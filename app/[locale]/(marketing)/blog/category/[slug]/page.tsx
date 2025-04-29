@@ -7,6 +7,13 @@ import { BLOG_CATEGORIES } from "@/config/blog";
 import { constructMetadata, getBlurDataURL } from "@/lib/utils";
 import { BlogCard } from "@/components/content/blog-card";
 
+interface CategoryPageProps {
+  params: Promise<{
+    slug: string;
+    locale?: string;
+  }>;
+}
+
 export async function generateStaticParams() {
   return BLOG_CATEGORIES.map((category) => ({
     slug: category.slug,
@@ -15,12 +22,11 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata | undefined> {
+}: CategoryPageProps): Promise<Metadata | undefined> {
   const t = await getTranslations("Blog");
+  const resolvedParams = await params;
   const category = BLOG_CATEGORIES.find(
-    (category) => category.slug === params.slug,
+    (category) => category.slug === resolvedParams.slug,
   );
   if (!category) {
     return;
@@ -34,12 +40,9 @@ export async function generateMetadata({
 
 export default async function BlogCategory({
   params,
-}: {
-  params: {
-    slug: string;
-  };
-}) {
-  const category = BLOG_CATEGORIES.find((ctg) => ctg.slug === params.slug);
+}: CategoryPageProps) {
+  const resolvedParams = await params;
+  const category = BLOG_CATEGORIES.find((ctg) => ctg.slug === resolvedParams.slug);
 
   if (!category) {
     notFound();

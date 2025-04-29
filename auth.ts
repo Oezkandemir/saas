@@ -37,7 +37,6 @@ export async function GET(request: NextRequest) {
   
   // Handle OAuth callback or session check
   try {
-    const cookieStore = cookies();
     const supabase = await getSupabaseServer();
     
     if (code) {

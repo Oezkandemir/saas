@@ -28,6 +28,13 @@ import { BlurImage } from "@/components/shared/blur-image";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { DashboardTableOfContents } from "@/components/shared/toc";
 
+interface PostPageProps {
+  params: Promise<{
+    slug: string;
+    locale?: string;
+  }>;
+}
+
 export async function generateStaticParams() {
   return allPosts.map((post) => ({
     slug: post.slugAsParams,
@@ -35,10 +42,8 @@ export async function generateStaticParams() {
 }
 
 // Helper function to get post by slug - now correctly handling async params
-async function getPostFromParams(params: { slug: string }) {
-  // Await the params object itself first
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
+async function getPostFromParams(params: Awaited<PostPageProps['params']>) {
+  const slug = params.slug;
   const post = allPosts.find((post) => post.slugAsParams === slug);
   if (!post) return null;
   return post;
@@ -46,10 +51,9 @@ async function getPostFromParams(params: { slug: string }) {
 
 export async function generateMetadata({
   params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata | undefined> {
-  const post = await getPostFromParams(params);
+}: PostPageProps): Promise<Metadata | undefined> {
+  const resolvedParams = await params;
+  const post = await getPostFromParams(resolvedParams);
   if (!post) {
     return;
   }
@@ -65,12 +69,9 @@ export async function generateMetadata({
 
 export default async function PostPage({
   params,
-}: {
-  params: {
-    slug: string;
-  };
-}) {
-  const post = await getPostFromParams(params);
+}: PostPageProps) {
+  const resolvedParams = await params;
+  const post = await getPostFromParams(resolvedParams);
 
   if (!post) {
     notFound();

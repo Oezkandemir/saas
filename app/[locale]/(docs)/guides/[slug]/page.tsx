@@ -16,6 +16,13 @@ import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { buttonVariants } from "@/components/ui/button";
 import { cn, constructMetadata } from "@/lib/utils";
 
+interface GuidePageProps {
+  params: Promise<{
+    slug: string;
+    locale?: string;
+  }>;
+}
+
 export async function generateStaticParams() {
   return allGuides.map((guide) => ({
     slug: guide.slugAsParams,
@@ -24,10 +31,9 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata | undefined> {
-  const guide = allGuides.find((guide) => guide.slugAsParams === params.slug);
+}: GuidePageProps): Promise<Metadata | undefined> {
+  const resolvedParams = await params;
+  const guide = allGuides.find((guide) => guide.slugAsParams === resolvedParams.slug);
   if (!guide) {
     return;
   }
@@ -42,12 +48,9 @@ export async function generateMetadata({
 
 export default async function GuidePage({
   params,
-}: {
-  params: {
-    slug: string;
-  };
-}) {
-  const guide = allGuides.find((guide) => guide.slugAsParams === params.slug);
+}: GuidePageProps) {
+  const resolvedParams = await params;
+  const guide = allGuides.find((guide) => guide.slugAsParams === resolvedParams.slug);
 
   if (!guide) {
     notFound();
