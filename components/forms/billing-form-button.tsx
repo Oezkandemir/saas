@@ -3,9 +3,9 @@
 import { useTransition } from "react";
 import { generateUserStripe } from "@/actions/generate-user-stripe";
 import { SubscriptionPlan, UserSubscriptionPlan } from "@/types";
-
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/shared/icons";
+import { toast } from "sonner";
 
 interface BillingFormButtonProps {
   offer: SubscriptionPlan;
@@ -19,32 +19,67 @@ export function BillingFormButton({
   subscriptionPlan,
 }: BillingFormButtonProps) {
   let [isPending, startTransition] = useTransition();
-  const generateUserStripeSession = generateUserStripe.bind(
-    null,
-    offer.stripeIds[year ? "yearly" : "monthly"],
-  );
 
-  const stripeSessionAction = () =>
-    startTransition(async () => await generateUserStripeSession());
+  const userCurrentPriceId = subscriptionPlan.stripePriceId;
+  const selectedPriceId = offer.stripeIds[year ? "yearly" : "monthly"];
+  
+  // Check if this is the user's current plan
+  const isCurrentPlan = userCurrentPriceId === selectedPriceId;
 
-  const userOffer =
-    subscriptionPlan.stripePriceId ===
-    offer.stripeIds[year ? "yearly" : "monthly"];
+  const handleStripeAction = () => {
+    if (!selectedPriceId) {
+      toast.error("Invalid pricing configuration. Please contact support.");
+      return;
+    }
+    
+    startTransition(async () => {
+      try {
+        // If the user already has this subscription, we show manage subscription UI
+        if (isCurrentPlan && subscriptionPlan.stripeCustomerId) {
+          toast.info("Redirecting to manage your current subscription...");
+        } else {
+          // Otherwise, we're upgrading or changing plans
+          toast.info("Redirecting to payment page...");
+        }
+        
+        await generateUserStripe(selectedPriceId);
+      } catch (error) {
+        console.error("Error with subscription action:", error);
+        toast.error("Failed to process subscription request. Please try again.");
+      }
+    });
+  };
 
   return (
     <Button
-      variant={userOffer ? "default" : "outline"}
+      variant={isCurrentPlan ? "default" : "outline"}
       rounded="full"
       className="w-full"
-      disabled={isPending}
-      onClick={stripeSessionAction}
+      disabled={isPending || !selectedPriceId}
+      onClick={handleStripeAction}
     >
       {isPending ? (
         <>
           <Icons.spinner className="mr-2 size-4 animate-spin" /> Loading...
         </>
+      ) : !selectedPriceId ? (
+        <>Not Available</>
       ) : (
-        <>{userOffer ? "Manage Subscription" : "Upgrade"}</>
+        <>
+          {isCurrentPlan ? (
+            <>
+              <Icons.check className="mr-2 size-4" /> Current Plan
+            </>
+          ) : subscriptionPlan.isPaid ? (
+            <>
+              <Icons.billing className="mr-2 size-4" /> Change Plan
+            </>
+          ) : (
+            <>
+              <Icons.arrowRight className="mr-2 size-4" /> Upgrade
+            </>
+          )}
+        </>
       )}
     </Button>
   );

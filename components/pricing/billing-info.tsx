@@ -16,6 +16,10 @@ import { UserSubscriptionPlan } from "types";
 import { Icons } from "@/components/shared/icons";
 import { SyncSubscriptionButton } from "./sync-subscription-button";
 
+// Direct link to test portal
+const STRIPE_TEST_PORTAL_URL = "https://billing.stripe.com/p/login/test_14kcMTbsj2hdbgQ288";
+const IS_TEST_MODE = process.env.NODE_ENV !== "production";
+
 interface BillingInfoProps extends React.HTMLAttributes<HTMLFormElement> {
   userSubscriptionPlan: UserSubscriptionPlan;
 }
@@ -72,6 +76,23 @@ export function BillingInfo({ userSubscriptionPlan }: BillingInfoProps) {
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+          
+          {/* Test Portal Direct Link - only shown in development */}
+          {IS_TEST_MODE && (
+            <div className="mt-4 p-3 rounded-md border border-blue-200 bg-blue-50">
+              <p className="text-sm font-medium text-blue-800 mb-2">Test Environment Quick Access</p>
+              <p className="text-xs text-blue-700 mb-3">This link appears only in development/test environments.</p>
+              <a 
+                href={STRIPE_TEST_PORTAL_URL} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className={cn(buttonVariants({ variant: "outline", size: "sm" }), "bg-white")}
+              >
+                <Icons.arrowUpRight className="mr-2 size-4" />
+                Open Test Customer Portal
+              </a>
             </div>
           )}
         </div>

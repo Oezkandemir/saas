@@ -5,6 +5,7 @@ import { constructMetadata } from "@/lib/utils";
 import { DashboardHeader } from "@/components/dashboard/header";
 import InfoCard from "@/components/dashboard/info-card";
 import TransactionsList from "@/components/dashboard/transactions-list";
+import { ConfigureStripePortalButton } from "@/components/admin/configure-stripe-button";
 
 export const metadata = constructMetadata({
   title: "Admin – Cenety",
@@ -28,6 +29,11 @@ export default async function AdminPage() {
           <InfoCard />
           <InfoCard />
         </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+          <ConfigureStripePortalButton />
+        </div>
+        
         <TransactionsList />
         <TransactionsList />
       </div>

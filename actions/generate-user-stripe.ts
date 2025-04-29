@@ -13,8 +13,10 @@ export type responseAction = {
   stripeUrl?: string;
 }
 
-// const billingUrl = absoluteUrl("/dashboard/billing")
-const billingUrl = absoluteUrl("/pricing")
+// Update the billingUrl to always point to the dashboard billing page
+const billingUrl = absoluteUrl("/dashboard/billing");
+// Direct link to the test customer portal
+const stripeTestPortalUrl = "https://billing.stripe.com/p/login/test_14kcMTbsj2hdbgQ288";
 
 export async function generateUserStripe(priceId: string): Promise<responseAction> {
   let redirectUrl: string = "";
@@ -58,15 +60,25 @@ export async function generateUserStripe(priceId: string): Promise<responseActio
 
     if (subscriptionPlan.isPaid && subscriptionPlan.stripeCustomerId) {
       console.log(`Creating billing portal for paid user ${user.id} with customer ID ${subscriptionPlan.stripeCustomerId}`);
-      // User on Paid Plan - Create a portal session to manage subscription.
-      const stripeSession = await stripe.billingPortal.sessions.create({
-        customer: subscriptionPlan.stripeCustomerId,
-        return_url: billingUrl,
-      })
+      
+      // In non-production environments, always use the test portal URL
+      if (process.env.NODE_ENV !== "production") {
+        console.log(`Using test portal URL: ${stripeTestPortalUrl}`);
+        redirectUrl = stripeTestPortalUrl;
+      } else {
+        // In production, create a real portal session
+        console.log("Creating real Stripe portal session for production environment");
+        const stripeSession = await stripe.billingPortal.sessions.create({
+          customer: subscriptionPlan.stripeCustomerId,
+          return_url: billingUrl,
+        });
 
-      redirectUrl = stripeSession.url as string
+        redirectUrl = stripeSession.url as string;
+      }
+      
+      console.log(`Created billing portal session, redirecting to: ${redirectUrl}`);
     } else {
-      console.log(`Creating checkout session for free user ${user.id} with email ${user.email} for price ID ${priceId}`);
+      console.log(`Creating checkout session for user ${user.id} with email ${user.email} for price ID ${priceId}`);
       // User on Free Plan - Create a checkout session to upgrade.
       
       // Check if price ID is valid
@@ -99,7 +111,8 @@ export async function generateUserStripe(priceId: string): Promise<responseActio
         },
       })
 
-      redirectUrl = stripeSession.url as string
+      redirectUrl = stripeSession.url as string;
+      console.log(`Created checkout session, redirecting to: ${redirectUrl}`);
     }
     
     if (!redirectUrl) {
@@ -108,20 +121,10 @@ export async function generateUserStripe(priceId: string): Promise<responseActio
     }
     
     console.log(`Redirecting user to ${redirectUrl}`);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error generating Stripe session:", error);
-    
-    // Return to pricing page instead of throwing an error
-    // This prevents the UI from breaking completely
-    console.log("Redirecting to pricing page due to error");
-    redirect(billingUrl);
+    throw new Error(error.message || "Failed to generate Stripe session");
   }
 
-  // no revalidatePath because redirect
-  if (redirectUrl) {
-    redirect(redirectUrl);
-  } else {
-    // Fallback if redirectUrl is not set for some reason
-    redirect(billingUrl);
-  }
+  redirect(redirectUrl);
 }

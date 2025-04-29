@@ -150,6 +150,41 @@ This project uses [Supabase Authentication](https://supabase.com/docs/guides/aut
 
 This project integrates with Stripe for subscription management. Users can choose between different plans (Starter, Pro, Business) on the pricing page. 
 
+### Setting Up Subscription Management
+
+1. **Configure Stripe Keys**: Ensure you have valid Stripe API keys set in your environment variables.
+
+2. **Configure Stripe Customer Portal**: As an admin, visit the admin dashboard and use the "Configure Stripe Portal" button to set up the customer portal with the recommended settings. This step is essential for enabling users to manage their subscriptions directly through Stripe's secure interface.
+
+3. **Test the Subscription Flow**: Use Stripe's test cards to test the entire subscription flow including:
+   - Initial subscription
+   - Upgrading/downgrading plans
+   - Updating payment methods
+   - Canceling subscriptions
+
+### Test Customer Portal
+
+In development and test environments, the application is configured to use a specific test customer portal:
+```
+https://billing.stripe.com/p/login/test_14kcMTbsj2hdbgQ288
+```
+
+This test portal URL is hard-coded in development mode to make testing easier. Users will see:
+- A direct link to the test portal on the billing page
+- The "Manage Subscription" button will open the test portal
+- Simplified workflows that bypass actual Stripe API calls during development
+
+In production, the application will use proper Stripe API calls to generate unique customer portal sessions.
+
+### Managing Subscriptions
+
+For users with active subscriptions, they will see a "Manage Subscription" button on the billing page that redirects them to the Stripe Customer Portal where they can:
+
+- Update their payment method
+- Change their subscription plan
+- View invoice history
+- Cancel their subscription
+
 ### Troubleshooting Subscription Issues
 
 If you experience any of the following issues:
@@ -173,3 +208,5 @@ You can use the following troubleshooting steps:
    - `stripe_subscription_id`
    - `stripe_price_id`
    - `stripe_current_period_end`
+
+5. **Configure Stripe Portal**: If users are having trouble managing their subscriptions, make sure the Stripe customer portal is properly configured using the admin dashboard.
