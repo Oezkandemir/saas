@@ -3,8 +3,8 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    // Authentication
-    AUTH_SECRET: z.string().min(1),
+    // Authentication - made optional since we're using Supabase auth
+    AUTH_SECRET: z.string().optional().default(""),
     
     // Email
     RESEND_API_KEY: z.string().optional(),
