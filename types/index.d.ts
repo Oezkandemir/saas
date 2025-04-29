@@ -1,7 +1,22 @@
-import { User } from "@prisma/client";
 import type { Icon } from "lucide-react";
+import { UserRole } from "@/components/forms/user-role-form";
 
 import { Icons } from "@/components/shared/icons";
+
+// Define the User interface that was previously from Prisma
+export interface User {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  emailVerified?: Date | null;
+  image?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+  stripeCustomerId?: string | null;
+  stripeSubscriptionId?: string | null;
+  stripePriceId?: string | null;
+  stripeCurrentPeriodEnd?: Date | null;
+}
 
 export type SiteConfig = {
   name: string;
@@ -60,13 +75,21 @@ export type SubscriptionPlan = {
   productId?: string;
 };
 
-export type UserSubscriptionPlan = SubscriptionPlan &
-  Pick<User, "stripeCustomerId" | "stripeSubscriptionId" | "stripePriceId"> & {
-    stripeCurrentPeriodEnd: number;
-    isPaid: boolean;
-    interval: "month" | "year" | null;
-    isCanceled?: boolean;
-  };
+// Re-export the UserRole enum for convenience
+// export enum UserRole {
+//   USER = "USER",
+//   ADMIN = "ADMIN"
+// }
+
+export type UserSubscriptionPlan = SubscriptionPlan & {
+  stripeCustomerId: string | null;
+  stripeSubscriptionId: string | null;
+  stripePriceId: string | null;
+  stripeCurrentPeriodEnd: number;
+  isPaid: boolean;
+  interval: "month" | "year" | null;
+  isCanceled?: boolean;
+};
 
 // compare plans
 export type ColumnType = string | boolean | null;

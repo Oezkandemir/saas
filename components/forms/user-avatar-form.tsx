@@ -4,7 +4,7 @@ import { useState, useRef, useTransition } from "react";
 import Image from "next/image";
 import { updateUserAvatar } from "@/actions/update-user-avatar";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User } from "@prisma/client";
+import { User } from "@/types";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";

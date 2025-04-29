@@ -1,4 +1,4 @@
-import { UserRole } from "@prisma/client";
+import { UserRole } from "@/components/forms/user-role-form";
 import * as z from "zod";
 
 export const userNameSchema = z.object({

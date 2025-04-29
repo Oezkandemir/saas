@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
-import { UserRole } from "@prisma/client";
+import { UserRole } from "@/components/forms/user-role-form";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { userRoleSchema } from "@/lib/validations/user";
 import { cookies } from "next/headers";

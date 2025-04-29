@@ -3,7 +3,6 @@
 import { useState, useTransition } from "react";
 import { updateUserRole, type FormData } from "@/actions/update-user-role";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User, UserRole } from "@prisma/client";
 import { useSupabase } from "@/components/supabase-provider";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -19,6 +18,16 @@ import {
 } from "@/components/ui/form";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { Icons } from "@/components/shared/icons";
+
+export enum UserRole {
+  USER = "USER",
+  ADMIN = "ADMIN"
+}
+
+interface User {
+  id: string;
+  role: UserRole;
+}
 
 interface UserNameFormProps {
   user: Pick<User, "id" | "role">;
