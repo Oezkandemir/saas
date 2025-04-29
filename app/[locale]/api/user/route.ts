@@ -1,26 +1,32 @@
 import { auth } from "@/auth";
+import { supabaseAdmin } from "@/lib/db";
 
-import { prisma } from "@/lib/db";
-
-export const DELETE = auth(async (req) => {
-  if (!req.auth) {
+export async function DELETE(req: Request) {
+  const authResult = await auth();
+  
+  if (!authResult) {
     return new Response("Not authenticated", { status: 401 });
   }
 
-  const currentUser = req.auth.user;
+  const currentUser = authResult.user;
   if (!currentUser) {
     return new Response("Invalid user", { status: 401 });
   }
 
   try {
-    await prisma.user.delete({
-      where: {
-        id: currentUser.id,
-      },
-    });
+    const { error } = await supabaseAdmin
+      .from('users')
+      .delete()
+      .eq('id', currentUser.id);
+      
+    if (error) {
+      console.error('Error deleting user:', error);
+      return new Response(`Database error: ${error.message}`, { status: 500 });
+    }
   } catch (error) {
+    console.error('Unexpected error deleting user:', error);
     return new Response("Internal server error", { status: 500 });
   }
 
   return new Response("User deleted successfully!", { status: 200 });
-});
+}

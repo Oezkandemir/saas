@@ -3,10 +3,12 @@ import Link from "next/link";
 
 import { getCurrentUser } from "@/lib/session";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
-import { constructMetadata } from "@/lib/utils";
+import { constructMetadata, resolveStaticPath } from "@/lib/utils";
 import { ComparePlans } from "@/components/pricing/compare-plans";
 import { PricingCards } from "@/components/pricing/pricing-cards";
 import { PricingFaq } from "@/components/pricing/pricing-faq";
+import { pricingData } from "@/config/subscriptions";
+import { UserSubscriptionPlan } from "@/types";
 
 export const metadata = constructMetadata({
   title: "Pricing – Cenety",
@@ -21,7 +23,7 @@ export default async function PricingPage() {
       <div className="flex min-h-screen flex-col items-center justify-center">
         <h1 className="text-5xl font-bold">Seriously?</h1>
         <Image
-          src="/_static/illustrations/call-waiting.svg"
+          src={resolveStaticPath("/_static/illustrations/call-waiting.svg")}
           alt="403"
           width={560}
           height={560}
@@ -41,9 +43,16 @@ export default async function PricingPage() {
     );
   }
 
-  let subscriptionPlan;
-  if (user && user.id) {
-    subscriptionPlan = await getUserSubscriptionPlan(user.id);
+  let subscriptionPlan: UserSubscriptionPlan | undefined;
+
+  try {
+    // Only try to get subscription plan if user is logged in
+    if (user && user.id) {
+      subscriptionPlan = await getUserSubscriptionPlan(user.id);
+    }
+  } catch (error) {
+    console.error("Error fetching subscription plan:", error);
+    // We'll handle this below with the default plan from the subscription service
   }
 
   return (

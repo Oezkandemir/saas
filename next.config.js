@@ -36,7 +36,8 @@ const nextConfig = {
       },
     ],
   },
-  serverExternalPackages: ["@prisma/client"],
+  // No longer needed as we're not using Prisma anymore
+  // serverExternalPackages: ["@prisma/client"],
 };
 
 module.exports = withNextIntl(withContentlayer(nextConfig));

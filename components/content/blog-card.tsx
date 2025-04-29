@@ -5,7 +5,7 @@ import { Post } from "contentlayer/generated";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
-import { cn, formatDate, placeholderBlurhash } from "@/lib/utils";
+import { cn, formatDate, placeholderBlurhash, resolveStaticPath } from "@/lib/utils";
 import { BlurImage } from "@/components/shared/blur-image";
 import { Link } from "@/i18n/routing";
 import { BLOG_AUTHORS } from "@/config/blog";
@@ -24,6 +24,9 @@ export function BlogCard({
   const t = useTranslations("Blog");
   const [imageError, setImageError] = useState(false);
   
+  // Ensure the image path is properly resolved
+  const imageSrc = data.image ? resolveStaticPath(data.image) : "";
+  
   return (
     <article
       className={cn(
@@ -33,7 +36,7 @@ export function BlogCard({
           : "flex flex-col space-y-2",
       )}
     >
-      {data.image && !imageError && (
+      {imageSrc && !imageError && (
         <div className="w-full overflow-hidden rounded-xl border">
           <BlurImage
             alt={data.title}
@@ -46,7 +49,7 @@ export function BlogCard({
             height={400}
             priority={priority}
             placeholder="blur"
-            src={data.image}
+            src={imageSrc}
             sizes="(max-width: 768px) 750px, 600px"
             onError={() => setImageError(true)}
           />
@@ -74,7 +77,7 @@ export function BlogCard({
               <div key={author} className="relative">
                 {BLOG_AUTHORS[author] && (
                   <Image
-                    src={BLOG_AUTHORS[author].image}
+                    src={BLOG_AUTHORS[author].image ? resolveStaticPath(BLOG_AUTHORS[author].image) : ""}
                     alt={BLOG_AUTHORS[author].name}
                     width={32}
                     height={32}

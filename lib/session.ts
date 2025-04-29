@@ -1,6 +1,7 @@
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { type Session } from "@supabase/supabase-js";
 import "server-only";
+import { syncUserWithDatabase } from "./auth-sync";
 
 export async function getCurrentUser() {
   try {
@@ -10,6 +11,9 @@ export async function getCurrentUser() {
     if (!user) {
       return null;
     }
+    
+    // Ensure the user exists in the database table
+    await syncUserWithDatabase(user);
     
     return {
       ...user,
@@ -28,6 +32,12 @@ export async function getSession(): Promise<Session | null> {
   try {
     const supabase = await getSupabaseServer();
     const { data: { session } } = await supabase.auth.getSession();
+    
+    // If session exists, ensure the user is synced
+    if (session?.user) {
+      await syncUserWithDatabase(session.user);
+    }
+    
     return session;
   } catch (error) {
     console.error("Error getting session:", error);
