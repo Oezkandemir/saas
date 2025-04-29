@@ -1,0 +1,269 @@
+{
+  "Index": {
+    "title": "Cenety",
+    "description": "Your complete SaaS solution with Stripe integration"
+  },
+  "Navigation": {
+    "home": "Home",
+    "pricing": "Pricing",
+    "dashboard": "Dashboard",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "switchLanguage": "Switch language",
+    "blog": "Blog",
+    "documentation": "Documentation",
+    "guides": "Guides"
+  },
+  "Common": {
+    "imageUnavailable": "Image unavailable"
+  },
+  "UserNav": {
+    "admin": "Admin",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "logout": "Log out",
+    "role": "Role",
+    "user": "User",
+    "defaultUser": "User",
+    "signOutSuccess": "Successfully signed out",
+    "signOutError": "Failed to sign out"
+  },
+  "Dashboard": {
+    "title": "Dashboard – Cenety",
+    "description": "Create and manage content.",
+    "heading": "Dashboard",
+    "currentRole": "Current Role",
+    "changeRole": "Change your role in settings.",
+    "noContent": "No content created",
+    "startCreating": "You don't have any content yet. Start creating content.",
+    "addContent": "Add Content"
+  },
+  "Billing": {
+    "title": "Billing – Cenety",
+    "description": "Manage billing and your subscription plan.",
+    "heading": "Billing",
+    "text": "Manage billing and your subscription plan.",
+    "demoAlert": "This is a demo app.",
+    "demoDescription": "Cenety app is a demo app using a Stripe test environment. You can find a list of test card numbers on the",
+    "stripeDocs": "Stripe docs"
+  },
+  "Settings": {
+    "title": "Settings – Cenety",
+    "description": "Configure your account and website settings.",
+    "heading": "Settings",
+    "text": "Manage account and website settings.",
+    "userInformation": "User Information",
+    "debugInformation": "Debug information about your user account.",
+    "profilePicture": {
+      "title": "Profile Picture",
+      "description": "Upload a profile picture to personalize your account.",
+      "label": "Avatar",
+      "recommendation": "Recommended: Square JPG, PNG, GIF or WEBP, 500×500px. Max 5MB."
+    },
+    "userName": {
+      "title": "Your Name",
+      "description": "Please enter a display name you are comfortable with.",
+      "label": "Name",
+      "maxChars": "Max 32 characters"
+    },
+    "userRole": {
+      "title": "Your Role",
+      "description": "Select the role what you want for test the app.",
+      "productionNote": "Remove this field on real production"
+    },
+    "deleteAccount": {
+      "title": "Delete Account",
+      "description": "This is a danger zone - Be careful !",
+      "areYouSure": "Are you sure ?",
+      "activeSubscription": "Active Subscription",
+      "permanentlyDelete": "Permanently delete your {name} account",
+      "andSubscription": " and your subscription",
+      "cannotBeUndone": ". This action cannot be undone - please proceed with caution.",
+      "deleteButton": "Delete Account",
+      "modal": {
+        "title": "Delete Account",
+        "warning": "Warning:",
+        "warningText": "This will permanently delete your account and your active subscription!",
+        "verifyLabel": "To verify, type",
+        "verifyText": "confirm delete account",
+        "verifyTextBelow": "below",
+        "confirmButton": "Confirm delete account",
+        "deletingToast": "Deleting account...",
+        "successToast": "Account deleted successfully!"
+      }
+    }
+  },
+  "Blog": {
+    "title": "Blog",
+    "description": "Latest news and updates from Cenety.",
+    "metaTitle": "Blog – Cenety",
+    "metaCategoryTitle": "{category} Posts – Cenety",
+    "categoriesLabel": "Categories",
+    "all": "All",
+    "guides": "Guides",
+    "viewArticle": "View Article",
+    "categories": {
+      "news": {
+        "title": "News",
+        "description": "Updates and announcements from Cenety."
+      },
+      "education": {
+        "title": "Education",
+        "description": "Educational content about SaaS management."
+      }
+    }
+  },
+  "Footer": {
+    "sections": {
+      "product": "Product",
+      "company": "Company",
+      "legal": "Legal",
+      "resources": "Resources",
+      "features": "Features",
+      "docs": "Documentation"
+    },
+    "links": {
+      "about": "About",
+      "blog": "Blog",
+      "careers": "Careers",
+      "contact": "Contact",
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "cookies": "Cookies",
+      "documentation": "Documentation",
+      "features": "Features",
+      "pricing": "Pricing",
+      "changelog": "Changelog",
+      "enterprise": "Enterprise",
+      "security": "Security",
+      "customization": "Customization",
+      "customers": "Customers",
+      "introduction": "Introduction",
+      "installation": "Installation",
+      "components": "Components",
+      "code_blocks": "Code Blocks"
+    },
+    "builtBy": "Entwickelt von",
+    "hostedOn": "Gehostet auf",
+    "illustrationsBy": "Illustrationen von"
+  },
+  "Newsletter": {
+    "subscribeLabel": "Subscribe to our newsletter",
+    "emailPlaceholder": "janedoe@example.com",
+    "subscribeButton": "Subscribe",
+    "submittedTitle": "You submitted the following values:",
+    "validEmail": "Enter a valid email."
+  },
+  "Auth": {
+    "signin": "Sign In",
+    "signup": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?"
+  },
+  "Hero": {
+    "introducing": "Introducing",
+    "nextAuthRoles": "Next Auth Roles Template on",
+    "kickOff": "Kick off with a bang with",
+    "saasStarter": "Cenety",
+    "buildNextProject": "Build your next project using Next.js 14, Prisma, Neon, Auth.js v5, Resend, React Email, Shadcn/ui, Stripe.",
+    "goPricing": "Go Pricing",
+    "starOn": "Star on"
+  },
+  "Features": {
+    "label": "Features",
+    "title": "Discover all features.",
+    "subtitle": "Harum quae dolore inventore repudiandae? orrupti aut temporibus ariatur.",
+    "visitSite": "Visit the site",
+    "feature1": {
+      "title": "Feature 1",
+      "description": "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente."
+    },
+    "feature2": {
+      "title": "Feature 2",
+      "description": "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente."
+    },
+    "feature3": {
+      "title": "Feature 3",
+      "description": "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente."
+    },
+    "feature4": {
+      "title": "Feature 4",
+      "description": "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente."
+    },
+    "feature5": {
+      "title": "Feature 5",
+      "description": "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente."
+    },
+    "feature6": {
+      "title": "Feature 6",
+      "description": "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente."
+    }
+  },
+  "Info": {
+    "empower": {
+      "title": "Empower your projects",
+      "description": "Unlock the full potential of your projects with our open-source SaaS platform. Collaborate seamlessly, innovate effortlessly, and scale limitlessly.",
+      "collaborative": {
+        "title": "Collaborative",
+        "description": "Work together with your team members in real-time."
+      },
+      "innovative": {
+        "title": "Innovative",
+        "description": "Stay ahead of the curve with access constant updates."
+      },
+      "scalable": {
+        "title": "Scalable",
+        "description": "Our platform offers the scalability needed to adapt to your needs."
+      }
+    },
+    "integration": {
+      "title": "Seamless Integration",
+      "description": "Integrate our open-source SaaS seamlessly into your existing workflows. Effortlessly connect with your favorite tools and services for a streamlined experience.",
+      "flexible": {
+        "title": "Flexible",
+        "description": "Customize your integrations to fit your unique requirements."
+      },
+      "efficient": {
+        "title": "Efficient",
+        "description": "Streamline your processes and reducing manual effort."
+      },
+      "reliable": {
+        "title": "Reliable",
+        "description": "Rely on our robust infrastructure and comprehensive documentation."
+      }
+    }
+  },
+  "Testimonials": {
+    "label": "Testimonials",
+    "title": "What our clients are sharing.",
+    "subtitle": "Discover the glowing feedback from our delighted customers worldwide."
+  },
+  "Meta": {
+    "appName": "Cenety",
+    "shortName": "Cenety"
+  },
+  "DashboardSidebar": {
+    "toggleSidebar": "Toggle Sidebar",
+    "toggleNavigationMenu": "Toggle navigation menu",
+    "sections": {
+      "menu": "MENU",
+      "options": "OPTIONS"
+    },
+    "items": {
+      "admin_panel": "Admin Panel",
+      "dashboard": "Dashboard",
+      "billing": "Billing",
+      "charts": "Charts",
+      "orders": "Orders",
+      "user_posts": "User Posts",
+      "settings": "Settings",
+      "homepage": "Homepage",
+      "documentation": "Documentation",
+      "support": "Support"
+    }
+  }
+} 

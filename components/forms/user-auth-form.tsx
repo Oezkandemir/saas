@@ -1,0 +1,175 @@
+"use client";
+
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useSupabase } from "@/components/supabase-provider";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Icons } from "@/components/shared/icons";
+
+interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
+  type?: string;
+  onSuccess?: () => void;
+  redirectTo?: string;
+}
+
+const formSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8)
+});
+
+type FormData = z.infer<typeof formSchema>;
+
+export function UserAuthForm({ className, type, onSuccess, redirectTo, ...props }: UserAuthFormProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+  });
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const searchParams = useSearchParams();
+  const { supabase } = useSupabase();
+  const router = useRouter();
+
+  async function onSubmit(data: FormData) {
+    setIsLoading(true);
+
+    try {
+      if (type === "register") {
+        // Sign up
+        const signUpResult = await supabase.auth.signUp({
+          email: data.email.toLowerCase(),
+          password: data.password,
+          options: {
+            data: {
+              name: data.email.split('@')[0], // Set a default name from email
+              role: "USER" // Default role
+            }
+          }
+        });
+        
+        if (signUpResult.error) {
+          throw signUpResult.error;
+        }
+        
+        toast.success("Check your email", {
+          description: "We sent you a confirmation link. Please check your inbox and spam folder.",
+        });
+
+        // Close modal after successful signup
+        if (onSuccess) {
+          onSuccess();
+        }
+      } else {
+        // Sign in
+        const signInResult = await supabase.auth.signInWithPassword({
+          email: data.email.toLowerCase(),
+          password: data.password,
+        });
+        
+        if (signInResult.error) {
+          throw signInResult.error;
+        }
+        
+        // If user metadata is missing, update it
+        if (!signInResult.data.user.user_metadata?.name) {
+          await supabase.auth.updateUser({
+            data: {
+              name: data.email.split('@')[0],
+              role: "USER"
+            }
+          });
+        }
+        
+        toast.success("Successfully signed in", {
+          description: "You are now logged in to your account.",
+        });
+
+        // Close modal after successful login
+        if (onSuccess) {
+          onSuccess();
+        }
+
+        // Redirect to dashboard or the specified redirect URL after successful login
+        if (redirectTo) {
+          router.push(redirectTo);
+        } else {
+          router.push("/dashboard");
+        }
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Authentication error:", error);
+      toast.error("Authentication failed", {
+        description: error.message || "Please check your credentials and try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <div className={cn("grid gap-6", className)} {...props}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="grid gap-2">
+          <div className="grid gap-1">
+            <Label className="sr-only" htmlFor="email">
+              Email
+            </Label>
+            <Input
+              id="email"
+              placeholder="name@example.com"
+              type="email"
+              autoCapitalize="none"
+              autoComplete="email"
+              autoCorrect="off"
+              disabled={isLoading}
+              {...register("email")}
+            />
+            {errors?.email && (
+              <p className="px-1 text-xs text-red-600">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+          <div className="grid gap-1">
+            <Label className="sr-only" htmlFor="password">
+              Password
+            </Label>
+            <Input
+              id="password"
+              placeholder="Password"
+              type="password"
+              autoCapitalize="none"
+              autoComplete={type === "register" ? "new-password" : "current-password"}
+              autoCorrect="off"
+              disabled={isLoading}
+              {...register("password")}
+            />
+            {errors?.password && (
+              <p className="px-1 text-xs text-red-600">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+          <button className={cn(buttonVariants())} disabled={isLoading}>
+            {isLoading && (
+              <Icons.spinner className="mr-2 size-4 animate-spin" />
+            )}
+            {type === "register" ? "Sign Up with Email" : "Sign In with Email"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}

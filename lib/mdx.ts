@@ -1,0 +1,23 @@
+import rehypePrettyCode from "rehype-pretty-code";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeSlug from "rehype-slug";
+import remarkGfm from "remark-gfm";
+
+// MDX options for rendering content
+export function getMDXOptions() {
+  return {
+    mdxOptions: {
+      remarkPlugins: [remarkGfm],
+      rehypePlugins: [
+        rehypeSlug,
+        [rehypePrettyCode, { theme: "github-dark" }],
+        [rehypeAutolinkHeadings, {
+          properties: {
+            className: ["subheading-anchor"],
+            ariaLabel: "Link to section",
+          },
+        }],
+      ],
+    },
+  };
+} 
