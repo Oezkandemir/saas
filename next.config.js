@@ -10,7 +10,7 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 const nextConfig = {
   reactStrictMode: true,
   // Make sure static files are properly served regardless of locale
-  assetPrefix: '',
+  assetPrefix: '/_static',
   images: {
     remotePatterns: [
       {

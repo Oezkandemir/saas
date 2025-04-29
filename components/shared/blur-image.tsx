@@ -40,7 +40,7 @@ export function BlurImage({
   };
 
   // Resolve the image path to ensure it works with localized routes
-  const resolvedSrc = src.startsWith("/_static/") ? resolveStaticPath(src) : src;
+  const resolvedSrc = resolveStaticPath(src);
 
   if (imgError) {
     return (

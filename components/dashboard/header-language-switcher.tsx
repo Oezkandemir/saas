@@ -25,7 +25,7 @@ export function HeaderLanguageSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="flex items-center gap-1">
-          <GlobeIcon className="h-4 w-4" />
+          <GlobeIcon className="size-4" />
           <span>{t("switchLanguage")}</span>
         </Button>
       </DropdownMenuTrigger>

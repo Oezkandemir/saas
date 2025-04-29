@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 const VisuallyHidden = ({ children }: { children: React.ReactNode }) => {
   return (
     <span 
-      className="absolute -m-px h-px w-px overflow-hidden whitespace-nowrap border-0 p-0"
+      className="absolute -m-px size-px overflow-hidden whitespace-nowrap border-0 p-0"
       style={{ clip: 'rect(0, 0, 0, 0)' }}
     >
       {children}

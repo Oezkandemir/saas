@@ -1,43 +1,43 @@
 /**
  * Helper utilities for working with static assets in a Next.js app with i18n
  */
+import { resolveStaticPath } from "./utils";
 
 // Function to get a blog image path without locale issues
 export const getBlogImagePath = (filename: string): string => {
-  // Ensure the path starts with /_static/blog/
+  // If it already has the full path structure, just ensure it's resolved correctly
   if (filename.startsWith('/_static/blog/')) {
-    return filename;
+    return resolveStaticPath(filename);
   }
   
-  // If it's just the filename, add the path
-  return `/_static/blog/${filename}`;
+  // If it's just the filename, add the blog path
+  return resolveStaticPath(`blog/${filename}`);
 };
 
 // Function to get an illustration path without locale issues
 export const getIllustrationPath = (filename: string): string => {
-  // Ensure the path starts with /_static/illustrations/
+  // If it already has the full path structure, just ensure it's resolved correctly
   if (filename.startsWith('/_static/illustrations/')) {
-    return filename;
+    return resolveStaticPath(filename);
   }
   
-  // If it's just the filename, add the path
-  return `/_static/illustrations/${filename}`;
+  // If it's just the filename, add the illustrations path
+  return resolveStaticPath(`illustrations/${filename}`);
 };
 
 // Function to get an avatar path without locale issues
 export const getAvatarPath = (filename: string): string => {
-  // Ensure the path starts with /_static/avatars/
+  // If it already has the full path structure, just ensure it's resolved correctly
   if (filename.startsWith('/_static/avatars/')) {
-    return filename;
+    return resolveStaticPath(filename);
   }
   
-  // If it's just the filename, add the path
-  return `/_static/avatars/${filename}`;
+  // If it's just the filename, add the avatars path
+  return resolveStaticPath(`avatars/${filename}`);
 };
 
 // General function to build paths for any static asset
 export const getStaticPath = (subdir: string, filename: string): string => {
-  // Create a full path from a subdirectory and filename
-  const path = `/_static/${subdir}/${filename}`;
-  return path;
+  // Create a path from a subdirectory and filename and resolve it
+  return resolveStaticPath(`${subdir}/${filename}`);
 }; 

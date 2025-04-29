@@ -23,7 +23,7 @@ export default async function PricingPage() {
       <div className="flex min-h-screen flex-col items-center justify-center">
         <h1 className="text-5xl font-bold">Seriously?</h1>
         <Image
-          src={resolveStaticPath("/_static/illustrations/call-waiting.svg")}
+          src={resolveStaticPath("illustrations/call-waiting.svg")}
           alt="403"
           width={560}
           height={560}

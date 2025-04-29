@@ -151,13 +151,13 @@ export const getBlurDataURL = async (url: string | null) => {
     return "data:image/webp;base64,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   }
 
-  if (url.startsWith("/_static/")) {
-    url = `${siteConfig.url}${url}`;
-  }
+  // Use the resolveStaticPath function to ensure consistent path handling
+  const resolvedUrl = resolveStaticPath(url);
+  const fullUrl = resolvedUrl.startsWith("/_static/") ? `${siteConfig.url}${resolvedUrl}` : url;
 
   try {
     const response = await fetch(
-      `https://wsrv.nl/?url=${url}&w=50&h=50&blur=5`,
+      `https://wsrv.nl/?url=${fullUrl}&w=50&h=50&blur=5`,
     );
     const buffer = await response.arrayBuffer();
     const base64 = Buffer.from(buffer).toString("base64");
@@ -179,12 +179,12 @@ export const resolveStaticPath = (path: string): string => {
     return path;
   }
   
-  // If the path starts with /_static, ensure it points to the root public directory
+  // If the path starts with /_static, it's already in the correct format
   if (path.startsWith("/_static/")) {
-    return path.replace("/_static/", "/_static/");
+    return path;
   }
   
-  // If no leading slash, add it
+  // If no leading slash, add /_static/ prefix
   if (!path.startsWith("/")) {
     return `/_static/${path}`;
   }

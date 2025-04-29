@@ -105,7 +105,7 @@ export function UserAvatarForm({ user }: UserAvatarFormProps) {
         description={t("description")}
       >
         <div className="flex flex-col items-center gap-4 sm:flex-row">
-          <div className="relative h-24 w-24 overflow-hidden rounded-full border border-border">
+          <div className="relative size-24 overflow-hidden rounded-full border border-border">
             {previewUrl ? (
               <Image
                 src={previewUrl}
@@ -114,7 +114,7 @@ export function UserAvatarForm({ user }: UserAvatarFormProps) {
                 className="object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center bg-muted">
+              <div className="flex size-full items-center justify-center bg-muted">
                 <Icons.user className="size-12 text-muted-foreground" />
               </div>
             )}
