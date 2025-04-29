@@ -22,6 +22,13 @@ export async function POST(req: Request) {
   }
 
   console.log(`Processing Stripe webhook event: ${event.type}`);
+  
+  // Log full event data for debugging
+  try {
+    console.log("Event data:", JSON.stringify(event.data.object, null, 2));
+  } catch (e) {
+    console.log("Could not stringify event data for logging");
+  }
 
   try {
     if (event.type === "checkout.session.completed") {
@@ -40,6 +47,7 @@ export async function POST(req: Request) {
       );
       
       console.log(`Retrieved subscription: ${subscription.id} for customer: ${subscription.customer}`);
+      console.log(`Price ID: ${subscription.items.data[0].price.id}`);
 
       // Verify the users table exists
       const { data: tableCheck, error: tableError } = await supabaseAdmin.rpc(
@@ -53,18 +61,53 @@ export async function POST(req: Request) {
         await createUsersTableIfNeeded();
       }
 
-      // Check if user exists
+      // Check if user exists by ID first
       const { data: userData, error: userError } = await supabaseAdmin
         .from('users')
-        .select('id')
+        .select('id, email')
         .eq('id', session.metadata.userId)
         .single();
       
-      if (userError) {
-        console.error(`User ${session.metadata.userId} not found:`, userError);
+      if (userError || !userData) {
+        console.error(`User ${session.metadata.userId} not found by ID:`, userError);
         
-        // Try to create the user if they don't exist
+        // If user not found by ID, try to find by email
         if (session.customer_email) {
+          console.log(`Looking for user by email: ${session.customer_email}`);
+          const { data: emailUserData, error: emailUserError } = await supabaseAdmin
+            .from('users')
+            .select('id, email')
+            .eq('email', session.customer_email)
+            .single();
+            
+          if (emailUserData && !emailUserError) {
+            console.log(`Found user by email with ID: ${emailUserData.id}`);
+            
+            // Update subscription for existing user found by email
+            const { error: updateError } = await supabaseAdmin
+              .from('users')
+              .update({
+                stripe_subscription_id: subscription.id,
+                stripe_customer_id: subscription.customer as string,
+                stripe_price_id: subscription.items.data[0].price.id,
+                stripe_current_period_end: new Date(
+                  subscription.current_period_end * 1000
+                ).toISOString(),
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', emailUserData.id);
+              
+            if (updateError) {
+              console.error('Error updating user found by email:', updateError);
+              return new Response(`Database Error: ${updateError.message}`, { status: 500 });
+            }
+            
+            console.log(`Updated subscription for user found by email: ${emailUserData.id}`);
+            return new Response(null, { status: 200 });
+          }
+          
+          // User not found by ID or email, create new user
+          console.log(`Creating new user with ID ${session.metadata.userId} and email ${session.customer_email}`);
           const { error: insertError } = await supabaseAdmin
             .from('users')
             .insert({
@@ -89,10 +132,14 @@ export async function POST(req: Request) {
           
           console.log(`Created new user record for ${session.metadata.userId}`);
           return new Response(null, { status: 200 });
+        } else {
+          console.error('No customer email in checkout session');
+          return new Response('Missing customer email in session', { status: 400 });
         }
       }
 
-      // Update the user stripe info in our database using Supabase.
+      // User exists, update subscription data
+      console.log(`Updating subscription for existing user ${userData.id}`);
       const { error } = await supabaseAdmin
         .from('users')
         .update({
@@ -112,6 +159,8 @@ export async function POST(req: Request) {
       }
       
       console.log(`Successfully updated subscription for user ${session.metadata.userId}`);
+      console.log(`Updated price ID: ${subscription.items.data[0].price.id}`);
+      console.log(`Updated period end: ${new Date(subscription.current_period_end * 1000).toISOString()}`);
     }
 
     if (event.type === "invoice.payment_succeeded") {
@@ -128,6 +177,7 @@ export async function POST(req: Request) {
         );
         
         console.log(`Retrieved subscription details for: ${subscription.id}`);
+        console.log(`Price ID: ${subscription.items.data[0].price.id}`);
 
         // Retrieve customer ID to find user if needed
         const customerId = subscription.customer as string;
@@ -168,6 +218,8 @@ export async function POST(req: Request) {
         }
         
         console.log('Successfully updated subscription information');
+        console.log(`Updated price ID: ${subscription.items.data[0].price.id}`);
+        console.log(`Updated period end: ${new Date(subscription.current_period_end * 1000).toISOString()}`);
       }
     }
 
@@ -198,6 +250,7 @@ export async function POST(req: Request) {
     return new Response(null, { status: 200 });
   } catch (error: any) {
     console.error(`Error processing webhook: ${error.message}`);
+    console.error(error.stack);
     return new Response(`Server Error: ${error.message}`, { status: 500 });
   }
 }

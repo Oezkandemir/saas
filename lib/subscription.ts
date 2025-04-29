@@ -42,6 +42,9 @@ export async function getUserSubscriptionPlan(
     userData = userResult.data;
     error = userResult.error;
 
+    console.log(`Fetching subscription data for user ${userId}`);
+    console.log(`Database record:`, userData);
+
     // If user not found by ID and we have an email, try to find by email
     if ((!userData || error) && userEmail) {
       console.log(`User not found by ID ${userId}, trying with email ${userEmail}`);
@@ -85,6 +88,13 @@ export async function getUserSubscriptionPlan(
       stripeCurrentPeriodEnd: userData.stripe_current_period_end ? new Date(userData.stripe_current_period_end) : null,
     };
 
+    console.log('User stripe data:', {
+      customerId: user.stripeCustomerId,
+      subscriptionId: user.stripeSubscriptionId,
+      priceId: user.stripePriceId,
+      periodEnd: user.stripeCurrentPeriodEnd
+    });
+
     // Check if user is on a paid plan.
     const isPaid =
       user.stripePriceId &&
@@ -95,6 +105,8 @@ export async function getUserSubscriptionPlan(
     const userPlan =
       pricingData.find((plan) => plan.stripeIds.monthly === user.stripePriceId) ||
       pricingData.find((plan) => plan.stripeIds.yearly === user.stripePriceId);
+
+    console.log('Matched plan:', userPlan?.title || 'No matching plan found');
 
     // Use the found plan or default to free
     const plan = isPaid && userPlan ? userPlan : pricingData[0];
@@ -123,7 +135,7 @@ export async function getUserSubscriptionPlan(
     }
 
     // Return the complete user subscription plan
-    return {
+    const result = {
       ...plan,
       ...user,
       stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd?.getTime() || 0,
@@ -131,6 +143,15 @@ export async function getUserSubscriptionPlan(
       interval,
       isCanceled
     };
+
+    console.log('Returning subscription plan:', {
+      title: result.title,
+      isPaid: result.isPaid,
+      priceId: result.stripePriceId,
+      interval: result.interval
+    });
+
+    return result;
   } catch (error) {
     console.error("Unexpected error in getUserSubscriptionPlan:", error);
     // Return default plan in case of any error

@@ -145,3 +145,31 @@ This project uses [Supabase Authentication](https://supabase.com/docs/guides/aut
 - `/api/auth/signin` - Sign in an existing user
 - `/api/auth/signout` - Sign out the current user
 - `/api/auth/reset-password` - Send a password reset email
+
+## Subscription Management
+
+This project integrates with Stripe for subscription management. Users can choose between different plans (Starter, Pro, Business) on the pricing page. 
+
+### Troubleshooting Subscription Issues
+
+If you experience any of the following issues:
+- Subscription payments are successful but not reflected in the UI
+- Plan remains as "Starter" after upgrading
+- Subscription data isn't updated in the database
+
+You can use the following troubleshooting steps:
+
+1. **Check your webhook setup**: Ensure your Stripe webhooks are correctly configured and pointing to your application's webhook endpoint at `/api/webhooks/stripe`. The webhook should have the following events enabled:
+   - `checkout.session.completed`
+   - `invoice.payment_succeeded`
+   - `customer.subscription.deleted`
+
+2. **Manual subscription sync**: If your subscription isn't showing up in the UI, visit your billing page and use the "Fix Subscription" button that appears for free users. This will attempt to sync your subscription status directly from Stripe.
+
+3. **Check server logs**: Look for webhook event logs in your server logs to see if Stripe events are being received and processed correctly.
+
+4. **Verify database records**: Check your database users table to see if the subscription fields are correctly populated:
+   - `stripe_customer_id`
+   - `stripe_subscription_id`
+   - `stripe_price_id`
+   - `stripe_current_period_end`

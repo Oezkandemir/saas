@@ -8,6 +8,7 @@ import { BillingInfo } from "@/components/pricing/billing-info";
 import { Icons } from "@/components/shared/icons";
 import { getTranslations } from "next-intl/server";
 import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
+import { RefreshSubscriptionButton } from "@/components/pricing/refresh-subscription-button";
 
 export async function generateMetadata() {
   const t = await getTranslations("Billing");
@@ -52,7 +53,13 @@ export default async function BillingPage() {
             .
           </AlertDescription>
         </Alert>
-        <BillingInfo userSubscriptionPlan={userSubscriptionPlan} />
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Subscription Details</h2>
+            <RefreshSubscriptionButton />
+          </div>
+          <BillingInfo userSubscriptionPlan={userSubscriptionPlan} />
+        </div>
       </div>
     </>
   );
