@@ -6,7 +6,19 @@ import { Command as CommandPrimitive } from "cmdk"
 import { Search } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+
+// Custom VisuallyHidden component to hide content visually but keep it accessible to screen readers
+const VisuallyHidden = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <span 
+      className="absolute -m-px h-px w-px overflow-hidden whitespace-nowrap border-0 p-0"
+      style={{ clip: 'rect(0, 0, 0, 0)' }}
+    >
+      {children}
+    </span>
+  )
+}
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -29,6 +41,9 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   return (
     <Dialog {...props}>
       <DialogContent className="overflow-hidden p-0 shadow-2xl">
+        <DialogTitle>
+          <VisuallyHidden>Search commands</VisuallyHidden>
+        </DialogTitle>
         <Command className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:size-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:size-5">
           {children}
         </Command>
