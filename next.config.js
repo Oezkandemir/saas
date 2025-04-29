@@ -9,6 +9,8 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Make sure static files are properly served regardless of locale
+  assetPrefix: '',
   images: {
     remotePatterns: [
       {

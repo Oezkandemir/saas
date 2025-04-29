@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { resolveStaticPath } from "@/lib/utils";
 
 export default function PreviewLanding() {
   return (
@@ -10,7 +11,7 @@ export default function PreviewLanding() {
           <div className="relative aspect-video overflow-hidden rounded-xl border md:rounded-lg">
             <Image
               className="size-full object-cover object-center dark:opacity-85 dark:invert"
-              src="/_static/blog/blog-post-3.jpg"
+              src={resolveStaticPath("/_static/blog/blog-post-3.jpg")}
               alt="preview landing"
               width={2000}
               height={1000}

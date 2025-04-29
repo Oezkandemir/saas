@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image, { ImageProps } from "next/image";
 import { useTranslations } from "next-intl";
-import { cn } from "@/lib/utils";
+import { cn, resolveStaticPath } from "@/lib/utils";
 
 export function BlurImage({ 
   src, 
@@ -39,6 +39,9 @@ export function BlurImage({
     if (onError) onError();
   };
 
+  // Resolve the image path to ensure it works with localized routes
+  const resolvedSrc = src.startsWith("/_static/") ? resolveStaticPath(src) : src;
+
   if (imgError) {
     return (
       <div 
@@ -57,7 +60,7 @@ export function BlurImage({
     <div className="relative overflow-hidden">
       <Image
         alt={alt}
-        src={src}
+        src={resolvedSrc}
         width={width}
         height={height}
         className={cn(

@@ -122,9 +122,10 @@ export const config = {
     // - api (API routes)
     // - _next/static (static files)
     // - _next/image (image optimization files)
+    // - _static (our static files)
     // - favicon.ico (favicon file)
     // - api/webhooks (webhook handlers)
-    '/((?!api|_next/static|_next/image|favicon.ico|api/webhooks).*)',
+    '/((?!api|_next/static|_next/image|_static|favicon.ico|api/webhooks).*)',
     
     // Optional: Also match locale-specific paths, if needed (or remove if covered by above)
     '/(en|de)/:path*',
