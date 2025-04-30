@@ -36,7 +36,7 @@ export function SyncSubscriptionButton() {
       size="sm"
       onClick={handleSync}
       disabled={isLoading}
-      className="w-full mt-4"
+      className="mt-4 w-full"
     >
       {isLoading ? (
         <>

@@ -70,7 +70,7 @@ export function BillingInfo({ userSubscriptionPlan }: BillingInfoProps) {
                   <div>
                     <h3 className="text-sm font-medium text-amber-800">Subscription Issue Detected</h3>
                     <p className="mt-1 text-sm text-amber-700">
-                      If you've recently upgraded but don't see your subscription, click the button below to sync your account.
+                      If you&apos;ve recently upgraded but don&apos;t see your subscription, click the button below to sync your account.
                     </p>
                     <SyncSubscriptionButton />
                   </div>
@@ -81,9 +81,9 @@ export function BillingInfo({ userSubscriptionPlan }: BillingInfoProps) {
           
           {/* Test Portal Direct Link - only shown in development */}
           {IS_TEST_MODE && (
-            <div className="mt-4 p-3 rounded-md border border-blue-200 bg-blue-50">
-              <p className="text-sm font-medium text-blue-800 mb-2">Test Environment Quick Access</p>
-              <p className="text-xs text-blue-700 mb-3">This link appears only in development/test environments.</p>
+            <div className="mt-4 rounded-md border border-blue-200 bg-blue-50 p-3">
+              <p className="mb-2 text-sm font-medium text-blue-800">Test Environment Quick Access</p>
+              <p className="mb-3 text-xs text-blue-700">This link appears only in development/test environments.</p>
               <a 
                 href={STRIPE_TEST_PORTAL_URL} 
                 target="_blank" 

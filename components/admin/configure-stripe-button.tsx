@@ -17,6 +17,7 @@ import {
 export function ConfigureStripePortalButton() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
+  const [stripeApiKey, setStripeApiKey] = useState<string | null>(null);
 
   const handleConfigure = async () => {
     setIsLoading(true);
@@ -54,15 +55,36 @@ export function ConfigureStripePortalButton() {
         </p>
         
         {result && (
-          <div className={`p-3 rounded-md my-4 ${result.success ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+          <div className={`border rounded-md p-3 my-4 ${result.success ? 'border-green-200 bg-green-50 text-green-700' : 'border-red-200 bg-red-50 text-red-700'}`}>
             <p className="font-medium">{result.message}</p>
             {result.details && (
-              <pre className="mt-2 text-xs overflow-auto">
+              <pre className="text-xs overflow-auto mt-2">
                 {JSON.stringify(result.details, null, 2)}
               </pre>
             )}
           </div>
         )}
+
+        <p className="text-sm text-muted-foreground mb-4">
+          Go to Stripe dashboard, and then "Configure branding" and "Configure
+          email" on this link
+        </p>
+        <p className="text-sm text-muted-foreground mb-4">
+          Paste the Stripe API key from Stripe Dashboard -&gt; API keys -&gt;
+          Secret key
+        </p>
+        <div
+          className={`border rounded-md p-3 my-4 ${
+            stripeApiKey ? "bg-green-50" : "bg-red-50"
+          }`}
+        >
+          <p className="text-sm">
+            {stripeApiKey
+              ? "Stripe API key is configured"
+              : "Stripe API key is not configured"}
+          </p>
+          <pre className="text-xs overflow-auto mt-2">{stripeApiKey || ""}</pre>
+        </div>
       </CardContent>
       <CardFooter>
         <Button
@@ -71,11 +93,11 @@ export function ConfigureStripePortalButton() {
         >
           {isLoading ? (
             <>
-              <Icons.spinner className="mr-2 size-4 animate-spin" /> Configuring...
+              <Icons.spinner className="size-4 mr-2 animate-spin" /> Configuring...
             </>
           ) : (
             <>
-              <Icons.settings className="mr-2 size-4" /> Configure Stripe Portal
+              <Icons.settings className="size-4 mr-2" /> Configure Stripe Portal
             </>
           )}
         </Button>
