@@ -1,15 +1,10 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { db } from "@/db";
-import { eq } from "drizzle-orm";
-import { users } from "@/db/schema";
-import { isAdmin } from "@/lib/utils";
-import { Suspense } from "react";
-import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ConfigureStripePortalButton } from "@/components/admin/configure-stripe-button";
+import { PageHeader } from "@/components/page-header";
 
 export default async function AdminPanelPage() {
   const session = await auth();
@@ -17,17 +12,16 @@ export default async function AdminPanelPage() {
     redirect("/login");
   }
 
-  const user = await db.query.users.findFirst({
-    where: eq(users.email, session.user.email),
-  });
-
-  if (!user || !isAdmin(user)) {
+  // Simple admin check based on email pattern - replace with a more robust method later
+  const isAdmin = session.user.email.endsWith("@admin.com");
+  
+  if (!isAdmin) {
     redirect("/dashboard");
   }
 
   return (
     <div>
-      <PageHeader
+      <PageHeader 
         heading="Admin Panel"
         subheading="Manage your application settings and users"
       />

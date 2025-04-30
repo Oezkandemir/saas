@@ -54,7 +54,7 @@ export default async function BillingPage() {
           </AlertDescription>
         </Alert>
         <div className="flex flex-col gap-4">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">Subscription Details</h2>
             <RefreshSubscriptionButton />
           </div>

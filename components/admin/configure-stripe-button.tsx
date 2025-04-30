@@ -47,7 +47,7 @@ export function ConfigureStripePortalButton() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground mb-4">
+        <p className="mb-4 text-sm text-muted-foreground">
           Click the button below to configure the Stripe Customer Portal with the
           recommended settings for subscription management. This will allow users
           to manage their subscriptions, update payment methods, and view billing
@@ -55,26 +55,26 @@ export function ConfigureStripePortalButton() {
         </p>
         
         {result && (
-          <div className={`border rounded-md p-3 my-4 ${result.success ? 'border-green-200 bg-green-50 text-green-700' : 'border-red-200 bg-red-50 text-red-700'}`}>
+          <div className={`my-4 rounded-md border p-3 ${result.success ? 'border-green-200 bg-green-50 text-green-700' : 'border-red-200 bg-red-50 text-red-700'}`}>
             <p className="font-medium">{result.message}</p>
             {result.details && (
-              <pre className="text-xs overflow-auto mt-2">
+              <pre className="mt-2 overflow-auto text-xs">
                 {JSON.stringify(result.details, null, 2)}
               </pre>
             )}
           </div>
         )}
 
-        <p className="text-sm text-muted-foreground mb-4">
-          Go to Stripe dashboard, and then "Configure branding" and "Configure
-          email" on this link
+        <p className="mb-4 text-sm text-muted-foreground">
+          Go to Stripe dashboard, and then &quot;Configure branding&quot; and &quot;Configure
+          email&quot; on this link
         </p>
-        <p className="text-sm text-muted-foreground mb-4">
+        <p className="mb-4 text-sm text-muted-foreground">
           Paste the Stripe API key from Stripe Dashboard -&gt; API keys -&gt;
           Secret key
         </p>
         <div
-          className={`border rounded-md p-3 my-4 ${
+          className={`my-4 rounded-md border p-3 ${
             stripeApiKey ? "bg-green-50" : "bg-red-50"
           }`}
         >
@@ -83,7 +83,7 @@ export function ConfigureStripePortalButton() {
               ? "Stripe API key is configured"
               : "Stripe API key is not configured"}
           </p>
-          <pre className="text-xs overflow-auto mt-2">{stripeApiKey || ""}</pre>
+          <pre className="mt-2 overflow-auto text-xs">{stripeApiKey || ""}</pre>
         </div>
       </CardContent>
       <CardFooter>
@@ -93,11 +93,11 @@ export function ConfigureStripePortalButton() {
         >
           {isLoading ? (
             <>
-              <Icons.spinner className="size-4 mr-2 animate-spin" /> Configuring...
+              <Icons.spinner className="mr-2 size-4 animate-spin" /> Configuring...
             </>
           ) : (
             <>
-              <Icons.settings className="size-4 mr-2" /> Configure Stripe Portal
+              <Icons.settings className="mr-2 size-4" /> Configure Stripe Portal
             </>
           )}
         </Button>
