@@ -1,19 +1,19 @@
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ConfigureStripePortalButton } from "@/components/admin/configure-stripe-button";
 import { PageHeader } from "@/components/page-header";
+import { getCurrentUser } from "@/lib/session";
 
 export default async function AdminPanelPage() {
-  const session = await auth();
-  if (!session?.user?.email) {
+  const user = await getCurrentUser();
+  if (!user?.email) {
     redirect("/login");
   }
 
-  // Simple admin check based on email pattern - replace with a more robust method later
-  const isAdmin = session.user.email.endsWith("@admin.com");
+  // Check for ADMIN role instead of email pattern
+  const isAdmin = user.role === "ADMIN";
   
   if (!isAdmin) {
     redirect("/dashboard");

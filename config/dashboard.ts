@@ -43,11 +43,10 @@ export const sidebarLinks: SidebarNavItem[] = [
       { href: "/", icon: "home", title: "Homepage" },
       { href: "/docs", icon: "bookOpen", title: "Documentation" },
       {
-        href: "#",
+        href: "/dashboard/support",
         icon: "messages",
         title: "Support",
-        authorizeOnly: UserRole.USER,
-        disabled: true,
+        authorizeOnly: UserRole.USER
       },
     ],
   },

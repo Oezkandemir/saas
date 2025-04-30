@@ -169,7 +169,7 @@
     "nextAuthRoles": "Next Auth Rollen-Vorlage auf",
     "kickOff": "Starten Sie mit Schwung mit",
     "saasStarter": "Cenety",
-    "buildNextProject": "Entwickeln Sie Ihr nächstes Projekt mit Next.js 14, Prisma, Neon, Auth.js v5, Resend, React Email, Shadcn/ui, Stripe.",
+    "buildNextProject": "Entwickeln Sie Ihr nächstes Projekt mit Next.js 15, Supabase, Next-Intl, Contentlayer, Resend, React Email, Shadcn/ui, Stripe.",
     "goPricing": "Zu den Preisen",
     "starOn": "Stern auf"
   },
@@ -265,5 +265,78 @@
   "Meta": {
     "appName": "Cenety",
     "shortName": "Cenety"
+  },
+  "Support": {
+    "title": "Support – Cenety",
+    "description": "Erhalten Sie Hilfe und Unterstützung für Ihr Cenety-Konto.",
+    "heading": "Support",
+    "text": "Erhalten Sie Hilfe und Unterstützung für Ihr Cenety-Konto.",
+    "contactUs": "Kontaktieren Sie uns",
+    "contactDescription": "Füllen Sie das untenstehende Formular aus, um mit unserem Support-Team in Kontakt zu treten.",
+    "formFields": {
+      "name": "Name",
+      "email": "E-Mail",
+      "subject": "Betreff",
+      "message": "Nachricht",
+      "messagePlaceholder": "Wie können wir Ihnen helfen?",
+      "sendMessage": "Nachricht senden"
+    },
+    "supportChannels": {
+      "title": "Support-Kanäle",
+      "description": "Wählen Sie die bequemste Möglichkeit, unser Support-Team zu erreichen.",
+      "email": {
+        "title": "E-Mail-Support"
+      },
+      "chat": {
+        "title": "Live-Chat",
+        "availability": "Verfügbar von 9 bis 17 Uhr MEZ"
+      },
+      "phone": {
+        "title": "Telefonischer Support",
+        "number": "+1 (555) 123-4567",
+        "restriction": "Nur für Premium- und Enterprise-Pläne"
+      }
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "description": "Schnelle Antworten auf häufige Fragen",
+      "categories": {
+        "billing": "Abrechnung",
+        "account": "Konto",
+        "features": "Funktionen"
+      },
+      "questions": {
+        "billing": {
+          "upgrade": {
+            "question": "Wie kann ich meinen Plan upgraden?",
+            "answer": "Sie können Ihren Plan im Abrechnungsbereich Ihres Dashboards upgraden."
+          },
+          "cancel": {
+            "question": "Kann ich mein Abonnement kündigen?",
+            "answer": "Ja, Sie können Ihr Abonnement jederzeit in Ihren Kontoeinstellungen kündigen."
+          }
+        },
+        "account": {
+          "resetPassword": {
+            "question": "Wie setze ich mein Passwort zurück?",
+            "answer": "Sie können Ihr Passwort zurücksetzen, indem Sie auf der Anmeldeseite auf \"Passwort vergessen?\" klicken."
+          },
+          "updateProfile": {
+            "question": "Wie aktualisiere ich mein Profil?",
+            "answer": "Sie können Ihre Profilinformationen im Bereich Einstellungen aktualisieren."
+          }
+        },
+        "features": {
+          "included": {
+            "question": "Welche Funktionen sind in meinem Plan enthalten?",
+            "answer": "Sie können alle in Ihrem Plan enthaltenen Funktionen auf der Preisseite einsehen."
+          },
+          "api": {
+            "question": "Wie verwende ich die API?",
+            "answer": "Sie finden die API-Dokumentation in unserem Entwickler-Dokumentationsbereich."
+          }
+        }
+      }
+    }
   }
 } 

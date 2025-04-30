@@ -83,7 +83,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
 
         <div className="flex items-center space-x-3">
           {/* Language Switcher */}
-          <div className="flex items-center">
+          <div className="flex items-center pr-5 md:pr-0">
             <LanguageSwitcher />
           </div>
           
@@ -124,7 +124,9 @@ export function NavBar({ scroll = false }: NavBarProps) {
                   <span>{t("dashboard")}</span>
                 </Button>
               </Link>
-              <UserAccountNav />
+              <div className="pr-2 md:pr-0">
+                <UserAccountNav />
+              </div>
             </>
           ) : (
             <>

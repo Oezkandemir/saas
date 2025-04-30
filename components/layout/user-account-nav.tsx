@@ -92,6 +92,10 @@ export function UserAccountNav() {
               <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
             </div>
 
+            <Drawer.Title className="sr-only">
+              User Account Menu
+            </Drawer.Title>
+
             <div className="flex items-center justify-start gap-2 p-2">
               <div className="flex flex-col">
                 <p className="font-medium">{displayName}</p>
