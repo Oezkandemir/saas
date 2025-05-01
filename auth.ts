@@ -20,7 +20,7 @@ export const auth = cache(async () => {
     // Get user data from database to get the proper name
     const supabase = await getSupabaseServer();
     const { data: dbUser } = await supabase
-      .from('users')
+      .from('user_profiles')
       .select('name')
       .eq('id', session.user.id)
       .single();

@@ -48,16 +48,16 @@ export function UserAuthForm({ className, type, onSuccess, redirectTo, ...props 
 
     try {
       if (type === "register") {
-        // Sign up
+        // Sign up - simplified without redirect
         const signUpResult = await supabase.auth.signUp({
           email: data.email.toLowerCase(),
           password: data.password,
           options: {
             data: {
               name: data.email.split('@')[0], // Set a default name from email
-              role: "USER" // Default role as string - will be converted to enum in DB
-            },
-            emailRedirectTo: `${window.location.origin}/auth/callback?redirectTo=${redirectTo || '/dashboard'}`
+              role: "USER" // Default role as string
+            }
+            // Removed emailRedirectTo to simplify the flow
           }
         });
         
@@ -65,8 +65,8 @@ export function UserAuthForm({ className, type, onSuccess, redirectTo, ...props 
           throw signUpResult.error;
         }
         
-        toast.success("Check your email", {
-          description: "We sent you a confirmation link. Please check your inbox and spam folder.",
+        toast.success("Account created successfully", {
+          description: "Check your email for a confirmation link. You need to confirm your email before signing in.",
         });
 
         // Close modal after successful signup

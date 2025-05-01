@@ -21,7 +21,8 @@ export async function POST(req: Request) {
       password,
       options: {
         data: {
-          name,
+          name: name || email.split('@')[0],
+          role: "USER"
         },
       },
     });

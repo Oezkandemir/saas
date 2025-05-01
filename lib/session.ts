@@ -19,7 +19,7 @@ export async function getCurrentUser() {
     
     // Auch Benutzerdaten aus der Datenbank abrufen für zusätzliche Felder wie avatar_url
     const { data: dbUser } = await supabase
-      .from('users')
+      .from('user_profiles')
       .select('*')
       .eq('id', user.id)
       .single();
