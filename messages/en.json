@@ -246,6 +246,126 @@
     "appName": "Cenety",
     "shortName": "Cenety"
   },
+  "Admin": {
+    "panel": {
+      "title": "Admin Panel – Cenety",
+      "description": "Manage your application settings and users.",
+      "heading": "Admin Panel",
+      "subheading": "Manage your application settings and users"
+    },
+    "users": {
+      "management": "User Management",
+      "description": "View and manage users in your application",
+      "manageUsers": "Manage Users",
+      "pageTitle": "User Management",
+      "pageDescription": "View and manage all users in your application.",
+      "totalUsers": "Total Users",
+      "allRegistered": "All registered users",
+      "adminUsers": "Admin Users",
+      "withAdminPrivileges": "Users with admin privileges",
+      "bannedUsers": "Banned Users",
+      "currentlySuspended": "Currently suspended accounts",
+      "subscribers": "Subscribers",
+      "activePaid": "Active paid subscriptions",
+      "loadingError": "Error loading users. Please try again later.",
+      "title": "Manage Users",
+      "heading": "Users",
+      "search": "Search users...",
+      "filter": "Filter users",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "subscription": "Subscription",
+        "createdAt": "Created At",
+        "actions": "Actions"
+      },
+      "actions": {
+        "view": "View",
+        "edit": "Edit",
+        "delete": "Delete",
+        "ban": "Ban User",
+        "unban": "Unban User"
+      },
+      "noUsers": "No users found",
+      "userDetails": "User Details",
+      "confirmDelete": "Are you sure you want to delete this user?",
+      "userDeleted": "User deleted successfully"
+    },
+    "support": {
+      "tickets": "Support Tickets",
+      "description": "Manage support requests from your users",
+      "manageTickets": "Manage Support Tickets",
+      "pageTitle": "Support Ticket Management",
+      "pageDescription": "Respond to and resolve support requests from your users.",
+      "openTickets": "Open Tickets",
+      "awaitingResponse": "Tickets awaiting response",
+      "resolvedTickets": "Resolved Tickets",
+      "successfullyClosed": "Successfully closed tickets",
+      "loadingError": "Error loading support tickets. Please try again later.",
+      "title": "Support Tickets",
+      "heading": "Support Tickets",
+      "search": "Search tickets...",
+      "filter": "Filter tickets",
+      "columns": {
+        "id": "ID",
+        "subject": "Subject",
+        "user": "User",
+        "status": "Status",
+        "priority": "Priority",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At",
+        "actions": "Actions"
+      },
+      "statuses": {
+        "open": "Open",
+        "inProgress": "In Progress",
+        "resolved": "Resolved",
+        "closed": "Closed"
+      },
+      "priorities": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "urgent": "Urgent"
+      },
+      "actions": {
+        "view": "View",
+        "update": "Update",
+        "close": "Close",
+        "delete": "Delete"
+      },
+      "noTickets": "No tickets found",
+      "ticketDetails": "Ticket Details",
+      "replyToTicket": "Reply to Ticket",
+      "updateStatus": "Update Status",
+      "ticketUpdated": "Ticket updated successfully"
+    },
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "created": "Created",
+      "lastSignIn": "Last Sign In",
+      "actions": "Actions",
+      "verified": "Verified",
+      "subscription": "Subscription",
+      "yes": "Yes",
+      "no": "No",
+      "active": "Active",
+      "banned": "Banned",
+      "admin": "Admin",
+      "user": "User",
+      "editUser": "Edit User",
+      "banUser": "Ban User",
+      "unbanUser": "Unban User",
+      "confirmBan": "Are you sure you want to ban this user?",
+      "confirmUnban": "Are you sure you want to unban this user?",
+      "never": "Never"
+    }
+  },
   "DashboardSidebar": {
     "toggleSidebar": "Toggle Sidebar",
     "toggleNavigationMenu": "Toggle navigation menu",
@@ -282,6 +402,29 @@
       "message": "Message",
       "messagePlaceholder": "How can we help you?",
       "sendMessage": "Send Message"
+    },
+    "ticket": {
+      "backToSupport": "Back to Support",
+      "viewAndRespond": "View and respond to your support ticket",
+      "ticketDetails": "Ticket Details",
+      "created": "Created",
+      "status": "Status",
+      "priority": "Priority",
+      "description": "Description",
+      "conversation": "Conversation",
+      "noMessages": "No messages yet",
+      "ticketClosed": "This ticket is closed",
+      "open": "Open",
+      "inProgress": "In Progress",
+      "resolved": "Resolved",
+      "closed": "Closed",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent",
+      "reply": "Reply",
+      "yourMessage": "Your message",
+      "sendReply": "Send Reply"
     },
     "supportChannels": {
       "title": "Support Channels",
@@ -405,6 +548,36 @@
     "heading": "Profile",
     "overview": "Profile Overview",
     "updateProfile": "Update your profile and preferences",
+    "accountInfo": "Account Info",
+    "memberSince": "Member Since",
+    "lastLogin": "Last Login",
+    "subscription": "Subscription",
+    "active": "Active",
+    "renews": "Renews",
+    "quickLinks": "Quick Links",
+    "support": "Support",
+    "billing": "Billing",
+    "settings": "Settings",
+    "viewManageSubscription": "View and manage your subscription",
+    "goToBilling": "Go to Billing",
+    "accountSettings": "Account Settings",
+    "updateSettings": "Update your account settings",
+    "manageAccountSettings": "Manage your account settings and preferences",
+    "goToSettings": "Go to Settings",
+    "manageSubscription": "Manage Subscription",
+    "info": "Information",
+    "help": "Help & Support",
+    "pay": "Billing & Payments",
+    "edit": "Edit Profile",
+    "freePlan": "Free Plan",
+    "upgradeText": "Upgrade to access premium features",
+    "upgrade": "Upgrade Now",
+    "supportTickets": "Support Tickets",
+    "viewManage": "View and manage your support tickets",
+    "yourTickets": "Your Tickets",
+    "createNewTicket": "Create New Ticket",
+    "billingInfo": "Billing Information",
+    "recentLogins": "Recent Logins",
     "notifications": {
       "title": "Notifications",
       "description": "Manage your notifications",
@@ -417,7 +590,9 @@
       "title": "Personal Information",
       "bio": "Bio",
       "location": "Location",
-      "website": "Website"
+      "website": "Website",
+      "name": "Name",
+      "email": "Email"
     },
     "socialLinks": {
       "title": "Social Links",
@@ -433,7 +608,14 @@
     "activity": {
       "title": "Recent Activity",
       "empty": "No recent activity",
-      "viewAll": "View all activity"
-    }
+      "viewAll": "View all activity",
+      "recentLogins": "Recent Logins",
+      "lastLogin": "Last Login"
+    },
+    "accountStatus": "Account Status",
+    "emailVerified": "Email Verified",
+    "yes": "Yes",
+    "currentPlan": "Current Plan",
+    "premiumPlan": "Premium Plan"
   }
-} 
+}

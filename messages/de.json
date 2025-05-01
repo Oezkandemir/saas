@@ -173,268 +173,6 @@
     "goPricing": "Zu den Preisen",
     "starOn": "Stern auf"
   },
-  "DashboardSidebar": {
-    "toggleSidebar": "Seitenleiste umschalten",
-    "toggleNavigationMenu": "Navigationsmenü umschalten",
-    "sections": {
-      "menu": "MENÜ",
-      "options": "OPTIONEN"
-    },
-    "items": {
-      "admin_panel": "Admin-Panel",
-      "dashboard": "Dashboard",
-      "billing": "Abrechnung",
-      "charts": "Diagramme",
-      "orders": "Bestellungen",
-      "user_posts": "Benutzerbeiträge",
-      "settings": "Einstellungen",
-      "homepage": "Startseite",
-      "documentation": "Dokumentation",
-      "support": "Support",
-      "my_profile": "Mein Profil",
-      "notifications": "Benachrichtigungen"
-    }
-  },
-  "Profile": {
-    "title": "Benutzerprofil",
-    "description": "Verwalten Sie Ihr Profil und Ihre Einstellungen",
-    "heading": "Profil",
-    "overview": "Profilübersicht",
-    "updateProfile": "Aktualisieren Sie Ihr Profil und Ihre Präferenzen",
-    "accountInfo": "Kontoinformationen",
-    "memberSince": "Mitglied seit",
-    "lastLogin": "Letzte Anmeldung",
-    "subscription": "Abonnement",
-    "active": "Aktiv",
-    "inactive": "Inaktiv",
-    "renews": "Verlängert sich",
-    "quickLinks": "Schnellzugriff",
-    "billing": "Abrechnung",
-    "settings": "Einstellungen",
-    "support": "Support",
-    "alerts": "Benachrichtigungen",
-    "info": "Info",
-    "help": "Hilfe",
-    "pay": "Zahlung",
-    "edit": "Bearbeiten",
-    "accountStatus": "Kontostatus",
-    "emailVerified": "E-Mail verifiziert",
-    "yes": "Ja",
-    "no": "Nein",
-    "currentPlan": "Aktueller Plan",
-    "premiumPlan": "Premium-Plan",
-    "basicPlan": "Basis-Plan",
-    "freePlan": "Kostenloser Plan",
-    "upgrade": "Upgrade",
-    "upgradeText": "Führen Sie ein Upgrade durch, um Premium-Funktionen freizuschalten",
-    "manage": "Verwalten",
-    "recentLogins": "Letzte Anmeldungen",
-    "supportTickets": "Support-Tickets",
-    "viewManage": "Sehen und verwalten Sie Ihre Support-Anfragen.",
-    "yourTickets": "Ihre Tickets",
-    "createNewTicket": "Neues Ticket erstellen",
-    "noTickets": "Noch keine Support-Tickets",
-    "needHelp": "Brauchen Sie Hilfe? Erstellen Sie Ihr erstes Support-Ticket und unser Team wird Ihnen helfen.",
-    "billingInfo": "Abrechnungsinformationen",
-    "manageSubscription": "Verwalten Sie Ihr Abonnement und Ihre Zahlungsmethoden.",
-    "viewManageSubscription": "Sehen und verwalten Sie Ihre Abonnementdetails im Abrechnungs-Dashboard.",
-    "goToBilling": "Zur Abrechnung",
-    "accountSettings": "Kontoeinstellungen",
-    "updateSettings": "Aktualisieren Sie Ihr Profil und Ihre Präferenzen.",
-    "manageAccountSettings": "Verwalten Sie Ihre Kontoeinstellungen, Passwort und Benachrichtigungspräferenzen.",
-    "goToSettings": "Zu den Einstellungen",
-    "notifications": {
-      "title": "Benachrichtigungen",
-      "description": "Verwalten Sie Ihre Benachrichtigungen",
-      "empty": "Noch keine Benachrichtigungen",
-      "markAsRead": "Als gelesen markieren",
-      "allRead": "Alle Benachrichtigungen gelesen",
-      "goBack": "Zurück zum Profil"
-    },
-    "personalInfo": {
-      "title": "Persönliche Informationen",
-      "bio": "Biografie",
-      "location": "Standort",
-      "website": "Webseite",
-      "name": "Name",
-      "email": "E-Mail",
-      "notProvided": "Nicht angegeben"
-    },
-    "socialLinks": {
-      "title": "Soziale Netzwerke",
-      "twitter": "Twitter",
-      "github": "GitHub",
-      "linkedin": "LinkedIn"
-    },
-    "preferences": {
-      "title": "Präferenzen",
-      "theme": "Theme",
-      "language": "Sprache"
-    },
-    "activity": {
-      "title": "Letzte Aktivitäten",
-      "empty": "Keine aktuellen Aktivitäten",
-      "viewAll": "Alle Aktivitäten anzeigen"
-    }
-  },
-  "Support": {
-    "title": "Support – Cenety",
-    "description": "Erhalten Sie Hilfe und Unterstützung für Ihr Cenety-Konto.",
-    "heading": "Support",
-    "text": "Erhalten Sie Hilfe und Unterstützung für Ihr Cenety-Konto.",
-    "contactUs": "Kontaktieren Sie uns",
-    "contactDescription": "Füllen Sie das Formular unten aus, um mit unserem Support-Team in Kontakt zu treten.",
-    "formFields": {
-      "name": "Name",
-      "email": "E-Mail",
-      "subject": "Betreff",
-      "message": "Nachricht",
-      "messagePlaceholder": "Wie können wir Ihnen helfen?",
-      "sendMessage": "Nachricht senden"
-    },
-    "supportChannels": {
-      "title": "Support-Kanäle",
-      "description": "Wählen Sie den bequemsten Weg, um unser Support-Team zu erreichen.",
-      "email": {
-        "title": "E-Mail-Support"
-      },
-      "chat": {
-        "title": "Live-Chat",
-        "availability": "Verfügbar von 9 bis 17 Uhr MEZ"
-      },
-      "phone": {
-        "title": "Telefon-Support",
-        "number": "+1 (555) 123-4567",
-        "restriction": "Nur für Premium- und Enterprise-Pakete"
-      }
-    },
-    "faq": {
-      "title": "Häufig gestellte Fragen",
-      "description": "Schnelle Antworten auf häufig gestellte Fragen",
-      "categories": {
-        "billing": "Abrechnung",
-        "account": "Konto",
-        "features": "Funktionen"
-      },
-      "questions": {
-        "billing": {
-          "upgrade": {
-            "question": "Wie kann ich meinen Plan upgraden?",
-            "answer": "Sie können Ihren Plan im Bereich Abrechnung in Ihrem Dashboard upgraden."
-          },
-          "cancel": {
-            "question": "Kann ich mein Abonnement kündigen?",
-            "answer": "Ja, Sie können Ihr Abonnement jederzeit in Ihren Kontoeinstellungen kündigen."
-          }
-        },
-        "account": {
-          "resetPassword": {
-            "question": "Wie setze ich mein Passwort zurück?",
-            "answer": "Sie können Ihr Passwort zurücksetzen, indem Sie auf der Anmeldeseite auf \"Passwort vergessen?\" klicken."
-          },
-          "updateProfile": {
-            "question": "Wie aktualisiere ich mein Profil?",
-            "answer": "Sie können Ihre Profilinformationen im Bereich Einstellungen aktualisieren."
-          }
-        },
-        "features": {
-          "included": {
-            "question": "Welche Funktionen sind in meinem Plan enthalten?",
-            "answer": "Sie können alle in Ihrem Plan enthaltenen Funktionen auf der Preisseite einsehen."
-          },
-          "api": {
-            "question": "Wie verwende ich die API?",
-            "answer": "Die API-Dokumentation finden Sie in unserem Abschnitt zur Entwicklerdokumentation."
-          }
-        }
-      }
-    },
-    "ticket": {
-      "backToSupport": "Zurück zum Support",
-      "backToTickets": "Zurück zu den Tickets",
-      "viewAndRespond": "Sehen und beantworten Sie Ihr Support-Ticket.",
-      "ticketDetails": "Ticket-Details",
-      "created": "Erstellt",
-      "status": "Status",
-      "priority": "Priorität",
-      "lastUpdate": "Letzte Aktualisierung",
-      "description": "Beschreibung",
-      "conversation": "Konversation",
-      "noMessages": "Noch keine Nachrichten. Beginnen Sie die Konversation unten.",
-      "noMessagesAdmin": "Noch keine Nachrichten in diesem Ticket.",
-      "ticketClosed": "Dieses Ticket ist geschlossen und kann keine neuen Nachrichten empfangen.",
-      "ticketFrom": "Ticket von",
-      "user": "Benutzer",
-      "noEmail": "Keine E-Mail",
-      "inProgress": "In Bearbeitung",
-      "open": "Offen",
-      "resolved": "Gelöst",
-      "closed": "Geschlossen",
-      "low": "Niedrig",
-      "medium": "Mittel",
-      "high": "Hoch",
-      "urgent": "Dringend"
-    }
-  },
-  "Admin": {
-    "panel": {
-      "title": "Admin-Panel – Cenety",
-      "description": "Verwalten Sie Ihre Anwendungseinstellungen und Benutzer.",
-      "heading": "Admin-Panel",
-      "subheading": "Verwalten Sie Ihre Anwendungseinstellungen und Benutzer"
-    },
-    "users": {
-      "management": "Benutzerverwaltung",
-      "description": "Sehen und verwalten Sie Benutzer in Ihrer Anwendung",
-      "manageUsers": "Benutzer verwalten",
-      "pageTitle": "Benutzerverwaltung",
-      "pageDescription": "Sehen und verwalten Sie alle Benutzer in Ihrer Anwendung.",
-      "totalUsers": "Gesamtzahl Benutzer",
-      "allRegistered": "Alle registrierten Benutzer",
-      "adminUsers": "Admin-Benutzer",
-      "withAdminPrivileges": "Benutzer mit Admin-Rechten",
-      "bannedUsers": "Gesperrte Benutzer",
-      "currentlySuspended": "Aktuell gesperrte Konten",
-      "subscribers": "Abonnenten",
-      "activePaid": "Aktive kostenpflichtige Abonnements",
-      "loadingError": "Fehler beim Laden der Benutzer. Bitte versuchen Sie es später erneut."
-    },
-    "support": {
-      "tickets": "Support-Tickets",
-      "description": "Verwalten Sie Support-Anfragen von Ihren Benutzern",
-      "manageTickets": "Support-Tickets verwalten",
-      "pageTitle": "Support-Ticket-Verwaltung",
-      "pageDescription": "Bearbeiten und lösen Sie Support-Anfragen Ihrer Benutzer.",
-      "openTickets": "Offene Tickets",
-      "awaitingResponse": "Tickets, die auf eine Antwort warten",
-      "resolvedTickets": "Gelöste Tickets",
-      "successfullyClosed": "Erfolgreich geschlossene Tickets",
-      "loadingError": "Fehler beim Laden der Support-Tickets. Bitte versuchen Sie es später erneut."
-    },
-    "table": {
-      "name": "Name",
-      "email": "E-Mail",
-      "role": "Rolle",
-      "status": "Status",
-      "created": "Erstellt",
-      "lastSignIn": "Letzte Anmeldung",
-      "actions": "Aktionen",
-      "verified": "Verifiziert",
-      "subscription": "Abonnement",
-      "yes": "Ja",
-      "no": "Nein",
-      "active": "Aktiv",
-      "banned": "Gesperrt",
-      "admin": "Admin",
-      "user": "Benutzer",
-      "editUser": "Benutzer bearbeiten",
-      "banUser": "Benutzer sperren",
-      "unbanUser": "Benutzer entsperren",
-      "confirmBan": "Sind Sie sicher, dass Sie diesen Benutzer sperren möchten?",
-      "confirmUnban": "Sind Sie sicher, dass Sie die Sperre dieses Benutzers aufheben möchten?",
-      "never": "Nie"
-    }
-  },
   "Features": {
     "label": "Funktionen",
     "title": "Entdecken Sie alle Funktionen.",
@@ -508,6 +246,186 @@
     "appName": "Cenety",
     "shortName": "Cenety"
   },
+  "Admin": {
+    "panel": {
+      "title": "Admin-Panel – Cenety",
+      "description": "Verwalten Sie Ihre Anwendungseinstellungen und Benutzer.",
+      "heading": "Admin-Panel",
+      "subheading": "Verwalten Sie Ihre Anwendungseinstellungen und Benutzer"
+    },
+    "users": {
+      "management": "Benutzerverwaltung",
+      "description": "Sehen und verwalten Sie Benutzer in Ihrer Anwendung",
+      "manageUsers": "Benutzer verwalten",
+      "pageTitle": "Benutzerverwaltung",
+      "pageDescription": "Sehen und verwalten Sie alle Benutzer in Ihrer Anwendung.",
+      "totalUsers": "Gesamtzahl Benutzer",
+      "allRegistered": "Alle registrierten Benutzer",
+      "adminUsers": "Admin-Benutzer",
+      "withAdminPrivileges": "Benutzer mit Admin-Rechten",
+      "bannedUsers": "Gesperrte Benutzer",
+      "currentlySuspended": "Aktuell gesperrte Konten",
+      "subscribers": "Abonnenten",
+      "activePaid": "Aktive kostenpflichtige Abonnements",
+      "loadingError": "Fehler beim Laden der Benutzer. Bitte versuchen Sie es später erneut."
+    },
+    "support": {
+      "tickets": "Support-Tickets",
+      "description": "Verwalten Sie Support-Anfragen von Ihren Benutzern",
+      "manageTickets": "Support-Tickets verwalten",
+      "pageTitle": "Support-Ticket-Verwaltung",
+      "pageDescription": "Bearbeiten und lösen Sie Support-Anfragen Ihrer Benutzer.",
+      "openTickets": "Offene Tickets",
+      "awaitingResponse": "Tickets, die auf eine Antwort warten",
+      "resolvedTickets": "Gelöste Tickets",
+      "successfullyClosed": "Erfolgreich geschlossene Tickets",
+      "loadingError": "Fehler beim Laden der Support-Tickets. Bitte versuchen Sie es später erneut."
+    },
+    "table": {
+      "name": "Name",
+      "email": "E-Mail",
+      "role": "Rolle",
+      "status": "Status",
+      "created": "Erstellt",
+      "lastSignIn": "Letzte Anmeldung",
+      "actions": "Aktionen",
+      "verified": "Verifiziert",
+      "subscription": "Abonnement",
+      "yes": "Ja",
+      "no": "Nein",
+      "active": "Aktiv",
+      "banned": "Gesperrt",
+      "admin": "Admin",
+      "user": "Benutzer",
+      "editUser": "Benutzer bearbeiten",
+      "banUser": "Benutzer sperren",
+      "unbanUser": "Benutzer entsperren",
+      "confirmBan": "Sind Sie sicher, dass Sie diesen Benutzer sperren möchten?",
+      "confirmUnban": "Sind Sie sicher, dass Sie die Sperre dieses Benutzers aufheben möchten?",
+      "never": "Nie"
+    }
+  },
+  "DashboardSidebar": {
+    "toggleSidebar": "Seitenleiste umschalten",
+    "toggleNavigationMenu": "Navigationsmenü umschalten",
+    "sections": {
+      "menu": "MENÜ",
+      "options": "OPTIONEN"
+    },
+    "items": {
+      "admin_panel": "Admin-Panel",
+      "dashboard": "Dashboard",
+      "billing": "Abrechnung",
+      "charts": "Diagramme",
+      "orders": "Bestellungen",
+      "user_posts": "Benutzerbeiträge",
+      "settings": "Einstellungen",
+      "homepage": "Startseite",
+      "documentation": "Dokumentation",
+      "support": "Support",
+      "my_profile": "Mein Profil",
+      "notifications": "Benachrichtigungen"
+    }
+  },
+  "Support": {
+    "title": "Support – Cenety",
+    "description": "Erhalten Sie Hilfe und Unterstützung für Ihr Cenety-Konto.",
+    "heading": "Support",
+    "text": "Erhalten Sie Hilfe und Unterstützung für Ihr Cenety-Konto.",
+    "contactUs": "Kontaktieren Sie uns",
+    "contactDescription": "Füllen Sie das Formular unten aus, um mit unserem Support-Team in Kontakt zu treten.",
+    "formFields": {
+      "name": "Name",
+      "email": "E-Mail",
+      "subject": "Betreff",
+      "message": "Nachricht",
+      "messagePlaceholder": "Wie können wir Ihnen helfen?",
+      "sendMessage": "Nachricht senden"
+    },
+    "ticket": {
+      "backToSupport": "Zurück zum Support",
+      "viewAndRespond": "Sehen und beantworten Sie Ihr Support-Ticket.",
+      "ticketDetails": "Ticket-Details",
+      "created": "Erstellt",
+      "status": "Status",
+      "priority": "Priorität",
+      "description": "Beschreibung",
+      "conversation": "Konversation",
+      "noMessages": "Noch keine Nachrichten. Beginnen Sie die Konversation unten.",
+      "ticketClosed": "Dieses Ticket ist geschlossen und kann keine neuen Nachrichten empfangen.",
+      "open": "Offen",
+      "inProgress": "In Bearbeitung",
+      "resolved": "Gelöst",
+      "closed": "Geschlossen",
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "urgent": "Dringend",
+      "backToTickets": "Zurück zu den Tickets",
+      "lastUpdate": "Letzte Aktualisierung",
+      "noMessagesAdmin": "Noch keine Nachrichten in diesem Ticket.",
+      "ticketFrom": "Ticket von",
+      "user": "Benutzer",
+      "noEmail": "Keine E-Mail"
+    },
+    "supportChannels": {
+      "title": "Support-Kanäle",
+      "description": "Wählen Sie den bequemsten Weg, um unser Support-Team zu erreichen.",
+      "email": {
+        "title": "E-Mail-Support"
+      },
+      "chat": {
+        "title": "Live-Chat",
+        "availability": "Verfügbar von 9 bis 17 Uhr MEZ"
+      },
+      "phone": {
+        "title": "Telefon-Support",
+        "number": "+1 (555) 123-4567",
+        "restriction": "Nur für Premium- und Enterprise-Pakete"
+      }
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "description": "Schnelle Antworten auf häufig gestellte Fragen",
+      "categories": {
+        "billing": "Abrechnung",
+        "account": "Konto",
+        "features": "Funktionen"
+      },
+      "questions": {
+        "billing": {
+          "upgrade": {
+            "question": "Wie kann ich meinen Plan upgraden?",
+            "answer": "Sie können Ihren Plan im Bereich Abrechnung in Ihrem Dashboard upgraden."
+          },
+          "cancel": {
+            "question": "Kann ich mein Abonnement kündigen?",
+            "answer": "Ja, Sie können Ihr Abonnement jederzeit in Ihren Kontoeinstellungen kündigen."
+          }
+        },
+        "account": {
+          "resetPassword": {
+            "question": "Wie setze ich mein Passwort zurück?",
+            "answer": "Sie können Ihr Passwort zurücksetzen, indem Sie auf der Anmeldeseite auf \"Passwort vergessen?\" klicken."
+          },
+          "updateProfile": {
+            "question": "Wie aktualisiere ich mein Profil?",
+            "answer": "Sie können Ihre Profilinformationen im Bereich Einstellungen aktualisieren."
+          }
+        },
+        "features": {
+          "included": {
+            "question": "Welche Funktionen sind in meinem Plan enthalten?",
+            "answer": "Sie können alle in Ihrem Plan enthaltenen Funktionen auf der Preisseite einsehen."
+          },
+          "api": {
+            "question": "Wie verwende ich die API?",
+            "answer": "Die API-Dokumentation finden Sie in unserem Abschnitt zur Entwicklerdokumentation."
+          }
+        }
+      }
+    }
+  },
   "Banned": {
     "heading": "Konto gesperrt",
     "message": "Ihr Konto wurde aufgrund eines Verstoßes gegen unsere Nutzungsbedingungen gesperrt.",
@@ -565,5 +483,87 @@
       "title": "Zuletzt aktualisiert",
       "content": "Diese Datenschutzerklärung wurde zuletzt am 1. Juni 2023 aktualisiert."
     }
+  },
+  "Profile": {
+    "title": "Benutzerprofil",
+    "description": "Verwalten Sie Ihr Profil und Ihre Einstellungen",
+    "heading": "Profil",
+    "overview": "Profilübersicht",
+    "updateProfile": "Aktualisieren Sie Ihr Profil und Ihre Präferenzen",
+    "accountInfo": "Kontoinformationen",
+    "memberSince": "Mitglied seit",
+    "lastLogin": "Letzte Anmeldung",
+    "subscription": "Abonnement",
+    "active": "Aktiv",
+    "renews": "Verlängert sich",
+    "quickLinks": "Schnellzugriff",
+    "support": "Support",
+    "billing": "Abrechnung",
+    "settings": "Einstellungen",
+    "viewManageSubscription": "Sehen und verwalten Sie Ihre Abonnementdetails im Abrechnungs-Dashboard.",
+    "goToBilling": "Zur Abrechnung",
+    "accountSettings": "Kontoeinstellungen",
+    "updateSettings": "Aktualisieren Sie Ihr Profil und Ihre Präferenzen.",
+    "manageAccountSettings": "Verwalten Sie Ihre Kontoeinstellungen, Passwort und Benachrichtigungspräferenzen.",
+    "goToSettings": "Zu den Einstellungen",
+    "manageSubscription": "Verwalten Sie Ihr Abonnement und Ihre Zahlungsmethoden.",
+    "info": "Info",
+    "help": "Hilfe",
+    "pay": "Zahlung",
+    "edit": "Bearbeiten",
+    "freePlan": "Kostenloser Plan",
+    "upgradeText": "Führen Sie ein Upgrade durch, um Premium-Funktionen freizuschalten",
+    "upgrade": "Upgrade",
+    "supportTickets": "Support-Tickets",
+    "viewManage": "Sehen und verwalten Sie Ihre Support-Anfragen.",
+    "yourTickets": "Ihre Tickets",
+    "createNewTicket": "Neues Ticket erstellen",
+    "billingInfo": "Abrechnungsinformationen",
+    "recentLogins": "Letzte Anmeldungen",
+    "notifications": {
+      "title": "Benachrichtigungen",
+      "description": "Verwalten Sie Ihre Benachrichtigungen",
+      "empty": "Noch keine Benachrichtigungen",
+      "markAsRead": "Als gelesen markieren",
+      "allRead": "Alle Benachrichtigungen gelesen",
+      "goBack": "Zurück zum Profil"
+    },
+    "personalInfo": {
+      "title": "Persönliche Informationen",
+      "bio": "Biografie",
+      "location": "Standort",
+      "website": "Webseite",
+      "name": "Name",
+      "email": "E-Mail",
+      "notProvided": "Nicht angegeben"
+    },
+    "socialLinks": {
+      "title": "Soziale Netzwerke",
+      "twitter": "Twitter",
+      "github": "GitHub",
+      "linkedin": "LinkedIn"
+    },
+    "preferences": {
+      "title": "Präferenzen",
+      "theme": "Theme",
+      "language": "Sprache"
+    },
+    "activity": {
+      "title": "Letzte Aktivitäten",
+      "empty": "Keine aktuellen Aktivitäten",
+      "viewAll": "Alle Aktivitäten anzeigen"
+    },
+    "accountStatus": "Kontostatus",
+    "emailVerified": "E-Mail verifiziert",
+    "yes": "Ja",
+    "currentPlan": "Aktueller Plan",
+    "premiumPlan": "Premium-Plan",
+    "inactive": "Inaktiv",
+    "alerts": "Benachrichtigungen",
+    "no": "Nein",
+    "basicPlan": "Basis-Plan",
+    "manage": "Verwalten",
+    "noTickets": "Noch keine Support-Tickets",
+    "needHelp": "Brauchen Sie Hilfe? Erstellen Sie Ihr erstes Support-Ticket und unser Team wird Ihnen helfen."
   }
-} 
+}
