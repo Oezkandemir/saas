@@ -56,8 +56,8 @@ export function UserNameForm({ user }: UserNameFormProps) {
         setUpdated(false);
         toast.success("Your name has been updated.");
         
-        // Force a hard refresh to ensure all components update with the new data
-        window.location.reload();
+        // Use Next.js router to refresh the data without a full page reload
+        router.refresh();
       }
     });
   });

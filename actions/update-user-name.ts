@@ -5,6 +5,7 @@ import { userNameSchema } from "@/lib/validations/user";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { getSupabaseServer } from "@/lib/supabase-server";
+import { supabaseAdmin } from "@/lib/db";
 
 export type FormData = {
   name: string;
@@ -23,22 +24,38 @@ export async function updateUserName(userId: string, data: FormData) {
     const supabase = await getSupabaseServer();
     
     // Get current user metadata
-    const { data: userData } = await supabase.auth.getUser();
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    
+    if (userError) {
+      console.error("Error fetching user data:", userError);
+      throw new Error("Failed to fetch user data");
+    }
+    
     const currentMetadata = userData?.user?.user_metadata || {};
     
     // Update auth metadata with new name while preserving other metadata
-    await supabase.auth.updateUser({
+    const { error: updateAuthError } = await supabase.auth.updateUser({
       data: {
         ...currentMetadata,
         name,
       },
     });
+    
+    if (updateAuthError) {
+      console.error("Error updating auth user:", updateAuthError);
+      throw new Error("Failed to update user auth data");
+    }
 
-    // Also update the users table in the database
-    await supabase
+    // Use supabaseAdmin to bypass RLS policies when updating the users table
+    const { error: updateDbError } = await supabaseAdmin
       .from('users')
       .update({ name })
       .eq('id', userId);
+      
+    if (updateDbError) {
+      console.error("Error updating users table:", updateDbError);
+      throw new Error("Failed to update user in database");
+    }
 
     // Force revalidation of user data
     revalidatePath('/dashboard/settings');
