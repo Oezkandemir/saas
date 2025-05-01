@@ -338,5 +338,13 @@
         }
       }
     }
+  },
+  "Banned": {
+    "heading": "Account Suspended",
+    "message": "Your account has been suspended due to a violation of our terms of service.",
+    "contact": "If you believe this is a mistake, please contact our support team.",
+    "goHome": "Return to Home",
+    "contactSupport": "Contact Support",
+    "signOut": "Sign out"
   }
 } 

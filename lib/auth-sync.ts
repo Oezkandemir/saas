@@ -86,6 +86,9 @@ export async function syncUserWithDatabase(user: User) {
     // Try direct insert without email if it's causing conflicts
     console.log(`Creating new user record for ${user.id}`);
     
+    // Stelle sicher, dass wir die avatar_url aus den Metadaten übernehmen
+    const avatar_url = user.user_metadata?.avatar_url || null;
+    
     // First try with all data
     const { data: newUser, error: insertError } = await supabaseAdmin
       .from("users")
@@ -94,6 +97,7 @@ export async function syncUserWithDatabase(user: User) {
         email: user.email,
         name: user.user_metadata?.name || user.email?.split('@')[0] || null,
         role: user.user_metadata?.role || "USER",
+        avatar_url: avatar_url,
         stripe_customer_id: stripeCustomerId,
         stripe_subscription_id: null,
         stripe_price_id: null,
@@ -118,6 +122,7 @@ export async function syncUserWithDatabase(user: User) {
             // No email field
             name: user.user_metadata?.name || user.email?.split('@')[0] || null,
             role: user.user_metadata?.role || "USER",
+            avatar_url: avatar_url,
             stripe_customer_id: stripeCustomerId,
             stripe_subscription_id: null,
             stripe_price_id: null,

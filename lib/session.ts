@@ -6,6 +6,8 @@ import { syncUserWithDatabase } from "./auth-sync";
 export async function getCurrentUser() {
   try {
     const supabase = await getSupabaseServer();
+    
+    // Verwende getUser statt getSession für sicherere Authentifizierung
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
@@ -15,12 +17,23 @@ export async function getCurrentUser() {
     // Ensure the user exists in the database table
     await syncUserWithDatabase(user);
     
+    // Auch Benutzerdaten aus der Datenbank abrufen für zusätzliche Felder wie avatar_url
+    const { data: dbUser } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+    
     return {
       ...user,
       id: user.id,
-      name: user.user_metadata?.name || user.email?.split('@')[0] || null,
+      // Prioritize name from database, then fallback to metadata or email
+      name: dbUser?.name || user.user_metadata?.name || user.email?.split('@')[0] || null,
       role: user.user_metadata?.role || "USER", // Default to USER role if not set
-      email: user.email
+      email: user.email,
+      // Zusätzliche Informationen aus der Datenbank
+      avatar_url: dbUser?.avatar_url || user.user_metadata?.avatar_url || null,
+      status: dbUser?.status || "active"
     };
   } catch (error) {
     console.error("Error getting current user:", error);

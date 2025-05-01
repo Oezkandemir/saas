@@ -76,16 +76,17 @@ export async function middleware(request: NextRequest) {
   // Get the locale from the request pathname
   const pathnameWithoutLocale = request.nextUrl.pathname.replace(/^\/(?:en|de)(?=$|\/)/, '')
 
-  // Refresh the session if it exists
-  const { data: { session } } = await supabase.auth.getSession()
+  // Always use getUser() for security instead of getSession()
+  const { data: { user: authUser } } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession();
 
-  // If accessing a protected route and no session, redirect to login
+  // If accessing a protected route and no authenticated user, redirect to login
   const protectedRoutes = ['/dashboard', '/settings', '/account', '/admin']
   const isProtectedRoute = protectedRoutes.some(route => 
     pathnameWithoutLocale.startsWith(route)
   )
 
-  if (isProtectedRoute && !session) {
+  if (isProtectedRoute && !authUser) {
     // Get the current locale
     const locale = request.nextUrl.pathname.match(/^\/(en|de)(?:\/|$)/)?.[1] || routing.defaultLocale
     
@@ -93,6 +94,33 @@ export async function middleware(request: NextRequest) {
     const redirectUrl = new URL(`/${locale}/login`, request.url)
     redirectUrl.searchParams.set('redirectTo', pathnameWithoutLocale)
     return NextResponse.redirect(redirectUrl)
+  }
+
+  // Check if user is banned when authenticated
+  if (authUser) {
+    try {
+      // Get user status from the database
+      const { data: userData, error } = await supabase
+        .from('users')
+        .select('status')
+        .eq('id', authUser.id)
+        .single();
+
+      // If user is banned, redirect to banned page regardless of the route they're trying to access
+      if (!error && userData?.status === 'banned') {
+        // Get the current locale
+        const locale = request.nextUrl.pathname.match(/^\/(en|de)(?:\/|$)/)?.[1] || routing.defaultLocale
+        
+        // Skip redirect if already on the banned page
+        if (!pathnameWithoutLocale.startsWith('/banned')) {
+          // Redirect to a banned page
+          const bannedUrl = new URL(`/${locale}/banned`, request.url);
+          return NextResponse.redirect(bannedUrl);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking user status:', error);
+    }
   }
 
   // If accessing login/register but already logged in, redirect to dashboard

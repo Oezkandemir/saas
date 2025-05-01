@@ -17,11 +17,20 @@ export const auth = cache(async () => {
     // Ensure user exists in the database
     await syncUserWithDatabase(session.user);
     
+    // Get user data from database to get the proper name
+    const supabase = await getSupabaseServer();
+    const { data: dbUser } = await supabase
+      .from('users')
+      .select('name')
+      .eq('id', session.user.id)
+      .single();
+    
     return {
       user: {
         id: session.user.id,
         email: session.user.email,
-        name: session.user.user_metadata?.name || session.user.email?.split('@')[0],
+        // Prioritize the database name
+        name: dbUser?.name || session.user.user_metadata?.name || session.user.email?.split('@')[0],
       }
     };
   } catch (error) {

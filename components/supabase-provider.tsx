@@ -28,14 +28,20 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       setSession(session)
     })
 
-    // Get initial session using getUser() instead of getSession()
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-          setSession(session)
-        })
+    async function loadInitialSession() {
+      try {
+        const { data: userData } = await supabase.auth.getUser()
+        
+        if (userData.user) {
+          const { data: sessionData } = await supabase.auth.getSession()
+          setSession(sessionData.session)
+        }
+      } catch (error) {
+        console.error('Error loading initial session:', error)
       }
-    })
+      }
+    
+    loadInitialSession()
 
     return () => {
       subscription.unsubscribe()

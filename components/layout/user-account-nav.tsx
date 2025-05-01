@@ -22,6 +22,7 @@ export function UserAccountNav() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dbUserName, setDbUserName] = useState<string | null>(null);
   
   const closeDrawer = () => {
     setDrawerOpen(false);
@@ -41,6 +42,29 @@ export function UserAccountNav() {
     }
   };
 
+  // Fetch user name from database when component mounts
+  useEffect(() => {
+    async function fetchUserName() {
+      try {
+        if (user?.id) {
+          const { data, error } = await supabase
+            .from('users')
+            .select('name')
+            .eq('id', user.id)
+            .single();
+          
+          if (!error && data) {
+            setDbUserName(data.name);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching user name:", err);
+      }
+    }
+    
+    fetchUserName();
+  }, [user, supabase]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -55,8 +79,8 @@ export function UserAccountNav() {
     };
   }, [dropdownRef]);
 
-  // Ensure we always have a display name, falling back to email
-  const displayName = user?.user_metadata?.name || user?.email?.split('@')[0] || t("defaultUser");
+  // Ensure we always have a display name, prioritizing the database value, then falling back to metadata and email
+  const displayName = dbUserName || user?.user_metadata?.name || user?.email?.split('@')[0] || t("defaultUser");
   const userRole = user?.user_metadata?.role || "USER";
 
   if (!user)

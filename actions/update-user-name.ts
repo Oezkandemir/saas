@@ -20,20 +20,25 @@ export async function updateUserName(userId: string, data: FormData) {
 
     const { name } = userNameSchema.parse(data);
 
-    // Update the name in Supabase Auth
     const supabase = await getSupabaseServer();
     
     // Get current user metadata
     const { data: userData } = await supabase.auth.getUser();
     const currentMetadata = userData?.user?.user_metadata || {};
     
-    // Update with new name while preserving other metadata
+    // Update auth metadata with new name while preserving other metadata
     await supabase.auth.updateUser({
       data: {
         ...currentMetadata,
         name,
       },
     });
+
+    // Also update the users table in the database
+    await supabase
+      .from('users')
+      .update({ name })
+      .eq('id', userId);
 
     // Force revalidation of user data
     revalidatePath('/dashboard/settings');
