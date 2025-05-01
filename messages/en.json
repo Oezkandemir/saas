@@ -393,7 +393,8 @@
       "documentation": "Documentation",
       "support": "Support",
       "my_profile": "My Profile",
-      "notifications": "Notifications"
+      "notifications": "Notifications",
+      "teams": "Teams"
     }
   },
   "Support": {
@@ -645,5 +646,134 @@
     "manage": "Verwalten",
     "noTickets": "Noch keine Support-Tickets",
     "needHelp": "Brauchen Sie Hilfe? Erstellen Sie Ihr erstes Support-Ticket und unser Team wird Ihnen helfen."
+  },
+  "Teams": {
+    "meta": {
+      "title": "Team Management"
+    },
+    "heading": {
+      "title": "Team ",
+      "highlight": "Management"
+    },
+    "description": "Create and manage your teams to collaborate with others.",
+    "yourTeams": "Your Teams",
+    "teamList": {
+      "created": "Created {time}",
+      "openMenu": "Open menu",
+      "manageTeam": "Manage Team",
+      "setDefault": "Set as Default Team",
+      "inviteMembers": "Invite Members",
+      "settings": "Team Settings",
+      "deleteTeam": "Delete Team",
+      "defaultTeam": "Default Team",
+      "noDescription": "No description provided",
+      "viewTeam": "View Team"
+    },
+    "createTeam": {
+      "button": "Create Team",
+      "title": "Create a New Team",
+      "description": "Create a team to collaborate with other users.",
+      "nameLabel": "Team Name",
+      "namePlaceholder": "My Awesome Team",
+      "descriptionLabel": "Description (optional)",
+      "descriptionPlaceholder": "A short description of your team",
+      "cancel": "Cancel",
+      "creating": "Creating...",
+      "create": "Create Team",
+      "success": "Team created successfully!",
+      "errors": {
+        "nameRequired": "Team name is required",
+        "default": "Failed to create team. Please try again."
+      }
+    },
+    "noTeams": {
+      "title": "No Teams Found",
+      "description": "You don't have any teams yet. Create your first team to start collaborating."
+    },
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "member": "Member",
+      "guest": "Guest"
+    },
+    "teamDetail": {
+      "meta": {
+        "title": "Team Details"
+      },
+      "noDescription": "No description provided",
+      "createdAt": "Created {time}",
+      "tabs": {
+        "members": "Members",
+        "permissions": "Permissions",
+        "settings": "Settings"
+      }
+    },
+    "teamMembers": {
+      "title": "Team Members",
+      "invite": "Invite Member",
+      "tabs": {
+        "members": "Members",
+        "invitations": "Invitations"
+      },
+      "membersTitle": "Team Members",
+      "membersDescription": "Manage the members of your team and their roles.",
+      "memberTable": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "invitationsTitle": "Pending Invitations",
+      "invitationsDescription": "Manage pending team invitations.",
+      "noInvitations": "No pending invitations",
+      "invitationTable": {
+        "email": "Email",
+        "role": "Role",
+        "expires": "Expires",
+        "actions": "Actions"
+      },
+      "changeRole": "Change Role",
+      "remove": "Remove Member",
+      "removing": "Removing...",
+      "resend": "Resend Invitation",
+      "cancel": "Cancel Invitation",
+      "send": "Send Invitation",
+      "sending": "Sending...",
+      "update": "Update Role",
+      "updating": "Updating...",
+      "inviteDialogTitle": "Invite Team Member",
+      "inviteDialogDescription": "Send an invitation to join your team.",
+      "inviteDialogEmailLabel": "Email Address",
+      "inviteDialogRoleLabel": "Role",
+      "inviteDialogRolePlaceholder": "Select a role",
+      "removeDialogTitle": "Remove Team Member",
+      "removeDialogDescription": "Are you sure you want to remove {name} from this team?",
+      "changeRoleDialogTitle": "Change Team Member Role",
+      "changeRoleDialogDescription": "{name} is currently a {role}. What role would you like to assign?",
+      "changeRoleDialogLabel": "New Role",
+      "changeRoleDialogPlaceholder": "Select a new role",
+      "inviteSuccess": "Invitation sent to {email}",
+      "inviteCancelSuccess": "Invitation cancelled successfully",
+      "inviteResendSuccess": "Invitation resent successfully",
+      "removeSuccess": "{name} has been removed from the team",
+      "roleSuccess": "{name}'s role updated to {role}",
+      "inviteErrors": {
+        "emailRequired": "Email address is required",
+        "default": "Failed to send invitation. Please try again."
+      },
+      "removeErrors": {
+        "default": "Failed to remove member. Please try again."
+      },
+      "roleErrors": {
+        "default": "Failed to update role. Please try again."
+      },
+      "inviteCancelErrors": {
+        "default": "Failed to cancel invitation. Please try again."
+      },
+      "inviteResendErrors": {
+        "default": "Failed to resend invitation. Please try again."
+      }
+    }
   }
 }

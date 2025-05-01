@@ -1,212 +1,402 @@
-<a href="https://next-saas-stripe-starter.vercel.app">
-  <img alt="SaaS Starter" src="public/_static/og.jpg">
-  <h1 align="center">Next SaaS Stripe Starter</h1>
-</a>
+# Next SaaS Stripe Starter
 
-<p align="center">
-  Start at full speed with SaaS Starter !
-</p>
+<div align="center">
+  <img alt="Next SaaS Stripe Starter" src="public/_static/og.jpg" width="800" />
+  <p>A complete SaaS starter kit with Next.js 15, Supabase, Stripe Subscriptions, i18n, MDX, and more.</p>
+  <p>
+    <a href="https://next-saas-stripe-starter.vercel.app">Live Demo</a> ·
+    <a href="#getting-started">Get Started</a> ·
+    <a href="#tech-stack">Tech Stack</a> ·
+    <a href="#documentation">Documentation</a>
+  </p>
+  <p>
+    <img src="https://img.shields.io/badge/Next.js-15-blue" alt="Next.js 15" />
+    <img src="https://img.shields.io/badge/Supabase-Latest-green" alt="Supabase" />
+    <img src="https://img.shields.io/badge/Stripe-Integrated-purple" alt="Stripe" />
+    <img src="https://img.shields.io/badge/i18n-Supported-yellow" alt="i18n" />
+    <img src="https://img.shields.io/badge/MDX-Content-red" alt="MDX" />
+    <img src="https://img.shields.io/badge/Shadcn-UI-indigo" alt="Shadcn UI" />
+  </p>
+</div>
 
-<p align="center">
-  <a href="https://twitter.com/miickasmt">
-    <img src="https://img.shields.io/twitter/follow/miickasmt?style=flat&label=miickasmt&logo=twitter&color=0bf&logoColor=fff" alt="Mickasmt Twitter follower count" />
-  </a>
-</p>
+## ✨ Features
 
-<p align="center">
-  <a href="#introduction"><strong>Introduction</strong></a> ·
-  <a href="#installation"><strong>Installation</strong></a> ·
-  <a href="#tech-stack--features"><strong>Tech Stack + Features</strong></a> ·
-  <a href="#author"><strong>Author</strong></a> ·
-  <a href="#credits"><strong>Credits</strong></a>
-</p>
-<br/>
+<table>
+  <tr>
+    <td>
+      <h3>🔐 Authentication</h3>
+      <p>Complete authentication system with Supabase. Login, register, password reset, and more.</p>
+    </td>
+    <td>
+      <h3>💳 Subscription Payments</h3>
+      <p>Fully integrated Stripe subscription payments with multiple plans and billing cycles.</p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h3>📊 Dashboard</h3>
+      <p>Beautiful user dashboard with subscription management, settings, and analytics.</p>
+    </td>
+    <td>
+      <h3>🌐 Internationalization</h3>
+      <p>Built-in i18n support with next-intl for multiple languages and automated translations.</p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h3>📝 Blog with MDX</h3>
+      <p>Content management with MDX for publishing beautiful blog posts with code highlighting.</p>
+    </td>
+    <td>
+      <h3>✉️ Email Templates</h3>
+      <p>Ready-to-use email templates with React Email and Resend for sending beautiful emails.</p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h3>👨‍💼 Admin Dashboard</h3>
+      <p>Complete admin panel for managing users, subscriptions, and content.</p>
+    </td>
+    <td>
+      <h3>📱 Responsive Design</h3>
+      <p>Fully responsive design that looks great on all devices with Tailwind CSS.</p>
+    </td>
+  </tr>
+</table>
 
-## Introduction
+## 📋 About This Project
 
-Empower your next project with the stack of Next.js 14, Prisma, Neon, Auth.js v5, Resend, React Email, Shadcn/ui, and Stripe.
-<br/>
-All seamlessly integrated with the SaaS Starter to accelerate your development and saas journey.
+Next SaaS Stripe Starter is a comprehensive solution for launching your SaaS business with minimal setup time. This project combines the best modern web technologies to provide you with a solid foundation for building subscription-based applications.
 
-## Installation
+### Why This Starter?
 
-Clone & create this repo locally with the following command:
+- **Production Ready**: Built with scalability in mind from day one
+- **Developer Experience**: Clean code, consistent patterns, and extensive documentation
+- **User Experience**: Beautiful UI with responsive design and intuitive navigation
+- **Business Model Built-in**: Subscription system ready to generate revenue
+- **Modern Stack**: Uses the latest stable versions of all frameworks and libraries
+
+### Key Benefits
+
+- Save 100+ hours of development time
+- Start with best practices already implemented
+- Focus on your unique business logic instead of boilerplate
+- Launch faster with a complete authentication and payment system
+- Scale easily with cloud-native architecture
+
+## 🚀 Getting Started <a name="getting-started"></a>
+
+### 1. Clone the repository
 
 ```bash
 npx create-next-app my-saas-project --example "https://github.com/mickasmt/next-saas-stripe-starter"
 ```
 
-Or, deploy with Vercel:
+### 2. Install dependencies
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmickasmt%2Fnext-saas-stripe-starter)
-
-### Steps
-
-1. Install dependencies using pnpm:
-
-```sh
+```bash
 pnpm install
 ```
 
-2. Copy `.env.example` to `.env.local` and update the variables.
+### 3. Configure environment variables
 
-```sh
+```bash
 cp .env.example .env.local
 ```
 
-3. Start the development server:
+Edit `.env.local` with your Supabase and Stripe credentials.
 
-```sh
+### 4. Set up Supabase
+
+Follow the instructions in the Supabase setup guide to configure your database:
+
+```bash
+npm run setup-supabase
+```
+
+This will set up the necessary tables, functions, and triggers in your Supabase project.
+
+### 5. Configure Stripe
+
+Set up your Stripe products and prices according to the Stripe setup guide:
+
+```bash
+npm run setup-env
+```
+
+Remember to use price IDs (starting with `price_`) in your environment variables, not product IDs.
+
+### 6. Start the development server
+
+```bash
 pnpm run dev
 ```
 
-> [!NOTE]  
-> I use [npm-check-updates](https://www.npmjs.com/package/npm-check-updates) package for update this project.
->
-> Use this command for update your project: `ncu -i --format group`
+Open [http://localhost:3000](http://localhost:3000) to see your application.
 
-## Roadmap
-- [ ] Upgrade eslint to v9
-- [ ] Add resend for success subscriptions
+## 🛠️ Tech Stack <a name="tech-stack"></a>
 
-## Tech Stack + Features
+### Frontend
 
-https://github.com/mickasmt/next-saas-stripe-starter/assets/62285783/828a4e0f-30e3-4cfe-96ff-4dfd9cd55124
+- **Next.js 15** - React framework with App Router
+- **React 18** - UI library
+- **Tailwind CSS** - Utility-first CSS framework
+- **Shadcn/UI** - Reusable UI components built with Radix UI
+- **next-intl** - i18n solution for Next.js
+- **Framer Motion** - Animation library
+- **React Hook Form** - Form validation
+- **Lucide Icons** - Beautiful icons
 
-### Frameworks
+### Backend
 
-- [Next.js](https://nextjs.org/) – React framework for building performant apps with the best developer experience
-- [Auth.js](https://authjs.dev/) – Handle user authentication with ease with providers like Google, Twitter, GitHub, etc.
-- [Prisma](https://www.prisma.io/) – Typescript-first ORM for Node.js
-- [React Email](https://react.email/) – Versatile email framework for efficient and flexible email development
+- **Supabase Auth** - Authentication and user management
+- **next-auth** - Authentication for Next.js
+- **React Email** - Email templates
+- **Resend** - Email delivery service
+- **API Routes** - Serverless API endpoints
+- **Edge Functions** - Fast, globally distributed functions
 
-### Platforms
+### Database
 
-- [Vercel](https://vercel.com/) – Easily preview & deploy changes with git
-- [Resend](https://resend.com/) – A powerful email framework for streamlined email development
-- [Neon](https://neon.tech/) – Serverless Postgres with autoscaling, branching, bottomless storage and generous free tier.
+- **Supabase** - PostgreSQL database as a service
+- **Row Level Security** - Secure database access
+- **Database Functions** - Custom PostgreSQL functions
+- **Database Triggers** - Automate database operations
 
-### UI
+### Payments
 
-- [Tailwind CSS](https://tailwindcss.com/) – Utility-first CSS framework for rapid UI development
-- [Shadcn/ui](https://ui.shadcn.com/) – Re-usable components built using Radix UI and Tailwind CSS
-- [Framer Motion](https://framer.com/motion) – Motion library for React to animate components with ease
-- [Lucide](https://lucide.dev/) – Beautifully simple, pixel-perfect icons
-- [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) – Optimize custom fonts and remove external network requests for improved performance
-- [`ImageResponse`](https://nextjs.org/docs/app/api-reference/functions/image-response) – Generate dynamic Open Graph images at the edge
+- **Stripe** - Payment processing
+- **Subscription Management** - Recurring billing
+- **Webhook Integration** - Real-time payment events
+- **Customer Portal** - Self-service subscription management
 
-### Hooks and Utilities
+### Deployment
 
-- `useIntersectionObserver` – React hook to observe when an element enters or leaves the viewport
-- `useLocalStorage` – Persist data in the browser's local storage
-- `useScroll` – React hook to observe scroll position ([example](https://github.com/mickasmt/precedent/blob/main/components/layout/navbar.tsx#L12))
-- `nFormatter` – Format numbers with suffixes like `1.2k` or `1.2M`
-- `capitalize` – Capitalize the first letter of a string
-- `truncate` – Truncate a string to a specified length
-- [`use-debounce`](https://www.npmjs.com/package/use-debounce) – Debounce a function call / state update
+- **Vercel** - Hosting and deployment
+- **Edge Network** - Global CDN
+- **Analytics** - Insights on usage and performance
+- **Environment Variables** - Secure configuration
 
-### Code Quality
+## 🌍 Internationalization
 
-- [TypeScript](https://www.typescriptlang.org/) – Static type checker for end-to-end typesafety
-- [Prettier](https://prettier.io/) – Opinionated code formatter for consistent code style
-- [ESLint](https://eslint.org/) – Pluggable linter for Next.js and TypeScript
+> **Info:** This project uses the inlang ecosystem for internationalization (i18n) and automated translation processes.
 
-### Miscellaneous
+### Available Commands
 
-- [Vercel Analytics](https://vercel.com/analytics) – Track unique visitors, pageviews, and more in a privacy-friendly way
+```bash
+# Synchronize translation keys
+npm run i18n:sync
 
-## Author
+# Validate your inlang configuration
+npm run i18n:validate
 
-Created by [@miickasmt](https://twitter.com/miickasmt) in 2023, released under the [MIT license](https://github.com/shadcn/taxonomy/blob/main/LICENSE.md).
+# Machine translate missing translations
+npm run i18n:translate
+```
 
-## Credits
+### Supported Languages
 
-This project was inspired by shadcn's [Taxonomy](https://github.com/shadcn-ui/taxonomy), Steven Tey's [Precedent](https://github.com/steven-tey/precedent), and Antonio Erdeljac's [Next 13 AI SaaS](https://github.com/AntonioErdeljac/next13-ai-saas).
+- English (source language)
+- German (target language)
+- Add more languages by updating the configuration
 
-- Shadcn ([@shadcn](https://twitter.com/shadcn))
-- Steven Tey ([@steventey](https://twitter.com/steventey))
-- Antonio Erdeljac ([@YTCodeAntonio](https://twitter.com/AntonioErdeljac))
+## 💳 Subscription Management
 
-## Authentication
+<div align="center">
+  <img alt="Subscription Plans" src="public/_static/og.jpg" width="800" />
+</div>
 
-This project uses [Supabase Authentication](https://supabase.com/docs/guides/auth) for handling user sessions and authentication. The SQL migrations under `lib/supabase/migrations` create the necessary tables and relationships for the authentication system.
+### Available Plans
 
-### Setting Up Authentication
+- **Starter**: Free tier with basic features
+- **Pro**: $15/month or $144/year with advanced features
+- **Business**: $30/month or $300/year with premium features
 
-1. Create a Supabase project at [supabase.com](https://supabase.com)
-2. Get your project URL and anon key from the Supabase dashboard
-3. Run `npm run setup-env` to create a basic `.env.local` file
-4. Run `npm run setup-supabase` to update the `.env.local` file with your Supabase credentials
-5. Replace the placeholder values in `.env.local` with your actual Supabase details
+### Features Comparison
 
-### Authentication API Routes
+| Feature | Starter | Pro | Business |
+| --- | :---: | :---: | :---: |
+| Monthly Posts | 100 | 500 | Unlimited |
+| Analytics | Basic | Advanced | Real-time |
+| Templates | Standard | Business | All + Custom |
+| Customer Support | Limited | Priority | 24/7 |
+| API Access | Limited | Standard | Enhanced |
+| Custom Branding | ❌ | ✅ | ✅ |
+| Onboarding | ❌ | Self-service | Assisted |
+
+## 📚 Documentation <a name="documentation"></a>
+
+### Setup Guides
+
+<table>
+  <tr>
+    <td>
+      <h4>🔧 Supabase Setup</h4>
+      <p>Our <a href="README-SETUP-SUPABASE.md">Supabase Setup Guide</a> provides detailed instructions for:</p>
+      <ul>
+        <li>Creating users table with proper schema</li>
+        <li>Setting up Row-Level Security (RLS) policies</li>
+        <li>Creating user sync triggers</li>
+        <li>Adding helper functions for Stripe integration</li>
+        <li>Syncing existing auth users</li>
+      </ul>
+    </td>
+    <td>
+      <h4>💳 Stripe Integration</h4>
+      <p>The <a href="STRIPE-SETUP-GUIDE.md">Stripe Setup Guide</a> walks you through:</p>
+      <ul>
+        <li>Creating products and price IDs</li>
+        <li>Setting up environment variables</li>
+        <li>Testing subscription flows</li>
+        <li>Configuring webhooks</li>
+        <li>Troubleshooting payment issues</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h4>🌐 Internationalization Guide</h4>
+      <p>Learn about our i18n implementation in the <a href="I18N.md">I18N Guide</a>, covering:</p>
+      <ul>
+        <li>Translation file structure</li>
+        <li>Adding new translations</li>
+        <li>Command workflows</li>
+        <li>Automated translation</li>
+        <li>Best practices</li>
+      </ul>
+    </td>
+    <td>
+      <h4>📝 Implementation Notes</h4>
+      <p>Check <a href="IMPLEMENTATION_NOTES.md">Implementation Notes</a> for detailed information about:</p>
+      <ul>
+        <li>Architecture decisions</li>
+        <li>Component structure</li>
+        <li>Authentication flow details</li>
+        <li>Subscription management logic</li>
+        <li>Performance optimization techniques</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+### Project Structure
+
+```
+next-saas-stripe-starter/
+├── actions/            # Server actions for Next.js App Router
+├── app/                # Next.js App Router pages and layouts
+│   ├── api/            # API routes 
+│   ├── auth/           # Authentication routes
+│   └── [locale]/       # Localized routes
+│       ├── (auth)/     # Authentication pages
+│       ├── (docs)/     # Documentation pages
+│       ├── (marketing)/# Marketing pages and blog
+│       └── (protected)/# Protected dashboard and admin pages
+├── components/         # Reusable UI components
+├── config/             # Site configuration
+├── emails/             # React Email templates
+├── hooks/              # Custom React hooks
+├── lib/                # Utility functions and shared logic
+├── messages/           # i18n translation files
+├── public/             # Static assets
+├── styles/             # Global styles
+├── supabase/           # Supabase configuration
+└── types/              # TypeScript type definitions
+```
+
+### Authentication Flow
+
+The project uses Supabase Authentication with a custom integration to ensure users are properly synced between auth.users and your application's users table. Key authentication endpoints include:
 
 - `/api/auth/signup` - Register a new user
 - `/api/auth/signin` - Sign in an existing user
 - `/api/auth/signout` - Sign out the current user
 - `/api/auth/reset-password` - Send a password reset email
 
-## Subscription Management
+### Webhook Implementation
 
-This project integrates with Stripe for subscription management. Users can choose between different plans (Starter, Pro, Business) on the pricing page. 
+The Stripe integration relies on webhooks to keep subscription status in sync. The webhook handler processes these key events:
 
-### Setting Up Subscription Management
+- `checkout.session.completed` - When a user completes checkout
+- `invoice.payment_succeeded` - When a subscription payment is successful
+- `customer.subscription.deleted` - When a subscription is canceled
 
-1. **Configure Stripe Keys**: Ensure you have valid Stripe API keys set in your environment variables.
+## 🧩 Key Components
 
-2. **Configure Stripe Customer Portal**: As an admin, visit the admin dashboard and use the "Configure Stripe Portal" button to set up the customer portal with the recommended settings. This step is essential for enabling users to manage their subscriptions directly through Stripe's secure interface.
+```tsx
+// Example of authenticated route protection
+// app/[locale]/(protected)/layout.tsx
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
-3. **Test the Subscription Flow**: Use Stripe's test cards to test the entire subscription flow including:
-   - Initial subscription
-   - Upgrading/downgrading plans
-   - Updating payment methods
-   - Canceling subscriptions
-
-### Test Customer Portal
-
-In development and test environments, the application is configured to use a specific test customer portal:
+export default async function ProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await auth();
+  
+  if (!session) {
+    redirect("/signin");
+  }
+  
+  return <>{children}</>;
+}
 ```
-https://billing.stripe.com/p/login/test_14kcMTbsj2hdbgQ288
-```
 
-This test portal URL is hard-coded in development mode to make testing easier. Users will see:
-- A direct link to the test portal on the billing page
-- The "Manage Subscription" button will open the test portal
-- Simplified workflows that bypass actual Stripe API calls during development
+## 🛣️ Roadmap
 
-In production, the application will use proper Stripe API calls to generate unique customer portal sessions.
+- [ ] Add multi-team support with team roles and permissions
+- [ ] Enhance admin dashboard with detailed analytics
+- [ ] Add Stripe tax compliance features
+- [ ] Implement content management system (CMS)
+- [ ] Add advanced user roles and permissions
+- [ ] Integrate webhooks for third-party applications
+- [ ] Add more payment providers (PayPal, Wise, etc.)
 
-### Managing Subscriptions
+## 🤝 Contributing
 
-For users with active subscriptions, they will see a "Manage Subscription" button on the billing page that redirects them to the Stripe Customer Portal where they can:
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-- Update their payment method
-- Change their subscription plan
-- View invoice history
-- Cancel their subscription
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-### Troubleshooting Subscription Issues
+## ❓ FAQ
 
-If you experience any of the following issues:
-- Subscription payments are successful but not reflected in the UI
-- Plan remains as "Starter" after upgrading
-- Subscription data isn't updated in the database
+<details>
+<summary><strong>Can I use this starter for commercial projects?</strong></summary>
+Yes! This project is licensed under the MIT License, which allows for commercial use.
+</details>
 
-You can use the following troubleshooting steps:
+<details>
+<summary><strong>How do I add more languages?</strong></summary>
+Add a new language file in the messages directory and update the inlang configuration. See the I18N.md guide for detailed instructions.
+</details>
 
-1. **Check your webhook setup**: Ensure your Stripe webhooks are correctly configured and pointing to your application's webhook endpoint at `/api/webhooks/stripe`. The webhook should have the following events enabled:
-   - `checkout.session.completed`
-   - `invoice.payment_succeeded`
-   - `customer.subscription.deleted`
+<details>
+<summary><strong>Can I use a different database instead of Supabase?</strong></summary>
+Yes, but you'll need to modify the authentication and data access layers accordingly. The project is built with Supabase in mind, but the architecture is modular enough to swap components.
+</details>
 
-2. **Manual subscription sync**: If your subscription isn't showing up in the UI, visit your billing page and use the "Fix Subscription" button that appears for free users. This will attempt to sync your subscription status directly from Stripe.
+<details>
+<summary><strong>How do I deploy this to production?</strong></summary>
+The recommended way is deploying to Vercel. Just connect your repository to Vercel, set up the environment variables, and deploy. For detailed instructions, see the deployment section in the documentation.
+</details>
 
-3. **Check server logs**: Look for webhook event logs in your server logs to see if Stripe events are being received and processed correctly.
+## 📄 License
 
-4. **Verify database records**: Check your database users table to see if the subscription fields are correctly populated:
-   - `stripe_customer_id`
-   - `stripe_subscription_id`
-   - `stripe_price_id`
-   - `stripe_current_period_end`
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
-5. **Configure Stripe Portal**: If users are having trouble managing their subscriptions, make sure the Stripe customer portal is properly configured using the admin dashboard.
+## 👨‍💻 Author
+
+Created by [@miickasmt](https://twitter.com/miickasmt) in 2023.
+
+## 🙏 Credits
+
+This project was inspired by:
+- Shadcn's [Taxonomy](https://github.com/shadcn-ui/taxonomy)
+- Steven Tey's [Precedent](https://github.com/steven-tey/precedent)
+- Antonio Erdeljac's [Next 13 AI SaaS](https://github.com/AntonioErdeljac/next13-ai-saas)

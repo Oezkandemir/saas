@@ -70,13 +70,36 @@ export function constructMetadata({
   };
 }
 
-export function formatDate(input: string | number): string {
-  const date = new Date(input);
-  return date.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+/**
+ * Get the base URL for the application based on the current environment
+ * This is useful for OAuth redirects and API calls
+ */
+export function getURL() {
+  // Get the environment-specific URL
+  let url =
+    process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
+    process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
+    'http://localhost:3000'
+
+  // Make sure to include `https://` when not localhost.
+  url = url.startsWith('http') ? url : `https://${url}`
+
+  // Make sure to include a trailing `/`.
+  url = url.endsWith('/') ? url : `${url}/`
+
+  return url
+}
+
+/**
+ * Format a date to a readable string
+ */
+export function formatDate(input: string | number | Date): string {
+  const date = new Date(input)
+  return date.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  })
 }
 
 export function absoluteUrl(path: string) {

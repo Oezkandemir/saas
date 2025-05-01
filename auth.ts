@@ -1,4 +1,3 @@
-import { getSession } from "@/lib/session";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { cookies } from "next/headers";
 import { cache } from "react";
@@ -7,8 +6,9 @@ import { syncUserWithDatabase } from "@/lib/auth-sync";
 
 export const auth = cache(async () => {
   try {
-    // Get the session using the existing session utility
-    const session = await getSession();
+    // Get session directly instead of using getSession
+    const supabase = await getSupabaseServer();
+    const { data: { session } } = await supabase.auth.getSession();
     
     if (!session) {
       return null;
@@ -18,7 +18,6 @@ export const auth = cache(async () => {
     await syncUserWithDatabase(session.user);
     
     // Get user data from database to get the proper name
-    const supabase = await getSupabaseServer();
     const { data: dbUser } = await supabase
       .from('user_profiles')
       .select('name')
@@ -96,5 +95,9 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Re-export the getSession function for convenience
-export { getSession }; 
+// Export a getSession function for API routes that need it
+export async function getSession() {
+  const supabase = await getSupabaseServer();
+  const { data: { session } } = await supabase.auth.getSession();
+  return session;
+} 

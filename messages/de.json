@@ -393,7 +393,8 @@
       "documentation": "Dokumentation",
       "support": "Support",
       "my_profile": "Mein Profil",
-      "notifications": "Benachrichtigungen"
+      "notifications": "Benachrichtigungen",
+      "teams": "Teams"
     }
   },
   "Support": {
@@ -645,5 +646,134 @@
     "manage": "Verwalten",
     "noTickets": "Noch keine Support-Tickets",
     "needHelp": "Brauchen Sie Hilfe? Erstellen Sie Ihr erstes Support-Ticket und unser Team wird Ihnen helfen."
+  },
+  "Teams": {
+    "meta": {
+      "title": "Team-Verwaltung"
+    },
+    "heading": {
+      "title": "Team-",
+      "highlight": "Verwaltung"
+    },
+    "description": "Erstellen und verwalten Sie Ihre Teams für die Zusammenarbeit mit anderen.",
+    "yourTeams": "Ihre Teams",
+    "teamList": {
+      "created": "Erstellt {time}",
+      "openMenu": "Menü öffnen",
+      "manageTeam": "Team verwalten",
+      "setDefault": "Als Standard-Team festlegen",
+      "inviteMembers": "Mitglieder einladen",
+      "settings": "Team-Einstellungen",
+      "deleteTeam": "Team löschen",
+      "defaultTeam": "Standard-Team",
+      "noDescription": "Keine Beschreibung vorhanden",
+      "viewTeam": "Team anzeigen"
+    },
+    "createTeam": {
+      "button": "Team erstellen",
+      "title": "Neues Team erstellen",
+      "description": "Erstellen Sie ein Team für die Zusammenarbeit mit anderen Benutzern.",
+      "nameLabel": "Team-Name",
+      "namePlaceholder": "Mein tolles Team",
+      "descriptionLabel": "Beschreibung (optional)",
+      "descriptionPlaceholder": "Eine kurze Beschreibung Ihres Teams",
+      "cancel": "Abbrechen",
+      "creating": "Wird erstellt...",
+      "create": "Team erstellen",
+      "success": "Team erfolgreich erstellt!",
+      "errors": {
+        "nameRequired": "Team-Name ist erforderlich",
+        "default": "Fehler beim Erstellen des Teams. Bitte versuchen Sie es erneut."
+      }
+    },
+    "noTeams": {
+      "title": "Keine Teams gefunden",
+      "description": "Sie haben noch keine Teams. Erstellen Sie Ihr erstes Team, um mit der Zusammenarbeit zu beginnen."
+    },
+    "roles": {
+      "owner": "Eigentümer",
+      "admin": "Administrator",
+      "member": "Mitglied",
+      "guest": "Gast"
+    },
+    "teamDetail": {
+      "meta": {
+        "title": "Team-Details"
+      },
+      "noDescription": "Keine Beschreibung vorhanden",
+      "createdAt": "Erstellt {time}",
+      "tabs": {
+        "members": "Mitglieder",
+        "permissions": "Berechtigungen",
+        "settings": "Einstellungen"
+      }
+    },
+    "teamMembers": {
+      "title": "Team-Mitglieder",
+      "invite": "Mitglied einladen",
+      "tabs": {
+        "members": "Mitglieder",
+        "invitations": "Einladungen"
+      },
+      "membersTitle": "Team-Mitglieder",
+      "membersDescription": "Verwalten Sie die Mitglieder Ihres Teams und deren Rollen.",
+      "memberTable": {
+        "name": "Name",
+        "email": "E-Mail",
+        "role": "Rolle",
+        "joined": "Beigetreten",
+        "actions": "Aktionen"
+      },
+      "invitationsTitle": "Ausstehende Einladungen",
+      "invitationsDescription": "Verwalten Sie ausstehende Team-Einladungen.",
+      "noInvitations": "Keine ausstehenden Einladungen",
+      "invitationTable": {
+        "email": "E-Mail",
+        "role": "Rolle",
+        "expires": "Läuft ab",
+        "actions": "Aktionen"
+      },
+      "changeRole": "Rolle ändern",
+      "remove": "Mitglied entfernen",
+      "removing": "Wird entfernt...",
+      "resend": "Einladung erneut senden",
+      "cancel": "Einladung zurückziehen",
+      "send": "Einladung senden",
+      "sending": "Wird gesendet...",
+      "update": "Rolle aktualisieren",
+      "updating": "Wird aktualisiert...",
+      "inviteDialogTitle": "Team-Mitglied einladen",
+      "inviteDialogDescription": "Senden Sie eine Einladung, um Ihrem Team beizutreten.",
+      "inviteDialogEmailLabel": "E-Mail-Adresse",
+      "inviteDialogRoleLabel": "Rolle",
+      "inviteDialogRolePlaceholder": "Rolle auswählen",
+      "removeDialogTitle": "Team-Mitglied entfernen",
+      "removeDialogDescription": "Sind Sie sicher, dass Sie {name} aus diesem Team entfernen möchten?",
+      "changeRoleDialogTitle": "Team-Mitgliedsrolle ändern",
+      "changeRoleDialogDescription": "{name} ist derzeit {role}. Welche Rolle möchten Sie zuweisen?",
+      "changeRoleDialogLabel": "Neue Rolle",
+      "changeRoleDialogPlaceholder": "Neue Rolle auswählen",
+      "inviteSuccess": "Einladung an {email} gesendet",
+      "inviteCancelSuccess": "Einladung erfolgreich zurückgezogen",
+      "inviteResendSuccess": "Einladung erfolgreich erneut gesendet",
+      "removeSuccess": "{name} wurde aus dem Team entfernt",
+      "roleSuccess": "Rolle von {name} wurde zu {role} aktualisiert",
+      "inviteErrors": {
+        "emailRequired": "E-Mail-Adresse ist erforderlich",
+        "default": "Fehler beim Senden der Einladung. Bitte versuchen Sie es erneut."
+      },
+      "removeErrors": {
+        "default": "Fehler beim Entfernen des Mitglieds. Bitte versuchen Sie es erneut."
+      },
+      "roleErrors": {
+        "default": "Fehler beim Aktualisieren der Rolle. Bitte versuchen Sie es erneut."
+      },
+      "inviteCancelErrors": {
+        "default": "Fehler beim Zurückziehen der Einladung. Bitte versuchen Sie es erneut."
+      },
+      "inviteResendErrors": {
+        "default": "Fehler beim erneuten Senden der Einladung. Bitte versuchen Sie es erneut."
+      }
+    }
   }
 }

@@ -19,6 +19,11 @@ export const sidebarLinks: SidebarNavItem[] = [
         title: "My Profile",
       },
       {
+        href: "/dashboard/teams",
+        icon: "user",
+        title: "Teams",
+      },
+      {
         href: "/dashboard/billing",
         icon: "billing",
         title: "Billing",
