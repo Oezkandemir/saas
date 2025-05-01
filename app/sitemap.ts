@@ -1,27 +1,33 @@
 import { MetadataRoute } from "next";
-import { routing } from "@/i18n/routing";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  
-  // Base routes that should be included in the sitemap for all locales
-  const baseRoutes = [
+
+  // Define routes that should be included in the sitemap
+  const routes = [
     "",
     "/pricing",
-    "/dashboard",
-    "/blog",
-    "/docs",
+    "/features",
+    "/contact",
+    "/terms",
+    "/privacy",
   ];
 
-  // Create entries for all locales
-  const routes = routing.locales.flatMap(locale => {
-    return baseRoutes.map(route => ({
-      url: `${baseUrl}/${locale}${route}`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: route === "" ? 1 : 0.8,
-    }));
-  });
+  // Generate entries for default locale (English)
+  const enEntries = routes.map((route) => ({
+    url: `${baseUrl}/en${route}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: route === "" ? 1 : 0.8,
+  }));
 
-  return routes;
+  // Generate entries for German locale
+  const deEntries = routes.map((route) => ({
+    url: `${baseUrl}/de${route}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: route === "" ? 0.9 : 0.7,
+  }));
+
+  return [...enEntries, ...deEntries];
 } 

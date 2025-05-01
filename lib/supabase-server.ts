@@ -55,4 +55,26 @@ export const getSupabaseServer = async () => {
     console.error('Error getting Supabase server instance:', error);
     throw error;
   }
+};
+
+// Static supabase client that doesn't use cookies (for static pages)
+export const getSupabaseStatic = () => {
+  try {
+    // Create a serverless client with no cookie handling
+    const supabaseClient = createServerClient<Database>(
+      supabaseUrl as string,
+      supabaseAnonKey as string,
+      {
+        cookies: {
+          get: () => '',
+          set: () => {},
+          remove: () => {},
+        },
+      }
+    );
+    return supabaseClient;
+  } catch (error) {
+    console.error('Error creating static Supabase client:', error);
+    throw error;
+  }
 }; 

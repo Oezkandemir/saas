@@ -11,9 +11,15 @@ const intlMiddleware = createIntlMiddleware({
 })
 
 export async function middleware(request: NextRequest) {
+  // Check if this is a static file request that should be ignored
+  const staticFileRegex = /\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot|otf|mp4|webm|ogg|mp3|wav|pdf|css|js|json)$/i;
+  if (staticFileRegex.test(request.nextUrl.pathname)) {
+    return NextResponse.next();
+  }
+
   // Skip locale handling if we're already being redirected
   const isAlreadyRedirecting = request.headers.has('x-middleware-rewrite') || 
-                               request.headers.has('x-middleware-next');
+                              request.headers.has('x-middleware-next');
 
   // Handle i18n routing first, but only if not already redirecting
   const intlResponse = !isAlreadyRedirecting ? 
@@ -153,9 +159,10 @@ export const config = {
     // - _static (our static files)
     // - favicon.ico (favicon file)
     // - api/webhooks (webhook handlers)
-    '/((?!api|_next/static|_next/image|_static|favicon.ico|api/webhooks).*)',
+    // - icons (icon files)
+    '/((?!api|_next/static|_next/image|_static|favicon.ico|api/webhooks|icons).*)',
     
-    // Optional: Also match locale-specific paths, if needed (or remove if covered by above)
+    // Optional: Also match locale-specific paths, if needed
     '/(en|de)/:path*',
   ],
 }

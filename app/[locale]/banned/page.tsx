@@ -6,6 +6,8 @@ import { getTranslations } from "next-intl/server";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { UserAvatar } from "@/components/shared/user-avatar";
 
+export const dynamic = "force-dynamic";
+
 export default async function BannedPage() {
   const t = await getTranslations("Banned");
   
@@ -34,8 +36,8 @@ export default async function BannedPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8">
       <div className="mx-auto flex w-full max-w-md flex-col items-center justify-center space-y-6 text-center">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
-          <BanIcon className="h-10 w-10 text-red-600 dark:text-red-300" />
+        <div className="flex size-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
+          <BanIcon className="size-10 text-red-600 dark:text-red-300" />
         </div>
         
         {user && (
@@ -45,7 +47,7 @@ export default async function BannedPage() {
                 name: userName,
                 avatar_url: userAvatar 
               }}
-              className="h-16 w-16"
+              className="size-16"
             />
             <p className="font-medium">{userName}</p>
           </div>
@@ -56,7 +58,7 @@ export default async function BannedPage() {
         </h1>
         
         <div className="flex items-center justify-center space-x-2 rounded-lg bg-amber-100 p-4 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
-          <AlertTriangle className="h-5 w-5" />
+          <AlertTriangle className="size-5" />
           <p className="text-sm font-medium">
             {t("message", { defaultValue: "Your account has been suspended due to a violation of our terms of service." })}
           </p>

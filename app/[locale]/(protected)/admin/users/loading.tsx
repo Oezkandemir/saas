@@ -35,7 +35,7 @@ export default function UsersLoading() {
                 <div className="flex items-center gap-4">
                   <Skeleton className="h-6 w-24" />
                   <Skeleton className="h-6 w-24" />
-                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <Skeleton className="size-8 rounded-full" />
                 </div>
               </div>
             </div>

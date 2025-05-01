@@ -151,9 +151,9 @@ export function UserActions({ user }: UserActionsProps) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="h-8 w-8 p-0" variant="ghost">
+          <Button className="size-8 p-0" variant="ghost">
             <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
+            <MoreHorizontal className="size-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -168,12 +168,12 @@ export function UserActions({ user }: UserActionsProps) {
           >
             {user.role === 'ADMIN' ? (
               <>
-                <Shield className="mr-2 h-4 w-4 text-blue-600" />
+                <Shield className="mr-2 size-4 text-blue-600" />
                 <span className="text-blue-600">Remove Admin</span>
               </>
             ) : (
               <>
-                <Shield className="mr-2 h-4 w-4 text-purple-600" />
+                <Shield className="mr-2 size-4 text-purple-600" />
                 <span className="text-purple-600">Make Admin</span>
               </>
             )}
@@ -187,12 +187,12 @@ export function UserActions({ user }: UserActionsProps) {
           >
             {user.status === 'banned' ? (
               <>
-                <Unlock className="mr-2 h-4 w-4 text-green-600" />
+                <Unlock className="mr-2 size-4 text-green-600" />
                 <span className="text-green-600">Unban User</span>
               </>
             ) : (
               <>
-                <ShieldAlert className="mr-2 h-4 w-4 text-amber-600" />
+                <ShieldAlert className="mr-2 size-4 text-amber-600" />
                 <span className="text-amber-600">Ban User</span>
               </>
             )}
@@ -204,7 +204,7 @@ export function UserActions({ user }: UserActionsProps) {
             onClick={() => setShowDeleteDialog(true)}
             className="cursor-pointer"
           >
-            <Trash className="mr-2 h-4 w-4 text-red-600" />
+            <Trash className="mr-2 size-4 text-red-600" />
             <span className="text-red-600">Delete User</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

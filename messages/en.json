@@ -346,5 +346,55 @@
     "goHome": "Return to Home",
     "contactSupport": "Contact Support",
     "signOut": "Sign out"
+  },
+  "Terms": {
+    "metaTitle": "Terms of Service - Cenety",
+    "metaDescription": "Terms and conditions for using Cenety services",
+    "title": "Terms of Service",
+    "section1": {
+      "title": "1. Terms of Use",
+      "content": "By accessing this website, you are agreeing to be bound by these terms of service, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws."
+    },
+    "section2": {
+      "title": "2. Use License",
+      "content": "Permission is granted to temporarily download one copy of the materials on Cenety's website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title."
+    },
+    "section3": {
+      "title": "3. Disclaimer",
+      "content": "The materials on Cenety's website are provided on an 'as is' basis. Cenety makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights."
+    },
+    "section4": {
+      "title": "4. Limitations",
+      "content": "In no event shall Cenety or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on Cenety's website, even if Cenety or a Cenety authorized representative has been notified orally or in writing of the possibility of such damage."
+    },
+    "lastUpdated": {
+      "title": "Last Updated",
+      "content": "These terms and conditions were last updated on June 1, 2023."
+    }
+  },
+  "Privacy": {
+    "metaTitle": "Privacy Policy - Cenety",
+    "metaDescription": "Privacy policy and data processing information for Cenety services",
+    "title": "Privacy Policy",
+    "section1": {
+      "title": "1. Information Collection",
+      "content": "We collect information to provide better services to all our users. The information we collect includes basic account information such as your name and email address, as well as usage data related to your interactions with our services."
+    },
+    "section2": {
+      "title": "2. How We Use Information",
+      "content": "We use the information we collect to provide, maintain, protect, and improve our services, to develop new ones, and to protect Cenety and our users. We also use this information to offer you tailored content and to improve your overall experience."
+    },
+    "section3": {
+      "title": "3. Information Sharing",
+      "content": "We do not share personal information with companies, organizations, or individuals outside of Cenety except in the following cases: with your consent, for external processing, for legal reasons, or in case of a merger or acquisition."
+    },
+    "section4": {
+      "title": "4. Your Rights",
+      "content": "Depending on your location, you may have certain rights regarding your personal data, including the right to access, correct, delete, or restrict processing of your data. You may also have the right to receive a copy of your data in a structured, machine-readable format."
+    },
+    "lastUpdated": {
+      "title": "Last Updated",
+      "content": "This Privacy Policy was last updated on June 1, 2023."
+    }
   }
 } 

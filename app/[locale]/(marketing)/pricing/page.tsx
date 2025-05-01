@@ -10,6 +10,8 @@ import { PricingFaq } from "@/components/pricing/pricing-faq";
 import { pricingData } from "@/config/subscriptions";
 import { UserSubscriptionPlan } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = constructMetadata({
   title: "Pricing – Cenety",
   description: "Explore our subscription plans.",

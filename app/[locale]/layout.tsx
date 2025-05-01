@@ -16,6 +16,8 @@ import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { SupabaseProvider } from "@/components/supabase-provider";
 import { AvatarProvider } from "@/components/context/avatar-context";
 
+export const dynamic = "force-dynamic";
+
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }

@@ -1,33 +1,28 @@
 import { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
-import { setRequestLocale } from "next-intl/server";
 
-export default async function sitemap({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<MetadataRoute.Sitemap> {
-  const { locale } = await params;
-  setRequestLocale(locale);
-  
+export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  
-  // Base routes specific to this locale
-  const baseRoutes = [
+
+  // Define routes that should be included in the sitemap
+  const routes = [
     "",
     "/pricing",
-    "/dashboard",
-    "/blog",
-    "/docs",
+    "/features",
+    "/contact",
+    "/terms",
+    "/privacy",
   ];
 
-  // Create entries for the current locale
-  const routes = baseRoutes.map(route => ({
-    url: `${baseUrl}/${locale}${route}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: route === "" ? 1 : 0.8,
-  }));
+  // Generate sitemap entries for all supported locales
+  const entries = routing.locales.flatMap(locale => {
+    return routes.map(route => ({
+      url: `${baseUrl}/${locale}${route}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: locale === routing.defaultLocale && route === "" ? 1 : 0.8,
+    }));
+  });
 
-  return routes;
+  return entries;
 } 

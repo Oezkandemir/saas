@@ -57,3 +57,15 @@ export async function getSession(): Promise<Session | null> {
     return null;
   }
 }
+
+// Safe version for static pages that doesn't use cookies
+export async function getStaticPageUser() {
+  return {
+    id: null,
+    name: null,
+    role: "USER",
+    email: null,
+    avatar_url: null,
+    status: "active"
+  };
+}

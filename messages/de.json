@@ -338,5 +338,55 @@
         }
       }
     }
+  },
+  "Terms": {
+    "metaTitle": "Nutzungsbedingungen - Cenety",
+    "metaDescription": "Allgemeine Geschäftsbedingungen für die Nutzung der Cenety-Dienste",
+    "title": "Nutzungsbedingungen",
+    "section1": {
+      "title": "1. Nutzungsbedingungen",
+      "content": "Durch den Zugriff auf diese Website stimmen Sie zu, an diese Nutzungsbedingungen, alle geltenden Gesetze und Vorschriften gebunden zu sein und erklären sich damit einverstanden, dass Sie für die Einhaltung aller geltenden lokalen Gesetze verantwortlich sind."
+    },
+    "section2": {
+      "title": "2. Nutzungslizenz",
+      "content": "Es wird die Erlaubnis erteilt, vorübergehend eine Kopie der Materialien auf der Website von Cenety nur für persönliche, nicht-kommerzielle, vorübergehende Ansicht herunterzuladen. Dies ist die Gewährung einer Lizenz, nicht die Übertragung eines Titels."
+    },
+    "section3": {
+      "title": "3. Haftungsausschluss",
+      "content": "Die Materialien auf der Website von Cenety werden 'wie besehen' bereitgestellt. Cenety gibt keine Garantien, weder ausdrücklich noch stillschweigend, und lehnt hiermit alle anderen Garantien ab, einschließlich, ohne Einschränkung, stillschweigende Garantien oder Bedingungen der Marktgängigkeit, Eignung für einen bestimmten Zweck oder Nichtverletzung von geistigem Eigentum oder anderer Rechtsverletzungen."
+    },
+    "section4": {
+      "title": "4. Einschränkungen",
+      "content": "In keinem Fall haftet Cenety oder seine Lieferanten für Schäden (einschließlich, ohne Einschränkung, Schäden durch Datenverlust oder Gewinn oder aufgrund von Geschäftsunterbrechung), die aus der Nutzung oder Unmöglichkeit der Nutzung der Materialien auf der Website von Cenety entstehen, selbst wenn Cenety oder ein autorisierter Vertreter von Cenety mündlich oder schriftlich über die Möglichkeit solcher Schäden informiert wurde."
+    },
+    "lastUpdated": {
+      "title": "Zuletzt aktualisiert",
+      "content": "Diese Allgemeinen Geschäftsbedingungen wurden zuletzt am 1. Juni 2023 aktualisiert."
+    }
+  },
+  "Privacy": {
+    "metaTitle": "Datenschutzerklärung - Cenety",
+    "metaDescription": "Datenschutzerklärung und Informationen zur Datenverarbeitung für Cenety-Dienste",
+    "title": "Datenschutzerklärung",
+    "section1": {
+      "title": "1. Erfassung von Informationen",
+      "content": "Wir sammeln Informationen, um allen unseren Nutzern bessere Dienste anzubieten. Zu den von uns erhobenen Informationen gehören grundlegende Kontoinformationen wie Name und E-Mail-Adresse sowie Nutzungsdaten im Zusammenhang mit Ihren Interaktionen mit unseren Diensten."
+    },
+    "section2": {
+      "title": "2. Wie wir Informationen verwenden",
+      "content": "Wir verwenden die von uns gesammelten Informationen, um unsere Dienste bereitzustellen, zu warten, zu schützen und zu verbessern, neue zu entwickeln und Cenety und unsere Nutzer zu schützen. Wir verwenden diese Informationen auch, um Ihnen maßgeschneiderte Inhalte anzubieten und Ihr Gesamterlebnis zu verbessern."
+    },
+    "section3": {
+      "title": "3. Weitergabe von Informationen",
+      "content": "Wir geben persönliche Informationen nicht an Unternehmen, Organisationen oder Einzelpersonen außerhalb von Cenety weiter, außer in den folgenden Fällen: mit Ihrer Zustimmung, zur externen Verarbeitung, aus rechtlichen Gründen oder im Falle einer Fusion oder Übernahme."
+    },
+    "section4": {
+      "title": "4. Ihre Rechte",
+      "content": "Je nach Ihrem Standort haben Sie möglicherweise bestimmte Rechte in Bezug auf Ihre personenbezogenen Daten, einschließlich des Rechts auf Zugriff, Korrektur, Löschung oder Einschränkung der Verarbeitung Ihrer Daten. Sie haben möglicherweise auch das Recht, eine Kopie Ihrer Daten in einem strukturierten, maschinenlesbaren Format zu erhalten."
+    },
+    "lastUpdated": {
+      "title": "Zuletzt aktualisiert",
+      "content": "Diese Datenschutzerklärung wurde zuletzt am 1. Juni 2023 aktualisiert."
+    }
   }
 } 
