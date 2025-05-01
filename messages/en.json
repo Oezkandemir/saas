@@ -18,7 +18,11 @@
     "guides": "Guides"
   },
   "Common": {
-    "imageUnavailable": "Image unavailable"
+    "imageUnavailable": "Image unavailable",
+    "alerts": "Alerts",
+    "user": "User",
+    "no": "No",
+    "inactive": "Inactive"
   },
   "UserNav": {
     "admin": "Admin",
@@ -39,7 +43,11 @@
     "changeRole": "Change your role in settings.",
     "noContent": "No content created",
     "startCreating": "You don't have any content yet. Start creating content.",
-    "addContent": "Add Content"
+    "addContent": "Add Content",
+    "needHelp": "Need help? Create your first support ticket and our team will help you.",
+    "noTickets": "No support tickets yet",
+    "manage": "Manage",
+    "basicPlan": "Basic Plan"
   },
   "Billing": {
     "title": "Billing – Cenety",
@@ -424,7 +432,13 @@
       "urgent": "Urgent",
       "reply": "Reply",
       "yourMessage": "Your message",
-      "sendReply": "Send Reply"
+      "sendReply": "Send Reply",
+      "backToTickets": "Zurück zu den Tickets",
+      "lastUpdate": "Letzte Aktualisierung",
+      "noMessagesAdmin": "Noch keine Nachrichten in diesem Ticket.",
+      "ticketFrom": "Ticket von",
+      "user": "Benutzer",
+      "noEmail": "Keine E-Mail"
     },
     "supportChannels": {
       "title": "Support Channels",
@@ -482,7 +496,13 @@
           }
         }
       }
-    }
+    },
+    "backToTickets": "Back to Tickets",
+    "lastUpdate": "Last Update",
+    "noMessagesAdmin": "No messages in this ticket yet.",
+    "ticketFrom": "Ticket from",
+    "noEmail": "No Email",
+    "notProvided": "Not provided"
   },
   "Banned": {
     "heading": "Account Suspended",
@@ -592,7 +612,8 @@
       "location": "Location",
       "website": "Website",
       "name": "Name",
-      "email": "Email"
+      "email": "Email",
+      "notProvided": "Nicht angegeben"
     },
     "socialLinks": {
       "title": "Social Links",
@@ -616,6 +637,13 @@
     "emailVerified": "Email Verified",
     "yes": "Yes",
     "currentPlan": "Current Plan",
-    "premiumPlan": "Premium Plan"
+    "premiumPlan": "Premium Plan",
+    "inactive": "Inaktiv",
+    "alerts": "Benachrichtigungen",
+    "no": "Nein",
+    "basicPlan": "Basis-Plan",
+    "manage": "Verwalten",
+    "noTickets": "Noch keine Support-Tickets",
+    "needHelp": "Brauchen Sie Hilfe? Erstellen Sie Ihr erstes Support-Ticket und unser Team wird Ihnen helfen."
   }
 }

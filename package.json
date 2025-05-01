@@ -15,7 +15,10 @@
     "preview": "next build && next start",
     "email": "email dev --dir emails --port 3333",
     "setup-env": "./update_env.sh",
-    "setup-supabase": "./update_supabase.sh"
+    "setup-supabase": "./update_supabase.sh",
+    "i18n:validate": "npx @inlang/cli@latest validate --project ./project.inlang",
+    "i18n:translate": "npx @inlang/cli@latest machine translate --project ./project.inlang --locale en --targetLocales de",
+    "i18n:sync": "node scripts/i18n-sync.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

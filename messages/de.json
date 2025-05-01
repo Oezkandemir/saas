@@ -18,7 +18,11 @@
     "guides": "Anleitungen"
   },
   "Common": {
-    "imageUnavailable": "Bild nicht verfügbar"
+    "imageUnavailable": "Bild nicht verfügbar",
+    "alerts": "Warnungen",
+    "user": "Benutzer",
+    "no": "NEIN",
+    "inactive": "Inaktiv"
   },
   "UserNav": {
     "admin": "Admin",
@@ -39,7 +43,11 @@
     "changeRole": "Ändern Sie Ihre Rolle in den Einstellungen.",
     "noContent": "Keine Inhalte erstellt",
     "startCreating": "Sie haben noch keine Inhalte. Beginnen Sie mit der Erstellung von Inhalten.",
-    "addContent": "Inhalt hinzufügen"
+    "addContent": "Inhalt hinzufügen",
+    "needHelp": "Brauchen Sie Hilfe? Erstellen Sie Ihr erstes Support-Ticket und unser Team hilft Ihnen weiter.",
+    "noTickets": "Noch keine Support-Tickets",
+    "manage": "Verwalten",
+    "basicPlan": "Basisplan"
   },
   "Billing": {
     "title": "Abrechnung – Cenety",
@@ -267,7 +275,31 @@
       "currentlySuspended": "Aktuell gesperrte Konten",
       "subscribers": "Abonnenten",
       "activePaid": "Aktive kostenpflichtige Abonnements",
-      "loadingError": "Fehler beim Laden der Benutzer. Bitte versuchen Sie es später erneut."
+      "loadingError": "Fehler beim Laden der Benutzer. Bitte versuchen Sie es später erneut.",
+      "title": "Benutzer verwalten",
+      "heading": "Benutzer",
+      "search": "Benutzer suchen...",
+      "filter": "Benutzer filtern",
+      "columns": {
+        "name": "Name",
+        "email": "E-Mail",
+        "role": "Rolle",
+        "status": "Status",
+        "subscription": "Abonnement",
+        "createdAt": "Erstellt am",
+        "actions": "Aktionen"
+      },
+      "actions": {
+        "view": "Sicht",
+        "edit": "Bearbeiten",
+        "delete": "Löschen",
+        "ban": "Benutzer sperren",
+        "unban": "Benutzersperre aufheben"
+      },
+      "noUsers": "Keine Benutzer gefunden",
+      "userDetails": "Benutzerdetails",
+      "confirmDelete": "Möchten Sie diesen Benutzer wirklich löschen?",
+      "userDeleted": "Benutzer erfolgreich gelöscht"
     },
     "support": {
       "tickets": "Support-Tickets",
@@ -279,7 +311,44 @@
       "awaitingResponse": "Tickets, die auf eine Antwort warten",
       "resolvedTickets": "Gelöste Tickets",
       "successfullyClosed": "Erfolgreich geschlossene Tickets",
-      "loadingError": "Fehler beim Laden der Support-Tickets. Bitte versuchen Sie es später erneut."
+      "loadingError": "Fehler beim Laden der Support-Tickets. Bitte versuchen Sie es später erneut.",
+      "title": "Support-Tickets",
+      "heading": "Support-Tickets",
+      "search": "Tickets suchen...",
+      "filter": "Tickets filtern",
+      "columns": {
+        "id": "AUSWEIS",
+        "subject": "Thema",
+        "user": "Benutzer",
+        "status": "Status",
+        "priority": "Priorität",
+        "createdAt": "Erstellt am",
+        "updatedAt": "Aktualisiert am",
+        "actions": "Aktionen"
+      },
+      "statuses": {
+        "open": "Offen",
+        "inProgress": "Im Gange",
+        "resolved": "Gelöst",
+        "closed": "Geschlossen"
+      },
+      "priorities": {
+        "low": "Niedrig",
+        "medium": "Medium",
+        "high": "Hoch",
+        "urgent": "Dringend"
+      },
+      "actions": {
+        "view": "Sicht",
+        "update": "Aktualisieren",
+        "close": "Schließen",
+        "delete": "Löschen"
+      },
+      "noTickets": "Keine Tickets gefunden",
+      "ticketDetails": "Ticketdetails",
+      "replyToTicket": "Auf Ticket antworten",
+      "updateStatus": "Update-Status",
+      "ticketUpdated": "Ticket erfolgreich aktualisiert"
     },
     "table": {
       "name": "Name",
@@ -361,6 +430,9 @@
       "medium": "Mittel",
       "high": "Hoch",
       "urgent": "Dringend",
+      "reply": "Antwort",
+      "yourMessage": "Ihre Nachricht",
+      "sendReply": "Antwort senden",
       "backToTickets": "Zurück zu den Tickets",
       "lastUpdate": "Letzte Aktualisierung",
       "noMessagesAdmin": "Noch keine Nachrichten in diesem Ticket.",
@@ -424,7 +496,13 @@
           }
         }
       }
-    }
+    },
+    "backToTickets": "Zurück zu Tickets",
+    "lastUpdate": "Letztes Update",
+    "noMessagesAdmin": "Noch keine Nachrichten in diesem Ticket.",
+    "ticketFrom": "Ticket ab",
+    "noEmail": "Keine E-Mail",
+    "notProvided": "Nicht vorgesehen"
   },
   "Banned": {
     "heading": "Konto gesperrt",
@@ -551,7 +629,9 @@
     "activity": {
       "title": "Letzte Aktivitäten",
       "empty": "Keine aktuellen Aktivitäten",
-      "viewAll": "Alle Aktivitäten anzeigen"
+      "viewAll": "Alle Aktivitäten anzeigen",
+      "recentLogins": "Letzte Anmeldungen",
+      "lastLogin": "Letzter Login"
     },
     "accountStatus": "Kontostatus",
     "emailVerified": "E-Mail verifiziert",
