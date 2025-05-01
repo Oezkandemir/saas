@@ -263,7 +263,9 @@
       "settings": "Settings",
       "homepage": "Homepage",
       "documentation": "Documentation",
-      "support": "Support"
+      "support": "Support",
+      "my_profile": "My Profile",
+      "notifications": "Notifications"
     }
   },
   "Support": {
@@ -395,6 +397,43 @@
     "lastUpdated": {
       "title": "Last Updated",
       "content": "This Privacy Policy was last updated on June 1, 2023."
+    }
+  },
+  "Profile": {
+    "title": "User Profile",
+    "description": "Manage your profile and settings",
+    "heading": "Profile",
+    "overview": "Profile Overview",
+    "updateProfile": "Update your profile and preferences",
+    "notifications": {
+      "title": "Notifications",
+      "description": "Manage your notifications",
+      "empty": "No notifications yet",
+      "markAsRead": "Mark as read",
+      "allRead": "All notifications read",
+      "goBack": "Go back to profile"
+    },
+    "personalInfo": {
+      "title": "Personal Information",
+      "bio": "Bio",
+      "location": "Location",
+      "website": "Website"
+    },
+    "socialLinks": {
+      "title": "Social Links",
+      "twitter": "Twitter",
+      "github": "GitHub",
+      "linkedin": "LinkedIn"
+    },
+    "preferences": {
+      "title": "Preferences",
+      "theme": "Theme",
+      "language": "Language"
+    },
+    "activity": {
+      "title": "Recent Activity",
+      "empty": "No recent activity",
+      "viewAll": "View all activity"
     }
   }
 } 

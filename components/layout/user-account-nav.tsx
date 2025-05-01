@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { LayoutDashboard, Lock, LogOut, Settings } from "lucide-react";
+import { LayoutDashboard, Lock, LogOut, Settings, User } from "lucide-react";
 import { useSupabase } from "@/components/supabase-provider";
 import { Drawer } from "vaul";
 import { useTranslations } from "next-intl";
@@ -150,6 +150,17 @@ export function UserAccountNav() {
 
               <li className="rounded-lg text-foreground hover:bg-muted">
                 <Link
+                  href="/profile"
+                  onClick={closeDrawer}
+                  className="flex w-full items-center gap-3 px-2.5 py-2"
+                >
+                  <User className="size-4" />
+                  <p className="text-sm">Profile</p>
+                </Link>
+              </li>
+
+              <li className="rounded-lg text-foreground hover:bg-muted">
+                <Link
                   href="/dashboard"
                   onClick={closeDrawer}
                   className="flex w-full items-center gap-3 px-2.5 py-2"
@@ -232,6 +243,11 @@ export function UserAccountNav() {
               <p>{t("admin")}</p>
             </Link>
           )}
+
+          <Link href="/profile" className="flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
+            <User className="mr-2 size-4" />
+            <p>Profile</p>
+          </Link>
 
           <Link href="/dashboard" className="flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
             <LayoutDashboard className="mr-2 size-4" />

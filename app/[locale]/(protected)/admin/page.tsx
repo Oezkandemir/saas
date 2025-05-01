@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ConfigureStripePortalButton } from "@/components/admin/configure-stripe-button";
 import { PageHeader } from "@/components/page-header";
 import { getCurrentUser } from "@/lib/session";
+import { MessageSquare, Users } from "lucide-react";
 
 export default async function AdminPanelPage() {
   const user = await getCurrentUser();
@@ -29,7 +30,10 @@ export default async function AdminPanelPage() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Users Management</CardTitle>
+            <CardTitle className="flex items-center">
+              <Users className="mr-2 size-5" />
+              Users Management
+            </CardTitle>
             <CardDescription>
               View and manage users in your application
             </CardDescription>
@@ -37,6 +41,23 @@ export default async function AdminPanelPage() {
           <CardContent>
             <Link href="/admin/users">
               <Button>Manage Users</Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <MessageSquare className="mr-2 size-5" />
+              Support Tickets
+            </CardTitle>
+            <CardDescription>
+              Manage support requests from your users
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/admin/support">
+              <Button>Manage Support Tickets</Button>
             </Link>
           </CardContent>
         </Card>

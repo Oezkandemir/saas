@@ -7,10 +7,10 @@ import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/head
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Mail, MessageSquare, Phone } from "lucide-react";
+import { Plus } from "lucide-react";
+import Link from "next/link";
+import { getUserTickets } from "@/actions/support-ticket-actions";
+import { UserTicketAccordion } from "@/components/support/user-ticket-accordion";
 
 export async function generateMetadata() {
   const t = await getTranslations("Support");
@@ -25,6 +25,10 @@ export default async function SupportPage() {
   const user = await getCurrentUser();
   const t = await getTranslations("Support");
 
+  // Fetch user tickets
+  const ticketsResult = await getUserTickets();
+  const tickets = ticketsResult.success ? ticketsResult.data || [] : [];
+
   return (
     <>
       <DashboardHeaderWithLanguageSwitcher
@@ -32,77 +36,89 @@ export default async function SupportPage() {
         text={t("text")}
       />
 
-      <div className="grid gap-8 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("contactUs")}</CardTitle>
-            <CardDescription>
-              {t("contactDescription")}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">{t("formFields.name")}</Label>
-                <Input id="name" defaultValue={user?.name || ""} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email">{t("formFields.email")}</Label>
-                <Input id="email" type="email" defaultValue={user?.email || ""} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="subject">{t("formFields.subject")}</Label>
-                <Input id="subject" />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="message">{t("formFields.message")}</Label>
-                <Textarea id="message" rows={5} placeholder={t("formFields.messagePlaceholder")} />
-              </div>
-              <Button type="submit" className="w-full">
-                {t("formFields.sendMessage")}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+      <Tabs defaultValue="tickets" className="w-full">
+        <div className="flex items-center justify-between">
+          <TabsList>
+            <TabsTrigger value="tickets">My Tickets</TabsTrigger>
+            <TabsTrigger value="contact">Contact</TabsTrigger>
+            <TabsTrigger value="faq">FAQ</TabsTrigger>
+          </TabsList>
 
-        <div className="grid gap-8">
+          <Link href="/dashboard/support/new">
+            <Button size="sm">
+              <Plus className="mr-2 size-4" />
+              New Ticket
+            </Button>
+          </Link>
+        </div>
+
+        <TabsContent value="tickets" className="py-4">
           <Card>
             <CardHeader>
-              <CardTitle>{t("supportChannels.title")}</CardTitle>
+              <CardTitle>Support Tickets</CardTitle>
               <CardDescription>
-                {t("supportChannels.description")}
+                View and manage your support tickets.
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4">
-              <div className="flex items-center gap-3">
-                <Mail className="size-5 text-primary" />
-                <div>
-                  <p className="font-medium">{t("supportChannels.email.title")}</p>
-                  <p className="text-sm text-muted-foreground">
-                    <a href={`mailto:${siteConfig.mailSupport}`} className="hover:underline">
-                      {siteConfig.mailSupport}
-                    </a>
+            <CardContent>
+              {tickets.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8">
+                  <p className="mb-4 text-center text-muted-foreground">
+                    You dont have any support tickets yet.
                   </p>
+                  <Link href="/dashboard/support/new">
+                    <Button>
+                      <Plus className="mr-2 size-4" />
+                      Create your first ticket
+                    </Button>
+                  </Link>
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <MessageSquare className="size-5 text-primary" />
-                <div>
-                  <p className="font-medium">{t("supportChannels.chat.title")}</p>
-                  <p className="text-sm text-muted-foreground">{t("supportChannels.chat.availability")}</p>
+              ) : (
+                <UserTicketAccordion data={tickets} />
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="contact" className="py-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("contactUs")}</CardTitle>
+              <CardDescription>
+                {t("contactDescription")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4">
+                <div className="flex items-center gap-3">
+                  <div>
+                    <p className="font-medium">{t("supportChannels.email.title")}</p>
+                    <p className="text-sm text-muted-foreground">
+                      <a href={`mailto:${siteConfig.mailSupport}`} className="hover:underline">
+                        {siteConfig.mailSupport}
+                      </a>
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Phone className="size-5 text-primary" />
-                <div>
-                  <p className="font-medium">{t("supportChannels.phone.title")}</p>
-                  <p className="text-sm text-muted-foreground">{t("supportChannels.phone.number")}</p>
-                  <p className="text-xs text-muted-foreground">{t("supportChannels.phone.restriction")}</p>
+                <div className="flex items-center gap-3">
+                  <div>
+                    <p className="font-medium">{t("supportChannels.chat.title")}</p>
+                    <p className="text-sm text-muted-foreground">{t("supportChannels.chat.availability")}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div>
+                    <p className="font-medium">{t("supportChannels.phone.title")}</p>
+                    <p className="text-sm text-muted-foreground">{t("supportChannels.phone.number")}</p>
+                    <p className="text-xs text-muted-foreground">{t("supportChannels.phone.restriction")}</p>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
 
+        <TabsContent value="faq" className="py-4">
           <Card>
             <CardHeader>
               <CardTitle>{t("faq.title")}</CardTitle>
@@ -165,8 +181,8 @@ export default async function SupportPage() {
               </Tabs>
             </CardContent>
           </Card>
-        </div>
-      </div>
+        </TabsContent>
+      </Tabs>
     </>
   );
 } 
