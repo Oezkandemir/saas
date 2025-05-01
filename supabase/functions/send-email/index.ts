@@ -1,8 +1,8 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
-const handler = async (_request: Request): Promise<Response> => {
+Deno.serve(async (_request: Request): Promise<Response> => {
     const res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
@@ -25,6 +25,4 @@ const handler = async (_request: Request): Promise<Response> => {
             'Content-Type': 'application/json',
         },
     });
-};
-
-Deno.serve(handler);
+});
