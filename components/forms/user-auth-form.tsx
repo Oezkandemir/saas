@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Icons } from "@/components/shared/icons";
+import { siteConfig } from "@/config/site";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   type?: string;
@@ -23,7 +24,7 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const formSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8)
+  password: z.string().min(8, { message: "Password must be at least 8 characters" })
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -33,6 +34,7 @@ export function UserAuthForm({ className, type, onSuccess, redirectTo, ...props 
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
@@ -53,8 +55,9 @@ export function UserAuthForm({ className, type, onSuccess, redirectTo, ...props 
           options: {
             data: {
               name: data.email.split('@')[0], // Set a default name from email
-              role: "USER" // Default role
-            }
+              role: "USER" // Default role as string - will be converted to enum in DB
+            },
+            emailRedirectTo: `${window.location.origin}/auth/callback?redirectTo=${redirectTo || '/dashboard'}`
           }
         });
         
@@ -71,7 +74,7 @@ export function UserAuthForm({ className, type, onSuccess, redirectTo, ...props 
           onSuccess();
         }
       } else {
-        // Sign in
+        // Sign in with password
         const signInResult = await supabase.auth.signInWithPassword({
           email: data.email.toLowerCase(),
           password: data.password,
@@ -142,6 +145,7 @@ export function UserAuthForm({ className, type, onSuccess, redirectTo, ...props 
               </p>
             )}
           </div>
+
           <div className="grid gap-1">
             <Label className="sr-only" htmlFor="password">
               Password
@@ -162,7 +166,8 @@ export function UserAuthForm({ className, type, onSuccess, redirectTo, ...props 
               </p>
             )}
           </div>
-          <button className={cn(buttonVariants())} disabled={isLoading}>
+
+          <button className={cn(buttonVariants())} disabled={isLoading} type="submit">
             {isLoading && (
               <Icons.spinner className="mr-2 size-4 animate-spin" />
             )}
