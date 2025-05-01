@@ -15,14 +15,6 @@ import {
 } from "@tanstack/react-table";
 
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { 
   Select, 
@@ -32,6 +24,19 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { UserAvatar } from "@/components/shared/user-avatar";
+import { Search, Filter, ChevronRight } from "lucide-react";
+import { UserActions } from "@/components/admin/users/user-actions";
+import { cn } from "@/lib/utils";
+import { User } from "./columns";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -49,6 +54,7 @@ export function DataTable<TData, TValue>({
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [roleFilter, setRoleFilter] = React.useState<string>("all");
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
+  const [showFilters, setShowFilters] = React.useState(false);
 
   const table = useReactTable({
     data,
@@ -95,106 +101,168 @@ export function DataTable<TData, TValue>({
     }
   }, [roleFilter, statusFilter, table]);
 
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
+
+  // For proper typing in our mobile view
+  const typedData = data as unknown as User[];
+  const filteredData = table.getFilteredRowModel().rows.map(row => row.original) as unknown as User[];
+
+  const gridContainerClasses = "grid grid-cols-2 gap-3 pt-2 sm:grid-cols-4";
+
   return (
     <div className="space-y-4">
-      <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-        <div className="flex items-center space-x-2">
-          <Input
-            placeholder="Search users..."
-            value={globalFilter}
-            onChange={(event) => setGlobalFilter(event.target.value)}
-            className="max-w-sm"
-          />
-        </div>
-        <div className="flex space-x-2">
-          <Select 
-            value={roleFilter} 
-            onValueChange={setRoleFilter}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select Role" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="ADMIN">Admins</SelectItem>
-                <SelectItem value="USER">Users</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+      {/* Responsive Search and Filters */}
+      <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+          <div className="flex w-full items-center sm:w-auto">
+            <div className="relative w-full sm:max-w-sm">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search users..."
+                value={globalFilter}
+                onChange={(event) => setGlobalFilter(event.target.value)}
+                className="w-full pl-8"
+              />
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="ml-2 sm:hidden"
+              onClick={toggleFilters}
+            >
+              <Filter className="h-4 w-4" />
+            </Button>
+          </div>
           
-          <Select 
-            value={statusFilter} 
-            onValueChange={setStatusFilter}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="banned">Banned</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          {/* Desktop filters always visible, mobile filters toggleable */}
+          <div className={cn(
+            "flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0",
+            !showFilters && "hidden sm:flex"
+          )}>
+            <Select 
+              value={roleFilter} 
+              onValueChange={setRoleFilter}
+            >
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Select Role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">All Roles</SelectItem>
+                  <SelectItem value="ADMIN">Admins</SelectItem>
+                  <SelectItem value="USER">Users</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            
+            <Select 
+              value={statusFilter} 
+              onValueChange={setStatusFilter}
+            >
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Select Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="banned">Banned</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No users found.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+
+      {/* Accordion Card View for All Screen Sizes */}
+      <div>
+        <Accordion type="single" collapsible className="space-y-2">
+          {filteredData.length > 0 ? (
+            filteredData.map((user) => (
+              <AccordionItem 
+                key={user.id} 
+                value={user.id}
+                className="overflow-hidden rounded-md border"
+              >
+                <AccordionTrigger className="px-4 py-2 hover:no-underline">
+                  <div className="flex w-full items-center space-x-3">
+                    <UserAvatar
+                      user={{ 
+                        name: user.name,
+                        avatar_url: user.avatar_url
+                      }}
+                      forceAvatarUrl={user.avatar_url}
+                      className="h-8 w-8"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-left text-sm font-medium">
+                        {user.name}
+                      </p>
+                      <p className="truncate text-left text-xs text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Badge variant={user.role === "ADMIN" ? "destructive" : "outline"}>
+                        {user.role}
+                      </Badge>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform duration-200" />
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 py-2 pt-0">
+                  <div className={gridContainerClasses}>
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">Role</p>
+                      <Badge variant={user.role === "ADMIN" ? "destructive" : "outline"} className="mt-1">
+                        {user.role}
+                      </Badge>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">Status</p>
+                      <Badge variant={user.status === "banned" ? "destructive" : "default"} className="mt-1">
+                        {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                      </Badge>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">Subscription</p>
+                      <Badge variant={user.hasSubscription ? "default" : "outline"} className="mt-1">
+                        {user.hasSubscription ? "Active" : "None"}
+                      </Badge>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">Joined</p>
+                      <p className="mt-1 text-sm">{user.createdAt}</p>
+                    </div>
+                    <div className="col-span-2 sm:col-span-4">
+                      <p className="mb-2 text-xs font-medium text-muted-foreground">Last Sign In</p>
+                      <p className="text-sm">{user.lastSignIn}</p>
+                    </div>
+                  </div>
+                  <div className="mt-4 border-t pt-4">
+                    <UserActions user={user} inline={true} />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))
+          ) : (
+            <Card>
+              <CardContent className="p-6 text-center text-muted-foreground">
+                No users found.
+              </CardContent>
+            </Card>
+          )}
+        </Accordion>
       </div>
-      <div className="flex items-center justify-end space-x-2">
-        <div className="flex-1 text-sm text-muted-foreground">
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted-foreground">
           {table.getFilteredRowModel().rows.length} users total.
         </div>
-        <div className="space-x-2">
+        <div className="flex space-x-2">
           <Button
             variant="outline"
             size="sm"

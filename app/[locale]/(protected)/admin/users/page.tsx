@@ -66,14 +66,14 @@ export default async function AdminUsersPage() {
   });
 
   return (
-    <>
+    <div className="container px-0 sm:px-4">
       <DashboardHeader
         heading="Users Management"
         text="View and manage all users in your application."
       />
       
       {/* User Stats Section */}
-      <div className="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -127,9 +127,9 @@ export default async function AdminUsersPage() {
         </Card>
       </div>
       
-      <div className="mt-8">
+      <div className="mt-8 px-1 sm:px-0">
         <DataTable columns={columns} data={formattedUsers} />
       </div>
-    </>
+    </div>
   );
 } 
