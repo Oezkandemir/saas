@@ -8,9 +8,14 @@ import { TeamList } from "@/components/teams/team-list";
 import { CreateTeamButton } from "@/components/teams/create-team-button";
 import { TitleWithHighlight } from "@/components/title-with-highlight";
 
-export async function generateMetadata({ params }: { params: { locale: string } }) {
-  // Need to properly handle dynamic params for metadata
-  const locale = params?.locale || 'en';
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ locale: string }> 
+}) {
+  // Next.js 15 requires params to be awaited
+  const resolvedParams = await params;
+  const locale = resolvedParams?.locale || 'en';
   const t = await getTranslations({ locale, namespace: "Teams" });
   return { title: t("meta.title") };
 }
@@ -18,7 +23,16 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 // Define type for the role
 type TeamRole = 'OWNER' | 'ADMIN' | 'MEMBER' | 'GUEST';
 
-export default async function TeamsPage() {
+interface PageProps {
+  params: Promise<{
+    locale: string;
+  }>;
+}
+
+export default async function TeamsPage({ params }: PageProps) {
+  // Next.js 15 requires params to be awaited
+  await params;
+
   const session = await auth();
   if (!session) redirect("/signin");
 

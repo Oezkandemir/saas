@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ConfigureStripePortalButton } from "@/components/admin/configure-stripe-button";
-import { PageHeader } from "@/components/page-header";
+import { PageHeader, PageHeaderDescription, PageHeaderHeading } from "@/components/page-header";
 import { getCurrentUser } from "@/lib/session";
 import { MessageSquare, Users } from "lucide-react";
 
@@ -22,10 +22,10 @@ export default async function AdminPanelPage() {
 
   return (
     <div>
-      <PageHeader 
-        heading="Admin Panel"
-        subheading="Manage your application settings and users"
-      />
+      <PageHeader>
+        <PageHeaderHeading>Admin Panel</PageHeaderHeading>
+        <PageHeaderDescription>Manage your application settings and users</PageHeaderDescription>
+      </PageHeader>
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>

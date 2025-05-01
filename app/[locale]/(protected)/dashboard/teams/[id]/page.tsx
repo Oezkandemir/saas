@@ -12,17 +12,27 @@ import { TeamPermissions } from "@/components/teams/team-permissions";
 export async function generateMetadata({ 
   params 
 }: { 
-  params: { locale: string; id: string } 
+  params: Promise<{ locale: string; id: string }> 
 }) {
-  const t = await getTranslations({ locale: params.locale, namespace: "Teams" });
+  // Next.js 15 requires params to be awaited
+  const resolvedParams = await params;
+  const t = await getTranslations({ locale: resolvedParams.locale, namespace: "Teams" });
   return { title: t("teamDetail.meta.title") };
+}
+
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
 }
 
 export default async function TeamDetailPage({ 
   params 
-}: { 
-  params: { id: string } 
-}) {
+}: PageProps) {
+  // Next.js 15 requires params to be awaited
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
+
   const session = await auth();
   if (!session) redirect("/signin");
 
@@ -32,7 +42,7 @@ export default async function TeamDetailPage({
   const { data: team, error: teamError } = await supabase
     .from('teams')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (teamError || !team) {
@@ -43,7 +53,7 @@ export default async function TeamDetailPage({
   const { data: memberData, error: memberError } = await supabase
     .from('team_members')
     .select('role')
-    .eq('team_id', params.id)
+    .eq('team_id', id)
     .eq('user_id', session.user.id)
     .single();
 
@@ -68,7 +78,7 @@ export default async function TeamDetailPage({
         avatar_url
       )
     `)
-    .eq('team_id', params.id);
+    .eq('team_id', id);
 
   if (membersError) {
     console.error("Error fetching team members:", membersError);
@@ -80,7 +90,7 @@ export default async function TeamDetailPage({
     const { data: invitesData, error: invitesError } = await supabase
       .from('team_invitations')
       .select('*')
-      .eq('team_id', params.id);
+      .eq('team_id', id);
     
     if (!invitesError) {
       invitations = invitesData || [];
@@ -124,7 +134,7 @@ export default async function TeamDetailPage({
               role: invite.role,
               expiresAt: invite.expires_at,
             }))}
-            teamId={params.id}
+            teamId={id}
             userRole={userRole}
           />
         </TabsContent>
@@ -132,7 +142,7 @@ export default async function TeamDetailPage({
         {isOwnerOrAdmin && (
           <TabsContent value="permissions" className="mt-4">
             <TeamPermissions
-              teamId={params.id}
+              teamId={id}
               userRole={userRole}
             />
           </TabsContent>
