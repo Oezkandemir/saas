@@ -25,6 +25,9 @@ jobs:
       - name: Validate inlang project
         run: npx @inlang/cli@latest validate --project ./project.inlang
       
+      - name: Synchronize translation keys
+        run: node scripts/i18n-sync.js
+      
       - name: Machine translate English to German
         run: npx @inlang/cli@latest machine translate --project ./project.inlang --locale en --targetLocales de
       
