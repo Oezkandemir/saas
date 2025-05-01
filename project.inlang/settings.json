@@ -1,7 +1,10 @@
 {
   "$schema": "https://inlang.com/schema/project-settings",
-  "baseLocale": "en",
-  "locales": ["en", "de"],
-  "modules": ["https://cdn.jsdelivr.net/npm/@inlang/plugin-json@4/dist/index.js"],
-  "settings": {}
+  "sourceLanguageTag": "en",
+  "languageTags": ["en", "de"],
+  "modules": ["https://cdn.jsdelivr.net/npm/@inlang/plugin-next-intl@1/dist/index.js"],
+  "plugin.inlang.nextIntl": {
+    "pathPattern": "./messages/{languageTag}.json",
+    "variableReferencePattern": ["{", "}"]
+  }
 }
