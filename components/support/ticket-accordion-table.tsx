@@ -25,15 +25,15 @@ import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Filter, ChevronRight } from "lucide-react";
+import { Search, Filter } from "lucide-react";
 import { TicketActions } from "@/components/support/ticket-actions";
 import { cn } from "@/lib/utils";
 import { Ticket } from "@/actions/support-ticket-actions";
 import { formatDistance } from "date-fns";
+import { UserAvatar } from "@/components/shared/user-avatar";
 
 interface TicketAccordionTableProps {
   data: Ticket[];
@@ -55,7 +55,7 @@ const getStatusColor = (status: string) => {
   }
 };
 
-// Helper function to format status for display
+// Helper function to format status text
 const formatStatus = (status: string) => {
   switch (status) {
     case "in_progress":
@@ -68,14 +68,14 @@ const formatStatus = (status: string) => {
 // Helper function to get priority badge color
 const getPriorityColor = (priority: string) => {
   switch (priority) {
-    case "high":
-      return "bg-red-500 hover:bg-red-500";
-    case "medium":
-      return "bg-yellow-500 hover:bg-yellow-500";
     case "low":
-      return "bg-green-500 hover:bg-green-500";
+      return "bg-green-500";
+    case "medium":
+      return "bg-yellow-500";
+    case "high":
+      return "bg-red-500";
     default:
-      return "bg-yellow-500 hover:bg-yellow-500";
+      return "bg-blue-500";
   }
 };
 
@@ -90,6 +90,7 @@ export function TicketAccordionTable({
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
   const [priorityFilter, setPriorityFilter] = React.useState<string>("all");
   const [showFilters, setShowFilters] = React.useState(false);
+  const [openItem, setOpenItem] = React.useState<string | undefined>(undefined);
 
   // Create a filterable table without rendering it
   const table = useReactTable({
@@ -183,7 +184,7 @@ export function TicketAccordionTable({
         <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <div className="flex w-full items-center sm:w-auto">
             <div className="relative w-full sm:max-w-sm">
-              <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search tickets..."
                 value={globalFilter}
@@ -197,7 +198,7 @@ export function TicketAccordionTable({
               className="ml-2 sm:hidden"
               onClick={toggleFilters}
             >
-              <Filter className="size-4" />
+              <Filter className="h-4 w-4" />
             </Button>
           </div>
           
@@ -246,7 +247,13 @@ export function TicketAccordionTable({
 
       {/* Accordion Card View for All Screen Sizes */}
       <div>
-        <Accordion type="single" collapsible className="space-y-2">
+        <Accordion 
+          type="single" 
+          collapsible 
+          className="space-y-2"
+          value={openItem}
+          onValueChange={setOpenItem}
+        >
           {sortedData.length > 0 ? (
             sortedData.map((ticket) => (
               <AccordionItem 
@@ -254,8 +261,26 @@ export function TicketAccordionTable({
                 value={ticket.id}
                 className="overflow-hidden rounded-md border"
               >
-                <AccordionTrigger className="px-4 py-2 hover:no-underline">
-                  <div className="flex w-full items-center space-x-3">
+                <div 
+                  className={cn(
+                    "flex cursor-pointer items-center justify-between px-4 py-1 transition-colors hover:bg-muted/50",
+                    openItem === ticket.id && "bg-muted/30"
+                  )}
+                  onClick={(e) => {
+                    // Only toggle if not clicking on an action button
+                    if (!(e.target as HTMLElement).closest('[role="button"]')) {
+                      setOpenItem(openItem === ticket.id ? undefined : ticket.id);
+                    }
+                  }}
+                >
+                  <div className="flex flex-1 items-center space-x-3">
+                    <UserAvatar
+                      user={{ 
+                        name: ticket.user?.name || "Unknown",
+                        avatar_url: ticket.user?.avatar_url || null
+                      }}
+                      className="h-8 w-8"
+                    />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-left text-sm font-medium">
                         {ticket.subject}
@@ -264,57 +289,66 @@ export function TicketAccordionTable({
                         {ticket.user?.name || "Unknown"} ({ticket.user?.email || "No email"})
                       </p>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge className={getStatusColor(ticket.status)}>
-                        {formatStatus(ticket.status)}
-                      </Badge>
-                      <ChevronRight className="size-4 text-muted-foreground transition-transform duration-200" />
+                    <Badge className={getStatusColor(ticket.status)}>
+                      {formatStatus(ticket.status)}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="hidden md:block">
+                      <TicketActions ticket={ticket} compact={true} isExpanded={openItem === ticket.id} />
                     </div>
                   </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 py-2 pt-0">
-                  <div className={gridContainerClasses}>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">Status</p>
-                      <Badge className={`mt-1 ${getStatusColor(ticket.status)}`}>
-                        {formatStatus(ticket.status)}
-                      </Badge>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">Priority</p>
-                      <Badge className={`mt-1 ${getPriorityColor(ticket.priority)}`}>
-                        <span className="capitalize">{ticket.priority}</span>
-                      </Badge>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">Created</p>
-                      <p className="mt-1 text-sm">
-                        {formatDistance(new Date(ticket.created_at), new Date(), { addSuffix: true })}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">Updated</p>
-                      <p className="mt-1 text-sm">
-                        {formatDistance(new Date(ticket.updated_at), new Date(), { addSuffix: true })}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-4">
-                    <p className="mb-1 text-xs font-medium text-muted-foreground">Description</p>
-                    <p className="whitespace-pre-wrap text-sm">{ticket.description}</p>
-                  </div>
-                  
-                  <div className="mt-4 border-t pt-4">
-                    <TicketActions ticket={ticket} />
-                  </div>
+                </div>
+                <AccordionContent forceMount className={cn(
+                  "overflow-hidden px-4 py-2 pt-0 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
+                  openItem !== ticket.id && "h-0 p-0 py-0"
+                )}>
+                  {openItem === ticket.id && (
+                    <>
+                      <div className={gridContainerClasses}>
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">Status</p>
+                          <Badge className={`mt-1 ${getStatusColor(ticket.status)}`}>
+                            {formatStatus(ticket.status)}
+                          </Badge>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">Priority</p>
+                          <Badge className={`mt-1 ${getPriorityColor(ticket.priority)}`}>
+                            <span className="capitalize">{ticket.priority}</span>
+                          </Badge>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">Created</p>
+                          <p className="mt-1 text-sm">
+                            {formatDistance(new Date(ticket.created_at), new Date(), { addSuffix: true })}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">Updated</p>
+                          <p className="mt-1 text-sm">
+                            {formatDistance(new Date(ticket.updated_at), new Date(), { addSuffix: true })}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4">
+                        <p className="mb-1 text-xs font-medium text-muted-foreground">Description</p>
+                        <p className="whitespace-pre-wrap text-sm">{ticket.description}</p>
+                      </div>
+                      
+                      <div className="mt-4 border-t pt-4 md:hidden">
+                        <TicketActions ticket={ticket} />
+                      </div>
+                    </>
+                  )}
                 </AccordionContent>
               </AccordionItem>
             ))
           ) : (
             <Card>
-              <CardContent className="p-6 text-center">
-                <p>No tickets found. Adjust your search filters or check back later.</p>
+              <CardContent className="p-6 text-center text-muted-foreground">
+                No tickets found. Adjust your search filters or check back later.
               </CardContent>
             </Card>
           )}
@@ -322,6 +356,11 @@ export function TicketAccordionTable({
       </div>
       
       {/* Pagination would go here if needed */}
+      <div className="flex items-center justify-end">
+        <div className="text-sm text-muted-foreground">
+          {sortedData.length} tickets total.
+        </div>
+      </div>
     </div>
   );
 } 

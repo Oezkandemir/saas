@@ -25,10 +25,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { toggleUserBanStatus, deleteUser, toggleUserAdminStatus } from "@/actions/admin-user-actions";
 import { UserAvatar } from "@/components/shared/user-avatar";
+import { cn } from "@/lib/utils";
 
 interface UserActionsProps {
   user: User;
-  inline?: boolean; // New prop for inline display
+  inline?: boolean; // Prop for inline display
+  compact?: boolean; // New prop for compact view in header
+  isExpanded?: boolean; // Whether the parent accordion item is expanded
 }
 
 // Define Tailwind class combinations to avoid lint errors
@@ -36,7 +39,7 @@ const flexContainerClasses = "flex flex-wrap justify-center gap-2";
 const userInfoContainerClasses = "mb-4 flex items-center gap-3 border-b pb-4";
 const buttonContainerClasses = "flex justify-end gap-2";
 
-export function UserActions({ user, inline = false }: UserActionsProps) {
+export function UserActions({ user, inline = false, compact = false, isExpanded = false }: UserActionsProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [showDeleteDrawer, setShowDeleteDrawer] = useState(false);
@@ -152,6 +155,95 @@ export function UserActions({ user, inline = false }: UserActionsProps) {
       setShowAdminDrawer(false);
     }
   };
+
+  // For compact view in the accordion header
+  if (compact) {
+    return (
+      <>
+        <div className="flex gap-1">
+          <div
+            role="button"
+            tabIndex={0}
+            aria-disabled={loading}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent accordion from toggling
+              if (!loading) setShowAdminDrawer(true);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!loading) setShowAdminDrawer(true);
+              }
+            }}
+            className={cn(
+              "flex h-8 items-center rounded-md transition-all duration-200",
+              isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
+              user.role === 'ADMIN' ? "text-blue-600 hover:text-blue-700" : "text-purple-600 hover:text-purple-700",
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-muted"
+            )}
+          >
+            <Shield className="size-4" />
+            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">{user.role === 'ADMIN' ? 'Remove Admin' : 'Make Admin'}</span>}
+          </div>
+          
+          <div
+            role="button"
+            tabIndex={0}
+            aria-disabled={loading}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent accordion from toggling
+              if (!loading) setShowBanDrawer(true);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!loading) setShowBanDrawer(true);
+              }
+            }}
+            className={cn(
+              "flex h-8 items-center rounded-md transition-all duration-200",
+              isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
+              user.status === 'banned' ? "text-green-600 hover:text-green-700" : "text-amber-600 hover:text-amber-700",
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-muted"
+            )}
+          >
+            {user.status === 'banned' ? <Unlock className="size-4" /> : <ShieldAlert className="size-4" />}
+            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">{user.status === 'banned' ? 'Unban' : 'Ban'}</span>}
+          </div>
+          
+          <div
+            role="button"
+            tabIndex={0}
+            aria-disabled={loading}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent accordion from toggling
+              if (!loading) setShowDeleteDrawer(true);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!loading) setShowDeleteDrawer(true);
+              }
+            }}
+            className={cn(
+              "flex h-8 items-center rounded-md text-red-600 transition-all duration-200 hover:text-red-700",
+              isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-muted"
+            )}
+          >
+            <Trash className="size-4" />
+            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Delete</span>}
+          </div>
+        </div>
+        
+        {/* Confirmation Drawers are shared between all views */}
+        {renderConfirmationDrawers()}
+      </>
+    );
+  }
 
   // For inline view, show buttons directly instead of dropdown
   if (inline) {

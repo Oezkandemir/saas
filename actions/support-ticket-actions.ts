@@ -30,6 +30,7 @@ export type Ticket = {
   user?: {
     name: string;
     email: string;
+    avatar_url?: string | null;
   };
 };
 
@@ -43,6 +44,7 @@ export type TicketMessage = {
   user?: {
     name: string;
     email: string;
+    avatar_url?: string | null;
   };
 };
 
@@ -77,7 +79,7 @@ export async function getAllTickets(): Promise<ActionResult<Ticket[]>> {
       .from("support_tickets")
       .select(`
         *,
-        user:users(name, email)
+        user:users(name, email, avatar_url)
       `)
       .order("updated_at", { ascending: false });
 
@@ -114,7 +116,10 @@ export async function getUserTickets(): Promise<ActionResult<Ticket[]>> {
   try {
     const { data, error } = await supabase
       .from("support_tickets")
-      .select("*")
+      .select(`
+        *,
+        user:users(name, email, avatar_url)
+      `)
       .eq("user_id", user.id)
       .order("updated_at", { ascending: false });
 
@@ -154,7 +159,7 @@ export async function getTicketWithMessages(ticketId: string): Promise<ActionRes
       .from("support_tickets")
       .select(`
         *,
-        user:users(name, email)
+        user:users(name, email, avatar_url)
       `)
       .eq("id", ticketId)
       .single();
@@ -176,7 +181,7 @@ export async function getTicketWithMessages(ticketId: string): Promise<ActionRes
       .from("support_ticket_messages")
       .select(`
         *,
-        user:users(name, email)
+        user:users(name, email, avatar_url)
       `)
       .eq("ticket_id", ticketId)
       .order("created_at", { ascending: true });

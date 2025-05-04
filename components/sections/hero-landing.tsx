@@ -9,21 +9,30 @@ import LanguageSwitcher from "@/components/language-switcher";
 import { getTranslations } from "next-intl/server";
 
 export default async function HeroLanding() {
-  const { stargazers_count: stars } = await fetch(
-    "https://api.github.com/repos/mickasmt/next-saas-stripe-starter",
-    {
-      ...(env.GITHUB_OAUTH_TOKEN && {
-        headers: {
-          Authorization: `Bearer ${process.env.GITHUB_OAUTH_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-      }),
-      // data will revalidate every hour
-      next: { revalidate: 3600 },
-    },
-  )
-    .then((res) => res.json())
-    .catch((e) => console.log(e));
+  let stars = 0;
+  try {
+    const response = await fetch(
+      "https://api.github.com/repos/mickasmt/next-saas-stripe-starter",
+      {
+        // Only add auth headers if token exists
+        ...(env.GITHUB_OAUTH_TOKEN && {
+          headers: {
+            Authorization: `Bearer ${env.GITHUB_OAUTH_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+        }),
+        // data will revalidate every hour
+        next: { revalidate: 3600 },
+      }
+    );
+    
+    if (response.ok) {
+      const data = await response.json();
+      stars = data.stargazers_count || 0;
+    }
+  } catch (e) {
+    console.log("Error fetching GitHub stars:", e);
+  }
 
   // Get translations
   const t = await getTranslations("Hero");

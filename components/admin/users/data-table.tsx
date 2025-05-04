@@ -55,6 +55,7 @@ export function DataTable<TData, TValue>({
   const [roleFilter, setRoleFilter] = React.useState<string>("all");
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
   const [showFilters, setShowFilters] = React.useState(false);
+  const [openItem, setOpenItem] = React.useState<string | undefined>(undefined);
 
   const table = useReactTable({
     data,
@@ -178,7 +179,13 @@ export function DataTable<TData, TValue>({
 
       {/* Accordion Card View for All Screen Sizes */}
       <div>
-        <Accordion type="single" collapsible className="space-y-2">
+        <Accordion 
+          type="single" 
+          collapsible 
+          className="space-y-2"
+          value={openItem}
+          onValueChange={setOpenItem}
+        >
           {filteredData.length > 0 ? (
             filteredData.map((user) => (
               <AccordionItem 
@@ -186,8 +193,19 @@ export function DataTable<TData, TValue>({
                 value={user.id}
                 className="overflow-hidden rounded-md border"
               >
-                <AccordionTrigger className="px-4 py-2 hover:no-underline">
-                  <div className="flex w-full items-center space-x-3">
+                <div 
+                  className={cn(
+                    "flex cursor-pointer items-center justify-between px-4 py-1 transition-colors hover:bg-muted/50",
+                    openItem === user.id && "bg-muted/30"
+                  )}
+                  onClick={(e) => {
+                    // Only toggle if not clicking on an action button
+                    if (!(e.target as HTMLElement).closest('[role="button"]')) {
+                      setOpenItem(openItem === user.id ? undefined : user.id);
+                    }
+                  }}
+                >
+                  <div className="flex flex-1 items-center space-x-3">
                     <UserAvatar
                       user={{ 
                         name: user.name,
@@ -204,46 +222,55 @@ export function DataTable<TData, TValue>({
                         {user.email}
                       </p>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge variant={user.role === "ADMIN" ? "destructive" : "outline"}>
-                        {user.role}
-                      </Badge>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform duration-200" />
+                    <Badge variant={user.role === "ADMIN" ? "destructive" : "outline"}>
+                      {user.role}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="hidden md:block">
+                      <UserActions user={user} compact={true} isExpanded={openItem === user.id} />
                     </div>
                   </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 py-2 pt-0">
-                  <div className={gridContainerClasses}>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">Role</p>
-                      <Badge variant={user.role === "ADMIN" ? "destructive" : "outline"} className="mt-1">
-                        {user.role}
-                      </Badge>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">Status</p>
-                      <Badge variant={user.status === "banned" ? "destructive" : "default"} className="mt-1">
-                        {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
-                      </Badge>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">Subscription</p>
-                      <Badge variant={user.hasSubscription ? "default" : "outline"} className="mt-1">
-                        {user.hasSubscription ? "Active" : "None"}
-                      </Badge>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">Joined</p>
-                      <p className="mt-1 text-sm">{user.createdAt}</p>
-                    </div>
-                    <div className="col-span-2 sm:col-span-4">
-                      <p className="mb-2 text-xs font-medium text-muted-foreground">Last Sign In</p>
-                      <p className="text-sm">{user.lastSignIn}</p>
-                    </div>
-                  </div>
-                  <div className="mt-4 border-t pt-4">
-                    <UserActions user={user} inline={true} />
-                  </div>
+                </div>
+                <AccordionContent forceMount className={cn(
+                  "overflow-hidden px-4 py-2 pt-0 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
+                  openItem !== user.id && "h-0 p-0 py-0"
+                )}>
+                  {openItem === user.id && (
+                    <>
+                      <div className={gridContainerClasses}>
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">Role</p>
+                          <Badge variant={user.role === "ADMIN" ? "destructive" : "outline"} className="mt-1">
+                            {user.role}
+                          </Badge>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">Status</p>
+                          <Badge variant={user.status === "banned" ? "destructive" : "default"} className="mt-1">
+                            {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                          </Badge>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">Subscription</p>
+                          <Badge variant={user.hasSubscription ? "default" : "outline"} className="mt-1">
+                            {user.hasSubscription ? "Active" : "None"}
+                          </Badge>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">Joined</p>
+                          <p className="mt-1 text-sm">{user.createdAt}</p>
+                        </div>
+                        <div className="col-span-2 sm:col-span-4">
+                          <p className="mb-2 text-xs font-medium text-muted-foreground">Last Sign In</p>
+                          <p className="text-sm">{user.lastSignIn}</p>
+                        </div>
+                      </div>
+                      <div className="mt-4 border-t pt-4 md:hidden">
+                        <UserActions user={user} inline={true} />
+                      </div>
+                    </>
+                  )}
                 </AccordionContent>
               </AccordionItem>
             ))

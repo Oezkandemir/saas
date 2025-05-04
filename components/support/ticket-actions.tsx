@@ -14,13 +14,16 @@ import {
   PlayCircle,
   XCircle,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface TicketActionsProps {
   ticket: Ticket;
   className?: string;
+  compact?: boolean;
+  isExpanded?: boolean;
 }
 
-export function TicketActions({ ticket, className }: TicketActionsProps) {
+export function TicketActions({ ticket, className, compact = false, isExpanded = false }: TicketActionsProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -52,6 +55,163 @@ export function TicketActions({ ticket, className }: TicketActionsProps) {
       setLoading(false);
     }
   };
+
+  if (compact) {
+    return (
+      <div className="flex gap-1">
+        <Link 
+          href={`/admin/support/${ticket.id}`} 
+          role="button"
+          tabIndex={0}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+          className={cn(
+            "flex h-8 items-center rounded-md text-gray-600 transition-all duration-200 hover:bg-muted hover:text-gray-800",
+            isExpanded ? "w-auto px-2" : "w-8 justify-center p-0"
+          )}
+        >
+          <ExternalLink className="h-4 w-4" />
+          {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">View</span>}
+        </Link>
+        
+        {ticket.status === "open" && (
+          <div
+            role="button"
+            tabIndex={0}
+            aria-disabled={loading}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!loading) handleStatusChange("in_progress");
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!loading) handleStatusChange("in_progress");
+              }
+            }}
+            className={cn(
+              "flex h-8 items-center rounded-md text-yellow-600 transition-all duration-200 hover:bg-muted hover:text-yellow-700",
+              isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+            )}
+          >
+            <PlayCircle className="h-4 w-4" />
+            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Start</span>}
+          </div>
+        )}
+        
+        {ticket.status === "in_progress" && (
+          <div
+            role="button"
+            tabIndex={0}
+            aria-disabled={loading}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!loading) handleStatusChange("resolved");
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!loading) handleStatusChange("resolved");
+              }
+            }}
+            className={cn(
+              "flex h-8 items-center rounded-md text-green-600 transition-all duration-200 hover:bg-muted hover:text-green-700",
+              isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+            )}
+          >
+            <CheckCircle2 className="h-4 w-4" />
+            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Resolve</span>}
+          </div>
+        )}
+        
+        {(ticket.status === "open" || ticket.status === "in_progress") && (
+          <div
+            role="button"
+            tabIndex={0}
+            aria-disabled={loading}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!loading) handleStatusChange("closed");
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!loading) handleStatusChange("closed");
+              }
+            }}
+            className={cn(
+              "flex h-8 items-center rounded-md text-red-600 transition-all duration-200 hover:bg-muted hover:text-red-700",
+              isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+            )}
+          >
+            <XCircle className="h-4 w-4" />
+            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Close</span>}
+          </div>
+        )}
+        
+        {ticket.status === "resolved" && (
+          <div
+            role="button"
+            tabIndex={0}
+            aria-disabled={loading}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!loading) handleStatusChange("closed");
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!loading) handleStatusChange("closed");
+              }
+            }}
+            className={cn(
+              "flex h-8 items-center rounded-md text-gray-600 transition-all duration-200 hover:bg-muted hover:text-gray-800",
+              isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+            )}
+          >
+            <XCircle className="h-4 w-4" />
+            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Close</span>}
+          </div>
+        )}
+        
+        {ticket.status === "closed" && (
+          <div
+            role="button"
+            tabIndex={0}
+            aria-disabled={loading}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!loading) handleStatusChange("open");
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!loading) handleStatusChange("open");
+              }
+            }}
+            className={cn(
+              "flex h-8 items-center rounded-md text-blue-600 transition-all duration-200 hover:bg-muted hover:text-blue-700",
+              isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+            )}
+          >
+            <AlertCircle className="h-4 w-4" />
+            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Reopen</span>}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className={`flex flex-wrap gap-2 ${className || ""}`}>
