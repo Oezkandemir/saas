@@ -71,7 +71,7 @@ export function TicketActions({ ticket, className, compact = false, isExpanded =
             isExpanded ? "w-auto px-2" : "w-8 justify-center p-0"
           )}
         >
-          <ExternalLink className="h-4 w-4" />
+          <ExternalLink className="size-4" />
           {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">View</span>}
         </Link>
         
@@ -97,7 +97,7 @@ export function TicketActions({ ticket, className, compact = false, isExpanded =
               loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
             )}
           >
-            <PlayCircle className="h-4 w-4" />
+            <PlayCircle className="size-4" />
             {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Start</span>}
           </div>
         )}
@@ -124,7 +124,7 @@ export function TicketActions({ ticket, className, compact = false, isExpanded =
               loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
             )}
           >
-            <CheckCircle2 className="h-4 w-4" />
+            <CheckCircle2 className="size-4" />
             {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Resolve</span>}
           </div>
         )}
@@ -151,7 +151,7 @@ export function TicketActions({ ticket, className, compact = false, isExpanded =
               loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
             )}
           >
-            <XCircle className="h-4 w-4" />
+            <XCircle className="size-4" />
             {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Close</span>}
           </div>
         )}
@@ -178,7 +178,7 @@ export function TicketActions({ ticket, className, compact = false, isExpanded =
               loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
             )}
           >
-            <XCircle className="h-4 w-4" />
+            <XCircle className="size-4" />
             {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Close</span>}
           </div>
         )}
@@ -205,7 +205,7 @@ export function TicketActions({ ticket, className, compact = false, isExpanded =
               loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
             )}
           >
-            <AlertCircle className="h-4 w-4" />
+            <AlertCircle className="size-4" />
             {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Reopen</span>}
           </div>
         )}

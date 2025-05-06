@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { TicketActions } from "@/components/support/ticket-actions";
 import { cn } from "@/lib/utils";
 import { Ticket } from "@/actions/support-ticket-actions";
@@ -198,7 +198,7 @@ export function TicketAccordionTable({
               className="ml-2 sm:hidden"
               onClick={toggleFilters}
             >
-              <Filter className="h-4 w-4" />
+              <Filter className="size-4" />
             </Button>
           </div>
           
@@ -259,7 +259,7 @@ export function TicketAccordionTable({
               <AccordionItem 
                 key={ticket.id} 
                 value={ticket.id}
-                className="overflow-hidden rounded-md border"
+                className="overflow-hidden rounded-md border p-0"
               >
                 <div 
                   className={cn(
@@ -280,7 +280,7 @@ export function TicketAccordionTable({
                         avatar_url: ticket.user?.avatar_url || null
                       }}
                       forceAvatarUrl={ticket.user?.avatar_url || null}
-                      className="h-8 w-8"
+                      className="size-8"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-left text-sm font-medium">
@@ -302,7 +302,7 @@ export function TicketAccordionTable({
                 </div>
                 <AccordionContent forceMount className={cn(
                   "overflow-hidden px-4 py-2 pt-0 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
-                  openItem !== ticket.id && "h-0 p-0 py-0"
+                  openItem !== ticket.id && "h-0 p-0"
                 )}>
                   {openItem === ticket.id && (
                     <>

@@ -39,6 +39,7 @@
     "title": "Dashboard – Cenety",
     "description": "Inhalte erstellen und verwalten.",
     "heading": "Dashboard",
+    "subheading": "Verwalten Sie Ihre Inhalte und Einstellungen",
     "currentRole": "Aktuelle Rolle",
     "changeRole": "Ändern Sie Ihre Rolle in den Einstellungen.",
     "noContent": "Keine Inhalte erstellt",
@@ -47,7 +48,9 @@
     "needHelp": "Brauchen Sie Hilfe? Erstellen Sie Ihr erstes Support-Ticket und unser Team hilft Ihnen weiter.",
     "noTickets": "Noch keine Support-Tickets",
     "manage": "Verwalten",
-    "basicPlan": "Basisplan"
+    "basicPlan": "Basisplan",
+    "emptyTitle": "Noch keine Inhalte",
+    "emptyDescription": "Sie haben noch keine Inhalte erstellt. Klicken Sie auf die Schaltfläche unten, um zu beginnen."
   },
   "Billing": {
     "title": "Abrechnung – Cenety",

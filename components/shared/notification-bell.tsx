@@ -34,7 +34,7 @@ export function NotificationBell({
     <Link 
       href="/profile/notifications"
       className={cn(
-        "inline-flex items-center justify-center relative",
+        "relative inline-flex items-center justify-center",
         className
       )}
     >

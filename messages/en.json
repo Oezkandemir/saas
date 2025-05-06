@@ -47,6 +47,7 @@
     "title": "Dashboard – Cenety",
     "description": "Create and manage content.",
     "heading": "Dashboard",
+    "subheading": "Manage your content and settings",
     "currentRole": "Current Role",
     "changeRole": "Change your role in settings.",
     "noContent": "No content created",
@@ -55,7 +56,9 @@
     "needHelp": "Need help? Create your first support ticket and our team will help you.",
     "noTickets": "No support tickets yet",
     "manage": "Manage",
-    "basicPlan": "Basic Plan"
+    "basicPlan": "Basic Plan",
+    "emptyTitle": "No content yet",
+    "emptyDescription": "You haven't created any content yet. Click the button below to get started."
   },
   "Billing": {
     "title": "Billing – Cenety",

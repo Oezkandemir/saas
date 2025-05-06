@@ -48,9 +48,9 @@ export function MarkAllAsReadButton() {
       disabled={loading}
     >
       {loading ? (
-        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        <Loader2 className="size-4 animate-spin" />
       ) : (
-        <Check className="mr-2 h-4 w-4" />
+        <Check className="size-4" />
       )}
       Mark all as read
     </Button>
