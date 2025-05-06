@@ -37,14 +37,15 @@ export async function generateMetadata() {
 }
 
 type Props = {
-  params: {
+  params: Promise<{
     locale: string;
-  };
+  }>;
 };
 
 export default async function AdminPanelPage(props: Props) {
   // Extract locale safely from props
-  const locale = props.params.locale;
+  const resolvedParams = await props.params;
+  const locale = resolvedParams.locale;
 
   const user = await getCurrentUser();
   const t = await getTranslations("Admin");
