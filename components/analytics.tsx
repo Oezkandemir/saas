@@ -1,5 +1,7 @@
 "use client"
 
+import { Analytics as VercelAnalytics } from "@vercel/analytics/react"
+
 export function Analytics() {
-  return null // Removed Vercel Analytics
+  return <VercelAnalytics />
 }
