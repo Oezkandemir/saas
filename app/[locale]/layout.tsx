@@ -1,7 +1,7 @@
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, setRequestLocale } from "next-intl/server";
 
 import "@/styles/globals.css";
 
@@ -11,10 +11,11 @@ import { ThemeProvider } from "next-themes";
 import { cn, constructMetadata } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@/components/analytics";
-import ModalProvider from "@/components/modals/providers";
-import { TailwindIndicator } from "@/components/tailwind-indicator";
-import { SupabaseProvider } from "@/components/supabase-provider";
 import { AvatarProvider } from "@/components/context/avatar-context";
+import ModalProvider from "@/components/modals/providers";
+import { QueryClientProvider } from "@/components/providers/query-client-provider";
+import { SupabaseProvider } from "@/components/supabase-provider";
+import { TailwindIndicator } from "@/components/tailwind-indicator";
 
 export const dynamic = "force-dynamic";
 
@@ -67,10 +68,12 @@ export default async function LocaleLayout({
           >
             <NextIntlClientProvider messages={messages} locale={locale}>
               <AvatarProvider>
-                <ModalProvider>{children}</ModalProvider>
-                <Analytics />
-                <Toaster richColors closeButton />
-                <TailwindIndicator />
+                <QueryClientProvider>
+                  <ModalProvider>{children}</ModalProvider>
+                  <Analytics />
+                  <Toaster richColors closeButton />
+                  <TailwindIndicator />
+                </QueryClientProvider>
               </AvatarProvider>
             </NextIntlClientProvider>
           </ThemeProvider>

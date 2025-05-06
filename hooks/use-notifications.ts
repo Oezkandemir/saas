@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { getUserNotifications } from "@/actions/user-profile-actions";
+import { useQuery } from "@tanstack/react-query";
 
 export interface UseNotificationsResult {
   unreadCount: number;
@@ -11,39 +11,39 @@ export interface UseNotificationsResult {
 }
 
 export function useNotifications(): UseNotificationsResult {
-  const [unreadCount, setUnreadCount] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchNotifications = async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const result = await getUserNotifications(true); // Only get unread notifications
-      
-      if (result.success && result.data) {
-        setUnreadCount(result.data.length);
-      } else {
-        setError(result.error || "Failed to fetch notifications");
-      }
-    } catch (err) {
-      console.error("Error fetching notifications:", err);
-      setError("An unexpected error occurred");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Fetch notifications on component mount
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
-  return {
-    unreadCount,
+  const {
+    data: unreadCount = 0,
     isLoading,
     error,
-    refetch: fetchNotifications
+    refetch,
+  } = useQuery({
+    queryKey: ["notifications", "unread"],
+    queryFn: async () => {
+      try {
+        const result = await getUserNotifications(true); // Only get unread notifications
+
+        if (result.success && result.data) {
+          return result.data.length;
+        } else {
+          throw new Error(result.error || "Failed to fetch notifications");
+        }
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+        throw new Error("An unexpected error occurred");
+      }
+    },
+    staleTime: 60 * 1000, // Consider data fresh for 1 minute
+    gcTime: 5 * 60 * 1000, // Keep in cache for garbage collection for 5 minutes
+    retry: 1,
+    refetchOnWindowFocus: true,
+  });
+
+  return {
+    unreadCount: typeof unreadCount === "number" ? unreadCount : 0,
+    isLoading,
+    error: error ? (error as Error).message : null,
+    refetch: async () => {
+      await refetch();
+    },
   };
-} 
+}
