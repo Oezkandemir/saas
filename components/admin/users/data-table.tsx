@@ -4,26 +4,18 @@ import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
+import { ChevronRight, Filter, Search } from "lucide-react";
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { 
-  Select, 
-  SelectContent, 
-  SelectGroup, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import {
   Accordion,
   AccordionContent,
@@ -31,25 +23,39 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { Search, Filter, ChevronRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { UserActions } from "@/components/admin/users/user-actions";
-import { cn } from "@/lib/utils";
+import { UserAvatar } from "@/components/shared/user-avatar";
+
 import { User } from "./columns";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  locale?: string; // Optional locale parameter for compatibility
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  // locale is received but not used directly in this component
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [roleFilter, setRoleFilter] = React.useState<string>("all");
@@ -69,7 +75,8 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     globalFilterFn: (row, _columnId, value) => {
-      const searchable = (row.getValue("name") as string).toLowerCase() +
+      const searchable =
+        (row.getValue("name") as string).toLowerCase() +
         (row.getValue("email") as string).toLowerCase();
       return searchable.includes(value.toLowerCase());
     },
@@ -87,14 +94,14 @@ export function DataTable<TData, TValue>({
     // Reset to first page when filters change
     table.resetRowSelection();
     table.resetPagination();
-    
+
     // Filter the data
     if (roleFilter !== "all") {
       table.getColumn("role")?.setFilterValue(roleFilter);
     } else {
       table.getColumn("role")?.setFilterValue(undefined);
     }
-    
+
     if (statusFilter !== "all") {
       table.getColumn("status")?.setFilterValue(statusFilter);
     } else {
@@ -108,7 +115,9 @@ export function DataTable<TData, TValue>({
 
   // For proper typing in our mobile view
   const typedData = data as unknown as User[];
-  const filteredData = table.getFilteredRowModel().rows.map(row => row.original) as unknown as User[];
+  const filteredData = table
+    .getFilteredRowModel()
+    .rows.map((row) => row.original) as unknown as User[];
 
   const gridContainerClasses = "grid grid-cols-2 gap-3 pt-2 sm:grid-cols-4";
 
@@ -136,16 +145,15 @@ export function DataTable<TData, TValue>({
               <Filter className="size-4" />
             </Button>
           </div>
-          
+
           {/* Desktop filters always visible, mobile filters toggleable */}
-          <div className={cn(
-            "flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0",
-            !showFilters && "hidden sm:flex"
-          )}>
-            <Select 
-              value={roleFilter} 
-              onValueChange={setRoleFilter}
-            >
+          <div
+            className={cn(
+              "flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0",
+              !showFilters && "hidden sm:flex",
+            )}
+          >
+            <Select value={roleFilter} onValueChange={setRoleFilter}>
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Select Role" />
               </SelectTrigger>
@@ -157,11 +165,8 @@ export function DataTable<TData, TValue>({
                 </SelectGroup>
               </SelectContent>
             </Select>
-            
-            <Select 
-              value={statusFilter} 
-              onValueChange={setStatusFilter}
-            >
+
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Select Status" />
               </SelectTrigger>
@@ -179,24 +184,24 @@ export function DataTable<TData, TValue>({
 
       {/* Accordion Card View for All Screen Sizes */}
       <div>
-        <Accordion 
-          type="single" 
-          collapsible 
+        <Accordion
+          type="single"
+          collapsible
           className="space-y-2"
           value={openItem}
           onValueChange={setOpenItem}
         >
           {filteredData.length > 0 ? (
             filteredData.map((user) => (
-              <AccordionItem 
-                key={user.id} 
+              <AccordionItem
+                key={user.id}
                 value={user.id}
                 className="overflow-hidden rounded-md border"
               >
-                <div 
+                <div
                   className={cn(
                     "flex cursor-pointer items-center justify-between px-4 py-1 transition-colors hover:bg-muted/50",
-                    openItem === user.id && "bg-muted/30"
+                    openItem === user.id && "bg-muted/30",
                   )}
                   onClick={(e) => {
                     // Only toggle if not clicking on an action button
@@ -207,9 +212,9 @@ export function DataTable<TData, TValue>({
                 >
                   <div className="flex flex-1 items-center space-x-3">
                     <UserAvatar
-                      user={{ 
+                      user={{
                         name: user.name,
-                        avatar_url: user.avatar_url
+                        avatar_url: user.avatar_url,
                       }}
                       forceAvatarUrl={user.avatar_url}
                       className="size-8"
@@ -222,47 +227,86 @@ export function DataTable<TData, TValue>({
                         {user.email}
                       </p>
                     </div>
-                    <Badge variant={user.role === "ADMIN" ? "destructive" : "outline"}>
+                    <Badge
+                      variant={
+                        user.role === "ADMIN" ? "destructive" : "outline"
+                      }
+                    >
                       {user.role}
                     </Badge>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="hidden md:block">
-                      <UserActions user={user} compact={true} isExpanded={openItem === user.id} />
+                      <UserActions
+                        user={user}
+                        compact={true}
+                        isExpanded={openItem === user.id}
+                      />
                     </div>
                   </div>
                 </div>
-                <AccordionContent forceMount className={cn(
-                  "overflow-hidden px-4 py-2 pt-0 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
-                  openItem !== user.id && "h-0 p-0"
-                )}>
+                <AccordionContent
+                  forceMount
+                  className={cn(
+                    "overflow-hidden px-4 py-2 pt-0 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
+                    openItem !== user.id && "h-0 p-0",
+                  )}
+                >
                   {openItem === user.id && (
                     <>
                       <div className={gridContainerClasses}>
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground">Role</p>
-                          <Badge variant={user.role === "ADMIN" ? "destructive" : "outline"} className="mt-1">
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Role
+                          </p>
+                          <Badge
+                            variant={
+                              user.role === "ADMIN" ? "destructive" : "outline"
+                            }
+                            className="mt-1"
+                          >
                             {user.role}
                           </Badge>
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground">Status</p>
-                          <Badge variant={user.status === "banned" ? "destructive" : "default"} className="mt-1">
-                            {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Status
+                          </p>
+                          <Badge
+                            variant={
+                              user.status === "banned"
+                                ? "destructive"
+                                : "default"
+                            }
+                            className="mt-1"
+                          >
+                            {user.status.charAt(0).toUpperCase() +
+                              user.status.slice(1)}
                           </Badge>
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground">Subscription</p>
-                          <Badge variant={user.hasSubscription ? "default" : "outline"} className="mt-1">
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Subscription
+                          </p>
+                          <Badge
+                            variant={
+                              user.hasSubscription ? "default" : "outline"
+                            }
+                            className="mt-1"
+                          >
                             {user.hasSubscription ? "Active" : "None"}
                           </Badge>
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground">Joined</p>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Joined
+                          </p>
                           <p className="mt-1 text-sm">{user.createdAt}</p>
                         </div>
                         <div className="col-span-2 sm:col-span-4">
-                          <p className="mb-2 text-xs font-medium text-muted-foreground">Last Sign In</p>
+                          <p className="mb-2 text-xs font-medium text-muted-foreground">
+                            Last Sign In
+                          </p>
                           <p className="text-sm">{user.lastSignIn}</p>
                         </div>
                       </div>
@@ -310,4 +354,4 @@ export function DataTable<TData, TValue>({
       </div>
     </div>
   );
-} 
+}

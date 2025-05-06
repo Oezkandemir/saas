@@ -1,42 +1,44 @@
 "use client";
 
 import * as React from "react";
+import { Ticket } from "@/actions/support-ticket-actions";
 import {
   ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
+import { formatDistance } from "date-fns";
+import { ChevronLeft, ChevronRight, Filter, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { 
-  Select, 
-  SelectContent, 
-  SelectGroup, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Filter, ChevronLeft, ChevronRight } from "lucide-react";
-import { TicketActions } from "@/components/support/ticket-actions";
-import { cn } from "@/lib/utils";
-import { Ticket } from "@/actions/support-ticket-actions";
-import { formatDistance } from "date-fns";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { UserAvatar } from "@/components/shared/user-avatar";
+import { TicketActions } from "@/components/support/ticket-actions";
 
 interface TicketAccordionTableProps {
   data: Ticket[];
+  locale?: string;
 }
 
 // Helper function to get status badge color
@@ -81,10 +83,16 @@ const getPriorityColor = (priority: string) => {
 
 export function TicketAccordionTable({
   data,
+  locale,
 }: TicketAccordionTableProps) {
+  const t = useTranslations("Admin.support");
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
@@ -121,24 +129,32 @@ export function TicketAccordionTable({
 
   // Custom filter function for tickets
   const filteredData = React.useMemo(() => {
-    return data.filter(ticket => {
+    return data.filter((ticket) => {
       // Global search filter
-      if (globalFilter && !((ticket.subject + ticket.description + (ticket.user?.name || "") + (ticket.user?.email || ""))
-        .toLowerCase()
-        .includes(globalFilter.toLowerCase()))) {
+      if (
+        globalFilter &&
+        !(
+          ticket.subject +
+          ticket.description +
+          (ticket.user?.name || "") +
+          (ticket.user?.email || "")
+        )
+          .toLowerCase()
+          .includes(globalFilter.toLowerCase())
+      ) {
         return false;
       }
-      
+
       // Status filter
       if (statusFilter !== "all" && ticket.status !== statusFilter) {
         return false;
       }
-      
+
       // Priority filter
       if (priorityFilter !== "all" && ticket.priority !== priorityFilter) {
         return false;
       }
-      
+
       return true;
     });
   }, [data, globalFilter, statusFilter, priorityFilter]);
@@ -147,34 +163,40 @@ export function TicketAccordionTable({
     if (sorting.length === 0) {
       // Default sort by updated_at desc
       return [...filteredData].sort((a, b) => {
-        return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+        return (
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        );
       });
     }
-    
+
     return [...filteredData].sort((a, b) => {
       for (const sort of sorting) {
         const key = sort.id as keyof Ticket;
         const aValue = a[key];
         const bValue = b[key];
-        
+
         if (aValue === bValue) continue;
-        
+
         const direction = sort.desc ? -1 : 1;
-        
-        if (typeof aValue === 'string' && typeof bValue === 'string') {
+
+        if (typeof aValue === "string" && typeof bValue === "string") {
           return aValue.localeCompare(bValue) * direction;
         }
-        
-        if (key === 'created_at' || key === 'updated_at') {
-          return (new Date(bValue as string).getTime() - new Date(aValue as string).getTime()) * direction;
+
+        if (key === "created_at" || key === "updated_at") {
+          return (
+            (new Date(bValue as string).getTime() -
+              new Date(aValue as string).getTime()) *
+            direction
+          );
         }
-        
+
         return ((aValue as any) > (bValue as any) ? 1 : -1) * direction;
       }
       return 0;
     });
   }, [filteredData, sorting]);
-  
+
   const gridContainerClasses = "grid grid-cols-2 gap-3 pt-2 sm:grid-cols-4";
 
   return (
@@ -186,7 +208,7 @@ export function TicketAccordionTable({
             <div className="relative w-full sm:max-w-sm">
               <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
               <Input
-                placeholder="Search tickets..."
+                placeholder={t("search")}
                 value={globalFilter}
                 onChange={(event) => setGlobalFilter(event.target.value)}
                 className="w-full pl-8"
@@ -201,43 +223,48 @@ export function TicketAccordionTable({
               <Filter className="size-4" />
             </Button>
           </div>
-          
+
           {/* Desktop filters always visible, mobile filters toggleable */}
-          <div className={cn(
-            "flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0",
-            !showFilters && "hidden sm:flex"
-          )}>
-            <Select 
-              value={statusFilter} 
-              onValueChange={setStatusFilter}
-            >
+          <div
+            className={cn(
+              "flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0",
+              !showFilters && "hidden sm:flex",
+            )}
+          >
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Select Status" />
+                <SelectValue placeholder={t("filter")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="open">Open</SelectItem>
-                  <SelectItem value="in_progress">In Progress</SelectItem>
-                  <SelectItem value="resolved">Resolved</SelectItem>
-                  <SelectItem value="closed">Closed</SelectItem>
+                  <SelectItem value="all">{t("filter")}</SelectItem>
+                  <SelectItem value="open">{t("statuses.open")}</SelectItem>
+                  <SelectItem value="in_progress">
+                    {t("statuses.inProgress")}
+                  </SelectItem>
+                  <SelectItem value="resolved">
+                    {t("statuses.resolved")}
+                  </SelectItem>
+                  <SelectItem value="closed">{t("statuses.closed")}</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
-            
-            <Select 
-              value={priorityFilter} 
-              onValueChange={setPriorityFilter}
-            >
+
+            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
               <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Select Priority" />
+                <SelectValue placeholder={t("columns.priority")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="all">All Priorities</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="all">{t("filter")}</SelectItem>
+                  <SelectItem value="low">{t("priorities.low")}</SelectItem>
+                  <SelectItem value="medium">
+                    {t("priorities.medium")}
+                  </SelectItem>
+                  <SelectItem value="high">{t("priorities.high")}</SelectItem>
+                  <SelectItem value="urgent">
+                    {t("priorities.urgent")}
+                  </SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -247,37 +274,39 @@ export function TicketAccordionTable({
 
       {/* Accordion Card View for All Screen Sizes */}
       <div>
-        <Accordion 
-          type="single" 
-          collapsible 
+        <Accordion
+          type="single"
+          collapsible
           className="space-y-2"
           value={openItem}
           onValueChange={setOpenItem}
         >
           {sortedData.length > 0 ? (
             sortedData.map((ticket) => (
-              <AccordionItem 
-                key={ticket.id} 
+              <AccordionItem
+                key={ticket.id}
                 value={ticket.id}
                 className="overflow-hidden rounded-md border p-0"
               >
-                <div 
+                <div
                   className={cn(
                     "flex cursor-pointer items-center justify-between px-4 py-1 transition-colors hover:bg-muted/50",
-                    openItem === ticket.id && "bg-muted/30"
+                    openItem === ticket.id && "bg-muted/30",
                   )}
                   onClick={(e) => {
                     // Only toggle if not clicking on an action button
                     if (!(e.target as HTMLElement).closest('[role="button"]')) {
-                      setOpenItem(openItem === ticket.id ? undefined : ticket.id);
+                      setOpenItem(
+                        openItem === ticket.id ? undefined : ticket.id,
+                      );
                     }
                   }}
                 >
                   <div className="flex flex-1 items-center space-x-3">
                     <UserAvatar
-                      user={{ 
+                      user={{
                         name: ticket.user?.name || "Unknown",
-                        avatar_url: ticket.user?.avatar_url || null
+                        avatar_url: ticket.user?.avatar_url || null,
                       }}
                       forceAvatarUrl={ticket.user?.avatar_url || null}
                       className="size-8"
@@ -296,68 +325,106 @@ export function TicketAccordionTable({
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="hidden md:block">
-                      <TicketActions ticket={ticket} compact={true} isExpanded={openItem === ticket.id} />
+                      <TicketActions
+                        ticket={ticket}
+                        locale={locale}
+                        compact={true}
+                        isExpanded={openItem === ticket.id}
+                      />
                     </div>
                   </div>
                 </div>
-                <AccordionContent forceMount className={cn(
-                  "overflow-hidden px-4 py-2 pt-0 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
-                  openItem !== ticket.id && "h-0 p-0"
-                )}>
+                <AccordionContent
+                  forceMount
+                  className={cn(
+                    "overflow-hidden px-4 py-2 pt-0 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
+                    openItem !== ticket.id && "h-0 p-0",
+                  )}
+                >
                   {openItem === ticket.id && (
                     <>
                       <div className={gridContainerClasses}>
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground">Status</p>
-                          <Badge className={`mt-1 ${getStatusColor(ticket.status)}`}>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Status
+                          </p>
+                          <Badge
+                            className={`mt-1 ${getStatusColor(ticket.status)}`}
+                          >
                             {formatStatus(ticket.status)}
                           </Badge>
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground">Priority</p>
-                          <Badge className={`mt-1 ${getPriorityColor(ticket.priority)}`}>
-                            <span className="capitalize">{ticket.priority}</span>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Priority
+                          </p>
+                          <Badge
+                            className={`mt-1 ${getPriorityColor(ticket.priority)}`}
+                          >
+                            <span className="capitalize">
+                              {ticket.priority}
+                            </span>
                           </Badge>
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground">Created</p>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Created
+                          </p>
                           <p className="mt-1 text-sm">
-                            {formatDistance(new Date(ticket.created_at), new Date(), { addSuffix: true })}
+                            {formatDistance(
+                              new Date(ticket.created_at),
+                              new Date(),
+                              { addSuffix: true },
+                            )}
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground">Updated</p>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Updated
+                          </p>
                           <p className="mt-1 text-sm">
-                            {formatDistance(new Date(ticket.updated_at), new Date(), { addSuffix: true })}
+                            {formatDistance(
+                              new Date(ticket.updated_at),
+                              new Date(),
+                              { addSuffix: true },
+                            )}
                           </p>
                         </div>
                       </div>
-                      
+
                       <div className="mt-4">
-                        <p className="mb-1 text-xs font-medium text-muted-foreground">User Information</p>
+                        <p className="mb-1 text-xs font-medium text-muted-foreground">
+                          User Information
+                        </p>
                         <div className="mb-3 flex items-center gap-3">
                           <UserAvatar
-                            user={{ 
+                            user={{
                               name: ticket.user?.name || "Unknown",
-                              avatar_url: ticket.user?.avatar_url || null
+                              avatar_url: ticket.user?.avatar_url || null,
                             }}
                             forceAvatarUrl={ticket.user?.avatar_url || null}
                             className="size-10"
                           />
                           <div>
                             <p className="font-medium">{ticket.subject}</p>
-                            <p className="text-sm text-muted-foreground">{ticket.user?.email || "No email"}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {ticket.user?.email || "No email"}
+                            </p>
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="mt-4">
-                        <p className="mb-1 text-xs font-medium text-muted-foreground">Description</p>
-                        <p className="whitespace-pre-wrap text-sm">{ticket.description}</p>
+                        <p className="mb-1 text-xs font-medium text-muted-foreground">
+                          Description
+                        </p>
+                        <p className="whitespace-pre-wrap text-sm">
+                          {ticket.description}
+                        </p>
                       </div>
-                      
+
                       <div className="mt-4 border-t pt-4 md:hidden">
-                        <TicketActions ticket={ticket} />
+                        <TicketActions ticket={ticket} locale={locale} />
                       </div>
                     </>
                   )}
@@ -367,13 +434,14 @@ export function TicketAccordionTable({
           ) : (
             <Card>
               <CardContent className="p-6 text-center text-muted-foreground">
-                No tickets found. Adjust your search filters or check back later.
+                No tickets found. Adjust your search filters or check back
+                later.
               </CardContent>
             </Card>
           )}
         </Accordion>
       </div>
-      
+
       {/* Pagination would go here if needed */}
       <div className="flex items-center justify-end">
         <div className="text-sm text-muted-foreground">
@@ -382,4 +450,4 @@ export function TicketAccordionTable({
       </div>
     </div>
   );
-} 
+}

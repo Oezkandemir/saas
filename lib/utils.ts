@@ -79,27 +79,27 @@ export function getURL() {
   let url =
     process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
     process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
-    'http://localhost:3000'
+    "http://localhost:3000";
 
   // Make sure to include `https://` when not localhost.
-  url = url.startsWith('http') ? url : `https://${url}`
+  url = url.startsWith("http") ? url : `https://${url}`;
 
   // Make sure to include a trailing `/`.
-  url = url.endsWith('/') ? url : `${url}/`
+  url = url.endsWith("/") ? url : `${url}/`;
 
-  return url
+  return url;
 }
 
 /**
  * Format a date to a readable string
  */
 export function formatDate(input: string | number | Date): string {
-  const date = new Date(input)
-  return date.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  })
+  const date = new Date(input);
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 export function absoluteUrl(path: string) {
@@ -176,7 +176,9 @@ export const getBlurDataURL = async (url: string | null) => {
 
   // Use the resolveStaticPath function to ensure consistent path handling
   const resolvedUrl = resolveStaticPath(url);
-  const fullUrl = resolvedUrl.startsWith("/_static/") ? `${siteConfig.url}${resolvedUrl}` : url;
+  const fullUrl = resolvedUrl.startsWith("/_static/")
+    ? `${siteConfig.url}${resolvedUrl}`
+    : url;
 
   try {
     const response = await fetch(
@@ -201,17 +203,17 @@ export const resolveStaticPath = (path: string): string => {
   if (path.startsWith("/") && !path.startsWith("/_static/")) {
     return path;
   }
-  
+
   // If the path starts with /_static, it's already in the correct format
   if (path.startsWith("/_static/")) {
     return path;
   }
-  
+
   // If no leading slash, add /_static/ prefix
   if (!path.startsWith("/")) {
     return `/_static/${path}`;
   }
-  
+
   return path;
 };
 

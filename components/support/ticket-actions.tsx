@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Ticket, updateTicketStatus } from "@/actions/support-ticket-actions";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/use-toast";
+import { Ticket, updateTicketStatus } from "@/actions/support-ticket-actions";
 import {
   AlertCircle,
   CheckCircle2,
@@ -14,35 +12,49 @@ import {
   PlayCircle,
   XCircle,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
+
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 interface TicketActionsProps {
   ticket: Ticket;
   className?: string;
   compact?: boolean;
   isExpanded?: boolean;
+  locale?: string;
 }
 
-export function TicketActions({ ticket, className, compact = false, isExpanded = false }: TicketActionsProps) {
+export function TicketActions({
+  ticket,
+  className,
+  compact = false,
+  isExpanded = false,
+  locale,
+}: TicketActionsProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const t = useTranslations("Admin.support");
   const [loading, setLoading] = useState(false);
 
-  const handleStatusChange = async (status: "open" | "in_progress" | "resolved" | "closed") => {
+  const handleStatusChange = async (
+    status: "open" | "in_progress" | "resolved" | "closed",
+  ) => {
     try {
       setLoading(true);
-      
+
       const result = await updateTicketStatus(ticket.id, status);
-      
+
       if (!result.success) {
         throw new Error(result.error);
       }
-      
+
       toast({
-        title: "Status Updated",
-        description: `Ticket status changed to "${status === 'in_progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}"`,
+        title: t("ticketUpdated"),
+        description: `Ticket status changed to "${status === "in_progress" ? t("statuses.inProgress") : status.charAt(0).toUpperCase() + status.slice(1)}"`,
       });
-      
+
       router.refresh();
     } catch (error) {
       console.error("Error updating ticket status:", error);
@@ -59,8 +71,8 @@ export function TicketActions({ ticket, className, compact = false, isExpanded =
   if (compact) {
     return (
       <div className="flex gap-1">
-        <Link 
-          href={`/admin/support/${ticket.id}`} 
+        <Link
+          href={`/${locale}/admin/support/${ticket.id}`}
           role="button"
           tabIndex={0}
           onClick={(e) => {
@@ -68,13 +80,17 @@ export function TicketActions({ ticket, className, compact = false, isExpanded =
           }}
           className={cn(
             "flex h-8 items-center rounded-md text-gray-600 transition-all duration-200 hover:bg-muted hover:text-gray-800",
-            isExpanded ? "w-auto px-2" : "w-8 justify-center p-0"
+            isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
           )}
         >
           <ExternalLink className="size-4" />
-          {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">View</span>}
+          {isExpanded && (
+            <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">
+              {t("actions.view")}
+            </span>
+          )}
         </Link>
-        
+
         {ticket.status === "open" && (
           <div
             role="button"
@@ -85,7 +101,7 @@ export function TicketActions({ ticket, className, compact = false, isExpanded =
               if (!loading) handleStatusChange("in_progress");
             }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!loading) handleStatusChange("in_progress");
@@ -94,14 +110,18 @@ export function TicketActions({ ticket, className, compact = false, isExpanded =
             className={cn(
               "flex h-8 items-center rounded-md text-yellow-600 transition-all duration-200 hover:bg-muted hover:text-yellow-700",
               isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
-              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer",
             )}
           >
             <PlayCircle className="size-4" />
-            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Start</span>}
+            {isExpanded && (
+              <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">
+                {t("actions.update")}
+              </span>
+            )}
           </div>
         )}
-        
+
         {ticket.status === "in_progress" && (
           <div
             role="button"
@@ -112,7 +132,7 @@ export function TicketActions({ ticket, className, compact = false, isExpanded =
               if (!loading) handleStatusChange("resolved");
             }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!loading) handleStatusChange("resolved");
@@ -121,14 +141,18 @@ export function TicketActions({ ticket, className, compact = false, isExpanded =
             className={cn(
               "flex h-8 items-center rounded-md text-green-600 transition-all duration-200 hover:bg-muted hover:text-green-700",
               isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
-              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer",
             )}
           >
             <CheckCircle2 className="size-4" />
-            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Resolve</span>}
+            {isExpanded && (
+              <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">
+                {t("actions.update")}
+              </span>
+            )}
           </div>
         )}
-        
+
         {(ticket.status === "open" || ticket.status === "in_progress") && (
           <div
             role="button"
@@ -139,7 +163,7 @@ export function TicketActions({ ticket, className, compact = false, isExpanded =
               if (!loading) handleStatusChange("closed");
             }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!loading) handleStatusChange("closed");
@@ -148,65 +172,15 @@ export function TicketActions({ ticket, className, compact = false, isExpanded =
             className={cn(
               "flex h-8 items-center rounded-md text-red-600 transition-all duration-200 hover:bg-muted hover:text-red-700",
               isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
-              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer",
             )}
           >
             <XCircle className="size-4" />
-            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Close</span>}
-          </div>
-        )}
-        
-        {ticket.status === "resolved" && (
-          <div
-            role="button"
-            tabIndex={0}
-            aria-disabled={loading}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (!loading) handleStatusChange("closed");
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                e.stopPropagation();
-                if (!loading) handleStatusChange("closed");
-              }
-            }}
-            className={cn(
-              "flex h-8 items-center rounded-md text-gray-600 transition-all duration-200 hover:bg-muted hover:text-gray-800",
-              isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
-              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+            {isExpanded && (
+              <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">
+                {t("actions.close")}
+              </span>
             )}
-          >
-            <XCircle className="size-4" />
-            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Close</span>}
-          </div>
-        )}
-        
-        {ticket.status === "closed" && (
-          <div
-            role="button"
-            tabIndex={0}
-            aria-disabled={loading}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (!loading) handleStatusChange("open");
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                e.stopPropagation();
-                if (!loading) handleStatusChange("open");
-              }
-            }}
-            className={cn(
-              "flex h-8 items-center rounded-md text-blue-600 transition-all duration-200 hover:bg-muted hover:text-blue-700",
-              isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
-              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
-            )}
-          >
-            <AlertCircle className="size-4" />
-            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Reopen</span>}
           </div>
         )}
       </div>
@@ -214,84 +188,65 @@ export function TicketActions({ ticket, className, compact = false, isExpanded =
   }
 
   return (
-    <div className={`flex flex-wrap gap-2 ${className || ""}`}>
-      <Link href={`/admin/support/${ticket.id}`} passHref>
-        <Button variant="outline" size="sm" className="border-gray-600 text-gray-600">
-          <ExternalLink className="mr-2 size-4" />
-          <span className="hidden sm:inline">View Details</span>
-          <span className="sm:hidden">View</span>
-        </Button>
+    <div className={cn("flex flex-wrap gap-2", className)}>
+      <Link
+        href={`/${locale}/admin/support/${ticket.id}`}
+        className="inline-flex items-center gap-1 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+      >
+        <ExternalLink className="size-4" />
+        {t("actions.view")}
       </Link>
-      
+
       {ticket.status === "open" && (
         <Button
           variant="outline"
           size="sm"
           disabled={loading}
           onClick={() => handleStatusChange("in_progress")}
-          className="border-yellow-600 text-yellow-600"
+          className="border-yellow-500 text-yellow-600 hover:bg-yellow-50 hover:text-yellow-700"
         >
-          <PlayCircle className="mr-2 size-4" />
-          <span className="hidden sm:inline">Mark In Progress</span>
-          <span className="sm:hidden">Start</span>
+          <Clock className="mr-1 size-4" />
+          {t("actions.update")}
         </Button>
       )}
-      
+
       {ticket.status === "in_progress" && (
         <Button
           variant="outline"
           size="sm"
           disabled={loading}
           onClick={() => handleStatusChange("resolved")}
-          className="border-green-600 text-green-600"
+          className="border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700"
         >
-          <CheckCircle2 className="mr-2 size-4" />
-          <span className="hidden sm:inline">Mark Resolved</span>
-          <span className="sm:hidden">Resolve</span>
+          <CheckCircle2 className="mr-1 size-4" />
+          {t("actions.update")}
         </Button>
       )}
-      
+
       {(ticket.status === "open" || ticket.status === "in_progress") && (
         <Button
           variant="outline"
           size="sm"
           disabled={loading}
           onClick={() => handleStatusChange("closed")}
-          className="border-red-600 text-red-600"
+          className="border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700"
         >
-          <XCircle className="mr-2 size-4" />
-          <span className="hidden sm:inline">Close Ticket</span>
-          <span className="sm:hidden">Close</span>
+          <XCircle className="mr-1 size-4" />
+          {t("actions.close")}
         </Button>
       )}
-      
-      {ticket.status === "resolved" && (
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={loading}
-          onClick={() => handleStatusChange("closed")}
-          className="border-gray-600 text-gray-600"
-        >
-          <XCircle className="mr-2 size-4" />
-          <span className="hidden sm:inline">Close Ticket</span>
-          <span className="sm:hidden">Close</span>
-        </Button>
-      )}
-      
-      {ticket.status === "closed" && (
+
+      {(ticket.status === "resolved" || ticket.status === "closed") && (
         <Button
           variant="outline"
           size="sm"
           disabled={loading}
           onClick={() => handleStatusChange("open")}
-          className="border-blue-600 text-blue-600"
         >
-          <AlertCircle className="mr-2 size-4" />
-          <span className="hidden sm:inline">Reopen Ticket</span>
-          <span className="sm:hidden">Reopen</span>
+          <AlertCircle className="mr-1 size-4" />
+          {t("actions.view")}
         </Button>
       )}
     </div>
   );
-} 
+}

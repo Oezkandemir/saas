@@ -35,6 +35,14 @@
     "signOutSuccess": "Erfolgreich abgemeldet",
     "signOutError": "Abmeldung fehlgeschlagen"
   },
+  "Notifications": {
+    "notifications": "Benachrichtigungen",
+    "unreadCount": "{count} ungelesene Benachrichtigungen",
+    "markAsRead": "Als gelesen markieren",
+    "markAllAsRead": "Alle als gelesen markieren",
+    "noNotifications": "Keine Benachrichtigungen",
+    "loading": "Benachrichtigungen werden geladen..."
+  },
   "Dashboard": {
     "title": "Dashboard – Cenety",
     "description": "Inhalte erstellen und verwalten.",
@@ -262,7 +270,21 @@
       "title": "Admin-Panel – Cenety",
       "description": "Verwalten Sie Ihre Anwendungseinstellungen und Benutzer.",
       "heading": "Admin-Panel",
-      "subheading": "Verwalten Sie Ihre Anwendungseinstellungen und Benutzer"
+      "subheading": "Verwalten Sie Ihre Anwendungseinstellungen, Benutzer und Support-Tickets"
+    },
+    "stats": {
+      "userStats": "Benutzerstatistik",
+      "ticketStatus": "Support-Ticket-Status",
+      "newTickets": "Neue Tickets",
+      "awaitingResponse": "Warten auf Antwort",
+      "currentlyHandled": "Derzeit in Bearbeitung",
+      "completedTickets": "Abgeschlossene Tickets",
+      "userManagementDesc": "Verwalten Sie Benutzerkonten, Rollen, Abonnements und Kontostatus. Sehen Sie detaillierte Benutzerinformationen und -aktivitäten ein.",
+      "supportTicketsDesc": "Prüfen, beantworten und lösen Sie Benutzer-Support-Tickets. Verfolgen Sie den Ticket-Status und halten Sie die Kommunikation mit den Benutzern aufrecht.",
+      "analyticsDashboard": "Analyse-Dashboard",
+      "trackMetrics": "Verfolgen Sie wichtige Kennzahlen und App-Leistung",
+      "comingSoon": "Demnächst verfügbar! Erhalten Sie Einblicke in Benutzeraktivitäten, Abonnement-Konversionen und die gesamte Plattformnutzung.",
+      "viewAnalytics": "Analysen anzeigen"
     },
     "users": {
       "management": "Benutzerverwaltung",
@@ -293,7 +315,7 @@
         "actions": "Aktionen"
       },
       "actions": {
-        "view": "Sicht",
+        "view": "Ansehen",
         "edit": "Bearbeiten",
         "delete": "Löschen",
         "ban": "Benutzer sperren",
@@ -302,7 +324,19 @@
       "noUsers": "Keine Benutzer gefunden",
       "userDetails": "Benutzerdetails",
       "confirmDelete": "Möchten Sie diesen Benutzer wirklich löschen?",
-      "userDeleted": "Benutzer erfolgreich gelöscht"
+      "userDeleted": "Benutzer erfolgreich gelöscht",
+      "table": {
+        "admin": "Admin",
+        "user": "Benutzer",
+        "active": "Aktiv",
+        "banned": "Gesperrt",
+        "yes": "Ja",
+        "no": "Nein",
+        "verified": "Verifiziert",
+        "created": "Erstellt",
+        "lastSignIn": "Letzte Anmeldung",
+        "never": "Nie"
+      }
     },
     "support": {
       "tickets": "Support-Tickets",
@@ -320,8 +354,8 @@
       "search": "Tickets suchen...",
       "filter": "Tickets filtern",
       "columns": {
-        "id": "AUSWEIS",
-        "subject": "Thema",
+        "id": "ID",
+        "subject": "Betreff",
         "user": "Benutzer",
         "status": "Status",
         "priority": "Priorität",
@@ -331,18 +365,18 @@
       },
       "statuses": {
         "open": "Offen",
-        "inProgress": "Im Gange",
+        "inProgress": "In Bearbeitung",
         "resolved": "Gelöst",
         "closed": "Geschlossen"
       },
       "priorities": {
         "low": "Niedrig",
-        "medium": "Medium",
+        "medium": "Mittel",
         "high": "Hoch",
         "urgent": "Dringend"
       },
       "actions": {
-        "view": "Sicht",
+        "view": "Ansehen",
         "update": "Aktualisieren",
         "close": "Schließen",
         "delete": "Löschen"
@@ -350,8 +384,10 @@
       "noTickets": "Keine Tickets gefunden",
       "ticketDetails": "Ticketdetails",
       "replyToTicket": "Auf Ticket antworten",
-      "updateStatus": "Update-Status",
-      "ticketUpdated": "Ticket erfolgreich aktualisiert"
+      "updateStatus": "Status aktualisieren",
+      "ticketUpdated": "Ticket erfolgreich aktualisiert",
+      "allTickets": "Alle Support-Tickets",
+      "inProgressDescription": "Derzeit in Bearbeitung"
     },
     "table": {
       "name": "Name",
@@ -374,7 +410,9 @@
       "unbanUser": "Benutzer entsperren",
       "confirmBan": "Sind Sie sicher, dass Sie diesen Benutzer sperren möchten?",
       "confirmUnban": "Sind Sie sicher, dass Sie die Sperre dieses Benutzers aufheben möchten?",
-      "never": "Nie"
+      "never": "Nie",
+      "makeAdmin": "Zum Admin machen",
+      "removeAdmin": "Admin-Rechte entfernen"
     }
   },
   "DashboardSidebar": {
@@ -778,13 +816,5 @@
         "default": "Fehler beim erneuten Senden der Einladung. Bitte versuchen Sie es erneut."
       }
     }
-  },
-  "Notifications": {
-    "notifications": "Benachrichtigungen",
-    "unreadCount": "{count} ungelesene Benachrichtigungen",
-    "markAsRead": "Als gelesen markieren",
-    "markAllAsRead": "Alle als gelesen markieren",
-    "noNotifications": "Keine Benachrichtigungen",
-    "loading": "Benachrichtigungen werden geladen..."
   }
 }

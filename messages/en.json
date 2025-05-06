@@ -270,7 +270,21 @@
       "title": "Admin Panel – Cenety",
       "description": "Manage your application settings and users.",
       "heading": "Admin Panel",
-      "subheading": "Manage your application settings and users"
+      "subheading": "Manage your application settings, users, and support tickets"
+    },
+    "stats": {
+      "userStats": "User Statistics",
+      "ticketStatus": "Support Ticket Status",
+      "newTickets": "New Tickets",
+      "awaitingResponse": "Awaiting response",
+      "currentlyHandled": "Currently being handled",
+      "completedTickets": "Completed tickets",
+      "userManagementDesc": "Manage user accounts, roles, subscriptions, and account status. View detailed user information and activity.",
+      "supportTicketsDesc": "Review, respond to, and resolve user support tickets. Track ticket status and maintain communication with users.",
+      "analyticsDashboard": "Analytics Dashboard",
+      "trackMetrics": "Track key metrics and app performance",
+      "comingSoon": "Coming soon! Get insights into user activity, subscription conversions, and overall platform usage.",
+      "viewAnalytics": "View Analytics"
     },
     "users": {
       "management": "User Management",
@@ -359,7 +373,9 @@
       "ticketDetails": "Ticket Details",
       "replyToTicket": "Reply to Ticket",
       "updateStatus": "Update Status",
-      "ticketUpdated": "Ticket updated successfully"
+      "ticketUpdated": "Ticket updated successfully",
+      "allTickets": "Alle Support-Tickets",
+      "inProgressDescription": "Derzeit in Bearbeitung"
     },
     "table": {
       "name": "Name",
@@ -382,7 +398,9 @@
       "unbanUser": "Unban User",
       "confirmBan": "Are you sure you want to ban this user?",
       "confirmUnban": "Are you sure you want to unban this user?",
-      "never": "Never"
+      "never": "Never",
+      "makeAdmin": "Zum Admin machen",
+      "removeAdmin": "Admin-Rechte entfernen"
     }
   },
   "DashboardSidebar": {

@@ -1,16 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { User } from "./columns";
-import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  deleteUser,
+  toggleUserAdminStatus,
+  toggleUserBanStatus,
+} from "@/actions/admin-user-actions";
+import {
+  MoreHorizontal,
+  Shield,
+  ShieldAlert,
+  Trash,
+  Unlock,
+  X,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -20,18 +28,25 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { MoreHorizontal, ShieldAlert, Trash, Unlock, Shield, X } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
-import { toggleUserBanStatus, deleteUser, toggleUserAdminStatus } from "@/actions/admin-user-actions";
 import { UserAvatar } from "@/components/shared/user-avatar";
-import { cn } from "@/lib/utils";
+
+import { User } from "./columns";
 
 interface UserActionsProps {
   user: User;
   inline?: boolean; // Prop for inline display
   compact?: boolean; // New prop for compact view in header
   isExpanded?: boolean; // Whether the parent accordion item is expanded
+  locale?: string; // Locale for translations
 }
 
 // Define Tailwind class combinations to avoid lint errors
@@ -39,9 +54,18 @@ const flexContainerClasses = "flex flex-wrap justify-center gap-2";
 const userInfoContainerClasses = "mb-4 flex items-center gap-3 border-b pb-4";
 const buttonContainerClasses = "flex justify-end gap-2";
 
-export function UserActions({ user, inline = false, compact = false, isExpanded = false }: UserActionsProps) {
+export function UserActions({
+  user,
+  inline = false,
+  compact = false,
+  isExpanded = false,
+  locale,
+}: UserActionsProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const t = useTranslations("Admin.users");
+  const tTable = useTranslations("Admin.table");
+
   const [showDeleteDrawer, setShowDeleteDrawer] = useState(false);
   const [showBanDrawer, setShowBanDrawer] = useState(false);
   const [showAdminDrawer, setShowAdminDrawer] = useState(false);
@@ -53,66 +77,67 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
     try {
       setLoading(true);
       setError(null);
-      
+
       // Call the server action
       const result = await toggleUserBanStatus(user.id, user.status);
-      
+
       if (!result.success) {
         throw new Error(result.error);
       }
-      
+
       // Show success toast
       toast({
-        title: user.status === 'banned' ? 'User Unbanned' : 'User Banned',
-        description: `Successfully ${user.status === 'banned' ? 'unbanned' : 'banned'} ${user.email}`,
+        title:
+          user.status === "banned" ? tTable("unbanUser") : tTable("banUser"),
+        description: `Successfully ${user.status === "banned" ? "unbanned" : "banned"} ${user.email}`,
       });
-      
+
       // Refresh the page data
       router.refresh();
     } catch (err) {
-      console.error('Error banning/unbanning user:', err);
-      setError(err instanceof Error ? err.message : 'Unknown error occurred');
-      
+      console.error("Error banning/unbanning user:", err);
+      setError(err instanceof Error ? err.message : "Unknown error occurred");
+
       toast({
-        title: 'Operation Failed',
-        description: `Failed to ${user.status === 'banned' ? 'unban' : 'ban'} user. Please try again.`,
-        variant: 'destructive',
+        title: "Operation Failed",
+        description: `Failed to ${user.status === "banned" ? "unban" : "ban"} user. Please try again.`,
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
       setShowBanDrawer(false);
     }
   };
-  
+
   // Handle user deletion
   const handleDeleteUser = async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Call the server action
       const result = await deleteUser(user.id);
-      
+
       if (!result.success) {
         throw new Error(result.error);
       }
-      
+
       // Show success toast
       toast({
-        title: 'User Deleted',
-        description: `Successfully deleted ${user.email}`,
+        title: "User Deleted",
+        description: t("userDeleted"),
       });
-      
+
       // Refresh the page data
       router.refresh();
     } catch (err) {
-      console.error('Error deleting user:', err);
-      setError(err instanceof Error ? err.message : 'Unknown error occurred');
-      
+      console.error("Error deleting user:", err);
+      setError(err instanceof Error ? err.message : "Unknown error occurred");
+
       toast({
-        title: 'Delete Failed',
-        description: 'Failed to delete user. Please try again.',
-        variant: 'destructive',
+        title: "Delete Failed",
+        description: "Failed to delete user. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -125,30 +150,33 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
     try {
       setLoading(true);
       setError(null);
-      
+
       // Call the server action
       const result = await toggleUserAdminStatus(user.id, user.role);
-      
+
       if (!result.success) {
         throw new Error(result.error);
       }
-      
+
       // Show success toast
       toast({
-        title: user.role === 'ADMIN' ? 'Admin Rights Removed' : 'Admin Rights Granted',
-        description: `Successfully ${user.role === 'ADMIN' ? 'removed admin rights from' : 'granted admin rights to'} ${user.email}`,
+        title:
+          user.role === "ADMIN"
+            ? "Admin Rights Removed"
+            : "Admin Rights Granted",
+        description: `Successfully ${user.role === "ADMIN" ? "removed admin rights from" : "granted admin rights to"} ${user.email}`,
       });
-      
+
       // Refresh the page data
       router.refresh();
     } catch (err) {
-      console.error('Error toggling admin status:', err);
-      setError(err instanceof Error ? err.message : 'Unknown error occurred');
-      
+      console.error("Error toggling admin status:", err);
+      setError(err instanceof Error ? err.message : "Unknown error occurred");
+
       toast({
-        title: 'Operation Failed',
-        description: `Failed to ${user.role === 'ADMIN' ? 'remove admin rights' : 'grant admin rights'}. Please try again.`,
-        variant: 'destructive',
+        title: "Operation Failed",
+        description: `Failed to ${user.role === "ADMIN" ? "remove admin rights" : "grant admin rights"}. Please try again.`,
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -170,7 +198,7 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
               if (!loading) setShowAdminDrawer(true);
             }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!loading) setShowAdminDrawer(true);
@@ -179,14 +207,24 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
             className={cn(
               "flex h-8 items-center rounded-md transition-all duration-200",
               isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
-              user.role === 'ADMIN' ? "text-blue-600 hover:text-blue-700" : "text-purple-600 hover:text-purple-700",
-              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-muted"
+              user.role === "ADMIN"
+                ? "text-blue-600 hover:text-blue-700"
+                : "text-purple-600 hover:text-purple-700",
+              loading
+                ? "cursor-not-allowed opacity-50"
+                : "cursor-pointer hover:bg-muted",
             )}
           >
             <Shield className="size-4" />
-            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">{user.role === 'ADMIN' ? 'Remove Admin' : 'Make Admin'}</span>}
+            {isExpanded && (
+              <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">
+                {user.role === "ADMIN"
+                  ? tTable("removeAdmin")
+                  : tTable("makeAdmin")}
+              </span>
+            )}
           </div>
-          
+
           <div
             role="button"
             tabIndex={0}
@@ -196,7 +234,7 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
               if (!loading) setShowBanDrawer(true);
             }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!loading) setShowBanDrawer(true);
@@ -205,14 +243,28 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
             className={cn(
               "flex h-8 items-center rounded-md transition-all duration-200",
               isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
-              user.status === 'banned' ? "text-green-600 hover:text-green-700" : "text-amber-600 hover:text-amber-700",
-              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-muted"
+              user.status === "banned"
+                ? "text-green-600 hover:text-green-700"
+                : "text-amber-600 hover:text-amber-700",
+              loading
+                ? "cursor-not-allowed opacity-50"
+                : "cursor-pointer hover:bg-muted",
             )}
           >
-            {user.status === 'banned' ? <Unlock className="size-4" /> : <ShieldAlert className="size-4" />}
-            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">{user.status === 'banned' ? 'Unban' : 'Ban'}</span>}
+            {user.status === "banned" ? (
+              <Unlock className="size-4" />
+            ) : (
+              <X className="size-4" />
+            )}
+            {isExpanded && (
+              <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">
+                {user.status === "banned"
+                  ? tTable("unbanUser")
+                  : tTable("banUser")}
+              </span>
+            )}
           </div>
-          
+
           <div
             role="button"
             tabIndex={0}
@@ -222,7 +274,7 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
               if (!loading) setShowDeleteDrawer(true);
             }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!loading) setShowDeleteDrawer(true);
@@ -231,14 +283,20 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
             className={cn(
               "flex h-8 items-center rounded-md text-red-600 transition-all duration-200 hover:text-red-700",
               isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
-              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-muted"
+              loading
+                ? "cursor-not-allowed opacity-50"
+                : "cursor-pointer hover:bg-muted",
             )}
           >
             <Trash className="size-4" />
-            {isExpanded && <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">Delete</span>}
+            {isExpanded && (
+              <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">
+                {t("actions.delete")}
+              </span>
+            )}
           </div>
         </div>
-        
+
         {/* Confirmation Drawers are shared between all views */}
         {renderConfirmationDrawers()}
       </>
@@ -248,58 +306,43 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
   // For inline view, show buttons directly instead of dropdown
   if (inline) {
     return (
-      <>
-        <div className={flexContainerClasses}>
-          <Button 
-            size="sm"
-            variant="outline"
-            disabled={loading}
-            onClick={() => setShowAdminDrawer(true)}
-            className={user.role === 'ADMIN' ? "border-blue-600 text-blue-600" : "border-purple-600 text-purple-600"}
-          >
-            <Shield className="mr-2 size-4" />
-            <span className="hidden sm:inline">{user.role === 'ADMIN' ? 'Remove Admin' : 'Make Admin'}</span>
-            <span className="sm:hidden">{user.role === 'ADMIN' ? 'Demote' : 'Promote'}</span>
-          </Button>
-          
-          <Button 
-            size="sm"
-            variant="outline"
-            disabled={loading}
-            onClick={() => setShowBanDrawer(true)}
-            className={user.status === 'banned' ? "border-green-600 text-green-600" : "border-amber-600 text-amber-600"}
-          >
-            {user.status === 'banned' ? (
-              <>
-                <Unlock className="mr-2 size-4" />
-                <span className="hidden sm:inline">Unban User</span>
-                <span className="sm:hidden">Unban</span>
-              </>
-            ) : (
-              <>
-                <ShieldAlert className="mr-2 size-4" />
-                <span className="hidden sm:inline">Ban User</span>
-                <span className="sm:hidden">Ban</span>
-              </>
-            )}
-          </Button>
-          
-          <Button 
-            size="sm"
-            variant="outline"
-            disabled={loading}
-            onClick={() => setShowDeleteDrawer(true)}
-            className="border-red-600 text-red-600"
-          >
-            <Trash className="mr-2 size-4" />
-            <span className="hidden sm:inline">Delete User</span>
-            <span className="sm:hidden">Delete</span>
-          </Button>
-        </div>
-        
-        {/* Confirmation Drawers are shared between both views */}
+      <div className={flexContainerClasses}>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={loading}
+          onClick={() => setShowAdminDrawer(true)}
+        >
+          <Shield className="mr-1 size-4" />
+          {user.role === "ADMIN" ? tTable("removeAdmin") : tTable("makeAdmin")}
+        </Button>
+
+        <Button
+          variant={user.status === "banned" ? "outline" : "destructive"}
+          size="sm"
+          disabled={loading}
+          onClick={() => setShowBanDrawer(true)}
+        >
+          {user.status === "banned" ? (
+            <Unlock className="mr-1 size-4" />
+          ) : (
+            <X className="mr-1 size-4" />
+          )}
+          {user.status === "banned" ? tTable("unbanUser") : tTable("banUser")}
+        </Button>
+
+        <Button
+          variant="destructive"
+          size="sm"
+          disabled={loading}
+          onClick={() => setShowDeleteDrawer(true)}
+        >
+          <Trash className="mr-1 size-4" />
+          {t("actions.delete")}
+        </Button>
+
         {renderConfirmationDrawers()}
-      </>
+      </div>
     );
   }
 
@@ -308,70 +351,49 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="size-8 p-0" variant="ghost">
+          <Button variant="ghost" className="size-8 p-0">
             <span className="sr-only">Open menu</span>
             <MoreHorizontal className="size-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("userDetails")}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          
-          {/* Toggle Admin Status Option */}
-          <DropdownMenuItem 
-            disabled={loading}
-            onClick={() => setShowAdminDrawer(true)}
-            className="cursor-pointer"
-          >
-            {user.role === 'ADMIN' ? (
+          <DropdownMenuItem onClick={() => setShowAdminDrawer(true)}>
+            <Shield className="mr-2 size-4" />
+            {user.role === "ADMIN"
+              ? tTable("removeAdmin")
+              : tTable("makeAdmin")}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setShowBanDrawer(true)}>
+            {user.status === "banned" ? (
               <>
-                <Shield className="mr-2 size-4 text-blue-600" />
-                <span className="text-blue-600">Remove Admin</span>
+                <Unlock className="mr-2 size-4" />
+                {tTable("unbanUser")}
               </>
             ) : (
               <>
-                <Shield className="mr-2 size-4 text-purple-600" />
-                <span className="text-purple-600">Make Admin</span>
+                <X className="mr-2 size-4" />
+                {tTable("banUser")}
               </>
             )}
           </DropdownMenuItem>
-          
-          {/* Ban/Unban User Option */}
-          <DropdownMenuItem 
-            disabled={loading}
-            onClick={() => setShowBanDrawer(true)}
-            className="cursor-pointer"
-          >
-            {user.status === 'banned' ? (
-              <>
-                <Unlock className="mr-2 size-4 text-green-600" />
-                <span className="text-green-600">Unban User</span>
-              </>
-            ) : (
-              <>
-                <ShieldAlert className="mr-2 size-4 text-amber-600" />
-                <span className="text-amber-600">Ban User</span>
-              </>
-            )}
-          </DropdownMenuItem>
-          
-          {/* Delete User Option */}
-          <DropdownMenuItem 
-            disabled={loading}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
             onClick={() => setShowDeleteDrawer(true)}
-            className="cursor-pointer"
           >
-            <Trash className="mr-2 size-4 text-red-600" />
-            <span className="text-red-600">Delete User</span>
+            <Trash className="mr-2 size-4" />
+            {t("actions.delete")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      
+
       {/* Shared confirmation drawers */}
       {renderConfirmationDrawers()}
     </>
   );
-  
+
   // Helper function to render shared confirmation drawers
   function renderConfirmationDrawers() {
     return (
@@ -382,11 +404,13 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
             <DrawerHeader className="border-b">
               <div className="flex items-center justify-between">
                 <DrawerTitle className="text-lg font-semibold">
-                  {user.role === 'ADMIN' ? 'Remove Admin Rights' : 'Grant Admin Rights'}
+                  {user.role === "ADMIN"
+                    ? "Remove Admin Rights"
+                    : "Grant Admin Rights"}
                 </DrawerTitle>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setShowAdminDrawer(false)}
                 >
                   <X className="size-4" />
@@ -397,14 +421,15 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
                   <UserAvatar className="size-12" user={user} />
                   <div>
                     <p className="font-medium">{user.name || user.email}</p>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {user.email}
+                    </p>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {user.role === 'ADMIN' 
+                  {user.role === "ADMIN"
                     ? `This will remove admin privileges from ${user.email}.`
-                    : `This will grant admin privileges to ${user.email}, giving them full access to the admin panel.`
-                  }
+                    : `This will grant admin privileges to ${user.email}, giving them full access to the admin panel.`}
                 </p>
               </DrawerDescription>
             </DrawerHeader>
@@ -413,29 +438,37 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
                 <DrawerClose asChild>
                   <Button variant="outline">Cancel</Button>
                 </DrawerClose>
-                <Button 
+                <Button
                   disabled={loading}
                   onClick={handleToggleAdmin}
-                  className={user.role === 'ADMIN' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-purple-600 hover:bg-purple-700'}
+                  className={
+                    user.role === "ADMIN"
+                      ? "bg-blue-600 hover:bg-blue-700"
+                      : "bg-purple-600 hover:bg-purple-700"
+                  }
                 >
-                  {loading ? 'Processing...' : user.role === 'ADMIN' ? 'Remove Admin' : 'Make Admin'}
+                  {loading
+                    ? "Processing..."
+                    : user.role === "ADMIN"
+                      ? "Remove Admin"
+                      : "Make Admin"}
                 </Button>
               </div>
             </DrawerFooter>
           </DrawerContent>
         </Drawer>
-        
+
         {/* Ban/Unban Confirmation Drawer */}
         <Drawer open={showBanDrawer} onOpenChange={setShowBanDrawer}>
           <DrawerContent>
             <DrawerHeader className="border-b">
               <div className="flex items-center justify-between">
                 <DrawerTitle className="text-lg font-semibold">
-                  {user.status === 'banned' ? 'Unban User' : 'Ban User'}
+                  {user.status === "banned" ? "Unban User" : "Ban User"}
                 </DrawerTitle>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setShowBanDrawer(false)}
                 >
                   <X className="size-4" />
@@ -446,14 +479,15 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
                   <UserAvatar className="size-12" user={user} />
                   <div>
                     <p className="font-medium">{user.name || user.email}</p>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {user.email}
+                    </p>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {user.status === 'banned' 
+                  {user.status === "banned"
                     ? `This will unban ${user.email} and restore their access to the application.`
-                    : `This will ban ${user.email} and prevent them from accessing the application.`
-                  }
+                    : `This will ban ${user.email} and prevent them from accessing the application.`}
                 </p>
               </DrawerDescription>
             </DrawerHeader>
@@ -462,27 +496,37 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
                 <DrawerClose asChild>
                   <Button variant="outline">Cancel</Button>
                 </DrawerClose>
-                <Button 
+                <Button
                   disabled={loading}
                   onClick={handleBanUser}
-                  className={user.status === 'banned' ? 'bg-green-600 hover:bg-green-700' : 'bg-amber-600 hover:bg-amber-700'}
+                  className={
+                    user.status === "banned"
+                      ? "bg-green-600 hover:bg-green-700"
+                      : "bg-amber-600 hover:bg-amber-700"
+                  }
                 >
-                  {loading ? 'Processing...' : user.status === 'banned' ? 'Unban User' : 'Ban User'}
+                  {loading
+                    ? "Processing..."
+                    : user.status === "banned"
+                      ? "Unban User"
+                      : "Ban User"}
                 </Button>
               </div>
             </DrawerFooter>
           </DrawerContent>
         </Drawer>
-        
+
         {/* Delete User Confirmation Drawer */}
         <Drawer open={showDeleteDrawer} onOpenChange={setShowDeleteDrawer}>
           <DrawerContent>
             <DrawerHeader className="border-b">
               <div className="flex items-center justify-between">
-                <DrawerTitle className="text-lg font-semibold">Delete User</DrawerTitle>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <DrawerTitle className="text-lg font-semibold">
+                  Delete User
+                </DrawerTitle>
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setShowDeleteDrawer(false)}
                 >
                   <X className="size-4" />
@@ -493,11 +537,15 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
                   <UserAvatar className="size-12" user={user} />
                   <div>
                     <p className="font-medium">{user.name || user.email}</p>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {user.email}
+                    </p>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  This will permanently delete the user account for <span className="font-medium">{user.email}</span>. This action cannot be undone.
+                  This will permanently delete the user account for{" "}
+                  <span className="font-medium">{user.email}</span>. This action
+                  cannot be undone.
                 </p>
               </DrawerDescription>
             </DrawerHeader>
@@ -506,12 +554,12 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
                 <DrawerClose asChild>
                   <Button variant="outline">Cancel</Button>
                 </DrawerClose>
-                <Button 
+                <Button
                   disabled={loading}
                   onClick={handleDeleteUser}
                   className="bg-red-600 hover:bg-red-700"
                 >
-                  {loading ? 'Processing...' : 'Delete User'}
+                  {loading ? "Processing..." : "Delete User"}
                 </Button>
               </div>
             </DrawerFooter>
@@ -520,4 +568,4 @@ export function UserActions({ user, inline = false, compact = false, isExpanded 
       </>
     );
   }
-} 
+}

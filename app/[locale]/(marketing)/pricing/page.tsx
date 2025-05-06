@@ -1,14 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
+import { UserSubscriptionPlan } from "@/types";
 
+import { pricingData } from "@/config/subscriptions";
 import { getCurrentUser } from "@/lib/session";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { constructMetadata, resolveStaticPath } from "@/lib/utils";
 import { ComparePlans } from "@/components/pricing/compare-plans";
 import { PricingCards } from "@/components/pricing/pricing-cards";
 import { PricingFaq } from "@/components/pricing/pricing-faq";
-import { pricingData } from "@/config/subscriptions";
-import { UserSubscriptionPlan } from "@/types";
 
 export const dynamic = "force-dynamic";
 
