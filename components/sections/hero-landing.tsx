@@ -1,12 +1,12 @@
 import { Link } from "@/i18n/routing";
+import { getTranslations } from "next-intl/server";
 
 import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
 import { cn, nFormatter } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { Icons } from "@/components/shared/icons";
 import LanguageSwitcher from "@/components/language-switcher";
-import { getTranslations } from "next-intl/server";
+import { Icons } from "@/components/shared/icons";
 
 export default async function HeroLanding() {
   let stars = 0;
@@ -23,9 +23,9 @@ export default async function HeroLanding() {
         }),
         // data will revalidate every hour
         next: { revalidate: 3600 },
-      }
+      },
     );
-    
+
     if (response.ok) {
       const data = await response.json();
       stars = data.stargazers_count || 0;
@@ -43,7 +43,7 @@ export default async function HeroLanding() {
         <div className="absolute right-4 top-4">
           <LanguageSwitcher />
         </div>
-        
+
         <Link
           href="https://twitter.com/miickasmt/status/1810465801649938857"
           className={cn(
@@ -53,7 +53,8 @@ export default async function HeroLanding() {
           target="_blank"
         >
           <span className="mr-3">🎉</span>
-          <span className="hidden md:flex">{t("introducing")}&nbsp;</span> {t("nextAuthRoles")}
+          <span className="hidden md:flex">{t("introducing")}&nbsp;</span>{" "}
+          {t("nextAuthRoles")}
           <Icons.twitter className="ml-2 size-3.5" />
         </Link>
 
@@ -101,8 +102,8 @@ export default async function HeroLanding() {
           >
             <Icons.gitHub className="mr-2 size-4" />
             <p>
-              <span className="hidden sm:inline-block">{t("starOn")}</span> GitHub{" "}
-              <span className="font-semibold">{nFormatter(stars)}</span>
+              <span className="hidden sm:inline-block">{t("starOn")}</span>{" "}
+              GitHub <span className="font-semibold">{nFormatter(stars)}</span>
             </p>
           </Link>
         </div>

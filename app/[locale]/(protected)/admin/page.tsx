@@ -43,8 +43,9 @@ type Props = {
 };
 
 export default async function AdminPanelPage(props: Props) {
-  // Extract locale safely from props
+  // Await the params to resolve the Promise
   const resolvedParams = await props.params;
+  // Extract locale safely from resolved params
   const locale = resolvedParams.locale;
 
   const user = await getCurrentUser();

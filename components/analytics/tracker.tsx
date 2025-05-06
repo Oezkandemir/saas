@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   recordPageView,
@@ -75,42 +75,45 @@ export function AnalyticsTracker() {
     return browserInfo;
   };
 
-  // Function to track page view
-  const trackPageView = async (url: string, referrer: string | null) => {
-    if (!sessionIdRef.current) {
-      sessionIdRef.current = uuidv4();
-    }
-
-    // Calculate time spent on previous page
-    let duration: number | null = null;
-    if (viewStartTimeRef.current !== null) {
-      duration = Math.floor((Date.now() - viewStartTimeRef.current) / 1000);
-    }
-    viewStartTimeRef.current = Date.now();
-
-    try {
-      const browserInfo = getBrowserInfo();
-      const userId = session?.user?.id;
-      const pageTitle = document.title;
-
-      if (sessionIdRef.current) {
-        await recordPageView({
-          userId: userId || null,
-          sessionId: sessionIdRef.current,
-          pagePath: url,
-          pageTitle,
-          referrer: referrer || null,
-          duration: duration,
-          browser: browserInfo.browser,
-          os: browserInfo.os,
-          deviceType: browserInfo.deviceType,
-          screenSize: browserInfo.screenSize,
-        });
+  // Function to track page view - wrap in useCallback
+  const trackPageView = useCallback(
+    async (url: string, referrer: string | null) => {
+      if (!sessionIdRef.current) {
+        sessionIdRef.current = uuidv4();
       }
-    } catch (error) {
-      console.error("Error tracking page view:", error);
-    }
-  };
+
+      // Calculate time spent on previous page
+      let duration: number | null = null;
+      if (viewStartTimeRef.current !== null) {
+        duration = Math.floor((Date.now() - viewStartTimeRef.current) / 1000);
+      }
+      viewStartTimeRef.current = Date.now();
+
+      try {
+        const browserInfo = getBrowserInfo();
+        const userId = session?.user?.id;
+        const pageTitle = document.title;
+
+        if (sessionIdRef.current) {
+          await recordPageView({
+            userId: userId || null,
+            sessionId: sessionIdRef.current,
+            pagePath: url,
+            pageTitle,
+            referrer: referrer || null,
+            duration: duration,
+            browser: browserInfo.browser,
+            os: browserInfo.os,
+            deviceType: browserInfo.deviceType,
+            screenSize: browserInfo.screenSize,
+          });
+        }
+      } catch (error) {
+        console.error("Error tracking page view:", error);
+      }
+    },
+    [session],
+  );
 
   // Set up global click tracking
   useEffect(() => {
@@ -240,7 +243,7 @@ export function AnalyticsTracker() {
         }
       }
     };
-  }, [pathname, searchParams, session]);
+  }, [pathname, searchParams, session, trackPageView]);
 
   // This component doesn't render anything
   return null;

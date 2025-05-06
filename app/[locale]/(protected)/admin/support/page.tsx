@@ -18,14 +18,16 @@ export async function generateMetadata() {
 }
 
 type Props = {
-  params: {
+  params: Promise<{
     locale: string;
-  };
+  }>;
 };
 
 export default async function AdminSupportPage(props: Props) {
-  // Extract locale safely from props
-  const locale = props.params.locale;
+  // Await the params to resolve the Promise
+  const resolvedParams = await props.params;
+  // Extract locale safely from resolved params
+  const locale = resolvedParams.locale;
 
   const user = await getCurrentUser();
   const tSupport = await getTranslations("Admin.support");

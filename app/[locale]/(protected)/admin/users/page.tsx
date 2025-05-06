@@ -25,12 +25,15 @@ export async function generateMetadata() {
 }
 
 type Props = {
-  params: {
+  params: Promise<{
     locale: string;
-  };
+  }>;
 };
 
 export default async function AdminUsersPage(props: Props) {
+  // Await the params to resolve the Promise
+  await props.params;
+
   const user = await getCurrentUser();
   const tUsers = await getTranslations("Admin.users");
 

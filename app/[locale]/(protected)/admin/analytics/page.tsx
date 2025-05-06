@@ -40,7 +40,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart } from "@/components/charts/bar-chart";
 import { LineChart } from "@/components/charts/line-chart";
-import { PieChart } from "@/components/charts/pie-chart";
 import { DashboardHeader } from "@/components/dashboard/header";
 
 export const metadata = constructMetadata({
@@ -593,7 +592,7 @@ export default async function AnalyticsPage() {
               </CardHeader>
               <CardContent className="h-80">
                 {deviceLabels.length > 0 ? (
-                  <PieChart
+                  <BarChart
                     data={{
                       labels: deviceLabels,
                       datasets: [
@@ -634,7 +633,7 @@ export default async function AnalyticsPage() {
               </CardHeader>
               <CardContent className="h-80">
                 {browserLabels.length > 0 ? (
-                  <PieChart
+                  <BarChart
                     data={{
                       labels: browserLabels,
                       datasets: [

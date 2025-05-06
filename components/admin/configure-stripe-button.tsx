@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import { configureStripePortal } from "@/actions/configure-stripe-portal";
-import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/shared/icons";
 import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Icons } from "@/components/shared/icons";
 
 export function ConfigureStripePortalButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +25,7 @@ export function ConfigureStripePortalButton() {
     try {
       const result = await configureStripePortal();
       setResult(result);
-      
+
       if (result.success) {
         toast.success(result.message);
       } else {
@@ -48,14 +49,16 @@ export function ConfigureStripePortalButton() {
       </CardHeader>
       <CardContent>
         <p className="mb-4 text-sm text-muted-foreground">
-          Click the button below to configure the Stripe Customer Portal with the
-          recommended settings for subscription management. This will allow users
-          to manage their subscriptions, update payment methods, and view billing
-          history.
+          Click the button below to configure the Stripe Customer Portal with
+          the recommended settings for subscription management. This will allow
+          users to manage their subscriptions, update payment methods, and view
+          billing history.
         </p>
-        
+
         {result && (
-          <div className={`my-4 rounded-md border p-3 ${result.success ? 'border-green-200 bg-green-50 text-green-700' : 'border-red-200 bg-red-50 text-red-700'}`}>
+          <div
+            className={`my-4 rounded-md border p-3 ${result.success ? "border-green-200 bg-green-50 text-green-700" : "border-red-200 bg-red-50 text-red-700"}`}
+          >
             <p className="font-medium">{result.message}</p>
             {result.details && (
               <pre className="mt-2 overflow-auto text-xs">
@@ -66,8 +69,8 @@ export function ConfigureStripePortalButton() {
         )}
 
         <p className="mb-4 text-sm text-muted-foreground">
-          Go to Stripe dashboard, and then &quot;Configure branding&quot; and &quot;Configure
-          email&quot; on this link
+          Go to Stripe dashboard, and then &quot;Configure branding&quot; and
+          &quot;Configure email&quot; on this link
         </p>
         <p className="mb-4 text-sm text-muted-foreground">
           Paste the Stripe API key from Stripe Dashboard -&gt; API keys -&gt;
@@ -87,13 +90,11 @@ export function ConfigureStripePortalButton() {
         </div>
       </CardContent>
       <CardFooter>
-        <Button
-          onClick={handleConfigure}
-          disabled={isLoading}
-        >
+        <Button onClick={handleConfigure} disabled={isLoading}>
           {isLoading ? (
             <>
-              <Icons.spinner className="mr-2 size-4 animate-spin" /> Configuring...
+              <Icons.spinner className="mr-2 size-4 animate-spin" />{" "}
+              Configuring...
             </>
           ) : (
             <>
@@ -104,4 +105,4 @@ export function ConfigureStripePortalButton() {
       </CardFooter>
     </Card>
   );
-} 
+}
