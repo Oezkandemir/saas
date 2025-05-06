@@ -69,7 +69,7 @@ export default async function AdminPanelPage() {
       
       {/* User Stats Section */}
       <div className="mb-6 mt-6">
-        <h2 className="mb-3 text-lg font-medium">User Statistics</h2>
+        <h2 className="mb-3 text-lg font-medium">User Statisticsss</h2>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <Card className="overflow-hidden border-l-4 border-l-blue-500">
             <CardContent className="flex items-center justify-between p-4">
