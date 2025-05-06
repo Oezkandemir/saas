@@ -272,6 +272,10 @@
       "heading": "Admin Panel",
       "subheading": "Manage your application settings, users, and support tickets"
     },
+    "configuration": {
+      "title": "Configuration",
+      "description": "Configure Stripe customer portal settings"
+    },
     "stats": {
       "userStats": "User Statistics",
       "ticketStatus": "Support Ticket Status",

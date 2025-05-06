@@ -54,6 +54,7 @@ export default async function AdminPanelPage(props: Props) {
   const tUsers = await getTranslations("Admin.users");
   const tSupport = await getTranslations("Admin.support");
   const tStats = await getTranslations("Admin.stats");
+  const tConfig = await getTranslations("Admin.configuration");
 
   if (!user?.email) {
     redirect("/login");
@@ -295,9 +296,9 @@ export default async function AdminPanelPage(props: Props) {
           <CardHeader className="bg-muted/50">
             <CardTitle className="flex items-center">
               <Settings className="mr-2 size-5" />
-              Stripe {t("configuration")}
+              Stripe {tConfig("title")}
             </CardTitle>
-            <CardDescription>{t("configure_stripe_portal")}</CardDescription>
+            <CardDescription>{tConfig("description")}</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <ConfigureStripePortalButton />

@@ -1,6 +1,5 @@
-import { UserRole } from "@/components/forms/user-role-form";
-
 import { SidebarNavItem } from "types";
+import { UserRole } from "@/components/forms/user-role-form";
 
 export const sidebarLinks: SidebarNavItem[] = [
   {
@@ -51,9 +50,9 @@ export const sidebarLinks: SidebarNavItem[] = [
     items: [
       { href: "/dashboard/settings", icon: "settings", title: "Settings" },
       {
-        href: "/profile/notifications", 
-        icon: "bell", 
-        title: "Notifications"
+        href: "/profile/notifications",
+        icon: "bell",
+        title: "Notifications",
       },
       { href: "/", icon: "home", title: "Homepage" },
       { href: "/docs", icon: "bookOpen", title: "Documentation" },
@@ -61,7 +60,7 @@ export const sidebarLinks: SidebarNavItem[] = [
         href: "/dashboard/support",
         icon: "messages",
         title: "Support",
-        authorizeOnly: UserRole.USER
+        authorizeOnly: UserRole.USER,
       },
     ],
   },

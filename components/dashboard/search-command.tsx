@@ -36,6 +36,13 @@ export function SearchCommand({ links }: { links: SidebarNavItem[] }) {
     command();
   }, []);
 
+  const handleItemSelect = React.useCallback(
+    (href: string) => {
+      runCommand(() => router.push(href));
+    },
+    [runCommand, router],
+  );
+
   return (
     <>
       <Button
@@ -65,9 +72,8 @@ export function SearchCommand({ links }: { links: SidebarNavItem[] }) {
                 return (
                   <CommandItem
                     key={item.title}
-                    onSelect={() => {
-                      runCommand(() => router.push(item.href as string));
-                    }}
+                    onSelect={() => handleItemSelect(item.href as string)}
+                    onClick={() => handleItemSelect(item.href as string)}
                   >
                     <Icon className="mr-2 size-5" />
                     {item.title}

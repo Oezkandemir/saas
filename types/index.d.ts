@@ -1,6 +1,6 @@
 import type { Icon } from "lucide-react";
-import { UserRole } from "@/components/forms/user-role-form";
 
+import { UserRole } from "@/components/forms/user-role-form";
 import { Icons } from "@/components/shared/icons";
 
 // Define the User interface that was previously from Prisma

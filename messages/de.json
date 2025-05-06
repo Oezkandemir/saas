@@ -272,6 +272,10 @@
       "heading": "Admin-Panel",
       "subheading": "Verwalten Sie Ihre Anwendungseinstellungen, Benutzer und Support-Tickets"
     },
+    "configuration": {
+      "title": "Konfiguration",
+      "description": "Stripe-Kundenportaleinstellungen konfigurieren"
+    },
     "stats": {
       "userStats": "Benutzerstatistiken",
       "ticketStatus": "Support-Ticket-Status",
