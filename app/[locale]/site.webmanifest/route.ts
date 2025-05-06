@@ -30,7 +30,10 @@ export async function GET(
 
   return NextResponse.json(manifest, {
     headers: {
-      "Content-Type": "application/manifest+json"
+      "Content-Type": "application/manifest+json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET",
+      "Access-Control-Allow-Headers": "Content-Type"
     }
   });
 } 

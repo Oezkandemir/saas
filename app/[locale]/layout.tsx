@@ -47,7 +47,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
-        <link rel="manifest" href={`/${locale}/site.webmanifest`} />
+        <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body
         className={cn(
