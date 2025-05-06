@@ -267,10 +267,7 @@ export default async function AdminPanelPage(props: Props) {
             </Link>
           </CardContent>
         </Card>
-      </div>
 
-      {/* Analytics Section */}
-      <div className="mb-8">
         <Card className="overflow-hidden">
           <CardHeader className="bg-muted/50">
             <CardTitle className="flex items-center">
@@ -281,19 +278,29 @@ export default async function AdminPanelPage(props: Props) {
           </CardHeader>
           <CardContent className="pt-6">
             <p className="mb-4 text-sm text-muted-foreground">
-              {tStats("comingSoon")}
+              {tStats("analyticsDashboard")} - {tStats("trackMetrics")}
             </p>
-            <Button disabled className="gap-2">
-              {tStats("viewAnalytics")}
-              <BarChart4 className="size-4" />
-            </Button>
+            <Link href={`/${locale}/admin/analytics`}>
+              <Button className="gap-2">
+                {tStats("viewAnalytics")}
+                <BarChart4 className="size-4" />
+              </Button>
+            </Link>
           </CardContent>
         </Card>
-      </div>
 
-      {/* Stripe Configuration */}
-      <div className="mb-8">
-        <ConfigureStripePortalButton />
+        <Card className="overflow-hidden">
+          <CardHeader className="bg-muted/50">
+            <CardTitle className="flex items-center">
+              <Settings className="mr-2 size-5" />
+              Stripe {t("configuration")}
+            </CardTitle>
+            <CardDescription>{t("configure_stripe_portal")}</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <ConfigureStripePortalButton />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

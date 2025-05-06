@@ -15,7 +15,7 @@ import {
   Unlock,
   X,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -63,6 +63,7 @@ export function UserActions({
 }: UserActionsProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const activeLocale = useLocale(); // Get the current locale from the context
   const t = useTranslations("Admin.users");
   const tTable = useTranslations("Admin.table");
 
@@ -158,7 +159,7 @@ export function UserActions({
         throw new Error(result.error);
       }
 
-      // Show success toast
+      // Show success toast with translated texts
       toast({
         title:
           user.role === "ADMIN"

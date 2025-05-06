@@ -62,6 +62,16 @@
       <p>Fully responsive design that looks great on all devices with Tailwind CSS.</p>
     </td>
   </tr>
+  <tr>
+    <td>
+      <h3>📊 Enhanced Analytics</h3>
+      <p>Comprehensive user behavior tracking with detailed dashboards for monitoring engagement, page views, and user flow.</p>
+    </td>
+    <td>
+      <h3>🧪 Testing</h3>
+      <p>Robust testing setup with Vitest and React Testing Library for reliable code.</p>
+    </td>
+  </tr>
 </table>
 
 ## 📋 About This Project
@@ -214,15 +224,15 @@ npm run i18n:translate
 
 ### Features Comparison
 
-| Feature | Starter | Pro | Business |
-| --- | :---: | :---: | :---: |
-| Monthly Posts | 100 | 500 | Unlimited |
-| Analytics | Basic | Advanced | Real-time |
-| Templates | Standard | Business | All + Custom |
-| Customer Support | Limited | Priority | 24/7 |
-| API Access | Limited | Standard | Enhanced |
-| Custom Branding | ❌ | ✅ | ✅ |
-| Onboarding | ❌ | Self-service | Assisted |
+| Feature          | Starter  |     Pro      |   Business   |
+| ---------------- | :------: | :----------: | :----------: |
+| Monthly Posts    |   100    |     500      |  Unlimited   |
+| Analytics        |  Basic   |   Advanced   |  Real-time   |
+| Templates        | Standard |   Business   | All + Custom |
+| Customer Support | Limited  |   Priority   |     24/7     |
+| API Access       | Limited  |   Standard   |   Enhanced   |
+| Custom Branding  |    ❌    |      ✅      |      ✅      |
+| Onboarding       |    ❌    | Self-service |   Assisted   |
 
 ## 📚 Documentation <a name="documentation"></a>
 
@@ -285,7 +295,7 @@ npm run i18n:translate
 next-saas-stripe-starter/
 ├── actions/            # Server actions for Next.js App Router
 ├── app/                # Next.js App Router pages and layouts
-│   ├── api/            # API routes 
+│   ├── api/            # API routes
 │   ├── auth/           # Authentication routes
 │   └── [locale]/       # Localized routes
 │       ├── (auth)/     # Authentication pages
@@ -326,8 +336,8 @@ The Stripe integration relies on webhooks to keep subscription status in sync. T
 ```tsx
 // Example of authenticated route protection
 // app/[locale]/(protected)/layout.tsx
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 
 export default async function ProtectedLayout({
   children,
@@ -335,11 +345,11 @@ export default async function ProtectedLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-  
+
   if (!session) {
     redirect("/signin");
   }
-  
+
   return <>{children}</>;
 }
 ```
@@ -397,6 +407,37 @@ Created by [@miickasmt](https://twitter.com/miickasmt) in 2023.
 ## 🙏 Credits
 
 This project was inspired by:
+
 - Shadcn's [Taxonomy](https://github.com/shadcn-ui/taxonomy)
 - Steven Tey's [Precedent](https://github.com/steven-tey/precedent)
 - Antonio Erdeljac's [Next 13 AI SaaS](https://github.com/AntonioErdeljac/next13-ai-saas)
+
+## Analytics Tracking
+
+The SaaS starter comes with a comprehensive analytics tracking system that allows you to monitor user behavior in detail:
+
+### User Behavior Tracking
+
+- **Page Views**: Track which pages users visit, how long they stay, and where they came from
+- **User Interactions**: Monitor clicks, form submissions, and other interactions
+- **Technical Data**: Collect information about users' browsers, operating systems, and devices
+- **Engagement Metrics**: Measure bounce rates, average session duration, and more
+
+### Analytics Dashboard
+
+The admin analytics dashboard provides detailed visualizations and metrics:
+
+- User growth and retention
+- Page popularity and performance
+- User engagement patterns
+- Technical analytics (browser/device usage)
+- User flow analysis
+
+### Privacy-Focused
+
+The analytics system is designed with privacy in mind:
+
+- No personal data is collected without consent
+- Form values are not stored (only field names)
+- All tracking is first-party (no third-party cookies)
+- Easy to customize for compliance with privacy regulations

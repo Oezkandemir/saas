@@ -283,8 +283,21 @@
       "supportTicketsDesc": "Review, respond to, and resolve user support tickets. Track ticket status and maintain communication with users.",
       "analyticsDashboard": "Analytics Dashboard",
       "trackMetrics": "Track key metrics and app performance",
-      "comingSoon": "Coming soon! Get insights into user activity, subscription conversions, and overall platform usage.",
-      "viewAnalytics": "View Analytics"
+      "viewAnalytics": "View Analytics",
+      "userGrowth": "User Growth",
+      "newUserSignups": "New user signups by month",
+      "supportTicketStatus": "Support Ticket Status",
+      "currentStatus": "Current status of support tickets",
+      "recentLogins": "Recent Logins",
+      "lastLoginActivities": "Last user login activities",
+      "recentSubscriptions": "Recent Subscriptions",
+      "latestActive": "Latest active subscriptions",
+      "noUserGrowthData": "No user growth data available",
+      "noRecentLoginActivity": "No recent login activity",
+      "noActiveSubscriptions": "No active subscriptions",
+      "notAvailable": "Not available",
+      "errorLoadingAnalytics": "Error loading analytics data",
+      "tryAgainLater": "Please try again later"
     },
     "users": {
       "management": "User Management",
@@ -374,8 +387,8 @@
       "replyToTicket": "Reply to Ticket",
       "updateStatus": "Update Status",
       "ticketUpdated": "Ticket updated successfully",
-      "allTickets": "Alle Support-Tickets",
-      "inProgressDescription": "Derzeit in Bearbeitung"
+      "allTickets": "All Support Tickets",
+      "inProgressDescription": "Currently being handled"
     },
     "table": {
       "name": "Name",
@@ -399,8 +412,8 @@
       "confirmBan": "Are you sure you want to ban this user?",
       "confirmUnban": "Are you sure you want to unban this user?",
       "never": "Never",
-      "makeAdmin": "Zum Admin machen",
-      "removeAdmin": "Admin-Rechte entfernen"
+      "makeAdmin": "Make Admin",
+      "removeAdmin": "Remove Admin Rights"
     }
   },
   "DashboardSidebar": {
@@ -463,12 +476,12 @@
       "reply": "Reply",
       "yourMessage": "Your message",
       "sendReply": "Send Reply",
-      "backToTickets": "Zurück zu den Tickets",
-      "lastUpdate": "Letzte Aktualisierung",
-      "noMessagesAdmin": "Noch keine Nachrichten in diesem Ticket.",
-      "ticketFrom": "Ticket von",
-      "user": "Benutzer",
-      "noEmail": "Keine E-Mail"
+      "backToTickets": "Back to Tickets",
+      "lastUpdate": "Last Update",
+      "noMessagesAdmin": "No messages in this ticket yet.",
+      "ticketFrom": "Ticket from",
+      "user": "User",
+      "noEmail": "No Email"
     },
     "supportChannels": {
       "title": "Support Channels",

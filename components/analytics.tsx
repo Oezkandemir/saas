@@ -1,7 +1,14 @@
-"use client"
+"use client";
 
-import { Analytics as VercelAnalytics } from "@vercel/analytics/react"
+import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
+
+import { AnalyticsTracker } from "./analytics/tracker";
 
 export function Analytics() {
-  return <VercelAnalytics />
+  return (
+    <>
+      <VercelAnalytics />
+      <AnalyticsTracker />
+    </>
+  );
 }
