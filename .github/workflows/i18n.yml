@@ -19,8 +19,13 @@ jobs:
         with:
           node-version: '18'
       
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
           
       - name: Validate inlang project
         run: npx @inlang/cli@latest validate --project ./project.inlang
