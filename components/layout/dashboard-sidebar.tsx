@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { NavItem, SidebarNavItem } from "@/types";
 import { Menu, PanelLeftClose, PanelRightClose } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useNotifications } from "@/hooks/use-notifications";
 
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
@@ -31,6 +32,7 @@ interface DashboardSidebarProps {
 export function DashboardSidebar({ links }: DashboardSidebarProps) {
   const path = usePathname();
   const t = useTranslations("DashboardSidebar");
+  const { unreadCount } = useNotifications();
 
   // NOTE: Use this if you want save in local storage -- Credits: Hosna Qasmei
   //
@@ -68,7 +70,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
         <ScrollArea className="h-full overflow-y-auto border-r">
           <aside
             className={cn(
-              isSidebarExpanded ? "w-[220px] xl:w-[260px]" : "w-[68px]",
+              isSidebarExpanded ? "w-[260px] xl:w-[300px]" : "w-[68px]",
               "hidden h-screen md:block",
             )}
           >
@@ -116,6 +118,10 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                         defaultValue: item.title
                       });
                       
+                      // Add notification badge for notification items
+                      const showNotificationBadge = 
+                        item.title.toLowerCase() === "notifications" && unreadCount > 0;
+                      
                       return (
                         item.href && (
                           <Fragment key={`link-fragment-${item.title}`}>
@@ -132,11 +138,17 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                     "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
                                 )}
                               >
-                                <Icon className="size-5" />
-                                {translatedTitle}
+                                <Icon className="size-5 min-w-5 flex-shrink-0" />
+                                <span className="truncate">{translatedTitle}</span>
                                 {item.badge && (
                                   <Badge className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full">
                                     {item.badge}
+                                  </Badge>
+                                )}
+                                {/* Add notification badge */}
+                                {showNotificationBadge && (
+                                  <Badge className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full bg-red-500 text-white" variant="outline">
+                                    {unreadCount > 99 ? "99+" : unreadCount}
                                   </Badge>
                                 )}
                               </Link>
@@ -153,15 +165,22 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                         : "text-muted-foreground hover:text-accent-foreground",
                                       item.disabled &&
                                         "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
+                                      "relative", // Add relative positioning for badge
                                     )}
                                   >
                                     <span className="flex size-full items-center justify-center">
-                                      <Icon className="size-5" />
+                                      <Icon className="size-5 min-w-5 flex-shrink-0" />
+                                      {showNotificationBadge && (
+                                        <span className="absolute -right-2 -top-2 flex size-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                                          {unreadCount > 9 ? "9+" : unreadCount}
+                                        </span>
+                                      )}
                                     </span>
                                   </Link>
                                 </TooltipTrigger>
                                 <TooltipContent side="right">
                                   {translatedTitle}
+                                  {showNotificationBadge && ` (${unreadCount})`}
                                 </TooltipContent>
                               </Tooltip>
                             )}
@@ -189,6 +208,7 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
   const [open, setOpen] = useState(false);
   const { isSm, isMobile } = useMediaQuery();
   const t = useTranslations("DashboardSidebar");
+  const { unreadCount } = useNotifications();
 
   if (isSm || isMobile) {
     return (
@@ -203,7 +223,7 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
             <span className="sr-only">{t("toggleNavigationMenu")}</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="flex flex-col p-0">
+        <SheetContent side="left" className="flex max-w-[280px] flex-col p-0 sm:max-w-[320px]">
           <ScrollArea className="h-full overflow-y-auto">
             <SheetTitle className="sr-only">
               Navigation Menu
@@ -237,6 +257,10 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                         defaultValue: item.title
                       });
                       
+                      // Add notification badge for notification items
+                      const showNotificationBadge = 
+                        item.title.toLowerCase() === "notifications" && unreadCount > 0;
+                      
                       return (
                         item.href && (
                           <Fragment key={`link-fragment-${item.title}`}>
@@ -255,11 +279,17 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                                   "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
                               )}
                             >
-                              <Icon className="size-5" />
-                              {translatedTitle}
+                              <Icon className="size-5 min-w-5 flex-shrink-0" />
+                              <span className="truncate">{translatedTitle}</span>
                               {item.badge && (
                                 <Badge className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full">
                                   {item.badge}
+                                </Badge>
+                              )}
+                              {/* Add notification badge */}
+                              {showNotificationBadge && (
+                                <Badge className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full bg-red-500 text-white" variant="outline">
+                                  {unreadCount > 99 ? "99+" : unreadCount}
                                 </Badge>
                               )}
                             </Link>

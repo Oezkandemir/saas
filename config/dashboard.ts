@@ -52,7 +52,7 @@ export const sidebarLinks: SidebarNavItem[] = [
       { href: "/dashboard/settings", icon: "settings", title: "Settings" },
       {
         href: "/profile/notifications", 
-        icon: "help", 
+        icon: "bell", 
         title: "Notifications"
       },
       { href: "/", icon: "home", title: "Homepage" },

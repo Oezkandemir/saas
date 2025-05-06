@@ -775,5 +775,13 @@
         "default": "Fehler beim erneuten Senden der Einladung. Bitte versuchen Sie es erneut."
       }
     }
+  },
+  "Notifications": {
+    "notifications": "Benachrichtigungen",
+    "unreadCount": "{count} ungelesene Benachrichtigungen",
+    "markAsRead": "Als gelesen markieren",
+    "markAllAsRead": "Alle als gelesen markieren",
+    "noNotifications": "Keine Benachrichtigungen",
+    "loading": "Benachrichtigungen werden geladen..."
   }
 }

@@ -55,6 +55,7 @@ export type UserNotification = {
   type: string;
   read: boolean;
   action_url: string | null;
+  metadata?: Record<string, any> | null;
   created_at: string;
 };
 
@@ -278,6 +279,83 @@ export async function getUserNotifications(
     return {
       success: false,
       error: "Failed to fetch notifications",
+    };
+  }
+}
+
+// Track user login to handle first login notifications
+export async function trackUserLogin(): Promise<ActionResult<null>> {
+  const user = await getCurrentUser();
+
+  if (!user?.email) {
+    return {
+      success: false,
+      error: "User not authenticated",
+    };
+  }
+
+  const supabase = await createClient();
+
+  try {
+    // Get user agent and IP if available
+    const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : null;
+    
+    // Call the function to track the login
+    const { error } = await supabase.rpc('track_user_login', {
+      p_user_id: user.id,
+      p_user_agent: userAgent
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return {
+      success: true,
+      data: null,
+    };
+  } catch (error) {
+    console.error("Error tracking user login:", error);
+    return {
+      success: false,
+      error: "Failed to track login",
+    };
+  }
+}
+
+// Mark all notifications as read
+export async function markAllNotificationsAsRead(): Promise<ActionResult<null>> {
+  const user = await getCurrentUser();
+
+  if (!user?.email) {
+    return {
+      success: false,
+      error: "User not authenticated",
+    };
+  }
+
+  const supabase = await createClient();
+
+  try {
+    const { error } = await supabase.rpc('mark_all_notifications_as_read', {
+      p_user_id: user.id
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    revalidatePath("/profile/notifications");
+    
+    return {
+      success: true,
+      data: null,
+    };
+  } catch (error) {
+    console.error("Error marking all notifications as read:", error);
+    return {
+      success: false,
+      error: "Failed to update notifications",
     };
   }
 }

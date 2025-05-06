@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NotificationsList } from "@/components/profile/notifications-list";
 import { getUserNotifications } from "@/actions/user-profile-actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { MarkAllAsReadButton } from "@/components/profile/mark-all-as-read-button";
 
 export async function generateMetadata() {
   const t = await getTranslations("Profile");
@@ -38,11 +39,33 @@ export default async function NotificationsPage() {
   const unreadCount = unreadNotifications.length;
   const readCount = totalCount - unreadCount;
 
+  // Group notifications by type
+  const systemNotifications = allNotifications.filter(notification => 
+    notification.type === 'SYSTEM' || notification.type === 'system'
+  );
+  
+  const billingNotifications = allNotifications.filter(notification => 
+    notification.type === 'BILLING' || notification.type === 'billing'
+  );
+  
+  const successNotifications = allNotifications.filter(notification => 
+    notification.type === 'SUCCESS' || notification.type === 'success'
+  );
+  
+  const welcomeNotifications = allNotifications.filter(notification => 
+    notification.type === 'WELCOME' || notification.type === 'welcome'
+  );
+  
+  const teamNotifications = allNotifications.filter(notification => 
+    notification.type === 'TEAM' || notification.type === 'team'
+  );
+
   return (
     <>
       <DashboardHeaderWithLanguageSwitcher
         heading="Notifications"
         text="View and manage your notifications"
+        actions={unreadCount > 0 ? <MarkAllAsReadButton /> : undefined}
       />
       
       <div className="space-y-6">
@@ -83,6 +106,15 @@ export default async function NotificationsPage() {
             <TabsTrigger value="unread" className="flex-1 sm:flex-initial">
               Unread ({unreadCount})
             </TabsTrigger>
+            <TabsTrigger value="welcome" className="flex-1 sm:flex-initial">
+              Welcome ({welcomeNotifications.length})
+            </TabsTrigger>
+            <TabsTrigger value="system" className="flex-1 sm:flex-initial">
+              System ({systemNotifications.length})
+            </TabsTrigger>
+            <TabsTrigger value="team" className="flex-1 sm:flex-initial">
+              Team ({teamNotifications.length})
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="all">
@@ -91,6 +123,18 @@ export default async function NotificationsPage() {
           
           <TabsContent value="unread">
             <NotificationsList notifications={unreadNotifications} />
+          </TabsContent>
+          
+          <TabsContent value="welcome">
+            <NotificationsList notifications={welcomeNotifications} />
+          </TabsContent>
+          
+          <TabsContent value="system">
+            <NotificationsList notifications={systemNotifications} />
+          </TabsContent>
+          
+          <TabsContent value="team">
+            <NotificationsList notifications={teamNotifications} />
           </TabsContent>
         </Tabs>
       </div>

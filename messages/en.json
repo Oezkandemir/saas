@@ -35,6 +35,14 @@
     "signOutSuccess": "Successfully signed out",
     "signOutError": "Failed to sign out"
   },
+  "Notifications": {
+    "notifications": "Notifications",
+    "unreadCount": "{count} unread notifications",
+    "markAsRead": "Mark as read",
+    "markAllAsRead": "Mark all as read",
+    "noNotifications": "No notifications",
+    "loading": "Loading notifications..."
+  },
   "Dashboard": {
     "title": "Dashboard – Cenety",
     "description": "Create and manage content.",
