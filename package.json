@@ -12,6 +12,7 @@
     "turbo": "next dev --turbo",
     "start": "next start",
     "lint": "next lint",
+    "lint:tailwind": "eslint --fix \"**/*.{js,jsx,ts,tsx}\" --rule \"tailwindcss/classnames-order: error\"",
     "preview": "next build && next start",
     "email": "email dev --dir emails --port 3333",
     "setup-env": "./update_env.sh",

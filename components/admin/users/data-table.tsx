@@ -119,7 +119,7 @@ export function DataTable<TData, TValue>({
         <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <div className="flex w-full items-center sm:w-auto">
             <div className="relative w-full sm:max-w-sm">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
               <Input
                 placeholder="Search users..."
                 value={globalFilter}
@@ -133,7 +133,7 @@ export function DataTable<TData, TValue>({
               className="ml-2 sm:hidden"
               onClick={toggleFilters}
             >
-              <Filter className="h-4 w-4" />
+              <Filter className="size-4" />
             </Button>
           </div>
           
@@ -212,7 +212,7 @@ export function DataTable<TData, TValue>({
                         avatar_url: user.avatar_url
                       }}
                       forceAvatarUrl={user.avatar_url}
-                      className="h-8 w-8"
+                      className="size-8"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-left text-sm font-medium">
@@ -234,7 +234,7 @@ export function DataTable<TData, TValue>({
                 </div>
                 <AccordionContent forceMount className={cn(
                   "overflow-hidden px-4 py-2 pt-0 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
-                  openItem !== user.id && "h-0 p-0 py-0"
+                  openItem !== user.id && "h-0 p-0"
                 )}>
                   {openItem === user.id && (
                     <>

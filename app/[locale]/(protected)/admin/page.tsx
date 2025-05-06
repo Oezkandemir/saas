@@ -68,7 +68,7 @@ export default async function AdminPanelPage() {
       />
       
       {/* User Stats Section */}
-      <div className="mb-6 mt-6">
+      <div className="my-6">
         <h2 className="mb-3 text-lg font-medium">User Statistics</h2>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <Card className="overflow-hidden border-l-4 border-l-blue-500">
@@ -77,7 +77,7 @@ export default async function AdminPanelPage() {
                 <p className="text-xs font-medium text-muted-foreground">Total Users</p>
                 <h3 className="mt-1 text-xl font-bold">{totalUsers}</h3>
               </div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
+              <div className="flex size-8 items-center justify-center rounded-full bg-blue-100">
                 <Users className="size-4 text-blue-600" />
               </div>
             </CardContent>
@@ -89,7 +89,7 @@ export default async function AdminPanelPage() {
                 <p className="text-xs font-medium text-muted-foreground">Admin Users</p>
                 <h3 className="mt-1 text-xl font-bold">{adminUsers}</h3>
               </div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100">
+              <div className="flex size-8 items-center justify-center rounded-full bg-purple-100">
                 <ShieldCheck className="size-4 text-purple-600" />
               </div>
             </CardContent>
@@ -101,7 +101,7 @@ export default async function AdminPanelPage() {
                 <p className="text-xs font-medium text-muted-foreground">Subscribers</p>
                 <h3 className="mt-1 text-xl font-bold">{subscribedUsers}</h3>
               </div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+              <div className="flex size-8 items-center justify-center rounded-full bg-green-100">
                 <CreditCard className="size-4 text-green-600" />
               </div>
             </CardContent>
@@ -113,7 +113,7 @@ export default async function AdminPanelPage() {
                 <p className="text-xs font-medium text-muted-foreground">Open Tickets</p>
                 <h3 className="mt-1 text-xl font-bold">{openTickets}</h3>
               </div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100">
+              <div className="flex size-8 items-center justify-center rounded-full bg-indigo-100">
                 <MessageSquare className="size-4 text-indigo-600" />
               </div>
             </CardContent>
@@ -132,7 +132,7 @@ export default async function AdminPanelPage() {
                 <h3 className="mt-1 text-xl font-bold">{openTickets}</h3>
                 <p className="mt-1 text-xs text-muted-foreground">Awaiting response</p>
               </div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100">
+              <div className="flex size-8 items-center justify-center rounded-full bg-amber-100">
                 <AlertTriangle className="size-4 text-amber-600" />
               </div>
             </CardContent>
@@ -145,7 +145,7 @@ export default async function AdminPanelPage() {
                 <h3 className="mt-1 text-xl font-bold">{inProgressTickets}</h3>
                 <p className="mt-1 text-xs text-muted-foreground">Currently being handled</p>
               </div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100">
+              <div className="flex size-8 items-center justify-center rounded-full bg-orange-100">
                 <Clock className="size-4 text-orange-600" />
               </div>
             </CardContent>
@@ -158,7 +158,7 @@ export default async function AdminPanelPage() {
                 <h3 className="mt-1 text-xl font-bold">{resolvedTickets}</h3>
                 <p className="mt-1 text-xs text-muted-foreground">Completed tickets</p>
               </div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100">
+              <div className="flex size-8 items-center justify-center rounded-full bg-emerald-100">
                 <CheckCircle className="size-4 text-emerald-600" />
               </div>
             </CardContent>

@@ -138,7 +138,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                     "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
                                 )}
                               >
-                                <Icon className="size-5 min-w-5 flex-shrink-0" />
+                                <Icon className="size-5 min-w-5 shrink-0" />
                                 <span className="truncate">{translatedTitle}</span>
                                 {item.badge && (
                                   <Badge className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full">
@@ -169,7 +169,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                     )}
                                   >
                                     <span className="flex size-full items-center justify-center">
-                                      <Icon className="size-5 min-w-5 flex-shrink-0" />
+                                      <Icon className="size-5 min-w-5 shrink-0" />
                                       {showNotificationBadge && (
                                         <span className="absolute -right-2 -top-2 flex size-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
                                           {unreadCount > 9 ? "9+" : unreadCount}
@@ -279,7 +279,7 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                                   "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
                               )}
                             >
-                              <Icon className="size-5 min-w-5 flex-shrink-0" />
+                              <Icon className="size-5 min-w-5 shrink-0" />
                               <span className="truncate">{translatedTitle}</span>
                               {item.badge && (
                                 <Badge className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full">
