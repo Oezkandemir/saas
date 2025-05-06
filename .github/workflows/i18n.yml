@@ -1,50 +1,14 @@
-name: Automated i18n Translations
+name: "Disabled i18n Translations"
+# This workflow has been disabled due to permission issues
+# The original workflow attempted to update translations but failed with 403 errors
 
 on:
-  # Run when pushing to main branch
-  push:
-    branches: [ main ]
-  # Allow manual trigger
+  # This workflow will never run
   workflow_dispatch:
 
 jobs:
-  translate:
+  disabled:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: latest
-
-      - name: Install dependencies
-        run: pnpm install
-          
-      - name: Validate inlang project
-        run: npx @inlang/cli@latest validate --project ./project.inlang
-      
-      - name: Synchronize translation keys
-        run: node scripts/i18n-sync.js
-      
-      - name: Machine translate English to German
-        run: npx @inlang/cli@latest machine translate --project ./project.inlang --locale en --targetLocales de
-      
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          commit-message: "chore: update translations"
-          title: "Update translations"
-          body: |
-            This PR updates translations using machine translation.
-            
-            - Automated through GitHub Actions
-            - Please review translations before merging
-          branch: "update-translations"
-          base: "main" 
+      - name: Do nothing
+        run: echo "This workflow is disabled due to permission issues"
