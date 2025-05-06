@@ -279,14 +279,15 @@ export function TicketAccordionTable({
                         name: ticket.user?.name || "Unknown",
                         avatar_url: ticket.user?.avatar_url || null
                       }}
+                      forceAvatarUrl={ticket.user?.avatar_url || null}
                       className="h-8 w-8"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-left text-sm font-medium">
-                        {ticket.subject}
+                        {ticket.user?.name || "Unknown"}
                       </p>
                       <p className="truncate text-left text-xs text-muted-foreground">
-                        {ticket.user?.name || "Unknown"} ({ticket.user?.email || "No email"})
+                        {ticket.user?.email || "No email"}
                       </p>
                     </div>
                     <Badge className={getStatusColor(ticket.status)}>
@@ -329,6 +330,24 @@ export function TicketAccordionTable({
                           <p className="mt-1 text-sm">
                             {formatDistance(new Date(ticket.updated_at), new Date(), { addSuffix: true })}
                           </p>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4">
+                        <p className="mb-1 text-xs font-medium text-muted-foreground">User Information</p>
+                        <div className="mb-3 flex items-center gap-3">
+                          <UserAvatar
+                            user={{ 
+                              name: ticket.user?.name || "Unknown",
+                              avatar_url: ticket.user?.avatar_url || null
+                            }}
+                            forceAvatarUrl={ticket.user?.avatar_url || null}
+                            className="size-10"
+                          />
+                          <div>
+                            <p className="font-medium">{ticket.subject}</p>
+                            <p className="text-sm text-muted-foreground">{ticket.user?.email || "No email"}</p>
+                          </div>
                         </div>
                       </div>
                       
