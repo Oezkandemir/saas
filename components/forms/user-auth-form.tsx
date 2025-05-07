@@ -82,8 +82,10 @@ export function UserAuthForm({
           // Extract the username from email
           const userName = data.email.split("@")[0];
 
-          // Build the confirmation URL - this should match your auth callback path
-          const confirmationUrl = `${window.location.origin}/auth/callback?type=signup&id=${signUpResult.data.user?.id}`;
+          // Build the confirmation URL - use the site URL from config if available
+          // This ensures we don't use localhost in production emails
+          const baseUrl = siteConfig.url || window.location.origin;
+          const confirmationUrl = `${baseUrl}/auth/callback?type=signup&id=${signUpResult.data.user?.id}`;
 
           // Send custom confirmation email
           await sendSignupConfirmationEmail({
