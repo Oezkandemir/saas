@@ -2,7 +2,7 @@
 
 import { User } from "@supabase/supabase-js";
 
-import { supabaseAdmin } from "@/lib/db";
+import { supabaseAdmin } from "@/lib/db-admin";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 

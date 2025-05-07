@@ -8,7 +8,11 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 import { siteConfig } from "@/config/site";
-import { sendSignupConfirmationEmail } from "@/lib/email";
+import {
+  sendEmailWithEdgeFunction,
+  sendSignupConfirmationEmail,
+  sendWelcomeEmail,
+} from "@/lib/email-client";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,19 +77,42 @@ export function UserAuthForm({
           throw signUpResult.error;
         }
 
-        // Try to send a custom confirmation email
+        // Try to send custom confirmation and welcome emails
         try {
-          // We don't have access to the confirmation URL from the API directly,
-          // but we'll intercept the default confirmation email and send our custom one
-          // using the same link from the regular Supabase flow.
-          // This would typically be handled by a server-side hook or webhook.
+          // Extract the username from email
+          const userName = data.email.split("@")[0];
+
+          // Build the confirmation URL - this should match your auth callback path
+          const confirmationUrl = `${window.location.origin}/auth/callback?type=signup&id=${signUpResult.data.user?.id}`;
+
+          // Send custom confirmation email
+          await sendSignupConfirmationEmail({
+            email: data.email,
+            name: userName,
+            actionUrl: confirmationUrl,
+          });
+
+          // Send welcome email
+          await sendWelcomeEmail({
+            email: data.email,
+            name: userName,
+          });
+
+          // Create a welcome notification in the user's account
+          await supabase.from("user_notifications").insert({
+            user_id: signUpResult.data.user?.id,
+            title: `Welcome to ${siteConfig.name}!`,
+            content: `Thank you for signing up. We're excited to have you join us.`,
+            type: "WELCOME",
+            read: false,
+          });
 
           toast.success("Account created successfully", {
             description:
-              "We've sent you a confirmation email. Please check your inbox and follow the link to verify your account.",
+              "We've sent you confirmation and welcome emails. Please check your inbox and follow the link to verify your account.",
           });
         } catch (emailError) {
-          console.error("Error with email confirmation:", emailError);
+          console.error("Error with email sending:", emailError);
           toast.success("Account created successfully", {
             description:
               "Check your email for a confirmation link. You need to confirm your email before signing in.",

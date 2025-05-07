@@ -17,6 +17,9 @@ Deno.serve(async (req) => {
     // Parse the incoming webhook payload
     const payload = await req.json();
 
+    // Log the full payload for debugging
+    console.log("Webhook payload:", JSON.stringify(payload));
+
     // Verify the webhook is from an authorized source (implement proper validation in production)
     const signature = req.headers.get("x-webhook-signature") || "";
 
@@ -38,9 +41,12 @@ Deno.serve(async (req) => {
     // Handle different webhook events
     if (type === "email.created" && record) {
       const { to, subject, content } = record;
+      console.log(`Processing email to ${to}, subject: ${subject}`);
 
       // Check if this is a confirmation email
       if (subject && subject.includes("Confirm") && content) {
+        console.log("Found confirmation email, extracting link...");
+
         // Extract the confirmation link from the email content
         const confirmationLinkMatch = content.match(/href="([^"]+)"/);
         const confirmationLink = confirmationLinkMatch
@@ -48,14 +54,19 @@ Deno.serve(async (req) => {
           : null;
 
         if (confirmationLink) {
+          console.log("Extracted confirmation link:", confirmationLink);
+
           // Get user details
           const { data: userData } =
             await supabase.auth.admin.getUserByEmail(to);
+          console.log("User data:", userData);
+
           const userName =
             userData?.user?.user_metadata?.name || to.split("@")[0];
 
           // Call the send-email function to send our custom email
           try {
+            console.log("Sending custom confirmation email to:", to);
             const { data, error } = await supabase.functions.invoke(
               "send-email",
               {
@@ -69,14 +80,43 @@ Deno.serve(async (req) => {
             );
 
             if (error) {
+              console.error("Error response from send-email function:", error);
               throw error;
             }
 
-            // If we successfully sent our custom email, return success
+            console.log("Custom confirmation email sent successfully");
+
+            // Also send welcome email
+            try {
+              console.log("Sending welcome email to:", to);
+              const welcomeResult = await supabase.functions.invoke(
+                "send-email",
+                {
+                  body: {
+                    type: "welcome",
+                    email: to,
+                    name: userName,
+                  },
+                },
+              );
+
+              if (welcomeResult.error) {
+                console.error(
+                  "Error sending welcome email:",
+                  welcomeResult.error,
+                );
+              } else {
+                console.log("Welcome email sent successfully");
+              }
+            } catch (welcomeError) {
+              console.error("Exception sending welcome email:", welcomeError);
+            }
+
+            // If we successfully sent our custom email, return success and cancel original email
             response = {
               success: true,
               message: "Custom confirmation email sent",
-              originalEmail: false,
+              originalEmail: false, // This tells Supabase not to send the original email
             };
           } catch (error) {
             console.error("Error sending custom email:", error);
@@ -88,6 +128,10 @@ Deno.serve(async (req) => {
               originalEmail: true,
             };
           }
+        } else {
+          console.error(
+            "Could not extract confirmation link from email content",
+          );
         }
       }
     }
@@ -97,6 +141,7 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
+    console.error("Webhook error:", error);
     return new Response(
       JSON.stringify({ error: error.message || "Internal server error" }),
       {

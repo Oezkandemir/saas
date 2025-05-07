@@ -4,10 +4,12 @@ import { corsHeaders } from "../_shared/cors.ts";
 
 // Load environment variables
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "";
-const SITE_URL = Deno.env.get("SITE_URL") || "http://localhost:3000";
+const SITE_URL = Deno.env.get("SITE_URL") || "https://cenety.com";
 const SITE_NAME = Deno.env.get("SITE_NAME") || "Next.js SaaS Starter";
 // Set the email domain to cenety.com instead of example.com
 const EMAIL_DOMAIN = Deno.env.get("EMAIL_DOMAIN") || "cenety.com";
+// Use hello@cenety.com instead of no-reply@cenety.com
+const EMAIL_FROM = Deno.env.get("EMAIL_FROM") || `hello@${EMAIL_DOMAIN}`;
 
 // Helper function to generate basic HTML email templates
 const generateEmailTemplate = (type: string, data: any) => {
@@ -205,7 +207,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: `${SITE_NAME} <no-reply@${EMAIL_DOMAIN}>`,
+        from: `${SITE_NAME} <${EMAIL_FROM}>`,
         to:
           Deno.env.get("NODE_ENV") === "development"
             ? "delivered@resend.dev"
