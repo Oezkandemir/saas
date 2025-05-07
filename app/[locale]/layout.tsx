@@ -12,6 +12,7 @@ import { cn, constructMetadata } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@/components/analytics";
 import { AvatarProvider } from "@/components/context/avatar-context";
+import { NotificationsProvider } from "@/components/context/notifications-context";
 import ModalProvider from "@/components/modals/providers";
 import { QueryClientProvider } from "@/components/providers/query-client-provider";
 import { SupabaseProvider } from "@/components/supabase-provider";
@@ -69,10 +70,12 @@ export default async function LocaleLayout({
             <NextIntlClientProvider messages={messages} locale={locale}>
               <AvatarProvider>
                 <QueryClientProvider>
-                  <ModalProvider>{children}</ModalProvider>
-                  <Analytics />
-                  <Toaster richColors closeButton />
-                  <TailwindIndicator />
+                  <NotificationsProvider>
+                    <ModalProvider>{children}</ModalProvider>
+                    <Analytics />
+                    <Toaster richColors closeButton />
+                    <TailwindIndicator />
+                  </NotificationsProvider>
                 </QueryClientProvider>
               </AvatarProvider>
             </NextIntlClientProvider>

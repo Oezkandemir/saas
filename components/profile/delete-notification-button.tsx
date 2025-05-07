@@ -2,31 +2,37 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { markAllNotificationsAsRead } from "@/actions/user-profile-actions";
-import { Check, Loader2 } from "lucide-react";
+import { deleteNotification } from "@/actions/user-profile-actions";
+import { Loader2, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useNotificationsContext } from "@/components/context/notifications-context";
 
-export function MarkAllAsReadButton() {
+interface DeleteNotificationButtonProps {
+  notificationId: string;
+}
+
+export function DeleteNotificationButton({
+  notificationId,
+}: DeleteNotificationButtonProps) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
   const { refetchAll } = useNotificationsContext();
 
-  const handleMarkAllAsRead = async () => {
+  const handleDeleteNotification = async () => {
     setLoading(true);
     try {
-      const result = await markAllNotificationsAsRead();
+      const result = await deleteNotification(notificationId);
 
       if (!result.success) {
-        throw new Error(result.error);
+        throw new Error(result.error || "Failed to delete notification");
       }
 
       toast({
         title: "Success",
-        description: "All notifications marked as read",
+        description: "Notification deleted",
         variant: "default",
       });
 
@@ -34,10 +40,13 @@ export function MarkAllAsReadButton() {
       await refetchAll();
       router.refresh();
     } catch (error) {
-      console.error("Error marking all as read:", error);
+      console.error("Error deleting notification:", error);
       toast({
         title: "Error",
-        description: "Failed to mark notifications as read",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to delete notification",
         variant: "destructive",
       });
     } finally {
@@ -47,17 +56,18 @@ export function MarkAllAsReadButton() {
 
   return (
     <Button
-      variant="outline"
+      variant="ghost"
       size="sm"
-      onClick={handleMarkAllAsRead}
+      onClick={handleDeleteNotification}
       disabled={loading}
+      className="text-red-500 hover:bg-red-100/30 hover:text-red-600"
     >
       {loading ? (
-        <Loader2 className="size-4 animate-spin" />
+        <Loader2 className="mr-2 size-4 animate-spin" />
       ) : (
-        <Check className="size-4" />
+        <Trash2 className="mr-2 size-4" />
       )}
-      Mark all as read
+      Delete
     </Button>
   );
 }

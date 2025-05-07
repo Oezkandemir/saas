@@ -1,26 +1,43 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
-import { getCurrentUser } from "@/lib/session";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { getCurrentUser } from "@/lib/session";
+import { createClient } from "@/lib/supabase/server";
+
 // Define profile schema for validation
 const profileSchema = z.object({
-  display_name: z.string().min(2, "Display name must be at least 2 characters").max(50).optional(),
+  display_name: z
+    .string()
+    .min(2, "Display name must be at least 2 characters")
+    .max(50)
+    .optional(),
   bio: z.string().max(250, "Bio must be less than 250 characters").optional(),
   location: z.string().max(100).optional(),
-  website: z.string().url("Please enter a valid URL").max(100).optional().or(z.literal("")),
+  website: z
+    .string()
+    .url("Please enter a valid URL")
+    .max(100)
+    .optional()
+    .or(z.literal("")),
   twitter_handle: z.string().max(50).optional(),
   github_handle: z.string().max(50).optional(),
-  linkedin_url: z.string().url("Please enter a valid LinkedIn URL").max(100).optional().or(z.literal("")),
+  linkedin_url: z
+    .string()
+    .url("Please enter a valid LinkedIn URL")
+    .max(100)
+    .optional()
+    .or(z.literal("")),
   theme_preference: z.enum(["system", "light", "dark"]).optional(),
   language_preference: z.string().max(10).optional(),
-  notification_preferences: z.object({
-    email: z.boolean().optional(),
-    push: z.boolean().optional(),
-    marketing: z.boolean().optional(),
-  }).optional(),
+  notification_preferences: z
+    .object({
+      email: z.boolean().optional(),
+      push: z.boolean().optional(),
+      marketing: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 // Types for our API responses
@@ -135,7 +152,9 @@ export async function getUserProfile(): Promise<ActionResult<UserProfile>> {
 }
 
 // Update user profile
-export async function updateUserProfile(formData: FormData): Promise<ActionResult<UserProfile>> {
+export async function updateUserProfile(
+  formData: FormData,
+): Promise<ActionResult<UserProfile>> {
   const user = await getCurrentUser();
 
   if (!user?.email) {
@@ -147,10 +166,10 @@ export async function updateUserProfile(formData: FormData): Promise<ActionResul
 
   // Extract form data
   const rawData: Record<string, any> = {};
-  
+
   // Use Array.from to convert FormData entries to an array for compatibility
   Array.from(formData.entries()).forEach(([key, value]) => {
-    if (key === 'notification_preferences') {
+    if (key === "notification_preferences") {
       try {
         rawData[key] = JSON.parse(value as string);
       } catch {
@@ -179,7 +198,7 @@ export async function updateUserProfile(formData: FormData): Promise<ActionResul
     }
 
     let result;
-    
+
     if (!currentProfile) {
       // Create new profile if it doesn't exist
       result = await supabase
@@ -223,7 +242,8 @@ export async function updateUserProfile(formData: FormData): Promise<ActionResul
   } catch (error) {
     if (error instanceof z.ZodError) {
       const fieldErrors = error.flatten().fieldErrors;
-      const firstError = Object.values(fieldErrors)[0]?.[0] || "Validation error";
+      const firstError =
+        Object.values(fieldErrors)[0]?.[0] || "Validation error";
       return {
         success: false,
         error: firstError,
@@ -240,7 +260,7 @@ export async function updateUserProfile(formData: FormData): Promise<ActionResul
 
 // Get user notifications
 export async function getUserNotifications(
-  onlyUnread: boolean = false
+  onlyUnread: boolean = false,
 ): Promise<ActionResult<UserNotification[]>> {
   const user = await getCurrentUser();
 
@@ -298,12 +318,13 @@ export async function trackUserLogin(): Promise<ActionResult<null>> {
 
   try {
     // Get user agent and IP if available
-    const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : null;
-    
+    const userAgent =
+      typeof window !== "undefined" ? window.navigator.userAgent : null;
+
     // Call the function to track the login
-    const { error } = await supabase.rpc('track_user_login', {
+    const { error } = await supabase.rpc("track_user_login", {
       p_user_id: user.id,
-      p_user_agent: userAgent
+      p_user_agent: userAgent,
     });
 
     if (error) {
@@ -324,7 +345,9 @@ export async function trackUserLogin(): Promise<ActionResult<null>> {
 }
 
 // Mark all notifications as read
-export async function markAllNotificationsAsRead(): Promise<ActionResult<null>> {
+export async function markAllNotificationsAsRead(): Promise<
+  ActionResult<null>
+> {
   const user = await getCurrentUser();
 
   if (!user?.email) {
@@ -337,8 +360,8 @@ export async function markAllNotificationsAsRead(): Promise<ActionResult<null>> 
   const supabase = await createClient();
 
   try {
-    const { error } = await supabase.rpc('mark_all_notifications_as_read', {
-      p_user_id: user.id
+    const { error } = await supabase.rpc("mark_all_notifications_as_read", {
+      p_user_id: user.id,
     });
 
     if (error) {
@@ -346,7 +369,7 @@ export async function markAllNotificationsAsRead(): Promise<ActionResult<null>> 
     }
 
     revalidatePath("/profile/notifications");
-    
+
     return {
       success: true,
       data: null,
@@ -362,7 +385,7 @@ export async function markAllNotificationsAsRead(): Promise<ActionResult<null>> 
 
 // Mark notification as read
 export async function markNotificationAsRead(
-  notificationId: string
+  notificationId: string,
 ): Promise<ActionResult<null>> {
   const user = await getCurrentUser();
 
@@ -402,9 +425,89 @@ export async function markNotificationAsRead(
   }
 }
 
+// Delete a single notification
+export async function deleteNotification(
+  notificationId: string,
+): Promise<ActionResult<null>> {
+  const user = await getCurrentUser();
+
+  if (!user?.email) {
+    return {
+      success: false,
+      error: "User not authenticated",
+    };
+  }
+
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase.rpc("api_delete_notification", {
+      p_notification_id: notificationId,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (!data) {
+      throw new Error("Notification not found or not authorized to delete");
+    }
+
+    revalidatePath("/dashboard/notifications");
+    revalidatePath("/profile");
+
+    return {
+      success: true,
+      data: null,
+    };
+  } catch (error) {
+    console.error("Error deleting notification:", error);
+    return {
+      success: false,
+      error: "Failed to delete notification",
+    };
+  }
+}
+
+// Delete all notifications for the current user
+export async function deleteAllNotifications(): Promise<ActionResult<null>> {
+  const user = await getCurrentUser();
+
+  if (!user?.email) {
+    return {
+      success: false,
+      error: "User not authenticated",
+    };
+  }
+
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase.rpc("api_delete_all_notifications");
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    revalidatePath("/dashboard/notifications");
+    revalidatePath("/profile");
+
+    return {
+      success: true,
+      data: null,
+    };
+  } catch (error) {
+    console.error("Error deleting all notifications:", error);
+    return {
+      success: false,
+      error: "Failed to delete all notifications",
+    };
+  }
+}
+
 // Get user activity logs
 export async function getUserActivityLogs(
-  limit: number = 10
+  limit: number = 10,
 ): Promise<ActionResult<ActivityLog[]>> {
   const user = await getCurrentUser();
 
@@ -440,4 +543,4 @@ export async function getUserActivityLogs(
       error: "Failed to fetch activity logs",
     };
   }
-} 
+}
