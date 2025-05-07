@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
         console.error("Error exchanging code for session:", error.message);
         return NextResponse.redirect(
           new URL(
-            `/${locale}/auth/error?error=${encodeURIComponent(error.message)}`,
+            `/${locale}/login?error=${encodeURIComponent(error.message)}`,
             requestUrl.origin,
           ),
         );
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
       console.error("Unexpected error during auth callback:", error);
       return NextResponse.redirect(
         new URL(
-          `/${locale}/auth/error?error=${encodeURIComponent("Authentication failed")}`,
+          `/${locale}/login?error=${encodeURIComponent("Authentication failed")}`,
           requestUrl.origin,
         ),
       );
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
       console.error("Error handling signup callback:", error);
       return NextResponse.redirect(
         new URL(
-          `/${locale}/auth/error?error=${encodeURIComponent("Verification failed")}`,
+          `/${locale}/login?error=${encodeURIComponent("Verification failed")}`,
           requestUrl.origin,
         ),
       );
