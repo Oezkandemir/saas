@@ -4,8 +4,8 @@ import { Resend } from "resend";
 import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
 
-import { getUserByEmail } from "./user";
 import { getSupabaseClient } from "./supabase";
+import { getUserByEmail } from "./user";
 
 export const resend = new Resend(env.RESEND_API_KEY);
 
@@ -26,10 +26,10 @@ export const sendEmailWithEdgeFunction = async ({
   actionUrl,
   emailType,
 }: {
-  type: "signup" | "magic-link";
+  type: "signup" | "magic-link" | "welcome" | "confirmation";
   email: string;
   name?: string;
-  actionUrl: string;
+  actionUrl?: string;
   emailType?: "login" | "register";
 }) => {
   try {
@@ -81,7 +81,10 @@ export const sendVerificationRequest = async ({
       });
       return;
     } catch (edgeFunctionError) {
-      console.warn("Edge function failed, falling back to Resend direct:", edgeFunctionError);
+      console.warn(
+        "Edge function failed, falling back to Resend direct:",
+        edgeFunctionError,
+      );
       // Continue with direct Resend API fallback
     }
 
@@ -128,7 +131,7 @@ export const sendSignupConfirmationEmail = async ({
 }) => {
   try {
     return await sendEmailWithEdgeFunction({
-      type: "signup",
+      type: "confirmation",
       email,
       name,
       actionUrl,
@@ -136,5 +139,25 @@ export const sendSignupConfirmationEmail = async ({
   } catch (error) {
     console.error("Failed to send signup confirmation email:", error);
     throw new Error("Failed to send signup confirmation email.");
+  }
+};
+
+// New function to send a welcome email after successful registration
+export const sendWelcomeEmail = async ({
+  email,
+  name,
+}: {
+  email: string;
+  name?: string;
+}) => {
+  try {
+    return await sendEmailWithEdgeFunction({
+      type: "welcome",
+      email,
+      name,
+    });
+  } catch (error) {
+    console.error("Failed to send welcome email:", error);
+    throw new Error("Failed to send welcome email.");
   }
 };
