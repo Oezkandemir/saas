@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import { siteConfig } from "@/config/site";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -10,6 +10,8 @@ import { Icons } from "@/components/shared/icons";
 
 export default function VerifiedPage() {
   const router = useRouter();
+  const params = useParams();
+  const locale = params.locale as string;
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
@@ -17,7 +19,7 @@ export default function VerifiedPage() {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          router.push("/login");
+          router.push(`/${locale}/login`);
           return 0;
         }
         return prev - 1;
@@ -25,7 +27,7 @@ export default function VerifiedPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [router]);
+  }, [router, locale]);
 
   return (
     <div className="container flex h-screen w-screen flex-col items-center justify-center">
@@ -48,11 +50,14 @@ export default function VerifiedPage() {
         <div className="grid gap-2">
           <Button
             className={buttonVariants({ variant: "default" })}
-            onClick={() => router.push("/login")}
+            onClick={() => router.push(`/${locale}/login`)}
           >
             Jetzt anmelden
           </Button>
-          <Link href="/" className={buttonVariants({ variant: "outline" })}>
+          <Link
+            href={`/${locale}`}
+            className={buttonVariants({ variant: "outline" })}
+          >
             Zurück zur Startseite
           </Link>
         </div>

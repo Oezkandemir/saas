@@ -1,16 +1,18 @@
+import { Metadata } from "next";
 import Link from "next/link";
 
 import { siteConfig } from "@/config/site";
 import { buttonVariants } from "@/components/ui/button";
 import { Icons } from "@/components/shared/icons";
 
-export default function AuthErrorPage({
-  searchParams,
-}: {
-  searchParams: { error?: string };
-}) {
+type Props = {
+  params: { locale: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+export default function AuthErrorPage({ searchParams }: Props) {
   const errorMessage =
-    searchParams.error ||
+    searchParams.error?.toString() ||
     "Ein Fehler ist aufgetreten bei der Authentifizierung";
 
   return (

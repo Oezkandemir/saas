@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { routing } from "@/i18n/routing";
 
 import { getSupabaseServer } from "@/lib/supabase-server";
 
@@ -8,6 +9,11 @@ export async function GET(request: NextRequest) {
   const code = requestUrl.searchParams.get("code");
   const type = requestUrl.searchParams.get("type");
   const userId = requestUrl.searchParams.get("id");
+
+  // Get the locale from the URL or use default
+  const locale =
+    requestUrl.pathname.match(/^\/(en|de)(?:\/|$)/)?.[1] ||
+    routing.defaultLocale;
 
   const supabase = await getSupabaseServer();
 
@@ -21,19 +27,21 @@ export async function GET(request: NextRequest) {
         console.error("Error exchanging code for session:", error.message);
         return NextResponse.redirect(
           new URL(
-            `/auth/error?error=${encodeURIComponent(error.message)}`,
+            `/${locale}/auth/error?error=${encodeURIComponent(error.message)}`,
             requestUrl.origin,
           ),
         );
       }
 
       // Redirect to dashboard after successful authentication
-      return NextResponse.redirect(new URL("/dashboard", requestUrl.origin));
+      return NextResponse.redirect(
+        new URL(`/${locale}/dashboard`, requestUrl.origin),
+      );
     } catch (error) {
       console.error("Unexpected error during auth callback:", error);
       return NextResponse.redirect(
         new URL(
-          `/auth/error?error=${encodeURIComponent("Authentication failed")}`,
+          `/${locale}/auth/error?error=${encodeURIComponent("Authentication failed")}`,
           requestUrl.origin,
         ),
       );
@@ -65,13 +73,13 @@ export async function GET(request: NextRequest) {
 
       // Redirect to the verified page with the userId to enable client-side login
       return NextResponse.redirect(
-        new URL(`/auth/verified?userId=${userId}`, requestUrl.origin),
+        new URL(`/${locale}/auth/verified?userId=${userId}`, requestUrl.origin),
       );
     } catch (error) {
       console.error("Error handling signup callback:", error);
       return NextResponse.redirect(
         new URL(
-          `/auth/error?error=${encodeURIComponent("Verification failed")}`,
+          `/${locale}/auth/error?error=${encodeURIComponent("Verification failed")}`,
           requestUrl.origin,
         ),
       );
@@ -79,5 +87,5 @@ export async function GET(request: NextRequest) {
   }
 
   // If no code or other valid parameters, redirect to sign-in page
-  return NextResponse.redirect(new URL("/login", requestUrl.origin));
+  return NextResponse.redirect(new URL(`/${locale}/login`, requestUrl.origin));
 }
