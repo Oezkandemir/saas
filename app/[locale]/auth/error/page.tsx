@@ -26,13 +26,13 @@ export default function AuthErrorPage({
 
         <div className="grid gap-2">
           <Link
-            href="/auth/signin"
+            href="/login"
             className={buttonVariants({ variant: "default" })}
           >
             Erneut anmelden
           </Link>
           <Link
-            href="/auth/signup"
+            href="/register"
             className={buttonVariants({ variant: "outline" })}
           >
             Konto erstellen
