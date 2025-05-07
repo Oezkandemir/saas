@@ -272,7 +272,17 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="end">
+      <PopoverContent
+        className="w-[350px] p-0 shadow-lg"
+        align="end"
+        side="bottom"
+        sideOffset={8}
+        onInteractOutside={(e) => {
+          // Only close when clicking outside the popover
+          setOpen(false);
+        }}
+        onEscapeKeyDown={() => setOpen(false)}
+      >
         <div className="flex items-center justify-between p-4">
           <h4 className="text-sm font-medium">Notifications</h4>
           <div className="flex items-center gap-2">
@@ -282,15 +292,15 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7 px-2 text-xs"
+                    className="h-7 px-3 text-xs font-medium"
                     onClick={handleMarkAllAsRead}
                     disabled={markingAllAsRead}
                     title="Mark all as read"
                   >
                     {markingAllAsRead ? (
-                      <Loader2 className="mr-1 size-3 animate-spin" />
+                      <Loader2 className="mr-1.5 size-3 animate-spin" />
                     ) : (
-                      <Check className="mr-1 size-3" />
+                      <Check className="mr-1.5 size-3" />
                     )}
                     Mark all
                   </Button>
@@ -298,15 +308,15 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 px-2 text-xs text-red-500 hover:text-red-600"
+                  className="h-7 px-3 text-xs font-medium text-red-500 hover:bg-red-50/30 hover:text-red-600"
                   onClick={handleClearAll}
                   disabled={clearingAll}
                   title="Clear all notifications"
                 >
                   {clearingAll ? (
-                    <Loader2 className="mr-1 size-3 animate-spin" />
+                    <Loader2 className="mr-1.5 size-3 animate-spin" />
                   ) : (
-                    <Trash2 className="mr-1 size-3" />
+                    <Trash2 className="mr-1.5 size-3" />
                   )}
                   Clear all
                 </Button>
@@ -320,21 +330,21 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
             <Loader2 className="size-6 animate-spin text-muted-foreground" />
           </div>
         ) : (
-          <ScrollArea className="h-auto max-h-[300px]">
+          <ScrollArea className="h-auto max-h-[400px] overflow-y-auto">
             {notifications.length > 0 ? (
               <div>
                 {notifications.map((notification: UserNotification) => (
                   <div
                     key={notification.id}
                     className={cn(
-                      "flex flex-col gap-1 p-4 text-sm",
+                      "flex flex-col gap-1.5 border-b border-border p-4 text-sm last:border-0",
                       !notification.read && "bg-muted/50",
                     )}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2">
                         {getNotificationIcon(notification.type)}
-                        <span className="font-medium">
+                        <span className="line-clamp-1 font-medium">
                           {notification.title}
                         </span>
                       </div>
@@ -356,7 +366,9 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
                         { addSuffix: true },
                       )}
                     </p>
-                    <p className="mt-1 text-xs">{notification.content}</p>
+                    <p className="mt-1 line-clamp-2 text-xs">
+                      {notification.content}
+                    </p>
 
                     <div className="mt-2 flex items-center justify-between">
                       {notification.action_url && (
@@ -375,22 +387,22 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="size-6 p-0 text-green-500 hover:text-green-600"
+                            className="size-7 p-0 text-green-500 hover:bg-green-50/30 hover:text-green-600"
                             onClick={() => handleMarkAsRead(notification.id)}
                             disabled={markingAsRead === notification.id}
                             title="Mark as read"
                           >
                             {markingAsRead === notification.id ? (
-                              <Loader2 className="size-3 animate-spin" />
+                              <Loader2 className="size-3.5 animate-spin" />
                             ) : (
-                              <Check className="size-3" />
+                              <Check className="size-3.5" />
                             )}
                           </Button>
                         )}
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="size-6 p-0 text-red-500 hover:text-red-600"
+                          className="size-7 p-0 text-red-500 hover:bg-red-50/30 hover:text-red-600"
                           onClick={() =>
                             handleDeleteNotification(notification.id)
                           }
@@ -398,9 +410,9 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
                           title="Delete notification"
                         >
                           {deletingNotification === notification.id ? (
-                            <Loader2 className="size-3 animate-spin" />
+                            <Loader2 className="size-3.5 animate-spin" />
                           ) : (
-                            <Trash2 className="size-3" />
+                            <Trash2 className="size-3.5" />
                           )}
                         </Button>
                       </div>
@@ -415,9 +427,11 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center p-6 text-center">
-                <Bell className="mb-2 size-8 text-muted-foreground" />
+                <div className="mb-2 rounded-full bg-muted p-3">
+                  <Bell className="size-8 text-muted-foreground" />
+                </div>
                 <p className="text-sm font-medium">No notifications</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="mt-1 max-w-[200px] text-xs text-muted-foreground">
                   You don&apos;t have any notifications at the moment.
                 </p>
               </div>
@@ -425,12 +439,13 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
           </ScrollArea>
         )}
         <Separator />
-        <div className="p-2">
+        <div className="p-3">
           <Link
             href="/profile/notifications"
-            className="block w-full rounded-sm p-2 text-center text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-muted/50 p-2 text-center text-xs font-medium text-foreground transition-colors hover:bg-muted"
             onClick={() => setOpen(false)}
           >
+            <Bell className="size-3.5" />
             View all notifications
           </Link>
         </div>
