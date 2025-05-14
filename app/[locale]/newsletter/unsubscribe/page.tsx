@@ -23,6 +23,7 @@ export default function NewsletterUnsubscribe() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<string | null>(null);
 
   useEffect(() => {
     const handleUnsubscribe = async () => {
@@ -30,13 +31,20 @@ export default function NewsletterUnsubscribe() {
         const email = searchParams.get("email");
         const token = searchParams.get("token");
 
+        console.log("Unsubscribe attempt for:", email, "with token:", token);
+        setDebugInfo(`Attempting to unsubscribe: ${email}`);
+
         if (!email || !token) {
           setError("Invalid unsubscribe link. Missing required parameters.");
           setIsLoading(false);
           return;
         }
 
-        const result = await unsubscribeFromNewsletter(email, token);
+        // Normalize the email by trimming and converting to lowercase
+        const normalizedEmail = email.trim().toLowerCase();
+        console.log("Normalized email:", normalizedEmail);
+
+        const result = await unsubscribeFromNewsletter(normalizedEmail, token);
 
         if (result.success) {
           setIsSuccess(true);
@@ -44,6 +52,7 @@ export default function NewsletterUnsubscribe() {
             description: result.message,
           });
         } else {
+          console.error("Unsubscribe failed:", result.message);
           setError(result.message);
           toast.error(t("unsubscribeError"), {
             description: result.message,
@@ -83,6 +92,9 @@ export default function NewsletterUnsubscribe() {
               <p className="text-sm text-muted-foreground">
                 {t("unsubscribeProcessing")}
               </p>
+              {debugInfo && (
+                <p className="text-xs text-muted-foreground">{debugInfo}</p>
+              )}
             </div>
           ) : isSuccess ? (
             <div className="flex flex-col items-center space-y-4">
@@ -100,6 +112,9 @@ export default function NewsletterUnsubscribe() {
               <p className="text-center text-sm text-muted-foreground">
                 {error || t("unsubscribeErrorDescription")}
               </p>
+              {debugInfo && (
+                <p className="text-xs text-muted-foreground">{debugInfo}</p>
+              )}
               <Link href="/support">
                 <Button className="mt-4">{t("contactSupportButton")}</Button>
               </Link>

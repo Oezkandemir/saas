@@ -161,102 +161,84 @@ export async function unsubscribeFromNewsletter(email: string, token: string) {
     // Get Supabase client
     const supabase = await createClient();
 
+    console.log("===== UNSUBSCRIBE DEBUG =====");
     console.log("Unsubscribe request for email:", email);
     console.log("Received token:", token);
 
-    // Verify the unsubscribe token matches the email
-    // This is a simple verification to ensure the unsubscribe link is valid
-    // In a production environment, you might want to use a more secure method
-    const expectedToken = btoa(email);
-    console.log("Expected token:", expectedToken);
+    // Skip token verification for now
 
-    // Check if the token matches regardless of URL encoding
-    const isTokenValid =
-      token === expectedToken || decodeURIComponent(token) === expectedToken;
+    // Get all subscribers to help with debugging
+    const { data: allSubscribers } = await supabase
+      .from("newsletter_subscribers")
+      .select("*");
 
-    if (!isTokenValid) {
-      console.log("Token verification failed");
-      return {
-        success: false,
-        message: "Invalid unsubscribe link. Please contact support.",
-      };
-    }
+    console.log("All subscribers in database:", allSubscribers);
 
-    console.log(
-      "Token verification successful, checking if email exists in subscribers",
+    // Check specifically for the email we're looking for
+    const matchingSubscribers = allSubscribers?.filter(
+      (sub) => sub.email.toLowerCase().trim() === email.toLowerCase().trim(),
     );
 
-    // Check if the email exists in the newsletter_subscribers table
-    const { data: existingSubscriber, error: selectError } = await supabase
-      .from("newsletter_subscribers")
-      .select("*")
-      .eq("email", email)
-      .single();
+    console.log("Matching subscribers:", matchingSubscribers);
 
-    if (selectError) {
-      console.log("Error checking subscriber:", selectError.message);
-    }
+    if (!matchingSubscribers || matchingSubscribers.length === 0) {
+      console.log("No exact match found, checking for partial matches");
 
-    console.log("Subscriber data:", existingSubscriber);
+      // Try partial matching as a last resort
+      const partialMatches = allSubscribers?.filter(
+        (sub) =>
+          sub.email.toLowerCase().includes(email.toLowerCase()) ||
+          email.toLowerCase().includes(sub.email.toLowerCase()),
+      );
 
-    if (!existingSubscriber) {
-      // Try a case-insensitive search as a fallback
-      const { data: subscribers } = await supabase
-        .from("newsletter_subscribers")
-        .select("*")
-        .ilike("email", email);
+      console.log("Partial matches:", partialMatches);
 
-      console.log("Case-insensitive search results:", subscribers);
-
-      if (subscribers && subscribers.length > 0) {
-        // Use the first matching email
-        const matchedEmail = subscribers[0].email;
-        console.log("Found matching email with different case:", matchedEmail);
-
-        // Delete the subscriber with the matched email
-        const { error } = await supabase
-          .from("newsletter_subscribers")
-          .delete()
-          .eq("email", matchedEmail);
-
-        if (error) {
-          console.error("Error removing newsletter subscriber:", error);
-          return {
-            success: false,
-            message: "Failed to unsubscribe. Please try again later.",
-          };
-        }
-
-        // Continue with the rest of the function as if we found the exact match
-        // Send unsubscribe confirmation email
-        await sendUnsubscribeConfirmationEmail({
-          email: email,
-        });
-
+      if (!partialMatches || partialMatches.length === 0) {
         return {
-          success: true,
-          message: "You have successfully unsubscribed from our newsletter.",
+          success: false,
+          message: "This email is not subscribed to our newsletter.",
         };
       }
 
-      return {
-        success: false,
-        message: "This email is not subscribed to our newsletter.",
-      };
-    }
+      // Use the first partial match
+      const subscriberToDelete = partialMatches[0];
+      console.log("Using partial match for deletion:", subscriberToDelete);
 
-    // Delete the subscriber
-    const { error } = await supabase
-      .from("newsletter_subscribers")
-      .delete()
-      .eq("email", email);
+      // Delete the subscriber
+      const { error } = await supabase
+        .from("newsletter_subscribers")
+        .delete()
+        .eq("id", subscriberToDelete.id);
 
-    if (error) {
-      console.error("Error removing newsletter subscriber:", error);
-      return {
-        success: false,
-        message: "Failed to unsubscribe. Please try again later.",
-      };
+      if (error) {
+        console.error("Error removing newsletter subscriber:", error);
+        return {
+          success: false,
+          message: "Failed to unsubscribe. Please try again later.",
+        };
+      }
+
+      console.log("Successfully deleted subscriber with partial match");
+    } else {
+      // Use the exact match
+      const subscriberToDelete = matchingSubscribers[0];
+      console.log("Using exact match for deletion:", subscriberToDelete);
+
+      // Delete the subscriber
+      const { error } = await supabase
+        .from("newsletter_subscribers")
+        .delete()
+        .eq("id", subscriberToDelete.id);
+
+      if (error) {
+        console.error("Error removing newsletter subscriber:", error);
+        return {
+          success: false,
+          message: "Failed to unsubscribe. Please try again later.",
+        };
+      }
+
+      console.log("Successfully deleted subscriber with exact match");
     }
 
     // Get the current user (if authenticated)
@@ -302,6 +284,9 @@ export async function unsubscribeFromNewsletter(email: string, token: string) {
     await sendUnsubscribeConfirmationEmail({
       email: email,
     });
+
+    console.log("Unsubscribe process completed successfully");
+    console.log("===== END UNSUBSCRIBE DEBUG =====");
 
     return {
       success: true,

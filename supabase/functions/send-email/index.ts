@@ -134,6 +134,9 @@ const generateEmailTemplate = (type: string, data: any) => {
     case "newsletter":
       // Create a properly encoded token
       const unsubscribeToken = btoa(data.email);
+      console.log(
+        `Newsletter email: ${data.email}, generated token: ${unsubscribeToken}`,
+      );
       return `
         <!DOCTYPE html>
         <html>
