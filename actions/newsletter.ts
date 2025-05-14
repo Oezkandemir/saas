@@ -167,22 +167,69 @@ export async function unsubscribeFromNewsletter(email: string, token: string) {
     // Normalize the email to handle case sensitivity and whitespace
     const normalizedEmail = email.toLowerCase().trim();
 
-    // ULTRA SIMPLE APPROACH: Just delete any matching email
-    // First try direct delete with case-insensitive matching
-    const { error: deleteError } = await supabase
+    // First, check if the email exists in the database
+    const { data: existingSubscribers } = await supabase
       .from("newsletter_subscribers")
-      .delete()
+      .select("*")
       .ilike("email", normalizedEmail);
 
-    if (deleteError) {
-      console.error("Error during delete operation:", deleteError);
+    console.log("Found subscribers:", existingSubscribers);
+
+    if (!existingSubscribers || existingSubscribers.length === 0) {
+      console.log("No matching subscribers found in database");
       return {
         success: false,
-        message: "Failed to unsubscribe. Please try again later.",
+        message: "This email is not subscribed to our newsletter.",
       };
     }
 
-    console.log("Unsubscribe process completed successfully");
+    // ULTRA SIMPLE APPROACH: Delete the subscriber directly
+    const { error: deleteError, count } = await supabase
+      .from("newsletter_subscribers")
+      .delete()
+      .ilike("email", normalizedEmail)
+      .select("count");
+
+    console.log("Delete operation result:", { error: deleteError, count });
+
+    if (deleteError) {
+      console.error("Error during delete operation:", deleteError);
+
+      // Fallback: Try to delete by ID
+      const subscriberId = existingSubscribers[0].id;
+      console.log("Trying fallback delete by ID:", subscriberId);
+
+      const { error: idDeleteError } = await supabase
+        .from("newsletter_subscribers")
+        .delete()
+        .eq("id", subscriberId);
+
+      if (idDeleteError) {
+        console.error("Error during ID-based delete:", idDeleteError);
+        return {
+          success: false,
+          message: "Failed to unsubscribe. Please try again later.",
+        };
+      }
+    }
+
+    // Double-check that the email was actually deleted
+    const { data: checkSubscribers } = await supabase
+      .from("newsletter_subscribers")
+      .select("*")
+      .ilike("email", normalizedEmail);
+
+    if (checkSubscribers && checkSubscribers.length > 0) {
+      console.error("CRITICAL: Email still exists in database after deletion!");
+      return {
+        success: false,
+        message: "Failed to unsubscribe. Please contact support.",
+      };
+    }
+
+    console.log(
+      "Unsubscribe process completed successfully - email removed from database",
+    );
     console.log("===== END UNSUBSCRIBE DEBUG =====");
 
     return {
