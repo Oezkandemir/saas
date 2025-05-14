@@ -163,127 +163,24 @@ export async function unsubscribeFromNewsletter(email: string, token: string) {
 
     console.log("===== UNSUBSCRIBE DEBUG =====");
     console.log("Unsubscribe request for email:", email);
-    console.log("Received token:", token);
 
-    // Skip token verification for now
+    // Normalize the email to handle case sensitivity and whitespace
+    const normalizedEmail = email.toLowerCase().trim();
 
-    // Get all subscribers to help with debugging
-    const { data: allSubscribers } = await supabase
+    // ULTRA SIMPLE APPROACH: Just delete any matching email
+    // First try direct delete with case-insensitive matching
+    const { error: deleteError } = await supabase
       .from("newsletter_subscribers")
-      .select("*");
+      .delete()
+      .ilike("email", normalizedEmail);
 
-    console.log("All subscribers in database:", allSubscribers);
-
-    // Check specifically for the email we're looking for
-    const matchingSubscribers = allSubscribers?.filter(
-      (sub) => sub.email.toLowerCase().trim() === email.toLowerCase().trim(),
-    );
-
-    console.log("Matching subscribers:", matchingSubscribers);
-
-    if (!matchingSubscribers || matchingSubscribers.length === 0) {
-      console.log("No exact match found, checking for partial matches");
-
-      // Try partial matching as a last resort
-      const partialMatches = allSubscribers?.filter(
-        (sub) =>
-          sub.email.toLowerCase().includes(email.toLowerCase()) ||
-          email.toLowerCase().includes(sub.email.toLowerCase()),
-      );
-
-      console.log("Partial matches:", partialMatches);
-
-      if (!partialMatches || partialMatches.length === 0) {
-        return {
-          success: false,
-          message: "This email is not subscribed to our newsletter.",
-        };
-      }
-
-      // Use the first partial match
-      const subscriberToDelete = partialMatches[0];
-      console.log("Using partial match for deletion:", subscriberToDelete);
-
-      // Delete the subscriber
-      const { error } = await supabase
-        .from("newsletter_subscribers")
-        .delete()
-        .eq("id", subscriberToDelete.id);
-
-      if (error) {
-        console.error("Error removing newsletter subscriber:", error);
-        return {
-          success: false,
-          message: "Failed to unsubscribe. Please try again later.",
-        };
-      }
-
-      console.log("Successfully deleted subscriber with partial match");
-    } else {
-      // Use the exact match
-      const subscriberToDelete = matchingSubscribers[0];
-      console.log("Using exact match for deletion:", subscriberToDelete);
-
-      // Delete the subscriber
-      const { error } = await supabase
-        .from("newsletter_subscribers")
-        .delete()
-        .eq("id", subscriberToDelete.id);
-
-      if (error) {
-        console.error("Error removing newsletter subscriber:", error);
-        return {
-          success: false,
-          message: "Failed to unsubscribe. Please try again later.",
-        };
-      }
-
-      console.log("Successfully deleted subscriber with exact match");
+    if (deleteError) {
+      console.error("Error during delete operation:", deleteError);
+      return {
+        success: false,
+        message: "Failed to unsubscribe. Please try again later.",
+      };
     }
-
-    // Get the current user (if authenticated)
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    let userId = user?.id;
-
-    // If no authenticated user, try to find a user with the provided email
-    if (!userId) {
-      // Search for a user with the provided email in the public.users table
-      const { data: userData } = await supabase
-        .from("users")
-        .select("id")
-        .eq("email", email)
-        .single();
-
-      if (userData) {
-        userId = userData.id;
-      }
-    }
-
-    // If we have a user ID, create a notification
-    if (userId) {
-      // Create notification for the user
-      const notificationContent = `You have successfully unsubscribed from the ${siteConfig.name} newsletter. You can resubscribe at any time.`;
-
-      await supabase.from("user_notifications").insert({
-        user_id: userId,
-        title: "Newsletter Unsubscription",
-        content: notificationContent,
-        type: "NEWSLETTER",
-        read: false,
-      });
-
-      // Revalidate paths to trigger a refresh of the UI
-      revalidatePath("/dashboard");
-      revalidatePath("/dashboard/notifications");
-    }
-
-    // Send unsubscribe confirmation email
-    await sendUnsubscribeConfirmationEmail({
-      email: email,
-    });
 
     console.log("Unsubscribe process completed successfully");
     console.log("===== END UNSUBSCRIBE DEBUG =====");

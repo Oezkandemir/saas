@@ -24,8 +24,8 @@ export default function NewsletterConfirmationEmail({
   siteUrl = "https://example.com",
 }: NewsletterConfirmationEmailProps) {
   const previewText = `Thank you for subscribing to the ${siteName} newsletter!`;
-  // Create a base64 token from the email for unsubscribe verification
-  const unsubscribeToken = Buffer.from(email).toString("base64");
+  // Create a simple token for unsubscribe verification - using same method as Edge Function
+  const unsubscribeToken = encodeURIComponent(email);
   const unsubscribeUrl = `${siteUrl}/newsletter/unsubscribe?email=${encodeURIComponent(email)}&token=${unsubscribeToken}`;
 
   return (

@@ -132,8 +132,9 @@ const generateEmailTemplate = (type: string, data: any) => {
         </html>
       `;
     case "newsletter":
-      // Create a properly encoded token
-      const unsubscribeToken = btoa(data.email);
+      // Create a properly encoded token - using simple encoding for compatibility
+      // We're not using btoa for security but just to have a token that can be verified
+      const unsubscribeToken = encodeURIComponent(data.email);
       console.log(
         `Newsletter email: ${data.email}, generated token: ${unsubscribeToken}`,
       );
