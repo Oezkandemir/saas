@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { unsubscribeFromNewsletter } from "@/actions/newsletter";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -20,10 +20,12 @@ import { Icons } from "@/components/shared/icons";
 export default function NewsletterUnsubscribe() {
   const t = useTranslations("Newsletter");
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [debugInfo, setDebugInfo] = useState<string | null>(null);
+  const [countdown, setCountdown] = useState(3);
 
   useEffect(() => {
     const handleUnsubscribe = async () => {
@@ -51,6 +53,23 @@ export default function NewsletterUnsubscribe() {
           toast.success(t("unsubscribeSuccess"), {
             description: result.message,
           });
+
+          // Start countdown for redirect
+          let seconds = 3;
+          setCountdown(seconds);
+
+          const countdownInterval = setInterval(() => {
+            seconds -= 1;
+            setCountdown(seconds);
+
+            if (seconds <= 0) {
+              clearInterval(countdownInterval);
+              router.push("/");
+            }
+          }, 1000);
+
+          // Clean up interval if component unmounts
+          return () => clearInterval(countdownInterval);
         } else {
           console.error("Unsubscribe failed:", result.message);
           setError(result.message);
@@ -70,7 +89,7 @@ export default function NewsletterUnsubscribe() {
     };
 
     handleUnsubscribe();
-  }, [searchParams, t]);
+  }, [searchParams, t, router]);
 
   return (
     <div className="container flex max-w-3xl flex-1 flex-col items-center justify-center py-12">
@@ -102,8 +121,11 @@ export default function NewsletterUnsubscribe() {
               <p className="text-center text-sm text-muted-foreground">
                 {t("unsubscribeSuccessDescription")}
               </p>
-              <Link href="/newsletter">
-                <Button className="mt-4">{t("resubscribeButton")}</Button>
+              <p className="text-center text-sm text-muted-foreground">
+                Redirecting to homepage in {countdown} seconds...
+              </p>
+              <Link href="/">
+                <Button className="mt-4">Go to Homepage</Button>
               </Link>
             </div>
           ) : (
