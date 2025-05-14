@@ -5,6 +5,7 @@ import {
   Head,
   Hr,
   Html,
+  Link,
   Preview,
   Section,
   Tailwind,
@@ -23,6 +24,9 @@ export default function NewsletterConfirmationEmail({
   siteUrl = "https://example.com",
 }: NewsletterConfirmationEmailProps) {
   const previewText = `Thank you for subscribing to the ${siteName} newsletter!`;
+  // Create a base64 token from the email for unsubscribe verification
+  const unsubscribeToken = Buffer.from(email).toString("base64");
+  const unsubscribeUrl = `${siteUrl}/newsletter/unsubscribe?email=${encodeURIComponent(email)}&token=${unsubscribeToken}`;
 
   return (
     <Html>
@@ -39,8 +43,9 @@ export default function NewsletterConfirmationEmail({
                 Thank you for subscribing to our newsletter!
               </Text>
               <Text className="text-gray-600">
-                Were excited to have you join our community. Youll now receive
-                updates on our latest features, tips, and exclusive content.
+                We&apos;re excited to have you join our community. You&apos;ll
+                now receive updates on our latest features, tips, and exclusive
+                content.
               </Text>
             </Section>
             <Section className="mt-8">
@@ -53,17 +58,22 @@ export default function NewsletterConfirmationEmail({
             </Section>
             <Section className="mt-8 text-sm text-gray-500">
               <Text>
-                Youre receiving this email because you signed up for the{" "}
+                You&apos;re receiving this email because you signed up for the{" "}
                 {siteName} newsletter.
               </Text>
               <Text>
-                If you didnt sign up for this newsletter, you can safely ignore
-                this email.
+                If you didn&apos;t sign up for this newsletter, you can safely
+                ignore this email.
               </Text>
             </Section>
             <Hr className="my-6 border-gray-300" />
             <Text className="text-center text-xs text-gray-500">
               © {new Date().getFullYear()} {siteName}. All rights reserved.
+            </Text>
+            <Text className="text-center text-xs text-gray-400">
+              <Link href={unsubscribeUrl} className="text-gray-400 underline">
+                Unsubscribe from newsletter
+              </Link>
             </Text>
           </Container>
         </Body>

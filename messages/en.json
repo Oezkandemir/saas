@@ -181,7 +181,15 @@
     "notification": {
       "title": "Newsletter Subscription",
       "content": "Thank you for subscribing to our newsletter. You'll receive updates on our latest features and announcements."
-    }
+    },
+    "unsubscribeTitle": "Newsletter Unsubscribe",
+    "unsubscribeProcessing": "Processing your unsubscribe request...",
+    "unsubscribeSuccess": "Unsubscribed Successfully",
+    "unsubscribeSuccessDescription": "You have been successfully unsubscribed from our newsletter. We're sorry to see you go.",
+    "unsubscribeError": "Unsubscribe Failed",
+    "unsubscribeErrorDescription": "An error occurred while processing your unsubscribe request. Please try again later or contact support.",
+    "resubscribeButton": "Resubscribe to Newsletter",
+    "contactSupportButton": "Contact Support"
   },
   "Auth": {
     "signin": "Sign In",

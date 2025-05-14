@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { siteConfig } from "@/config/site";
-import { sendNewsletterConfirmationEmail } from "@/lib/email-client";
+import {
+  sendNewsletterConfirmationEmail,
+  sendUnsubscribeConfirmationEmail,
+} from "@/lib/email-client";
 import { createClient } from "@/lib/supabase/server";
 
 // Schema for newsletter subscription
@@ -148,6 +151,110 @@ export async function subscribeToNewsletter(data: NewsletterFormData) {
     return {
       success: false,
       message: "Failed to subscribe. Please try again later.",
+    };
+  }
+}
+
+// Function to unsubscribe from newsletter
+export async function unsubscribeFromNewsletter(email: string, token: string) {
+  try {
+    // Get Supabase client
+    const supabase = await createClient();
+
+    // Verify the unsubscribe token matches the email
+    // This is a simple verification to ensure the unsubscribe link is valid
+    // In a production environment, you might want to use a more secure method
+    const expectedToken = btoa(email);
+
+    if (token !== expectedToken) {
+      return {
+        success: false,
+        message: "Invalid unsubscribe link. Please contact support.",
+      };
+    }
+
+    // Check if the email exists in the newsletter_subscribers table
+    const { data: existingSubscriber } = await supabase
+      .from("newsletter_subscribers")
+      .select("*")
+      .eq("email", email)
+      .single();
+
+    if (!existingSubscriber) {
+      return {
+        success: false,
+        message: "This email is not subscribed to our newsletter.",
+      };
+    }
+
+    // Delete the subscriber
+    const { error } = await supabase
+      .from("newsletter_subscribers")
+      .delete()
+      .eq("email", email);
+
+    if (error) {
+      console.error("Error removing newsletter subscriber:", error);
+      return {
+        success: false,
+        message: "Failed to unsubscribe. Please try again later.",
+      };
+    }
+
+    // Get the current user (if authenticated)
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    let userId = user?.id;
+
+    // If no authenticated user, try to find a user with the provided email
+    if (!userId) {
+      // Search for a user with the provided email in the public.users table
+      const { data: userData } = await supabase
+        .from("users")
+        .select("id")
+        .eq("email", email)
+        .single();
+
+      if (userData) {
+        userId = userData.id;
+      }
+    }
+
+    // If we have a user ID, create a notification
+    if (userId) {
+      // Create notification for the user
+      const notificationContent = `You have successfully unsubscribed from the ${siteConfig.name} newsletter. You can resubscribe at any time.`;
+
+      await supabase.from("user_notifications").insert({
+        user_id: userId,
+        title: "Newsletter Unsubscription",
+        content: notificationContent,
+        type: "NEWSLETTER",
+        read: false,
+      });
+
+      // Revalidate paths to trigger a refresh of the UI
+      revalidatePath("/dashboard");
+      revalidatePath("/dashboard/notifications");
+    }
+
+    // Send unsubscribe confirmation email
+    await sendUnsubscribeConfirmationEmail({
+      email: email,
+    });
+
+    return {
+      success: true,
+      message: "You have successfully unsubscribed from our newsletter.",
+    };
+  } catch (error) {
+    console.error("Newsletter unsubscription error:", error);
+
+    return {
+      success: false,
+      message: "Failed to unsubscribe. Please try again later.",
     };
   }
 }

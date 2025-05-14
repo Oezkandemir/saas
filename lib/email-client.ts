@@ -10,7 +10,13 @@ export const sendEmailWithEdgeFunction = async ({
   actionUrl,
   emailType,
 }: {
-  type: "signup" | "magic-link" | "welcome" | "confirmation" | "newsletter";
+  type:
+    | "signup"
+    | "magic-link"
+    | "welcome"
+    | "confirmation"
+    | "newsletter"
+    | "unsubscribe";
   email: string;
   name?: string;
   actionUrl?: string;
@@ -99,5 +105,22 @@ export const sendNewsletterConfirmationEmail = async ({
   } catch (error) {
     console.error("Failed to send newsletter confirmation email:", error);
     throw new Error("Failed to send newsletter confirmation email.");
+  }
+};
+
+// Function to send an unsubscribe confirmation email
+export const sendUnsubscribeConfirmationEmail = async ({
+  email,
+}: {
+  email: string;
+}) => {
+  try {
+    return await sendEmailWithEdgeFunction({
+      type: "unsubscribe",
+      email,
+    });
+  } catch (error) {
+    console.error("Failed to send unsubscribe confirmation email:", error);
+    throw new Error("Failed to send unsubscribe confirmation email.");
   }
 };

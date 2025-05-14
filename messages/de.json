@@ -181,7 +181,15 @@
     "notification": {
       "title": "Newsletter-Abonnement",
       "content": "Vielen Dank für das Abonnieren unseres Newsletters. Sie erhalten Updates zu unseren neuesten Funktionen und Ankündigungen."
-    }
+    },
+    "unsubscribeTitle": "Newsletter abbestellen",
+    "unsubscribeProcessing": "Ihre Abbestellung wird bearbeitet...",
+    "unsubscribeSuccess": "Erfolgreich abbestellt",
+    "unsubscribeSuccessDescription": "Sie haben den Newsletter erfolgreich abbestellt. Es tut uns leid, dass Sie gehen.",
+    "unsubscribeError": "Abbestellung fehlgeschlagen",
+    "unsubscribeErrorDescription": "Bei der Bearbeitung Ihrer Abbestellung ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut oder kontaktieren Sie den Support.",
+    "resubscribeButton": "Newsletter erneut abonnieren",
+    "contactSupportButton": "Support kontaktieren"
   },
   "Auth": {
     "signin": "Anmelden",

@@ -158,6 +158,40 @@ const generateEmailTemplate = (type: string, data: any) => {
               </div>
               <div style="text-align: center; margin-top: 30px; font-size: 14px; color: #6B7280;">
                 <p>© ${new Date().getFullYear()} ${data.siteName}. All rights reserved.</p>
+                <p style="font-size: 12px; color: #9CA3AF; margin-top: 10px;">
+                  <a href="${data.siteUrl}/newsletter/unsubscribe?email=${encodeURIComponent(data.email)}&token=${btoa(data.email)}" style="color: #9CA3AF; text-decoration: underline;">Unsubscribe from newsletter</a>
+                </p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `;
+    case "unsubscribe":
+      return `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <title>Unsubscribed from ${data.siteName} newsletter</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: sans-serif; margin: 0; padding: 0; background-color: #f9f9f9;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+              <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="color: #111827;">${data.siteName}</h1>
+              </div>
+              <div style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <p style="margin-bottom: 15px; font-size: 18px; color: #111827; font-weight: 500;">You have been unsubscribed from our newsletter</p>
+                <p style="margin-bottom: 25px; font-size: 16px; color: #374151;">We're sorry to see you go. You will no longer receive our newsletter emails.</p>
+                
+                <p style="margin-bottom: 25px; font-size: 16px; color: #374151;">If you unsubscribed by mistake or would like to resubscribe in the future, you can do so at any time.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                  <a href="${data.siteUrl}/newsletter" style="background-color: #111827; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: 500; display: inline-block;">Resubscribe</a>
+                </div>
+              </div>
+              <div style="text-align: center; margin-top: 30px; font-size: 14px; color: #6B7280;">
+                <p>© ${new Date().getFullYear()} ${data.siteName}. All rights reserved.</p>
               </div>
             </div>
           </body>
@@ -228,6 +262,14 @@ Deno.serve(async (req) => {
       // For newsletter subscription confirmation
       subject = `Thank you for subscribing to ${SITE_NAME} newsletter`;
       htmlContent = generateEmailTemplate("newsletter", {
+        email: email,
+        siteName: SITE_NAME,
+        siteUrl: SITE_URL,
+      });
+    } else if (type === "unsubscribe") {
+      // For newsletter unsubscription confirmation
+      subject = `You have been unsubscribed from ${SITE_NAME} newsletter`;
+      htmlContent = generateEmailTemplate("unsubscribe", {
         email: email,
         siteName: SITE_NAME,
         siteUrl: SITE_URL,
