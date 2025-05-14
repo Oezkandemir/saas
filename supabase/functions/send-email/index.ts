@@ -132,6 +132,8 @@ const generateEmailTemplate = (type: string, data: any) => {
         </html>
       `;
     case "newsletter":
+      // Create a properly encoded token
+      const unsubscribeToken = btoa(data.email);
       return `
         <!DOCTYPE html>
         <html>
@@ -159,7 +161,7 @@ const generateEmailTemplate = (type: string, data: any) => {
               <div style="text-align: center; margin-top: 30px; font-size: 14px; color: #6B7280;">
                 <p>© ${new Date().getFullYear()} ${data.siteName}. All rights reserved.</p>
                 <p style="font-size: 12px; color: #9CA3AF; margin-top: 10px;">
-                  <a href="${data.siteUrl}/newsletter/unsubscribe?email=${encodeURIComponent(data.email)}&token=${btoa(data.email)}" style="color: #9CA3AF; text-decoration: underline;">Unsubscribe from newsletter</a>
+                  <a href="${data.siteUrl}/newsletter/unsubscribe?email=${encodeURIComponent(data.email)}&token=${unsubscribeToken}" style="color: #9CA3AF; text-decoration: underline;">Unsubscribe from newsletter</a>
                 </p>
               </div>
             </div>

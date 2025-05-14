@@ -161,26 +161,84 @@ export async function unsubscribeFromNewsletter(email: string, token: string) {
     // Get Supabase client
     const supabase = await createClient();
 
+    console.log("Unsubscribe request for email:", email);
+    console.log("Received token:", token);
+
     // Verify the unsubscribe token matches the email
     // This is a simple verification to ensure the unsubscribe link is valid
     // In a production environment, you might want to use a more secure method
     const expectedToken = btoa(email);
+    console.log("Expected token:", expectedToken);
 
-    if (token !== expectedToken) {
+    // Check if the token matches regardless of URL encoding
+    const isTokenValid =
+      token === expectedToken || decodeURIComponent(token) === expectedToken;
+
+    if (!isTokenValid) {
+      console.log("Token verification failed");
       return {
         success: false,
         message: "Invalid unsubscribe link. Please contact support.",
       };
     }
 
+    console.log(
+      "Token verification successful, checking if email exists in subscribers",
+    );
+
     // Check if the email exists in the newsletter_subscribers table
-    const { data: existingSubscriber } = await supabase
+    const { data: existingSubscriber, error: selectError } = await supabase
       .from("newsletter_subscribers")
       .select("*")
       .eq("email", email)
       .single();
 
+    if (selectError) {
+      console.log("Error checking subscriber:", selectError.message);
+    }
+
+    console.log("Subscriber data:", existingSubscriber);
+
     if (!existingSubscriber) {
+      // Try a case-insensitive search as a fallback
+      const { data: subscribers } = await supabase
+        .from("newsletter_subscribers")
+        .select("*")
+        .ilike("email", email);
+
+      console.log("Case-insensitive search results:", subscribers);
+
+      if (subscribers && subscribers.length > 0) {
+        // Use the first matching email
+        const matchedEmail = subscribers[0].email;
+        console.log("Found matching email with different case:", matchedEmail);
+
+        // Delete the subscriber with the matched email
+        const { error } = await supabase
+          .from("newsletter_subscribers")
+          .delete()
+          .eq("email", matchedEmail);
+
+        if (error) {
+          console.error("Error removing newsletter subscriber:", error);
+          return {
+            success: false,
+            message: "Failed to unsubscribe. Please try again later.",
+          };
+        }
+
+        // Continue with the rest of the function as if we found the exact match
+        // Send unsubscribe confirmation email
+        await sendUnsubscribeConfirmationEmail({
+          email: email,
+        });
+
+        return {
+          success: true,
+          message: "You have successfully unsubscribed from our newsletter.",
+        };
+      }
+
       return {
         success: false,
         message: "This email is not subscribed to our newsletter.",
