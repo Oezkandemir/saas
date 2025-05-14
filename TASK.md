@@ -14,3 +14,12 @@
 - Fix errors with notification deletion functionality ✅
 - Ensure consistent functionality between popover and notifications page ✅
 - Add tests for the notification deletion functionality ✅
+
+## [2024-06-30] Implement newsletter subscription functionality ✅
+
+- Create a newsletter_subscribers table in Supabase ✅
+- Create a newsletter confirmation email template ✅
+- Update the newsletter form component to handle submissions ✅
+- Implement server action for newsletter subscriptions ✅
+- Add email sending functionality using Resend ✅
+- Update translations for newsletter-related messages ✅

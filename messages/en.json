@@ -173,7 +173,10 @@
     "subscribeLabel": "Subscribe to our newsletter",
     "emailPlaceholder": "janedoe@example.com",
     "subscribeButton": "Subscribe",
-    "submittedTitle": "You submitted the following values:",
+    "subscribingButton": "Subscribing...",
+    "submittedTitle": "Thank you!",
+    "errorTitle": "Subscription failed",
+    "errorDescription": "An error occurred. Please try again later.",
     "validEmail": "Enter a valid email."
   },
   "Auth": {

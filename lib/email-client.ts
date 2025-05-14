@@ -10,7 +10,7 @@ export const sendEmailWithEdgeFunction = async ({
   actionUrl,
   emailType,
 }: {
-  type: "signup" | "magic-link" | "welcome" | "confirmation";
+  type: "signup" | "magic-link" | "welcome" | "confirmation" | "newsletter";
   email: string;
   name?: string;
   actionUrl?: string;
@@ -82,5 +82,22 @@ export const sendWelcomeEmail = async ({
   } catch (error) {
     console.error("Failed to send welcome email:", error);
     throw new Error("Failed to send welcome email.");
+  }
+};
+
+// Function to send a newsletter confirmation email
+export const sendNewsletterConfirmationEmail = async ({
+  email,
+}: {
+  email: string;
+}) => {
+  try {
+    return await sendEmailWithEdgeFunction({
+      type: "newsletter",
+      email,
+    });
+  } catch (error) {
+    console.error("Failed to send newsletter confirmation email:", error);
+    throw new Error("Failed to send newsletter confirmation email.");
   }
 };

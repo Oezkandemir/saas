@@ -131,6 +131,38 @@ const generateEmailTemplate = (type: string, data: any) => {
           </body>
         </html>
       `;
+    case "newsletter":
+      return `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <title>Thank you for subscribing to ${data.siteName} newsletter</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: sans-serif; margin: 0; padding: 0; background-color: #f9f9f9;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+              <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="color: #111827;">${data.siteName}</h1>
+              </div>
+              <div style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <p style="margin-bottom: 15px; font-size: 18px; color: #111827; font-weight: 500;">Thank you for subscribing to our newsletter!</p>
+                <p style="margin-bottom: 25px; font-size: 16px; color: #374151;">We're excited to have you join our community. You'll now receive updates on our latest features, tips, and exclusive content.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                  <a href="${data.siteUrl}" style="background-color: #111827; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: 500; display: inline-block;">Visit our website</a>
+                </div>
+                
+                <p style="margin-bottom: 15px; font-size: 14px; color: #6B7280;">You're receiving this email because you signed up for the ${data.siteName} newsletter.</p>
+                <p style="margin-bottom: 15px; font-size: 14px; color: #6B7280;">If you didn't sign up for this newsletter, you can safely ignore this email.</p>
+              </div>
+              <div style="text-align: center; margin-top: 30px; font-size: 14px; color: #6B7280;">
+                <p>© ${new Date().getFullYear()} ${data.siteName}. All rights reserved.</p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `;
     default:
       return "";
   }
@@ -191,6 +223,14 @@ Deno.serve(async (req) => {
         actionUrl: actionUrl || `${SITE_URL}/auth/callback`,
         mailType: mailType === "login" ? "login" : "register",
         siteName: SITE_NAME,
+      });
+    } else if (type === "newsletter") {
+      // For newsletter subscription confirmation
+      subject = `Thank you for subscribing to ${SITE_NAME} newsletter`;
+      htmlContent = generateEmailTemplate("newsletter", {
+        email: email,
+        siteName: SITE_NAME,
+        siteUrl: SITE_URL,
       });
     } else {
       return new Response(JSON.stringify({ error: "Invalid email type" }), {

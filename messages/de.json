@@ -171,9 +171,12 @@
   },
   "Newsletter": {
     "subscribeLabel": "Abonnieren Sie unseren Newsletter",
-    "emailPlaceholder": "maxmustermann@beispiel.de",
+    "emailPlaceholder": "janedoe@example.com",
     "subscribeButton": "Abonnieren",
-    "submittedTitle": "Sie haben folgende Werte übermittelt:",
+    "subscribingButton": "Wird abonniert...",
+    "submittedTitle": "Vielen Dank!",
+    "errorTitle": "Abonnement fehlgeschlagen",
+    "errorDescription": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
     "validEmail": "Geben Sie eine gültige E-Mail-Adresse ein."
   },
   "Auth": {
