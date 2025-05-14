@@ -23,3 +23,11 @@
 - Implement server action for newsletter subscriptions ✅
 - Add email sending functionality using Resend ✅
 - Update translations for newsletter-related messages ✅
+
+## [2024-07-01] Enhance newsletter with notifications and improved UX ✅
+
+- Add enhanced toast notifications with styling ✅
+- Create user notifications for newsletter subscriptions ✅
+- Add NEWSLETTER type to notification_type enum ✅
+- Update i18n messages for newsletter notifications ✅
+- Fix email sending functionality in the edge function ✅

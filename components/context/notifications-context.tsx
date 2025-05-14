@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { UserNotification } from "@/actions/user-profile-actions";
+import { toast } from "sonner";
 
 import { useNotifications } from "@/hooks/use-notifications";
 import { useSupabase } from "@/components/supabase-provider";
@@ -38,6 +39,11 @@ export function NotificationsProvider({
   useEffect(() => {
     if (!session?.user?.id) return;
 
+    console.log(
+      "Setting up notifications realtime subscription for user:",
+      session.user.id,
+    );
+
     // Subscribe to changes in the user_notifications table
     const channel = supabase
       .channel("global_notifications_changes")
@@ -49,7 +55,19 @@ export function NotificationsProvider({
           table: "user_notifications",
           filter: `user_id=eq.${session.user.id}`,
         },
-        () => {
+        (payload) => {
+          console.log("Received notification change:", payload);
+
+          // Show toast for new notifications
+          if (payload.eventType === "INSERT") {
+            const notification = payload.new as UserNotification;
+            if (notification && notification.title) {
+              toast.info(notification.title, {
+                description: notification.content,
+              });
+            }
+          }
+
           // Refetch unread count for the bell indicator
           refetchUnreadCount();
 
@@ -57,10 +75,13 @@ export function NotificationsProvider({
           window.dispatchEvent(new CustomEvent("notifications-changed"));
         },
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log("Notification subscription status:", status);
+      });
 
     // Cleanup subscription on unmount
     return () => {
+      console.log("Cleaning up notifications subscription");
       supabase.removeChannel(channel);
     };
   }, [session?.user?.id, supabase, refetchUnreadCount]);

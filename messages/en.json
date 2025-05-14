@@ -177,7 +177,11 @@
     "submittedTitle": "Thank you!",
     "errorTitle": "Subscription failed",
     "errorDescription": "An error occurred. Please try again later.",
-    "validEmail": "Enter a valid email."
+    "validEmail": "Enter a valid email.",
+    "notification": {
+      "title": "Newsletter Subscription",
+      "content": "Thank you for subscribing to our newsletter. You'll receive updates on our latest features and announcements."
+    }
   },
   "Auth": {
     "signin": "Sign In",

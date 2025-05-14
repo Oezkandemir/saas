@@ -177,7 +177,11 @@
     "submittedTitle": "Vielen Dank!",
     "errorTitle": "Abonnement fehlgeschlagen",
     "errorDescription": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
-    "validEmail": "Geben Sie eine gültige E-Mail-Adresse ein."
+    "validEmail": "Geben Sie eine gültige E-Mail-Adresse ein.",
+    "notification": {
+      "title": "Newsletter-Abonnement",
+      "content": "Vielen Dank für das Abonnieren unseres Newsletters. Sie erhalten Updates zu unseren neuesten Funktionen und Ankündigungen."
+    }
   },
   "Auth": {
     "signin": "Anmelden",

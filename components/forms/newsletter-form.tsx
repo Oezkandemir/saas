@@ -5,6 +5,7 @@ import { subscribeToNewsletter } from "@/actions/newsletter";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -17,12 +18,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
+import { useNotificationsContext } from "@/components/context/notifications-context";
 import { Icons } from "@/components/shared/icons";
+import { useSupabase } from "@/components/supabase-provider";
 
 export function NewsletterForm() {
   const t = useTranslations("Newsletter");
   const [isLoading, setIsLoading] = useState(false);
+  const { refetchAll } = useNotificationsContext();
+  const { session } = useSupabase();
+  const isLoggedIn = !!session?.user;
 
   const FormSchema = z.object({
     email: z.string().email({
@@ -47,22 +52,22 @@ export function NewsletterForm() {
 
       if (result.success) {
         form.reset();
-        toast({
-          title: t("submittedTitle"),
+        toast.success(t("submittedTitle"), {
           description: result.message,
         });
+
+        // If user is logged in, refresh notifications
+        if (isLoggedIn) {
+          await refetchAll();
+        }
       } else {
-        toast({
-          title: t("errorTitle"),
+        toast.error(t("errorTitle"), {
           description: result.message,
-          variant: "destructive",
         });
       }
     } catch (error) {
-      toast({
-        title: t("errorTitle"),
+      toast.error(t("errorTitle"), {
         description: t("errorDescription"),
-        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
