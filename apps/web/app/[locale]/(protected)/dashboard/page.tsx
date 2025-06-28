@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { Button } from "@/components/ui/button";
 import { LoginTracker } from "@/components/auth/login-tracker";
-import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
+import { DashboardHeader } from "@/components/dashboard/header";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
 
 export async function generateMetadata() {
@@ -26,7 +26,7 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <DashboardHeaderWithLanguageSwitcher
+      <DashboardHeader
         heading={t("heading")}
         text={t("subheading")}
       />

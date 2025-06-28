@@ -5,7 +5,6 @@ import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
 import { cn, nFormatter } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import LanguageSwitcher from "@/components/language-switcher";
 import { Icons } from "@/components/shared/icons";
 
 export default async function HeroLanding() {
@@ -40,10 +39,6 @@ export default async function HeroLanding() {
   return (
     <section className="space-y-6 py-12 sm:py-20 lg:py-20">
       <div className="container flex max-w-5xl flex-col items-center gap-5 text-center">
-        <div className="absolute right-4 top-4">
-          <LanguageSwitcher />
-        </div>
-
         <Link
           href="https://twitter.com/miickasmt/status/1810465801649938857"
           className={cn(
