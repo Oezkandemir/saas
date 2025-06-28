@@ -1,0 +1,43 @@
+
+
+> @cenety/web@0.3.1 build /Users/dmr/Desktop/next-saas-stripe-starter-main/apps/web
+> next build
+
+   [1m[38;2;173;127;168m▲ Next.js 15.3.1[39m[22m
+   - Environments: .env.local, .env
+
+ [37m[1m [22m[39m Creating an optimized production build ...
+Generated 20 documents in .contentlayer
+<w> [1m[33m[webpack.cache.PackFileCacheStrategy] Serializing big strings (100kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)[39m[22m
+ [33m[1m⚠[22m[39m Compiled with warnings in 16.0s
+
+../../node_modules/.pnpm/@supabase+realtime-js@2.11.10_bufferutil@4.0.9_utf-8-validate@6.0.5/node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+../../node_modules/.pnpm/@supabase+realtime-js@2.11.10_bufferutil@4.0.9_utf-8-validate@6.0.5/node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
+../../node_modules/.pnpm/@supabase+realtime-js@2.11.10_bufferutil@4.0.9_utf-8-validate@6.0.5/node_modules/@supabase/realtime-js/dist/main/index.js
+../../node_modules/.pnpm/@supabase+supabase-js@2.50.0_bufferutil@4.0.9_utf-8-validate@6.0.5/node_modules/@supabase/supabase-js/dist/module/index.js
+./lib/db-admin.ts
+./actions/analytics-actions.ts
+
+[?25l [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G[?25h[31m
+Failed to compile.[39m
+[?25l [36m.[39m [2K[1G[?25h
+./app/[locale]/layout.tsx
+56:20  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
+
+./components/error-boundary.tsx
+32:16  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
+33:26  Warning: Classnames 'h-12, w-12' could be replaced by the 'size-12' shorthand!  tailwindcss/enforces-shorthand
+41:16  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
+47:26  Warning: Classnames 'h-4, w-4' could be replaced by the 'size-4' shorthand!  tailwindcss/enforces-shorthand
+55:21  Warning: Classnames 'h-4, w-4' could be replaced by the 'size-4' shorthand!  tailwindcss/enforces-shorthand
+61:22  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
+62:24  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
+68:24  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
+75:26  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
+83:26  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+[?25l [36m.[39m [?25h[41m[30m ELIFECYCLE [39m[49m [31mCommand failed with exit code 1.[39m

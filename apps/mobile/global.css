@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @media (prefers-color-scheme: light) {
+    :root {
+      /* Light mode: Black text on white backgrounds */
+      --background: 0 0% 100%;                    /* Pure white */
+      --foreground: 0 0% 0%;                     /* Pure black */
+      --card: 0 0% 100%;                         /* Pure white */
+      --card-foreground: 0 0% 0%;                /* Pure black */
+      --popover: 0 0% 100%;                      /* Pure white */
+      --popover-foreground: 0 0% 0%;             /* Pure black */
+      --primary: 0 0% 0%;                        /* Pure black */
+      --primary-foreground: 0 0% 100%;           /* Pure white */
+      --secondary: 0 0% 96%;                     /* Light gray */
+      --secondary-foreground: 0 0% 0%;           /* Pure black */
+      --muted: 0 0% 96%;                         /* Light gray */
+      --muted-foreground: 0 0% 20%;              /* Dark gray */
+      --accent: 0 0% 96%;                        /* Light gray */
+      --accent-foreground: 0 0% 0%;              /* Pure black */
+      --destructive: 0 84.2% 60.2%;              /* Red for errors */
+      --destructive-foreground: 0 0% 100%;       /* Pure white */
+      --border: 0 0% 90%;                        /* Light gray border */
+      --input: 0 0% 96%;                         /* Light gray input bg */
+      --ring: 0 0% 0%;                           /* Pure black focus ring */
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      /* Dark mode: White text on black backgrounds */
+      --background: 0 0% 0%;                     /* Pure black */
+      --foreground: 0 0% 100%;                   /* Pure white */
+      --card: 0 0% 0%;                           /* Pure black */
+      --card-foreground: 0 0% 100%;              /* Pure white */
+      --popover: 0 0% 0%;                        /* Pure black */
+      --popover-foreground: 0 0% 100%;           /* Pure white */
+      --primary: 0 0% 100%;                      /* Pure white */
+      --primary-foreground: 0 0% 0%;             /* Pure black */
+      --secondary: 0 0% 10%;                     /* Dark gray */
+      --secondary-foreground: 0 0% 100%;         /* Pure white */
+      --muted: 0 0% 10%;                         /* Dark gray */
+      --muted-foreground: 0 0% 80%;              /* Light gray */
+      --accent: 0 0% 10%;                        /* Dark gray */
+      --accent-foreground: 0 0% 100%;            /* Pure white */
+      --destructive: 0 72% 51%;                  /* Red for errors */
+      --destructive-foreground: 0 0% 100%;       /* Pure white */
+      --border: 0 0% 20%;                        /* Dark gray border */
+      --input: 0 0% 10%;                         /* Dark gray input bg */
+      --ring: 0 0% 100%;                         /* Pure white focus ring */
+    }
+  }
+}

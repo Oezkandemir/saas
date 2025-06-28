@@ -1,0 +1,20 @@
+{
+  "name": "@cenety/config",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./eslint": "./eslint.js",
+    "./tailwind": "./tailwind.js",
+    "./tsconfig.json": "./tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/eslint": "^9.6.1",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^15.3.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.35.0",
+    "eslint-plugin-tailwindcss": "^3.17.4",
+    "tailwindcss": "^3.4.6",
+    "typescript": "^5.3.3"
+  }
+}

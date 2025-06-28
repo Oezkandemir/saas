@@ -1,0 +1,5 @@
+
+
+> @cenety/ui@0.0.0 type-check /Users/dmr/Desktop/next-saas-stripe-starter-main/packages/ui
+> tsc --noEmit
+

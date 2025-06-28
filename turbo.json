@@ -1,0 +1,41 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**", ".expo/**"],
+      "env": ["NODE_ENV", "NEXT_PUBLIC_*"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "env": ["NODE_ENV", "NEXT_PUBLIC_*"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"],
+      "outputs": ["eslint-report.json"]
+    },
+    "type-check": {
+      "dependsOn": ["^type-check"],
+      "outputs": ["tsconfig.tsbuildinfo"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"]
+    },
+    "clean": {
+      "cache": false
+    },
+    "format": {
+      "outputs": []
+    },
+    "analyze": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/analyze/**"]
+    }
+  },
+  "remoteCache": {
+    "signature": true
+  }
+}
