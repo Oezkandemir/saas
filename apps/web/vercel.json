@@ -1,5 +1,0 @@
-{
-  "buildCommand": "cd ../.. && turbo run build --filter=@cenety/web",
-  "devCommand": "cd ../.. && turbo run dev --filter=@cenety/web",
-  "installCommand": "cd ../.. && pnpm install --frozen-lockfile"
-} 
