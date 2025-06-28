@@ -1,74 +1,56 @@
-# Deployment Setup - Monorepo to Vercel
+# Deployment Setup - Nur Next.js Web App
 
-## Vercel Project Configuration
+## Einfache Vercel Konfiguration
 
-### 1. Project Settings in Vercel Dashboard
+### 1. Vercel Project Settings
 
-Gehen Sie zu Ihren **Vercel Project Settings** und konfigurieren Sie:
+Gehe zu deinem **Vercel Project Dashboard** → **Settings** → **General**:
 
 #### Build & Development Settings:
-- **Framework Preset**: `Next.js`
-- **Root Directory**: `.` (Root des Monorepos) 
-- **Build Command**: Wird automatisch aus `apps/web/vercel.json` gelesen
-- **Install Command**: Wird automatisch aus `apps/web/vercel.json` gelesen
-- **Development Command**: Wird automatisch aus `apps/web/vercel.json` gelesen
+- **Framework Preset**: `Next.js` ✅
+- **Root Directory**: `apps/web` ⭐ **WICHTIG!**
+- **Build Command**: `npm run build` (Standard)
+- **Output Directory**: `.next` (Standard)
+- **Install Command**: `npm install` (Standard)
+- **Development Command**: `npm run dev` (Standard)
 
-**Wichtig**: Die `vercel.json` Datei befindet sich jetzt in `apps/web/vercel.json` mit folgender Konfiguration:
-```json
-{
-  "buildCommand": "cd ../.. && turbo run build --filter=@cenety/web",
-  "devCommand": "cd ../.. && turbo run dev --filter=@cenety/web",
-  "installCommand": "cd ../.. && pnpm install --frozen-lockfile"
-}
+#### Node.js Version:
+- **Node.js Version**: `18.x`
+
+### 2. Das wars! 🎉
+
+Mit **Root Directory: apps/web** weiß Vercel:
+- ✅ Wo sich die Next.js App befindet
+- ✅ Welche package.json zu verwenden ist
+- ✅ Dass nur die Web App deployed werden soll
+- ✅ Mobile/Landing Apps werden ignoriert
+
+### 3. Environment Variables
+
+Füge deine Environment Variables hinzu:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` 
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `STRIPE_SECRET_KEY`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+
+## Warum diese Lösung?
+
+- ✅ **Einfach**: Keine komplizierte vercel.json
+- ✅ **Zuverlässig**: Vercel weiß genau wo Next.js ist
+- ✅ **Nur Web App**: Mobile/Expo Apps werden nicht deployed
+- ✅ **Standard Next.js**: Nutzt normale Next.js Build-Prozesse
+
+## Testing
+
+Lokal testen:
+```bash
+cd apps/web
+npm run build
 ```
 
-#### Environment Variables:
-Stellen Sie sicher, dass alle Environment Variables aus `apps/web/.env.example` in Vercel konfiguriert sind.
+## Mobile Apps
 
-### 2. Node.js Version
-- **Node.js Version**: `18.x` (in Vercel Settings)
-
-### 3. Package Manager
-- **Package Manager**: `pnpm` (wird automatisch erkannt durch `packageManager` in package.json)
-
-## Automatisches Deployment
-
-Mit dieser Konfiguration wird bei jedem Commit:
-- Nur die `@cenety/web` App gebaut und deployed
-- Die anderen Apps (mobile, landing) werden ignoriert
-- Turbo's Caching wird genutzt für schnellere Builds
-
-## Troubleshooting
-
-### Registry Errors
-Falls npm registry Fehler auftreten:
-1. Prüfen Sie die Netzwerkverbindung
-2. Warten Sie und pushen Sie erneut
-3. Überprüfen Sie, ob alle Dependencies in `apps/web/package.json` korrekt sind
-
-### Build Errors
-1. Lokal testen: `pnpm run build --filter=@cenety/web`
-2. Dependencies prüfen: `pnpm install`
-3. TypeScript Errors beheben
-
-### Deployment nur bei Web-App Änderungen (Optional)
-Um nur bei Änderungen an der Web-App zu deployen, können Sie in Vercel Settings die **Ignored Build Step** konfigurieren:
-```bash
-git diff HEAD^ HEAD --quiet apps/web/
-```
-
-## Befehle
-
-```bash
-# Lokal entwickeln (nur Web-App)
-pnpm run dev:web
-
-# Lokal builden (nur Web-App)  
-turbo run build --filter=@cenety/web
-
-# Alle Apps entwickeln
-pnpm run dev
-
-# Dependencies installieren
-pnpm install
-``` 
+- iOS/Android Apps werden später über Expo/App Stores deployed
+- Vercel deployed nur die Web App
+- Alle Apps können im selben Repo bleiben 
