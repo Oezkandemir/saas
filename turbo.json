@@ -58,8 +58,5 @@
       "dependsOn": ["^build"],
       "outputs": [".next/analyze/**"]
     }
-  },
-  "remoteCache": {
-    "signature": true
   }
 }
