@@ -5,39 +5,213 @@
 
    [1m[38;2;173;127;168m▲ Next.js 15.3.1[39m[22m
    - Environments: .env.local, .env
+   - Experiments (use with caution):
+     [1m✓[22m optimizeCss
+     [1m✓[22m webpackBuildWorker
+     [1m✓[22m parallelServerCompiles
+     [1m✓[22m parallelServerBuildTraces
 
  [37m[1m [22m[39m Creating an optimized production build ...
 Generated 20 documents in .contentlayer
-<w> [1m[33m[webpack.cache.PackFileCacheStrategy] Serializing big strings (100kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)[39m[22m
- [33m[1m⚠[22m[39m Compiled with warnings in 16.0s
+Generated 20 documents in .contentlayer
+Generated 20 documents in .contentlayer
+ [32m[1m✓[22m[39m Compiled successfully in 9.0s
+[?25l [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G[?25h [37m[1m [22m[39m Linting and checking validity of types     [32m[1m✓[22m[39m Linting and checking validity of types 
+[?25l [37m[1m [22m[39m Collecting page data  [36m.[39m[2K[1G [37m[1m [22m[39m Collecting page data  [36m..[39m✅ Stripe initialized successfully
+✅ Stripe initialized successfully
+✅ Stripe initialized successfully
+✅ Stripe initialized successfully
+✅ Stripe initialized successfully
+[2K[1G[?25h [33m[1m⚠[22m[39m Using edge runtime on a page currently disables static generation for that page
+[?25l [36m.[39m ✅ Stripe initialized successfully
+✅ Stripe initialized successfully
+✅ Stripe initialized successfully
+✅ Stripe initialized successfully
+✅ Stripe initialized successfully
+✅ Stripe initialized successfully
+✅ Stripe initialized successfully
+[2K[1G[?25h    [32m[1m✓[22m[39m Collecting page data 
+[?25l [37m[1m [22m[39m Generating static pages (0/120)  [36m[    ][39mSupabase admin client connected successfully
+Supabase admin client connected successfully
+Supabase admin client connected successfully
+[2K[1G [37m[1m [22m[39m Generating static pages (0/120)  [36m[=   ][39mSupabase admin client connected successfully
+Supabase admin client connected successfully
+Supabase admin client connected successfully
+Supabase admin client connected successfully
+Supabase admin client connected successfully
+Supabase admin client connected successfully
+Supabase admin client connected successfully
+Supabase admin client connected successfully
+Supabase admin client connected successfully
+[2K[1G[?25h✅ Stripe initialized successfully
+Supabase admin client connected successfully
+ ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+[?25h [32m[1m✓[22m[39m Generating static pages (120/120)
+[?25l [37m[1m [22m[39m Finalizing page optimization  [36m.[39m[?25l [37m[1m [22m[39m Collecting build traces  [36m.[39m[2K[1G[?25h [37m[1m [22m[39m Collecting build traces     [32m[1m✓[22m[39m Collecting build traces 
+[2K[1G[?25h [37m[1m [22m[39m Finalizing page optimization     [32m[1m✓[22m[39m Finalizing page optimization 
 
-../../node_modules/.pnpm/@supabase+realtime-js@2.11.10_bufferutil@4.0.9_utf-8-validate@6.0.5/node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
-Critical dependency: the request of a dependency is an expression
+[4mRoute (app)[24m                                            [4mSize[24m  [4mFirst Load JS[24m  [4m[24m  [4m[24m
+┌ ○ /                                               1.99 kB         [37m[1m121 kB[22m[39m
+├ ○ /_not-found                                       986 B         [37m[1m103 kB[22m[39m
+├ ● /[locale]                                       1.72 kB         [37m[1m189 kB[22m[39m
+├   ├ /en
+├   └ /de
+├ ● /[locale]/[slug]                                1.99 kB         [37m[1m160 kB[22m[39m
+├   ├ /en/privacy
+├   ├ /en/terms
+├   ├ /de/privacy
+├   └ /de/terms
+├ ● /[locale]/admin                                 8.27 kB         [37m[1m168 kB[22m[39m
+├   ├ /en/admin
+├   └ /de/admin
+├ ● /[locale]/admin/analytics                       75.9 kB         [37m[1m228 kB[22m[39m
+├   ├ /en/admin/analytics
+├   └ /de/admin/analytics
+├ ● /[locale]/admin/orders                            235 B         [37m[1m102 kB[22m[39m
+├   ├ /en/admin/orders
+├   └ /de/admin/orders
+├ ● /[locale]/admin/support                         8.02 kB         [37m[1m244 kB[22m[39m
+├   ├ /en/admin/support
+├   └ /de/admin/support
+├ ƒ /[locale]/admin/support/[id]                    5.28 kB         [37m[1m190 kB[22m[39m
+├ ● /[locale]/admin/users                           5.35 kB         [37m[1m260 kB[22m[39m
+├   ├ /en/admin/users
+├   └ /de/admin/users
+├ ƒ /[locale]/api/auth/reset-password                 235 B         [37m[1m102 kB[22m[39m
+├ ƒ /[locale]/api/auth/signin                         235 B         [37m[1m102 kB[22m[39m
+├ ƒ /[locale]/api/auth/signout                        235 B         [37m[1m102 kB[22m[39m
+├ ƒ /[locale]/api/auth/signup                         235 B         [37m[1m102 kB[22m[39m
+├ ƒ /[locale]/api/og                                  235 B         [37m[1m102 kB[22m[39m
+├ ƒ /[locale]/api/user                                235 B         [37m[1m102 kB[22m[39m
+├ ƒ /[locale]/api/webhooks/stripe                     235 B         [37m[1m102 kB[22m[39m
+├ ƒ /[locale]/auth/callback                         1.99 kB         [37m[1m121 kB[22m[39m
+├ ● /[locale]/auth/verified                         6.04 kB         [37m[1m142 kB[22m[39m
+├   ├ /en/auth/verified
+├   └ /de/auth/verified
+├ ● /[locale]/banned                                7.21 kB         [37m[1m187 kB[22m[39m
+├   ├ /en/banned
+├   └ /de/banned
+├ ● /[locale]/blog                                  1.96 kB         [37m[1m160 kB[22m[39m
+├   ├ /en/blog
+├   └ /de/blog
+├ ● /[locale]/blog/[slug]                             946 B         [37m[1m159 kB[22m[39m
+├   ├ /en/blog/deploying-next-apps
+├   ├ /en/blog/dynamic-routing-static-regeneration
+├   ├ /en/blog/preview-mode-headless-cms
+├   └ [+5 more paths]
+├ ● /[locale]/blog/category/[slug]                  1.84 kB         [37m[1m160 kB[22m[39m
+├   ├ /en/blog/category/news
+├   ├ /en/blog/category/education
+├   ├ /de/blog/category/news
+├   └ /de/blog/category/education
+├ ● /[locale]/company/about                         1.99 kB         [37m[1m121 kB[22m[39m
+├   ├ /en/company/about
+├   └ /de/company/about
+├ ● /[locale]/company/enterprise                    1.99 kB         [37m[1m121 kB[22m[39m
+├   ├ /en/company/enterprise
+├   └ /de/company/enterprise
+├ ● /[locale]/dashboard                             2.24 kB         [37m[1m184 kB[22m[39m
+├   ├ /en/dashboard
+├   └ /de/dashboard
+├ ● /[locale]/dashboard/billing                     4.62 kB         [37m[1m198 kB[22m[39m
+├   ├ /en/dashboard/billing
+├   └ /de/dashboard/billing
+├ ● /[locale]/dashboard/charts                       121 kB         [37m[1m251 kB[22m[39m
+├   ├ /en/dashboard/charts
+├   └ /de/dashboard/charts
+├ ● /[locale]/dashboard/settings                    11.7 kB         [37m[1m262 kB[22m[39m
+├   ├ /en/dashboard/settings
+├   └ /de/dashboard/settings
+├ ● /[locale]/dashboard/support                       631 B         [37m[1m193 kB[22m[39m
+├   ├ /en/dashboard/support
+├   └ /de/dashboard/support
+├ ƒ /[locale]/dashboard/support/[id]                10.4 kB         [37m[1m161 kB[22m[39m
+├ ● /[locale]/dashboard/support/new                 10.4 kB         [37m[1m162 kB[22m[39m
+├   ├ /en/dashboard/support/new
+├   └ /de/dashboard/support/new
+├ ● /[locale]/dashboard/teams                       4.95 kB         [37m[1m201 kB[22m[39m
+├   ├ /en/dashboard/teams
+├   └ /de/dashboard/teams
+├ ƒ /[locale]/dashboard/teams/[id]                  7.92 kB         [37m[1m212 kB[22m[39m
+├ ● /[locale]/dashboard/users                       10.3 kB         [37m[1m140 kB[22m[39m
+├   ├ /en/dashboard/users
+├   └ /de/dashboard/users
+├ ● /[locale]/docs/[[...slug]]                        943 B         [37m[1m159 kB[22m[39m
+├   ├ /en/docs/in-progress
+├   ├ /en/docs
+├   ├ /en/docs/installation
+├   └ [+21 more paths]
+├ ● /[locale]/guides                                  176 B         [37m[1m105 kB[22m[39m
+├   ├ /en/guides
+├   └ /de/guides
+├ ● /[locale]/guides/[slug]                           943 B         [37m[1m159 kB[22m[39m
+├   ├ /en/guides/build-blog-using-contentlayer-mdx
+├   ├ /en/guides/using-next-auth-next-13
+├   ├ /de/guides/build-blog-using-contentlayer-mdx
+├   └ /de/guides/using-next-auth-next-13
+├ ● /[locale]/login                                 5.26 kB         [37m[1m196 kB[22m[39m
+├   ├ /en/login
+├   └ /de/login
+├ ● /[locale]/newsletter/unsubscribe                 6.9 kB         [37m[1m166 kB[22m[39m
+├   ├ /en/newsletter/unsubscribe
+├   └ /de/newsletter/unsubscribe
+├ ● /[locale]/pricing                               14.3 kB         [37m[1m243 kB[22m[39m
+├   ├ /en/pricing
+├   └ /de/pricing
+├ ● /[locale]/privacy                               1.99 kB         [37m[1m121 kB[22m[39m
+├   ├ /en/privacy
+├   └ /de/privacy
+├ ● /[locale]/product/changelog                     5.24 kB         [37m[1m153 kB[22m[39m
+├   ├ /en/product/changelog
+├   └ /de/product/changelog
+├ ● /[locale]/product/customers                     6.61 kB         [37m[1m154 kB[22m[39m
+├   ├ /en/product/customers
+├   └ /de/product/customers
+├ ● /[locale]/product/customization                 1.99 kB         [37m[1m121 kB[22m[39m
+├   ├ /en/product/customization
+├   └ /de/product/customization
+├ ● /[locale]/product/security                      1.99 kB         [37m[1m121 kB[22m[39m
+├   ├ /en/product/security
+├   └ /de/product/security
+├ ● /[locale]/profile                               2.15 kB         [37m[1m194 kB[22m[39m
+├   ├ /en/profile
+├   └ /de/profile
+├ ƒ /[locale]/profile/[userId]                      4.91 kB         [37m[1m186 kB[22m[39m
+├ ƒ /[locale]/profile/[userId]/followers              166 B         [37m[1m186 kB[22m[39m
+├ ƒ /[locale]/profile/[userId]/following              166 B         [37m[1m186 kB[22m[39m
+├ ● /[locale]/profile/notifications                 7.07 kB         [37m[1m192 kB[22m[39m
+├   ├ /en/profile/notifications
+├   └ /de/profile/notifications
+├ ● /[locale]/register                              5.35 kB         [37m[1m196 kB[22m[39m
+├   ├ /en/register
+├   └ /de/register
+├ ƒ /[locale]/site.webmanifest                      1.99 kB         [37m[1m121 kB[22m[39m
+├ ƒ /[locale]/sitemap.xml                             235 B         [37m[1m102 kB[22m[39m
+├ ● /[locale]/terms                                 1.99 kB         [37m[1m121 kB[22m[39m
+├   ├ /en/terms
+├   └ /de/terms
+├ ƒ /api/analytics/page-views                         235 B         [37m[1m102 kB[22m[39m
+├ ƒ /api/auth/callback                                235 B         [37m[1m102 kB[22m[39m
+├ ƒ /api/confirm-user                                 235 B         [37m[1m102 kB[22m[39m
+├ ƒ /api/get-user-email                               235 B         [37m[1m102 kB[22m[39m
+├ ƒ /api/teams                                        235 B         [37m[1m102 kB[22m[39m
+├ ƒ /api/teams/invitations                            235 B         [37m[1m102 kB[22m[39m
+├ ƒ /api/teams/members                                235 B         [37m[1m102 kB[22m[39m
+├ ƒ /api/views                                        235 B         [37m[1m102 kB[22m[39m
+├ ƒ /auth/callback                                    235 B         [37m[1m102 kB[22m[39m
+├ ○ /opengraph-image.jpg                                0 B            [37m[1m0 B[22m[39m
+├ ○ /robots.txt                                       235 B         [37m[1m102 kB[22m[39m
+└ ○ /sitemap.xml                                      235 B         [37m[1m102 kB[22m[39m
++ First Load JS shared by all                        [37m[1m102 kB[22m[39m
+  ├ chunks/4641-6095f66998d9a9d5.js                 46.5 kB
+  ├ chunks/65971fd6-0a89095f3acc49e0.js             53.2 kB
+  └ other shared chunks (total)                     1.99 kB
 
-Import trace for requested module:
-../../node_modules/.pnpm/@supabase+realtime-js@2.11.10_bufferutil@4.0.9_utf-8-validate@6.0.5/node_modules/@supabase/realtime-js/dist/main/RealtimeClient.js
-../../node_modules/.pnpm/@supabase+realtime-js@2.11.10_bufferutil@4.0.9_utf-8-validate@6.0.5/node_modules/@supabase/realtime-js/dist/main/index.js
-../../node_modules/.pnpm/@supabase+supabase-js@2.50.0_bufferutil@4.0.9_utf-8-validate@6.0.5/node_modules/@supabase/supabase-js/dist/module/index.js
-./lib/db-admin.ts
-./actions/analytics-actions.ts
 
-[?25l [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G[?25h[31m
-Failed to compile.[39m
-[?25l [36m.[39m [2K[1G[?25h
-./app/[locale]/layout.tsx
-56:20  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
+ƒ Middleware                                         [37m[1m115 kB[22m[39m
 
-./components/error-boundary.tsx
-32:16  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
-33:26  Warning: Classnames 'h-12, w-12' could be replaced by the 'size-12' shorthand!  tailwindcss/enforces-shorthand
-41:16  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
-47:26  Warning: Classnames 'h-4, w-4' could be replaced by the 'size-4' shorthand!  tailwindcss/enforces-shorthand
-55:21  Warning: Classnames 'h-4, w-4' could be replaced by the 'size-4' shorthand!  tailwindcss/enforces-shorthand
-61:22  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
-62:24  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
-68:24  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
-75:26  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
-83:26  Error: Invalid Tailwind CSS classnames order  tailwindcss/classnames-order
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses [36mgenerateStaticParams[39m)
+ƒ  (Dynamic)  server-rendered on demand
 
-info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
-[?25l [36m.[39m [?25h[41m[30m ELIFECYCLE [39m[49m [31mCommand failed with exit code 1.[39m
+[?25h
