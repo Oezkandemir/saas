@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "buildCommand": "turbo run build --filter=@cenety/web",
+  "devCommand": "turbo run dev --filter=@cenety/web",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "outputDirectory": "apps/web/.next",
+  "framework": "nextjs"
+} 
