@@ -8,11 +8,19 @@ Gehen Sie zu Ihren **Vercel Project Settings** und konfigurieren Sie:
 
 #### Build & Development Settings:
 - **Framework Preset**: `Next.js`
-- **Root Directory**: `.` (Root des Monorepos)
-- **Build Command**: `turbo run build --filter=@cenety/web`
-- **Output Directory**: `apps/web/.next`
-- **Install Command**: `pnpm install --frozen-lockfile`
-- **Development Command**: `turbo run dev --filter=@cenety/web`
+- **Root Directory**: `.` (Root des Monorepos) 
+- **Build Command**: Wird automatisch aus `apps/web/vercel.json` gelesen
+- **Install Command**: Wird automatisch aus `apps/web/vercel.json` gelesen
+- **Development Command**: Wird automatisch aus `apps/web/vercel.json` gelesen
+
+**Wichtig**: Die `vercel.json` Datei befindet sich jetzt in `apps/web/vercel.json` mit folgender Konfiguration:
+```json
+{
+  "buildCommand": "cd ../.. && turbo run build --filter=@cenety/web",
+  "devCommand": "cd ../.. && turbo run dev --filter=@cenety/web",
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile"
+}
+```
 
 #### Environment Variables:
 Stellen Sie sicher, dass alle Environment Variables aus `apps/web/.env.example` in Vercel konfiguriert sind.
