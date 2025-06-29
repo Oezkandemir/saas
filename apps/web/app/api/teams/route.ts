@@ -135,13 +135,30 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        const { data: result, error } = await supabase.rpc("set_default_team", {
-          team_id: id,
-        });
+        // First, verify the user is actually a member of this team
+        const { data: memberData, error: memberError } = await supabase
+          .from("team_members")
+          .select("role")
+          .eq("team_id", id)
+          .eq("user_id", session.user.id)
+          .single();
 
-        if (error) {
-          console.error("Error setting default team:", error);
-          return NextResponse.json({ error: error.message }, { status: 500 });
+        if (memberError || !memberData) {
+          return NextResponse.json(
+            { error: "You are not a member of this team" },
+            { status: 403 },
+          );
+        }
+
+        // Update the user's default team
+        const { error: updateError } = await supabase
+          .from("users")
+          .update({ default_team_id: id })
+          .eq("id", session.user.id);
+
+        if (updateError) {
+          console.error("Error setting default team:", updateError);
+          return NextResponse.json({ error: updateError.message }, { status: 500 });
         }
 
         return NextResponse.json({ success: true });

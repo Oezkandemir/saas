@@ -725,7 +725,8 @@
   },
   "Teams": {
     "meta": {
-      "title": "Team-Verwaltung"
+      "title": "Team-Verwaltung",
+      "description": "Verwalten und arbeiten Sie effizient mit Ihren Teams zusammen"
     },
     "heading": {
       "title": "Team-",
@@ -733,6 +734,21 @@
     },
     "description": "Erstellen und verwalten Sie Ihre Teams für die Zusammenarbeit mit anderen.",
     "yourTeams": "Ihre Teams",
+    "error": {
+      "title": "Teams können nicht geladen werden",
+      "description": "Beim Laden Ihrer Teams ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+    },
+    "overview": {
+      "totalMembers": "Mitglieder gesamt",
+      "totalMembersDesc": "Aktive Team-Mitglieder in allen Teams",
+      "totalProjects": "Aktive Projekte",
+      "totalProjectsDesc": "Projekte, die derzeit in Bearbeitung sind",
+      "yourRole": "Ihre Teams",
+      "yourRoleDesc": "Teams, in denen Sie Mitglied oder Leiter sind",
+      "activity": "Team-Aktivität",
+      "activityDesc": "Letzte Team-Aktionen und Updates",
+      "active": "Aktiv"
+    },
     "teamList": {
       "created": "Erstellt {time}",
       "openMenu": "Menü öffnen",
@@ -760,7 +776,16 @@
       "errors": {
         "nameRequired": "Team-Name ist erforderlich",
         "default": "Fehler beim Erstellen des Teams. Bitte versuchen Sie es erneut."
-      }
+      },
+      "preview": {
+        "placeholder": "Team-Vorschau",
+        "description": "Beschreibung hinzufügen..."
+      },
+      "characters": "Zeichen",
+      "logoLabel": "Team-Logo",
+      "logoPlaceholder": "https://beispiel.com/logo.png",
+      "logoHelp": "Geben Sie eine URL für Ihr Team-Logo ein (optional)",
+      "optional": "optional"
     },
     "noTeams": {
       "title": "Keine Teams gefunden",
@@ -778,10 +803,43 @@
       },
       "noDescription": "Keine Beschreibung vorhanden",
       "createdAt": "Erstellt {time}",
-      "tabs": {
+      "members": "Mitglieder",
+      "projects": "Projekte",
+      "stats": {
         "members": "Mitglieder",
-        "permissions": "Berechtigungen",
-        "settings": "Einstellungen"
+        "projects": "Projekte",
+        "activity": "Aktivitäten"
+      },
+      "tabs": {
+        "dashboard": "Dashboard",
+        "members": "Mitglieder",
+        "projects": "Projekte", 
+        "activity": "Aktivität",
+        "resources": "Ressourcen"
+      },
+      "dashboard": {
+        "title": "Team-Dashboard",
+        "description": "Übersicht über Team-Metriken und aktuelle Aktivitäten",
+        "comingSoon": "Dashboard kommt bald",
+        "dashboardDescription": "Das Team-Dashboard mit Diagrammen und Metriken wird bald verfügbar sein."
+      },
+      "projects": {
+        "title": "Team-Projekte",
+        "description": "Team-Projekte verwalten und verfolgen",
+        "comingSoon": "Projekte kommen bald",
+        "projectsDescription": "Projektmanagement-Funktionen werden bald verfügbar sein."
+      },
+      "activity": {
+        "title": "Team-Aktivität",
+        "description": "Aktuelle Team-Aktionen und Updates",
+        "comingSoon": "Aktivitäts-Feed kommt bald",
+        "activityDescription": "Team-Aktivitätsverfolgung wird bald verfügbar sein."
+      },
+      "resources": {
+        "title": "Team-Ressourcen",
+        "description": "Geteilte Dateien und Dokumente",
+        "comingSoon": "Ressourcen kommen bald",
+        "resourcesDescription": "Team-Ressourcenverwaltung wird bald verfügbar sein."
       }
     },
     "teamMembers": {

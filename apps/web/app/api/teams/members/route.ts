@@ -223,9 +223,10 @@ export async function POST(request: NextRequest) {
 
             if (otherTeam) {
               // Set as default
-              await supabase.rpc("set_default_team", {
-                team_id: otherTeam.team_id,
-              });
+              await supabase
+                .from("users")
+                .update({ default_team_id: otherTeam.team_id })
+                .eq("id", session.user.id);
             } else {
               // No teams left, clear default
               await supabase

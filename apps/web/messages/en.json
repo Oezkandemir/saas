@@ -713,7 +713,8 @@
   },
   "Teams": {
     "meta": {
-      "title": "Team Management"
+      "title": "Team Management",
+      "description": "Manage and collaborate with your teams efficiently"
     },
     "heading": {
       "title": "Team ",
@@ -721,6 +722,62 @@
     },
     "description": "Create and manage your teams to collaborate with others.",
     "yourTeams": "Your Teams",
+    "error": {
+      "title": "Unable to load teams",
+      "description": "There was an error loading your teams. Please try again later."
+    },
+    "overview": {
+      "totalTeams": "Total Teams",
+      "teamsDescription": "Teams you're part of",
+      "totalMembers": "Total Members",
+      "totalMembersDesc": "Active team members across all teams",
+      "membersDescription": "Active team members across all teams",
+      "totalProjects": "Active Projects", 
+      "totalProjectsDesc": "Projects currently in progress",
+      "projectsDescription": "Projects currently in progress",
+      "activeProjects": "Active Projects",
+      "ownedTeams": "Teams Owned",
+      "ownedDescription": "Teams where you are the owner",
+      "yourRole": "Your Teams",
+      "yourRoleDesc": "Teams where you are a member or leader",
+      "activity": "Team Activity",
+      "activityDesc": "Recent team actions and updates",
+      "active": "Active"
+    },
+    "grid": {
+      "defaultTeam": "Default Team",
+      "members": "Members",
+      "totalMembers": "Total Members",
+      "projects": "Projects",
+      "activeProjects": "Active Projects",
+      "recentMembers": "Recent Members",
+      "viewTeam": "View Team",
+      "joined": "Joined",
+      "openMenu": "Open menu",
+      "manageTeam": "Manage Team",
+      "setDefault": "Set as Default Team",
+      "inviteMembers": "Invite Members",
+      "settings": "Team Settings",
+      "deleteTeam": "Delete Team",
+      "defaultTeamSet": "Default team updated successfully",
+      "defaultTeamError": "Failed to set default team",
+      "noTeams": {
+        "title": "No Teams Found",
+        "description": "You don't have any teams yet. Create your first team to start collaborating.",
+        "createFirst": "Create Your First Team"
+      }
+    },
+    "header": {
+      "backToTeams": "Back to Teams",
+      "created": "Created {time}",
+      "members": "Members",
+      "projects": "Projects",
+      "settings": "Team Settings"
+    },
+    "members": {
+      "title": "Team Members",
+      "description": "Manage team members and their roles"
+    },
     "teamList": {
       "created": "Created {time}",
       "openMenu": "Open menu",
@@ -748,7 +805,16 @@
       "errors": {
         "nameRequired": "Team name is required",
         "default": "Failed to create team. Please try again."
-      }
+      },
+      "preview": {
+        "placeholder": "Team Preview",
+        "description": "Add a description..."
+      },
+      "characters": "characters",
+      "logoLabel": "Team Logo",
+      "logoPlaceholder": "https://example.com/logo.png",
+      "logoHelp": "Enter a URL for your team logo (optional)",
+      "optional": "optional"
     },
     "noTeams": {
       "title": "No Teams Found",
@@ -766,10 +832,43 @@
       },
       "noDescription": "No description provided",
       "createdAt": "Created {time}",
-      "tabs": {
+      "members": "members",
+      "projects": "projects", 
+      "stats": {
         "members": "Members",
-        "permissions": "Permissions",
-        "settings": "Settings"
+        "projects": "Projects",
+        "activity": "Activities"
+      },
+      "tabs": {
+        "dashboard": "Dashboard",
+        "members": "Members", 
+        "projects": "Projects",
+        "activity": "Activity",
+        "resources": "Resources"
+      },
+      "dashboard": {
+        "title": "Team Dashboard",
+        "description": "Overview of team metrics and recent activity",
+        "comingSoon": "Dashboard coming soon",
+        "dashboardDescription": "Team dashboard with charts and metrics will be available soon."
+      },
+      "projects": {
+        "title": "Team Projects", 
+        "description": "Manage and track team projects",
+        "comingSoon": "Projects coming soon",
+        "projectsDescription": "Project management features will be available soon."
+      },
+      "activity": {
+        "title": "Team Activity",
+        "description": "Recent team actions and updates", 
+        "comingSoon": "Activity feed coming soon",
+        "activityDescription": "Team activity tracking will be available soon."
+      },
+      "resources": {
+        "title": "Team Resources",
+        "description": "Shared files and documents",
+        "comingSoon": "Resources coming soon", 
+        "resourcesDescription": "Team resource management will be available soon."
       }
     },
     "teamMembers": {
