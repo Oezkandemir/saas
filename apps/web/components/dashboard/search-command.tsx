@@ -45,16 +45,28 @@ export function SearchCommand({ links }: { links: SidebarNavItem[] }) {
 
   return (
     <>
+      {/* Mobile: Only show search icon */}
+      <Button
+        variant="outline"
+        size="icon"
+        className="sm:hidden"
+        onClick={() => setOpen(true)}
+        aria-label="Search"
+      >
+        <Icons.search className="size-4" />
+      </Button>
+
+      {/* Desktop: Show full search bar */}
       <Button
         variant="outline"
         className={cn(
-          "relative h-9 w-full justify-start rounded-md bg-muted/50 text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-72",
+          "relative h-9 w-full justify-start rounded-md bg-muted/50 text-sm font-normal text-muted-foreground shadow-none pr-12 hidden sm:flex md:w-72",
         )}
         onClick={() => setOpen(true)}
       >
         <span className="inline-flex">
           Search
-          <span className="hidden sm:inline-flex">&nbsp;documentation</span>...
+          <span className="hidden md:inline-flex">&nbsp;documentation</span>...
         </span>
         <kbd className="pointer-events-none absolute right-[0.3rem] top-[0.45rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
           <span className="text-xs">⌘</span>K

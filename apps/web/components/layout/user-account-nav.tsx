@@ -6,14 +6,11 @@ import { useRouter, useSelectedLayoutSegment } from "next/navigation";
 import { getUserNotifications } from "@/actions/user-profile-actions";
 import {
   Link as I18nLink,
-  useRouter as useI18nRouter,
-  usePathname,
 } from "@/i18n/routing";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
 import {
   Bell,
-  Globe,
   LayoutDashboard,
   Lock,
   LogOut,
@@ -33,10 +30,10 @@ import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useNotifications } from "@/hooks/use-notifications";
 import { DocsSidebarNav } from "@/components/docs/sidebar-nav";
-import LanguageSwitcher from "@/components/language-switcher";
+import LanguageDrawer from "@/components/language-drawer";
 import { ModalContext } from "@/components/modals/providers";
 import { Icons } from "@/components/shared/icons";
-import { NotificationBell } from "@/components/shared/notification-bell";
+
 import { getNotificationIcon } from "@/components/shared/notifications-popover";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { useSupabase } from "@/components/supabase-provider";
@@ -44,69 +41,6 @@ import { useSupabase } from "@/components/supabase-provider";
 import { ModeToggle } from "./mode-toggle";
 
 // Language Drawer Component
-function LanguageDrawer() {
-  const [open, setOpen] = useState(false);
-  const router = useI18nRouter();
-  const pathname = usePathname();
-  const t = useTranslations("Navigation");
-
-  const switchLanguage = (locale: string) => {
-    router.replace(pathname, { locale });
-    setOpen(false);
-  };
-
-  return (
-    <Drawer.Root open={open} onClose={() => setOpen(false)}>
-      <Drawer.Trigger asChild>
-        <button
-          onClick={() => setOpen(true)}
-          className="p-2 transition-colors duration-200 rounded-full hover:bg-muted focus:outline-none active:bg-muted"
-        >
-          <Globe className="size-5 text-muted-foreground" />
-        </button>
-      </Drawer.Trigger>
-      <Drawer.Portal>
-        <Drawer.Overlay
-          className="fixed inset-0 z-40 h-full bg-background/80 backdrop-blur-sm"
-          onClick={() => setOpen(false)}
-        />
-        <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background px-3 text-sm">
-          <div className="sticky top-0 z-20 flex items-center justify-center w-full bg-inherit">
-            <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
-          </div>
-
-          <Drawer.Title className="sr-only">Choose Language</Drawer.Title>
-
-          <div className="w-full mt-1 mb-14">
-            <div className="p-4">
-              <h3 className="mb-4 text-lg font-semibold">
-                {t("switchLanguage")}
-              </h3>
-              <div className="space-y-2">
-                <button
-                  onClick={() => switchLanguage("en")}
-                  className="flex items-center w-full gap-3 p-3 text-left rounded-lg hover:bg-muted"
-                >
-                  <span className="text-2xl">🇺🇸</span>
-                  <span className="font-medium">English</span>
-                </button>
-                <button
-                  onClick={() => switchLanguage("de")}
-                  className="flex items-center w-full gap-3 p-3 text-left rounded-lg hover:bg-muted"
-                >
-                  <span className="text-2xl">🇩🇪</span>
-                  <span className="font-medium">Deutsch</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </Drawer.Content>
-        <Drawer.Overlay />
-      </Drawer.Portal>
-    </Drawer.Root>
-  );
-}
-
 // Notification Drawer Component
 function NotificationDrawer() {
   const [open, setOpen] = useState(false);
@@ -260,9 +194,7 @@ export function UserAccountNav() {
   const t = useTranslations("UserNav");
 
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const [dbUserName, setDbUserName] = useState<string | null>(null);
 
   const closeDrawer = () => {
@@ -271,7 +203,7 @@ export function UserAccountNav() {
 
   const { isMobile } = useMediaQuery();
 
-  // Mobile navigation configuration
+  // Navigation configuration
   const selectedLayout = useSelectedLayoutSegment();
   const documentation = selectedLayout === "docs";
 
@@ -319,23 +251,6 @@ export function UserAccountNav() {
     fetchUserName();
   }, [user, supabase]);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setDropdownOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownRef]);
-
   // Ensure we always have a display name, prioritizing the database value, then falling back to metadata and email
   const displayName =
     dbUserName ||
@@ -349,140 +264,137 @@ export function UserAccountNav() {
       <div className="border rounded-full size-8 animate-pulse bg-muted" />
     );
 
-  if (isMobile) {
-    return (
-      <>
-        {/* Mobile Layout: translate → notification → avatar → hamburger menu */}
-        <div className="flex items-center gap-1">
-          {/* Language Switcher Drawer */}
-          <LanguageDrawer />
+  // Now using Bottom Sheet/Drawer for ALL screen sizes
+  return (
+    <>
+      <div className="flex items-center gap-1">
+        {/* Notifications Drawer */}
+        <NotificationDrawer />
 
-          {/* Notifications Drawer */}
-          <NotificationDrawer />
+        {/* User Account Drawer */}
+        <Drawer.Root open={drawerOpen} onClose={closeDrawer}>
+          <Drawer.Trigger asChild>
+            <div
+              onClick={() => setDrawerOpen(true)}
+              className="cursor-pointer"
+            >
+              <UserAvatar
+                user={{
+                  name: displayName,
+                  image: user.user_metadata?.image || null,
+                  avatar_url: user.user_metadata?.avatar_url || null,
+                }}
+                className="border size-9"
+              />
+            </div>
+          </Drawer.Trigger>
+          <Drawer.Portal>
+            <Drawer.Overlay
+              className="fixed inset-0 z-40 h-full bg-background/80 backdrop-blur-sm"
+              onClick={closeDrawer}
+            />
+            <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background px-3 text-sm">
+              <div className="sticky top-0 z-20 flex items-center justify-center w-full bg-inherit">
+                <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
+              </div>
 
-          {/* User Account Drawer */}
-          <Drawer.Root open={drawerOpen} onClose={closeDrawer}>
-            <Drawer.Trigger asChild>
-              <div
-                onClick={() => setDrawerOpen(true)}
-                className="cursor-pointer"
-              >
+              <Drawer.Title className="sr-only">
+                User Account Menu
+              </Drawer.Title>
+
+              <div className="flex items-center justify-start gap-3 p-2">
                 <UserAvatar
                   user={{
                     name: displayName,
                     image: user.user_metadata?.image || null,
                     avatar_url: user.user_metadata?.avatar_url || null,
                   }}
-                  className="border size-9"
+                  className="border size-12"
                 />
-              </div>
-            </Drawer.Trigger>
-            <Drawer.Portal>
-              <Drawer.Overlay
-                className="fixed inset-0 z-40 h-full bg-background/80 backdrop-blur-sm"
-                onClick={closeDrawer}
-              />
-              <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background px-3 text-sm">
-                <div className="sticky top-0 z-20 flex items-center justify-center w-full bg-inherit">
-                  <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
-                </div>
-
-                <Drawer.Title className="sr-only">
-                  User Account Menu
-                </Drawer.Title>
-
-                <div className="flex items-center justify-start gap-3 p-2">
-                  <UserAvatar
-                    user={{
-                      name: displayName,
-                      image: user.user_metadata?.image || null,
-                      avatar_url: user.user_metadata?.avatar_url || null,
-                    }}
-                    className="border size-12"
-                  />
-                  <div className="flex flex-col">
-                    <p className="font-medium">{displayName}</p>
-                    {user.email && (
-                      <p className="w-[200px] truncate text-muted-foreground">
-                        {user?.email}
-                      </p>
-                    )}
-                    <p className="text-xs text-muted-foreground">
-                      {t("role")}: {t(userRole.toLowerCase())}
+                <div className="flex flex-col">
+                  <p className="font-medium">{displayName}</p>
+                  {user.email && (
+                    <p className="w-[200px] truncate text-muted-foreground">
+                      {user?.email}
                     </p>
-                  </div>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    {t("role")}: {t(userRole.toLowerCase())}
+                  </p>
                 </div>
+              </div>
 
-                <ul
-                  role="list"
-                  className="w-full mt-1 mb-14 text-muted-foreground"
-                >
-                  {userRole === "ADMIN" ? (
-                    <li className="rounded-lg text-foreground hover:bg-muted">
-                      <Link
-                        href="/admin"
-                        onClick={closeDrawer}
-                        className="flex w-full items-center gap-3 px-2.5 py-2"
-                      >
-                        <Lock className="size-4" />
-                        <p className="text-sm">{t("admin")}</p>
-                      </Link>
-                    </li>
-                  ) : null}
-
+              <ul
+                role="list"
+                className="w-full mt-1 mb-14 text-muted-foreground"
+              >
+                {userRole === "ADMIN" ? (
                   <li className="rounded-lg text-foreground hover:bg-muted">
                     <Link
-                      href="/profile"
+                      href="/admin"
                       onClick={closeDrawer}
                       className="flex w-full items-center gap-3 px-2.5 py-2"
                     >
-                      <User className="size-4" />
-                      <p className="text-sm">Profile</p>
+                      <Lock className="size-4" />
+                      <p className="text-sm">{t("admin")}</p>
                     </Link>
                   </li>
+                ) : null}
 
-                  <li className="rounded-lg text-foreground hover:bg-muted">
-                    <Link
-                      href="/dashboard"
-                      onClick={closeDrawer}
-                      className="flex w-full items-center gap-3 px-2.5 py-2"
-                    >
-                      <LayoutDashboard className="size-4" />
-                      <p className="text-sm">{t("dashboard")}</p>
-                    </Link>
-                  </li>
-
-                  <li className="rounded-lg text-foreground hover:bg-muted">
-                    <Link
-                      href="/dashboard/settings"
-                      onClick={closeDrawer}
-                      className="flex w-full items-center gap-3 px-2.5 py-2"
-                    >
-                      <Settings className="size-4" />
-                      <p className="text-sm">{t("settings")}</p>
-                    </Link>
-                  </li>
-
-                  <li
-                    className="rounded-lg cursor-pointer text-foreground hover:bg-muted"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      handleSignOut();
-                      closeDrawer();
-                    }}
+                <li className="rounded-lg text-foreground hover:bg-muted">
+                  <Link
+                    href="/profile"
+                    onClick={closeDrawer}
+                    className="flex w-full items-center gap-3 px-2.5 py-2"
                   >
-                    <div className="flex w-full items-center gap-3 px-2.5 py-2">
-                      <LogOut className="size-4" />
-                      <p className="text-sm">{t("logout")}</p>
-                    </div>
-                  </li>
-                </ul>
-              </Drawer.Content>
-              <Drawer.Overlay />
-            </Drawer.Portal>
-          </Drawer.Root>
+                    <User className="size-4" />
+                    <p className="text-sm">Profile</p>
+                  </Link>
+                </li>
 
-          {/* Mobile Navigation Menu as Drawer */}
+                <li className="rounded-lg text-foreground hover:bg-muted">
+                  <Link
+                    href="/dashboard"
+                    onClick={closeDrawer}
+                    className="flex w-full items-center gap-3 px-2.5 py-2"
+                  >
+                    <LayoutDashboard className="size-4" />
+                    <p className="text-sm">{t("dashboard")}</p>
+                  </Link>
+                </li>
+
+                <li className="rounded-lg text-foreground hover:bg-muted">
+                  <Link
+                    href="/dashboard/settings"
+                    onClick={closeDrawer}
+                    className="flex w-full items-center gap-3 px-2.5 py-2"
+                  >
+                    <Settings className="size-4" />
+                    <p className="text-sm">{t("settings")}</p>
+                  </Link>
+                </li>
+
+                <li
+                  className="rounded-lg cursor-pointer text-foreground hover:bg-muted"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    handleSignOut();
+                    closeDrawer();
+                  }}
+                >
+                  <div className="flex w-full items-center gap-3 px-2.5 py-2">
+                    <LogOut className="size-4" />
+                    <p className="text-sm">{t("logout")}</p>
+                  </div>
+                </li>
+              </ul>
+            </Drawer.Content>
+            <Drawer.Overlay />
+          </Drawer.Portal>
+        </Drawer.Root>
+
+        {/* Mobile Navigation Menu as Drawer - Only shown on mobile */}
+        {isMobile && (
           <Drawer.Root
             open={mobileMenuOpen}
             onClose={() => setMobileMenuOpen(false)}
@@ -602,99 +514,8 @@ export function UserAccountNav() {
               <Drawer.Overlay />
             </Drawer.Portal>
           </Drawer.Root>
-        </div>
-      </>
-    );
-  }
-
-  // Using standard HTML/React for dropdown to avoid Radix UI type compatibility issues
-  return (
-    <div className="flex items-center gap-2">
-      <NotificationBell />
-
-      <div className="relative" ref={dropdownRef}>
-        <div
-          className="flex items-center justify-center overflow-hidden border rounded-full cursor-pointer size-8 hover:ring-2 hover:ring-muted-foreground/20"
-          onClick={() => setDropdownOpen(!dropdownOpen)}
-        >
-          <UserAvatar
-            user={{
-              name: displayName,
-              image: user.user_metadata?.image || null,
-              avatar_url: user.user_metadata?.avatar_url || null,
-            }}
-            className="size-8"
-          />
-        </div>
-
-        {dropdownOpen && (
-          <div className="absolute right-0 z-50 mt-2 min-w-48 overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in fade-in-80 data-[side=bottom]:slide-in-from-top-2">
-            <div className="flex items-center justify-start gap-2 p-2">
-              <div className="flex flex-col space-y-1 leading-none">
-                <p className="font-medium">{displayName}</p>
-                {user.email && (
-                  <p className="w-[200px] truncate text-sm text-muted-foreground">
-                    {user?.email}
-                  </p>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  {t("role")}: {t(userRole.toLowerCase())}
-                </p>
-              </div>
-            </div>
-
-            <div className="h-px my-1 -mx-1 bg-muted" />
-
-            {userRole === "ADMIN" && (
-              <Link
-                href="/admin"
-                className="flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
-              >
-                <Lock className="mr-2 size-4" />
-                <p>{t("admin")}</p>
-              </Link>
-            )}
-
-            <Link
-              href="/profile"
-              className="flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
-            >
-              <User className="mr-2 size-4" />
-              <p>Profile</p>
-            </Link>
-
-            <Link
-              href="/dashboard"
-              className="flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
-            >
-              <LayoutDashboard className="mr-2 size-4" />
-              <p>{t("dashboard")}</p>
-            </Link>
-
-            <Link
-              href="/dashboard/settings"
-              className="flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
-            >
-              <Settings className="mr-2 size-4" />
-              <p>{t("settings")}</p>
-            </Link>
-
-            <div className="h-px my-1 -mx-1 bg-muted" />
-
-            <div
-              className="flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
-              onClick={(event) => {
-                event.preventDefault();
-                handleSignOut();
-                setDropdownOpen(false);
-              }}
-            >
-              <LogOut className="mr-2 size-4" />
-              <p>{t("logout")}</p>
-            </div>
-          </div>
         )}
       </div>
-    </div>
+    </>
   );
 }

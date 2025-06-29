@@ -13,7 +13,7 @@ import { useScroll } from "@/hooks/use-scroll";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DocsSearch } from "@/components/docs/search";
-import LanguageSwitcher from "@/components/language-switcher";
+import LanguageDrawer from "@/components/language-drawer";
 import { ModalContext } from "@/components/modals/providers";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
@@ -83,19 +83,16 @@ export function NavBar({ scroll = false }: NavBarProps) {
         </div>
 
         <div className="flex items-center space-x-1 sm:space-x-2">
-          {/* Language Switcher - Desktop only, mobile is handled in UserAccountNav */}
-          <div className="hidden items-center pr-2 md:flex md:pr-0">
-            <LanguageSwitcher />
+          {/* Language Switcher - Now using drawer for all screen sizes */}
+          <div className="flex items-center pr-2 md:pr-0">
+            <LanguageDrawer />
           </div>
 
           {/* right header for docs */}
           {documentation ? (
-            <div className="hidden flex-1 items-center space-x-4 sm:justify-end lg:flex">
-              <div className="hidden lg:flex lg:grow-0">
+            <div className="flex flex-1 items-center space-x-4 sm:justify-end">
+              <div className="flex-grow-0">
                 <DocsSearch />
-              </div>
-              <div className="flex lg:hidden">
-                <Icons.search className="size-6 text-muted-foreground" />
               </div>
               <div className="flex space-x-4">
                 <Link
@@ -156,10 +153,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
                 <span>{t("signUp")}</span>
               </Button>
 
-              {/* Mobile: Language switcher and placeholder for auth buttons */}
-              <div className="flex items-center gap-1 md:hidden">
-                <LanguageSwitcher />
-              </div>
+
             </>
           )}
         </div>

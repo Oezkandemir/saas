@@ -88,7 +88,7 @@ export default async function ProfilePage() {
       <div className="grid gap-6 md:grid-cols-3">
         {/* Left sidebar with user info */}
         <Card className="md:col-span-1">
-          <CardHeader className="flex flex-row items-center gap-4 pb-2">
+          <CardHeader className="flex flex-row gap-4 items-center pb-2">
             <Avatar className="size-16">
               <AvatarImage
                 src={user.avatar_url || ""}
@@ -102,7 +102,7 @@ export default async function ProfilePage() {
               <CardTitle>{user.name || t("personalInfo.title")}</CardTitle>
               <CardDescription className="flex items-center">
                 {user.role === "ADMIN" && (
-                  <Shield className="mr-1 size-3 text-blue-500" />
+                  <Shield className="mr-1 text-blue-500 size-3" />
                 )}
                 {user.email}
               </CardDescription>
@@ -113,7 +113,7 @@ export default async function ProfilePage() {
               <p className="text-sm font-medium text-muted-foreground">
                 {t("accountInfo")}
               </p>
-              <div className="flex items-center justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-sm">{t("memberSince")}</span>
                 <span className="text-sm font-medium">
                   {user.created_at
@@ -123,7 +123,7 @@ export default async function ProfilePage() {
                     : "N/A"}
                 </span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-sm">{t("lastLogin")}</span>
                 <span className="text-sm font-medium">
                   {user.last_sign_in_at
@@ -136,7 +136,7 @@ export default async function ProfilePage() {
                 </span>
               </div>
               {subscriptionStatus && (
-                <div className="flex items-center justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-sm">{t("subscription")}</span>
                   <span
                     className={`flex items-center text-sm font-medium ${subscriptionStatus === "active" ? "text-green-500" : "text-yellow-500"}`}
@@ -149,7 +149,7 @@ export default async function ProfilePage() {
                 </div>
               )}
               {subscriptionEndsAt && (
-                <div className="flex items-center justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-sm">{t("renews")}</span>
                   <span className="text-sm font-medium">
                     {formatDistance(subscriptionEndsAt, new Date(), {
@@ -169,7 +169,7 @@ export default async function ProfilePage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full justify-start"
+                    className="justify-start w-full"
                   >
                     <CreditCard className="mr-2 size-4" />
                     {t("billing")}
@@ -179,7 +179,7 @@ export default async function ProfilePage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full justify-start"
+                    className="justify-start w-full"
                   >
                     <Settings className="mr-2 size-4" />
                     {t("settings")}
@@ -189,7 +189,7 @@ export default async function ProfilePage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full justify-start"
+                    className="justify-start w-full"
                   >
                     <HelpCircle className="mr-2 size-4" />
                     {t("support")}
@@ -199,7 +199,7 @@ export default async function ProfilePage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full justify-start"
+                    className="justify-start w-full"
                   >
                     <Bell className="mr-2 size-4" />
                     {t("notifications.title")}
@@ -227,7 +227,7 @@ export default async function ProfilePage() {
         {/* Main content with tabs */}
         <div className="md:col-span-2">
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid grid-cols-4 w-full">
               <TabsTrigger value="overview">
                 <User className="mr-2 size-4 md:hidden" />
                 <span className="hidden md:inline">{t("overview")}</span>
@@ -294,8 +294,8 @@ export default async function ProfilePage() {
                       {t("subscription")}
                     </h3>
                     {hasSubscription ? (
-                      <div className="rounded-lg border p-4">
-                        <div className="flex items-center justify-between">
+                      <div className="p-4 rounded-lg border">
+                        <div className="flex justify-between items-center">
                           <div>
                             <p className="font-medium">{t("currentPlan")}</p>
                             <p className="text-sm text-muted-foreground">
@@ -312,8 +312,8 @@ export default async function ProfilePage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="rounded-lg border p-4">
-                        <div className="flex items-center justify-between">
+                      <div className="p-4 rounded-lg border">
+                        <div className="flex justify-between items-center">
                           <div>
                             <p className="font-medium">{t("freePlan")}</p>
                             <p className="text-sm text-muted-foreground">
@@ -332,13 +332,13 @@ export default async function ProfilePage() {
                     <h3 className="text-lg font-semibold">
                       {t("activity.title")}
                     </h3>
-                    <div className="rounded-lg border p-4">
+                    <div className="p-4 rounded-lg border">
                       <p className="mb-2 text-sm text-muted-foreground">
                         {t("recentLogins")}
                       </p>
                       <div className="space-y-2">
                         {user.last_sign_in_at && (
-                          <div className="flex items-center justify-between text-sm">
+                          <div className="flex justify-between items-center text-sm">
                             <span>{t("lastLogin")}</span>
                             <span>
                               {formatDistance(
@@ -363,7 +363,7 @@ export default async function ProfilePage() {
                   <CardDescription>{t("viewManage")}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="mb-4 flex items-center justify-between">
+                  <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold">
                       {t("yourTickets")}
                     </h3>
@@ -374,7 +374,7 @@ export default async function ProfilePage() {
                   {tickets.length > 0 ? (
                     <UserTicketAccordion data={tickets} />
                   ) : (
-                    <div className="rounded-lg border p-6 text-center">
+                    <div className="p-6 text-center rounded-lg border">
                       <HelpCircle className="mx-auto mb-4 size-12 text-muted-foreground" />
                       <h3 className="mb-2 text-xl font-semibold">
                         {t("noTickets")}
@@ -398,7 +398,7 @@ export default async function ProfilePage() {
                   <CardDescription>{t("manageSubscription")}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <div className="rounded-lg border p-6 text-center">
+                  <div className="p-6 text-center rounded-lg border">
                     <p className="mb-4 text-muted-foreground">
                       {t("viewManageSubscription")}
                     </p>
@@ -417,7 +417,7 @@ export default async function ProfilePage() {
                   <CardDescription>{t("updateSettings")}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <div className="rounded-lg border p-6 text-center">
+                  <div className="p-6 text-center rounded-lg border">
                     <p className="mb-4 text-muted-foreground">
                       {t("manageAccountSettings")}
                     </p>

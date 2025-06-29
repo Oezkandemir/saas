@@ -3,7 +3,6 @@
 import { ReactNode } from "react";
 
 import { DashboardHeader } from "@/components/dashboard/header";
-import { HeaderLanguageSwitcher } from "@/components/dashboard/header-language-switcher";
 
 interface DashboardHeaderWithLanguageSwitcherProps {
   heading: string;
@@ -16,9 +15,9 @@ export function DashboardHeaderWithLanguageSwitcher({
   text,
   actions,
 }: DashboardHeaderWithLanguageSwitcherProps) {
+  // Note: Language switcher is now available in the navbar for all pages
+  // This component now just renders the regular DashboardHeader
   return (
-    <DashboardHeader heading={heading} text={text} actions={actions}>
-      <HeaderLanguageSwitcher />
-    </DashboardHeader>
+    <DashboardHeader heading={heading} text={text} actions={actions} />
   );
 }

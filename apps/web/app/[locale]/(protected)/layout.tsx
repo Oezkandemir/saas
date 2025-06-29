@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { sidebarLinks } from "@/config/dashboard";
 import { getCurrentUser } from "@/lib/session";
 import { SearchCommand } from "@/components/dashboard/search-command";
-import LanguageSwitcher from "@/components/language-switcher";
+import LanguageDrawer from "@/components/language-drawer";
 import {
   DashboardSidebar,
   MobileSheetSidebar,
@@ -43,7 +43,7 @@ export default async function Dashboard({ children }: ProtectedLayoutProps) {
               <SearchCommand links={filteredLinks} />
             </div>
 
-            <LanguageSwitcher />
+            <LanguageDrawer />
             <ModeToggle />
             <UserAccountNav />
           </MaxWidthWrapper>
