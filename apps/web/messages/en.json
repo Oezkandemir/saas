@@ -758,6 +758,7 @@
       "setDefault": "Set as Default Team",
       "inviteMembers": "Invite Members",
       "settings": "Team Settings",
+      "teamSettings": "Team Settings",
       "deleteTeam": "Delete Team",
       "defaultTeamSet": "Default team updated successfully",
       "defaultTeamError": "Failed to set default team",

@@ -111,44 +111,44 @@ export function TeamDeleteForm({ team, memberCount, projectCount, invitationCoun
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Warning Alert */}
       <Alert variant="destructive">
         <AlertTriangle className="h-4 w-4" />
-        <AlertTitle>Danger Zone</AlertTitle>
-        <AlertDescription>
+        <AlertTitle className="text-sm sm:text-base">Danger Zone</AlertTitle>
+        <AlertDescription className="text-xs sm:text-sm">
           This action cannot be undone. Deleting this team will permanently remove all associated data.
         </AlertDescription>
       </Alert>
 
       {/* Impact Overview */}
       <Card>
-        <CardHeader>
+        <CardHeader className="p-4 sm:p-6">
           <div className="flex items-center gap-2">
-            <Info className="h-5 w-5 text-muted-foreground" />
-            <CardTitle>What will be deleted?</CardTitle>
+            <Info className="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5" />
+            <CardTitle className="text-lg sm:text-xl">What will be deleted?</CardTitle>
           </div>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Review what will happen when you delete this team
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4">
+        <CardContent className="space-y-3 p-4 sm:space-y-4 sm:p-6">
+          <div className="grid gap-3 sm:gap-4">
             {dataImpactItems.map((item) => {
               const Icon = item.icon;
               return (
-                <div key={item.label} className="flex items-center gap-4 p-4 rounded-lg border bg-muted/20">
-                  <div className={`rounded-full p-2 bg-background shadow-sm`}>
-                    <Icon className={`h-5 w-5 ${item.color}`} />
+                <div key={item.label} className="flex items-center gap-3 rounded-lg border bg-muted/20 p-3 sm:gap-4 sm:p-4">
+                  <div className={`flex-shrink-0 rounded-full bg-background p-2 shadow-sm`}>
+                    <Icon className={`h-4 w-4 sm:h-5 sm:w-5 ${item.color}`} />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{item.label}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
+                      <span className="text-sm font-medium">{item.label}</span>
                       <span className={`text-lg font-bold ${item.color}`}>
                         {item.count}
                       </span>
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground sm:text-sm">
                       {item.description}
                     </p>
                   </div>
@@ -160,8 +160,8 @@ export function TeamDeleteForm({ team, memberCount, projectCount, invitationCoun
           <Separator />
 
           <div className="space-y-2">
-            <h4 className="font-medium text-destructive">Additional consequences:</h4>
-            <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+            <h4 className="text-sm font-medium text-destructive">Additional consequences:</h4>
+            <ul className="list-inside list-disc space-y-1 text-xs text-muted-foreground sm:text-sm">
               <li>Team slug &quot;{team.slug}&quot; will become available for reuse</li>
               <li>All team-specific settings and configurations will be lost</li>
               <li>Team billing history will be archived but no longer accessible</li>
@@ -173,135 +173,145 @@ export function TeamDeleteForm({ team, memberCount, projectCount, invitationCoun
 
       {/* Delete Action */}
       <Card className="border-destructive/50">
-        <CardHeader>
+        <CardHeader className="p-4 sm:p-6">
           <div className="flex items-center gap-2">
-            <Trash2 className="h-5 w-5 text-destructive" />
-            <CardTitle className="text-destructive">Delete Team</CardTitle>
+            <Trash2 className="h-4 w-4 text-destructive sm:h-5 sm:w-5" />
+            <CardTitle className="text-lg text-destructive sm:text-xl">Delete Team</CardTitle>
           </div>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Permanently delete &quot;{team.name}&quot; and all associated data
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+        <CardContent className="p-4 sm:p-6">
+          <div className="space-y-3 sm:space-y-4">
             <Alert variant="destructive">
               <Shield className="h-4 w-4" />
-              <AlertTitle>Final Warning</AlertTitle>
-              <AlertDescription>
+              <AlertTitle className="text-sm">Final Warning</AlertTitle>
+              <AlertDescription className="text-xs sm:text-sm">
                 <strong>This action is irreversible.</strong> All data associated with this team will be permanently lost.
                 Please ensure you have exported any important data before proceeding.
               </AlertDescription>
             </Alert>
 
-            <div className="flex justify-end">
+            <div className="flex justify-start">
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="destructive" className="gap-2">
+                  <Button variant="destructive" className="w-full gap-2 sm:w-auto" size="sm">
                     <Trash2 className="h-4 w-4" />
                     Delete Team
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md">
+                <DialogContent className="w-[95vw] sm:max-w-lg">
                   <DialogHeader>
-                    <DialogTitle className="text-destructive">Delete Team</DialogTitle>
-                    <DialogDescription>
-                      This will permanently delete &quot;{team.name}&quot; and all its data.
-                      This action cannot be undone.
+                    <DialogTitle className="text-lg">Confirm Team Deletion</DialogTitle>
+                    <DialogDescription className="text-sm">
+                      This is your final chance to reconsider. This action cannot be undone.
                     </DialogDescription>
                   </DialogHeader>
-                  
+
                   <Form {...form}>
                     <form onSubmit={form.handleSubmit(onDelete)} className="space-y-4">
-                      <div className="space-y-4">
-                        <FormField
-                          control={form.control}
-                          name="acknowledgeData"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  disabled={isLoading}
-                                />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm">
-                                  I understand that all team data will be permanently lost
-                                </FormLabel>
-                                <FormMessage />
-                              </div>
-                            </FormItem>
-                          )}
-                        />
+                      <Alert variant="destructive">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle className="text-sm">Are you absolutely sure?</AlertTitle>
+                                                 <AlertDescription className="text-xs">
+                           This will permanently delete the team <strong>&quot;{team.name}&quot;</strong> and all its data.
+                         </AlertDescription>
+                      </Alert>
 
-                        <FormField
-                          control={form.control}
-                          name="acknowledgeMembers"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  disabled={isLoading}
-                                />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm">
-                                  I understand that all team members will be removed
-                                </FormLabel>
-                                <FormMessage />
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="confirmText"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>
-                                To verify, type <strong>confirm delete team</strong> below:
+                      <FormField
+                        control={form.control}
+                        name="acknowledgeData"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={isLoading}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="text-xs font-normal sm:text-sm">
+                                I understand that all team data will be permanently deleted
                               </FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder="confirm delete team"
-                                  {...field}
-                                  disabled={isLoading}
-                                  className="font-mono"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
 
-                      <DialogFooter>
+                      <FormField
+                        control={form.control}
+                        name="acknowledgeMembers"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={isLoading}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="text-xs font-normal sm:text-sm">
+                                I understand that all team members will lose access
+                              </FormLabel>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="confirmText"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm">Type &quot;confirm delete team&quot; to proceed</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="confirm delete team"
+                                {...field}
+                                disabled={isLoading}
+                                className="text-sm"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <DialogFooter className="flex flex-col-reverse gap-2 sm:flex-row sm:gap-0">
                         <Button 
                           type="button" 
                           variant="outline" 
                           onClick={() => setIsDialogOpen(false)}
                           disabled={isLoading}
+                          className="w-full sm:w-auto"
+                          size="sm"
                         >
                           Cancel
                         </Button>
-                        <Button 
-                          type="submit" 
+                        <Button
+                          type="submit"
                           variant="destructive"
-                          disabled={isLoading}
+                          disabled={
+                            isLoading ||
+                            !form.watch("acknowledgeData") ||
+                            !form.watch("acknowledgeMembers") ||
+                            form.watch("confirmText") !== "confirm delete team"
+                          }
+                          className="w-full sm:w-auto"
+                          size="sm"
                         >
                           {isLoading ? (
                             <>
-                              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent mr-2" />
+                              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                               Deleting...
                             </>
                           ) : (
                             <>
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete Team
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete Team Forever
                             </>
                           )}
                         </Button>

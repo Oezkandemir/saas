@@ -770,6 +770,7 @@
       "setDefault": "Als Standard-Team festlegen",
       "inviteMembers": "Mitglieder einladen",
       "settings": "Team-Einstellungen",
+      "teamSettings": "Team-Einstellungen",
       "deleteTeam": "Team löschen",
       "defaultTeamSet": "Standard-Team erfolgreich aktualisiert",
       "defaultTeamError": "Fehler beim Festlegen des Standard-Teams",

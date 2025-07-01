@@ -63,21 +63,21 @@ async function TeamsContent({ userId }: { userId: string }) {
     if (!userMemberships || userMemberships.length === 0) {
       const t = await getTranslations("Teams");
       return (
-        <div className="space-y-8">
-          <div className="flex justify-between items-center">
+        <div className="space-y-6 sm:space-y-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
                 {t("heading.title")}
                 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   {t("heading.highlight")}
                 </span>
               </h1>
-              <p className="mt-2 text-muted-foreground">{t("description")}</p>
+              <p className="mt-2 text-sm sm:text-base text-muted-foreground">{t("description")}</p>
             </div>
             <CreateTeamModal />
           </div>
-          <div className="py-12 text-center">
-            <h2 className="text-xl font-semibold text-muted-foreground">
+          <div className="py-8 sm:py-12 text-center">
+            <h2 className="text-lg sm:text-xl font-semibold text-muted-foreground">
               {t("noTeams.title")}
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -146,47 +146,47 @@ async function TeamsContent({ userId }: { userId: string }) {
           .eq("id", userId)
           .single();
 
-                  return {
-            id: team.id,
-            name: team.name,
-            slug: team.slug,
-            description: team.description,
-            logoUrl: team.logo_url,
-            role: membership?.role || 'MEMBER',
-            isDefault: team.id === defaultTeamId,
-            joinedAt: membership?.created_at || team.created_at,
-            createdAt: team.created_at,
-            updatedAt: team.updated_at,
-            memberCount: memberCount?.length || 0,
-            activeProjects: projectCount?.length || 0,
-            recentActivity: new Date(team.updated_at),
-            members: (sampleMembers || []).map((m: any) => {
-              return {
-                id: currentUser?.id || userId,
-                name: currentUser?.name || 'Unknown User',
-                email: currentUser?.email || '',
-                avatarUrl: currentUser?.avatar_url || null,
-                role: m.role
-              };
-            })
-          };
+        return {
+          id: team.id,
+          name: team.name,
+          slug: team.slug,
+          description: team.description,
+          logoUrl: team.logo_url,
+          role: membership?.role || 'MEMBER',
+          isDefault: team.id === defaultTeamId,
+          joinedAt: membership?.created_at || team.created_at,
+          createdAt: team.created_at,
+          updatedAt: team.updated_at,
+          memberCount: memberCount?.length || 0,
+          activeProjects: projectCount?.length || 0,
+          recentActivity: new Date(team.updated_at),
+          members: (sampleMembers || []).map((m: any) => {
+            return {
+              id: currentUser?.id || userId,
+              name: currentUser?.name || 'Unknown User',
+              email: currentUser?.email || '',
+              avatarUrl: currentUser?.avatar_url || null,
+              role: m.role
+            };
+          })
+        };
       })
     );
 
     const t = await getTranslations("Teams");
 
     return (
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         <TeamsOverview teams={teams} />
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
               {t("heading.title")}
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 {t("heading.highlight")}
               </span>
             </h1>
-            <p className="mt-2 text-muted-foreground">{t("description")}</p>
+            <p className="mt-2 text-sm sm:text-base text-muted-foreground">{t("description")}</p>
           </div>
           <CreateTeamModal />
         </div>
@@ -198,9 +198,21 @@ async function TeamsContent({ userId }: { userId: string }) {
     const t = await getTranslations("Teams");
     
     return (
-      <div className="space-y-8">
-        <div className="py-12 text-center">
-          <h2 className="text-xl font-semibold text-muted-foreground">
+      <div className="space-y-6 sm:space-y-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              {t("heading.title")}
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {t("heading.highlight")}
+              </span>
+            </h1>
+            <p className="mt-2 text-sm sm:text-base text-muted-foreground">{t("description")}</p>
+          </div>
+          <CreateTeamModal />
+        </div>
+        <div className="py-8 sm:py-12 text-center">
+          <h2 className="text-lg sm:text-xl font-semibold text-red-600">
             {t("error.title")}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">

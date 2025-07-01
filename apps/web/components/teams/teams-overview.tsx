@@ -68,7 +68,7 @@ export function TeamsOverview({ teams }: TeamsOverviewProps) {
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
       {stats.map((stat) => {
         const Icon = stat.icon;
         return (
@@ -80,19 +80,19 @@ export function TeamsOverview({ teams }: TeamsOverviewProps) {
             <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgGradient} opacity-40`} />
             <div className="absolute inset-0 bg-gradient-to-br from-transparent via-background/80 to-background/90" />
             
-            <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs font-medium text-muted-foreground/90">
+            <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground/90 leading-tight">
                 {stat.title}
               </CardTitle>
-              <div className={`rounded-lg p-2 bg-gradient-to-br ${stat.bgGradient} shadow-sm ring-1 ring-border/10`}>
-                <Icon className={`h-4 w-4 ${stat.iconColor}`} />
+              <div className={`rounded-lg p-1.5 sm:p-2 bg-gradient-to-br ${stat.bgGradient} shadow-sm ring-1 ring-border/10`}>
+                <Icon className={`h-3 w-3 sm:h-4 sm:w-4 ${stat.iconColor}`} />
               </div>
             </CardHeader>
             
-            <CardContent className="relative">
+            <CardContent className="relative p-3 sm:p-6 pt-0">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <div className="text-2xl font-bold tracking-tight text-foreground">
+                  <div className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
                     {stat.value}
                   </div>
                   {stat.value > 0 && (
@@ -101,8 +101,8 @@ export function TeamsOverview({ teams }: TeamsOverviewProps) {
                         variant="secondary" 
                         className="text-xs gap-1 bg-gradient-to-r from-muted to-muted/50 hover:from-muted/80 hover:to-muted/30 transition-colors"
                       >
-                        <Activity className="w-2.5 h-2.5" />
-                        {t("overview.active")}
+                        <Activity className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
+                        <span className="hidden sm:inline">{t("overview.active")}</span>
                       </Badge>
                     </div>
                   )}
@@ -111,12 +111,12 @@ export function TeamsOverview({ teams }: TeamsOverviewProps) {
                 {/* Trend indicator */}
                 {stat.value > 0 && (
                   <div className="opacity-15 group-hover:opacity-30 transition-opacity">
-                    <TrendingUp className={`h-6 w-6 ${stat.iconColor}`} />
+                    <TrendingUp className={`h-4 w-4 sm:h-6 sm:w-6 ${stat.iconColor}`} />
                   </div>
                 )}
               </div>
               
-              <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+              <p className="mt-1 sm:mt-2 text-xs text-muted-foreground leading-relaxed line-clamp-2">
                 {stat.description}
               </p>
             </CardContent>

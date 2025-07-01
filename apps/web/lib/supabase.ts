@@ -18,6 +18,7 @@ export type Database = {
           stripe_subscription_id: string | null;
           stripe_price_id: string | null;
           stripe_current_period_end: Date | null;
+          default_team_id: string | null;
         };
         Insert: {
           id?: string;
@@ -32,6 +33,7 @@ export type Database = {
           stripe_subscription_id?: string | null;
           stripe_price_id?: string | null;
           stripe_current_period_end?: Date | null;
+          default_team_id?: string | null;
         };
         Update: {
           id?: string;
@@ -46,6 +48,149 @@ export type Database = {
           stripe_subscription_id?: string | null;
           stripe_price_id?: string | null;
           stripe_current_period_end?: Date | null;
+          default_team_id?: string | null;
+        };
+      };
+      teams: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          description: string | null;
+          logo_url: string | null;
+          billing_email: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          description?: string | null;
+          logo_url?: string | null;
+          billing_email?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          slug?: string;
+          description?: string | null;
+          logo_url?: string | null;
+          billing_email?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      team_members: {
+        Row: {
+          id: string;
+          team_id: string;
+          user_id: string;
+          role: "OWNER" | "ADMIN" | "MEMBER";
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          team_id: string;
+          user_id: string;
+          role?: "OWNER" | "ADMIN" | "MEMBER";
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          team_id?: string;
+          user_id?: string;
+          role?: "OWNER" | "ADMIN" | "MEMBER";
+          created_at?: string;
+        };
+      };
+      team_invitations: {
+        Row: {
+          id: string;
+          team_id: string;
+          email: string;
+          role: "ADMIN" | "MEMBER";
+          status: "PENDING" | "ACCEPTED" | "DECLINED" | "EXPIRED";
+          invited_by: string;
+          created_at: string;
+          expires_at: string;
+        };
+        Insert: {
+          id?: string;
+          team_id: string;
+          email: string;
+          role?: "ADMIN" | "MEMBER";
+          status?: "PENDING" | "ACCEPTED" | "DECLINED" | "EXPIRED";
+          invited_by: string;
+          created_at?: string;
+          expires_at?: string;
+        };
+        Update: {
+          id?: string;
+          team_id?: string;
+          email?: string;
+          role?: "ADMIN" | "MEMBER";
+          status?: "PENDING" | "ACCEPTED" | "DECLINED" | "EXPIRED";
+          invited_by?: string;
+          created_at?: string;
+          expires_at?: string;
+        };
+      };
+      team_projects: {
+        Row: {
+          id: string;
+          team_id: string;
+          name: string;
+          description: string | null;
+          status: "active" | "archived" | "deleted";
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          team_id: string;
+          name: string;
+          description?: string | null;
+          status?: "active" | "archived" | "deleted";
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          team_id?: string;
+          name?: string;
+          description?: string | null;
+          status?: "active" | "archived" | "deleted";
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      team_activities: {
+        Row: {
+          id: string;
+          team_id: string;
+          user_id: string;
+          action: string;
+          details: Record<string, any> | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          team_id: string;
+          user_id: string;
+          action: string;
+          details?: Record<string, any> | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          team_id?: string;
+          user_id?: string;
+          action?: string;
+          details?: Record<string, any> | null;
+          created_at?: string;
         };
       };
       accounts: {
@@ -134,6 +279,32 @@ export type Database = {
           token?: string;
           expires?: Date;
         };
+      };
+    };
+    Functions: {
+      create_team: {
+        Args: {
+          name: string;
+          description?: string;
+          logo_url?: string;
+          owner_id?: string;
+        };
+        Returns: string;
+      };
+      add_team_member: {
+        Args: {
+          team_id: string;
+          user_id: string;
+          member_role?: string;
+          inviter_id?: string;
+        };
+        Returns: boolean;
+      };
+      generate_team_slug: {
+        Args: {
+          team_name: string;
+        };
+        Returns: string;
       };
     };
   };

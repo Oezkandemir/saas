@@ -248,15 +248,15 @@ export function TeamMembersManagement({ team, members, invitations, userRole, cu
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
+        <CardHeader className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
+              <Users className="h-4 w-4 sm:h-5 sm:w-5" />
               <div>
-                <CardTitle>Team Members</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-lg sm:text-xl">Team Members</CardTitle>
+                <CardDescription className="text-sm">
                   Manage team members and their roles
                 </CardDescription>
               </div>
@@ -264,15 +264,16 @@ export function TeamMembersManagement({ team, members, invitations, userRole, cu
             {canManageMembers && (
               <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="gap-2">
+                  <Button className="gap-2 w-full sm:w-auto" size="sm">
                     <UserPlus className="h-4 w-4" />
-                    Invite Member
+                    <span className="hidden sm:inline">Invite Member</span>
+                    <span className="sm:hidden">Invite</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="w-[95vw] sm:max-w-md">
                   <DialogHeader>
-                    <DialogTitle>Invite Team Member</DialogTitle>
-                    <DialogDescription>
+                    <DialogTitle className="text-lg">Invite Team Member</DialogTitle>
+                    <DialogDescription className="text-sm">
                       Send an invitation to join {team.name}
                     </DialogDescription>
                   </DialogHeader>
@@ -283,13 +284,14 @@ export function TeamMembersManagement({ team, members, invitations, userRole, cu
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Email Address</FormLabel>
+                            <FormLabel className="text-sm">Email Address</FormLabel>
                             <FormControl>
                               <Input
                                 type="email"
                                 placeholder="john@example.com"
                                 {...field}
                                 disabled={isLoading}
+                                className="text-sm"
                               />
                             </FormControl>
                             <FormMessage />
@@ -302,10 +304,10 @@ export function TeamMembersManagement({ team, members, invitations, userRole, cu
                         name="role"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Role</FormLabel>
+                            <FormLabel className="text-sm">Role</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
                               <FormControl>
-                                <SelectTrigger>
+                                <SelectTrigger className="text-sm">
                                   <SelectValue placeholder="Select a role" />
                                 </SelectTrigger>
                               </FormControl>
@@ -316,7 +318,7 @@ export function TeamMembersManagement({ team, members, invitations, userRole, cu
                                 )}
                               </SelectContent>
                             </Select>
-                            <FormDescription>
+                            <FormDescription className="text-xs">
                               {field.value === "ADMIN" 
                                 ? "Administrators can manage team settings and invite members."
                                 : "Members can view team content and participate in projects."
@@ -327,11 +329,11 @@ export function TeamMembersManagement({ team, members, invitations, userRole, cu
                         )}
                       />
                       
-                      <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setIsInviteDialogOpen(false)} disabled={isLoading}>
+                      <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-0">
+                        <Button type="button" variant="outline" onClick={() => setIsInviteDialogOpen(false)} disabled={isLoading} className="w-full sm:w-auto" size="sm">
                           Cancel
                         </Button>
-                        <Button type="submit" disabled={isLoading}>
+                        <Button type="submit" disabled={isLoading} className="w-full sm:w-auto" size="sm">
                           {isLoading ? (
                             <>
                               <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -352,14 +354,18 @@ export function TeamMembersManagement({ team, members, invitations, userRole, cu
             )}
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6">
           <Tabs defaultValue="members" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="members">
-                Members ({members.length})
+            <TabsList className="w-full sm:w-auto">
+              <TabsTrigger value="members" className="flex-1 sm:flex-initial text-sm">
+                <span className="hidden sm:inline">Members ({members.length})</span>
+                <span className="sm:hidden">Members</span>
+                <span className="ml-1 text-xs">({members.length})</span>
               </TabsTrigger>
-              <TabsTrigger value="invitations">
-                Invitations ({invitations.length})
+              <TabsTrigger value="invitations" className="flex-1 sm:flex-initial text-sm">
+                <span className="hidden sm:inline">Invitations ({invitations.length})</span>
+                <span className="sm:hidden">Invites</span>
+                <span className="ml-1 text-xs">({invitations.length})</span>
               </TabsTrigger>
             </TabsList>
             
@@ -367,56 +373,295 @@ export function TeamMembersManagement({ team, members, invitations, userRole, cu
               {members.length === 0 ? (
                 <Alert>
                   <Users className="h-4 w-4" />
-                  <AlertDescription>
+                  <AlertDescription className="text-sm">
                     No team members found.
                   </AlertDescription>
                 </Alert>
               ) : (
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Member</TableHead>
-                        <TableHead>Role</TableHead>
-                        <TableHead>Joined</TableHead>
-                        {canManageMembers && <TableHead className="w-[100px]">Actions</TableHead>}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {members.map((member) => (
-                        <TableRow key={member.id}>
-                          <TableCell>
-                            <div className="flex items-center gap-3">
-                              <Avatar className="h-8 w-8">
-                                {member.users.avatar_url ? (
-                                  <AvatarImage src={member.users.avatar_url} alt={member.users.name} />
-                                ) : (
-                                  <AvatarFallback>
-                                    {member.users.name?.substring(0, 2).toUpperCase() || "?"}
-                                  </AvatarFallback>
-                                )}
-                              </Avatar>
-                              <div>
-                                <div className="font-medium">{member.users.name}</div>
-                                <div className="text-sm text-muted-foreground">{member.users.email}</div>
-                              </div>
+                <div className="rounded-md border overflow-hidden">
+                  {/* Mobile Card View */}
+                  <div className="sm:hidden space-y-3 p-4">
+                    {members.map((member) => (
+                      <div key={member.id} className="flex items-center justify-between p-3 border rounded-lg bg-muted/20">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <Avatar className="h-10 w-10 flex-shrink-0">
+                            {member.users.avatar_url ? (
+                              <AvatarImage src={member.users.avatar_url} alt={member.users.name} />
+                            ) : (
+                              <AvatarFallback className="text-xs">
+                                {member.users.name?.substring(0, 2).toUpperCase() || "?"}
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="font-medium text-sm truncate">{member.users.name}</div>
                               {member.user_id === currentUserId && (
-                                <Badge variant="outline" className="text-xs">You</Badge>
+                                <Badge variant="outline" className="text-xs px-1 py-0">You</Badge>
                               )}
                             </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={getRoleBadgeVariant(member.role)} className="gap-1">
-                              {getRoleIcon(member.role)}
-                              {member.role}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {formatDistanceToNow(new Date(member.created_at), { addSuffix: true })}
-                          </TableCell>
-                          {canManageMembers && (
+                            <div className="text-xs text-muted-foreground truncate">{member.users.email}</div>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge variant={getRoleBadgeVariant(member.role)} className="gap-1 text-xs">
+                                {getRoleIcon(member.role)}
+                                {member.role}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">
+                                {formatDistanceToNow(new Date(member.created_at), { addSuffix: true })}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        {canManageMembers && (canRemoveMember(member) || canChangeRole(member)) && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel className="text-xs">Actions</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              
+                              {canChangeRole(member) && member.role !== "OWNER" && (
+                                <>
+                                  {member.role === "MEMBER" && (
+                                    <DropdownMenuItem
+                                      onClick={() => changeRole(member.id, "ADMIN", member.users.name)}
+                                      disabled={isLoading}
+                                      className="text-xs"
+                                    >
+                                      <Shield className="mr-2 h-3 w-3" />
+                                      Make Admin
+                                    </DropdownMenuItem>
+                                  )}
+                                  {member.role === "ADMIN" && (
+                                    <DropdownMenuItem
+                                      onClick={() => changeRole(member.id, "MEMBER", member.users.name)}
+                                      disabled={isLoading}
+                                      className="text-xs"
+                                    >
+                                      <User className="mr-2 h-3 w-3" />
+                                      Make Member
+                                    </DropdownMenuItem>
+                                  )}
+                                  <DropdownMenuSeparator />
+                                </>
+                              )}
+                              
+                              {canRemoveMember(member) && (
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setSelectedMember(member);
+                                    setIsRemoveDialogOpen(true);
+                                  }}
+                                  disabled={isLoading}
+                                  className="text-destructive focus:text-destructive text-xs"
+                                >
+                                  <Trash2 className="mr-2 h-3 w-3" />
+                                  Remove
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Desktop Table View */}
+                  <div className="hidden sm:block">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-sm">Member</TableHead>
+                          <TableHead className="text-sm">Role</TableHead>
+                          <TableHead className="text-sm">Joined</TableHead>
+                          {canManageMembers && <TableHead className="w-[100px] text-sm">Actions</TableHead>}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {members.map((member) => (
+                          <TableRow key={member.id}>
                             <TableCell>
-                              {(canRemoveMember(member) || canChangeRole(member)) && (
+                              <div className="flex items-center gap-3">
+                                <Avatar className="h-8 w-8">
+                                  {member.users.avatar_url ? (
+                                    <AvatarImage src={member.users.avatar_url} alt={member.users.name} />
+                                  ) : (
+                                    <AvatarFallback className="text-xs">
+                                      {member.users.name?.substring(0, 2).toUpperCase() || "?"}
+                                    </AvatarFallback>
+                                  )}
+                                </Avatar>
+                                <div>
+                                  <div className="font-medium text-sm">{member.users.name}</div>
+                                  <div className="text-xs text-muted-foreground">{member.users.email}</div>
+                                </div>
+                                {member.user_id === currentUserId && (
+                                  <Badge variant="outline" className="text-xs">You</Badge>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={getRoleBadgeVariant(member.role)} className="gap-1 text-xs">
+                                {getRoleIcon(member.role)}
+                                {member.role}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-xs text-muted-foreground">
+                              {formatDistanceToNow(new Date(member.created_at), { addSuffix: true })}
+                            </TableCell>
+                            {canManageMembers && (
+                              <TableCell>
+                                {(canRemoveMember(member) || canChangeRole(member)) && (
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button variant="ghost" size="sm">
+                                        <MoreHorizontal className="h-4 w-4" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                      <DropdownMenuSeparator />
+                                      
+                                      {canChangeRole(member) && member.role !== "OWNER" && (
+                                        <>
+                                          {member.role === "MEMBER" && (
+                                            <DropdownMenuItem
+                                              onClick={() => changeRole(member.id, "ADMIN", member.users.name)}
+                                              disabled={isLoading}
+                                            >
+                                              <Shield className="mr-2 h-4 w-4" />
+                                              Make Admin
+                                            </DropdownMenuItem>
+                                          )}
+                                          {member.role === "ADMIN" && (
+                                            <DropdownMenuItem
+                                              onClick={() => changeRole(member.id, "MEMBER", member.users.name)}
+                                              disabled={isLoading}
+                                            >
+                                              <User className="mr-2 h-4 w-4" />
+                                              Make Member
+                                            </DropdownMenuItem>
+                                          )}
+                                          <DropdownMenuSeparator />
+                                        </>
+                                      )}
+                                      
+                                      {canRemoveMember(member) && (
+                                        <DropdownMenuItem
+                                          onClick={() => {
+                                            setSelectedMember(member);
+                                            setIsRemoveDialogOpen(true);
+                                          }}
+                                          disabled={isLoading}
+                                          className="text-destructive focus:text-destructive"
+                                        >
+                                          <Trash2 className="mr-2 h-4 w-4" />
+                                          Remove Member
+                                        </DropdownMenuItem>
+                                      )}
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                )}
+                              </TableCell>
+                            )}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="invitations" className="space-y-4">
+              {invitations.length === 0 ? (
+                <Alert>
+                  <Mail className="h-4 w-4" />
+                  <AlertDescription className="text-sm">
+                    No pending invitations.
+                  </AlertDescription>
+                </Alert>
+              ) : (
+                <div className="rounded-md border overflow-hidden">
+                  {/* Mobile Card View */}
+                  <div className="sm:hidden space-y-3 p-4">
+                    {invitations.map((invitation) => (
+                      <div key={invitation.id} className="flex items-center justify-between p-3 border rounded-lg bg-muted/20">
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-sm truncate">{invitation.email}</div>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge variant={getRoleBadgeVariant(invitation.role)} className="gap-1 text-xs">
+                              {getRoleIcon(invitation.role)}
+                              {invitation.role}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              Expires {formatDistanceToNow(new Date(invitation.expires_at), { addSuffix: true })}
+                            </span>
+                          </div>
+                        </div>
+                        {canManageMembers && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel className="text-xs">Actions</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => resendInvitation(invitation.id, invitation.email)}
+                                disabled={isLoading}
+                                className="text-xs"
+                              >
+                                <RotateCcw className="mr-2 h-3 w-3" />
+                                Resend
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => cancelInvitation(invitation.id, invitation.email)}
+                                disabled={isLoading}
+                                className="text-destructive focus:text-destructive text-xs"
+                              >
+                                <Trash2 className="mr-2 h-3 w-3" />
+                                Cancel
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Desktop Table View */}
+                  <div className="hidden sm:block">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-sm">Email</TableHead>
+                          <TableHead className="text-sm">Role</TableHead>
+                          <TableHead className="text-sm">Expires</TableHead>
+                          {canManageMembers && <TableHead className="w-[100px] text-sm">Actions</TableHead>}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {invitations.map((invitation) => (
+                          <TableRow key={invitation.id}>
+                            <TableCell className="font-medium text-sm">{invitation.email}</TableCell>
+                            <TableCell>
+                              <Badge variant={getRoleBadgeVariant(invitation.role)} className="gap-1 text-xs">
+                                {getRoleIcon(invitation.role)}
+                                {invitation.role}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-xs text-muted-foreground">
+                              {formatDistanceToNow(new Date(invitation.expires_at), { addSuffix: true })}
+                            </TableCell>
+                            {canManageMembers && (
+                              <TableCell>
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" size="sm">
@@ -426,124 +671,31 @@ export function TeamMembersManagement({ team, members, invitations, userRole, cu
                                   <DropdownMenuContent align="end">
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
-                                    
-                                    {canChangeRole(member) && member.role !== "OWNER" && (
-                                      <>
-                                        {member.role === "MEMBER" && (
-                                          <DropdownMenuItem
-                                            onClick={() => changeRole(member.id, "ADMIN", member.users.name)}
-                                            disabled={isLoading}
-                                          >
-                                            <Shield className="mr-2 h-4 w-4" />
-                                            Make Admin
-                                          </DropdownMenuItem>
-                                        )}
-                                        {member.role === "ADMIN" && (
-                                          <DropdownMenuItem
-                                            onClick={() => changeRole(member.id, "MEMBER", member.users.name)}
-                                            disabled={isLoading}
-                                          >
-                                            <User className="mr-2 h-4 w-4" />
-                                            Make Member
-                                          </DropdownMenuItem>
-                                        )}
-                                        <DropdownMenuSeparator />
-                                      </>
-                                    )}
-                                    
-                                    {canRemoveMember(member) && (
-                                      <DropdownMenuItem
-                                        onClick={() => {
-                                          setSelectedMember(member);
-                                          setIsRemoveDialogOpen(true);
-                                        }}
-                                        disabled={isLoading}
-                                        className="text-destructive focus:text-destructive"
-                                      >
-                                        <Trash2 className="mr-2 h-4 w-4" />
-                                        Remove Member
-                                      </DropdownMenuItem>
-                                    )}
+                                    <DropdownMenuItem
+                                      onClick={() => resendInvitation(invitation.id, invitation.email)}
+                                      disabled={isLoading}
+                                    >
+                                      <RotateCcw className="mr-2 h-4 w-4" />
+                                      Resend
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                      onClick={() => cancelInvitation(invitation.id, invitation.email)}
+                                      disabled={isLoading}
+                                      className="text-destructive focus:text-destructive"
+                                    >
+                                      <Trash2 className="mr-2 h-4 w-4" />
+                                      Cancel
+                                    </DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
-                              )}
-                            </TableCell>
-                          )}
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </TabsContent>
-            
-            <TabsContent value="invitations" className="space-y-4">
-              {invitations.length === 0 ? (
-                <Alert>
-                  <Mail className="h-4 w-4" />
-                  <AlertDescription>
-                    No pending invitations.
-                  </AlertDescription>
-                </Alert>
-              ) : (
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Role</TableHead>
-                        <TableHead>Expires</TableHead>
-                        {canManageMembers && <TableHead className="w-[100px]">Actions</TableHead>}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {invitations.map((invitation) => (
-                        <TableRow key={invitation.id}>
-                          <TableCell className="font-medium">{invitation.email}</TableCell>
-                          <TableCell>
-                            <Badge variant={getRoleBadgeVariant(invitation.role)} className="gap-1">
-                              {getRoleIcon(invitation.role)}
-                              {invitation.role}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {formatDistanceToNow(new Date(invitation.expires_at), { addSuffix: true })}
-                          </TableCell>
-                          {canManageMembers && (
-                            <TableCell>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="sm">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem
-                                    onClick={() => resendInvitation(invitation.id, invitation.email)}
-                                    disabled={isLoading}
-                                  >
-                                    <RotateCcw className="mr-2 h-4 w-4" />
-                                    Resend
-                                  </DropdownMenuItem>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem
-                                    onClick={() => cancelInvitation(invitation.id, invitation.email)}
-                                    disabled={isLoading}
-                                    className="text-destructive focus:text-destructive"
-                                  >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Cancel
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          )}
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                              </TableCell>
+                            )}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
               )}
             </TabsContent>
@@ -553,22 +705,24 @@ export function TeamMembersManagement({ team, members, invitations, userRole, cu
 
       {/* Remove Member Dialog */}
       <Dialog open={isRemoveDialogOpen} onOpenChange={setIsRemoveDialogOpen}>
-        <DialogContent>
+        <DialogContent className="w-[95vw] sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Remove Team Member</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg">Remove Team Member</DialogTitle>
+            <DialogDescription className="text-sm">
               Are you sure you want to remove {selectedMember?.users.name} from this team?
               This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsRemoveDialogOpen(false)} disabled={isLoading}>
+          <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setIsRemoveDialogOpen(false)} disabled={isLoading} className="w-full sm:w-auto" size="sm">
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={() => selectedMember && removeMember(selectedMember.id, selectedMember.users.name)}
               disabled={isLoading}
+              className="w-full sm:w-auto"
+              size="sm"
             >
               {isLoading ? (
                 <>

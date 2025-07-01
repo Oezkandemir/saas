@@ -134,16 +134,16 @@ export function TeamsGrid({ teams }: TeamsGridProps) {
 
   if (!teams.length) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/25 p-16 text-center bg-muted/10">
-        <div className="rounded-full bg-gradient-to-br from-primary/10 to-primary/5 p-8 mb-6">
-          <Users className="h-16 w-16 text-primary/60" />
+      <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/25 p-8 sm:p-16 text-center bg-muted/10">
+        <div className="rounded-full bg-gradient-to-br from-primary/10 to-primary/5 p-6 sm:p-8 mb-4 sm:mb-6">
+          <Users className="h-12 w-12 sm:h-16 sm:w-16 text-primary/60" />
         </div>
-        <h3 className="text-2xl font-semibold mb-3 text-foreground">{t("grid.noTeams.title")}</h3>
-        <p className="text-muted-foreground max-w-md mb-8 text-lg">
+        <h3 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3 text-foreground">{t("grid.noTeams.title")}</h3>
+        <p className="text-muted-foreground max-w-md mb-6 sm:mb-8 text-base sm:text-lg px-4">
           {t("grid.noTeams.description")}
         </p>
         <Button size="lg" className="gap-2">
-          <UserPlus className="h-5 w-5" />
+          <UserPlus className="h-4 w-4 sm:h-5 sm:w-5" />
           {t("grid.noTeams.createFirst")}
         </Button>
       </div>
@@ -151,7 +151,7 @@ export function TeamsGrid({ teams }: TeamsGridProps) {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {teams.map((team) => (
         <Card 
           key={team.id} 
@@ -161,17 +161,17 @@ export function TeamsGrid({ teams }: TeamsGridProps) {
               : "border-0 hover:-translate-y-1"
           }`}
         >
-          <CardHeader className="pb-3 relative">
+          <CardHeader className="pb-2 sm:pb-3 relative">
             {/* Menu Button */}
-            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="absolute top-2 sm:top-3 right-2 sm:right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-7 w-7 rounded-full bg-background/80 hover:bg-background border border-border/50"
+                    className="h-8 w-8 sm:h-7 sm:w-7 rounded-full bg-background/80 hover:bg-background border border-border/50"
                   >
-                    <MoreHorizontal className="h-3.5 w-3.5" />
+                    <MoreHorizontal className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                     <span className="sr-only">{t("grid.openMenu")}</span>
                   </Button>
                 </DropdownMenuTrigger>
@@ -199,20 +199,27 @@ export function TeamsGrid({ teams }: TeamsGridProps) {
                     </DropdownMenuItem>
                   )}
                   
+                  <DropdownMenuSeparator />
+                  
+                  <DropdownMenuItem asChild>
+                    <Link href={`/dashboard/teams/${team.id}`} className="cursor-pointer">
+                      <Eye className="h-4 w-4 mr-2" />
+                      {t("grid.viewTeam")}
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem asChild>
+                    <Link href={`/dashboard/teams/${team.id}/settings`} className="cursor-pointer">
+                      <Settings className="h-4 w-4 mr-2" />
+                      {t("grid.teamSettings")}
+                    </Link>
+                  </DropdownMenuItem>
+                  
                   {team.role === "OWNER" && (
                     <>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/dashboard/teams/${team.id}/settings`} className="cursor-pointer">
-                          <Settings className="h-4 w-4 mr-2" />
-                          {t("grid.settings")}
-                        </Link>
-                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="text-destructive focus:text-destructive cursor-pointer"
-                        asChild
-                      >
-                        <Link href={`/dashboard/teams/${team.id}/delete`}>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/dashboard/teams/${team.id}/delete`} className="cursor-pointer text-destructive">
                           <Trash2 className="h-4 w-4 mr-2" />
                           {t("grid.deleteTeam")}
                         </Link>
@@ -223,122 +230,111 @@ export function TeamsGrid({ teams }: TeamsGridProps) {
               </DropdownMenu>
             </div>
 
-            {/* Team Avatar & Basic Info */}
-            <div className="flex flex-col items-center text-center space-y-3">
-              <div className="relative">
-                <Avatar className="h-12 w-12 border-2 border-background shadow-sm ring-1 ring-border/10">
-                  {team.logoUrl ? (
-                    <AvatarImage src={team.logoUrl} alt={team.name} />
-                  ) : (
-                    <AvatarFallback className="bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 font-semibold text-sm text-primary">
-                      {team.name.substring(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-                {team.isDefault && (
-                  <div className="absolute -top-0.5 -right-0.5 rounded-full bg-primary p-1 shadow-sm">
-                    <Star className="h-2.5 w-2.5 text-primary-foreground fill-current" />
-                  </div>
+            {/* Team Avatar */}
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <Avatar className="h-12 w-12 sm:h-16 sm:w-16 border-2 border-border/20 shadow-sm">
+                {team.logoUrl ? (
+                  <AvatarImage src={team.logoUrl} alt={team.name} />
+                ) : (
+                  <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/5 text-base sm:text-xl font-bold">
+                    {team.name.substring(0, 2).toUpperCase()}
+                  </AvatarFallback>
                 )}
-              </div>
-              
-              <div className="space-y-1">
-                <h3 className="font-semibold text-base leading-tight">{team.name}</h3>
-                {team.isDefault && (
-                  <Badge variant="secondary" className="text-xs gap-1">
-                    <Star className="h-2.5 w-2.5 fill-current" />
-                    {t("grid.defaultTeam")}
-                  </Badge>
-                )}
-              </div>
+              </Avatar>
             </div>
+
+            {/* Team Name */}
+            <div className="text-center space-y-1 sm:space-y-2">
+              <h3 className="font-semibold text-base sm:text-lg leading-tight line-clamp-1 px-2">{team.name}</h3>
+              {team.description && (
+                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 px-2 leading-relaxed">
+                  {team.description}
+                </p>
+              )}
+            </div>
+
+            {/* Default Team Badge */}
+            {team.isDefault && (
+              <div className="flex justify-center mt-2">
+                <Badge variant="secondary" className="text-xs gap-1">
+                  <Star className="h-2.5 w-2.5 fill-current" />
+                  {t("grid.defaultTeam")}
+                </Badge>
+              </div>
+            )}
           </CardHeader>
 
-          <CardContent className="space-y-4">
-            {/* Description */}
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem] leading-relaxed">
-                {team.description || t("teamList.noDescription")}
-              </p>
-            </div>
-
+          <CardContent className="space-y-3 sm:space-y-4 pt-0">
             {/* Stats */}
-            <div className="grid grid-cols-2 gap-2">
-              <div className="text-center p-2 rounded-md bg-muted/30 border border-border/20">
-                <Users className="h-3.5 w-3.5 text-blue-600 mx-auto mb-1" />
-                <div className="text-lg font-bold text-foreground">{team.memberCount}</div>
-                <div className="text-xs text-muted-foreground">{t("grid.members")}</div>
+            <div className="flex items-center justify-between text-xs sm:text-sm text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                <span>{team.memberCount}</span>
               </div>
-              
-              <div className="text-center p-2 rounded-md bg-muted/30 border border-border/20">
-                <Briefcase className="h-3.5 w-3.5 text-purple-600 mx-auto mb-1" />
-                <div className="text-lg font-bold text-foreground">{team.activeProjects}</div>
-                <div className="text-xs text-muted-foreground">{t("grid.projects")}</div>
+              <div className="flex items-center gap-1">
+                <Briefcase className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                <span>{team.activeProjects}</span>
               </div>
-            </div>
-
-            {/* Member Avatars */}
-            <div className="space-y-1.5">
-              <div className="text-xs font-medium text-muted-foreground text-center">
-                {t("grid.recentMembers")}
-              </div>
-                             <div className="flex justify-center">
-                 <div className="flex -space-x-2">
-                   {team.members.slice(0, 4).map((member) => (
-                     <TooltipProvider key={member.id}>
-                       <Tooltip>
-                         <TooltipTrigger asChild>
-                           <Avatar className="h-8 w-8 border-2 border-background hover:scale-110 transition-transform cursor-pointer ring-1 ring-border/10">
-                             {member.avatarUrl ? (
-                               <AvatarImage src={member.avatarUrl} alt={member.name} />
-                             ) : (
-                               <AvatarFallback className="text-xs bg-gradient-to-br from-muted to-muted/50">
-                                 {member.name?.substring(0, 2).toUpperCase() || "?"}
-                               </AvatarFallback>
-                             )}
-                           </Avatar>
-                         </TooltipTrigger>
-                         <TooltipContent side="bottom">
-                           <p className="font-medium">{member.name}</p>
-                           <p className="text-xs text-muted-foreground">{member.role}</p>
-                         </TooltipContent>
-                       </Tooltip>
-                     </TooltipProvider>
-                   ))}
-                   {team.memberCount > 4 && (
-                     <div className="h-8 w-8 rounded-full border-2 border-background bg-muted/60 flex items-center justify-center ring-1 ring-border/10">
-                       <span className="text-xs font-medium text-muted-foreground">+{team.memberCount - 4}</span>
-                     </div>
-                   )}
-                 </div>
-               </div>
-            </div>
-
-            {/* Role & Actions */}
-            <div className="flex items-center justify-between pt-1 border-t border-border/20">
-              <Badge variant={getRoleBadgeVariant(team.role)} className="gap-1 text-xs">
-                {getRoleIcon(team.role)}
-                {t(`roles.${team.role.toLowerCase()}`)}
-              </Badge>
-              
-              <Link href={`/dashboard/teams/${team.id}`}>
-                <Button 
-                  size="sm" 
-                  variant="ghost"
-                  className="gap-1.5 text-primary hover:text-primary hover:bg-primary/10 transition-colors h-7 px-2"
-                >
-                  {t("grid.viewTeam")}
-                  <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-                </Button>
-              </Link>
-            </div>
-
-            {/* Joined Date */}
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+              <div className="flex items-center gap-1">
                 <Calendar className="h-2.5 w-2.5" />
-                {t("grid.joined")} {formatDistanceToNow(new Date(team.joinedAt), { addSuffix: true })}
-              </p>
+                <span className="text-xs">{formatDistanceToNow(new Date(team.recentActivity), { addSuffix: true })}</span>
+              </div>
+            </div>
+
+            {/* Members Preview */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs sm:text-sm font-medium text-muted-foreground">{t("grid.members")}</span>
+                <Badge variant={getRoleBadgeVariant(team.role)} className="text-xs gap-1">
+                  {getRoleIcon(team.role)}
+                  {team.role}
+                </Badge>
+              </div>
+              
+              {team.members.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <div className="flex -space-x-2">
+                    {team.members.slice(0, 4).map((member, index) => (
+                      <TooltipProvider key={member.id}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Avatar className="h-6 w-6 sm:h-8 sm:w-8 border-2 border-background">
+                              {member.avatarUrl ? (
+                                <AvatarImage src={member.avatarUrl} alt={member.name} />
+                              ) : (
+                                <AvatarFallback className="text-xs font-medium">
+                                  {member.name.substring(0, 2).toUpperCase()}
+                                </AvatarFallback>
+                              )}
+                            </Avatar>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">{member.name}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ))}
+                    {team.memberCount > 4 && (
+                      <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-muted border-2 border-background flex items-center justify-center">
+                        <span className="text-xs font-medium text-muted-foreground">
+                          +{team.memberCount - 4}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="pt-2 sm:pt-3 border-t border-border/30">
+              <Link 
+                href={`/dashboard/teams/${team.id}`}
+                className="flex items-center justify-between w-full p-2 sm:p-3 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors group"
+              >
+                <span className="text-xs sm:text-sm font-medium">{t("grid.viewTeam")}</span>
+                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+              </Link>
             </div>
           </CardContent>
         </Card>
