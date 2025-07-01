@@ -5,9 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { Shell } from "@/components/shell";
 import { TeamHeader } from "@/components/teams/team-header";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
+import { TeamDeleteForm } from "@/components/teams/team-delete-form";
 
 export async function generateMetadata({
   params,
@@ -70,16 +68,22 @@ export default async function TeamDeletePage({ params }: PageProps) {
       redirect("/dashboard/teams");
     }
 
-    // Get team stats for header
+    // Get team stats for header and deletion info
     const { data: teamMembers } = await supabase
       .from("team_members")
-      .select("id")
+      .select("id, users:user_id(name, email)")
       .eq("team_id", id);
 
     const { data: teamProjects } = await supabase
       .from("team_projects")
-      .select("id")
+      .select("id, name")
       .eq("team_id", id);
+
+    const { data: teamInvitations } = await supabase
+      .from("team_invitations")
+      .select("id")
+      .eq("team_id", id)
+      .eq("status", "pending");
 
     const team = {
       id: teamData.id,
@@ -104,34 +108,12 @@ export default async function TeamDeletePage({ params }: PageProps) {
             projectCount={teamProjects?.length || 0}
           />
 
-          <div className="space-y-6">
-            <Alert variant="destructive">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Danger Zone</AlertTitle>
-              <AlertDescription>
-                This action cannot be undone. Deleting this team will permanently remove all associated data.
-              </AlertDescription>
-            </Alert>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-destructive">Delete Team</CardTitle>
-                <CardDescription>
-                  Permanently delete &ldquo;{team.name}&rdquo; and all associated data
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="py-12 text-center">
-                  <h3 className="text-lg font-semibold text-muted-foreground">
-                    Delete Feature Coming Soon
-                  </h3>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Team deletion functionality will be available soon with proper safeguards.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <TeamDeleteForm 
+            team={team}
+            memberCount={teamMembers?.length || 0}
+            projectCount={teamProjects?.length || 0}
+            invitationCount={teamInvitations?.length || 0}
+          />
         </div>
       </Shell>
     );

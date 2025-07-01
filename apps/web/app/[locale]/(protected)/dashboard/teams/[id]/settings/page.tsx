@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { Shell } from "@/components/shell";
 import { TeamHeader } from "@/components/teams/team-header";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { TeamSettingsForm } from "@/components/teams/team-settings-form";
 
 export async function generateMetadata({
   params,
@@ -91,7 +91,6 @@ export default async function TeamSettingsPage({ params }: PageProps) {
     };
 
     const userRole = userMembership.role;
-    const t = await getTranslations("Teams");
 
     return (
       <Shell className="max-w-4xl">
@@ -103,26 +102,7 @@ export default async function TeamSettingsPage({ params }: PageProps) {
             projectCount={teamProjects?.length || 0}
           />
 
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Team Settings</CardTitle>
-                <CardDescription>
-                  Manage your team settings and configuration
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="py-12 text-center">
-                  <h3 className="text-lg font-semibold text-muted-foreground">
-                    Settings Coming Soon
-                  </h3>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Team settings management will be available soon.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <TeamSettingsForm team={team} userRole={userRole} />
         </div>
       </Shell>
     );

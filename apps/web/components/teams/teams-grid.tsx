@@ -16,7 +16,8 @@ import {
   Star,
   Trash2,
   Calendar,
-  Activity
+  ExternalLink,
+  ChevronRight
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -27,10 +28,7 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -136,16 +134,16 @@ export function TeamsGrid({ teams }: TeamsGridProps) {
 
   if (!teams.length) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted p-12 text-center">
-        <div className="rounded-full bg-muted p-6 mb-4">
-          <Users className="h-12 w-12 text-muted-foreground" />
+      <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/25 p-16 text-center bg-muted/10">
+        <div className="rounded-full bg-gradient-to-br from-primary/10 to-primary/5 p-8 mb-6">
+          <Users className="h-16 w-16 text-primary/60" />
         </div>
-        <h3 className="text-xl font-semibold mb-2">{t("grid.noTeams.title")}</h3>
-        <p className="text-muted-foreground max-w-md mb-6">
+        <h3 className="text-2xl font-semibold mb-3 text-foreground">{t("grid.noTeams.title")}</h3>
+        <p className="text-muted-foreground max-w-md mb-8 text-lg">
           {t("grid.noTeams.description")}
         </p>
-        <Button>
-          <UserPlus className="h-4 w-4 mr-2" />
+        <Button size="lg" className="gap-2">
+          <UserPlus className="h-5 w-5" />
           {t("grid.noTeams.createFirst")}
         </Button>
       </div>
@@ -153,59 +151,27 @@ export function TeamsGrid({ teams }: TeamsGridProps) {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {teams.map((team) => (
         <Card 
           key={team.id} 
-          className={`group relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${
-            team.isDefault ? "ring-2 ring-primary ring-offset-2" : ""
+          className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 bg-gradient-to-br from-background via-background to-muted/20 ${
+            team.isDefault 
+              ? "border border-primary/40 shadow-md shadow-primary/10" 
+              : "border-0 hover:-translate-y-1"
           }`}
         >
-          {/* Gradient overlay for default team */}
-          {team.isDefault && (
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
-          )}
-
-          <CardHeader className="pb-3">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <Avatar className="h-12 w-12 border-2 border-background shadow-sm">
-                    {team.logoUrl ? (
-                      <AvatarImage src={team.logoUrl} alt={team.name} />
-                    ) : (
-                      <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/5 font-semibold">
-                        {team.name.substring(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    )}
-                  </Avatar>
-                  {team.isDefault && (
-                    <div className="absolute -top-1 -right-1 rounded-full bg-primary p-1">
-                      <Star className="h-3 w-3 text-primary-foreground" />
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <CardTitle className="text-lg leading-none">{team.name}</CardTitle>
-                  <CardDescription className="text-xs mt-1 flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    {t("grid.joined", {
-                      time: formatDistanceToNow(new Date(team.joinedAt), {
-                        addSuffix: true,
-                      }),
-                    })}
-                  </CardDescription>
-                </div>
-              </div>
-              
+          <CardHeader className="pb-3 relative">
+            {/* Menu Button */}
+            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="h-7 w-7 rounded-full bg-background/80 hover:bg-background border border-border/50"
                   >
-                    <MoreHorizontal className="h-4 w-4" />
+                    <MoreHorizontal className="h-3.5 w-3.5" />
                     <span className="sr-only">{t("grid.openMenu")}</span>
                   </Button>
                 </DropdownMenuTrigger>
@@ -257,111 +223,124 @@ export function TeamsGrid({ teams }: TeamsGridProps) {
               </DropdownMenu>
             </div>
 
-            {team.isDefault && (
-              <Badge className="w-fit mt-3" variant="outline">
-                <Star className="h-3 w-3 mr-1" />
-                {t("grid.defaultTeam")}
-              </Badge>
-            )}
-          </CardHeader>
-
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
-              {team.description || t("grid.noDescription")}
-            </p>
-
-            {/* Team Stats */}
-            <div className="grid grid-cols-2 gap-3">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
-                      <Users className="h-4 w-4 text-blue-600" />
-                      <div>
-                        <div className="text-sm font-semibold">{team.memberCount}</div>
-                        <div className="text-xs text-muted-foreground">{t("grid.members")}</div>
-                      </div>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{t("grid.totalMembers")}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
-                      <Briefcase className="h-4 w-4 text-purple-600" />
-                      <div>
-                        <div className="text-sm font-semibold">{team.activeProjects}</div>
-                        <div className="text-xs text-muted-foreground">{t("grid.projects")}</div>
-                      </div>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{t("grid.activeProjects")}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-
-            {/* Team Members Preview */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-muted-foreground">
-                  {t("grid.recentMembers")}
-                </span>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Activity className="h-3 w-3" />
-                  {formatDistanceToNow(team.recentActivity, { addSuffix: true })}
-                </div>
-              </div>
-              <div className="flex -space-x-2">
-                {team.members.slice(0, 4).map((member) => (
-                  <TooltipProvider key={member.id}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Avatar className="h-8 w-8 border-2 border-background hover:scale-110 transition-transform cursor-pointer">
-                          {member.avatarUrl ? (
-                            <AvatarImage src={member.avatarUrl} alt={member.name} />
-                          ) : (
-                            <AvatarFallback className="text-xs">
-                              {member.name?.substring(0, 2).toUpperCase() || "?"}
-                            </AvatarFallback>
-                          )}
-                        </Avatar>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="font-medium">{member.name}</p>
-                        <p className="text-xs text-muted-foreground">{member.role}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ))}
-                {team.memberCount > 4 && (
-                  <div className="h-8 w-8 rounded-full border-2 border-background bg-muted flex items-center justify-center">
-                    <span className="text-xs font-medium">+{team.memberCount - 4}</span>
+            {/* Team Avatar & Basic Info */}
+            <div className="flex flex-col items-center text-center space-y-3">
+              <div className="relative">
+                <Avatar className="h-12 w-12 border-2 border-background shadow-sm ring-1 ring-border/10">
+                  {team.logoUrl ? (
+                    <AvatarImage src={team.logoUrl} alt={team.name} />
+                  ) : (
+                    <AvatarFallback className="bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 font-semibold text-sm text-primary">
+                      {team.name.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                {team.isDefault && (
+                  <div className="absolute -top-0.5 -right-0.5 rounded-full bg-primary p-1 shadow-sm">
+                    <Star className="h-2.5 w-2.5 text-primary-foreground fill-current" />
                   </div>
                 )}
               </div>
+              
+              <div className="space-y-1">
+                <h3 className="font-semibold text-base leading-tight">{team.name}</h3>
+                {team.isDefault && (
+                  <Badge variant="secondary" className="text-xs gap-1">
+                    <Star className="h-2.5 w-2.5 fill-current" />
+                    {t("grid.defaultTeam")}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            {/* Description */}
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem] leading-relaxed">
+                {team.description || t("teamList.noDescription")}
+              </p>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="text-center p-2 rounded-md bg-muted/30 border border-border/20">
+                <Users className="h-3.5 w-3.5 text-blue-600 mx-auto mb-1" />
+                <div className="text-lg font-bold text-foreground">{team.memberCount}</div>
+                <div className="text-xs text-muted-foreground">{t("grid.members")}</div>
+              </div>
+              
+              <div className="text-center p-2 rounded-md bg-muted/30 border border-border/20">
+                <Briefcase className="h-3.5 w-3.5 text-purple-600 mx-auto mb-1" />
+                <div className="text-lg font-bold text-foreground">{team.activeProjects}</div>
+                <div className="text-xs text-muted-foreground">{t("grid.projects")}</div>
+              </div>
+            </div>
+
+            {/* Member Avatars */}
+            <div className="space-y-1.5">
+              <div className="text-xs font-medium text-muted-foreground text-center">
+                {t("grid.recentMembers")}
+              </div>
+                             <div className="flex justify-center">
+                 <div className="flex -space-x-2">
+                   {team.members.slice(0, 4).map((member) => (
+                     <TooltipProvider key={member.id}>
+                       <Tooltip>
+                         <TooltipTrigger asChild>
+                           <Avatar className="h-8 w-8 border-2 border-background hover:scale-110 transition-transform cursor-pointer ring-1 ring-border/10">
+                             {member.avatarUrl ? (
+                               <AvatarImage src={member.avatarUrl} alt={member.name} />
+                             ) : (
+                               <AvatarFallback className="text-xs bg-gradient-to-br from-muted to-muted/50">
+                                 {member.name?.substring(0, 2).toUpperCase() || "?"}
+                               </AvatarFallback>
+                             )}
+                           </Avatar>
+                         </TooltipTrigger>
+                         <TooltipContent side="bottom">
+                           <p className="font-medium">{member.name}</p>
+                           <p className="text-xs text-muted-foreground">{member.role}</p>
+                         </TooltipContent>
+                       </Tooltip>
+                     </TooltipProvider>
+                   ))}
+                   {team.memberCount > 4 && (
+                     <div className="h-8 w-8 rounded-full border-2 border-background bg-muted/60 flex items-center justify-center ring-1 ring-border/10">
+                       <span className="text-xs font-medium text-muted-foreground">+{team.memberCount - 4}</span>
+                     </div>
+                   )}
+                 </div>
+               </div>
+            </div>
+
+            {/* Role & Actions */}
+            <div className="flex items-center justify-between pt-1 border-t border-border/20">
+              <Badge variant={getRoleBadgeVariant(team.role)} className="gap-1 text-xs">
+                {getRoleIcon(team.role)}
+                {t(`roles.${team.role.toLowerCase()}`)}
+              </Badge>
+              
+              <Link href={`/dashboard/teams/${team.id}`}>
+                <Button 
+                  size="sm" 
+                  variant="ghost"
+                  className="gap-1.5 text-primary hover:text-primary hover:bg-primary/10 transition-colors h-7 px-2"
+                >
+                  {t("grid.viewTeam")}
+                  <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                </Button>
+              </Link>
+            </div>
+
+            {/* Joined Date */}
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+                <Calendar className="h-2.5 w-2.5" />
+                {t("grid.joined")} {formatDistanceToNow(new Date(team.joinedAt), { addSuffix: true })}
+              </p>
             </div>
           </CardContent>
-
-          <CardFooter className="flex justify-between pt-4">
-            <Badge variant={getRoleBadgeVariant(team.role)} className="gap-1">
-              {getRoleIcon(team.role)}
-              {t(`roles.${team.role.toLowerCase()}`)}
-            </Badge>
-            
-            <Link href={`/dashboard/teams/${team.id}`}>
-              <Button size="sm" className="group">
-                <Eye className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
-                {t("grid.viewTeam")}
-              </Button>
-            </Link>
-          </CardFooter>
         </Card>
       ))}
     </div>

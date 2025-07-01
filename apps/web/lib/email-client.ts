@@ -108,6 +108,53 @@ export const sendNewsletterConfirmationEmail = async ({
   }
 };
 
+// Function to send a team invitation email
+export const sendTeamInvitationEmail = async ({
+  email,
+  inviterName,
+  inviterEmail,
+  teamName,
+  teamSlug,
+  role,
+  actionUrl,
+}: {
+  email: string;
+  inviterName: string;
+  inviterEmail: string;
+  teamName: string;
+  teamSlug: string;
+  role: string;
+  actionUrl?: string;
+}) => {
+  try {
+    console.log(`Sending team invitation email to ${email} via edge function`);
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.functions.invoke("send-email", {
+      body: {
+        type: "team-invitation",
+        email,
+        inviterName,
+        inviterEmail,
+        teamName,
+        teamSlug,
+        role,
+        actionUrl,
+      },
+    });
+
+    if (error) {
+      console.error("Edge function error:", error);
+      throw new Error(`Failed to send team invitation email: ${error.message}`);
+    }
+
+    console.log(`Successfully sent team invitation email to ${email}`);
+    return data;
+  } catch (error) {
+    console.error("Failed to send team invitation email:", error);
+    throw new Error("Failed to send team invitation email.");
+  }
+};
+
 // Function to send an unsubscribe confirmation email
 export const sendUnsubscribeConfirmationEmail = async ({
   email,

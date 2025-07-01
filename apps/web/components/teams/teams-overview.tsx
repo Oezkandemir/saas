@@ -1,6 +1,6 @@
 "use client";
 
-import { Users, Briefcase, TrendingUp, Crown } from "lucide-react";
+import { Users, Briefcase, TrendingUp, Crown, Target, Activity } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,34 +32,38 @@ export function TeamsOverview({ teams }: TeamsOverviewProps) {
     {
       title: t("overview.totalTeams"),
       value: totalTeams,
-      icon: Users,
+      icon: Target,
       description: t("overview.teamsDescription"),
-      color: "text-blue-600 dark:text-blue-400",
-      bgColor: "bg-blue-50 dark:bg-blue-950/50",
+      gradient: "from-blue-500 to-cyan-500",
+      bgGradient: "from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50",
+      iconColor: "text-blue-600 dark:text-blue-400",
     },
     {
       title: t("overview.totalMembers"),
       value: totalMembers,
       icon: Users,
       description: t("overview.membersDescription"),
-      color: "text-green-600 dark:text-green-400",
-      bgColor: "bg-green-50 dark:bg-green-950/50",
+      gradient: "from-green-500 to-emerald-500",
+      bgGradient: "from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50",
+      iconColor: "text-green-600 dark:text-green-400",
     },
     {
       title: t("overview.activeProjects"),
       value: totalProjects,
       icon: Briefcase,
       description: t("overview.projectsDescription"),
-      color: "text-purple-600 dark:text-purple-400",
-      bgColor: "bg-purple-50 dark:bg-purple-950/50",
+      gradient: "from-purple-500 to-violet-500",
+      bgGradient: "from-purple-50 to-violet-50 dark:from-purple-950/50 dark:to-violet-950/50",
+      iconColor: "text-purple-600 dark:text-purple-400",
     },
     {
       title: t("overview.ownedTeams"),
       value: ownedTeams,
       icon: Crown,
       description: t("overview.ownedDescription"),
-      color: "text-amber-600 dark:text-amber-400",
-      bgColor: "bg-amber-50 dark:bg-amber-950/50",
+      gradient: "from-amber-500 to-orange-500",
+      bgGradient: "from-amber-50 to-orange-50 dark:from-amber-950/50 dark:to-orange-950/50",
+      iconColor: "text-amber-600 dark:text-amber-400",
     },
   ];
 
@@ -70,33 +74,55 @@ export function TeamsOverview({ teams }: TeamsOverviewProps) {
         return (
           <Card 
             key={stat.title} 
-            className="overflow-hidden relative border-0 shadow-md transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+            className="group relative overflow-hidden border-0 bg-gradient-to-br from-background via-background to-muted/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1"
           >
-            <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+            {/* Background Pattern */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgGradient} opacity-40`} />
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-background/80 to-background/90" />
+            
+            <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xs font-medium text-muted-foreground/90">
                 {stat.title}
               </CardTitle>
-              <div className={`rounded-full p-2 ${stat.bgColor}`}>
-                <Icon className={`h-4 w-4 ${stat.color}`} />
+              <div className={`rounded-lg p-2 bg-gradient-to-br ${stat.bgGradient} shadow-sm ring-1 ring-border/10`}>
+                <Icon className={`h-4 w-4 ${stat.iconColor}`} />
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-2">
-                <div className="text-2xl font-bold">{stat.value}</div>
+            
+            <CardContent className="relative">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <div className="text-2xl font-bold tracking-tight text-foreground">
+                    {stat.value}
+                  </div>
+                  {stat.value > 0 && (
+                    <div className="flex items-center gap-1">
+                      <Badge 
+                        variant="secondary" 
+                        className="text-xs gap-1 bg-gradient-to-r from-muted to-muted/50 hover:from-muted/80 hover:to-muted/30 transition-colors"
+                      >
+                        <Activity className="w-2.5 h-2.5" />
+                        {t("overview.active")}
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Trend indicator */}
                 {stat.value > 0 && (
-                  <Badge variant="secondary" className="text-xs">
-                    <TrendingUp className="mr-1 w-3 h-3" />
-                    {t("overview.active")}
-                  </Badge>
+                  <div className="opacity-15 group-hover:opacity-30 transition-opacity">
+                    <TrendingUp className={`h-6 w-6 ${stat.iconColor}`} />
+                  </div>
                 )}
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">
+              
+              <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
                 {stat.description}
               </p>
             </CardContent>
             
-            {/* Subtle gradient overlay */}
-            <div className={`absolute inset-0 opacity-5 bg-gradient-to-br from-transparent to-current ${stat.color} pointer-events-none`} />
+            {/* Subtle accent border */}
+            <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${stat.gradient} opacity-50`} />
           </Card>
         );
       })}

@@ -203,6 +203,56 @@ const generateEmailTemplate = (type: string, data: any) => {
           </body>
         </html>
       `;
+    case "team-invitation":
+      const getRoleDisplayName = (role: string) => {
+        switch (role) {
+          case "OWNER": return "Owner";
+          case "ADMIN": return "Administrator";
+          case "MEMBER": return "Member";
+          case "GUEST": return "Guest";
+          default: return "Member";
+        }
+      };
+      return `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <title>You've been invited to join ${data.teamName} on ${data.siteName}</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: sans-serif; margin: 0; padding: 0; background-color: #f9f9f9;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+              <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="color: #111827;">${data.siteName}</h1>
+              </div>
+              <div style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <p style="margin-bottom: 15px; font-size: 18px; color: #111827; font-weight: 500;">You've been invited to join ${data.teamName}!</p>
+                <p style="margin-bottom: 25px; font-size: 16px; color: #374151;"><strong>${data.inviterName}</strong> (${data.inviterEmail}) has invited you to join the team "${data.teamName}" as a <strong>${getRoleDisplayName(data.role)}</strong> on ${data.siteName}.</p>
+                
+                <div style="background-color: #f3f4f6; border-radius: 6px; padding: 20px; margin-bottom: 25px;">
+                  <p style="margin-top: 0; margin-bottom: 10px; font-size: 14px; color: #111827; font-weight: 500;">Team Details:</p>
+                  <p style="margin-bottom: 8px; font-size: 14px; color: #374151;"><strong>Team:</strong> ${data.teamName}</p>
+                  <p style="margin-bottom: 8px; font-size: 14px; color: #374151;"><strong>Role:</strong> ${getRoleDisplayName(data.role)}</p>
+                  <p style="margin-bottom: 0; font-size: 14px; color: #374151;"><strong>Invited by:</strong> ${data.inviterName}</p>
+                </div>
+                
+                <p style="margin-bottom: 15px; font-size: 16px; color: #374151;">Click the button below to accept the invitation and join the team:</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                  <a href="${data.actionUrl}" style="background-color: #111827; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: 500; display: inline-block;">Accept Invitation & Join Team</a>
+                </div>
+                
+                <p style="margin-bottom: 10px; font-size: 14px; color: #6B7280;">This invitation will expire in 7 days. If you don't want to join this team, you can safely ignore this email.</p>
+                <p style="margin-bottom: 0; font-size: 14px; color: #6B7280;">If you have any questions, you can contact ${data.inviterName} directly at ${data.inviterEmail}.</p>
+              </div>
+              <div style="text-align: center; margin-top: 30px; font-size: 14px; color: #6B7280;">
+                <p>© ${new Date().getFullYear()} ${data.siteName}. All rights reserved.</p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `;
     default:
       return "";
   }
@@ -215,7 +265,10 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { type, email, name, actionUrl, emailType } = await req.json();
+    const requestBody = await req.json();
+    console.log("Request body:", JSON.stringify(requestBody)); // Debug log
+    
+    const { type, email, name, actionUrl, emailType, inviterName, inviterEmail, teamName, teamSlug, role } = requestBody;
 
     // Create Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
@@ -228,6 +281,8 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    console.log(`Processing ${type} email for ${email}`);
 
     let htmlContent = "";
     let subject = "";
@@ -280,6 +335,29 @@ Deno.serve(async (req) => {
         siteName: SITE_NAME,
         siteUrl: SITE_URL,
       });
+    } else if (type === "team-invitation") {
+      // For team invitations
+      if (!inviterName || !inviterEmail || !teamName || !role) {
+        console.error("Missing team invitation data:", { inviterName, inviterEmail, teamName, role });
+        return new Response(JSON.stringify({ error: "Missing required team invitation data" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      
+      console.log(`Sending team invitation email: ${teamName} to ${email} as ${role}`);
+      
+      subject = `You've been invited to join ${teamName} on ${SITE_NAME}`;
+      htmlContent = generateEmailTemplate("team-invitation", {
+        inviterName,
+        inviterEmail,
+        teamName,
+        teamSlug,
+        role,
+        actionUrl: actionUrl || `${SITE_URL}/teams/join?token=${encodeURIComponent(email)}`,
+        siteName: SITE_NAME,
+        siteUrl: SITE_URL,
+      });
     } else {
       return new Response(JSON.stringify({ error: "Invalid email type" }), {
         status: 400,
@@ -288,32 +366,46 @@ Deno.serve(async (req) => {
     }
 
     // Send email using Resend
+    const isDevMode = Deno.env.get("NODE_ENV") === "development";
+    const finalEmail = isDevMode ? "delivered@resend.dev" : email;
+    
+    console.log(`Environment: ${Deno.env.get("NODE_ENV") || "production"}`);
+    console.log(`Sending email to: ${finalEmail} (original: ${email})`);
+    console.log(`From: ${SITE_NAME} <${EMAIL_FROM}>`);
+    console.log(`Subject: ${subject}`);
+    
+    const emailPayload = {
+      from: `${SITE_NAME} <${EMAIL_FROM}>`,
+      to: finalEmail,
+      subject: subject,
+      html: htmlContent,
+      headers: {
+        "X-Entity-Ref-ID": new Date().getTime() + "",
+      },
+    };
+    
+    console.log("Email payload:", JSON.stringify(emailPayload, null, 2));
+    
     const resendResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        from: `${SITE_NAME} <${EMAIL_FROM}>`,
-        to:
-          Deno.env.get("NODE_ENV") === "development"
-            ? "delivered@resend.dev"
-            : email,
-        subject: subject,
-        html: htmlContent,
-        headers: {
-          "X-Entity-Ref-ID": new Date().getTime() + "",
-        },
-      }),
+      body: JSON.stringify(emailPayload),
     });
 
     const resendData = await resendResponse.json();
+    
+    console.log(`Resend API Response Status: ${resendResponse.status}`);
+    console.log("Resend API Response:", JSON.stringify(resendData, null, 2));
 
     if (!resendResponse.ok) {
+      console.error("Resend API Error:", resendData);
       throw new Error(resendData.message || "Failed to send email");
     }
 
+    console.log("Email sent successfully!");
     return new Response(JSON.stringify({ success: true, data: resendData }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

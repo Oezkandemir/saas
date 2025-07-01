@@ -739,15 +739,56 @@
       "description": "Beim Laden Ihrer Teams ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
     },
     "overview": {
+      "totalTeams": "Teams gesamt",
+      "teamsDescription": "Teams, denen Sie angehören",
       "totalMembers": "Mitglieder gesamt",
       "totalMembersDesc": "Aktive Team-Mitglieder in allen Teams",
+      "membersDescription": "Aktive Team-Mitglieder in allen Teams",
       "totalProjects": "Aktive Projekte",
       "totalProjectsDesc": "Projekte, die derzeit in Bearbeitung sind",
+      "projectsDescription": "Projekte, die derzeit in Bearbeitung sind",
+      "activeProjects": "Aktive Projekte",
+      "ownedTeams": "Teams im Besitz",
+      "ownedDescription": "Teams, in denen Sie der Eigentümer sind",
       "yourRole": "Ihre Teams",
       "yourRoleDesc": "Teams, in denen Sie Mitglied oder Leiter sind",
       "activity": "Team-Aktivität",
       "activityDesc": "Letzte Team-Aktionen und Updates",
       "active": "Aktiv"
+    },
+    "grid": {
+      "defaultTeam": "Standard-Team",
+      "members": "Mitglieder",
+      "totalMembers": "Mitglieder gesamt",
+      "projects": "Projekte",
+      "activeProjects": "Aktive Projekte",
+      "recentMembers": "Aktuelle Mitglieder",
+      "viewTeam": "Team anzeigen",
+      "joined": "Beigetreten",
+      "openMenu": "Menü öffnen",
+      "manageTeam": "Team verwalten",
+      "setDefault": "Als Standard-Team festlegen",
+      "inviteMembers": "Mitglieder einladen",
+      "settings": "Team-Einstellungen",
+      "deleteTeam": "Team löschen",
+      "defaultTeamSet": "Standard-Team erfolgreich aktualisiert",
+      "defaultTeamError": "Fehler beim Festlegen des Standard-Teams",
+      "noTeams": {
+        "title": "Keine Teams gefunden",
+        "description": "Sie haben noch keine Teams. Erstellen Sie Ihr erstes Team, um mit der Zusammenarbeit zu beginnen.",
+        "createFirst": "Erstellen Sie Ihr erstes Team"
+      }
+    },
+    "header": {
+      "backToTeams": "Zurück zu Teams",
+      "created": "Erstellt {time}",
+      "members": "Mitglieder",
+      "projects": "Projekte",
+      "settings": "Team-Einstellungen"
+    },
+    "members": {
+      "title": "Team-Mitglieder",
+      "description": "Team-Mitglieder und ihre Rollen verwalten"
     },
     "teamList": {
       "created": "Erstellt {time}",
