@@ -1,4 +1,4 @@
-import { allPages } from "contentlayer/generated";
+import { allPages } from "@/.contentlayer/generated";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { constructMetadata } from "@/lib/utils";

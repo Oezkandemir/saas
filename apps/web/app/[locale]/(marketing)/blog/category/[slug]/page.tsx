@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { allPosts } from "contentlayer/generated";
+import { allPosts } from "@/.contentlayer/generated";
 import { getTranslations } from "next-intl/server";
 
 import { BLOG_CATEGORIES } from "@/config/blog";

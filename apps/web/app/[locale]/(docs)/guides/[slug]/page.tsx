@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { allGuides } from "contentlayer/generated";
+import { allGuides } from "@/.contentlayer/generated";
 
 import { getTableOfContents } from "@/lib/toc";
 import { Mdx } from "@/components/content/mdx-components";

@@ -1,4 +1,4 @@
-import { allPosts } from "contentlayer/generated";
+import { allPosts } from "@/.contentlayer/generated";
 import { getTranslations } from "next-intl/server";
 
 import { constructMetadata, getBlurDataURL } from "@/lib/utils";

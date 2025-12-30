@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Link } from "@/i18n/routing";
-import { Post } from "contentlayer/generated";
+import { Post } from "@/.contentlayer/generated";
 import { useTranslations } from "next-intl";
 
 import { BLOG_AUTHORS } from "@/config/blog";
