@@ -4,18 +4,31 @@ import { ogImageSchema } from "@/lib/validations/og";
 
 export const runtime = "edge";
 
-const interRegular = fetch(
-  new URL("../../../../assets/fonts/Inter-Regular.ttf", import.meta.url),
-).then((res) => res.arrayBuffer());
-
-const interBold = fetch(
-  new URL("../../../../assets/fonts/CalSans-SemiBold.ttf", import.meta.url),
-).then((res) => res.arrayBuffer());
+// Load fonts from external URLs to reduce bundle size
+// This prevents bundling large font files in the Edge Function
+async function loadFont(url: string): Promise<ArrayBuffer> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to load font from ${url}`);
+  }
+  return response.arrayBuffer();
+}
 
 export async function GET(req: Request) {
   try {
-    const fontRegular = await interRegular;
-    const fontBold = await interBold;
+    // Load fonts from external URLs instead of bundling them
+    // This significantly reduces the Edge Function bundle size (under 1MB limit)
+    const [fontRegular, fontBold] = await Promise.all([
+      // Inter Regular from Google Fonts API (WOFF2 format, smaller size)
+      loadFont(
+        "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2"
+      ),
+      // For Cal Sans, using Poppins as a visual substitute (similar geometric sans-serif)
+      // To use Cal Sans instead, host it on a CDN (Vercel Blob/Cloudflare R2) and replace this URL
+      loadFont(
+        "https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLCz7Z1xlFd2JQEk.woff2"
+      ),
+    ]);
 
     const url = new URL(req.url);
     const values = ogImageSchema.parse(Object.fromEntries(url.searchParams));
@@ -46,7 +59,7 @@ export async function GET(req: Request) {
           <div
             tw="text-5xl"
             style={{
-              fontFamily: "Cal Sans",
+              fontFamily: "Poppins",
               fontWeight: "normal",
               position: "relative",
               background: "linear-gradient(90deg, #6366f1, #a855f7 80%)",
@@ -69,7 +82,7 @@ export async function GET(req: Request) {
             <div
               tw="flex leading-[1.15] text-[80px] font-bold"
               style={{
-                fontFamily: "Cal Sans",
+                fontFamily: "Poppins",
                 fontWeight: "bold",
                 marginLeft: "-3px",
                 fontSize,
@@ -95,7 +108,7 @@ export async function GET(req: Request) {
               />
 
               <div tw="flex flex-col" style={{ marginLeft: "15px" }}>
-                <div tw="text-[22px]" style={{ fontFamily: "Cal Sans" }}>
+                <div tw="text-[22px]" style={{ fontFamily: "Poppins" }}>
                   {githubName}
                 </div>
                 <div>Open Source Designer</div>
@@ -140,9 +153,9 @@ export async function GET(req: Request) {
             style: "normal",
           },
           {
-            name: "Cal Sans",
+            name: "Poppins",
             data: fontBold,
-            weight: 700,
+            weight: 400,
             style: "normal",
           },
         ],
