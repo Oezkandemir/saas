@@ -122,30 +122,30 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
             className={notification.read ? "bg-muted/30" : ""}
           >
             <CardHeader className="flex flex-row items-start gap-2 space-y-0 pb-2">
-              <div className="mt-1">
+              <div className="mt-1 shrink-0">
                 {getNotificationIcon(notification.type)}
               </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <CardTitle className="text-base break-words">
                     {notification.title}
                   </CardTitle>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 shrink-0">
                     {!notification.read && (
-                      <Badge variant="default" className="bg-blue-500">
+                      <Badge variant="default" className="bg-blue-500 text-xs">
                         New
                       </Badge>
                     )}
                     <Badge
                       variant="secondary"
-                      className={getBadgeColorClass(notification.type)}
+                      className={`${getBadgeColorClass(notification.type)} text-xs`}
                     >
                       {notification.type.charAt(0).toUpperCase() +
                         notification.type.slice(1).toLowerCase()}
                     </Badge>
                   </div>
                 </div>
-                <CardDescription className="mt-1">
+                <CardDescription className="mt-1 text-xs sm:text-sm">
                   {formatDistance(
                     new Date(notification.created_at),
                     new Date(),
@@ -155,26 +155,26 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm">{notification.content}</p>
+              <p className="text-sm break-words">{notification.content}</p>
 
               {notification.metadata &&
                 Object.keys(notification.metadata).length > 0 && (
-                  <div className="mt-2 rounded-md bg-muted p-2 text-xs">
+                  <div className="mt-2 rounded-md bg-muted p-2 text-xs overflow-x-auto">
                     {Object.entries(notification.metadata).map(
                       ([key, value]) => (
                         <div
                           key={key}
-                          className="flex items-start justify-between py-1"
+                          className="flex flex-col gap-1 py-1 sm:flex-row sm:items-start sm:justify-between"
                         >
                           <span className="font-medium capitalize">
                             {key.replace(/_/g, " ")}:
                           </span>
-                          <span className="ml-2 text-right">
+                          <span className="sm:ml-2 sm:text-right break-words">
                             {typeof value === "boolean"
                               ? value
                                 ? "Yes"
                                 : "No"
-                              : value}
+                              : String(value)}
                           </span>
                         </div>
                       ),
@@ -182,11 +182,11 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
                   </div>
                 )}
             </CardContent>
-            <CardFooter className="flex justify-between">
-              <div className="flex items-center gap-2">
+            <CardFooter className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 {notification.action_url && (
-                  <Link href={notification.action_url}>
-                    <Button variant="outline" size="sm">
+                  <Link href={notification.action_url} className="flex-1 sm:flex-initial">
+                    <Button variant="outline" size="sm" className="w-full sm:w-auto">
                       View Details
                     </Button>
                   </Link>
@@ -200,13 +200,15 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
                   size="sm"
                   onClick={() => handleMarkAsRead(notification.id)}
                   disabled={loadingId === notification.id}
+                  className="w-full sm:w-auto"
                 >
                   {loadingId === notification.id ? (
                     <Clock className="mr-2 size-4 animate-spin" />
                   ) : (
                     <CheckCircle2 className="mr-2 size-4" />
                   )}
-                  Mark as Read
+                  <span className="hidden sm:inline">Mark as Read</span>
+                  <span className="sm:hidden">Mark Read</span>
                 </Button>
               )}
             </CardFooter>

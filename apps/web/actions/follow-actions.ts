@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/session';
 import { z } from 'zod';
+import { logger } from '@/lib/logger';
 
 // Types
 export type FollowStatus = {
@@ -90,7 +91,7 @@ export async function followUser(userId: string) {
       });
 
     if (notificationError) {
-      console.error('Failed to create follow notification:', notificationError);
+      logger.error('Failed to create follow notification:', notificationError);
       // Don't fail the follow action if notification fails
     }
 
@@ -99,7 +100,7 @@ export async function followUser(userId: string) {
     
     return { success: true };
   } catch (error) {
-    console.error('Follow user error:', error);
+    logger.error('Follow user error:', error);
     return { error: 'Failed to follow user' };
   }
 }
@@ -135,7 +136,7 @@ export async function unfollowUser(userId: string) {
     
     return { success: true };
   } catch (error) {
-    console.error('Unfollow user error:', error);
+    logger.error('Unfollow user error:', error);
     return { error: 'Failed to unfollow user' };
   }
 }
@@ -166,7 +167,7 @@ export async function getFollowStatus(userId: string): Promise<FollowStatus> {
       .rpc('get_follower_count', { user_id: userId });
 
     if (followerError) {
-      console.error('Get follower count error:', followerError);
+      logger.error('Get follower count error:', followerError);
     }
 
     // Get following count
@@ -174,7 +175,7 @@ export async function getFollowStatus(userId: string): Promise<FollowStatus> {
       .rpc('get_following_count', { user_id: userId });
 
     if (followingError) {
-      console.error('Get following count error:', followingError);
+      logger.error('Get following count error:', followingError);
     }
 
     return {
@@ -183,7 +184,7 @@ export async function getFollowStatus(userId: string): Promise<FollowStatus> {
       followingCount: followingData || 0,
     };
   } catch (error) {
-    console.error('Get follow status error:', error);
+    logger.error('Get follow status error:', error);
     return {
       isFollowing: false,
       followerCount: 0,
@@ -206,7 +207,7 @@ export async function getFollowers(
 }> {
   try {
     if (!userId) {
-      console.error('Get followers error: userId is required');
+      logger.error('Get followers error: userId is required');
       return { followers: [], totalCount: 0, hasMore: false };
     }
 
@@ -222,7 +223,7 @@ export async function getFollowers(
       .range(offset, offset + limit - 1);
 
     if (error) {
-      console.error('Get followers error - follow query:', error);
+      logger.error('Get followers error - follow query:', error);
       throw error;
     }
 
@@ -238,7 +239,7 @@ export async function getFollowers(
       .in('id', followerIds);
 
     if (usersError) {
-      console.error('Get followers error - users query:', usersError);
+      logger.error('Get followers error - users query:', usersError);
       throw usersError;
     }
 
@@ -269,7 +270,7 @@ export async function getFollowers(
       hasMore,
     };
   } catch (error) {
-    console.error('Get followers error:', error?.message || error || 'Unknown error');
+    logger.error('Get followers error:', error?.message || error || 'Unknown error');
     return { followers: [], totalCount: 0, hasMore: false };
   }
 }
@@ -288,7 +289,7 @@ export async function getFollowing(
 }> {
   try {
     if (!userId) {
-      console.error('Get following error: userId is required');
+      logger.error('Get following error: userId is required');
       return { following: [], totalCount: 0, hasMore: false };
     }
 
@@ -304,7 +305,7 @@ export async function getFollowing(
       .range(offset, offset + limit - 1);
 
     if (followError) {
-      console.error('Get following error - follows query:', followError);
+      logger.error('Get following error - follows query:', followError);
       throw followError;
     }
 
@@ -320,7 +321,7 @@ export async function getFollowing(
       .in('id', followingIds);
 
     if (usersError) {
-      console.error('Get following error - users query:', usersError);
+      logger.error('Get following error - users query:', usersError);
       throw usersError;
     }
 
@@ -351,7 +352,7 @@ export async function getFollowing(
       hasMore,
     };
   } catch (error) {
-    console.error('Get following error:', error?.message || error || 'Unknown error');
+    logger.error('Get following error:', error?.message || error || 'Unknown error');
     return { following: [], totalCount: 0, hasMore: false };
   }
 }
@@ -382,7 +383,7 @@ export async function checkMutualFollow(userId1: string, userId2: string): Promi
 
     return hasFollowRelation && hasFollowBackRelation;
   } catch (error) {
-    console.error('Check mutual follow error:', error);
+    logger.error('Check mutual follow error:', error);
     return false;
   }
 } 

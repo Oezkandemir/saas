@@ -1,3 +1,4 @@
+const path = require("path");
 const { withContentlayer } = require("next-contentlayer2");
 const createNextIntlPlugin = require("next-intl/plugin");
 
@@ -8,6 +9,7 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  outputFileTracingRoot: path.join(__dirname, '../..'),
   reactStrictMode: true,
   poweredByHeader: false,
   trailingSlash: false,

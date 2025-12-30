@@ -1,11 +1,12 @@
 import Stripe from "stripe";
 
 import { env } from "@/env.mjs";
+import { logger } from "./logger";
 
 // Check if Stripe API key is defined
 if (!env.STRIPE_API_KEY) {
-  console.error(
-    "⚠️ Stripe API key is not defined. Please set STRIPE_API_KEY in your environment variables.",
+  logger.error(
+    "Stripe API key is not defined. Please set STRIPE_API_KEY in your environment variables.",
   );
 }
 
@@ -18,12 +19,12 @@ try {
       apiVersion: "2024-04-10",
       typescript: true,
     });
-    console.log("✅ Stripe initialized successfully");
+    logger.info("Stripe initialized successfully");
   } else {
-    console.error("⚠️ Stripe not initialized: API key is empty or invalid");
+    logger.error("Stripe not initialized: API key is empty or invalid");
   }
 } catch (error) {
-  console.error("⚠️ Error initializing Stripe:", error);
+  logger.error("Error initializing Stripe", error);
 }
 
 // Export a proxy object that will show clear errors if Stripe is not initialized

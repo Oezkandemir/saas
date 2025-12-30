@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { logger } from "@/lib/logger";
 
 /**
  * GET handler to fetch the most viewed pages
@@ -96,7 +97,7 @@ export async function GET(request: NextRequest) {
       pageCount: uniquePaths.size,
     });
   } catch (error) {
-    console.error("Error fetching page views:", error);
+    logger.error("Error fetching page views:", error);
     return NextResponse.json(
       { error: "Failed to fetch page views analytics" },
       { status: 500 },

@@ -98,7 +98,7 @@ export default async function AdminUsersPage(props: Props) {
   });
 
   return (
-    <div className="container px-0 sm:px-4">
+    <div className="w-full">
       <DashboardHeader
         heading={tUsers("pageTitle")}
         text={tUsers("pageDescription")}
@@ -167,7 +167,7 @@ export default async function AdminUsersPage(props: Props) {
         </Card>
       </div>
 
-      <div className="mt-8 px-1 sm:px-0">
+      <div className="mt-8">
         <DataTable columns={columns} data={formattedUsers} />
       </div>
     </div>

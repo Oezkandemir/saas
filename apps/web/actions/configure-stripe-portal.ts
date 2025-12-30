@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 
 import { stripe } from "@/lib/stripe";
 import { absoluteUrl } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 
 export type ConfigResponse = {
   success: boolean;
@@ -38,7 +39,7 @@ export async function configureStripePortal(): Promise<ConfigResponse> {
     if (configurations.data.length > 0) {
       const existingConfig = configurations.data[0];
 
-      console.log(
+      logger.info(
         `Updating existing Stripe portal configuration: ${existingConfig.id}`,
       );
 
@@ -99,7 +100,7 @@ export async function configureStripePortal(): Promise<ConfigResponse> {
       };
     } else {
       // Create a new configuration if none exists
-      console.log("Creating new Stripe portal configuration");
+      logger.info("Creating new Stripe portal configuration");
 
       const newConfig = await stripe.billingPortal.configurations.create({
         business_profile: {
@@ -158,7 +159,7 @@ export async function configureStripePortal(): Promise<ConfigResponse> {
       };
     }
   } catch (error: any) {
-    console.error("Error configuring Stripe portal:", error);
+    logger.error("Error configuring Stripe portal", error);
 
     return {
       success: false,

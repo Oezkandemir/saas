@@ -8,6 +8,7 @@ import { siteConfig } from "@/config/site";
 
 import { getServerUserByEmail } from "./db-admin";
 import { getSupabaseClient } from "./supabase";
+import { logger } from "./logger";
 
 export const resend = new Resend(env.RESEND_API_KEY);
 
@@ -35,7 +36,7 @@ export const sendEmailWithEdgeFunction = async ({
   emailType?: "login" | "register";
 }) => {
   try {
-    console.log(`Sending ${type} email to ${email} via edge function`);
+    logger.info(`Sending ${type} email to ${email} via edge function`);
     const supabase = getSupabaseClient();
     const { data, error } = await supabase.functions.invoke("send-email", {
       body: {
@@ -48,18 +49,18 @@ export const sendEmailWithEdgeFunction = async ({
     });
 
     if (error) {
-      console.error("Edge function error:", error);
+      logger.error("Edge function error", error);
       throw new Error(`Failed to send ${type} email: ${error.message}`);
     }
 
-    console.log(`Successfully sent ${type} email to ${email}`);
+    logger.info(`Successfully sent ${type} email to ${email}`);
     return data;
   } catch (error) {
-    console.error(`Failed to send ${type} email:`, error);
+    logger.error(`Failed to send ${type} email`, error);
     // Try to use direct Resend API as a fallback for some email types
     if (type === "welcome") {
       try {
-        console.log("Attempting to send welcome email directly via Resend API");
+        logger.info("Attempting to send welcome email directly via Resend API");
         const { data, error } = await resend.emails.send({
           from: `${siteConfig.name} <hello@cenety.com>`,
           to:
@@ -71,15 +72,13 @@ export const sendEmailWithEdgeFunction = async ({
         });
 
         if (error) {
-          console.error("Resend API fallback error:", error);
+          logger.error("Resend API fallback error", error);
         } else {
-          console.log(
-            "Successfully sent welcome email via Resend API fallback",
-          );
+          logger.info("Successfully sent welcome email via Resend API fallback");
           return data;
         }
       } catch (fallbackError) {
-        console.error("Fallback email sending failed:", fallbackError);
+        logger.error("Fallback email sending failed", fallbackError);
       }
     }
 
@@ -112,8 +111,8 @@ export const sendVerificationRequest = async ({
       });
       return;
     } catch (edgeFunctionError) {
-      console.warn(
-        "Edge function failed, falling back to Resend direct:",
+      logger.warn(
+        "Edge function failed, falling back to Resend direct",
         edgeFunctionError,
       );
       // Continue with direct Resend API fallback
@@ -168,7 +167,7 @@ export const sendSignupConfirmationEmail = async ({
       actionUrl,
     });
   } catch (error) {
-    console.error("Failed to send signup confirmation email:", error);
+    logger.error("Failed to send signup confirmation email", error);
     throw new Error("Failed to send signup confirmation email.");
   }
 };
@@ -188,7 +187,7 @@ export const sendWelcomeEmail = async ({
       name,
     });
   } catch (error) {
-    console.error("Failed to send welcome email:", error);
+    logger.error("Failed to send welcome email", error);
     throw new Error("Failed to send welcome email.");
   }
 };

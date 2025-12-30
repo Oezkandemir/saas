@@ -5,6 +5,7 @@ import { User } from "@supabase/supabase-js";
 import { supabaseAdmin } from "@/lib/db-admin";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/logger";
 
 interface AuthUser extends User {
   banned?: boolean;
@@ -102,7 +103,7 @@ export async function getAnalyticsData() {
           .select("status");
 
         if (error) {
-          console.warn(
+          logger.warn(
             "Error fetching ticket stats (table may not exist):",
             error,
           );
@@ -131,7 +132,7 @@ export async function getAnalyticsData() {
 
         return ticketStats;
       } catch (error) {
-        console.warn("Error in getTicketStats:", error);
+        logger.warn("Error in getTicketStats:", error);
         // Return default empty stats on error
         return {
           open: 0,
@@ -152,7 +153,7 @@ export async function getAnalyticsData() {
           .limit(10);
 
         if (error) {
-          console.warn(
+          logger.warn(
             "Error fetching auth events (table may not exist):",
             error,
           );
@@ -169,7 +170,7 @@ export async function getAnalyticsData() {
           .in("id", userIds);
 
         if (usersError) {
-          console.warn("Error fetching user emails:", usersError);
+          logger.warn("Error fetching user emails:", usersError);
           return data.map((login) => ({
             type: login.type,
             userId: login.user_id,
@@ -193,7 +194,7 @@ export async function getAnalyticsData() {
           timestamp: login.created_at,
         }));
       } catch (error) {
-        console.warn("Error in getRecentLogins:", error);
+        logger.warn("Error in getRecentLogins:", error);
         return [];
       }
     };
@@ -240,7 +241,7 @@ export async function getAnalyticsData() {
       },
     };
   } catch (error) {
-    console.error("Error in getAnalyticsData:", error);
+    logger.error("Error in getAnalyticsData:", error);
     return {
       success: false,
       error: "Failed to fetch analytics data",
@@ -267,7 +268,7 @@ export async function getDetailedAnalytics(daysRange = 30) {
     });
 
     if (error) {
-      console.warn("Error calling get_detailed_analytics function:", error);
+      logger.warn("Error calling get_detailed_analytics function:", error);
       // Return default empty data instead of error
       return {
         success: true,
@@ -286,7 +287,7 @@ export async function getDetailedAnalytics(daysRange = 30) {
       data,
     };
   } catch (error) {
-    console.error("Error in getDetailedAnalytics:", error);
+    logger.error("Error in getDetailedAnalytics:", error);
     // Return success with empty data to prevent UI from breaking
     return {
       success: true,
@@ -327,7 +328,7 @@ export async function recordPageView(pageViewData: PageViewData) {
 
     return { success: true };
   } catch (error) {
-    console.error("Error recording page view:", error);
+    logger.error("Error recording page view:", error);
     return { success: false, error: "Failed to record page view" };
   }
 }
@@ -358,7 +359,7 @@ export async function trackUserInteraction(
 
     return { success: true };
   } catch (error) {
-    console.error("Error tracking user interaction:", error);
+    logger.error("Error tracking user interaction:", error);
     return { success: false, error: "Failed to track user interaction" };
   }
 }

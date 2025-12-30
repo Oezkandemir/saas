@@ -14,7 +14,6 @@ interface UserStats {
   totalUsers: number;
   recentSignUps: number;
   activeToday: number;
-  totalTeams: number;
 }
 
 export default function DashboardScreen() {
@@ -45,13 +44,11 @@ export default function DashboardScreen() {
 
       // For demo purposes, we'll calculate some stats
       const activeToday = Math.floor((totalUsers || 0) * 0.1); // 10% of users active today
-      const totalTeams = Math.floor((totalUsers || 0) * 0.2); // Each user might be in a team
 
       setUserStats({
         totalUsers: totalUsers || 0,
         recentSignUps: recentSignUps || 0,
         activeToday,
-        totalTeams,
       });
     } catch (error) {
       console.error('Error fetching user stats:', error);
@@ -60,7 +57,6 @@ export default function DashboardScreen() {
         totalUsers: 0,
         recentSignUps: 0,
         activeToday: 0,
-        totalTeams: 0,
       });
     } finally {
       setLoading(false);
@@ -94,13 +90,6 @@ export default function DashboardScreen() {
       change: '+8%',
       changeType: 'positive' as const,
       description: 'Users active today'
-    },
-    { 
-      title: 'Teams', 
-      value: userStats?.totalTeams?.toString() || '0', 
-      change: '+3%',
-      changeType: 'positive' as const,
-      description: 'Active teams'
     },
   ];
 

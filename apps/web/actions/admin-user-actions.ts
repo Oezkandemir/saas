@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { supabaseAdmin } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+import { logger } from "@/lib/logger";
 
 const banUserSchema = z.object({
   userId: z.string().uuid(),
@@ -44,7 +45,7 @@ export async function toggleUserBanStatus(userId: string, status: string) {
     );
 
     if (error) {
-      console.error(
+      logger.error(
         `Error ${status === "banned" ? "unbanning" : "banning"} user:`,
         error,
       );
@@ -62,7 +63,7 @@ export async function toggleUserBanStatus(userId: string, status: string) {
       message: `User successfully ${status === "banned" ? "unbanned" : "banned"}`,
     };
   } catch (error) {
-    console.error("Error in toggleUserBanStatus:", error);
+    logger.error("Error in toggleUserBanStatus:", error);
     if (error instanceof z.ZodError) {
       return { success: false, error: "Invalid user ID format" };
     }
@@ -97,7 +98,7 @@ export async function deleteUser(userId: string) {
       .eq("id", validatedUserId);
 
     if (error) {
-      console.error("Error deleting user:", error);
+      logger.error("Error deleting user:", error);
       return {
         success: false,
         error: `Failed to delete user: ${error.message}`,
@@ -109,7 +110,7 @@ export async function deleteUser(userId: string) {
 
     return { success: true, message: "User successfully deleted" };
   } catch (error) {
-    console.error("Error in deleteUser:", error);
+    logger.error("Error in deleteUser:", error);
     if (error instanceof z.ZodError) {
       return { success: false, error: "Invalid user ID format" };
     }
@@ -148,7 +149,7 @@ export async function toggleUserAdminStatus(
       .eq("id", validatedUserId);
 
     if (error) {
-      console.error("Error updating user role:", error);
+      logger.error("Error updating user role:", error);
       return {
         success: false,
         error: `Failed to update user role: ${error.message}`,
@@ -163,7 +164,7 @@ export async function toggleUserAdminStatus(
       message: `User is now ${newRole === "ADMIN" ? "an admin" : "a regular user"}`,
     };
   } catch (error) {
-    console.error("Error in toggleUserAdminStatus:", error);
+    logger.error("Error in toggleUserAdminStatus:", error);
     if (error instanceof z.ZodError) {
       return { success: false, error: "Invalid user ID format" };
     }
@@ -194,7 +195,7 @@ export async function getAllUsers() {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching users:", error);
+      logger.error("Error fetching users:", error);
       return {
         success: false,
         error: `Failed to fetch users: ${error.message}`,
@@ -206,7 +207,7 @@ export async function getAllUsers() {
       await supabaseAdmin.auth.admin.listUsers();
 
     if (authError) {
-      console.error("Error fetching auth users:", authError);
+      logger.error("Error fetching auth users:", authError);
       // Continue without auth data since we have the basic users
     }
 
@@ -239,7 +240,7 @@ export async function getAllUsers() {
 
     return { success: true, data: enhancedUsers };
   } catch (error) {
-    console.error("Error in getAllUsers:", error);
+    logger.error("Error in getAllUsers:", error);
     return { success: false, error: "An unexpected error occurred" };
   }
 }

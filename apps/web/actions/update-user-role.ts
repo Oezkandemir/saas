@@ -7,6 +7,7 @@ import { getSession } from "@/lib/session";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { userRoleSchema } from "@/lib/validations/user";
 import { UserRole } from "@/components/forms/user-role-form";
+import { logger } from "@/lib/logger";
 
 export type FormData = {
   role: UserRole;
@@ -44,7 +45,7 @@ export async function updateUserRole(userId: string, data: FormData) {
 
     return { status: "success" };
   } catch (error) {
-    console.error("Error updating user role:", error);
+    logger.error("Error updating user role", error);
     return { status: "error" };
   }
 }

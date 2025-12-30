@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/session';
 import { redirect } from 'next/navigation';
+import { logger } from '@/lib/logger';
 
 export type SearchFilters = {
   query?: string;
@@ -73,7 +74,7 @@ export async function searchUsers(
     const { data: users, error, count } = await query;
 
     if (error) {
-      console.error('Error searching users:', error);
+      logger.error('Error searching users', error);
       return {
         users: [],
         totalCount: 0,
@@ -108,7 +109,7 @@ export async function searchUsers(
       hasMore: (count || 0) > offset + limit,
     };
   } catch (error) {
-    console.error('Search users error:', error);
+    logger.error('Search users error', error);
     return {
       users: [],
       totalCount: 0,
@@ -143,7 +144,7 @@ export async function getSuggestedUsers(limit = 10): Promise<UserSearchResult[]>
       .limit(limit);
 
     if (error) {
-      console.error('Error getting suggested users:', error);
+      logger.error('Error getting suggested users', error);
       return [];
     }
 
@@ -185,7 +186,7 @@ export async function getSuggestedUsers(limit = 10): Promise<UserSearchResult[]>
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
   } catch (error) {
-    console.error('Get suggested users error:', error);
+    logger.error('Get suggested users error', error);
     return [];
   }
 }
@@ -227,7 +228,7 @@ export async function getUserStats(): Promise<{
       recentJoins: recentJoins || 0,
     };
   } catch (error) {
-    console.error('Get user stats error:', error);
+    logger.error('Get user stats error', error);
     return {
       totalUsers: 0,
       totalAdmins: 0,

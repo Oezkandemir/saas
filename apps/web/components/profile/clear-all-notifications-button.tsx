@@ -54,7 +54,7 @@ export function ClearAllNotificationsButton() {
       size="sm"
       onClick={handleClearAllNotifications}
       disabled={loading}
-      className="text-red-500 hover:bg-red-100/30 hover:text-red-600"
+      className="w-full sm:w-auto text-red-500 hover:bg-red-100/30 hover:text-red-600"
     >
       {loading ? (
         <Loader2 className="mr-2 size-4 animate-spin" />

@@ -4,6 +4,7 @@ import { UserSubscriptionPlan } from "types";
 import { pricingData } from "@/config/subscriptions";
 import { supabaseAdmin } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
+import { logger } from "@/lib/logger";
 
 // Default free subscription plan as a fallback
 const DEFAULT_FREE_PLAN: UserSubscriptionPlan = {
@@ -23,7 +24,7 @@ export async function getUserSubscriptionPlan(
 ): Promise<UserSubscriptionPlan> {
   // If no userId provided, return the default free plan
   if (!userId) {
-    console.warn("getUserSubscriptionPlan called without userId");
+    logger.warn("getUserSubscriptionPlan called without userId");
     return DEFAULT_FREE_PLAN;
   }
 
@@ -44,12 +45,11 @@ export async function getUserSubscriptionPlan(
     userData = userResult.data;
     error = userResult.error;
 
-    console.log(`Fetching subscription data for user ${userId}`);
-    console.log(`Database record:`, userData);
+    logger.debug(`Fetching subscription data for user ${userId}`, { userData });
 
     // If user not found by ID and we have an email, try to find by email
     if ((!userData || error) && userEmail) {
-      console.log(
+      logger.info(
         `User not found by ID ${userId}, trying with email ${userEmail}`,
       );
       const emailResult = await supabaseAdmin
@@ -61,7 +61,7 @@ export async function getUserSubscriptionPlan(
         .single();
 
       if (emailResult.data && !emailResult.error) {
-        console.log(
+        logger.info(
           `Found user by email ${userEmail} with ID ${emailResult.data.id}`,
         );
         userData = emailResult.data;
@@ -74,12 +74,12 @@ export async function getUserSubscriptionPlan(
           .eq("id", userData.id);
 
         if (updateResult.error) {
-          console.error(
-            `Failed to update user ID from ${userData.id} to ${userId}:`,
+          logger.error(
+            `Failed to update user ID from ${userData.id} to ${userId}`,
             updateResult.error,
           );
         } else {
-          console.log(`Updated user ID from ${userData.id} to ${userId}`);
+          logger.info(`Updated user ID from ${userData.id} to ${userId}`);
           userData.id = userId;
         }
       }
@@ -87,9 +87,8 @@ export async function getUserSubscriptionPlan(
 
     // If user not found, return the default free plan instead of throwing an error
     if (error || !userData) {
-      console.warn(
-        `User with id ${userId} not found in Supabase database:`,
-        error?.message || "No data returned",
+      logger.warn(
+        `User with id ${userId} not found in Supabase database: ${error?.message || "No data returned"}`,
       );
       return DEFAULT_FREE_PLAN;
     }
@@ -104,7 +103,7 @@ export async function getUserSubscriptionPlan(
         : null,
     };
 
-    console.log("User stripe data:", {
+    logger.debug("User stripe data", {
       customerId: user.stripeCustomerId,
       subscriptionId: user.stripeSubscriptionId,
       priceId: user.stripePriceId,
@@ -126,7 +125,7 @@ export async function getUserSubscriptionPlan(
       ) ||
       pricingData.find((plan) => plan.stripeIds.yearly === user.stripePriceId);
 
-    console.log("Matched plan:", userPlan?.title || "No matching plan found");
+    logger.debug("Matched plan", { planTitle: userPlan?.title || "No matching plan found" });
 
     // Use the found plan or default to free
     const plan = isPaid && userPlan ? userPlan : pricingData[0];
@@ -149,7 +148,7 @@ export async function getUserSubscriptionPlan(
         );
         isCanceled = stripePlan.cancel_at_period_end;
       } catch (stripeError) {
-        console.error("Error retrieving Stripe subscription:", stripeError);
+        logger.error("Error retrieving Stripe subscription", stripeError);
         // Continue with default values if Stripe call fails
       }
     }
@@ -164,7 +163,7 @@ export async function getUserSubscriptionPlan(
       isCanceled,
     };
 
-    console.log("Returning subscription plan:", {
+    logger.debug("Returning subscription plan", {
       title: result.title,
       isPaid: result.isPaid,
       priceId: result.stripePriceId,
@@ -173,7 +172,7 @@ export async function getUserSubscriptionPlan(
 
     return result;
   } catch (error) {
-    console.error("Unexpected error in getUserSubscriptionPlan:", error);
+    logger.error("Unexpected error in getUserSubscriptionPlan", error);
     // Return default plan in case of any error
     return DEFAULT_FREE_PLAN;
   }

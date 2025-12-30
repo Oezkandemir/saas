@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { env } from "@/env.mjs";
 import { supabaseAdmin } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
+import { logger } from "@/lib/logger";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -17,29 +18,29 @@ export async function POST(req: Request) {
       env.STRIPE_WEBHOOK_SECRET,
     );
   } catch (error: any) {
-    console.error(`Webhook Error: ${error.message}`);
+    logger.error(`Webhook Error: ${error.message}`, error);
     return new Response(`Webhook Error: ${error.message}`, { status: 400 });
   }
 
-  console.log(`Processing Stripe webhook event: ${event.type}`);
+  logger.info(`Processing Stripe webhook event: ${event.type}`);
 
   // Log full event data for debugging
   try {
-    console.log("Event data:", JSON.stringify(event.data.object, null, 2));
+    logger.debug("Event data", { eventData: event.data.object });
   } catch (e) {
-    console.log("Could not stringify event data for logging");
+    logger.debug("Could not stringify event data for logging");
   }
 
   try {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
 
-      console.log(
+      logger.info(
         `Checkout session completed for user: ${session?.metadata?.userId}`,
       );
 
       if (!session?.metadata?.userId) {
-        console.error("No userId in session metadata");
+        logger.error("No userId in session metadata");
         return new Response("Missing userId in session metadata", {
           status: 400,
         });
@@ -50,10 +51,10 @@ export async function POST(req: Request) {
         session.subscription as string,
       );
 
-      console.log(
+      logger.info(
         `Retrieved subscription: ${subscription.id} for customer: ${subscription.customer}`,
       );
-      console.log(`Price ID: ${subscription.items.data[0].price.id}`);
+      logger.debug(`Price ID: ${subscription.items.data[0].price.id}`);
 
       // Verify the users table exists
       const { data: tableCheck, error: tableError } = await supabaseAdmin.rpc(
@@ -62,7 +63,7 @@ export async function POST(req: Request) {
       );
 
       if (tableError || !tableCheck || tableCheck.length === 0) {
-        console.error("Users table does not exist:", tableError);
+        logger.error("Users table does not exist", tableError);
         // Try to create the table if it doesn't exist
         await createUsersTableIfNeeded();
       }
@@ -75,14 +76,14 @@ export async function POST(req: Request) {
         .single();
 
       if (userError || !userData) {
-        console.error(
-          `User ${session.metadata.userId} not found by ID:`,
+        logger.error(
+          `User ${session.metadata.userId} not found by ID`,
           userError,
         );
 
         // If user not found by ID, try to find by email
         if (session.customer_email) {
-          console.log(`Looking for user by email: ${session.customer_email}`);
+          logger.info(`Looking for user by email: ${session.customer_email}`);
           const { data: emailUserData, error: emailUserError } =
             await supabaseAdmin
               .from("users")
@@ -91,7 +92,7 @@ export async function POST(req: Request) {
               .single();
 
           if (emailUserData && !emailUserError) {
-            console.log(`Found user by email with ID: ${emailUserData.id}`);
+            logger.info(`Found user by email with ID: ${emailUserData.id}`);
 
             // Update subscription for existing user found by email
             const { error: updateError } = await supabaseAdmin
@@ -108,20 +109,20 @@ export async function POST(req: Request) {
               .eq("id", emailUserData.id);
 
             if (updateError) {
-              console.error("Error updating user found by email:", updateError);
+              logger.error("Error updating user found by email", updateError);
               return new Response(`Database Error: ${updateError.message}`, {
                 status: 500,
               });
             }
 
-            console.log(
+            logger.info(
               `Updated subscription for user found by email: ${emailUserData.id}`,
             );
             return new Response(null, { status: 200 });
           }
 
           // User not found by ID or email, create new user
-          console.log(
+          logger.info(
             `Creating new user with ID ${session.metadata.userId} and email ${session.customer_email}`,
           );
           const { error: insertError } = await supabaseAdmin
@@ -142,16 +143,16 @@ export async function POST(req: Request) {
             });
 
           if (insertError) {
-            console.error("Error creating user record:", insertError);
+            logger.error("Error creating user record", insertError);
             return new Response(`Database Error: ${insertError.message}`, {
               status: 500,
             });
           }
 
-          console.log(`Created new user record for ${session.metadata.userId}`);
+          logger.info(`Created new user record for ${session.metadata.userId}`);
           return new Response(null, { status: 200 });
         } else {
-          console.error("No customer email in checkout session");
+          logger.error("No customer email in checkout session");
           return new Response("Missing customer email in session", {
             status: 400,
           });
@@ -159,7 +160,7 @@ export async function POST(req: Request) {
       }
 
       // User exists, update subscription data
-      console.log(`Updating subscription for existing user ${userData.id}`);
+      logger.info(`Updating subscription for existing user ${userData.id}`);
       const { error } = await supabaseAdmin
         .from("users")
         .update({
@@ -174,17 +175,17 @@ export async function POST(req: Request) {
         .eq("id", session.metadata.userId);
 
       if (error) {
-        console.error("Error updating user after checkout completion:", error);
+        logger.error("Error updating user after checkout completion", error);
         return new Response(`Database Error: ${error.message}`, {
           status: 500,
         });
       }
 
-      console.log(
+      logger.info(
         `Successfully updated subscription for user ${session.metadata.userId}`,
       );
-      console.log(`Updated price ID: ${subscription.items.data[0].price.id}`);
-      console.log(
+      logger.debug(`Updated price ID: ${subscription.items.data[0].price.id}`);
+      logger.debug(
         `Updated period end: ${new Date(subscription.current_period_end * 1000).toISOString()}`,
       );
     }
@@ -192,7 +193,7 @@ export async function POST(req: Request) {
     if (event.type === "invoice.payment_succeeded") {
       const invoice = event.data.object as Stripe.Invoice;
 
-      console.log(
+      logger.info(
         `Invoice payment succeeded for subscription: ${invoice.subscription}`,
       );
 
@@ -204,8 +205,8 @@ export async function POST(req: Request) {
           invoice.subscription as string,
         );
 
-        console.log(`Retrieved subscription details for: ${subscription.id}`);
-        console.log(`Price ID: ${subscription.items.data[0].price.id}`);
+        logger.info(`Retrieved subscription details for: ${subscription.id}`);
+        logger.debug(`Price ID: ${subscription.items.data[0].price.id}`);
 
         // Retrieve customer ID to find user if needed
         const customerId = subscription.customer as string;
@@ -224,7 +225,7 @@ export async function POST(req: Request) {
           .select("id");
 
         if (userError || !userData || userData.length === 0) {
-          console.log(
+          logger.info(
             `Could not find user by subscription ID, trying customer ID: ${customerId}`,
           );
 
@@ -242,8 +243,8 @@ export async function POST(req: Request) {
             .eq("stripe_customer_id", customerId);
 
           if (customerUpdateError) {
-            console.error(
-              "Error updating user by customer ID:",
+            logger.error(
+              "Error updating user by customer ID",
               customerUpdateError,
             );
             return new Response(
@@ -253,9 +254,9 @@ export async function POST(req: Request) {
           }
         }
 
-        console.log("Successfully updated subscription information");
-        console.log(`Updated price ID: ${subscription.items.data[0].price.id}`);
-        console.log(
+        logger.info("Successfully updated subscription information");
+        logger.debug(`Updated price ID: ${subscription.items.data[0].price.id}`);
+        logger.debug(
           `Updated period end: ${new Date(subscription.current_period_end * 1000).toISOString()}`,
         );
       }
@@ -265,7 +266,7 @@ export async function POST(req: Request) {
       const subscription = event.data.object as Stripe.Subscription;
       const customerId = subscription.customer as string;
 
-      console.log(`Subscription deleted for customer: ${customerId}`);
+      logger.info(`Subscription deleted for customer: ${customerId}`);
 
       // Update user record to remove subscription details
       const { error } = await supabaseAdmin
@@ -278,8 +279,8 @@ export async function POST(req: Request) {
         .eq("stripe_customer_id", customerId);
 
       if (error) {
-        console.error(
-          "Error updating user after subscription deletion:",
+        logger.error(
+          "Error updating user after subscription deletion",
           error,
         );
         return new Response(`Database Error: ${error.message}`, {
@@ -287,13 +288,12 @@ export async function POST(req: Request) {
         });
       }
 
-      console.log("Successfully removed subscription information");
+      logger.info("Successfully removed subscription information");
     }
 
     return new Response(null, { status: 200 });
   } catch (error: any) {
-    console.error(`Error processing webhook: ${error.message}`);
-    console.error(error.stack);
+    logger.error(`Error processing webhook: ${error.message}`, error);
     return new Response(`Server Error: ${error.message}`, { status: 500 });
   }
 }
@@ -320,14 +320,14 @@ async function createUsersTableIfNeeded() {
     });
 
     if (error) {
-      console.error("Error creating users table:", error);
+      logger.error("Error creating users table", error);
       throw error;
     }
 
-    console.log("Users table created or already exists");
+    logger.info("Users table created or already exists");
     return true;
   } catch (error) {
-    console.error("Failed to create users table:", error);
+    logger.error("Failed to create users table", error);
     return false;
   }
 }

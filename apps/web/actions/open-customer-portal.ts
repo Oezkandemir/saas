@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 
 import { stripe } from "@/lib/stripe";
 import { absoluteUrl } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 
 export type responseAction = {
   status: "success" | "error";
@@ -24,11 +25,11 @@ export async function openCustomerPortal(
     const session = await auth();
 
     if (!session?.user || !session?.user.email) {
-      console.error("Cannot open customer portal: User not authenticated");
+      logger.error("Cannot open customer portal: User not authenticated");
       throw new Error("Unauthorized");
     }
 
-    console.log(`Redirecting to Stripe test portal: ${stripeTestPortalUrl}`);
+    logger.debug(`Redirecting to Stripe test portal: ${stripeTestPortalUrl}`);
 
     // In test mode, always use the test portal URL
     if (process.env.NODE_ENV !== "production") {
@@ -37,12 +38,12 @@ export async function openCustomerPortal(
     }
 
     // In production mode, create a real portal session
-    console.log(
+    logger.info(
       `Attempting to create Stripe portal session for customer: ${userStripeId}`,
     );
 
     if (!userStripeId) {
-      console.error("Cannot open customer portal: No customer ID provided");
+      logger.error("Cannot open customer portal: No customer ID provided");
       throw new Error("No customer ID provided");
     }
 
@@ -52,13 +53,14 @@ export async function openCustomerPortal(
         return_url: billingUrl,
       });
 
-      console.log(
+      logger.info(
         `Successfully created Stripe portal session, URL: ${stripeSession.url}`,
       );
       redirect(stripeSession.url as string);
     } catch (stripeError: any) {
-      console.error(
+      logger.error(
         `Stripe error creating portal session: ${stripeError.message}`,
+        stripeError,
       );
 
       // If the customer ID is invalid or doesn't exist, try to find the correct one
@@ -66,7 +68,7 @@ export async function openCustomerPortal(
         stripeError.code === "resource_missing" &&
         stripeError.message.includes("Customer")
       ) {
-        console.log(
+        logger.info(
           `Customer ${userStripeId} not found in Stripe, trying to find by email: ${session.user.email}`,
         );
 
@@ -78,7 +80,7 @@ export async function openCustomerPortal(
 
         if (customers.data.length > 0) {
           const correctCustomerId = customers.data[0].id;
-          console.log(`Found customer by email with ID: ${correctCustomerId}`);
+          logger.info(`Found customer by email with ID: ${correctCustomerId}`);
 
           // Create portal session with the correct customer ID
           const stripeSession = await stripe.billingPortal.sessions.create({
@@ -86,14 +88,14 @@ export async function openCustomerPortal(
             return_url: billingUrl,
           });
 
-          console.log(
+          logger.info(
             `Successfully created Stripe portal session with corrected ID`,
           );
           redirect(stripeSession.url as string);
         } else {
           // If all else fails, redirect to the test portal in non-production environments
           if (process.env.NODE_ENV !== "production") {
-            console.log(`Falling back to test portal: ${stripeTestPortalUrl}`);
+            logger.debug(`Falling back to test portal: ${stripeTestPortalUrl}`);
             redirect(stripeTestPortalUrl);
           } else {
             throw new Error("Customer not found in Stripe");
@@ -102,7 +104,7 @@ export async function openCustomerPortal(
       } else {
         // For any other errors in non-production, redirect to test portal
         if (process.env.NODE_ENV !== "production") {
-          console.log(
+          logger.debug(
             `Redirecting to test portal due to error: ${stripeTestPortalUrl}`,
           );
           redirect(stripeTestPortalUrl);
@@ -112,13 +114,14 @@ export async function openCustomerPortal(
       }
     }
   } catch (error: any) {
-    console.error(
+    logger.error(
       `Failed to generate Stripe customer portal: ${error.message}`,
+      error,
     );
 
     // In test/development, redirect to the test portal as a fallback
     if (process.env.NODE_ENV !== "production") {
-      console.log(
+      logger.debug(
         `Redirecting to test portal after error: ${stripeTestPortalUrl}`,
       );
       redirect(stripeTestPortalUrl);

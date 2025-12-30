@@ -13,7 +13,7 @@ interface ProductLayoutProps {
 
 export default function ProductLayout({ children }: ProductLayoutProps) {
   return (
-    <div className="container max-w-4xl py-12">
+    <div className="w-full py-12">
       <div className="space-y-8">{children}</div>
     </div>
   );

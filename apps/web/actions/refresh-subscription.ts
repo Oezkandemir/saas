@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 import { supabaseAdmin } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
+import { logger } from "@/lib/logger";
 
 export type RefreshResult = {
   success: boolean;
@@ -31,7 +32,7 @@ export async function refreshSubscription(): Promise<RefreshResult> {
       .single();
 
     if (userError || !userData) {
-      console.error("Error fetching user data:", userError);
+      logger.error("Error fetching user data:", userError);
       return { success: false, message: "Error fetching user data" };
     }
 
@@ -59,7 +60,7 @@ export async function refreshSubscription(): Promise<RefreshResult> {
         .eq("id", user.id);
 
       if (updateError) {
-        console.error("Error updating subscription data:", updateError);
+        logger.error("Error updating subscription data:", updateError);
         return {
           success: false,
           message: "Error updating subscription data in database",
@@ -80,14 +81,14 @@ export async function refreshSubscription(): Promise<RefreshResult> {
         },
       };
     } catch (stripeError) {
-      console.error("Error retrieving subscription from Stripe:", stripeError);
+      logger.error("Error retrieving subscription from Stripe:", stripeError);
       return {
         success: false,
         message: "Error retrieving subscription data from Stripe",
       };
     }
   } catch (error) {
-    console.error("Unexpected error in refreshSubscription:", error);
+    logger.error("Unexpected error in refreshSubscription:", error);
     return { success: false, message: "Unexpected error occurred" };
   }
 }

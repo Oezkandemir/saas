@@ -19,6 +19,7 @@ import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { useSupabase } from "@/components/supabase-provider";
 
+import { ModeToggle } from "./mode-toggle";
 import { UserAccountNav } from "./user-account-nav";
 
 interface NavBarProps {
@@ -88,6 +89,9 @@ export function NavBar({ scroll = false }: NavBarProps) {
             <LanguageDrawer />
           </div>
 
+          {/* Theme Toggle - Always visible */}
+          <ModeToggle />
+
           {/* right header for docs */}
           {documentation ? (
             <div className="flex flex-1 items-center space-x-4 sm:justify-end">
@@ -108,28 +112,9 @@ export function NavBar({ scroll = false }: NavBarProps) {
           ) : null}
 
           {session ? (
-            <>
-              <Link
-                href={
-                  session?.user.user_metadata?.role === "ADMIN"
-                    ? "/admin"
-                    : "/dashboard"
-                }
-                className="hidden md:block"
-              >
-                <Button
-                  className="gap-2 px-5"
-                  variant="default"
-                  size="sm"
-                  rounded="full"
-                >
-                  <span>{t("dashboard")}</span>
-                </Button>
-              </Link>
-              <div className="pr-0 md:pr-0">
-                <UserAccountNav />
-              </div>
-            </>
+            <div className="pr-0 md:pr-0">
+              <UserAccountNav />
+            </div>
           ) : (
             <>
               <Button

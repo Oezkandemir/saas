@@ -155,11 +155,11 @@ export function UserAuthForm({
           onSuccess();
         }
 
-        // Redirect to dashboard or the specified redirect URL after successful login
+        // Redirect to home or the specified redirect URL after successful login
         if (redirectTo) {
           router.push(redirectTo);
         } else {
-          router.push("/dashboard");
+          router.push("/");
         }
         router.refresh();
       }

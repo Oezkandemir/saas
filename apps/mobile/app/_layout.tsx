@@ -1,7 +1,6 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Theme, ThemeProvider, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { PortalHost } from '@rn-primitives/portal';
-import { DeprecatedUi } from '@rnr/reusables';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
@@ -14,8 +13,6 @@ import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { AuthProvider, useAuth } from '~/lib/auth-context';
 import { NotificationProvider } from '~/lib/notification-provider';
-
-const { ToastProvider } = DeprecatedUi;
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -123,7 +120,6 @@ export default function RootLayout() {
             </BottomSheetModalProvider>
             <PortalHost />
           </GestureHandlerRootView>
-          <ToastProvider />
         </ThemeProvider>
       </NotificationProvider>
     </AuthProvider>

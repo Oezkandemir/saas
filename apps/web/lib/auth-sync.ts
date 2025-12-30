@@ -3,17 +3,7 @@ import { User } from "@supabase/supabase-js";
 import { env } from "@/env.mjs";
 import { supabaseAdmin } from "@/lib/db-admin";
 import { stripe } from "@/lib/stripe";
-
-const logger = {
-  log: (message: string, data?: any) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log(message, data);
-    }
-  },
-  error: (message: string, error?: any) => {
-    console.error(message, error);
-  }
-};
+import { logger } from "@/lib/logger";
 
 /**
  * Ensures that a user record exists in the database users table
@@ -26,7 +16,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
   }
 
   try {
-    logger.log(`Checking if user ${user.id} exists in database...`);
+    logger.debug(`Checking if user ${user.id} exists in database...`);
 
     // First try to get the user by ID directly
     const { data: existingUser, error: fetchError } = await supabaseAdmin
@@ -37,7 +27,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
 
     // If we found the user, return success
     if (existingUser) {
-      logger.log(`User ${user.id} already exists in database`);
+      logger.debug(`User ${user.id} already exists in database`);
       return existingUser;
     }
 
@@ -60,7 +50,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
         }
 
         if (userByEmail) {
-          logger.log(
+          logger.info(
             `Found user with same email but different ID. Email: ${user.email}, DB ID: ${userByEmail.id}, Auth ID: ${user.id}`,
           );
 
@@ -74,7 +64,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
             if (updateError) {
               logger.error("Could not update user ID:", updateError);
             } else {
-              logger.log(
+              logger.info(
                 `Updated user ID from ${userByEmail.id} to ${user.id}`,
               );
               return user;
@@ -100,7 +90,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
           },
         });
         stripeCustomerId = customer.id;
-        logger.log(
+        logger.info(
           `Created Stripe customer ${stripeCustomerId} for user ${user.id}`,
         );
       } catch (stripeError) {
@@ -113,7 +103,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
     }
 
     // Try direct insert without email if it's causing conflicts
-    logger.log(`Creating new user record for ${user.id}`);
+    logger.info(`Creating new user record for ${user.id}`);
 
     // Get avatar_url from user metadata
     const avatar_url = user.user_metadata?.avatar_url || null;
@@ -149,7 +139,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
           insertError.code === "23505" &&
           insertError.details?.includes("email")
         ) {
-          logger.log(
+          logger.info(
             "Trying insert without email due to uniqueness constraint",
           );
 
@@ -171,7 +161,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
             return null;
           }
 
-          logger.log(
+          logger.info(
             `Successfully created user record for ${user.id} without email`,
           );
           return userWithoutEmail;
@@ -180,7 +170,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
         return null;
       }
 
-      logger.log(`Successfully created user record for ${user.id}`);
+      logger.info(`Successfully created user record for ${user.id}`);
       return newUser;
     } catch (insertError) {
       logger.error("Exception during user insert:", insertError);
@@ -206,7 +196,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
           return null;
         }
 
-        logger.log(`Successfully created minimal user record for ${user.id}`);
+        logger.info(`Successfully created minimal user record for ${user.id}`);
         return minimalUser;
       } catch (minimalError) {
         logger.error("Exception during minimal user insert:", minimalError);

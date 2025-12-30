@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 
 import { supabaseAdmin } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
+import { logger } from "@/lib/logger";
 
 export async function syncUserSubscriptionFromStripe() {
   try {
@@ -61,7 +62,7 @@ export async function syncUserSubscriptionFromStripe() {
       .eq("id", user.id);
 
     if (error) {
-      console.error("Error updating user subscription data:", error);
+      logger.error("Error updating user subscription data", error);
       return {
         success: false,
         message: "Failed to update subscription data in database",
@@ -69,10 +70,7 @@ export async function syncUserSubscriptionFromStripe() {
     }
 
     // Log successful sync
-    console.log("Successfully synced subscription for user", user.id);
-    console.log("Customer ID:", customerId);
-    console.log("Subscription ID:", subscription.id);
-    console.log("Price ID:", priceId);
+    logger.info("Successfully synced subscription for user", { userId: user.id, customerId, subscriptionId: subscription.id, priceId });
 
     return {
       success: true,
@@ -82,7 +80,7 @@ export async function syncUserSubscriptionFromStripe() {
       subscriptionId: subscription.id,
     };
   } catch (error) {
-    console.error("Error syncing subscription:", error);
+    logger.error("Error syncing subscription", error);
     return {
       success: false,
       message: "An error occurred while syncing subscription",

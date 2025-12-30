@@ -57,38 +57,6 @@ export default function DropdownMenuScreen() {
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <Users className='text-foreground' size={14} />
-              <Text>Team</Text>
-            </DropdownMenuItem>
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
-                <UserPlus className='text-foreground' size={14} />
-                <Text>Invite users</Text>
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent>
-                <Animated.View entering={FadeIn.duration(200)}>
-                  <DropdownMenuItem>
-                    <Mail className='text-foreground' size={14} />
-                    <Text>Email</Text>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <MessageSquare className='text-foreground' size={14} />
-                    <Text>Message</Text>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <PlusCircle className='text-foreground' size={14} />
-                    <Text>More...</Text>
-                  </DropdownMenuItem>
-                </Animated.View>
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-            <DropdownMenuItem>
-              <Plus className='text-foreground' size={14} />
-              <Text>New Team</Text>
-              <DropdownMenuShortcut>⌘+T</DropdownMenuShortcut>
-            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem>

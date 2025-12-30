@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { supabaseAdmin } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
       await supabaseAdmin.auth.admin.getUserById(userId);
 
     if (userError || !userData?.user) {
-      console.error("Error getting user:", userError);
+      logger.error("Error getting user:", userError);
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest) {
       email: userData.user.email,
     });
   } catch (error) {
-    console.error("Unexpected error getting user email:", error);
+    logger.error("Unexpected error getting user email:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

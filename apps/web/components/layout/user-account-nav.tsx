@@ -1,8 +1,8 @@
 "use client";
 
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSelectedLayoutSegment } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { getUserNotifications } from "@/actions/user-profile-actions";
 import {
   Link as I18nLink,
@@ -11,32 +11,27 @@ import { useQuery } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
 import {
   Bell,
-  LayoutDashboard,
+  BookOpen,
+  FileText,
   Lock,
   LogOut,
-  Menu,
-  Settings,
-  User,
-  X,
+  Mail,
+  Shield,
+  User as UserIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Drawer } from "vaul";
-
-import { docsConfig } from "@/config/docs";
-import { marketingConfig } from "@/config/marketing";
-import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
-import { useMediaQuery } from "@/hooks/use-media-query";
 import { useNotifications } from "@/hooks/use-notifications";
-import { DocsSidebarNav } from "@/components/docs/sidebar-nav";
-import LanguageDrawer from "@/components/language-drawer";
 import { ModalContext } from "@/components/modals/providers";
 import { Icons } from "@/components/shared/icons";
 
 import { getNotificationIcon } from "@/components/shared/notifications-popover";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { useSupabase } from "@/components/supabase-provider";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 import { ModeToggle } from "./mode-toggle";
 
@@ -194,25 +189,13 @@ export function UserAccountNav() {
   const t = useTranslations("UserNav");
 
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dbUserName, setDbUserName] = useState<string | null>(null);
+  const [dbUserRole, setDbUserRole] = useState<string | null>(null);
 
   const closeDrawer = () => {
     setDrawerOpen(false);
   };
 
-  const { isMobile } = useMediaQuery();
-
-  // Navigation configuration
-  const selectedLayout = useSelectedLayoutSegment();
-  const documentation = selectedLayout === "docs";
-
-  const configMap = {
-    docs: docsConfig.mainNav,
-  };
-
-  const links =
-    (selectedLayout && configMap[selectedLayout]) || marketingConfig.mainNav;
 
   const { setShowSignInModal, setShowSignUpModal } = useContext(ModalContext);
 
@@ -228,27 +211,28 @@ export function UserAccountNav() {
     }
   };
 
-  // Fetch user name from database when component mounts
+  // Fetch user name and role from database when component mounts
   useEffect(() => {
-    async function fetchUserName() {
+    async function fetchUserData() {
       try {
         if (user?.id) {
           const { data, error } = await supabase
             .from("users")
-            .select("name")
+            .select("name, role")
             .eq("id", user.id)
             .single();
 
           if (!error && data) {
             setDbUserName(data.name);
+            setDbUserRole(data.role);
           }
         }
       } catch (err) {
-        console.error("Error fetching user name:", err);
+        console.error("Error fetching user data:", err);
       }
     }
 
-    fetchUserName();
+    fetchUserData();
   }, [user, supabase]);
 
   // Ensure we always have a display name, prioritizing the database value, then falling back to metadata and email
@@ -257,7 +241,12 @@ export function UserAccountNav() {
     user?.user_metadata?.name ||
     user?.email?.split("@")[0] ||
     t("defaultUser");
-  const userRole = user?.user_metadata?.role || "USER";
+  
+  // Prioritize database role, then fall back to metadata
+  const userRole = dbUserRole || user?.user_metadata?.role || "USER";
+  
+  // Get user email
+  const userEmail = user?.email || "";
 
   if (!user)
     return (
@@ -272,11 +261,20 @@ export function UserAccountNav() {
         <NotificationDrawer />
 
         {/* User Account Drawer */}
-        <Drawer.Root open={drawerOpen} onClose={closeDrawer}>
+        <Drawer.Root 
+          open={drawerOpen} 
+          onOpenChange={setDrawerOpen}
+        >
           <Drawer.Trigger asChild>
-            <div
-              onClick={() => setDrawerOpen(true)}
-              className="cursor-pointer"
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setDrawerOpen(true);
+              }}
+              className="cursor-pointer focus:outline-none rounded-full transition-opacity hover:opacity-90 active:opacity-80"
+              aria-label="Open user account menu"
+              aria-expanded={drawerOpen}
             >
               <UserAvatar
                 user={{
@@ -286,106 +284,144 @@ export function UserAccountNav() {
                 }}
                 className="border size-9"
               />
-            </div>
+            </button>
           </Drawer.Trigger>
           <Drawer.Portal>
             <Drawer.Overlay
               className="fixed inset-0 z-40 h-full bg-background/80 backdrop-blur-sm"
               onClick={closeDrawer}
             />
-            <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background px-3 text-sm">
-              <div className="sticky top-0 z-20 flex items-center justify-center w-full bg-inherit">
-                <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
+            <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[20px] border-t border-l border-r bg-background shadow-xl">
+              <div className="sticky top-0 z-20 flex items-center justify-center w-full bg-inherit pt-3 pb-2">
+                <div className="h-1.5 w-20 rounded-full bg-muted-foreground/30" />
               </div>
 
               <Drawer.Title className="sr-only">
                 User Account Menu
               </Drawer.Title>
 
-              <div className="flex items-center justify-start gap-3 p-2">
-                <UserAvatar
-                  user={{
-                    name: displayName,
-                    image: user.user_metadata?.image || null,
-                    avatar_url: user.user_metadata?.avatar_url || null,
-                  }}
-                  className="border size-12"
-                />
-                <div className="flex flex-col">
-                  <p className="font-medium">{displayName}</p>
-                  {user.email && (
-                    <p className="w-[200px] truncate text-muted-foreground">
-                      {user?.email}
-                    </p>
-                  )}
-                  <p className="text-xs text-muted-foreground">
-                    {t("role")}: {t(userRole.toLowerCase())}
-                  </p>
+              <div className="px-6 pb-4">
+                {/* User Info Card */}
+                <div className="relative overflow-hidden rounded-xl border bg-gradient-to-br from-background to-muted/20 p-5 shadow-sm">
+                  <div className="flex items-start gap-4">
+                    <UserAvatar
+                      user={{
+                        name: displayName,
+                        image: user.user_metadata?.image || null,
+                        avatar_url: user.user_metadata?.avatar_url || null,
+                      }}
+                      className="border-2 border-background size-16 shadow-md"
+                    />
+                    <div className="flex-1 min-w-0 space-y-3">
+                      {/* Username */}
+                      <div className="flex items-center gap-2">
+                        <UserIcon className="size-4 text-muted-foreground shrink-0" />
+                        <h3 className="text-lg font-semibold text-foreground truncate">
+                          {displayName}
+                        </h3>
+                      </div>
+                      
+                      {/* Email */}
+                      {userEmail && (
+                        <div className="flex items-center gap-2">
+                          <Mail className="size-4 text-muted-foreground shrink-0" />
+                          <p className="text-sm text-muted-foreground truncate">
+                            {userEmail}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {/* Role Badge */}
+                      <div className="flex items-center gap-2">
+                        <Shield className="size-4 text-muted-foreground shrink-0" />
+                        <Badge
+                          variant={userRole === "ADMIN" ? "default" : "secondary"}
+                          className="text-xs font-medium"
+                        >
+                          {userRole === "ADMIN" ? "Administrator" : "User"}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
+              <Separator className="mx-6" />
+
               <ul
                 role="list"
-                className="w-full mt-1 mb-14 text-muted-foreground"
+                className="w-full px-6 py-4 mb-14 space-y-1"
               >
                 {userRole === "ADMIN" ? (
-                  <li className="rounded-lg text-foreground hover:bg-muted">
+                  <li>
                     <Link
                       href="/admin"
                       onClick={closeDrawer}
-                      className="flex w-full items-center gap-3 px-2.5 py-2"
+                      className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
                     >
-                      <Lock className="size-4" />
-                      <p className="text-sm">{t("admin")}</p>
+                      <div className="flex items-center justify-center rounded-md bg-primary/10 p-1.5">
+                        <Lock className="size-4 text-primary" />
+                      </div>
+                      <span className="text-sm font-medium">{t("admin")}</span>
                     </Link>
                   </li>
                 ) : null}
 
-                <li className="rounded-lg text-foreground hover:bg-muted">
+                <li>
                   <Link
-                    href="/profile"
+                    href="/blog"
                     onClick={closeDrawer}
-                    className="flex w-full items-center gap-3 px-2.5 py-2"
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
                   >
-                    <User className="size-4" />
-                    <p className="text-sm">Profile</p>
+                    <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
+                      <FileText className="size-4 text-muted-foreground" />
+                    </div>
+                    <span className="text-sm font-medium">Blog</span>
                   </Link>
                 </li>
 
-                <li className="rounded-lg text-foreground hover:bg-muted">
+                <li>
                   <Link
-                    href="/dashboard"
+                    href="/pricing"
                     onClick={closeDrawer}
-                    className="flex w-full items-center gap-3 px-2.5 py-2"
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
                   >
-                    <LayoutDashboard className="size-4" />
-                    <p className="text-sm">{t("dashboard")}</p>
+                    <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
+                      <FileText className="size-4 text-muted-foreground" />
+                    </div>
+                    <span className="text-sm font-medium">Pricing</span>
                   </Link>
                 </li>
 
-                <li className="rounded-lg text-foreground hover:bg-muted">
+                <li>
                   <Link
-                    href="/dashboard/settings"
+                    href="/docs"
                     onClick={closeDrawer}
-                    className="flex w-full items-center gap-3 px-2.5 py-2"
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
                   >
-                    <Settings className="size-4" />
-                    <p className="text-sm">{t("settings")}</p>
+                    <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
+                      <BookOpen className="size-4 text-muted-foreground" />
+                    </div>
+                    <span className="text-sm font-medium">Documentation</span>
                   </Link>
                 </li>
 
-                <li
-                  className="rounded-lg cursor-pointer text-foreground hover:bg-muted"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    handleSignOut();
-                    closeDrawer();
-                  }}
-                >
-                  <div className="flex w-full items-center gap-3 px-2.5 py-2">
-                    <LogOut className="size-4" />
-                    <p className="text-sm">{t("logout")}</p>
-                  </div>
+                <Separator className="my-2" />
+
+                <li>
+                  <button
+                    onClick={(event) => {
+                      event.preventDefault();
+                      handleSignOut();
+                      closeDrawer();
+                    }}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-destructive transition-colors hover:bg-destructive/10 active:bg-destructive/20"
+                  >
+                    <div className="flex items-center justify-center rounded-md bg-destructive/10 p-1.5">
+                      <LogOut className="size-4 text-destructive" />
+                    </div>
+                    <span className="text-sm font-medium">{t("logout")}</span>
+                  </button>
                 </li>
               </ul>
             </Drawer.Content>
@@ -393,128 +429,6 @@ export function UserAccountNav() {
           </Drawer.Portal>
         </Drawer.Root>
 
-        {/* Mobile Navigation Menu as Drawer - Only shown on mobile */}
-        {isMobile && (
-          <Drawer.Root
-            open={mobileMenuOpen}
-            onClose={() => setMobileMenuOpen(false)}
-          >
-            <Drawer.Trigger asChild>
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 transition-colors duration-200 rounded-full hover:bg-muted focus:outline-none active:bg-muted"
-              >
-                {mobileMenuOpen ? (
-                  <X className="size-5 text-muted-foreground" />
-                ) : (
-                  <Menu className="size-5 text-muted-foreground" />
-                )}
-              </button>
-            </Drawer.Trigger>
-            <Drawer.Portal>
-              <Drawer.Overlay
-                className="fixed inset-0 z-40 h-full bg-background/80 backdrop-blur-sm"
-                onClick={() => setMobileMenuOpen(false)}
-              />
-              <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background px-3 text-sm">
-                <div className="sticky top-0 z-20 flex items-center justify-center w-full bg-inherit">
-                  <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
-                </div>
-
-                <Drawer.Title className="sr-only">Navigation Menu</Drawer.Title>
-
-                <div className="w-full mt-1 mb-14">
-                  <ul className="grid divide-y divide-muted">
-                    {links &&
-                      links.length > 0 &&
-                      links.map(({ title, href }) => (
-                        <li key={href} className="py-3">
-                          <I18nLink
-                            href={href}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="flex w-full font-medium capitalize text-foreground hover:text-foreground/80"
-                          >
-                            {title}
-                          </I18nLink>
-                        </li>
-                      ))}
-
-                    {session ? (
-                      <>
-                        {session.user.user_metadata?.role === "ADMIN" ? (
-                          <li className="py-3">
-                            <I18nLink
-                              href="/admin"
-                              onClick={() => setMobileMenuOpen(false)}
-                              className="flex w-full font-medium capitalize text-foreground hover:text-foreground/80"
-                            >
-                              Admin
-                            </I18nLink>
-                          </li>
-                        ) : null}
-
-                        <li className="py-3">
-                          <I18nLink
-                            href="/dashboard"
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="flex w-full font-medium capitalize text-foreground hover:text-foreground/80"
-                          >
-                            Dashboard
-                          </I18nLink>
-                        </li>
-                      </>
-                    ) : (
-                      <>
-                        <li className="py-3">
-                          <button
-                            onClick={() => {
-                              setMobileMenuOpen(false);
-                              setShowSignInModal(true);
-                            }}
-                            className="flex w-full font-medium capitalize text-foreground hover:text-foreground/80"
-                          >
-                            Login
-                          </button>
-                        </li>
-
-                        <li className="py-3">
-                          <button
-                            onClick={() => {
-                              setMobileMenuOpen(false);
-                              setShowSignUpModal(true);
-                            }}
-                            className="flex w-full font-medium capitalize text-foreground hover:text-foreground/80"
-                          >
-                            Sign up
-                          </button>
-                        </li>
-                      </>
-                    )}
-                  </ul>
-
-                  {documentation ? (
-                    <div className="block mt-8 md:hidden">
-                      <DocsSidebarNav setOpen={setMobileMenuOpen} />
-                    </div>
-                  ) : null}
-
-                  <div className="flex items-center justify-end mt-5 space-x-4">
-                    <I18nLink
-                      href={siteConfig.links.github}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <Icons.gitHub className="size-6" />
-                      <span className="sr-only">GitHub</span>
-                    </I18nLink>
-                    <ModeToggle />
-                  </div>
-                </div>
-              </Drawer.Content>
-              <Drawer.Overlay />
-            </Drawer.Portal>
-          </Drawer.Root>
-        )}
       </div>
     </>
   );

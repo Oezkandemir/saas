@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/logger";
 
 // Define profile schema for validation
 const profileSchema = z.object({
@@ -143,7 +144,7 @@ export async function getUserProfile(): Promise<ActionResult<UserProfile>> {
       data: profile as UserProfile,
     };
   } catch (error) {
-    console.error("Error fetching user profile:", error);
+    logger.error("Error fetching user profile", error);
     return {
       success: false,
       error: "Failed to fetch user profile",
@@ -250,7 +251,7 @@ export async function updateUserProfile(
       };
     }
 
-    console.error("Error updating user profile:", error);
+    logger.error("Error updating user profile", error);
     return {
       success: false,
       error: "Failed to update profile",
@@ -295,7 +296,7 @@ export async function getUserNotifications(
       data: data as UserNotification[],
     };
   } catch (error) {
-    console.error("Error fetching user notifications:", error);
+    logger.error("Error fetching user notifications", error);
     return {
       success: false,
       error: "Failed to fetch notifications",
@@ -336,7 +337,7 @@ export async function trackUserLogin(): Promise<ActionResult<null>> {
       data: null,
     };
   } catch (error) {
-    console.error("Error tracking user login:", error);
+    logger.error("Error tracking user login", error);
     return {
       success: false,
       error: "Failed to track login",
@@ -375,7 +376,7 @@ export async function markAllNotificationsAsRead(): Promise<
       data: null,
     };
   } catch (error) {
-    console.error("Error marking all notifications as read:", error);
+    logger.error("Error marking all notifications as read", error);
     return {
       success: false,
       error: "Failed to update notifications",
@@ -417,7 +418,7 @@ export async function markNotificationAsRead(
       data: null,
     };
   } catch (error) {
-    console.error("Error marking notification as read:", error);
+    logger.error("Error marking notification as read", error);
     return {
       success: false,
       error: "Failed to update notification",
@@ -461,7 +462,7 @@ export async function deleteNotification(
       data: null,
     };
   } catch (error) {
-    console.error("Error deleting notification:", error);
+    logger.error("Error deleting notification", error);
     return {
       success: false,
       error: "Failed to delete notification",
@@ -497,7 +498,7 @@ export async function deleteAllNotifications(): Promise<ActionResult<null>> {
       data: null,
     };
   } catch (error) {
-    console.error("Error deleting all notifications:", error);
+    logger.error("Error deleting all notifications", error);
     return {
       success: false,
       error: "Failed to delete all notifications",
@@ -537,7 +538,7 @@ export async function getUserActivityLogs(
       data: data as ActivityLog[],
     };
   } catch (error) {
-    console.error("Error fetching user activity logs:", error);
+    logger.error("Error fetching user activity logs", error);
     return {
       success: false,
       error: "Failed to fetch activity logs",

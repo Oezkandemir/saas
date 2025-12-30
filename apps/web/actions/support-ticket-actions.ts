@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/logger";
 
 // Define the ticket schema for validation
 const ticketSchema = z.object({
@@ -97,7 +98,7 @@ export async function getAllTickets(): Promise<ActionResult<Ticket[]>> {
       data: data as Ticket[],
     };
   } catch (error) {
-    console.error("Error fetching all tickets:", error);
+    logger.error("Error fetching all tickets:", error);
     return {
       success: false,
       error: "Failed to fetch tickets",
@@ -139,7 +140,7 @@ export async function getUserTickets(): Promise<ActionResult<Ticket[]>> {
       data: data as Ticket[],
     };
   } catch (error) {
-    console.error("Error fetching user tickets:", error);
+    logger.error("Error fetching user tickets:", error);
     return {
       success: false,
       error: "Failed to fetch tickets",
@@ -211,7 +212,7 @@ export async function getTicketWithMessages(
       },
     };
   } catch (error) {
-    console.error("Error fetching ticket with messages:", error);
+    logger.error("Error fetching ticket with messages:", error);
     return {
       success: false,
       error: "Failed to fetch ticket details",
@@ -279,7 +280,7 @@ export async function createTicket(
       };
     }
 
-    console.error("Error creating ticket:", error);
+    logger.error("Error creating ticket:", error);
     return {
       success: false,
       error: "Failed to create ticket",
@@ -364,7 +365,7 @@ export async function addTicketMessage(
       };
     }
 
-    console.error("Error adding message:", error);
+    logger.error("Error adding message:", error);
     return {
       success: false,
       error: "Failed to add message",
@@ -415,7 +416,7 @@ export async function updateTicketStatus(
       data: data as Ticket,
     };
   } catch (error) {
-    console.error("Error updating ticket status:", error);
+    logger.error("Error updating ticket status:", error);
     return {
       success: false,
       error: "Failed to update ticket status",

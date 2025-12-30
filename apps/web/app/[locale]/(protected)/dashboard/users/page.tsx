@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function UsersPage() {
   return (
-    <div className="container mx-auto py-6">
+    <div className="w-full py-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Users</h1>
         <p className="text-muted-foreground">

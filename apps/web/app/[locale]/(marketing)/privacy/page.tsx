@@ -12,7 +12,7 @@ export default async function PrivacyPage() {
   const t = await getTranslations("Footer");
 
   return (
-    <div className="container max-w-4xl py-12">
+    <div className="w-full py-12">
       <div className="space-y-8">
         <h1 className="text-3xl font-bold">Privacy Policy</h1>
         <p className="text-muted-foreground">Last updated: June 1, 2023</p>

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { getSupabaseServer } from "@/lib/supabase-server";
+import { logger } from "@/lib/logger";
 
 export async function updateUserAvatar(userId: string, formData: FormData) {
   try {
@@ -50,7 +51,7 @@ export async function updateUserAvatar(userId: string, formData: FormData) {
       });
 
     if (uploadError) {
-      console.error("Error uploading avatar:", uploadError);
+      logger.error("Error uploading avatar", uploadError);
       throw new Error("Failed to upload avatar");
     }
 
@@ -83,7 +84,7 @@ export async function updateUserAvatar(userId: string, formData: FormData) {
 
     return { status: "success", avatarUrl };
   } catch (error) {
-    console.error("Error updating user avatar:", error);
+    logger.error("Error updating user avatar", error);
     return {
       status: "error",
       message: error.message || "Failed to update avatar",

@@ -11,11 +11,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
 import { ClearAllNotificationsButton } from "@/components/profile/clear-all-notifications-button";
 import { MarkAllAsReadButton } from "@/components/profile/mark-all-as-read-button";
 import { NotificationsList } from "@/components/profile/notifications-list";
+import { ResponsiveNotificationsTabs } from "@/components/profile/responsive-notifications-tabs";
 
 export async function generateMetadata() {
   const t = await getTranslations("Profile");
@@ -90,7 +90,7 @@ export default async function NotificationsPage() {
         text="View and manage your notifications"
         actions={
           totalCount > 0 ? (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               {unreadCount > 0 && <MarkAllAsReadButton />}
               <ClearAllNotificationsButton />
             </div>
@@ -98,84 +98,52 @@ export default async function NotificationsPage() {
         }
       />
 
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-3">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-xs sm:text-sm font-medium">
                 All Notifications
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totalCount}</div>
+              <div className="text-xl sm:text-2xl font-bold">{totalCount}</div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Unread</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">Unread</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{unreadCount}</div>
+              <div className="text-xl sm:text-2xl font-bold">{unreadCount}</div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Read</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">Read</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{readCount}</div>
+              <div className="text-xl sm:text-2xl font-bold">{readCount}</div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Notifications Tabs */}
-        <Tabs defaultValue="all" className="w-full">
-          <TabsList className="mb-4 w-full sm:w-auto">
-            <TabsTrigger value="all" className="flex-1 sm:flex-initial">
-              All ({totalCount})
-            </TabsTrigger>
-            <TabsTrigger value="unread" className="flex-1 sm:flex-initial">
-              Unread ({unreadCount})
-            </TabsTrigger>
-            <TabsTrigger value="welcome" className="flex-1 sm:flex-initial">
-              Welcome ({welcomeNotifications.length})
-            </TabsTrigger>
-            <TabsTrigger value="system" className="flex-1 sm:flex-initial">
-              System ({systemNotifications.length})
-            </TabsTrigger>
-            <TabsTrigger value="team" className="flex-1 sm:flex-initial">
-              Team ({teamNotifications.length})
-            </TabsTrigger>
-            <TabsTrigger value="follow" className="flex-1 sm:flex-initial">
-              Follow ({followNotifications.length})
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="all">
-            <NotificationsList notifications={allNotifications} />
-          </TabsContent>
-
-          <TabsContent value="unread">
-            <NotificationsList notifications={unreadNotifications} />
-          </TabsContent>
-
-          <TabsContent value="welcome">
-            <NotificationsList notifications={welcomeNotifications} />
-          </TabsContent>
-
-          <TabsContent value="system">
-            <NotificationsList notifications={systemNotifications} />
-          </TabsContent>
-
-          <TabsContent value="team">
-            <NotificationsList notifications={teamNotifications} />
-          </TabsContent>
-
-          <TabsContent value="follow">
-            <NotificationsList notifications={followNotifications} />
-          </TabsContent>
-        </Tabs>
+        {/* Notifications Tabs - Responsive */}
+        <ResponsiveNotificationsTabs
+          totalCount={totalCount}
+          unreadCount={unreadCount}
+          welcomeCount={welcomeNotifications.length}
+          systemCount={systemNotifications.length}
+          teamCount={teamNotifications.length}
+          followCount={followNotifications.length}
+          allContent={<NotificationsList notifications={allNotifications} />}
+          unreadContent={<NotificationsList notifications={unreadNotifications} />}
+          welcomeContent={<NotificationsList notifications={welcomeNotifications} />}
+          systemContent={<NotificationsList notifications={systemNotifications} />}
+          teamContent={<NotificationsList notifications={teamNotifications} />}
+          followContent={<NotificationsList notifications={followNotifications} />}
+        />
       </div>
     </>
   );

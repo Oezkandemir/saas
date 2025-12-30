@@ -73,7 +73,7 @@ export default async function AdminSupportPage(props: Props) {
   ).length;
 
   return (
-    <div className="container px-0 sm:px-4">
+    <div className="w-full">
       <DashboardHeader
         heading={tSupport("pageTitle")}
         text={tSupport("pageDescription")}

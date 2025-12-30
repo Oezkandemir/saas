@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { logger } from "@/lib/logger";
 
 // POST handler to increment page views
 export async function POST(request: NextRequest) {
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error incrementing page view:", error);
+    logger.error("Error incrementing page view:", error);
     return NextResponse.json(
       { error: "Failed to increment page view" },
       { status: 500 },
@@ -57,7 +58,7 @@ export async function GET(request: NextRequest) {
       views: data && data.length > 0 ? data[0].view_count : 0,
     });
   } catch (error) {
-    console.error("Error fetching page views:", error);
+    logger.error("Error fetching page views:", error);
     return NextResponse.json(
       { error: "Failed to fetch page views" },
       { status: 500 },

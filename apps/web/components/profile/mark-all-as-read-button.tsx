@@ -51,13 +51,15 @@ export function MarkAllAsReadButton() {
       size="sm"
       onClick={handleMarkAllAsRead}
       disabled={loading}
+      className="w-full sm:w-auto"
     >
       {loading ? (
         <Loader2 className="size-4 animate-spin" />
       ) : (
         <Check className="size-4" />
       )}
-      Mark all as read
+      <span className="hidden sm:inline">Mark all as read</span>
+      <span className="sm:hidden">Mark all read</span>
     </Button>
   );
 }

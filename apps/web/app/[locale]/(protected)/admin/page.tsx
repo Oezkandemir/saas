@@ -102,7 +102,7 @@ export default async function AdminPanelPage(props: Props) {
   }
 
   return (
-    <div className="container px-0 sm:px-4">
+    <div className="w-full">
       <DashboardHeader
         heading={tPanel("heading")}
         text={tPanel("subheading")}

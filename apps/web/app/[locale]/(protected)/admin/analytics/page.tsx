@@ -38,8 +38,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart } from "@/components/charts/bar-chart";
-import { LineChart } from "@/components/charts/line-chart";
 import { DashboardHeader } from "@/components/dashboard/header";
 
 export const metadata = constructMetadata({
@@ -243,31 +241,13 @@ export default async function AnalyticsPage() {
                 <CardDescription>New user signups by month</CardDescription>
               </CardHeader>
               <CardContent className="h-80">
-                {userGrowthLabels.length > 0 ? (
-                  <BarChart
-                    data={{
-                      labels: userGrowthLabels.map((month) => {
-                        const [year, monthNum] = month.split("-");
-                        return `${monthNum}/${year.slice(2)}`;
-                      }),
-                      datasets: [
-                        {
-                          label: "New Users",
-                          data: userGrowthData,
-                          backgroundColor: "rgba(59, 130, 246, 0.5)",
-                          borderColor: "rgb(59, 130, 246)",
-                          borderWidth: 1,
-                        },
-                      ],
-                    }}
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center">
-                    <p className="text-muted-foreground">
-                      No user growth data available
-                    </p>
-                  </div>
-                )}
+                <div className="flex h-full items-center justify-center">
+                  <p className="text-muted-foreground">
+                    {userGrowthLabels.length > 0
+                      ? `Total new users: ${userGrowthData.reduce((a, b) => a + b, 0)}`
+                      : "No user growth data available"}
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
@@ -279,30 +259,18 @@ export default async function AnalyticsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="h-80">
-                <BarChart
-                  data={{
-                    labels: ticketLabels,
-                    datasets: [
-                      {
-                        label: "Tickets",
-                        data: ticketData,
-                        backgroundColor: [
-                          "rgba(239, 68, 68, 0.5)",
-                          "rgba(245, 158, 11, 0.5)",
-                          "rgba(16, 185, 129, 0.5)",
-                          "rgba(107, 114, 128, 0.5)",
-                        ],
-                        borderColor: [
-                          "rgb(239, 68, 68)",
-                          "rgb(245, 158, 11)",
-                          "rgb(16, 185, 129)",
-                          "rgb(107, 114, 128)",
-                        ],
-                        borderWidth: 1,
-                      },
-                    ],
-                  }}
-                />
+                <div className="flex h-full items-center justify-center">
+                  <div className="text-center">
+                    <p className="text-muted-foreground mb-2">Ticket Statistics:</p>
+                    <div className="space-y-1">
+                      {ticketLabels.map((label, index) => (
+                        <p key={index} className="text-sm">
+                          {label}: {ticketData[index]}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -390,28 +358,13 @@ export default async function AnalyticsPage() {
                 <CardDescription>Types of user interactions</CardDescription>
               </CardHeader>
               <CardContent className="h-80">
-                {userEngagementLabels.length > 0 ? (
-                  <BarChart
-                    data={{
-                      labels: userEngagementLabels,
-                      datasets: [
-                        {
-                          label: "Count",
-                          data: userEngagementData,
-                          backgroundColor: "rgba(99, 102, 241, 0.5)",
-                          borderColor: "rgb(99, 102, 241)",
-                          borderWidth: 1,
-                        },
-                      ],
-                    }}
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center">
-                    <p className="text-muted-foreground">
-                      No user engagement data available
-                    </p>
-                  </div>
-                )}
+                <div className="flex h-full items-center justify-center">
+                  <p className="text-muted-foreground">
+                    {userEngagementLabels.length > 0
+                      ? `Total engagements: ${userEngagementData.reduce((a, b) => a + b, 0)}`
+                      : "No user engagement data available"}
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
@@ -472,30 +425,13 @@ export default async function AnalyticsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="h-80">
-                {pageViewLabels.length > 0 ? (
-                  <LineChart
-                    data={{
-                      labels: pageViewLabels,
-                      datasets: [
-                        {
-                          label: "Page Views",
-                          data: pageViewData,
-                          borderColor: "rgb(99, 102, 241)",
-                          backgroundColor: "rgba(99, 102, 241, 0.1)",
-                          borderWidth: 1,
-                          tension: 0.2,
-                          fill: true,
-                        },
-                      ],
-                    }}
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center">
-                    <p className="text-muted-foreground">
-                      No page view data available
-                    </p>
-                  </div>
-                )}
+                <div className="flex h-full items-center justify-center">
+                  <p className="text-muted-foreground">
+                    {pageViewLabels.length > 0
+                      ? `Total page views: ${pageViewData.reduce((a, b) => a + b, 0)}`
+                      : "No page view data available"}
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -591,38 +527,22 @@ export default async function AnalyticsPage() {
                 <CardDescription>User device distribution</CardDescription>
               </CardHeader>
               <CardContent className="h-80">
-                {deviceLabels.length > 0 ? (
-                  <BarChart
-                    data={{
-                      labels: deviceLabels,
-                      datasets: [
-                        {
-                          label: "Devices",
-                          data: deviceData,
-                          backgroundColor: [
-                            "rgba(54, 162, 235, 0.5)",
-                            "rgba(255, 99, 132, 0.5)",
-                            "rgba(255, 206, 86, 0.5)",
-                            "rgba(75, 192, 192, 0.5)",
-                          ],
-                          borderColor: [
-                            "rgba(54, 162, 235, 1)",
-                            "rgba(255, 99, 132, 1)",
-                            "rgba(255, 206, 86, 1)",
-                            "rgba(75, 192, 192, 1)",
-                          ],
-                          borderWidth: 1,
-                        },
-                      ],
-                    }}
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center">
-                    <p className="text-muted-foreground">
-                      No device data available
-                    </p>
+                <div className="flex h-full items-center justify-center">
+                  <div className="text-center">
+                    <p className="text-muted-foreground mb-2">Device Statistics:</p>
+                    <div className="space-y-1">
+                      {deviceLabels.length > 0 ? (
+                        deviceLabels.map((label, index) => (
+                          <p key={index} className="text-sm">
+                            {label}: {deviceData[index]}
+                          </p>
+                        ))
+                      ) : (
+                        <p className="text-sm text-muted-foreground">No device data available</p>
+                      )}
+                    </div>
                   </div>
-                )}
+                </div>
               </CardContent>
             </Card>
 
@@ -632,40 +552,22 @@ export default async function AnalyticsPage() {
                 <CardDescription>User browser distribution</CardDescription>
               </CardHeader>
               <CardContent className="h-80">
-                {browserLabels.length > 0 ? (
-                  <BarChart
-                    data={{
-                      labels: browserLabels,
-                      datasets: [
-                        {
-                          label: "Browsers",
-                          data: browserData,
-                          backgroundColor: [
-                            "rgba(255, 99, 132, 0.5)",
-                            "rgba(54, 162, 235, 0.5)",
-                            "rgba(255, 206, 86, 0.5)",
-                            "rgba(75, 192, 192, 0.5)",
-                            "rgba(153, 102, 255, 0.5)",
-                          ],
-                          borderColor: [
-                            "rgba(255, 99, 132, 1)",
-                            "rgba(54, 162, 235, 1)",
-                            "rgba(255, 206, 86, 1)",
-                            "rgba(75, 192, 192, 1)",
-                            "rgba(153, 102, 255, 1)",
-                          ],
-                          borderWidth: 1,
-                        },
-                      ],
-                    }}
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center">
-                    <p className="text-muted-foreground">
-                      No browser data available
-                    </p>
+                <div className="flex h-full items-center justify-center">
+                  <div className="text-center">
+                    <p className="text-muted-foreground mb-2">Browser Statistics:</p>
+                    <div className="space-y-1">
+                      {browserLabels.length > 0 ? (
+                        browserLabels.map((label, index) => (
+                          <p key={index} className="text-sm">
+                            {label}: {browserData[index]}
+                          </p>
+                        ))
+                      ) : (
+                        <p className="text-sm text-muted-foreground">No browser data available</p>
+                      )}
+                    </div>
                   </div>
-                )}
+                </div>
               </CardContent>
             </Card>
           </div>
