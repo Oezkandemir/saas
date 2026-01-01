@@ -12,20 +12,36 @@ export async function generatePDFFromDocument(
   companyInfo: CompanyInfo,
 ): Promise<Buffer> {
   // Helper functions
-  const formatCurrency = (amount: number, currency: string = "EUR"): string => {
+  const formatCurrency = (amount: number | null | undefined, currency: string = "EUR"): string => {
+    if (amount == null || isNaN(amount)) {
+      return new Intl.NumberFormat("de-DE", {
+        style: "currency",
+        currency,
+      }).format(0);
+    }
     return new Intl.NumberFormat("de-DE", {
       style: "currency",
       currency,
     }).format(amount);
   };
 
-  const formatDate = (date: string | Date): string => {
-    const dateObj = typeof date === "string" ? new Date(date) : date;
-    return new Intl.DateTimeFormat("de-DE", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }).format(dateObj);
+  const formatDate = (date: string | Date | null | undefined): string => {
+    if (!date) {
+      return new Date().toLocaleDateString("de-DE");
+    }
+    try {
+      const dateObj = typeof date === "string" ? new Date(date) : date;
+      if (isNaN(dateObj.getTime())) {
+        return new Date().toLocaleDateString("de-DE");
+      }
+      return new Intl.DateTimeFormat("de-DE", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }).format(dateObj);
+    } catch (error) {
+      return new Date().toLocaleDateString("de-DE");
+    }
   };
 
   const isInvoice = document.type === "invoice";
@@ -61,7 +77,7 @@ export async function generatePDFFromDocument(
 
   // Update addText to use currentPage
   const addTextToPage = (
-    text: string,
+    text: string | null | undefined,
     x: number,
     yPos: number,
     options: {
@@ -72,6 +88,10 @@ export async function generatePDFFromDocument(
       align?: "left" | "center" | "right";
     } = {}
   ) => {
+    // Handle null/undefined text
+    const safeText = text || "";
+    if (!safeText) return;
+
     const {
       size = 10,
       font = helveticaFont,
@@ -83,14 +103,14 @@ export async function generatePDFFromDocument(
     // Calculate x position for alignment
     let actualX = x;
     if (align === "right") {
-      const textWidth = font.widthOfTextAtSize(text, size);
+      const textWidth = font.widthOfTextAtSize(safeText, size);
       actualX = x - textWidth;
     } else if (align === "center") {
-      const textWidth = font.widthOfTextAtSize(text, size);
+      const textWidth = font.widthOfTextAtSize(safeText, size);
       actualX = x - textWidth / 2;
     }
 
-    currentPage.drawText(text, {
+    currentPage.drawText(safeText, {
       x: actualX,
       y: yPos,
       size,
