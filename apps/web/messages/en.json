@@ -463,6 +463,49 @@
       "never": "Never",
       "makeAdmin": "Make Admin",
       "removeAdmin": "Remove Admin Rights"
+    },
+    "webhooks": {
+      "title": "Webhook Management",
+      "description": "Configure webhooks for event notifications",
+      "create": "Create Webhook",
+      "update": "Update Webhook",
+      "delete": "Delete Webhook",
+      "name": "Name",
+      "url": "URL",
+      "secret": "Secret",
+      "events": "Events",
+      "isActive": "Active",
+      "generateSecret": "Generate Secret"
+    },
+    "roles": {
+      "title": "Role Management",
+      "description": "Manage custom roles and permissions",
+      "create": "Create Role",
+      "update": "Update Role",
+      "delete": "Delete Role",
+      "name": "Name",
+      "description": "Description",
+      "permissions": "Permissions",
+      "isSystemRole": "System Role",
+      "assignRole": "Assign Role",
+      "removeRole": "Remove Role"
+    },
+    "usageStats": {
+      "title": "Usage Statistics",
+      "description": "Analyze feature usage and peak times",
+      "featureUsage": "Feature Usage",
+      "peakTimes": "Peak Times",
+      "userActivity": "User Activity"
+    },
+    "revenue": {
+      "title": "Revenue Analytics",
+      "description": "Detailed revenue analytics and metrics",
+      "revenueByPeriod": "Revenue by Period",
+      "revenueByPlan": "Revenue by Plan",
+      "subscriptionMetrics": "Subscription Metrics",
+      "totalMRR": "Total MRR",
+      "churnRate": "Churn Rate",
+      "avgRevenuePerUser": "Average Revenue per User"
     }
   },
   "DashboardSidebar": {

@@ -463,6 +463,49 @@
       "never": "Nie",
       "makeAdmin": "Zum Admin machen",
       "removeAdmin": "Admin-Rechte entfernen"
+    },
+    "webhooks": {
+      "title": "Webhook-Verwaltung",
+      "description": "Konfigurieren Sie Webhooks für Event-Benachrichtigungen",
+      "create": "Webhook erstellen",
+      "update": "Webhook aktualisieren",
+      "delete": "Webhook löschen",
+      "name": "Name",
+      "url": "URL",
+      "secret": "Secret",
+      "events": "Events",
+      "isActive": "Aktiv",
+      "generateSecret": "Secret generieren"
+    },
+    "roles": {
+      "title": "Rollen-Verwaltung",
+      "description": "Verwalten Sie Custom Rollen und Berechtigungen",
+      "create": "Rolle erstellen",
+      "update": "Rolle aktualisieren",
+      "delete": "Rolle löschen",
+      "name": "Name",
+      "description": "Beschreibung",
+      "permissions": "Berechtigungen",
+      "isSystemRole": "System-Rolle",
+      "assignRole": "Rolle zuweisen",
+      "removeRole": "Rolle entfernen"
+    },
+    "usageStats": {
+      "title": "Nutzungsstatistiken",
+      "description": "Feature-Nutzung und Peak-Zeiten analysieren",
+      "featureUsage": "Feature-Nutzung",
+      "peakTimes": "Peak-Zeiten",
+      "userActivity": "Benutzer-Aktivität"
+    },
+    "revenue": {
+      "title": "Revenue Analytics",
+      "description": "Detaillierte Umsatz-Analysen und Metriken",
+      "revenueByPeriod": "Umsatz nach Zeitraum",
+      "revenueByPlan": "Umsatz nach Plan",
+      "subscriptionMetrics": "Abonnement-Metriken",
+      "totalMRR": "Gesamt MRR",
+      "churnRate": "Churn-Rate",
+      "avgRevenuePerUser": "Durchschnittlicher Umsatz pro Benutzer"
     }
   },
   "DashboardSidebar": {

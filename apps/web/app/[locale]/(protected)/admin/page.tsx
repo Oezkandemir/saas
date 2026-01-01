@@ -14,6 +14,10 @@ import {
   Users,
   Shield,
   Activity,
+  Webhook,
+  UserCog,
+  TrendingUp,
+  DollarSign,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
@@ -256,6 +260,98 @@ export default async function AdminPanelPage(props: Props) {
                 <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
                   System anzeigen
                   <Activity className="size-3.5" />
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href={`/${locale}/admin/webhooks`} className="group">
+            <Card className="h-full hover interactive">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex gap-2 items-center text-sm">
+                  <Webhook className="size-4 text-primary" />
+                  Webhooks
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Webhook-Konfiguration für Event-Benachrichtigungen
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-3 text-xs text-muted-foreground">
+                  Konfigurieren Sie Webhooks, um über wichtige Events benachrichtigt zu werden
+                </p>
+                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
+                  Webhooks verwalten
+                  <Webhook className="size-3.5" />
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href={`/${locale}/admin/roles`} className="group">
+            <Card className="h-full hover interactive">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex gap-2 items-center text-sm">
+                  <UserCog className="size-4 text-primary" />
+                  Rollen & Berechtigungen
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Custom Rollen und Berechtigungen verwalten
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-3 text-xs text-muted-foreground">
+                  Erstellen Sie eigene Rollen mit spezifischen Berechtigungen
+                </p>
+                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
+                  Rollen verwalten
+                  <UserCog className="size-3.5" />
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href={`/${locale}/admin/usage-stats`} className="group">
+            <Card className="h-full hover interactive">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex gap-2 items-center text-sm">
+                  <TrendingUp className="size-4 text-primary" />
+                  Nutzungsstatistiken
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Feature-Nutzung und Peak-Zeiten analysieren
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-3 text-xs text-muted-foreground">
+                  Verfolgen Sie, wie Benutzer die Features nutzen
+                </p>
+                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
+                  Statistiken anzeigen
+                  <TrendingUp className="size-3.5" />
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href={`/${locale}/admin/revenue`} className="group">
+            <Card className="h-full hover interactive">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex gap-2 items-center text-sm">
+                  <DollarSign className="size-4 text-primary" />
+                  Revenue Analytics
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Detaillierte Umsatz-Analysen und Metriken
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-3 text-xs text-muted-foreground">
+                  Analysieren Sie Umsatz, Abonnements und Churn-Rate
+                </p>
+                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
+                  Revenue anzeigen
+                  <DollarSign className="size-3.5" />
                 </Button>
               </CardContent>
             </Card>
