@@ -47,7 +47,7 @@ function formatDate(date: string | Date): string {
   }).format(dateObj);
 }
 
-const DEFAULT_COMPANY_INFO: CompanyInfo = {
+export const DEFAULT_COMPANY_INFO: CompanyInfo = {
   name: "Ihr Unternehmen",
   address: "Musterstraße 123",
   city: "Musterstadt",
