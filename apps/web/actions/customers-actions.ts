@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getSupabaseServer, getSupabaseStatic } from "@/lib/supabase-server";
 import { getCurrentUser } from "@/lib/session";
 import { enforcePlanLimit } from "@/lib/plan-limits";
+import { logger } from "@/lib/logger";
 
 export type Customer = {
   id: string;
@@ -51,14 +52,14 @@ export async function getCustomers(): Promise<Customer[]> {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching customers:", error);
+      logger.error("Error fetching customers", error);
       // Return empty array instead of throwing to prevent UI breakage
       return [];
     }
     
     return data || [];
   } catch (error) {
-    console.error("Error in getCustomers:", error);
+    logger.error("Error in getCustomers", error);
     // Return empty array on any error to prevent UI breakage
     return [];
   }
@@ -83,13 +84,13 @@ export async function getCustomer(id: string): Promise<Customer | null> {
 
     if (error) {
       if (error.code === "PGRST116") return null;
-      console.error("Error fetching customer:", error);
+      logger.error("Error fetching customer", error);
       return null;
     }
     
     return data || null;
   } catch (error) {
-    console.error("Error in getCustomer:", error);
+    logger.error("Error in getCustomer", error);
     return null;
   }
 }
@@ -342,7 +343,7 @@ export async function trackCustomerQRCodeScan(
     });
   } catch (error) {
     // Silently fail tracking - don't break the user experience
-    console.error("Error tracking customer QR code scan:", error);
+    logger.error("Error tracking customer QR code scan", error);
   }
 }
 
@@ -365,7 +366,7 @@ export async function getCustomerByQRCode(qrCode: string): Promise<Customer | nu
     
     return data;
   } catch (error) {
-    console.error("Error fetching customer by QR code:", error);
+    logger.error("Error fetching customer by QR code", error);
     return null;
   }
 }

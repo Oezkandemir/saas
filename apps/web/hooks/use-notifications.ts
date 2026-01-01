@@ -2,6 +2,7 @@
 
 import { getUserNotifications } from "@/actions/user-profile-actions";
 import { useQuery } from "@tanstack/react-query";
+import { logger } from "@/lib/logger";
 
 export interface UseNotificationsResult {
   unreadCount: number;
@@ -28,14 +29,15 @@ export function useNotifications(): UseNotificationsResult {
           throw new Error(result.error || "Failed to fetch notifications");
         }
       } catch (err) {
-        console.error("Error fetching notifications:", err);
+        logger.error("Error fetching notifications", err);
         throw new Error("An unexpected error occurred");
       }
     },
-    staleTime: 60 * 1000, // Consider data fresh for 1 minute
+    staleTime: 30 * 1000, // Consider data fresh for 30 seconds (notifications change frequently)
     gcTime: 5 * 60 * 1000, // Keep in cache for garbage collection for 5 minutes
     retry: 1,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false, // Don't refetch on window focus for notifications
+    refetchInterval: 60 * 1000, // Refetch every minute for real-time updates
   });
 
   return {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useSWR from "swr";
+import { logger } from "@/lib/logger";
 
 // Fetcher function for SWR
 const fetcher = async (url: string) => {
@@ -62,7 +63,7 @@ export function usePageViews({ slug, trackView = true }: UsePageViewsProps) {
         mutate();
         setHasTracked(true);
       } catch (error) {
-        console.error("Error tracking page view:", error);
+        logger.error("Error tracking page view", error);
       }
     };
 

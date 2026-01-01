@@ -41,6 +41,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { useNotificationsContext } from "@/components/context/notifications-context";
 import { useSupabase } from "@/components/supabase-provider";
+import { logger } from "@/lib/logger";
 
 interface NotificationsPopoverProps {
   children: React.ReactNode;
@@ -108,12 +109,14 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
         }
         return [];
       } catch (err) {
-        console.error("Error fetching popover notifications:", err);
+        logger.error("Error fetching popover notifications", err);
         return [];
       }
     },
     enabled: open, // Only fetch when popover is open
-    staleTime: 30 * 1000, // Consider data fresh for 30 seconds
+    staleTime: 30 * 1000, // Consider data fresh for 30 seconds (notifications change frequently)
+    gcTime: 2 * 60 * 1000, // Keep in cache for 2 minutes
+    refetchOnWindowFocus: false, // Don't refetch on window focus
   });
 
   // Listen for notification changes from other components
@@ -155,7 +158,7 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
       await refetch();
       router.refresh();
     } catch (error) {
-      console.error("Error marking all as read:", error);
+      logger.error("Error marking all as read", error);
       toast({
         title: "Error",
         description:
@@ -189,7 +192,7 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
       await refetch();
       router.refresh();
     } catch (error) {
-      console.error("Error clearing notifications:", error);
+      logger.error("Error clearing notifications", error);
       toast({
         title: "Error",
         description:
@@ -221,7 +224,7 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
       // Trigger notification updates
       await refetchAll();
     } catch (error) {
-      console.error("Error marking notification as read:", error);
+      logger.error("Error marking notification as read", error);
       toast({
         title: "Error",
         description:
@@ -254,7 +257,7 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
       // Manually trigger updates
       await refetchAll();
     } catch (error) {
-      console.error("Error deleting notification:", error);
+      logger.error("Error deleting notification", error);
       toast({
         title: "Error",
         description:

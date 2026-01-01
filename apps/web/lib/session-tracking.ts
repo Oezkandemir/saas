@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
+import { logger } from "@/lib/logger";
 
 /**
  * Create a login session and log to history
@@ -56,7 +57,7 @@ export async function createLoginSession(
       two_factor_used: false, // Will be updated if 2FA is used
     });
   } catch (error) {
-    console.error("Error creating login session:", error);
+    logger.error("Error creating login session", error);
     // Don't throw - session tracking failures shouldn't break login
   }
 }
@@ -74,7 +75,7 @@ export async function updateSessionActivity(sessionToken: string): Promise<void>
       .eq("session_token", sessionToken)
       .gte("expires_at", new Date().toISOString());
   } catch (error) {
-    console.error("Error updating session activity:", error);
+    logger.error("Error updating session activity", error);
   }
 }
 
@@ -109,7 +110,7 @@ export async function logFailedLogin(
       });
     }
   } catch (error) {
-    console.error("Error logging failed login:", error);
+    logger.error("Error logging failed login", error);
     // Don't throw - logging failures shouldn't break login flow
   }
 }

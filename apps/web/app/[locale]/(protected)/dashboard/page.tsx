@@ -32,7 +32,8 @@ import {
   DollarSign,
 } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+// ISR: Revalidate every 60 seconds for fresh data
+export const revalidate = 60;
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();

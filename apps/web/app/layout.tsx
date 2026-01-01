@@ -18,6 +18,8 @@ import { DynamicProviders } from "@/components/providers/dynamic-providers";
 import { SupabaseProvider } from "@/components/supabase-provider";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ThemeSyncProvider } from "@/components/providers/theme-sync-provider";
+import { PerformanceTracker } from "@/components/performance-tracker";
+import { NavigationProgress } from "@/components/navigation-progress";
 
 export const dynamic = "force-dynamic";
 
@@ -84,6 +86,8 @@ export default async function RootLayout({
                         </DynamicProviders>
                         <Toaster richColors closeButton />
                         <TailwindIndicator />
+                        <PerformanceTracker />
+                        <NavigationProgress />
                       </NotificationsProvider>
                     </QueryClientProvider>
                   </AvatarProvider>

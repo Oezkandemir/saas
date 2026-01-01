@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { UseFormReturn, FieldValues, DeepPartial } from "react-hook-form";
+import { logger } from "@/lib/logger";
 
 interface UseAutoSaveOptions<T extends FieldValues> {
   form: UseFormReturn<T>;
@@ -38,7 +39,7 @@ export function useAutoSave<T extends FieldValues>({
         isRestoredRef.current = true;
       }
     } catch (error) {
-      console.error("Failed to restore form data:", error);
+      logger.error("Failed to restore form data", error);
     }
   }, [enabled, storageKey, form, onRestore]);
 
@@ -58,7 +59,7 @@ export function useAutoSave<T extends FieldValues>({
           localStorage.setItem(storageKey, JSON.stringify(data));
           onSave?.(data as DeepPartial<T>);
         } catch (error) {
-          console.error("Failed to save form data:", error);
+          logger.error("Failed to save form data", error);
         }
       }, debounceMs);
     });
@@ -76,7 +77,7 @@ export function useAutoSave<T extends FieldValues>({
     try {
       localStorage.removeItem(storageKey);
     } catch (error) {
-      console.error("Failed to clear saved form data:", error);
+      logger.error("Failed to clear saved form data", error);
     }
   };
 

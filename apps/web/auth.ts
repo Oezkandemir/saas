@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { syncUserWithDatabase } from "@/lib/auth-sync";
 import { getSupabaseServer } from "@/lib/supabase-server";
+import { logger } from "@/lib/logger";
 
 export const auth = cache(async () => {
   try {
@@ -39,7 +40,7 @@ export const auth = cache(async () => {
       },
     };
   } catch (error) {
-    console.error("Error in auth function:", error);
+    logger.error("Error in auth function", error);
     return null;
   }
 });
@@ -65,7 +66,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ session }, { status: 200 });
   } catch (error) {
-    console.error("Auth GET error:", error);
+    logger.error("Auth GET error", error);
     return NextResponse.json(
       { error: "Authentication error" },
       { status: 500 },
@@ -98,7 +99,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
   } catch (error) {
-    console.error("Auth POST error:", error);
+    logger.error("Auth POST error", error);
     return NextResponse.json(
       { error: "Authentication error" },
       { status: 500 },

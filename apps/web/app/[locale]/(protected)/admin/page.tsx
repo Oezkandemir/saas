@@ -33,6 +33,9 @@ import {
 import { ConfigureStripePortalButton } from "@/components/admin/configure-stripe-button";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
+// ISR: Revalidate every 60 seconds for fresh admin data
+export const revalidate = 60;
+
 export async function generateMetadata() {
   const t = await getTranslations("Admin.panel");
 

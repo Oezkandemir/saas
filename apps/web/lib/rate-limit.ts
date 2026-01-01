@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/session";
+import { logger } from "@/lib/logger";
 
 export interface RateLimitResult {
   allowed: boolean;
@@ -122,7 +123,7 @@ export async function checkRateLimit(
   });
 
   if (error) {
-    console.error("Rate limit check error:", error);
+    logger.error("Rate limit check error", error);
     // Fail open - allow request if rate limit check fails
     return {
       allowed: true,

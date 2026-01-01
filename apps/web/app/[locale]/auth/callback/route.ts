@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { routing } from "@/i18n/routing";
 
 import { getSupabaseServer } from "@/lib/supabase-server";
+import { logger } from "@/lib/logger";
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
@@ -24,7 +25,7 @@ export async function GET(request: NextRequest) {
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
-        console.error("Error exchanging code for session:", error.message);
+        logger.error("Error exchanging code for session", { message: error.message });
         return NextResponse.redirect(
           new URL(
             `/${locale}/login?error=${encodeURIComponent(error.message)}`,
@@ -49,7 +50,7 @@ export async function GET(request: NextRequest) {
         new URL(`/${locale}/dashboard`, requestUrl.origin),
       );
     } catch (error) {
-      console.error("Unexpected error during auth callback:", error);
+      logger.error("Unexpected error during auth callback", error);
       return NextResponse.redirect(
         new URL(
           `/${locale}/login?error=${encodeURIComponent("Authentication failed")}`,
@@ -76,18 +77,18 @@ export async function GET(request: NextRequest) {
 
       if (!confirmResponse.ok) {
         const errorData = await confirmResponse.json();
-        console.error("Failed to confirm user:", errorData);
+        logger.error("Failed to confirm user", errorData);
         throw new Error(errorData.error || "Failed to confirm user");
       }
 
-      console.log(`Email verified successfully for user ${userId}`);
+      logger.info(`Email verified successfully for user ${userId}`);
 
       // Redirect to the verified page with the userId to enable client-side login
       return NextResponse.redirect(
         new URL(`/${locale}/auth/verified?userId=${userId}`, requestUrl.origin),
       );
     } catch (error) {
-      console.error("Error handling signup callback:", error);
+      logger.error("Error handling signup callback", error);
       return NextResponse.redirect(
         new URL(
           `/${locale}/login?error=${encodeURIComponent("Verification failed")}`,

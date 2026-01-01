@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { logger } from "@/lib/logger";
 
 interface PDFDownloadButtonProps {
   documentId: string;
@@ -55,7 +56,7 @@ export function PDFDownloadButton({
       
       toast.success("PDF erfolgreich heruntergeladen");
     } catch (error) {
-      console.error("Error generating PDF:", error);
+      logger.error("Error generating PDF", error);
       
       let errorMessage = "Fehler beim Generieren des PDFs";
       if (error instanceof Error) {

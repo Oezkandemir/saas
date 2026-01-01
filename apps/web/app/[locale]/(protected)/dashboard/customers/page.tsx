@@ -10,7 +10,8 @@ import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlanLimitWarning } from "@/components/plan-limit-warning";
 
-export const dynamic = "force-dynamic";
+// ISR: Revalidate every 60 seconds for fresh customer data
+export const revalidate = 60;
 
 export default async function CustomersPage() {
   const user = await getCurrentUser();
