@@ -36,8 +36,15 @@ export default async function RootLayout({
   // Enable static rendering
   setRequestLocale(locale);
 
-  // Get messages for the default locale
-  const messages = await getMessages();
+  // Get messages for the default locale with error handling
+  let messages;
+  try {
+    messages = await getMessages();
+  } catch (error) {
+    // Fallback to empty messages if loading fails
+    console.error("Failed to load messages:", error);
+    messages = {};
+  }
 
   return (
     <html lang={locale} suppressHydrationWarning>
