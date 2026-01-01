@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -370,9 +371,9 @@ export function OnboardingWizard({ onComplete, onSkip }: OnboardingWizardProps) 
           </div>
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20">
-              {steps[currentStep].icon && (
-                <steps[currentStep].icon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-              )}
+              {steps[currentStep].icon && React.createElement(steps[currentStep].icon, {
+                className: "h-6 w-6 text-blue-600 dark:text-blue-400"
+              })}
             </div>
             <div>
               <CardTitle>{steps[currentStep].title}</CardTitle>

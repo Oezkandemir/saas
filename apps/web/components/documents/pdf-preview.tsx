@@ -400,7 +400,7 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
             <DialogTitle>PDF-Vorschau</DialogTitle>
             <DialogDescription>Vollbildansicht des PDFs</DialogDescription>
           </DialogHeader>
-          {fullscreenContent}
+          {fullscreenContentDetailed}
         </DialogContent>
       </Dialog>
     );

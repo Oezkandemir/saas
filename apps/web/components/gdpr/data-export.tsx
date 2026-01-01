@@ -29,7 +29,7 @@ export function DataExport() {
         toast({
           variant: "destructive",
           title: "Export fehlgeschlagen",
-          description: result.message,
+          description: "message" in result ? result.message : "Ein Fehler ist aufgetreten",
         });
         return;
       }
@@ -69,7 +69,7 @@ export function DataExport() {
         toast({
           variant: "destructive",
           title: "Export fehlgeschlagen",
-          description: result.message,
+          description: "message" in result ? result.message : "Ein Fehler ist aufgetreten",
         });
         return;
       }

@@ -43,7 +43,7 @@ export const sidebarLinks: SidebarNavItem[] = [
       },
       {
         href: "/dashboard/support",
-        icon: "helpCircle",
+        icon: "help",
         title: "Support",
       },
       {
