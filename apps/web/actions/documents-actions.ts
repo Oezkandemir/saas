@@ -222,7 +222,7 @@ export async function createDocument(
 
   // Generate PDF in background (non-blocking)
   // Don't await - let it run in the background
-  import("@/lib/pdf/generator")
+  import("@/lib/pdf/generator-vercel")
     .then(({ generatePDFInBackground }) => {
       import("@/lib/pdf/templates")
         .then(({ generateInvoiceHTMLAsync }) => {

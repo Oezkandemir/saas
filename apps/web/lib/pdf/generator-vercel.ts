@@ -26,153 +26,24 @@ const DEFAULT_OPTIONS: PDFOptions = {
 };
 
 /**
- * Generates a PDF using a headless browser service or simple HTML-to-PDF conversion
+ * Generates a PDF using @react-pdf/renderer (no external services needed!)
  * 
- * Options:
- * 1. Use external service (recommended for production) - set PDF_SERVICE_URL
- * 2. Use simple HTML-to-PDF conversion (fallback) - works without external services
+ * This is a pure JavaScript solution that works without API keys or external services.
+ * It uses React components to generate PDFs server-side.
  */
 export async function generatePDFFromHTML(
   html: string,
   options: PDFOptions = {},
 ): Promise<Buffer> {
-  // Option 1: Use external service (recommended for production)
-  if (process.env.PDF_SERVICE_URL) {
-    try {
-      const response = await fetch(process.env.PDF_SERVICE_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(process.env.PDF_SERVICE_API_KEY && {
-            "Authorization": `Bearer ${process.env.PDF_SERVICE_API_KEY}`
-          })
-        },
-        body: JSON.stringify({
-          html,
-          options: { ...DEFAULT_OPTIONS, ...options }
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`PDF service returned ${response.status}: ${await response.text()}`);
-      }
-
-      const arrayBuffer = await response.arrayBuffer();
-      return Buffer.from(arrayBuffer);
-    } catch (error) {
-      console.error("Error calling PDF service:", error);
-      throw new Error(`Failed to generate PDF: ${error instanceof Error ? error.message : String(error)}`);
-    }
-  }
-
-  // Option 2: Simple HTML-to-PDF conversion using a basic approach
-  // This creates a minimal PDF structure from HTML
-  try {
-    return await generateSimplePDFFromHTML(html, options);
-  } catch (error) {
-    console.error("Error generating simple PDF:", error);
-    throw new Error(
-      "PDF generation failed. Please set PDF_SERVICE_URL environment variable to use an external PDF service.\n" +
-      "Recommended services: PDFShift (https://pdfshift.io), DocRaptor, or Browserless."
-    );
-  }
+  // This function is kept for compatibility but we use generatePDFFromDocument instead
+  // HTML-based generation is not supported with @react-pdf/renderer
+  // We need to use the React component approach
+  throw new Error(
+    "generatePDFFromHTML wird nicht mehr unterstützt.\n\n" +
+    "Bitte verwenden Sie generatePDFFromDocument mit React-PDF-Komponenten."
+  );
 }
 
-/**
- * Simple PDF generation from HTML using basic PDF structure
- * This is a fallback solution that works without external services
- */
-async function generateSimplePDFFromHTML(
-  html: string,
-  options: PDFOptions = {},
-): Promise<Buffer> {
-  // Create a minimal PDF structure
-  // This is a very basic implementation - for production, use a proper PDF service
-  const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
-  
-  // Extract text content from HTML (simple approach)
-  const textContent = html
-    .replace(/<[^>]*>/g, ' ') // Remove HTML tags
-    .replace(/\s+/g, ' ') // Normalize whitespace
-    .trim();
-
-  // Create a minimal PDF structure
-  // PDF format: %PDF-1.4 header, objects, xref table, trailer
-  const pdfLines: string[] = [];
-  
-  // PDF Header
-  pdfLines.push('%PDF-1.4');
-  
-  // Catalog object (object 1)
-  pdfLines.push('1 0 obj');
-  pdfLines.push('<< /Type /Catalog /Pages 2 0 R >>');
-  pdfLines.push('endobj');
-  
-  // Pages object (object 2)
-  pdfLines.push('2 0 obj');
-  pdfLines.push('<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
-  pdfLines.push('endobj');
-  
-  // Page object (object 3)
-  const pageWidth = mergedOptions.format === 'Letter' ? 612 : 595.28; // A4 width in points
-  const pageHeight = mergedOptions.format === 'Letter' ? 792 : 841.89; // A4 height in points
-  
-  pdfLines.push('3 0 obj');
-  pdfLines.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>`);
-  pdfLines.push('endobj');
-  
-  // Content stream (object 4) - simple text rendering
-  const content = `BT
-/F1 12 Tf
-50 ${pageHeight - 50} Td
-(${escapePDFString(textContent.substring(0, 2000))}) Tj
-ET`;
-  
-  pdfLines.push('4 0 obj');
-  pdfLines.push(`<< /Length ${content.length} >>`);
-  pdfLines.push('stream');
-  pdfLines.push(content);
-  pdfLines.push('endstream');
-  pdfLines.push('endobj');
-  
-  // Font object (object 5) - Helvetica
-  pdfLines.push('5 0 obj');
-  pdfLines.push('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
-  pdfLines.push('endobj');
-  
-  // Cross-reference table
-  const xrefOffset = pdfLines.join('\n').length;
-  pdfLines.push('xref');
-  pdfLines.push('0 6');
-  pdfLines.push('0000000000 65535 f ');
-  pdfLines.push('0000000009 00000 n ');
-  pdfLines.push('0000000058 00000 n ');
-  pdfLines.push('0000000115 00000 n ');
-  pdfLines.push('0000000300 00000 n ');
-  pdfLines.push('0000000400 00000 n ');
-  
-  // Trailer
-  pdfLines.push('trailer');
-  pdfLines.push('<< /Size 6 /Root 1 0 R >>');
-  pdfLines.push('startxref');
-  pdfLines.push(String(xrefOffset));
-  pdfLines.push('%%EOF');
-  
-  return Buffer.from(pdfLines.join('\n'), 'utf-8');
-}
-
-/**
- * Escape special characters for PDF strings
- */
-function escapePDFString(str: string): string {
-  return str
-    .replace(/\\/g, '\\\\')
-    .replace(/\(/g, '\\(')
-    .replace(/\)/g, '\\)')
-    .replace(/\n/g, '\\n')
-    .replace(/\r/g, '\\r')
-    .replace(/\t/g, '\\t');
-}
 
 /**
  * Uploads PDF to Supabase Storage and returns public URL
@@ -231,15 +102,37 @@ export async function uploadPDFToStorage(
 
 /**
  * Generates PDF for a document and uploads it to storage
+ * Uses PDFKit - pure JavaScript, works perfectly on Vercel and locally!
+ * No external services or API keys needed.
  */
 export async function generateAndUploadPDF(
   document: Document,
-  htmlContent: string,
+  htmlContent: string, // Kept for compatibility but not used
   options?: PDFOptions,
 ): Promise<string> {
   try {
-    // Generate PDF buffer
-    const pdfBuffer = await generatePDFFromHTML(htmlContent, options);
+    // Import pdf-lib generator
+    const { generatePDFFromDocument } = await import("./pdf-lib-generator");
+    const { convertCompanyProfileToInfo, DEFAULT_COMPANY_INFO } = await import("./templates");
+    
+    // Get company info from the document (we need it for the PDF)
+    // Try to load company profile
+    let companyInfo;
+    try {
+      const { getDefaultCompanyProfile } = await import("@/actions/company-profiles-actions");
+      const defaultProfile = await getDefaultCompanyProfile();
+      companyInfo = convertCompanyProfileToInfo(defaultProfile);
+    } catch (error) {
+      console.warn("Could not load company profile, using defaults:", error);
+    }
+    
+    // Use default company info if none found
+    if (!companyInfo) {
+      companyInfo = DEFAULT_COMPANY_INFO;
+    }
+
+    // Generate PDF buffer using PDFKit
+    const pdfBuffer = await generatePDFFromDocument(document, companyInfo);
 
     // Upload to storage
     const pdfUrl = await uploadPDFToStorage(

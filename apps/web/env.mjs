@@ -10,6 +10,10 @@ export const env = createEnv({
     RESEND_API_KEY: z.string().optional(),
     EMAIL_FROM: z.string().optional(),
     
+    // PDF Service (optional - wird für Rechnungen/Angebote benötigt)
+    PDF_SERVICE_URL: z.string().url().optional(),
+    PDF_SERVICE_API_KEY: z.string().optional(),
+    
     // Stripe
     STRIPE_API_KEY: z.string().optional().default(""),
     STRIPE_WEBHOOK_SECRET: z.string().optional().default(""),
@@ -39,6 +43,10 @@ export const env = createEnv({
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    
+    // PDF Service
+    PDF_SERVICE_URL: process.env.PDF_SERVICE_URL,
+    PDF_SERVICE_API_KEY: process.env.PDF_SERVICE_API_KEY,
     
     // Stripe
     STRIPE_API_KEY: process.env.STRIPE_API_KEY,
