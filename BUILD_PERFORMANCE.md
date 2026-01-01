@@ -275,3 +275,4 @@ Bei Fragen oder Problemen:
 2. Review dieser Dokumentation
 3. Analyze Bundle mit `pnpm analyze`
 
+

@@ -39,3 +39,4 @@ export const fontGeist = localFont({
 // NOTE: On Vercel, the above code will work perfectly!
 // The local build issue is specific to restricted network environments.
 
+

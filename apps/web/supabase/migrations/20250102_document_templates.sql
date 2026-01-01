@@ -86,3 +86,4 @@ ALTER TABLE public.documents
 
 CREATE INDEX IF NOT EXISTS documents_template_id_idx ON public.documents(template_id);
 
+

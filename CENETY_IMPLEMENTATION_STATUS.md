@@ -183,3 +183,4 @@ Run the migration file in Supabase SQL Editor:
 - `apps/web/app/[locale]/(protected)/layout.tsx` - Added sidebar
 
 
+

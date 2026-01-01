@@ -266,3 +266,4 @@ export async function deleteDocumentTemplate(id: string): Promise<void> {
   revalidatePath("/dashboard/settings/templates");
 }
 
+

@@ -58,3 +58,4 @@ pnpm dev
 Die API Keys sind richtig - Sie müssen nur die richtigen Price IDs eintragen!
 
 
+

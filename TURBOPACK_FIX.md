@@ -98,3 +98,4 @@ Falls das Problem weiterhin besteht, können Sie Turbopack in der `package.json`
 - [Turbopack Issues](https://github.com/vercel/next.js/issues?q=is%3Aissue+EBADF)
 
 
+

@@ -409,3 +409,4 @@ CREATE TRIGGER subscriptions_updated_at
   EXECUTE FUNCTION public.update_updated_at_column();
 
 
+
