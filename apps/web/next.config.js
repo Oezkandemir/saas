@@ -73,8 +73,6 @@ const nextConfig = {
   
   // ⚡ ULTRA-FAST BUILD OPTIMIZATIONS
   experimental: {
-    // Optimize CSS processing
-    optimizeCss: true,
     // Tree-shake unused imports from heavy packages
     optimizePackageImports: [
       '@radix-ui/react-icons',
@@ -104,8 +102,8 @@ const nextConfig = {
 
   // ⚡ WEBPACK OPTIMIZATIONS FOR LIGHTNING SPEED
   webpack: (config, { isServer, dev }) => {
-    // Enable persistent caching
-    if (!dev) {
+    // Enable persistent caching (only in production, not in Turbopack mode)
+    if (!dev && !process.env.TURBOPACK) {
       config.cache = {
         type: 'filesystem',
         buildDependencies: {
