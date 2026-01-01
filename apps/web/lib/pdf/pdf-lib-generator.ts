@@ -52,6 +52,7 @@ export async function generatePDFFromDocument(
       font?: any;
       color?: any;
       maxWidth?: number;
+      align?: "left" | "center" | "right";
     } = {}
   ) => {
     const {
@@ -59,15 +60,26 @@ export async function generatePDFFromDocument(
       font = helveticaFont,
       color = rgb(0.067, 0.094, 0.153), // #111827
       maxWidth = width - 80,
+      align = "left",
     } = options;
 
+    // Calculate x position for right alignment
+    let actualX = x;
+    if (align === "right") {
+      const textWidth = font.widthOfTextAtSize(text, size);
+      actualX = x - textWidth;
+    } else if (align === "center") {
+      const textWidth = font.widthOfTextAtSize(text, size);
+      actualX = x - textWidth / 2;
+    }
+
     page.drawText(text, {
-      x,
+      x: actualX,
       y: yPos,
       size,
       font,
       color,
-      maxWidth,
+      maxWidth: align === "right" ? undefined : maxWidth,
     });
   };
 
@@ -219,6 +231,13 @@ export async function generatePDFFromDocument(
     const itemHeight = 20;
     let tableY = tableTop;
 
+    // Column positions - better spacing
+    const colPos = 50; // Position column (narrow)
+    const colDesc = 100; // Description column (wide)
+    const colQty = width - 220; // Quantity column (right-aligned, 70px width)
+    const colUnitPrice = width - 140; // Unit price column (right-aligned, 80px width)
+    const colTotal = width - 40; // Total column (right-aligned, 100px width)
+
     // Table header
     page.drawRectangle({
       x: 40,
@@ -230,25 +249,28 @@ export async function generatePDFFromDocument(
       borderWidth: 2,
     });
 
-    addText("Pos.", 50, tableY - 14, {
+    addText("Pos.", colPos, tableY - 14, {
       size: 10,
       font: helveticaBoldFont,
     });
-    addText("Beschreibung", 100, tableY - 14, {
+    addText("Beschreibung", colDesc, tableY - 14, {
       size: 10,
       font: helveticaBoldFont,
     });
-    addText("Menge", width - 155, tableY - 14, {
+    addText("Menge", colQty, tableY - 14, {
       size: 10,
       font: helveticaBoldFont,
+      align: "right",
     });
-    addText("Einzelpreis", width - 95, tableY - 14, {
+    addText("Einzelpreis", colUnitPrice, tableY - 14, {
       size: 10,
       font: helveticaBoldFont,
+      align: "right",
     });
-    addText("Gesamt", width - 40, tableY - 14, {
+    addText("Gesamt", colTotal, tableY - 14, {
       size: 10,
       font: helveticaBoldFont,
+      align: "right",
     });
 
     tableY -= itemHeight;
@@ -271,23 +293,26 @@ export async function generatePDFFromDocument(
         borderWidth: 1,
       });
 
-      addText(String(index + 1), 50, tableY - 14, {
+      addText(String(index + 1), colPos, tableY - 14, {
         size: 11,
         color: index % 2 === 0 ? rgb(0.067, 0.094, 0.153) : rgb(0.42, 0.45, 0.51),
       });
-      addText(item.description, 100, tableY - 14, {
+      addText(item.description, colDesc, tableY - 14, {
         size: 11,
-        maxWidth: 270,
+        maxWidth: colQty - colDesc - 15, // Leave more space for right-aligned columns
       });
-      addText(String(item.quantity), width - 155, tableY - 14, {
+      addText(String(item.quantity), colQty, tableY - 14, {
         size: 11,
+        align: "right",
       });
-      addText(formatCurrency(item.unit_price), width - 95, tableY - 14, {
+      addText(formatCurrency(item.unit_price), colUnitPrice, tableY - 14, {
         size: 11,
+        align: "right",
       });
-      addText(formatCurrency(item.quantity * item.unit_price), width - 40, tableY - 14, {
+      addText(formatCurrency(item.quantity * item.unit_price), colTotal, tableY - 14, {
         size: 11,
         font: helveticaBoldFont,
+        align: "right",
       });
 
       tableY -= itemHeight;
@@ -296,52 +321,62 @@ export async function generatePDFFromDocument(
     y = tableY - 20;
   }
 
-  // Totals
-  const totalsX = width - 385;
+  // Totals - right aligned
+  const totalsStartX = 210; // Start of totals section
+  const totalsEndX = width - 40; // Right edge for alignment
   y -= 20;
-  addText("Zwischensumme (Netto):", totalsX, y, {
+  
+  addText("Zwischensumme (Netto):", totalsStartX, y, {
     size: 10,
     color: rgb(0.22, 0.25, 0.31),
   });
-  addText(formatCurrency(document.subtotal), width - 40, y, {
+  addText(formatCurrency(document.subtotal), totalsEndX, y, {
     size: 10,
     font: helveticaBoldFont,
+    align: "right",
   });
   y -= 15;
-  addText(`zzgl. MwSt. (${document.tax_rate}%):`, totalsX, y, {
+  
+  addText(`zzgl. MwSt. (${document.tax_rate}%):`, totalsStartX, y, {
     size: 10,
     color: rgb(0.22, 0.25, 0.31),
   });
-  addText(formatCurrency(document.tax_amount), width - 40, y, {
+  addText(formatCurrency(document.tax_amount), totalsEndX, y, {
     size: 10,
     font: helveticaBoldFont,
+    align: "right",
   });
   y -= 15;
+  
   page.drawLine({
-    start: { x: totalsX, y },
-    end: { x: width - 40, y },
+    start: { x: totalsStartX, y },
+    end: { x: totalsEndX, y },
     thickness: 1,
     color: rgb(0.82, 0.84, 0.86),
   });
   y -= 10;
 
-  // Total box
+  // Total box - ensure enough width for the total amount
+  const totalBoxWidth = totalsEndX - totalsStartX + 10;
+  const totalBoxHeight = 30;
   page.drawRectangle({
-    x: totalsX - 10,
-    y: y - 30,
-    width: width - totalsX - 30,
-    height: 30,
+    x: totalsStartX - 10,
+    y: y - totalBoxHeight,
+    width: totalBoxWidth,
+    height: totalBoxHeight,
     color: rgb(0.95, 0.96, 0.95),
     borderColor: rgb(0.067, 0.094, 0.153),
     borderWidth: 2,
   });
-  addText("Gesamtbetrag (Brutto):", totalsX, y - 8, {
+  
+  addText("Gesamtbetrag (Brutto):", totalsStartX, y - 8, {
     size: 11,
     font: helveticaBoldFont,
   });
-  addText(formatCurrency(document.total), width - 40, y - 6, {
+  addText(formatCurrency(document.total), totalsEndX, y - 6, {
     size: 13,
     font: helveticaBoldFont,
+    align: "right",
   });
 
   y -= 50;
