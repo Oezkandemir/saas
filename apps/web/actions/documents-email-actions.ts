@@ -7,7 +7,6 @@ import { resend } from "@/lib/email";
 import { siteConfig } from "@/config/site";
 import { logger } from "@/lib/logger";
 import { getSupabaseServer } from "@/lib/supabase-server";
-import { generateInvoiceHTMLAsync } from "@/lib/pdf/templates";
 import { generateAndUploadPDF } from "@/lib/pdf/generator-vercel";
 
 export interface SendDocumentEmailInput {
@@ -33,14 +32,11 @@ export async function sendDocumentEmail(
       throw new Error("Document not found");
     }
 
-    // Ensure PDF exists - generate directly without HTTP fetch to avoid SSL issues
+    // Ensure PDF exists - generate directly using pdf-lib
     if (!document.pdf_url) {
       try {
-        // Generate HTML content with company profile data
-        const htmlContent = await generateInvoiceHTMLAsync(document);
-        
-        // Generate and upload PDF directly
-        const pdfUrl = await generateAndUploadPDF(document, htmlContent);
+        // Generate and upload PDF directly (pdf-lib doesn't need HTML)
+        const pdfUrl = await generateAndUploadPDF(document, "");
         
         // Update document with PDF URL in database
         const supabase = await getSupabaseServer();
@@ -66,12 +62,39 @@ export async function sendDocumentEmail(
       }
     }
 
-    // Fetch PDF from URL
-    const pdfResponse = await fetch(document.pdf_url!);
+    // Fetch PDF from URL and validate it's actually a PDF
+    let pdfResponse = await fetch(document.pdf_url!);
     if (!pdfResponse.ok) {
       throw new Error("Failed to fetch PDF");
     }
-    const pdfBuffer = await pdfResponse.arrayBuffer();
+    let pdfBuffer = await pdfResponse.arrayBuffer();
+    
+    // Validate that we got a PDF (starts with %PDF)
+    const buffer = Buffer.from(pdfBuffer);
+    if (buffer.length < 4 || buffer.toString("ascii", 0, 4) !== "%PDF") {
+      // PDF is invalid (probably old HTML format), regenerate it
+      logger.warn("Invalid PDF detected (possibly old HTML format), regenerating with pdf-lib...");
+      const pdfUrl = await generateAndUploadPDF(document, "");
+      const supabase = await getSupabaseServer();
+      await supabase
+        .from("documents")
+        .update({ pdf_url: pdfUrl })
+        .eq("id", document.id)
+        .eq("user_id", user.id);
+      
+      // Fetch the new PDF
+      pdfResponse = await fetch(pdfUrl);
+      if (!pdfResponse.ok) {
+        throw new Error("Failed to fetch regenerated PDF");
+      }
+      pdfBuffer = await pdfResponse.arrayBuffer();
+      
+      // Validate the new PDF
+      const newBuffer = Buffer.from(pdfBuffer);
+      if (newBuffer.length < 4 || newBuffer.toString("ascii", 0, 4) !== "%PDF") {
+        throw new Error("Regenerated PDF is still invalid");
+      }
+    }
 
     const documentType = document.type === "invoice" ? "Rechnung" : "Angebot";
     const subject =

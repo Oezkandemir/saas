@@ -41,11 +41,8 @@ export async function GET(
     }
 
     // PDF doesn't exist or force regeneration requested
-    // Generate HTML content with company profile data
-    const htmlContent = await generateInvoiceHTMLAsync(document);
-
-    // Generate and upload PDF
-    const pdfUrl = await generateAndUploadPDF(document, htmlContent);
+    // Generate and upload PDF using pdf-lib (no HTML needed)
+    const pdfUrl = await generateAndUploadPDF(document, "");
 
     // Update document with PDF URL
     const supabase = await getSupabaseServer();
@@ -120,11 +117,8 @@ export async function POST(
       return NextResponse.json({ error: "Document not found" }, { status: 404 });
     }
 
-    // Generate HTML content with company profile data
-    const htmlContent = await generateInvoiceHTMLAsync(document);
-
-    // Generate and upload PDF (force regeneration)
-    const pdfUrl = await generateAndUploadPDF(document, htmlContent);
+    // Generate and upload PDF using pdf-lib (force regeneration)
+    const pdfUrl = await generateAndUploadPDF(document, "");
 
     // Update document with PDF URL
     const supabase = await getSupabaseServer();
