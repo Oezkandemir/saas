@@ -30,13 +30,30 @@ export async function GET(
       return NextResponse.json({ error: "Document not found" }, { status: 404 });
     }
 
-    // Check if PDF already exists - return it immediately if available
+    // Check if PDF already exists - validate it first
     if (document.pdf_url) {
       const url = new URL(request.url);
       // Only regenerate if explicitly requested with ?force=true
       if (url.searchParams.get("force") !== "true") {
-        // Return existing PDF URL - it's always ready!
-        return NextResponse.json({ pdfUrl: document.pdf_url });
+        // Validate existing PDF is actually a PDF (not HTML/CSS)
+        try {
+          const pdfResponse = await fetch(document.pdf_url);
+          if (pdfResponse.ok) {
+            const pdfBuffer = await pdfResponse.arrayBuffer();
+            const buffer = Buffer.from(pdfBuffer);
+            // Check if it's a valid PDF (starts with %PDF)
+            if (buffer.length >= 4 && buffer.toString("ascii", 0, 4) === "%PDF") {
+              // Valid PDF, return it
+              return NextResponse.json({ pdfUrl: document.pdf_url });
+            } else {
+              // Invalid PDF (probably old HTML), regenerate it
+              console.warn("Invalid PDF detected, regenerating...");
+            }
+          }
+        } catch (error) {
+          // Error fetching PDF, regenerate it
+          console.warn("Error validating PDF, regenerating:", error);
+        }
       }
     }
 

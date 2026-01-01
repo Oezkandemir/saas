@@ -111,6 +111,8 @@ export async function generateAndUploadPDF(
   options?: PDFOptions,
 ): Promise<string> {
   try {
+    console.log("Starting PDF generation for document:", document.id);
+    
     // Import pdf-lib generator
     const { generatePDFFromDocument } = await import("./pdf-lib-generator");
     const { convertCompanyProfileToInfo, DEFAULT_COMPANY_INFO } = await import("./templates");
@@ -122,6 +124,7 @@ export async function generateAndUploadPDF(
       const { getDefaultCompanyProfile } = await import("@/actions/company-profiles-actions");
       const defaultProfile = await getDefaultCompanyProfile();
       companyInfo = convertCompanyProfileToInfo(defaultProfile);
+      console.log("Loaded company profile:", companyInfo?.name || "none");
     } catch (error) {
       console.warn("Could not load company profile, using defaults:", error);
     }
@@ -129,22 +132,45 @@ export async function generateAndUploadPDF(
     // Use default company info if none found
     if (!companyInfo) {
       companyInfo = DEFAULT_COMPANY_INFO;
+      console.log("Using default company info");
     }
 
-    // Generate PDF buffer using PDFKit
+    console.log("Generating PDF buffer with pdf-lib...");
+    // Generate PDF buffer using pdf-lib
     const pdfBuffer = await generatePDFFromDocument(document, companyInfo);
+    
+    // Validate PDF buffer
+    if (!pdfBuffer || pdfBuffer.length === 0) {
+      throw new Error("PDF buffer is empty");
+    }
+    
+    // Check if it's a valid PDF (starts with %PDF)
+    const pdfHeader = pdfBuffer.toString("ascii", 0, Math.min(4, pdfBuffer.length));
+    if (pdfHeader !== "%PDF") {
+      throw new Error(`Invalid PDF generated. Header: ${pdfHeader}, Buffer length: ${pdfBuffer.length}`);
+    }
+    
+    console.log("PDF generated successfully, size:", pdfBuffer.length, "bytes");
 
     // Upload to storage
+    console.log("Uploading PDF to storage...");
     const pdfUrl = await uploadPDFToStorage(
       pdfBuffer,
       document.id,
       document.user_id,
     );
 
+    console.log("PDF uploaded successfully, URL:", pdfUrl);
     return pdfUrl;
   } catch (error) {
-    console.error("Error generating and uploading PDF:", error);
-    throw error;
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    console.error("Error generating and uploading PDF:", {
+      message: errorMessage,
+      stack: errorStack,
+      documentId: document.id,
+    });
+    throw new Error(`PDF-Generierung fehlgeschlagen: ${errorMessage}`);
   }
 }
 
