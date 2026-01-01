@@ -23,7 +23,7 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  // Enable static rendering
+  // Set locale for server-side rendering
   setRequestLocale(locale);
 
   // Get messages for the current locale with error handling
@@ -43,6 +43,7 @@ export default async function LocaleLayout({
   }
 
   // Locale layout provides locale-specific messages
+  // This will override the default locale messages from root layout
   return (
     <NextIntlClientProvider messages={messages} locale={locale}>
       {children}

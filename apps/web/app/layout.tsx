@@ -1,4 +1,6 @@
 import { routing } from "@/i18n/routing";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, setRequestLocale } from "next-intl/server";
 
 import "@/styles/globals.css";
 
@@ -22,13 +24,32 @@ export const dynamic = "force-dynamic";
 
 export const metadata = constructMetadata();
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Default locale for root layout (for HTML lang attribute)
+  // Default locale for root layout
   const locale = routing.defaultLocale;
+  
+  // Set locale for server-side rendering
+  setRequestLocale(locale);
+
+  // Get messages for the default locale with error handling
+  let messages;
+  try {
+    messages = await getMessages();
+  } catch (error) {
+    // Fallback to empty messages if loading fails
+    console.error("Failed to load messages in root layout:", error);
+    try {
+      // Try to load default locale messages directly
+      messages = (await import(`../messages/${locale}.json`)).default;
+    } catch (fallbackError) {
+      console.error("Failed to load fallback messages:", fallbackError);
+      messages = {};
+    }
+  }
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -68,19 +89,21 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <ThemeSyncProvider>
-                <AvatarProvider>
-                  <QueryClientProvider>
-                    <NotificationsProvider>
-                      <DynamicProviders>
-                        {children}
-                      </DynamicProviders>
-                      <Toaster richColors closeButton />
-                      <TailwindIndicator />
-                      <PerformanceTracker />
-                      <NavigationProgress />
-                    </NotificationsProvider>
-                  </QueryClientProvider>
-                </AvatarProvider>
+                <NextIntlClientProvider messages={messages} locale={locale}>
+                  <AvatarProvider>
+                    <QueryClientProvider>
+                      <NotificationsProvider>
+                        <DynamicProviders>
+                          {children}
+                        </DynamicProviders>
+                        <Toaster richColors closeButton />
+                        <TailwindIndicator />
+                        <PerformanceTracker />
+                        <NavigationProgress />
+                      </NotificationsProvider>
+                    </QueryClientProvider>
+                  </AvatarProvider>
+                </NextIntlClientProvider>
               </ThemeSyncProvider>
             </ThemeProvider>
           </SupabaseProvider>
