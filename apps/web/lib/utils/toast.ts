@@ -29,7 +29,7 @@ export const toast = {
             onClick: options.action.onClick,
           }
         : undefined,
-      cancel: options?.cancel
+      cancel: options?.cancel && options.cancel.onClick
         ? {
             label: options.cancel.label,
             onClick: options.cancel.onClick,
@@ -48,7 +48,7 @@ export const toast = {
             onClick: options.action.onClick,
           }
         : undefined,
-      cancel: options?.cancel
+      cancel: options?.cancel && options.cancel.onClick
         ? {
             label: options.cancel.label,
             onClick: options.cancel.onClick,
@@ -67,7 +67,7 @@ export const toast = {
             onClick: options.action.onClick,
           }
         : undefined,
-      cancel: options?.cancel
+      cancel: options?.cancel && options.cancel.onClick
         ? {
             label: options.cancel.label,
             onClick: options.cancel.onClick,
@@ -86,7 +86,7 @@ export const toast = {
             onClick: options.action.onClick,
           }
         : undefined,
-      cancel: options?.cancel
+      cancel: options?.cancel && options.cancel.onClick
         ? {
             label: options.cancel.label,
             onClick: options.cancel.onClick,

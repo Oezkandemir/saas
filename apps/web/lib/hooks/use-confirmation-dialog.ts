@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { useState } from "react";
+import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 import {
-  AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
@@ -66,44 +66,61 @@ export function useConfirmationDialog() {
     setResolvePromise(null);
   };
 
-  const ConfirmationDialog = (): React.ReactElement | null => {
+  const ConfirmationDialog = () => {
     if (!options) return null;
 
-    return (
-      <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{options.title}</AlertDialogTitle>
-            <AlertDialogDescription>{options.description}</AlertDialogDescription>
-          </AlertDialogHeader>
-          {options.showNeverAskAgain && (
-            <div className="flex items-center space-x-2 py-2">
-              <Checkbox
-                id="never-ask-again"
-                checked={neverAskAgain}
-                onCheckedChange={(checked) => setNeverAskAgain(!!checked)}
-              />
-              <Label
-                htmlFor="never-ask-again"
-                className="text-sm font-normal cursor-pointer"
-              >
-                Nie wieder fragen
-              </Label>
-            </div>
-          )}
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCancel}>
-              {options.cancelText || "Abbrechen"}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirm}
-              className={options.variant === "destructive" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
-            >
-              {options.confirmText || "Bestätigen"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+    // Use React.createElement to avoid TypeScript JSX type issues
+    return React.createElement(
+      AlertDialogPrimitive.Root,
+      { open: isOpen, onOpenChange: setIsOpen },
+      React.createElement(
+        AlertDialogContent,
+        null,
+        React.createElement(
+          AlertDialogHeader,
+          null,
+          React.createElement(AlertDialogTitle, null, options.title),
+          React.createElement(AlertDialogDescription, null, options.description)
+        ),
+        options.showNeverAskAgain &&
+          React.createElement(
+            "div",
+            { className: "flex items-center space-x-2 py-2" },
+            React.createElement(Checkbox, {
+              id: "never-ask-again",
+              checked: neverAskAgain,
+              onCheckedChange: (checked: boolean | string) => setNeverAskAgain(!!checked),
+            }),
+            React.createElement(
+              Label,
+              {
+                htmlFor: "never-ask-again",
+                className: "text-sm font-normal cursor-pointer",
+              },
+              "Nie wieder fragen"
+            )
+          ),
+        React.createElement(
+          AlertDialogFooter,
+          null,
+          React.createElement(
+            AlertDialogCancel,
+            { onClick: handleCancel },
+            options.cancelText || "Abbrechen"
+          ),
+          React.createElement(
+            AlertDialogAction,
+            {
+              onClick: handleConfirm,
+              className:
+                options.variant === "destructive"
+                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  : "",
+            },
+            options.confirmText || "Bestätigen"
+          )
+        )
+      )
     );
   };
 
@@ -112,4 +129,3 @@ export function useConfirmationDialog() {
     ConfirmationDialog,
   };
 }
-

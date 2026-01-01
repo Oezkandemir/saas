@@ -11,7 +11,8 @@ export function useFormFieldStatus<TFieldValues extends FieldValues = FieldValue
   
   const fieldState = getFieldState(fieldName, formState);
   const fieldValue = watch(fieldName);
-  const isDirty = formState.dirtyFields[fieldName];
+  // Use fieldState.isDirty instead of accessing dirtyFields directly to avoid TypeScript errors
+  const isDirty = fieldState.isDirty;
   const hasError = !!fieldState.error;
   const hasSuccess = !hasError && isDirty && fieldValue !== undefined && fieldValue !== "";
 
