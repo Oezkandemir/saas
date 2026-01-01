@@ -26,12 +26,23 @@ export default async function LocaleLayout({
   // Enable static rendering
   setRequestLocale(locale);
 
-  // Get messages for the current locale
-  const messages = await getMessages();
+  // Get messages for the current locale with error handling
+  let messages;
+  try {
+    messages = await getMessages();
+  } catch (error) {
+    // Fallback to empty messages if loading fails
+    console.error("Failed to load messages for locale:", locale, error);
+    try {
+      // Try to load default locale messages as fallback
+      messages = (await import(`../../messages/${routing.defaultLocale}.json`)).default;
+    } catch (fallbackError) {
+      console.error("Failed to load fallback messages:", fallbackError);
+      messages = {};
+    }
+  }
 
-  // Locale layout no longer needs html/body tags as they're in root layout
-  // But we need to provide locale-specific messages, so we wrap with NextIntlClientProvider
-  // This will override the default locale messages from root layout
+  // Locale layout provides locale-specific messages
   return (
     <NextIntlClientProvider messages={messages} locale={locale}>
       {children}

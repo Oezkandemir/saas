@@ -1,7 +1,4 @@
-import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
 
 import "@/styles/globals.css";
 
@@ -25,26 +22,13 @@ export const dynamic = "force-dynamic";
 
 export const metadata = constructMetadata();
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Default locale for root layout
+  // Default locale for root layout (for HTML lang attribute)
   const locale = routing.defaultLocale;
-  
-  // Enable static rendering
-  setRequestLocale(locale);
-
-  // Get messages for the default locale with error handling
-  let messages;
-  try {
-    messages = await getMessages();
-  } catch (error) {
-    // Fallback to empty messages if loading fails
-    console.error("Failed to load messages:", error);
-    messages = {};
-  }
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -84,21 +68,19 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <ThemeSyncProvider>
-                <NextIntlClientProvider messages={messages} locale={locale}>
-                  <AvatarProvider>
-                    <QueryClientProvider>
-                      <NotificationsProvider>
-                        <DynamicProviders>
-                          {children}
-                        </DynamicProviders>
-                        <Toaster richColors closeButton />
-                        <TailwindIndicator />
-                        <PerformanceTracker />
-                        <NavigationProgress />
-                      </NotificationsProvider>
-                    </QueryClientProvider>
-                  </AvatarProvider>
-                </NextIntlClientProvider>
+                <AvatarProvider>
+                  <QueryClientProvider>
+                    <NotificationsProvider>
+                      <DynamicProviders>
+                        {children}
+                      </DynamicProviders>
+                      <Toaster richColors closeButton />
+                      <TailwindIndicator />
+                      <PerformanceTracker />
+                      <NavigationProgress />
+                    </NotificationsProvider>
+                  </QueryClientProvider>
+                </AvatarProvider>
               </ThemeSyncProvider>
             </ThemeProvider>
           </SupabaseProvider>
