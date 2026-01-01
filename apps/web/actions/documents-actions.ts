@@ -220,6 +220,25 @@ export async function createDocument(
   const completeDoc = await getDocument(document.id);
   if (!completeDoc) throw new Error("Failed to fetch created document");
 
+  // Generate PDF in background (non-blocking)
+  // Don't await - let it run in the background
+  import("@/lib/pdf/generator")
+    .then(({ generatePDFInBackground }) => {
+      import("@/lib/pdf/templates")
+        .then(({ generateInvoiceHTML }) => {
+          const htmlContent = generateInvoiceHTML(completeDoc);
+          generatePDFInBackground(completeDoc, htmlContent).catch((err) => {
+            console.error("Background PDF generation failed:", err);
+          });
+        })
+        .catch((err) => {
+          console.error("Failed to load PDF templates:", err);
+        });
+    })
+    .catch((err) => {
+      console.error("Failed to load PDF generator:", err);
+    });
+
   revalidatePath("/dashboard/documents");
   return completeDoc;
 }
@@ -279,6 +298,25 @@ export async function updateDocument(
 
   const updatedDoc = await getDocument(id);
   if (!updatedDoc) throw new Error("Failed to fetch updated document");
+
+  // Regenerate PDF in background when document is updated (non-blocking)
+  // Don't await - let it run in the background
+  import("@/lib/pdf/generator")
+    .then(({ generatePDFInBackground }) => {
+      import("@/lib/pdf/templates")
+        .then(({ generateInvoiceHTML }) => {
+          const htmlContent = generateInvoiceHTML(updatedDoc);
+          generatePDFInBackground(updatedDoc, htmlContent).catch((err) => {
+            console.error("Background PDF regeneration failed:", err);
+          });
+        })
+        .catch((err) => {
+          console.error("Failed to load PDF templates:", err);
+        });
+    })
+    .catch((err) => {
+      console.error("Failed to load PDF generator:", err);
+    });
 
   revalidatePath("/dashboard/documents");
   return updatedDoc;
@@ -348,6 +386,24 @@ export async function convertQuoteToInvoice(quoteId: string): Promise<Document> 
 
   const completeInvoice = await getDocument(invoice.id);
   if (!completeInvoice) throw new Error("Failed to fetch created invoice");
+
+  // Generate PDF in background (non-blocking)
+  import("@/lib/pdf/generator")
+    .then(({ generatePDFInBackground }) => {
+      import("@/lib/pdf/templates")
+        .then(({ generateInvoiceHTML }) => {
+          const htmlContent = generateInvoiceHTML(completeInvoice);
+          generatePDFInBackground(completeInvoice, htmlContent).catch((err) => {
+            console.error("Background PDF generation failed:", err);
+          });
+        })
+        .catch((err) => {
+          console.error("Failed to load PDF templates:", err);
+        });
+    })
+    .catch((err) => {
+      console.error("Failed to load PDF generator:", err);
+    });
 
   revalidatePath("/dashboard/documents");
   return completeInvoice;
@@ -438,6 +494,24 @@ export async function duplicateDocument(id: string): Promise<Document> {
 
   const completeDoc = await getDocument(document.id);
   if (!completeDoc) throw new Error("Failed to fetch duplicated document");
+
+  // Generate PDF in background (non-blocking)
+  import("@/lib/pdf/generator")
+    .then(({ generatePDFInBackground }) => {
+      import("@/lib/pdf/templates")
+        .then(({ generateInvoiceHTML }) => {
+          const htmlContent = generateInvoiceHTML(completeDoc);
+          generatePDFInBackground(completeDoc, htmlContent).catch((err) => {
+            console.error("Background PDF generation failed:", err);
+          });
+        })
+        .catch((err) => {
+          console.error("Failed to load PDF templates:", err);
+        });
+    })
+    .catch((err) => {
+      console.error("Failed to load PDF generator:", err);
+    });
 
   revalidatePath("/dashboard/documents");
   return completeDoc;

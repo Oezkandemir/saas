@@ -9,6 +9,7 @@ import { QRCodesTable } from "@/components/qr-codes/qr-codes-table";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
 import { ModernPageHeader } from "@/components/layout/modern-page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -69,12 +70,22 @@ export default async function QRCodesPage() {
         description="Erstellen und verwalten Sie dynamische QR-Codes für Ihre Kunden und Dokumente."
         icon={<QrCode className="h-5 w-5 text-primary" />}
         actions={
-          <Link href="/dashboard/qr-codes/new">
-            <Button className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-              <Plus className="h-4 w-4" />
-              QR-Code erstellen
-            </Button>
-          </Link>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href="/dashboard/qr-codes/new">
+                  <Button 
+                    className="h-9 w-9 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 p-0"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>QR-Code erstellen</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         }
       />
 

@@ -21,8 +21,14 @@ import {
   User as UserIcon,
   Crown,
   Sparkles,
+  Plus,
+  QrCode,
+  Users,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { Drawer } from "vaul";
 import { DrawerDescription } from "@/components/ui/drawer";
@@ -194,6 +200,8 @@ export function UserAccountNav() {
   const user = session?.user;
   const router = useRouter();
   const t = useTranslations("UserNav");
+  const quickActionsT = useTranslations("QuickActions");
+  const { theme, setTheme } = useTheme();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dbUserName, setDbUserName] = useState<string | null>(null);
@@ -387,6 +395,79 @@ export function UserAccountNav() {
               </div>
 
               <Separator className="mx-6" />
+
+              {/* Mobile-only Quick Actions and Theme Toggle */}
+              <div className="md:hidden px-6 py-4 space-y-2">
+                {/* Quick Actions */}
+                <div className="space-y-1">
+                  <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                    {quickActionsT("createNew")}
+                  </p>
+                  <Link
+                    href="/dashboard/documents/new?type=quote"
+                    onClick={closeDrawer}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
+                  >
+                    <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
+                      <FileText className="size-4 text-muted-foreground" />
+                    </div>
+                    <span className="text-sm font-medium">{quickActionsT("newQuote")}</span>
+                  </Link>
+                  <Link
+                    href="/dashboard/documents/new?type=invoice"
+                    onClick={closeDrawer}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
+                  >
+                    <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
+                      <FileText className="size-4 text-muted-foreground" />
+                    </div>
+                    <span className="text-sm font-medium">{quickActionsT("newInvoice")}</span>
+                  </Link>
+                  <Link
+                    href="/dashboard/customers/new"
+                    onClick={closeDrawer}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
+                  >
+                    <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
+                      <Users className="size-4 text-muted-foreground" />
+                    </div>
+                    <span className="text-sm font-medium">{quickActionsT("newCustomer")}</span>
+                  </Link>
+                  <Link
+                    href="/dashboard/qr-codes/new"
+                    onClick={closeDrawer}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
+                  >
+                    <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
+                      <QrCode className="size-4 text-muted-foreground" />
+                    </div>
+                    <span className="text-sm font-medium">{quickActionsT("newQRCode")}</span>
+                  </Link>
+                </div>
+
+                <Separator className="my-2" />
+
+                {/* Theme Toggle */}
+                <button
+                  onClick={() => {
+                    setTheme(theme === "dark" ? "light" : "dark");
+                  }}
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
+                >
+                  <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
+                    {theme === "dark" ? (
+                      <Sun className="size-4 text-muted-foreground" />
+                    ) : (
+                      <Moon className="size-4 text-muted-foreground" />
+                    )}
+                  </div>
+                  <span className="text-sm font-medium">
+                    {theme === "dark" ? "Hell-Modus" : theme === "light" ? "Dunkel-Modus" : "Theme wechseln"}
+                  </span>
+                </button>
+              </div>
+
+              <Separator className="mx-6 md:hidden" />
 
               <ul
                 role="list"

@@ -10,7 +10,6 @@ import LanguageDrawer from "@/components/language-drawer";
 import { ModeToggle } from "@/components/layout/mode-toggle";
 import { UserAccountNav } from "@/components/layout/user-account-nav";
 import { DashboardSidebar, MobileSheetSidebar } from "@/components/layout/dashboard-sidebar-wrapper";
-import { SearchCommand } from "@/components/dashboard/search-command";
 import { QuickActions } from "@/components/layout/quick-actions";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
@@ -80,13 +79,14 @@ export default async function Dashboard({ children }: ProtectedLayoutProps) {
 
             <div className="w-full flex-1" />
 
-            <div className="flex items-center gap-2">
-              <SearchCommand links={filteredLinks} />
+            <div className="hidden md:flex items-center gap-2">
               <QuickActions />
             </div>
 
             <LanguageDrawer />
-            <ModeToggle />
+            <div className="hidden md:block">
+              <ModeToggle />
+            </div>
             <UserAccountNav />
           </div>
         </header>

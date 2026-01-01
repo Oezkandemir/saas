@@ -13,7 +13,7 @@ import { UserRoleForm } from "@/components/forms/user-role-form";
 import { ModernPageHeader } from "@/components/layout/modern-page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Crown, Sparkles, Settings, ArrowRight } from "lucide-react";
+import { Crown, Sparkles, Settings, ArrowRight, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserSubscriptionPlan } from "@/types";
 
@@ -59,6 +59,44 @@ export default async function SettingsPage() {
       />
 
       <div className="divide-y divide-border/50 space-y-6 pb-10">
+        {/* Company Settings Section */}
+        <div className="pt-6">
+          <SectionColumns
+            title="Company Settings"
+            description="Manage your company information for invoices and documents"
+          >
+            <Card className="relative overflow-hidden border border-border/50 bg-card/80 backdrop-blur-sm">
+              {/* Gradient background */}
+              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5" />
+
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 text-blue-600 dark:text-blue-400 shadow-lg">
+                    <Building2 className="size-5" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">Company Profiles</CardTitle>
+                    <CardDescription>
+                      Manage company information for all your documents
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-muted-foreground">
+                    Centralized company data for invoices, quotes, and more
+                  </div>
+                  <Link href="/dashboard/settings/company" className="group flex items-center gap-1 text-sm text-primary hover:gap-2 transition-all">
+                    Manage Profiles
+                    <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </SectionColumns>
+        </div>
+
         {/* Subscription Plan Section */}
         {subscriptionPlan && (
           <div className="pt-6">

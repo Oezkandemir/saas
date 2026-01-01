@@ -32,9 +32,8 @@ export function QuickActions() {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          {t("new")}
+        <Button size="icon" className="h-9 w-9">
+          <Plus className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">

@@ -29,6 +29,9 @@ const nextConfig = {
     // parallelServerBuildTraces: true,
   },
 
+  // External packages for server-side (not bundled)
+  serverExternalPackages: ['puppeteer'],
+
   // Optimized webpack configuration
   webpack: (config, { isServer, dev }) => {
     // Enable webpack cache for better performance
@@ -56,6 +59,12 @@ const nextConfig = {
         net: false,
         tls: false,
       };
+    }
+
+    // Externalize puppeteer for server-side (don't bundle it)
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push('puppeteer');
     }
     
     return config;

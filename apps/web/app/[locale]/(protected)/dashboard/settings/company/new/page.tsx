@@ -1,0 +1,52 @@
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/session";
+import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { Building2 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { CompanyProfileForm } from "@/components/company-settings/company-profile-form";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+
+export const dynamic = "force-dynamic";
+
+export default async function NewCompanyProfilePage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  return (
+    <div className="flex flex-col gap-6">
+      <ModernPageHeader
+        title="Neues Firmenprofil"
+        description="Erstellen Sie ein neues Firmenprofil für Ihre Dokumente"
+        icon={<Building2 className="h-5 w-5 text-primary" />}
+      />
+
+      <Card>
+        <CardContent className="pt-6">
+          {/* Profile Name Field - shown before tabs */}
+          <div className="mb-6 space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Profilname *
+              </label>
+              <p className="text-sm text-muted-foreground">
+                Ein eindeutiger Name für dieses Firmenprofil (z.B. "Hauptfirma", "Zweigstelle Berlin")
+              </p>
+            </div>
+          </div>
+
+          <CompanyProfileForm />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+

@@ -14,6 +14,8 @@ import {
   DocumentType,
 } from "@/actions/documents-actions";
 import { getCustomers, Customer } from "@/actions/customers-actions";
+import { CompanyProfile } from "@/actions/company-profiles-actions";
+import { CompanyProfileSelector } from "@/components/company-settings/company-profile-selector";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -63,6 +65,7 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [selectedProfile, setSelectedProfile] = useState<CompanyProfile | null>(null);
 
   useEffect(() => {
     getCustomers().then(setCustomers).catch(() => {});
@@ -72,8 +75,12 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
   const normalizedDocument = document
     ? {
         customer_id: document.customer_id || "",
-        document_date: document.document_date,
-        due_date: document.due_date || "",
+        document_date: document.document_date 
+          ? new Date(document.document_date).toISOString().split("T")[0]
+          : new Date().toISOString().split("T")[0],
+        due_date: document.due_date 
+          ? new Date(document.due_date).toISOString().split("T")[0]
+          : "",
         tax_rate: document.tax_rate,
         notes: document.notes || "",
         items:
@@ -148,6 +155,19 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Company Profile Selector */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Firmenprofil
+              </label>
+              <CompanyProfileSelector
+                onProfileSelect={setSelectedProfile}
+              />
+              <p className="text-sm text-muted-foreground">
+                Wählen Sie das Firmenprofil für dieses Dokument aus. Die Daten werden beim Generieren verwendet.
+              </p>
+            </div>
+
             <div className="grid gap-4 md:grid-cols-2">
               <FormField
                 control={form.control}

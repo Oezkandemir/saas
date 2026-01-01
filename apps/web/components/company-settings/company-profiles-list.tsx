@@ -1,0 +1,152 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { CompanyProfile, deleteCompanyProfile, setDefaultProfile } from "@/actions/company-profiles-actions";
+import { CompanyProfileCard } from "./company-profile-card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { MoreVertical, Edit, Trash2, Star, Eye } from "lucide-react";
+
+interface CompanyProfilesListProps {
+  profiles: CompanyProfile[];
+}
+
+export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
+  const [selectedProfile, setSelectedProfile] = useState<CompanyProfile | null>(null);
+  const [profileToDelete, setProfileToDelete] = useState<CompanyProfile | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
+
+  const handleSetDefault = async (profile: CompanyProfile) => {
+    try {
+      await setDefaultProfile(profile.id);
+      toast.success(`"${profile.profile_name}" als Standard festgelegt`);
+      router.refresh();
+    } catch (error: any) {
+      console.error("Error setting default:", error);
+      toast.error(error.message || "Fehler beim Festlegen als Standard");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!profileToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteCompanyProfile(profileToDelete.id);
+      toast.success("Profil erfolgreich gelöscht");
+      setProfileToDelete(null);
+      router.refresh();
+    } catch (error: any) {
+      console.error("Error deleting profile:", error);
+      toast.error(error.message || "Fehler beim Löschen des Profils");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {profiles.map((profile) => (
+          <div key={profile.id} className="relative group">
+            <CompanyProfileCard
+              profile={profile}
+              isSelected={selectedProfile?.id === profile.id}
+              onClick={() => setSelectedProfile(profile)}
+            />
+
+            {/* Actions Dropdown */}
+            <div className="absolute top-4 right-4">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                    <span className="sr-only">Aktionen öffnen</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => router.push(`/dashboard/settings/company/${profile.id}`)}
+                  >
+                    <Eye className="mr-2 h-4 w-4" />
+                    Anzeigen
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => router.push(`/dashboard/settings/company/${profile.id}/edit`)}
+                  >
+                    <Edit className="mr-2 h-4 w-4" />
+                    Bearbeiten
+                  </DropdownMenuItem>
+                  {!profile.is_default && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => handleSetDefault(profile)}>
+                        <Star className="mr-2 h-4 w-4" />
+                        Als Standard festlegen
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => setProfileToDelete(profile)}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Löschen
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!profileToDelete} onOpenChange={(open) => !open && setProfileToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Profil löschen?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Möchten Sie das Profil "{profileToDelete?.profile_name}" wirklich löschen? 
+              Diese Aktion kann nicht rückgängig gemacht werden.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Abbrechen</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? "Wird gelöscht..." : "Löschen"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
+
