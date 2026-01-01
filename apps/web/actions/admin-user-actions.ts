@@ -176,7 +176,7 @@ export async function toggleUserAdminStatus(
 
 /**
  * Get all users (admin only)
- * Optimized: Only fetches from users table, no unnecessary auth.users fetch
+ * Fetches from users table and merges with auth.users for last_sign_in_at
  *
  * @returns List of all users or error
  */
@@ -188,11 +188,11 @@ export async function getAllUsers() {
       return { success: false, error: "Unauthorized: Admin access required" };
     }
 
-    // Fetch user data from the database - only select needed columns for better performance
+    // Fetch user data from the database - include emailVerified and other needed columns
     const { data: users, error } = await supabaseAdmin
       .from("users")
       .select(
-        "id, email, name, role, status, avatar_url, stripe_subscription_id, created_at, updated_at",
+        'id, email, name, role, status, avatar_url, stripe_subscription_id, created_at, updated_at, "emailVerified"',
       )
       .order("created_at", { ascending: false });
 
@@ -204,7 +204,37 @@ export async function getAllUsers() {
       };
     }
 
-    return { success: true, data: users || [] };
+    if (!users || users.length === 0) {
+      return { success: true, data: [] };
+    }
+
+    // Fetch last_sign_in_at from auth.users for all users
+    // Note: We need to use admin API to access auth.users
+    const userIds = users.map((u) => u.id);
+    const { data: authUsers, error: authError } = await supabaseAdmin.auth.admin.listUsers();
+
+    if (authError) {
+      logger.warn("Error fetching auth users (last_sign_in_at may be missing):", authError);
+    }
+
+    // Create a map of auth user data by ID
+    const authUserMap = new Map(
+      authUsers?.users?.map((authUser) => [
+        authUser.id,
+        {
+          last_sign_in_at: authUser.last_sign_in_at,
+        },
+      ]) || [],
+    );
+
+    // Merge public.users data with auth.users data
+    const mergedUsers = users.map((user) => ({
+      ...user,
+      last_sign_in: authUserMap.get(user.id)?.last_sign_in_at || null,
+      email_verified: (user as any).emailVerified || null,
+    }));
+
+    return { success: true, data: mergedUsers };
   } catch (error) {
     logger.error("Error in getAllUsers:", error);
     return { success: false, error: "An unexpected error occurred" };
