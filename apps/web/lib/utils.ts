@@ -16,27 +16,31 @@ export function constructMetadata({
   image = siteConfig.ogImage,
   icons = "/favicon.ico",
   noIndex = false,
+  keywords,
 }: {
   title?: string;
   description?: string;
   image?: string;
   icons?: string;
   noIndex?: boolean;
+  keywords?: string[];
 } = {}): Metadata {
+  const defaultKeywords = [
+    "Next.js",
+    "React",
+    "Prisma",
+    "Neon",
+    "Auth.js",
+    "shadcn ui",
+    "Resend",
+    "React Email",
+    "Stripe",
+  ];
+  const finalKeywords = keywords || defaultKeywords;
+
   return {
     title,
     description,
-    keywords: [
-      "Next.js",
-      "React",
-      "Prisma",
-      "Neon",
-      "Auth.js",
-      "shadcn ui",
-      "Resend",
-      "React Email",
-      "Stripe",
-    ],
     authors: [
       {
         name: "mickasmt",
@@ -61,6 +65,11 @@ export function constructMetadata({
     icons,
     metadataBase: new URL(siteConfig.url),
     manifest: `${siteConfig.url}/site.webmanifest`,
+    ...(finalKeywords.length > 0 && {
+      other: {
+        keywords: finalKeywords.join(", "),
+      },
+    }),
     ...(noIndex && {
       robots: {
         index: false,
