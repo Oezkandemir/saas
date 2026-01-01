@@ -83,99 +83,104 @@ export async function generatePDFFromDocument(
     });
   };
 
-  // Header
-  addText(companyInfo.name || "", 40, y, {
+  // Header section - consistent Y positioning
+  let currentY = height - 40; // Start from top with margin
+  
+  // Left side - Company info
+  addText(companyInfo.name || "", 40, currentY, {
     size: 18,
     font: helveticaBoldFont,
   });
-  y -= 20;
-  addText(companyInfo.address || "", 40, y, {
+  currentY -= 20;
+  addText(companyInfo.address || "", 40, currentY, {
     size: 10,
     color: rgb(0.42, 0.45, 0.51), // #6b7280
   });
-  y -= 12;
-  addText(`${companyInfo.postalCode || ""} ${companyInfo.city || ""}`, 40, y, {
+  currentY -= 12;
+  addText(`${companyInfo.postalCode || ""} ${companyInfo.city || ""}`, 40, currentY, {
     size: 10,
     color: rgb(0.42, 0.45, 0.51),
   });
-  y -= 12;
-  addText(companyInfo.country || "", 40, y, {
+  currentY -= 12;
+  addText(companyInfo.country || "", 40, currentY, {
     size: 10,
     color: rgb(0.42, 0.45, 0.51),
   });
 
-  // Right side contact info
+  // Right side contact info - align with company name
   const rightX = width - 155;
-  y = height - 40;
-  addText(`Tel: ${companyInfo.phone || ""}`, rightX, y, {
+  let rightY = height - 40;
+  addText(`Tel: ${companyInfo.phone || ""}`, rightX, rightY, {
     size: 10,
     color: rgb(0.42, 0.45, 0.51),
   });
-  y -= 12;
-  addText(`E-Mail: ${companyInfo.email || ""}`, rightX, y, {
+  rightY -= 12;
+  addText(`E-Mail: ${companyInfo.email || ""}`, rightX, rightY, {
     size: 10,
     color: rgb(0.42, 0.45, 0.51),
   });
-  y -= 12;
-  addText(`Web: ${companyInfo.website || ""}`, rightX, y, {
+  rightY -= 12;
+  addText(`Web: ${companyInfo.website || ""}`, rightX, rightY, {
     size: 10,
     color: rgb(0.42, 0.45, 0.51),
   });
-  y -= 12;
-  addText(`USt-IdNr.: ${companyInfo.taxId || ""}`, rightX, y, {
+  rightY -= 12;
+  addText(`USt-IdNr.: ${companyInfo.taxId || ""}`, rightX, rightY, {
     size: 10,
     color: rgb(0.42, 0.45, 0.51),
   });
 
-  // Header line
-  y = height - 100;
+  // Header line - below company info
+  const headerLineY = currentY - 20;
   page.drawLine({
-    start: { x: 40, y },
-    end: { x: width - 40, y },
+    start: { x: 40, y: headerLineY },
+    end: { x: width - 40, y: headerLineY },
     thickness: 4,
     color: rgb(0.067, 0.094, 0.153),
   });
 
-  y -= 30;
+  currentY = headerLineY - 30;
 
-  // Customer info
+  // Customer info section
   if (document.customer) {
     addText(
       `${companyInfo.name} · ${companyInfo.address} · ${companyInfo.postalCode} ${companyInfo.city}`,
       40,
-      y,
+      currentY,
       {
         size: 8,
         color: rgb(0.61, 0.64, 0.69), // #9ca3af
       }
     );
-    y -= 15;
+    currentY -= 15;
 
-    // Left border line
+    // Left border line for customer
+    const customerBoxTop = currentY + 10;
+    const customerBoxBottom = currentY - 20;
     page.drawLine({
-      start: { x: 40, y: y + 10 },
-      end: { x: 40, y: y - 20 },
+      start: { x: 40, y: customerBoxTop },
+      end: { x: 40, y: customerBoxBottom },
       thickness: 4,
       color: rgb(0.067, 0.094, 0.153),
     });
 
-    addText(document.customer.name, 48, y, {
+    addText(document.customer.name, 48, currentY, {
       size: 10,
       font: helveticaBoldFont,
     });
     if (document.customer.email) {
-      y -= 12;
-      addText(document.customer.email, 48, y, {
+      currentY -= 12;
+      addText(document.customer.email, 48, currentY, {
         size: 10,
         color: rgb(0.42, 0.45, 0.51),
       });
     }
-    y -= 30;
+    currentY -= 30;
   }
 
-  // Document title and info (right side)
+  // Document title and info (right side) - align with customer section
   const docRightX = width - 155;
-  let docY = height - 100;
+  let docY = headerLineY - 30;
   addText(documentTitle, docRightX, docY, {
     size: 24,
     font: helveticaBoldFont,
@@ -204,30 +209,32 @@ export async function generatePDFFromDocument(
     });
   }
 
-  y -= 50;
+  // Use the lower Y position for continuation
+  currentY = Math.min(currentY, docY - 20);
 
   // Greeting
-  addText("Sehr geehrte Damen und Herren,", 40, y, {
+  currentY -= 20;
+  addText("Sehr geehrte Damen und Herren,", 40, currentY, {
     size: 10,
     color: rgb(0.22, 0.25, 0.31), // #374151
   });
-  y -= 20;
+  currentY -= 20;
   addText(
     isInvoice
       ? "hiermit stellen wir Ihnen folgende Leistungen in Rechnung:"
       : "hiermit unterbreiten wir Ihnen folgendes Angebot:",
     40,
-    y,
+    currentY,
     {
       size: 10,
       color: rgb(0.22, 0.25, 0.31),
     }
   );
-  y -= 30;
+  currentY -= 30;
 
   // Items table
   if (document.items && document.items.length > 0) {
-    const tableTop = y;
+    const tableTop = currentY;
     const itemHeight = 20;
     let tableY = tableTop;
 
@@ -318,50 +325,52 @@ export async function generatePDFFromDocument(
       tableY -= itemHeight;
     });
 
-    y = tableY - 20;
+    currentY = tableY - 20;
+  } else {
+    currentY -= 20;
   }
 
   // Totals - right aligned
   const totalsStartX = 210; // Start of totals section
   const totalsEndX = width - 40; // Right edge for alignment
-  y -= 20;
+  currentY -= 20;
   
-  addText("Zwischensumme (Netto):", totalsStartX, y, {
+  addText("Zwischensumme (Netto):", totalsStartX, currentY, {
     size: 10,
     color: rgb(0.22, 0.25, 0.31),
   });
-  addText(formatCurrency(document.subtotal), totalsEndX, y, {
+  addText(formatCurrency(document.subtotal), totalsEndX, currentY, {
     size: 10,
     font: helveticaBoldFont,
     align: "right",
   });
-  y -= 15;
+  currentY -= 15;
   
-  addText(`zzgl. MwSt. (${document.tax_rate}%):`, totalsStartX, y, {
+  addText(`zzgl. MwSt. (${document.tax_rate}%):`, totalsStartX, currentY, {
     size: 10,
     color: rgb(0.22, 0.25, 0.31),
   });
-  addText(formatCurrency(document.tax_amount), totalsEndX, y, {
+  addText(formatCurrency(document.tax_amount), totalsEndX, currentY, {
     size: 10,
     font: helveticaBoldFont,
     align: "right",
   });
-  y -= 15;
+  currentY -= 15;
   
   page.drawLine({
-    start: { x: totalsStartX, y },
-    end: { x: totalsEndX, y },
+    start: { x: totalsStartX, y: currentY },
+    end: { x: totalsEndX, y: currentY },
     thickness: 1,
     color: rgb(0.82, 0.84, 0.86),
   });
-  y -= 10;
+  currentY -= 10;
 
   // Total box - ensure enough width for the total amount
   const totalBoxWidth = totalsEndX - totalsStartX + 10;
   const totalBoxHeight = 30;
   page.drawRectangle({
     x: totalsStartX - 10,
-    y: y - totalBoxHeight,
+    y: currentY - totalBoxHeight,
     width: totalBoxWidth,
     height: totalBoxHeight,
     color: rgb(0.95, 0.96, 0.95),
@@ -369,21 +378,21 @@ export async function generatePDFFromDocument(
     borderWidth: 2,
   });
   
-  addText("Gesamtbetrag (Brutto):", totalsStartX, y - 8, {
+  addText("Gesamtbetrag (Brutto):", totalsStartX, currentY - 8, {
     size: 11,
     font: helveticaBoldFont,
   });
-  addText(formatCurrency(document.total), totalsEndX, y - 6, {
+  addText(formatCurrency(document.total), totalsEndX, currentY - 6, {
     size: 13,
     font: helveticaBoldFont,
     align: "right",
   });
 
-  y -= 50;
+  currentY -= 50;
 
   // Payment info (only for invoices)
   if (isInvoice) {
-    const paymentY = y;
+    const paymentY = currentY;
     page.drawRectangle({
       x: 40,
       y: paymentY - 80,
@@ -445,7 +454,7 @@ export async function generatePDFFromDocument(
       }
     );
 
-    y = paymentY - 100;
+    currentY = paymentY - 100;
   }
 
   // Closing
@@ -454,119 +463,132 @@ export async function generatePDFFromDocument(
       ? "Wir bedanken uns für Ihren Auftrag und das entgegengebrachte Vertrauen."
       : "Wir freuen uns auf Ihre Auftragserteilung und stehen für Rückfragen gerne zur Verfügung.",
     40,
-    y,
+    currentY,
     {
       size: 10,
       color: rgb(0.22, 0.25, 0.31),
     }
   );
-  y -= 20;
-  addText("Mit freundlichen Grüßen", 40, y, {
+  currentY -= 20;
+  addText("Mit freundlichen Grüßen", 40, currentY, {
     size: 10,
     color: rgb(0.22, 0.25, 0.31),
   });
-  y -= 20;
-  addText(companyInfo.name || "", 40, y, {
+  currentY -= 20;
+  addText(companyInfo.name || "", 40, currentY, {
     size: 10,
     font: helveticaBoldFont,
   });
 
-  // Footer
-  y = 100;
+  // Footer - ensure it's at the bottom
+  const footerY = 100;
   page.drawLine({
-    start: { x: 40, y },
-    end: { x: width - 40, y },
+    start: { x: 40, y: footerY },
+    end: { x: width - 40, y: footerY },
     thickness: 2,
     color: rgb(0.067, 0.094, 0.153),
   });
-  y -= 20;
+  let footerCurrentY = footerY - 20;
 
-  addText("Kontakt", 40, y, {
+  addText("Kontakt", 40, footerCurrentY, {
     size: 8,
     color: rgb(0.42, 0.45, 0.51),
   });
-  addText(companyInfo.name || "", 40, y - 10, {
+  footerCurrentY -= 10;
+  addText(companyInfo.name || "", 40, footerCurrentY, {
     size: 8,
     font: helveticaBoldFont,
     color: rgb(0.067, 0.094, 0.153),
   });
-  addText(companyInfo.address || "", 40, y - 20, {
+  footerCurrentY -= 10;
+  addText(companyInfo.address || "", 40, footerCurrentY, {
     size: 8,
     color: rgb(0.42, 0.45, 0.51),
   });
-  addText(`${companyInfo.postalCode || ""} ${companyInfo.city || ""}`, 40, y - 30, {
+  footerCurrentY -= 10;
+  addText(`${companyInfo.postalCode || ""} ${companyInfo.city || ""}`, 40, footerCurrentY, {
     size: 8,
     color: rgb(0.42, 0.45, 0.51),
   });
-  addText(companyInfo.country || "", 40, y - 40, {
+  footerCurrentY -= 10;
+  addText(companyInfo.country || "", 40, footerCurrentY, {
     size: 8,
     color: rgb(0.42, 0.45, 0.51),
   });
-  addText(`Tel: ${companyInfo.phone || ""}`, 40, y - 50, {
+  footerCurrentY -= 10;
+  addText(`Tel: ${companyInfo.phone || ""}`, 40, footerCurrentY, {
     size: 8,
     color: rgb(0.42, 0.45, 0.51),
   });
-  addText(`E-Mail: ${companyInfo.email || ""}`, 40, y - 60, {
+  footerCurrentY -= 10;
+  addText(`E-Mail: ${companyInfo.email || ""}`, 40, footerCurrentY, {
     size: 8,
     color: rgb(0.42, 0.45, 0.51),
   });
-  addText(`Web: ${companyInfo.website || ""}`, 40, y - 70, {
+  footerCurrentY -= 10;
+  addText(`Web: ${companyInfo.website || ""}`, 40, footerCurrentY, {
     size: 8,
     color: rgb(0.42, 0.45, 0.51),
   });
 
-  addText("Bankverbindung", 200, y, {
+  footerCurrentY = footerY - 20;
+  addText("Bankverbindung", 200, footerCurrentY, {
     size: 8,
     color: rgb(0.42, 0.45, 0.51),
   });
-  addText(companyInfo.bankName || "", 200, y - 10, {
+  footerCurrentY -= 10;
+  addText(companyInfo.bankName || "", 200, footerCurrentY, {
     size: 8,
     font: helveticaBoldFont,
     color: rgb(0.067, 0.094, 0.153),
   });
-  addText(`IBAN: ${companyInfo.iban || ""}`, 200, y - 20, {
+  footerCurrentY -= 10;
+  addText(`IBAN: ${companyInfo.iban || ""}`, 200, footerCurrentY, {
     size: 8,
     color: rgb(0.42, 0.45, 0.51),
   });
-  addText(`BIC: ${companyInfo.bic || ""}`, 200, y - 30, {
+  footerCurrentY -= 10;
+  addText(`BIC: ${companyInfo.bic || ""}`, 200, footerCurrentY, {
     size: 8,
     color: rgb(0.42, 0.45, 0.51),
   });
 
-  addText("Rechtliches", 380, y, {
+  footerCurrentY = footerY - 20;
+  addText("Rechtliches", 380, footerCurrentY, {
     size: 8,
     color: rgb(0.42, 0.45, 0.51),
   });
-  addText(`USt-IdNr.: ${companyInfo.taxId || ""}`, 380, y - 10, {
+  footerCurrentY -= 10;
+  addText(`USt-IdNr.: ${companyInfo.taxId || ""}`, 380, footerCurrentY, {
     size: 8,
     font: helveticaBoldFont,
     color: rgb(0.067, 0.094, 0.153),
   });
 
-  y -= 90;
+  footerCurrentY = 10;
   page.drawLine({
-    start: { x: 40, y },
-    end: { x: width - 40, y },
+    start: { x: 40, y: footerCurrentY },
+    end: { x: width - 40, y: footerCurrentY },
     thickness: 1,
     color: rgb(0.82, 0.84, 0.86),
   });
-  y -= 15;
+  footerCurrentY -= 15;
 
   addText(
     "Alle Preise verstehen sich in Euro. Es gelten unsere Allgemeinen Geschäftsbedingungen.",
     40,
-    y,
+    footerCurrentY,
     {
       size: 8,
       color: rgb(0.61, 0.64, 0.69), // #9ca3af
       maxWidth: width - 80,
     }
   );
-  y -= 12;
+  footerCurrentY -= 12;
   addText(
     "Dieses Dokument wurde elektronisch erstellt und ist ohne Unterschrift gültig.",
     40,
-    y,
+    footerCurrentY,
     {
       size: 8,
       color: rgb(0.61, 0.64, 0.69),
