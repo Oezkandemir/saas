@@ -9,7 +9,7 @@ import { logger } from "./lib/logger";
 const intlMiddleware = createIntlMiddleware({
   locales: routing.locales,
   defaultLocale: routing.defaultLocale,
-  localePrefix: "as-needed", // Only add locale prefix when needed
+  localePrefix: "always", // Always include locale prefix in URL
   // Use cookie for locale detection
   localeDetection: true, // Enable automatic locale detection
 });

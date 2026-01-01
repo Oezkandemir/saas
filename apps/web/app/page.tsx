@@ -4,7 +4,7 @@ import { routing } from "@/i18n/routing";
 export const dynamic = "force-dynamic";
 
 export default function RootPage() {
-  // Default to the configured default locale
-  // This will only happen at the root path "/"
+  // Redirect to default locale
+  // The middleware should handle this, but this is a fallback
   redirect(`/${routing.defaultLocale}`);
 }
