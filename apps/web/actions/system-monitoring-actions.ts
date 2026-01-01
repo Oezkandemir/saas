@@ -177,6 +177,94 @@ export async function resolveError(
 }
 
 /**
+ * Bulk resolve errors by filter criteria
+ */
+export async function bulkResolveErrors(
+  filters?: {
+    component?: string;
+    errorType?: string;
+    errorMessagePattern?: string;
+    resolved?: boolean;
+  },
+): Promise<{ success: boolean; message: string; count?: number }> {
+  try {
+    const supabase = await createClient();
+    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, message: "Not authenticated" };
+    }
+
+    // Check if user is admin
+    const { data: userData } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (userData?.role !== "ADMIN") {
+      return { success: false, message: "Unauthorized: Admin access required" };
+    }
+
+    let query = supabase
+      .from("system_errors")
+      .select("id", { count: "exact" })
+      .eq("resolved", filters?.resolved ?? false);
+
+    if (filters?.component) {
+      query = query.eq("component", filters.component);
+    }
+
+    if (filters?.errorType) {
+      query = query.eq("error_type", filters.errorType);
+    }
+
+    if (filters?.errorMessagePattern) {
+      query = query.ilike("error_message", `%${filters.errorMessagePattern}%`);
+    }
+
+    const { data: errorIds, error: selectError, count } = await query;
+
+    if (selectError) {
+      return { success: false, message: "Failed to fetch errors" };
+    }
+
+    if (!errorIds || errorIds.length === 0) {
+      return { success: true, message: "No errors found to resolve", count: 0 };
+    }
+
+    const ids = errorIds.map((e) => e.id);
+
+    const { error: updateError } = await supabase
+      .from("system_errors")
+      .update({
+        resolved: true,
+        resolved_at: new Date().toISOString(),
+        resolved_by: user.id,
+      })
+      .in("id", ids);
+
+    if (updateError) {
+      return { success: false, message: "Failed to resolve errors" };
+    }
+
+    return {
+      success: true,
+      message: `Successfully resolved ${count || ids.length} error(s)`,
+      count: count || ids.length,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to resolve errors",
+    };
+  }
+}
+
+/**
  * Get error statistics
  */
 export async function getErrorStatistics(): Promise<
@@ -253,6 +341,73 @@ export async function performHealthCheck(): Promise<{
     return {
       success: false,
       message: error instanceof Error ? error.message : "Health check failed",
+    };
+  }
+}
+
+/**
+ * Delete old resolved errors
+ * @param daysOld Number of days old errors should be before deletion
+ */
+export async function deleteOldResolvedErrors(
+  daysOld: number = 30,
+): Promise<{ success: boolean; message: string; count?: number }> {
+  try {
+    const supabase = await createClient();
+    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, message: "Not authenticated" };
+    }
+
+    // Check if user is admin
+    const { data: userData } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (userData?.role !== "ADMIN") {
+      return { success: false, message: "Unauthorized: Admin access required" };
+    }
+
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+
+    // Count errors to be deleted
+    const { count, error: countError } = await supabase
+      .from("system_errors")
+      .select("*", { count: "exact", head: true })
+      .eq("resolved", true)
+      .lt("resolved_at", cutoffDate.toISOString());
+
+    if (countError) {
+      return { success: false, message: "Failed to count errors" };
+    }
+
+    // Delete old resolved errors
+    const { error: deleteError } = await supabase
+      .from("system_errors")
+      .delete()
+      .eq("resolved", true)
+      .lt("resolved_at", cutoffDate.toISOString());
+
+    if (deleteError) {
+      return { success: false, message: "Failed to delete errors" };
+    }
+
+    return {
+      success: true,
+      message: `Successfully deleted ${count || 0} old resolved error(s)`,
+      count: count || 0,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to delete errors",
     };
   }
 }

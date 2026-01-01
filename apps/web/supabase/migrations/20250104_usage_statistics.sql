@@ -40,7 +40,7 @@ CREATE INDEX IF NOT EXISTS feature_usage_user_id_idx ON public.feature_usage(use
 CREATE INDEX IF NOT EXISTS feature_usage_feature_name_idx ON public.feature_usage(feature_name);
 CREATE INDEX IF NOT EXISTS feature_usage_created_at_idx ON public.feature_usage(created_at DESC);
 CREATE INDEX IF NOT EXISTS feature_usage_user_feature_idx ON public.feature_usage(user_id, feature_name);
-CREATE INDEX IF NOT EXISTS feature_usage_created_at_date_idx ON public.feature_usage(DATE(created_at) DESC);
+-- Removed DATE() function from index as it's not IMMUTABLE - use created_at index instead
 
 -- Enable Row Level Security
 ALTER TABLE public.feature_usage ENABLE ROW LEVEL SECURITY;
