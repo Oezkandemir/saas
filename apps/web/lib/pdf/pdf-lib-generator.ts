@@ -40,10 +40,27 @@ export async function generatePDFFromDocument(
   const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const helveticaBoldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-  let y = height - 40; // Start from top with margin
+  // Constants for consistent layout
+  const MARGIN_LEFT = 40;
+  const MARGIN_RIGHT = width - 40;
+  const MARGIN_TOP = height - 40;
+  const MARGIN_BOTTOM = 40;
+  
 
-  // Helper function to add text
-  const addText = (
+  // Track current page and Y position
+  let currentPage = page;
+  let y = MARGIN_TOP;
+
+  // Helper function to check if we need a new page and create one if needed
+  const ensurePageSpace = (requiredHeight: number): void => {
+    if (y - requiredHeight < MARGIN_BOTTOM + 120) {
+      currentPage = pdfDoc.addPage([595.28, 841.89]);
+      y = MARGIN_TOP;
+    }
+  };
+
+  // Update addText to use currentPage
+  const addTextToPage = (
     text: string,
     x: number,
     yPos: number,
@@ -59,11 +76,11 @@ export async function generatePDFFromDocument(
       size = 10,
       font = helveticaFont,
       color = rgb(0.067, 0.094, 0.153), // #111827
-      maxWidth = width - 80,
+      maxWidth = MARGIN_RIGHT - MARGIN_LEFT,
       align = "left",
     } = options;
 
-    // Calculate x position for right alignment
+    // Calculate x position for alignment
     let actualX = x;
     if (align === "right") {
       const textWidth = font.widthOfTextAtSize(text, size);
@@ -73,7 +90,7 @@ export async function generatePDFFromDocument(
       actualX = x - textWidth / 2;
     }
 
-    page.drawText(text, {
+    currentPage.drawText(text, {
       x: actualX,
       y: yPos,
       size,
@@ -83,198 +100,233 @@ export async function generatePDFFromDocument(
     });
   };
 
-  // Header section - consistent Y positioning
-  let currentY = height - 40; // Start from top with margin
+  // ============================================
+  // HEADER SECTION
+  // ============================================
   
-  // Left side - Company info
-  addText(companyInfo.name || "", 40, currentY, {
+  // Company name (left)
+  addTextToPage(companyInfo.name || "", MARGIN_LEFT, y, {
     size: 18,
     font: helveticaBoldFont,
   });
-  currentY -= 20;
-  addText(companyInfo.address || "", 40, currentY, {
+  
+  // Contact info (right) - align with company name
+  const contactRightX = MARGIN_RIGHT;
+  addTextToPage(`Tel: ${companyInfo.phone || ""}`, contactRightX, y, {
     size: 10,
-    color: rgb(0.42, 0.45, 0.51), // #6b7280
+    color: rgb(0.42, 0.45, 0.51),
+    align: "right",
   });
-  currentY -= 12;
-  addText(`${companyInfo.postalCode || ""} ${companyInfo.city || ""}`, 40, currentY, {
+  y -= 12;
+  addTextToPage(`E-Mail: ${companyInfo.email || ""}`, contactRightX, y, {
+    size: 10,
+    color: rgb(0.42, 0.45, 0.51),
+    align: "right",
+  });
+  y -= 12;
+  if (companyInfo.website) {
+    addTextToPage(`Web: ${companyInfo.website}`, contactRightX, y, {
+      size: 10,
+      color: rgb(0.42, 0.45, 0.51),
+      align: "right",
+    });
+    y -= 12;
+  }
+  addTextToPage(`USt-IdNr.: ${companyInfo.taxId || ""}`, contactRightX, y, {
+    size: 10,
+    color: rgb(0.42, 0.45, 0.51),
+    align: "right",
+  });
+  
+  // Reset Y for company address (left side)
+  y = MARGIN_TOP - 20;
+  addTextToPage(companyInfo.address || "", MARGIN_LEFT, y, {
     size: 10,
     color: rgb(0.42, 0.45, 0.51),
   });
-  currentY -= 12;
-  addText(companyInfo.country || "", 40, currentY, {
+  y -= 12;
+  addTextToPage(`${companyInfo.postalCode || ""} ${companyInfo.city || ""}`, MARGIN_LEFT, y, {
+    size: 10,
+    color: rgb(0.42, 0.45, 0.51),
+  });
+  y -= 12;
+  addTextToPage(companyInfo.country || "", MARGIN_LEFT, y, {
     size: 10,
     color: rgb(0.42, 0.45, 0.51),
   });
 
-  // Right side contact info - align with company name
-  const rightX = width - 155;
-  let rightY = height - 40;
-  addText(`Tel: ${companyInfo.phone || ""}`, rightX, rightY, {
-    size: 10,
-    color: rgb(0.42, 0.45, 0.51),
-  });
-  rightY -= 12;
-  addText(`E-Mail: ${companyInfo.email || ""}`, rightX, rightY, {
-    size: 10,
-    color: rgb(0.42, 0.45, 0.51),
-  });
-  rightY -= 12;
-  addText(`Web: ${companyInfo.website || ""}`, rightX, rightY, {
-    size: 10,
-    color: rgb(0.42, 0.45, 0.51),
-  });
-  rightY -= 12;
-  addText(`USt-IdNr.: ${companyInfo.taxId || ""}`, rightX, rightY, {
-    size: 10,
-    color: rgb(0.42, 0.45, 0.51),
-  });
-
-  // Header line - below company info
-  const headerLineY = currentY - 20;
-  page.drawLine({
-    start: { x: 40, y: headerLineY },
-    end: { x: width - 40, y: headerLineY },
+  // Header line
+  y -= 20;
+  const headerLineY = y;
+  currentPage.drawLine({
+    start: { x: MARGIN_LEFT, y: headerLineY },
+    end: { x: MARGIN_RIGHT, y: headerLineY },
     thickness: 4,
     color: rgb(0.067, 0.094, 0.153),
   });
 
-  currentY = headerLineY - 30;
+  y = headerLineY - 30;
 
-  // Customer info section
+  // ============================================
+  // CUSTOMER & DOCUMENT INFO SECTION
+  // ============================================
+  
+  const sectionTopY = y;
+  
+  // Customer info (left side)
   if (document.customer) {
-    addText(
+    addTextToPage(
       `${companyInfo.name} · ${companyInfo.address} · ${companyInfo.postalCode} ${companyInfo.city}`,
-      40,
-      currentY,
+      MARGIN_LEFT,
+      y,
       {
         size: 8,
         color: rgb(0.61, 0.64, 0.69), // #9ca3af
       }
     );
-    currentY -= 15;
+    y -= 15;
 
-    // Left border line for customer
-    const customerBoxTop = currentY + 10;
-    const customerBoxBottom = currentY - 20;
-    page.drawLine({
-      start: { x: 40, y: customerBoxTop },
-      end: { x: 40, y: customerBoxBottom },
+    // Left border for customer box
+    const customerBoxHeight = 30;
+    currentPage.drawLine({
+      start: { x: MARGIN_LEFT, y: y + 5 },
+      end: { x: MARGIN_LEFT, y: y - customerBoxHeight + 5 },
       thickness: 4,
       color: rgb(0.067, 0.094, 0.153),
     });
 
-    addText(document.customer.name, 48, currentY, {
+    addTextToPage(document.customer.name, MARGIN_LEFT + 8, y, {
       size: 10,
       font: helveticaBoldFont,
     });
     if (document.customer.email) {
-      currentY -= 12;
-      addText(document.customer.email, 48, currentY, {
+      y -= 12;
+      addTextToPage(document.customer.email, MARGIN_LEFT + 8, y, {
         size: 10,
         color: rgb(0.42, 0.45, 0.51),
       });
     }
-    currentY -= 30;
   }
 
   // Document title and info (right side) - align with customer section
-  const docRightX = width - 155;
-  let docY = headerLineY - 30;
-  addText(documentTitle, docRightX, docY, {
+  y = sectionTopY;
+  const docInfoRightX = MARGIN_RIGHT;
+  addTextToPage(documentTitle, docInfoRightX, y, {
     size: 24,
     font: helveticaBoldFont,
+    align: "right",
   });
-  docY -= 30;
-  addText(`Rechnungsnr.: ${document.document_number}`, docRightX, docY, {
+  y -= 30;
+  addTextToPage(`Rechnungsnr.: ${document.document_number}`, docInfoRightX, y, {
     size: 10,
+    align: "right",
   });
-  docY -= 12;
-  addText(`Datum: ${formatDate(document.document_date)}`, docRightX, docY, {
+  y -= 12;
+  addTextToPage(`Datum: ${formatDate(document.document_date)}`, docInfoRightX, y, {
     size: 10,
+    align: "right",
   });
 
   if (document.due_date && isInvoice) {
-    docY -= 20;
-    page.drawLine({
-      start: { x: docRightX, y: docY },
-      end: { x: width - 40, y: docY },
+    y -= 20;
+    currentPage.drawLine({
+      start: { x: docInfoRightX - 200, y },
+      end: { x: docInfoRightX, y },
       thickness: 1,
       color: rgb(0.9, 0.91, 0.92), // #e5e7eb
     });
-    docY -= 8;
-    addText(`Fällig am: ${formatDate(document.due_date)}`, docRightX, docY, {
+    y -= 8;
+    addTextToPage(`Fällig am: ${formatDate(document.due_date)}`, docInfoRightX, y, {
       size: 10,
       font: helveticaBoldFont,
+      align: "right",
     });
   }
 
-  // Use the lower Y position for continuation
-  currentY = Math.min(currentY, docY - 20);
+  // Continue with main content - use the lower Y position
+  y = Math.min(sectionTopY - (document.customer ? 50 : 0), y - 10);
 
-  // Greeting
-  currentY -= 20;
-  addText("Sehr geehrte Damen und Herren,", 40, currentY, {
+  // ============================================
+  // GREETING SECTION
+  // ============================================
+  
+  y -= 20;
+  addTextToPage("Sehr geehrte Damen und Herren,", MARGIN_LEFT, y, {
     size: 10,
     color: rgb(0.22, 0.25, 0.31), // #374151
   });
-  currentY -= 20;
-  addText(
+  y -= 20;
+  addTextToPage(
     isInvoice
       ? "hiermit stellen wir Ihnen folgende Leistungen in Rechnung:"
       : "hiermit unterbreiten wir Ihnen folgendes Angebot:",
-    40,
-    currentY,
+    MARGIN_LEFT,
+    y,
     {
       size: 10,
       color: rgb(0.22, 0.25, 0.31),
     }
   );
-  currentY -= 30;
+  y -= 30;
 
-  // Items table
+  // ============================================
+  // ITEMS TABLE
+  // ============================================
+  
   if (document.items && document.items.length > 0) {
-    const tableTop = currentY;
-    const itemHeight = 20;
-    let tableY = tableTop;
+    const tableTopY = y;
+    const itemHeight = 25;
+    let tableY = tableTopY;
 
-    // Column positions - better spacing
-    const colPos = 50; // Position column (narrow)
-    const colDesc = 100; // Description column (wide)
-    const colQty = width - 220; // Quantity column (right-aligned, 70px width)
-    const colUnitPrice = width - 140; // Unit price column (right-aligned, 80px width)
-    const colTotal = width - 40; // Total column (right-aligned, 100px width)
+    // Column positions - optimized spacing with better distribution
+    const colPos = MARGIN_LEFT + 5; // Position (narrow, 35px)
+    const colDesc = MARGIN_LEFT + 50; // Description (wide, starts at 50px)
+    const colQty = width - 200; // Quantity (right-aligned, 80px width)
+    const colUnitPrice = width - 120; // Unit price (right-aligned, 80px width)
+    const colTotal = MARGIN_RIGHT; // Total (right-aligned, 80px width)
 
-    // Table header
-    page.drawRectangle({
-      x: 40,
+    // Ensure we have space for header + at least one row
+    ensurePageSpace(itemHeight * 2 + 20);
+
+    // Table header background
+    currentPage.drawRectangle({
+      x: MARGIN_LEFT,
       y: tableY - itemHeight,
-      width: width - 80,
+      width: MARGIN_RIGHT - MARGIN_LEFT,
       height: itemHeight,
       color: rgb(0.95, 0.96, 0.95), // #f3f4f6
+    });
+    
+    // Table header border
+    currentPage.drawRectangle({
+      x: MARGIN_LEFT,
+      y: tableY - itemHeight,
+      width: MARGIN_RIGHT - MARGIN_LEFT,
+      height: itemHeight,
       borderColor: rgb(0.067, 0.094, 0.153),
       borderWidth: 2,
     });
 
-    addText("Pos.", colPos, tableY - 14, {
+    // Header text
+    addTextToPage("Pos.", colPos, tableY - 14, {
       size: 10,
       font: helveticaBoldFont,
     });
-    addText("Beschreibung", colDesc, tableY - 14, {
+    addTextToPage("Beschreibung", colDesc, tableY - 14, {
       size: 10,
       font: helveticaBoldFont,
     });
-    addText("Menge", colQty, tableY - 14, {
-      size: 10,
-      font: helveticaBoldFont,
-      align: "right",
-    });
-    addText("Einzelpreis", colUnitPrice, tableY - 14, {
+    addTextToPage("Menge", colQty, tableY - 14, {
       size: 10,
       font: helveticaBoldFont,
       align: "right",
     });
-    addText("Gesamt", colTotal, tableY - 14, {
+    addTextToPage("Einzelpreis", colUnitPrice, tableY - 14, {
+      size: 10,
+      font: helveticaBoldFont,
+      align: "right",
+    });
+    addTextToPage("Gesamt", colTotal, tableY - 14, {
       size: 10,
       font: helveticaBoldFont,
       align: "right",
@@ -284,39 +336,82 @@ export async function generatePDFFromDocument(
 
     // Table rows
     document.items.forEach((item, index) => {
-      if (tableY < 100) {
-        // New page if needed
-        const newPage = pdfDoc.addPage([595.28, 841.89]);
-        tableY = height - 40;
-        // Note: We'd need to update the page reference, but for simplicity, continue
+      // Check if we need a new page
+      const pageBeforeCheck = currentPage;
+      ensurePageSpace(itemHeight + 20);
+      
+      // If we're on a new page, reset tableY and redraw header
+      if (currentPage !== pageBeforeCheck) {
+        tableY = MARGIN_TOP - itemHeight;
+        currentPage.drawRectangle({
+          x: MARGIN_LEFT,
+          y: tableY - itemHeight,
+          width: MARGIN_RIGHT - MARGIN_LEFT,
+          height: itemHeight,
+          color: rgb(0.95, 0.96, 0.95),
+        });
+        currentPage.drawRectangle({
+          x: MARGIN_LEFT,
+          y: tableY - itemHeight,
+          width: MARGIN_RIGHT - MARGIN_LEFT,
+          height: itemHeight,
+          borderColor: rgb(0.067, 0.094, 0.153),
+          borderWidth: 2,
+        });
+        addTextToPage("Pos.", colPos, tableY - 14, {
+          size: 10,
+          font: helveticaBoldFont,
+        });
+        addTextToPage("Beschreibung", colDesc, tableY - 14, {
+          size: 10,
+          font: helveticaBoldFont,
+        });
+        addTextToPage("Menge", colQty, tableY - 14, {
+          size: 10,
+          font: helveticaBoldFont,
+          align: "right",
+        });
+        addTextToPage("Einzelpreis", colUnitPrice, tableY - 14, {
+          size: 10,
+          font: helveticaBoldFont,
+          align: "right",
+        });
+        addTextToPage("Gesamt", colTotal, tableY - 14, {
+          size: 10,
+          font: helveticaBoldFont,
+          align: "right",
+        });
+        tableY -= itemHeight;
       }
 
-      page.drawRectangle({
-        x: 40,
+      // Row border
+      currentPage.drawRectangle({
+        x: MARGIN_LEFT,
         y: tableY - itemHeight,
-        width: width - 80,
+        width: MARGIN_RIGHT - MARGIN_LEFT,
         height: itemHeight,
         borderColor: rgb(0.82, 0.84, 0.86), // #d1d5db
         borderWidth: 1,
       });
 
-      addText(String(index + 1), colPos, tableY - 14, {
+      // Row content
+      addTextToPage(String(index + 1), colPos, tableY - 14, {
         size: 11,
-        color: index % 2 === 0 ? rgb(0.067, 0.094, 0.153) : rgb(0.42, 0.45, 0.51),
+        color: rgb(0.067, 0.094, 0.153),
       });
-      addText(item.description, colDesc, tableY - 14, {
+      addTextToPage(item.description, colDesc, tableY - 14, {
         size: 11,
-        maxWidth: colQty - colDesc - 15, // Leave more space for right-aligned columns
+        maxWidth: colQty - colDesc - 15,
       });
-      addText(String(item.quantity), colQty, tableY - 14, {
-        size: 11,
-        align: "right",
-      });
-      addText(formatCurrency(item.unit_price), colUnitPrice, tableY - 14, {
+      addTextToPage(String(item.quantity), colQty, tableY - 14, {
         size: 11,
         align: "right",
       });
-      addText(formatCurrency(item.quantity * item.unit_price), colTotal, tableY - 14, {
+      addTextToPage(formatCurrency(item.unit_price), colUnitPrice, tableY - 14, {
+        size: 11,
+        align: "right",
+      });
+      addTextToPage(formatCurrency(item.quantity * item.unit_price), colTotal, tableY - 14, {
         size: 11,
         font: helveticaBoldFont,
         align: "right",
@@ -325,279 +420,484 @@ export async function generatePDFFromDocument(
       tableY -= itemHeight;
     });
 
-    currentY = tableY - 20;
+    y = tableY - 20;
   } else {
-    currentY -= 20;
+    y -= 20;
   }
 
-  // Totals - right aligned
-  const totalsStartX = 210; // Start of totals section
-  const totalsEndX = width - 40; // Right edge for alignment
-  currentY -= 20;
+  // ============================================
+  // TOTALS SECTION
+  // ============================================
   
-  addText("Zwischensumme (Netto):", totalsStartX, currentY, {
+  // Ensure we have space for totals section
+  ensurePageSpace(100);
+  
+  y -= 20;
+  const totalsStartX = width - 300; // Better positioning
+  const totalsEndX = MARGIN_RIGHT;
+  
+  addTextToPage("Zwischensumme (Netto):", totalsStartX, y, {
     size: 10,
     color: rgb(0.22, 0.25, 0.31),
   });
-  addText(formatCurrency(document.subtotal), totalsEndX, currentY, {
+  addTextToPage(formatCurrency(document.subtotal), totalsEndX, y, {
     size: 10,
     font: helveticaBoldFont,
     align: "right",
   });
-  currentY -= 15;
+  y -= 15;
   
-  addText(`zzgl. MwSt. (${document.tax_rate}%):`, totalsStartX, currentY, {
+  addTextToPage(`zzgl. MwSt. (${document.tax_rate}%):`, totalsStartX, y, {
     size: 10,
     color: rgb(0.22, 0.25, 0.31),
   });
-  addText(formatCurrency(document.tax_amount), totalsEndX, currentY, {
+  addTextToPage(formatCurrency(document.tax_amount), totalsEndX, y, {
     size: 10,
     font: helveticaBoldFont,
     align: "right",
   });
-  currentY -= 15;
+  y -= 15;
   
-  page.drawLine({
-    start: { x: totalsStartX, y: currentY },
-    end: { x: totalsEndX, y: currentY },
+  // Divider line
+  currentPage.drawLine({
+    start: { x: totalsStartX, y },
+    end: { x: totalsEndX, y },
     thickness: 1,
     color: rgb(0.82, 0.84, 0.86),
   });
-  currentY -= 10;
+  y -= 10;
 
-  // Total box - ensure enough width for the total amount
-  const totalBoxWidth = totalsEndX - totalsStartX + 10;
+  // Total box
   const totalBoxHeight = 30;
-  page.drawRectangle({
+  const totalBoxY = y - totalBoxHeight;
+  currentPage.drawRectangle({
     x: totalsStartX - 10,
-    y: currentY - totalBoxHeight,
-    width: totalBoxWidth,
+    y: totalBoxY,
+    width: totalsEndX - totalsStartX + 10,
     height: totalBoxHeight,
     color: rgb(0.95, 0.96, 0.95),
+  });
+  currentPage.drawRectangle({
+    x: totalsStartX - 10,
+    y: totalBoxY,
+    width: totalsEndX - totalsStartX + 10,
+    height: totalBoxHeight,
     borderColor: rgb(0.067, 0.094, 0.153),
     borderWidth: 2,
   });
   
-  addText("Gesamtbetrag (Brutto):", totalsStartX, currentY - 8, {
+  addTextToPage("Gesamtbetrag (Brutto):", totalsStartX, y - 8, {
     size: 11,
     font: helveticaBoldFont,
   });
-  addText(formatCurrency(document.total), totalsEndX, currentY - 6, {
+  addTextToPage(formatCurrency(document.total), totalsEndX, y - 6, {
     size: 13,
     font: helveticaBoldFont,
     align: "right",
   });
 
-  currentY -= 50;
+  y = totalBoxY - 30;
 
-  // Payment info (only for invoices)
+  // ============================================
+  // PAYMENT INFO (only for invoices)
+  // ============================================
+  
   if (isInvoice) {
-    const paymentY = currentY;
-    page.drawRectangle({
-      x: 40,
-      y: paymentY - 80,
-      width: width - 80,
-      height: 80,
+    // Ensure we have space for payment box
+    ensurePageSpace(100);
+    
+    const paymentBoxHeight = 80;
+    const paymentBoxY = y - paymentBoxHeight;
+    
+    // Payment box background
+    currentPage.drawRectangle({
+      x: MARGIN_LEFT,
+      y: paymentBoxY,
+      width: MARGIN_RIGHT - MARGIN_LEFT,
+      height: paymentBoxHeight,
       color: rgb(0.98, 0.98, 0.98), // #f9fafb
+    });
+    
+    // Payment box border
+    currentPage.drawRectangle({
+      x: MARGIN_LEFT,
+      y: paymentBoxY,
+      width: MARGIN_RIGHT - MARGIN_LEFT,
+      height: paymentBoxHeight,
       borderColor: rgb(0.067, 0.094, 0.153),
       borderWidth: 4,
     });
 
-    // Left border
-    page.drawLine({
-      start: { x: 40, y: paymentY },
-      end: { x: 40, y: paymentY - 80 },
+    // Left accent line
+    currentPage.drawLine({
+      start: { x: MARGIN_LEFT, y: y },
+      end: { x: MARGIN_LEFT, y: paymentBoxY },
       thickness: 4,
       color: rgb(0.067, 0.094, 0.153),
     });
 
-    addText("Zahlungsinformationen", 60, paymentY - 16, {
+    addTextToPage("Zahlungsinformationen", MARGIN_LEFT + 20, y - 16, {
       size: 10,
       font: helveticaBoldFont,
     });
-    addText("Zahlungsziel:", 60, paymentY - 36, {
+    addTextToPage("Zahlungsziel:", MARGIN_LEFT + 20, y - 36, {
       size: 10,
       color: rgb(0.42, 0.45, 0.51),
     });
-    addText(
+    addTextToPage(
       document.due_date ? formatDate(document.due_date) : "Bei Erhalt",
-      60,
-      paymentY - 48,
+      MARGIN_LEFT + 20,
+      y - 48,
       {
         size: 10,
         font: helveticaBoldFont,
       }
     );
-    addText("Zahlungsweise:", 300, paymentY - 36, {
+    addTextToPage("Zahlungsweise:", 300, y - 36, {
       size: 10,
       color: rgb(0.42, 0.45, 0.51),
     });
-    addText("Überweisung", 300, paymentY - 48, {
+    addTextToPage("Überweisung", 300, y - 48, {
       size: 10,
       font: helveticaBoldFont,
     });
 
-    page.drawLine({
-      start: { x: 60, y: paymentY - 60 },
-      end: { x: width - 60, y: paymentY - 60 },
+    // Divider line
+    currentPage.drawLine({
+      start: { x: MARGIN_LEFT + 20, y: y - 60 },
+      end: { x: MARGIN_RIGHT - 20, y: y - 60 },
       thickness: 1,
       color: rgb(0.82, 0.84, 0.86),
     });
 
-    addText(
+    addTextToPage(
       "Bitte überweisen Sie den Betrag unter Angabe der Rechnungsnummer auf unser Konto.",
-      60,
-      paymentY - 72,
+      MARGIN_LEFT + 20,
+      y - 72,
       {
         size: 8,
         color: rgb(0.42, 0.45, 0.51),
+        maxWidth: MARGIN_RIGHT - MARGIN_LEFT - 40,
       }
     );
 
-    currentY = paymentY - 100;
+    y = paymentBoxY - 20;
   }
 
-  // Closing
-  addText(
+  // ============================================
+  // CLOSING SECTION
+  // ============================================
+  
+  // Ensure we have space for closing section
+  ensurePageSpace(60);
+  
+  addTextToPage(
     isInvoice
       ? "Wir bedanken uns für Ihren Auftrag und das entgegengebrachte Vertrauen."
       : "Wir freuen uns auf Ihre Auftragserteilung und stehen für Rückfragen gerne zur Verfügung.",
-    40,
-    currentY,
+    MARGIN_LEFT,
+    y,
     {
       size: 10,
       color: rgb(0.22, 0.25, 0.31),
     }
   );
-  currentY -= 20;
-  addText("Mit freundlichen Grüßen", 40, currentY, {
+  y -= 20;
+  addTextToPage("Mit freundlichen Grüßen", MARGIN_LEFT, y, {
     size: 10,
     color: rgb(0.22, 0.25, 0.31),
   });
-  currentY -= 20;
-  addText(companyInfo.name || "", 40, currentY, {
+  y -= 20;
+  addTextToPage(companyInfo.name || "", MARGIN_LEFT, y, {
     size: 10,
     font: helveticaBoldFont,
   });
 
-  // Footer - ensure it's at the bottom
-  const footerY = 100;
-  page.drawLine({
-    start: { x: 40, y: footerY },
-    end: { x: width - 40, y: footerY },
-    thickness: 2,
-    color: rgb(0.067, 0.094, 0.153),
-  });
-  let footerCurrentY = footerY - 20;
+  // ============================================
+  // FOOTER SECTION
+  // ============================================
+  
+  // Calculate footer position dynamically - ensure it doesn't overlap with content
+  // Footer needs about 120px of space
+  const footerHeight = 120;
+  const footerY = Math.max(MARGIN_BOTTOM + footerHeight, y - 30);
+  
+  // If footer would overlap, move to next page
+  if (y - footerHeight < MARGIN_BOTTOM + footerHeight) {
+    currentPage = pdfDoc.addPage([595.28, 841.89]);
+    y = MARGIN_TOP;
+    const newFooterY = MARGIN_BOTTOM + footerHeight;
+    
+    // Footer line
+    currentPage.drawLine({
+      start: { x: MARGIN_LEFT, y: newFooterY },
+      end: { x: MARGIN_RIGHT, y: newFooterY },
+      thickness: 2,
+      color: rgb(0.067, 0.094, 0.153),
+    });
+    
+    let footerYPos = newFooterY - 20;
 
-  addText("Kontakt", 40, footerCurrentY, {
-    size: 8,
-    color: rgb(0.42, 0.45, 0.51),
-  });
-  footerCurrentY -= 10;
-  addText(companyInfo.name || "", 40, footerCurrentY, {
-    size: 8,
-    font: helveticaBoldFont,
-    color: rgb(0.067, 0.094, 0.153),
-  });
-  footerCurrentY -= 10;
-  addText(companyInfo.address || "", 40, footerCurrentY, {
-    size: 8,
-    color: rgb(0.42, 0.45, 0.51),
-  });
-  footerCurrentY -= 10;
-  addText(`${companyInfo.postalCode || ""} ${companyInfo.city || ""}`, 40, footerCurrentY, {
-    size: 8,
-    color: rgb(0.42, 0.45, 0.51),
-  });
-  footerCurrentY -= 10;
-  addText(companyInfo.country || "", 40, footerCurrentY, {
-    size: 8,
-    color: rgb(0.42, 0.45, 0.51),
-  });
-  footerCurrentY -= 10;
-  addText(`Tel: ${companyInfo.phone || ""}`, 40, footerCurrentY, {
-    size: 8,
-    color: rgb(0.42, 0.45, 0.51),
-  });
-  footerCurrentY -= 10;
-  addText(`E-Mail: ${companyInfo.email || ""}`, 40, footerCurrentY, {
-    size: 8,
-    color: rgb(0.42, 0.45, 0.51),
-  });
-  footerCurrentY -= 10;
-  addText(`Web: ${companyInfo.website || ""}`, 40, footerCurrentY, {
-    size: 8,
-    color: rgb(0.42, 0.45, 0.51),
-  });
-
-  footerCurrentY = footerY - 20;
-  addText("Bankverbindung", 200, footerCurrentY, {
-    size: 8,
-    color: rgb(0.42, 0.45, 0.51),
-  });
-  footerCurrentY -= 10;
-  addText(companyInfo.bankName || "", 200, footerCurrentY, {
-    size: 8,
-    font: helveticaBoldFont,
-    color: rgb(0.067, 0.094, 0.153),
-  });
-  footerCurrentY -= 10;
-  addText(`IBAN: ${companyInfo.iban || ""}`, 200, footerCurrentY, {
-    size: 8,
-    color: rgb(0.42, 0.45, 0.51),
-  });
-  footerCurrentY -= 10;
-  addText(`BIC: ${companyInfo.bic || ""}`, 200, footerCurrentY, {
-    size: 8,
-    color: rgb(0.42, 0.45, 0.51),
-  });
-
-  footerCurrentY = footerY - 20;
-  addText("Rechtliches", 380, footerCurrentY, {
-    size: 8,
-    color: rgb(0.42, 0.45, 0.51),
-  });
-  footerCurrentY -= 10;
-  addText(`USt-IdNr.: ${companyInfo.taxId || ""}`, 380, footerCurrentY, {
-    size: 8,
-    font: helveticaBoldFont,
-    color: rgb(0.067, 0.094, 0.153),
-  });
-
-  footerCurrentY = 10;
-  page.drawLine({
-    start: { x: 40, y: footerCurrentY },
-    end: { x: width - 40, y: footerCurrentY },
-    thickness: 1,
-    color: rgb(0.82, 0.84, 0.86),
-  });
-  footerCurrentY -= 15;
-
-  addText(
-    "Alle Preise verstehen sich in Euro. Es gelten unsere Allgemeinen Geschäftsbedingungen.",
-    40,
-    footerCurrentY,
-    {
+    // Contact column (left)
+    addTextToPage("Kontakt", MARGIN_LEFT, footerYPos, {
       size: 8,
-      color: rgb(0.61, 0.64, 0.69), // #9ca3af
-      maxWidth: width - 80,
-    }
-  );
-  footerCurrentY -= 12;
-  addText(
-    "Dieses Dokument wurde elektronisch erstellt und ist ohne Unterschrift gültig.",
-    40,
-    footerCurrentY,
-    {
+      font: helveticaBoldFont,
+      color: rgb(0.067, 0.094, 0.153),
+    });
+    footerYPos -= 10;
+    addTextToPage(companyInfo.name || "", MARGIN_LEFT, footerYPos, {
       size: 8,
-      color: rgb(0.61, 0.64, 0.69),
-      maxWidth: width - 80,
+      font: helveticaBoldFont,
+      color: rgb(0.067, 0.094, 0.153),
+    });
+    footerYPos -= 10;
+    addTextToPage(companyInfo.address || "", MARGIN_LEFT, footerYPos, {
+      size: 8,
+      color: rgb(0.42, 0.45, 0.51),
+    });
+    footerYPos -= 10;
+    addTextToPage(`${companyInfo.postalCode || ""} ${companyInfo.city || ""}`, MARGIN_LEFT, footerYPos, {
+      size: 8,
+      color: rgb(0.42, 0.45, 0.51),
+    });
+    footerYPos -= 10;
+    addTextToPage(companyInfo.country || "", MARGIN_LEFT, footerYPos, {
+      size: 8,
+      color: rgb(0.42, 0.45, 0.51),
+    });
+    footerYPos -= 10;
+    addTextToPage(`Tel: ${companyInfo.phone || ""}`, MARGIN_LEFT, footerYPos, {
+      size: 8,
+      color: rgb(0.42, 0.45, 0.51),
+    });
+    footerYPos -= 10;
+    addTextToPage(`E-Mail: ${companyInfo.email || ""}`, MARGIN_LEFT, footerYPos, {
+      size: 8,
+      color: rgb(0.42, 0.45, 0.51),
+    });
+    if (companyInfo.website) {
+      footerYPos -= 10;
+      addTextToPage(`Web: ${companyInfo.website}`, MARGIN_LEFT, footerYPos, {
+        size: 8,
+        color: rgb(0.42, 0.45, 0.51),
+      });
     }
-  );
+
+    // Bank column (middle)
+    footerYPos = newFooterY - 20;
+    addTextToPage("Bankverbindung", 200, footerYPos, {
+      size: 8,
+      font: helveticaBoldFont,
+      color: rgb(0.067, 0.094, 0.153),
+    });
+    footerYPos -= 10;
+    if (companyInfo.bankName) {
+      addTextToPage(companyInfo.bankName, 200, footerYPos, {
+        size: 8,
+        font: helveticaBoldFont,
+        color: rgb(0.067, 0.094, 0.153),
+      });
+      footerYPos -= 10;
+    }
+    if (companyInfo.iban) {
+      addTextToPage(`IBAN: ${companyInfo.iban}`, 200, footerYPos, {
+        size: 8,
+        color: rgb(0.42, 0.45, 0.51),
+      });
+      footerYPos -= 10;
+    }
+    if (companyInfo.bic) {
+      addTextToPage(`BIC: ${companyInfo.bic}`, 200, footerYPos, {
+        size: 8,
+        color: rgb(0.42, 0.45, 0.51),
+      });
+    }
+
+    // Legal column (right)
+    footerYPos = newFooterY - 20;
+    addTextToPage("Rechtliches", 380, footerYPos, {
+      size: 8,
+      font: helveticaBoldFont,
+      color: rgb(0.067, 0.094, 0.153),
+    });
+    footerYPos -= 10;
+    if (companyInfo.taxId) {
+      addTextToPage(`USt-IdNr.: ${companyInfo.taxId}`, 380, footerYPos, {
+        size: 8,
+        font: helveticaBoldFont,
+        color: rgb(0.067, 0.094, 0.153),
+      });
+    }
+
+    // Footer note line
+    const footerNoteY = 10;
+    currentPage.drawLine({
+      start: { x: MARGIN_LEFT, y: footerNoteY },
+      end: { x: MARGIN_RIGHT, y: footerNoteY },
+      thickness: 1,
+      color: rgb(0.82, 0.84, 0.86),
+    });
+
+    // Footer notes
+    addTextToPage(
+      "Alle Preise verstehen sich in Euro. Es gelten unsere Allgemeinen Geschäftsbedingungen.",
+      MARGIN_LEFT,
+      footerNoteY - 15,
+      {
+        size: 8,
+        color: rgb(0.61, 0.64, 0.69), // #9ca3af
+        maxWidth: MARGIN_RIGHT - MARGIN_LEFT,
+        align: "center",
+      }
+    );
+    addTextToPage(
+      "Dieses Dokument wurde elektronisch erstellt und ist ohne Unterschrift gültig.",
+      MARGIN_LEFT,
+      footerNoteY - 27,
+      {
+        size: 8,
+        color: rgb(0.61, 0.64, 0.69),
+        maxWidth: MARGIN_RIGHT - MARGIN_LEFT,
+        align: "center",
+      }
+    );
+  } else {
+    // Footer line
+    currentPage.drawLine({
+      start: { x: MARGIN_LEFT, y: footerY },
+      end: { x: MARGIN_RIGHT, y: footerY },
+      thickness: 2,
+      color: rgb(0.067, 0.094, 0.153),
+    });
+    
+    let footerYPos = footerY - 20;
+
+    // Contact column (left)
+    addTextToPage("Kontakt", MARGIN_LEFT, footerYPos, {
+      size: 8,
+      font: helveticaBoldFont,
+      color: rgb(0.067, 0.094, 0.153),
+    });
+    footerYPos -= 10;
+    addTextToPage(companyInfo.name || "", MARGIN_LEFT, footerYPos, {
+      size: 8,
+      font: helveticaBoldFont,
+      color: rgb(0.067, 0.094, 0.153),
+    });
+    footerYPos -= 10;
+    addTextToPage(companyInfo.address || "", MARGIN_LEFT, footerYPos, {
+      size: 8,
+      color: rgb(0.42, 0.45, 0.51),
+    });
+    footerYPos -= 10;
+    addTextToPage(`${companyInfo.postalCode || ""} ${companyInfo.city || ""}`, MARGIN_LEFT, footerYPos, {
+      size: 8,
+      color: rgb(0.42, 0.45, 0.51),
+    });
+    footerYPos -= 10;
+    addTextToPage(companyInfo.country || "", MARGIN_LEFT, footerYPos, {
+      size: 8,
+      color: rgb(0.42, 0.45, 0.51),
+    });
+    footerYPos -= 10;
+    addTextToPage(`Tel: ${companyInfo.phone || ""}`, MARGIN_LEFT, footerYPos, {
+      size: 8,
+      color: rgb(0.42, 0.45, 0.51),
+    });
+    footerYPos -= 10;
+    addTextToPage(`E-Mail: ${companyInfo.email || ""}`, MARGIN_LEFT, footerYPos, {
+      size: 8,
+      color: rgb(0.42, 0.45, 0.51),
+    });
+    if (companyInfo.website) {
+      footerYPos -= 10;
+      addTextToPage(`Web: ${companyInfo.website}`, MARGIN_LEFT, footerYPos, {
+        size: 8,
+        color: rgb(0.42, 0.45, 0.51),
+      });
+    }
+
+    // Bank column (middle)
+    footerYPos = footerY - 20;
+    addTextToPage("Bankverbindung", 200, footerYPos, {
+      size: 8,
+      font: helveticaBoldFont,
+      color: rgb(0.067, 0.094, 0.153),
+    });
+    footerYPos -= 10;
+    if (companyInfo.bankName) {
+      addTextToPage(companyInfo.bankName, 200, footerYPos, {
+        size: 8,
+        font: helveticaBoldFont,
+        color: rgb(0.067, 0.094, 0.153),
+      });
+      footerYPos -= 10;
+    }
+    if (companyInfo.iban) {
+      addTextToPage(`IBAN: ${companyInfo.iban}`, 200, footerYPos, {
+        size: 8,
+        color: rgb(0.42, 0.45, 0.51),
+      });
+      footerYPos -= 10;
+    }
+    if (companyInfo.bic) {
+      addTextToPage(`BIC: ${companyInfo.bic}`, 200, footerYPos, {
+        size: 8,
+        color: rgb(0.42, 0.45, 0.51),
+      });
+    }
+
+    // Legal column (right)
+    footerYPos = footerY - 20;
+    addTextToPage("Rechtliches", 380, footerYPos, {
+      size: 8,
+      font: helveticaBoldFont,
+      color: rgb(0.067, 0.094, 0.153),
+    });
+    footerYPos -= 10;
+    if (companyInfo.taxId) {
+      addTextToPage(`USt-IdNr.: ${companyInfo.taxId}`, 380, footerYPos, {
+        size: 8,
+        font: helveticaBoldFont,
+        color: rgb(0.067, 0.094, 0.153),
+      });
+    }
+
+    // Footer note line
+    const footerNoteY = 10;
+    currentPage.drawLine({
+      start: { x: MARGIN_LEFT, y: footerNoteY },
+      end: { x: MARGIN_RIGHT, y: footerNoteY },
+      thickness: 1,
+      color: rgb(0.82, 0.84, 0.86),
+    });
+
+    // Footer notes
+    addTextToPage(
+      "Alle Preise verstehen sich in Euro. Es gelten unsere Allgemeinen Geschäftsbedingungen.",
+      MARGIN_LEFT,
+      footerNoteY - 15,
+      {
+        size: 8,
+        color: rgb(0.61, 0.64, 0.69), // #9ca3af
+        maxWidth: MARGIN_RIGHT - MARGIN_LEFT,
+        align: "center",
+      }
+    );
+    addTextToPage(
+      "Dieses Dokument wurde elektronisch erstellt und ist ohne Unterschrift gültig.",
+      MARGIN_LEFT,
+      footerNoteY - 27,
+      {
+        size: 8,
+        color: rgb(0.61, 0.64, 0.69),
+        maxWidth: MARGIN_RIGHT - MARGIN_LEFT,
+        align: "center",
+      }
+    );
+  }
 
   // Serialize the PDF
   const pdfBytes = await pdfDoc.save();
   return Buffer.from(pdfBytes);
 }
-
