@@ -435,6 +435,64 @@
 - Professionelle Card-Layouts mit Schatten und Borders
 - Icons für bessere visuelle Orientierung
 
+## [2026-01-01] Fix Vercel Deployment for Monorepo Structure ✅
+
+**Fixed deployment configuration for Turborepo monorepo setup**
+
+### **Problem Identified:**
+- Build command `cd apps/web && pnpm build` failed with "No such file or directory"
+- Vercel was trying to navigate into `apps/web` from wrong context
+- Monorepo structure wasn't properly configured for Vercel deployment
+
+### **Solutions Implemented:** ✅
+
+#### **1. Root vercel.json Configuration** ✅
+- Changed `buildCommand` from `cd apps/web && pnpm build` to `pnpm turbo run build --filter=@cenety/web`
+- Updated `installCommand` from `pnpm install --frozen-lockfile` to `pnpm install`
+- Set `framework` to `null` to let Vercel auto-detect from workspace
+- Added proper `ignoreCommand` to check changes in both apps/web and packages
+- Enhanced build env with Turbo remote cache settings
+
+#### **2. App-Specific vercel.json** ✅
+- Created `/apps/web/vercel.json` for web-specific configuration
+- Defined proper headers for security and caching
+- Configured function memory and duration limits
+- Set up proper redirect and rewrite rules
+
+#### **3. Vercel Ignore Files** ✅
+- Created root `.vercelignore` to exclude mobile app and unnecessary files
+- Created `/apps/web/.vercelignore` for web-specific exclusions
+- Reduced deployment size by ignoring dev files, tests, and documentation
+
+### **Key Configuration Changes:**
+
+**Root vercel.json:**
+```json
+{
+  "buildCommand": "pnpm turbo run build --filter=@cenety/web",
+  "installCommand": "pnpm install",
+  "outputDirectory": "apps/web/.next",
+  "framework": null,
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./apps/web ./packages"
+}
+```
+
+**Build Environment:**
+- `NODE_OPTIONS`: --max-old-space-size=4096
+- `TURBO_TEAM`: team_vercel
+- `TURBO_REMOTE_ONLY`: true
+
+### **Benefits:** ✅
+- ✅ Proper Turborepo integration with Vercel
+- ✅ Correct build path resolution
+- ✅ Optimized deployment size
+- ✅ Faster builds with Turbo remote cache
+- ✅ Proper change detection for incremental builds
+- ✅ Security headers configured
+- ✅ Caching optimized for static assets
+
+**Current Status:** ✅ **COMPLETED** - Vercel deployment configuration fixed for monorepo
+
 ## [2026-01-01] Mobile Responsiveness & UX Optimization for Web App ✅
 
 **Comprehensive mobile optimization across the entire web application**

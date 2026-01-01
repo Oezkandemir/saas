@@ -11,7 +11,11 @@
   },
   "crons": [],
   "functions": {
-    "api/**/*.ts": {
+    "app/api/**/*.{ts,tsx}": {
+      "memory": 1024,
+      "maxDuration": 10
+    },
+    "app/[locale]/api/**/*.{ts,tsx}": {
       "memory": 1024,
       "maxDuration": 10
     }
