@@ -42,6 +42,11 @@ export const sidebarLinks: SidebarNavItem[] = [
         title: "Billing",
       },
       {
+        href: "/dashboard/support",
+        icon: "helpCircle",
+        title: "Support",
+      },
+      {
         href: "/admin",
         icon: "laptop",
         title: "Admin Panel",

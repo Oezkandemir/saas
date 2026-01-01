@@ -21,7 +21,11 @@ export function PDFDownloadButton({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleDownload = async (retryCount = 0) => {
+  const handleDownload = async () => {
+    await downloadPDF(0);
+  };
+
+  const downloadPDF = async (retryCount = 0): Promise<void> => {
     setLoading(true);
     try {
       // If PDF doesn't exist, generate it first
@@ -76,7 +80,7 @@ export function PDFDownloadButton({
           if (isRetryable && retryCount < 2) {
             console.log(`PDF generation failed, retrying... (${retryCount + 1}/2)`);
             await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
-            return handleDownload(retryCount + 1);
+            return downloadPDF(retryCount + 1);
           }
           
           throw new Error(errorMessage);

@@ -1,0 +1,41 @@
+// ⚡ QUICK FIX: Google Fonts Alternative
+// 
+// This file replaces Google Fonts (Inter, Urbanist) with local Geist font
+// to avoid build failures when Google Fonts API is not accessible.
+//
+// PRODUCTION ALTERNATIVE:
+// If you want to use Google Fonts on Vercel (where network access works),
+// uncomment this version and replace the content of index.ts:
+
+import { Inter as FontSans, Urbanist } from "next/font/google";
+import localFont from "next/font/local";
+
+export const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+  fallback: ["system-ui", "arial"],
+});
+
+export const fontUrban = Urbanist({
+  subsets: ["latin"],
+  variable: "--font-urban",
+  display: "swap",
+  fallback: ["system-ui", "arial"],
+});
+
+export const fontHeading = localFont({
+  src: "./CalSans-SemiBold.woff2",
+  variable: "--font-heading",
+  display: "swap",
+});
+
+export const fontGeist = localFont({
+  src: "./GeistVF.woff2",
+  variable: "--font-geist",
+  display: "swap",
+});
+
+// NOTE: On Vercel, the above code will work perfectly!
+// The local build issue is specific to restricted network environments.
+

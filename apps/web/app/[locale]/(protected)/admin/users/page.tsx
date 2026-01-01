@@ -6,6 +6,7 @@ import {
   CreditCardIcon,
   ShieldCheckIcon,
   UsersIcon,
+  Users,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
@@ -13,7 +14,7 @@ import { getCurrentUser } from "@/lib/session";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { columns } from "@/components/admin/users/columns";
 import { DataTable } from "@/components/admin/users/data-table";
-import { DashboardHeader } from "@/components/dashboard/header";
+import { ModernPageHeader } from "@/components/layout/modern-page-header";
 
 export async function generateMetadata() {
   const t = await getTranslations("Admin.users");
@@ -54,12 +55,13 @@ export default async function AdminUsersPage(props: Props) {
   if (!result.success || !result.data) {
     console.error("Error fetching users:", result.error);
     return (
-      <>
-        <DashboardHeader
-          heading={tUsers("title")}
-          text={tUsers("loadingError")}
+      <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <ModernPageHeader
+          title={tUsers("title")}
+          description={tUsers("loadingError")}
+          icon={<Users className="w-5 h-5 text-primary" />}
         />
-      </>
+      </div>
     );
   }
 
@@ -98,15 +100,16 @@ export default async function AdminUsersPage(props: Props) {
   });
 
   return (
-    <div className="w-full">
-      <DashboardHeader
-        heading={tUsers("pageTitle")}
-        text={tUsers("pageDescription")}
+    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <ModernPageHeader
+        title={tUsers("pageTitle")}
+        description={tUsers("pageDescription")}
+        icon={<Users className="w-5 h-5 text-primary" />}
       />
 
       {/* User Stats Section */}
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {tUsers("totalUsers")}
@@ -115,13 +118,13 @@ export default async function AdminUsersPage(props: Props) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalUsers}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mt-1">
               {tUsers("allRegistered")}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {tUsers("adminUsers")}
@@ -130,13 +133,13 @@ export default async function AdminUsersPage(props: Props) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{adminUsers}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mt-1">
               {tUsers("withAdminPrivileges")}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {tUsers("bannedUsers")}
@@ -145,13 +148,13 @@ export default async function AdminUsersPage(props: Props) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{bannedUsers}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mt-1">
               {tUsers("currentlySuspended")}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {tUsers("subscribers")}
@@ -160,16 +163,18 @@ export default async function AdminUsersPage(props: Props) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{subscribedUsers}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mt-1">
               {tUsers("activePaid")}
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="mt-8">
-        <DataTable columns={columns} data={formattedUsers} />
-      </div>
+      <Card className="hover:shadow-md transition-all">
+        <CardContent className="pt-6">
+          <DataTable columns={columns} data={formattedUsers} />
+        </CardContent>
+      </Card>
     </div>
   );
 }

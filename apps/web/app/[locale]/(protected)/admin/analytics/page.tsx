@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   TicketCheck,
   Users,
+  TrendingUp,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
@@ -38,7 +39,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DashboardHeader } from "@/components/dashboard/header";
+import { ModernPageHeader } from "@/components/layout/modern-page-header";
 
 export const metadata = constructMetadata({
   title: "Analytics – Cenety",
@@ -75,20 +76,23 @@ export default async function AnalyticsPage() {
 
   if (!result.success) {
     return (
-      <>
-        <DashboardHeader
-          heading="Analytics Dashboard"
-          text="Track key metrics and app performance"
+      <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <ModernPageHeader
+          title="Analytics Dashboard"
+          description="Track key metrics and app performance"
+          icon={<TrendingUp className="w-5 h-5 text-primary" />}
         />
-        <div className="rounded-lg border bg-card p-8 text-center">
-          <h2 className="text-xl font-semibold">
-            Error loading analytics data
-          </h2>
-          <p className="mt-2 text-muted-foreground">
-            {result.error || "Please try again later"}
-          </p>
-        </div>
-      </>
+        <Card>
+          <CardContent className="pt-8 text-center">
+            <h2 className="text-xl font-semibold">
+              Error loading analytics data
+            </h2>
+            <p className="mt-2 text-muted-foreground">
+              {result.error || "Please try again later"}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
@@ -152,10 +156,11 @@ export default async function AnalyticsPage() {
   }
 
   return (
-    <>
-      <DashboardHeader
-        heading="Analytics Dashboard"
-        text="Track key metrics and app performance"
+    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <ModernPageHeader
+        title="Analytics Dashboard"
+        description="Track key metrics and app performance"
+        icon={<TrendingUp className="w-5 h-5 text-primary" />}
       />
 
       <Tabs defaultValue="overview" className="space-y-4">
@@ -169,7 +174,7 @@ export default async function AnalyticsPage() {
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
+            <Card className="hover:shadow-md transition-all">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Total Users
@@ -178,13 +183,13 @@ export default async function AnalyticsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{data.totalUsers || 0}</div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground mt-1">
                   All registered users
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-md transition-all">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Admin Users
@@ -193,13 +198,13 @@ export default async function AnalyticsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{data.adminCount || 0}</div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground mt-1">
                   Users with admin privileges
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-md transition-all">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Banned Users
@@ -210,13 +215,13 @@ export default async function AnalyticsPage() {
                 <div className="text-2xl font-bold">
                   {data.bannedCount || 0}
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground mt-1">
                   Currently suspended accounts
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-md transition-all">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Subscribers
@@ -227,15 +232,15 @@ export default async function AnalyticsPage() {
                 <div className="text-2xl font-bold">
                   {data.subscribersCount || 0}
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground mt-1">
                   Active paid subscriptions
                 </p>
               </CardContent>
             </Card>
           </div>
 
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <Card className="col-span-1">
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="hover:shadow-md transition-all">
               <CardHeader>
                 <CardTitle>User Growth</CardTitle>
                 <CardDescription>New user signups by month</CardDescription>
@@ -251,7 +256,7 @@ export default async function AnalyticsPage() {
               </CardContent>
             </Card>
 
-            <Card className="col-span-1">
+            <Card className="hover:shadow-md transition-all">
               <CardHeader>
                 <CardTitle>Support Ticket Status</CardTitle>
                 <CardDescription>
@@ -279,7 +284,7 @@ export default async function AnalyticsPage() {
         {/* User Behavior Tab */}
         <TabsContent value="user-behavior" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
+            <Card className="hover:shadow-md transition-all">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Active Users (30d)
@@ -290,13 +295,13 @@ export default async function AnalyticsPage() {
                 <div className="text-2xl font-bold">
                   {detailedData?.user_stats?.active_users_last_30_days || 0}
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground mt-1">
                   Users active in the last 30 days
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-md transition-all">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Page Views (30d)
@@ -307,13 +312,13 @@ export default async function AnalyticsPage() {
                 <div className="text-2xl font-bold">
                   {detailedData?.user_stats?.page_views_last_30_days || 0}
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground mt-1">
                   Total page views in last 30 days
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-md transition-all">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Avg. Session Time
@@ -327,13 +332,13 @@ export default async function AnalyticsPage() {
                     : 0}{" "}
                   min
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground mt-1">
                   Average time spent per session
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-md transition-all">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Bounce Rate
@@ -344,15 +349,15 @@ export default async function AnalyticsPage() {
                 <div className="text-2xl font-bold">
                   {detailedData?.bounce_rate || 0}%
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground mt-1">
                   Single page visit percentage
                 </p>
               </CardContent>
             </Card>
           </div>
 
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <Card className="col-span-1">
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="hover:shadow-md transition-all">
               <CardHeader>
                 <CardTitle>User Engagement</CardTitle>
                 <CardDescription>Types of user interactions</CardDescription>
@@ -368,7 +373,7 @@ export default async function AnalyticsPage() {
               </CardContent>
             </Card>
 
-            <Card className="col-span-1">
+            <Card className="hover:shadow-md transition-all">
               <CardHeader>
                 <CardTitle>User Flow</CardTitle>
                 <CardDescription>Common navigation paths</CardDescription>
@@ -416,28 +421,26 @@ export default async function AnalyticsPage() {
 
         {/* Page Analytics Tab */}
         <TabsContent value="page-analytics" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1">
-            <Card>
-              <CardHeader>
-                <CardTitle>Daily Page Views</CardTitle>
-                <CardDescription>
-                  Page views over the last 30 days
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="h-80">
-                <div className="flex h-full items-center justify-center">
-                  <p className="text-muted-foreground">
-                    {pageViewLabels.length > 0
-                      ? `Total page views: ${pageViewData.reduce((a, b) => a + b, 0)}`
-                      : "No page view data available"}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <Card className="hover:shadow-md transition-all">
+            <CardHeader>
+              <CardTitle>Daily Page Views</CardTitle>
+              <CardDescription>
+                Page views over the last 30 days
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="h-80">
+              <div className="flex h-full items-center justify-center">
+                <p className="text-muted-foreground">
+                  {pageViewLabels.length > 0
+                    ? `Total page views: ${pageViewData.reduce((a, b) => a + b, 0)}`
+                    : "No page view data available"}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
 
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <Card className="col-span-1">
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="hover:shadow-md transition-all">
               <CardHeader>
                 <CardTitle>Most Viewed Pages</CardTitle>
                 <CardDescription>Top pages by view count</CardDescription>
@@ -477,7 +480,7 @@ export default async function AnalyticsPage() {
               </CardContent>
             </Card>
 
-            <Card className="col-span-1">
+            <Card className="hover:shadow-md transition-all">
               <CardHeader>
                 <CardTitle>User Interactions</CardTitle>
                 <CardDescription>Top user interactions by type</CardDescription>
@@ -521,7 +524,7 @@ export default async function AnalyticsPage() {
         {/* Technical Tab */}
         <TabsContent value="technical" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
-            <Card className="col-span-1">
+            <Card className="hover:shadow-md transition-all">
               <CardHeader>
                 <CardTitle>Device Types</CardTitle>
                 <CardDescription>User device distribution</CardDescription>
@@ -546,7 +549,7 @@ export default async function AnalyticsPage() {
               </CardContent>
             </Card>
 
-            <Card className="col-span-1">
+            <Card className="hover:shadow-md transition-all">
               <CardHeader>
                 <CardTitle>Browsers</CardTitle>
                 <CardDescription>User browser distribution</CardDescription>
@@ -574,8 +577,8 @@ export default async function AnalyticsPage() {
         </TabsContent>
       </Tabs>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <Card className="col-span-1">
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="hover:shadow-md transition-all">
           <CardHeader>
             <CardTitle>Recent Logins</CardTitle>
             <CardDescription>Last 10 user login activities</CardDescription>
@@ -610,7 +613,7 @@ export default async function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card className="col-span-1">
+        <Card className="hover:shadow-md transition-all">
           <CardHeader>
             <CardTitle>Recent Subscriptions</CardTitle>
             <CardDescription>Last 5 user subscriptions</CardDescription>
@@ -648,6 +651,6 @@ export default async function AnalyticsPage() {
           </CardContent>
         </Card>
       </div>
-    </>
+    </div>
   );
 }

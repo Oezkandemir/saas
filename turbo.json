@@ -1,10 +1,23 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
+  "globalEnv": [
+    "NODE_ENV",
+    "VERCEL",
+    "VERCEL_ENV",
+    "CI"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**", ".expo/**"],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**",
+        "build/**",
+        ".expo/**",
+        ".contentlayer/**"
+      ],
       "env": [
         "NODE_ENV", 
         "NEXT_PUBLIC_*",
@@ -17,7 +30,9 @@
         "NEXT_PUBLIC_SUPABASE_URL",
         "NEXT_PUBLIC_SUPABASE_ANON_KEY",
         "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
-      ]
+      ],
+      "cache": true,
+      "persistent": false
     },
     "dev": {
       "cache": false,
@@ -37,26 +52,34 @@
       ]
     },
     "lint": {
-      "dependsOn": ["^lint"],
-      "outputs": ["eslint-report.json"]
+      "dependsOn": ["^build"],
+      "outputs": ["eslint-report.json"],
+      "cache": true
     },
     "type-check": {
-      "dependsOn": ["^type-check"],
-      "outputs": ["tsconfig.tsbuildinfo"]
+      "dependsOn": ["^build"],
+      "outputs": ["tsconfig.tsbuildinfo"],
+      "cache": true
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
+      "outputs": ["coverage/**"],
+      "cache": true
     },
     "clean": {
       "cache": false
     },
     "format": {
-      "outputs": []
+      "outputs": [],
+      "cache": false
     },
     "analyze": {
       "dependsOn": ["^build"],
-      "outputs": [".next/analyze/**"]
+      "outputs": [".next/analyze/**"],
+      "cache": true
     }
+  },
+  "remoteCache": {
+    "enabled": true
   }
 }

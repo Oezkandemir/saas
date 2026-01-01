@@ -30,11 +30,15 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
   // Fetch PDF URL if not provided
   useEffect(() => {
     if (!currentPdfUrl && documentId && showPdfPreview) {
-      fetchPDFUrl();
+      handleFetchPDF();
     }
   }, [documentId, currentPdfUrl, showPdfPreview]);
 
-  const fetchPDFUrl = async (retryCount = 0) => {
+  const handleFetchPDF = async () => {
+    await fetchPDFUrl(0);
+  };
+
+  const fetchPDFUrl = async (retryCount = 0): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
@@ -194,13 +198,19 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
                     <p className="font-semibold mb-2">Fehler beim Generieren des PDFs</p>
                     <p className="text-sm">{error}</p>
                   </div>
-                  <Button onClick={fetchPDFUrl} variant="outline">
+                  <Button onClick={handleFetchPDF} variant="outline">
                     Erneut versuchen
                   </Button>
                 </div>
-              ) : currentPdfUrl ? (
-                fullscreenContent
-              ) : null}
+        ) : currentPdfUrl ? (
+          <div className="w-full h-full flex items-center justify-center bg-muted/50">
+            <iframe
+              src={`${currentPdfUrl}#toolbar=1&navpanes=1&scrollbar=1`}
+              className="w-full h-full border-0"
+              title="PDF Fullscreen Preview"
+            />
+          </div>
+        ) : null}
             </DialogContent>
           </Dialog>
         )}
@@ -251,7 +261,7 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
             </code>
           </div>
         )}
-        <Button onClick={fetchPDFUrl} variant="outline">
+        <Button onClick={handleFetchPDF} variant="outline">
           Erneut versuchen
         </Button>
       </div>
@@ -262,7 +272,7 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center">
         <p className="text-muted-foreground mb-4">Kein PDF verfügbar</p>
-        <Button onClick={fetchPDFUrl} variant="outline">
+        <Button onClick={handleFetchPDF} variant="outline">
           PDF generieren
         </Button>
       </div>
@@ -332,7 +342,7 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
     </div>
   );
 
-  const fullscreenContent = (
+  const fullscreenContentDetailed = (
     <div className="flex flex-col h-full">
       {/* Toolbar */}
       <div className="flex items-center justify-between p-4 border-b bg-muted/50">

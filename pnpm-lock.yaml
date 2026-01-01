@@ -14715,9 +14715,9 @@ snapshots:
 
   '@expo/sudo-prompt@9.3.2': {}
 
-  '@expo/vector-icons@14.1.0(expo-font@13.3.1(expo@53.0.11(@babel/core@7.27.4)(@expo/metro-runtime@5.0.4(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10)))(bufferutil@4.0.9)(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0))(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0)':
+  '@expo/vector-icons@14.1.0(expo-font@13.3.1(expo@53.0.11(@babel/core@7.27.7)(@expo/metro-runtime@5.0.4(react-native@0.79.3(@babel/core@7.27.7)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10)))(bufferutil@4.0.9)(react-native@0.79.3(@babel/core@7.27.7)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0))(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0)':
     dependencies:
-      expo-font: 13.3.1(expo@53.0.11(@babel/core@7.27.4)(@expo/metro-runtime@5.0.4(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10)))(bufferutil@4.0.9)(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0)
+      expo-font: 13.3.1(expo@53.0.11(@babel/core@7.27.7)(@expo/metro-runtime@5.0.4(react-native@0.79.3(@babel/core@7.27.7)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10)))(bufferutil@4.0.9)(react-native@0.79.3(@babel/core@7.27.7)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0)
       react: 19.0.0
       react-native: 0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10)
 
@@ -21367,7 +21367,7 @@ snapshots:
       '@expo/config-plugins': 10.0.2
       '@expo/fingerprint': 0.13.0
       '@expo/metro-config': 0.20.14
-      '@expo/vector-icons': 14.1.0(expo-font@13.3.1(expo@53.0.11(@babel/core@7.27.4)(@expo/metro-runtime@5.0.4(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10)))(bufferutil@4.0.9)(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0))(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0)
+      '@expo/vector-icons': 14.1.0(expo-font@13.3.1(expo@53.0.11(@babel/core@7.27.7)(@expo/metro-runtime@5.0.4(react-native@0.79.3(@babel/core@7.27.7)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10)))(bufferutil@4.0.9)(react-native@0.79.3(@babel/core@7.27.7)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0))(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0)
       babel-preset-expo: 13.2.0(@babel/core@7.27.4)
       expo-asset: 11.1.5(expo@53.0.11(@babel/core@7.27.4)(@expo/metro-runtime@5.0.4(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10)))(bufferutil@4.0.9)(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0)(utf-8-validate@5.0.10))(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0)
       expo-constants: 17.1.6(expo@53.0.11(@babel/core@7.27.4)(@expo/metro-runtime@5.0.4(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10)))(bufferutil@4.0.9)(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10))(react@19.0.0)(utf-8-validate@5.0.10))(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(bufferutil@4.0.9)(react@19.0.0)(utf-8-validate@5.0.10))
@@ -23182,7 +23182,7 @@ snapshots:
   metro-source-map@0.82.4:
     dependencies:
       '@babel/traverse': 7.27.4
-      '@babel/traverse--for-generate-function-map': '@babel/traverse@7.27.7'
+      '@babel/traverse--for-generate-function-map': '@babel/traverse@7.27.4'
       '@babel/types': 7.27.6
       flow-enums-runtime: 0.0.6
       invariant: 2.2.4

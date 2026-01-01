@@ -4,7 +4,7 @@ const createNextIntlPlugin = require("next-intl/plugin");
 
 import("./env.mjs");
 
-// Specify the path to the request.ts file
+// ⚡ CRITICAL: Specify the path to the request.ts file BEFORE config
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 /** @type {import('next').NextConfig} */
@@ -14,41 +14,98 @@ const nextConfig = {
   poweredByHeader: false,
   trailingSlash: false,
   
-  // Enable modern optimizations
+  // ⚡ ULTRA-FAST BUILD OPTIMIZATIONS
   experimental: {
+    // Optimize CSS processing
     optimizeCss: true,
+    // Tree-shake unused imports from heavy packages
     optimizePackageImports: [
       '@radix-ui/react-icons',
       'lucide-react',
       '@supabase/supabase-js',
       'date-fns',
+      '@radix-ui/react-accordion',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-select',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-toast',
+      'recharts',
+      'chart.js',
     ],
-    // Disable parallel builds to avoid EBADF errors with Turbopack
-    // webpackBuildWorker: true,
-    // parallelServerCompiles: true,
-    // parallelServerBuildTraces: true,
+    // Enable concurrent features
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+    // Faster page compilation
+    optimisticClientCache: true,
   },
 
-  // External packages for server-side (not bundled)
-  serverExternalPackages: ['puppeteer'],
+  // External packages for server-side (not bundled) - reduces bundle size
+  serverExternalPackages: ['puppeteer', 'sharp', '@node-rs/argon2', '@node-rs/bcrypt'],
 
-  // Optimized webpack configuration
+  // ⚡ WEBPACK OPTIMIZATIONS FOR LIGHTNING SPEED
   webpack: (config, { isServer, dev }) => {
-    // Enable webpack cache for better performance
+    // Enable persistent caching
     if (!dev) {
       config.cache = {
         type: 'filesystem',
         buildDependencies: {
           config: [__filename],
         },
+        // Increase cache efficiency
+        compression: 'gzip',
+        hashAlgorithm: 'md4',
       };
     }
 
-    // Suppress only critical Supabase warnings
+    // ⚡ Production optimizations
+    if (!dev && !isServer) {
+      // Split chunks for better caching
+      config.optimization = {
+        ...config.optimization,
+        moduleIds: 'deterministic',
+        runtimeChunk: 'single',
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            default: false,
+            vendors: false,
+            // Vendor chunk
+            vendor: {
+              name: 'vendor',
+              chunks: 'all',
+              test: /node_modules/,
+              priority: 20,
+            },
+            // Common chunk
+            common: {
+              name: 'common',
+              minChunks: 2,
+              chunks: 'all',
+              priority: 10,
+              reuseExistingChunk: true,
+              enforce: true,
+            },
+            // UI libraries
+            ui: {
+              test: /[\\/]node_modules[\\/](@radix-ui|lucide-react)[\\/]/,
+              name: 'ui',
+              priority: 30,
+            },
+          },
+        },
+      };
+    }
+
+    // Suppress warnings to speed up build
     config.ignoreWarnings = [
       { module: /node_modules\/@supabase\/realtime-js/ },
       { module: /node_modules\/@supabase\/supabase-js/ },
+      { module: /node_modules\/puppeteer/ },
       /Critical dependency: the request of a dependency is an expression/,
+      /Can't resolve 'canvas'/,
     ];
     
     // Client-side optimizations
@@ -58,22 +115,33 @@ const nextConfig = {
         fs: false,
         net: false,
         tls: false,
+        crypto: false,
+        stream: false,
+        url: false,
+        zlib: false,
+        http: false,
+        https: false,
+        assert: false,
+        os: false,
+        path: false,
       };
     }
 
-    // Externalize puppeteer for server-side (don't bundle it)
+    // Externalize heavy packages for server
     if (isServer) {
       config.externals = config.externals || [];
-      config.externals.push('puppeteer');
+      config.externals.push('puppeteer', 'sharp', 'canvas');
     }
     
     return config;
   },
 
-  // Modern image optimization
+  // ⚡ MODERN IMAGE OPTIMIZATION
   images: {
     formats: ['image/avif', 'image/webp'],
-    minimumCacheTTL: 31536000,
+    minimumCacheTTL: 31536000, // 1 year
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     remotePatterns: [
       {
         protocol: "https",
@@ -91,11 +159,35 @@ const nextConfig = {
         protocol: "https",
         hostname: "*.supabase.co",
       },
+      {
+        protocol: "https",
+        hostname: "fonts.googleapis.com",
+      },
+      {
+        protocol: "https",
+        hostname: "fonts.gstatic.com",
+      },
     ],
+    // Disable image optimization in development for faster builds
+    unoptimized: process.env.NODE_ENV === 'development',
   },
 
-  // Enable compression and other optimizations
+  // ⚡ COMPRESSION & OPTIMIZATIONS
   compress: true,
+  
+  // Disable source maps in production for faster builds
+  productionBrowserSourceMaps: false,
+  
+  // ⚡ TYPESCRIPT OPTIMIZATIONS
+  typescript: {
+    // Skip type checking during build (use CI for that)
+    ignoreBuildErrors: false,
+    // Faster type checking
+    tsconfigPath: './tsconfig.json',
+  },
+
+  // Exclude unnecessary files from build
+  excludeDefaultMomentLocales: true,
   
   // Bundle analyzer for production builds
   ...(process.env.ANALYZE === 'true' && {

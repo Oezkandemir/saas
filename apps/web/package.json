@@ -8,12 +8,16 @@
   },
   "scripts": {
     "dev": "next dev",
+    "dev:turbo": "next dev --turbo",
     "prebuild": "npx contentlayer2 build",
-    "build": "next build",
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' next build",
+    "build:fast": "SKIP_ENV_VALIDATION=true NODE_OPTIONS='--max-old-space-size=4096' next build",
     "turbo": "next dev --turbo",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "next lint --max-warnings=0",
+    "lint:fix": "next lint --fix",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint:tailwind": "eslint --fix \"**/*.{js,jsx,ts,tsx}\" --rule \"tailwindcss/classnames-order: error\"",
@@ -26,7 +30,9 @@
     "i18n:sync": "node scripts/i18n-sync.js",
     "analyze": "ANALYZE=true next build",
     "analyze:server": "BUNDLE_ANALYZE=server next build",
-    "analyze:browser": "BUNDLE_ANALYZE=browser next build"
+    "analyze:browser": "BUNDLE_ANALYZE=browser next build",
+    "clean": "rm -rf .next .turbo node_modules/.cache",
+    "clean:all": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

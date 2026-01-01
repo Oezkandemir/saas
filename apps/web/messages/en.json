@@ -158,6 +158,7 @@
       "contact": "Contact",
       "terms": "Terms",
       "privacy": "Privacy",
+      "imprint": "Imprint",
       "cookies": "Cookies",
       "documentation": "Documentation",
       "features": "Features",
@@ -634,7 +635,7 @@
   },
   "Privacy": {
     "metaTitle": "Privacy Policy - Cenety",
-    "metaDescription": "Privacy policy and data processing information for Cenety services",
+    "metaDescription": "GDPR compliant privacy policy for Cenety services",
     "title": "Privacy Policy",
     "section1": {
       "title": "1. Information Collection",
@@ -656,6 +657,60 @@
       "title": "Last Updated",
       "content": "This Privacy Policy was last updated on June 1, 2023."
     }
+  },
+  "Imprint": {
+    "title": "Imprint",
+    "subtitle": "Information according to § 5 TMG (German Telemedia Act)",
+    "company": {
+      "title": "Company Information"
+    },
+    "contact": {
+      "title": "Contact"
+    },
+    "registration": {
+      "title": "Registration Entry",
+      "registrationCourt": "Registration Court",
+      "registrationNumber": "Registration Number",
+      "vatId": "VAT ID",
+      "managingDirector": "Managing Director"
+    },
+    "responsible": {
+      "title": "Responsible for Content according to § 55 Abs. 2 RStV",
+      "description": "Responsible for journalistic-editorial content"
+    },
+    "dispute": {
+      "title": "EU Dispute Resolution",
+      "euPlatform": "The European Commission provides a platform for online dispute resolution (ODR):",
+      "participation": "We are not willing or obligated to participate in dispute resolution proceedings before a consumer arbitration board."
+    },
+    "liability": {
+      "title": "Liability for Content and Links",
+      "contentTitle": "Liability for Content",
+      "contentText": "As a service provider, we are liable for own contents of these websites according to Sec. 7, paragraph 1 German Telemedia Act (TMG). However, according to Sec. 8 to 10 German Telemedia Act (TMG), service providers are not obligated to permanently monitor submitted or stored information or to search for evidences that indicate illegal activities.",
+      "linksTitle": "Liability for Links",
+      "linksText": "Our offer includes links to external third party websites. We have no influence on the contents of those websites, therefore we cannot guarantee for those contents. Providers or administrators of linked websites are always responsible for their own contents."
+    },
+    "copyright": {
+      "title": "Copyright",
+      "text": "The content and works published on this website underlie the German copyright law. Any kind of duplication, processing, distribution or any kind of utilization beyond the scope of copyright law shall require the prior written consent of the author or originator in question."
+    }
+  },
+  "CookieConsent": {
+    "title": "Cookie Settings",
+    "description": "We use cookies to provide you with the best possible user experience. Some are technically necessary, others help us improve our website.",
+    "customize": "Customize",
+    "acceptAll": "Accept All",
+    "acceptNecessary": "Necessary Only",
+    "savePreferences": "Save Preferences",
+    "back": "Back",
+    "necessary": "Necessary Cookies",
+    "necessaryDescription": "These cookies are required for the basic functions of the website and cannot be deactivated.",
+    "analytics": "Analytics Cookies",
+    "analyticsDescription": "Help us understand how visitors interact with our website by collecting and reporting information anonymously.",
+    "marketing": "Marketing Cookies",
+    "marketingDescription": "Used to track visitors across websites. The intention is to display ads that are relevant and engaging for the individual user.",
+    "moreInfo": "For more information, see our",
+    "privacyPolicy": "Privacy Policy"
   },
   "Profile": {
     "title": "User Profile",

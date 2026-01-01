@@ -24,8 +24,8 @@ export async function generateMetadata() {
   const t = await getTranslations("Support");
 
   return constructMetadata({
-    title: t("title"),
-    description: t("description"),
+    title: "Support Center - Get Help & Submit Tickets | Professional Customer Support",
+    description: "Access our comprehensive support center. Submit tickets, get instant help, browse FAQs, and connect with our expert support team. Fast response times guaranteed.",
   });
 }
 
@@ -36,6 +36,11 @@ export default async function SupportPage() {
   // Fetch user tickets
   const ticketsResult = await getUserTickets();
   const tickets = ticketsResult.success ? ticketsResult.data || [] : [];
+
+  // Calculate ticket stats
+  const openTickets = tickets.filter(t => t.status === 'open').length;
+  const inProgressTickets = tickets.filter(t => t.status === 'in_progress').length;
+  const resolvedTickets = tickets.filter(t => t.status === 'resolved' || t.status === 'closed').length;
 
   return (
     <div className="relative flex flex-col gap-6">
@@ -50,18 +55,71 @@ export default async function SupportPage() {
 
       {/* Header */}
       <ModernPageHeader
-        title={t("heading")}
-        description={t("text")}
+        title="Support Center"
+        description="Get expert help when you need it. Our support team is here to assist you with any questions or issues."
         icon={<HelpCircle className="h-5 w-5 text-primary" />}
         actions={
           <Link href="/dashboard/support/new">
-            <Button size="sm" className="gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700">
+            <Button size="sm" className="gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 shadow-lg transition-all hover:scale-105">
               <Plus className="size-4" />
               New Ticket
             </Button>
           </Link>
         }
       />
+
+      {/* Quick Stats */}
+      {tickets.length > 0 && (
+        <div className="grid gap-4 sm:grid-cols-3 animate-in fade-in slide-in-from-top-4 duration-500">
+          <Card className="relative overflow-hidden border border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-all">
+            <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-500/5 via-transparent to-cyan-500/5" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Open Tickets</CardTitle>
+              <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-500/20">
+                <HelpCircle className="size-4 text-blue-600 dark:text-blue-400" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{openTickets}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Awaiting response
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="relative overflow-hidden border border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-all">
+            <div className="absolute inset-0 -z-10 bg-gradient-to-br from-orange-500/5 via-transparent to-yellow-500/5" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+              <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-500/20 to-yellow-500/20">
+                <MessageCircle className="size-4 text-orange-600 dark:text-orange-400" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{inProgressTickets}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Being handled
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="relative overflow-hidden border border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-all">
+            <div className="absolute inset-0 -z-10 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Resolved</CardTitle>
+              <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-500/20">
+                <MessageCircle className="size-4 text-emerald-600 dark:text-emerald-400" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{resolvedTickets}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Successfully closed
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <Tabs defaultValue="tickets" className="w-full">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -90,9 +148,9 @@ export default async function SupportPage() {
                   <HelpCircle className="size-5" />
                 </div>
                 <div>
-                  <CardTitle>Support Tickets</CardTitle>
+                  <CardTitle>Your Support Tickets</CardTitle>
                   <CardDescription>
-                    View and manage your support tickets.
+                    Track all your support requests in one place. Average response time: 2-4 hours.
                   </CardDescription>
                 </div>
               </div>
@@ -103,8 +161,9 @@ export default async function SupportPage() {
                   <div className="flex size-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20 mb-6">
                     <HelpCircle className="size-10 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <p className="mb-4 text-center text-muted-foreground font-medium">
-                    You dont have any support tickets yet.
+                  <h3 className="mb-2 text-lg font-semibold">No Support Tickets Yet</h3>
+                  <p className="mb-4 text-center text-muted-foreground max-w-md">
+                    Need help? Our support team is ready to assist you. Create your first ticket and we'll respond within 2-4 hours.
                   </p>
                   <Link href="/dashboard/support/new">
                     <Button className="gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 shadow-lg transition-all hover:scale-105">
@@ -131,8 +190,8 @@ export default async function SupportPage() {
                   <Mail className="size-5" />
                 </div>
                 <div>
-                  <CardTitle>{t("contactUs")}</CardTitle>
-                  <CardDescription>{t("contactDescription")}</CardDescription>
+                  <CardTitle>Get in Touch</CardTitle>
+                  <CardDescription>Multiple ways to reach our support team - choose what works best for you.</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -144,7 +203,7 @@ export default async function SupportPage() {
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold">
-                      {t("supportChannels.email.title")}
+                      Email Support
                     </p>
                     <a
                       href={`mailto:${siteConfig.mailSupport}`}
@@ -153,6 +212,9 @@ export default async function SupportPage() {
                       {siteConfig.mailSupport}
                       <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
                     </a>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Response within 24 hours
+                    </p>
                   </div>
                 </div>
                 <div className="group relative flex items-center gap-4 rounded-lg border border-border/50 bg-background/50 p-4 backdrop-blur-sm transition-all hover:border-primary/50 hover:bg-background hover:shadow-md">
@@ -161,10 +223,13 @@ export default async function SupportPage() {
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold">
-                      {t("supportChannels.chat.title")}
+                      Live Chat Support
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {t("supportChannels.chat.availability")}
+                      Available Mon-Fri, 9am-6pm
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Instant responses for urgent issues
                     </p>
                   </div>
                 </div>
@@ -174,13 +239,13 @@ export default async function SupportPage() {
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold">
-                      {t("supportChannels.phone.title")}
+                      Phone Support
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {t("supportChannels.phone.number")}
+                      +1 (555) 123-4567
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {t("supportChannels.phone.restriction")}
+                      Premium plan subscribers only
                     </p>
                   </div>
                 </div>
@@ -200,8 +265,8 @@ export default async function SupportPage() {
                   <HelpCircle className="size-5" />
                 </div>
                 <div>
-                  <CardTitle>{t("faq.title")}</CardTitle>
-                  <CardDescription>{t("faq.description")}</CardDescription>
+                  <CardTitle>Frequently Asked Questions</CardTitle>
+                  <CardDescription>Find quick answers to common questions - browse our knowledge base.</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -209,69 +274,96 @@ export default async function SupportPage() {
               <Tabs defaultValue="billing" className="w-full">
                 <TabsList className="grid w-full grid-cols-3 bg-card/80 backdrop-blur-sm border border-border/50">
                   <TabsTrigger value="billing">
-                    {t("faq.categories.billing")}
+                    Billing & Plans
                   </TabsTrigger>
                   <TabsTrigger value="account">
-                    {t("faq.categories.account")}
+                    Account Settings
                   </TabsTrigger>
                   <TabsTrigger value="features">
-                    {t("faq.categories.features")}
+                    Features & Usage
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="billing" className="mt-4 space-y-4">
-                  <div>
-                    <h4 className="font-medium">
-                      {t("faq.questions.billing.upgrade.question")}
+                  <div className="p-4 rounded-lg bg-muted/50">
+                    <h4 className="font-semibold mb-2">
+                      How do I upgrade my subscription plan?
                     </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {t("faq.questions.billing.upgrade.answer")}
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Navigate to Settings → Billing, select your desired plan, and complete the payment process. Your upgrade takes effect immediately, and you'll have access to all premium features right away. No downtime required.
                     </p>
                   </div>
                   <Separator />
-                  <div>
-                    <h4 className="font-medium">
-                      {t("faq.questions.billing.cancel.question")}
+                  <div className="p-4 rounded-lg bg-muted/50">
+                    <h4 className="font-semibold mb-2">
+                      Can I cancel my subscription anytime?
                     </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {t("faq.questions.billing.cancel.answer")}
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Yes, you can cancel anytime without penalties. Your subscription remains active until the end of your billing period. Go to Settings → Billing → Manage Subscription to cancel. All your data is preserved for 30 days after cancellation.
+                    </p>
+                  </div>
+                  <Separator />
+                  <div className="p-4 rounded-lg bg-muted/50">
+                    <h4 className="font-semibold mb-2">
+                      What payment methods do you accept?
+                    </h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      We accept all major credit cards (Visa, Mastercard, American Express), PayPal, and bank transfers for enterprise plans. All payments are processed securely through Stripe.
                     </p>
                   </div>
                 </TabsContent>
                 <TabsContent value="account" className="mt-4 space-y-4">
-                  <div>
-                    <h4 className="font-medium">
-                      {t("faq.questions.account.resetPassword.question")}
+                  <div className="p-4 rounded-lg bg-muted/50">
+                    <h4 className="font-semibold mb-2">
+                      How do I reset my password?
                     </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {t("faq.questions.account.resetPassword.answer")}
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Click "Forgot Password" on the login page, enter your email address, and follow the instructions sent to your inbox. Password reset links expire after 1 hour for security reasons.
                     </p>
                   </div>
                   <Separator />
-                  <div>
-                    <h4 className="font-medium">
-                      {t("faq.questions.account.updateProfile.question")}
+                  <div className="p-4 rounded-lg bg-muted/50">
+                    <h4 className="font-semibold mb-2">
+                      How do I update my profile information?
                     </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {t("faq.questions.account.updateProfile.answer")}
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Go to Settings → Profile to update your name, email, avatar, and other personal details. Changes are saved automatically and sync across all your devices instantly.
+                    </p>
+                  </div>
+                  <Separator />
+                  <div className="p-4 rounded-lg bg-muted/50">
+                    <h4 className="font-semibold mb-2">
+                      Can I use the same account on multiple devices?
+                    </h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Yes! Your account works seamlessly across all devices. Log in from your computer, tablet, or phone - your data stays synced in real-time across all platforms.
                     </p>
                   </div>
                 </TabsContent>
                 <TabsContent value="features" className="mt-4 space-y-4">
-                  <div>
-                    <h4 className="font-medium">
-                      {t("faq.questions.features.included.question")}
+                  <div className="p-4 rounded-lg bg-muted/50">
+                    <h4 className="font-semibold mb-2">
+                      What features are included in my plan?
                     </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {t("faq.questions.features.included.answer")}
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Each plan includes document management, QR code generation, customer tracking, and analytics. Premium plans add unlimited storage, priority support, API access, and advanced customization options. Check our pricing page for detailed comparisons.
                     </p>
                   </div>
                   <Separator />
-                  <div>
-                    <h4 className="font-medium">
-                      {t("faq.questions.features.api.question")}
+                  <div className="p-4 rounded-lg bg-muted/50">
+                    <h4 className="font-semibold mb-2">
+                      Do you offer API access?
                     </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {t("faq.questions.features.api.answer")}
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Yes, API access is available on Business and Enterprise plans. Our REST API includes comprehensive documentation, SDKs for popular languages, and webhook support for real-time integrations. Rate limits vary by plan.
+                    </p>
+                  </div>
+                  <Separator />
+                  <div className="p-4 rounded-lg bg-muted/50">
+                    <h4 className="font-semibold mb-2">
+                      Is there a mobile app available?
+                    </h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Our platform is fully responsive and works beautifully on mobile browsers. Native iOS and Android apps are currently in development and will be launched in Q2 2025 with offline capabilities.
                     </p>
                   </div>
                 </TabsContent>

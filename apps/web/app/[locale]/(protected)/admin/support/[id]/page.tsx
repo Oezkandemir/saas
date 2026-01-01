@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getTicketWithMessages } from "@/actions/support-ticket-actions";
 import { formatDistance } from "date-fns";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, MessageSquare } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
@@ -17,7 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { DashboardHeader } from "@/components/dashboard/header";
+import { ModernPageHeader } from "@/components/layout/modern-page-header";
 import { TicketMessageItem } from "@/components/support/ticket-message";
 import { TicketReplyForm } from "@/components/support/ticket-reply-form";
 import { TicketStatusUpdater } from "@/components/support/ticket-status-updater";
@@ -74,37 +74,24 @@ export default async function AdminTicketPage({
   });
 
   return (
-    <>
-      <div className="mb-4 flex items-center">
-        <Link href="/admin/support">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1"
-          >
-            <ChevronLeft className="size-4" />
-            {t("backToTickets")}
-          </Button>
-        </Link>
-      </div>
-
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <DashboardHeader
-          heading={ticket.subject}
-          text={`${t("ticketFrom")} ${ticket.user?.name || t("user")} (${ticket.user?.email || t("noEmail")})`}
-        />
-
-        <div className="mt-4 sm:mt-0">
+    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <ModernPageHeader
+        title={ticket.subject}
+        description={`${t("ticketFrom")} ${ticket.user?.name || t("user")} (${ticket.user?.email || t("noEmail")})`}
+        icon={<MessageSquare className="w-5 h-5 text-primary" />}
+        showBackButton
+        backHref="/admin/support"
+        actions={
           <TicketStatusUpdater
             ticketId={ticket.id}
             currentStatus={
               ticket.status as "open" | "in_progress" | "resolved" | "closed"
             }
           />
-        </div>
-      </div>
+        }
+      />
 
-      <Card>
+      <Card className="hover:shadow-md transition-all">
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
@@ -167,6 +154,6 @@ export default async function AdminTicketPage({
           )}
         </CardFooter>
       </Card>
-    </>
+    </div>
   );
 }

@@ -1,0 +1,109 @@
+# ⚡ Vercel Ignore - Exclude unnecessary files from builds for faster deployment
+
+# Development
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+**/__tests__/**
+**/*.test.ts
+**/*.test.tsx
+**/*.test.js
+**/*.test.jsx
+**/*.spec.ts
+**/*.spec.tsx
+**/*.spec.js
+**/*.spec.jsx
+**/tests/**
+**/test/**
+coverage
+.nyc_output
+
+# Documentation
+README.md
+**/*.md
+!apps/web/content/**/*.md
+!apps/web/content/**/*.mdx
+docs
+.github
+CHANGELOG.md
+LICENSE
+CONTRIBUTING.md
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+.circleci
+azure-pipelines.yml
+.drone.yml
+
+# Package managers
+.yarn
+.pnp.*
+.npm
+.pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# IDE
+.vscode
+.idea
+*.sublime-project
+*.sublime-workspace
+
+# OS
+Thumbs.db
+Desktop.ini
+._*
+.Spotlight-V100
+.Trashes
+
+# Temporary
+*.tmp
+*.temp
+*.log
+.cache
+
+# Scripts
+scripts/dev/**
+scripts/test/**
+update_*.sh
+setup_*.sh
+
+# Storybook
+.storybook
+**/*.stories.tsx
+**/*.stories.ts
+
+# Husky
+.husky
+
+# Prettier/ESLint
+.prettierrc*
+.prettierignore
+.eslintrc*
+.eslintignore
+prettier.config.js
+
+# Analysis
+.next/analyze
+bundle-analyzer
+
+# Misc
+TODO.md
+NOTES.md
+*.bak
+*.backup
+

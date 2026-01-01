@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import { getAllTickets } from "@/actions/support-ticket-actions";
-import { AlertTriangle, CheckCircle, Clock, HelpCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle, Clock, HelpCircle, MessageSquare } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DashboardHeader } from "@/components/dashboard/header";
+import { ModernPageHeader } from "@/components/layout/modern-page-header";
 import { TicketAccordionTable } from "@/components/support/ticket-accordion-table";
 
 export async function generateMetadata() {
@@ -49,12 +49,13 @@ export default async function AdminSupportPage(props: Props) {
   if (!result.success || !result.data) {
     console.error("Error fetching tickets:", result.error);
     return (
-      <>
-        <DashboardHeader
-          heading={tSupport("pageTitle")}
-          text={tSupport("loadingError")}
+      <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <ModernPageHeader
+          title={tSupport("pageTitle")}
+          description={tSupport("loadingError")}
+          icon={<MessageSquare className="w-5 h-5 text-primary" />}
         />
-      </>
+      </div>
     );
   }
 
@@ -73,15 +74,16 @@ export default async function AdminSupportPage(props: Props) {
   ).length;
 
   return (
-    <div className="w-full">
-      <DashboardHeader
-        heading={tSupport("pageTitle")}
-        text={tSupport("pageDescription")}
+    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <ModernPageHeader
+        title={tSupport("pageTitle")}
+        description={tSupport("pageDescription")}
+        icon={<MessageSquare className="w-5 h-5 text-primary" />}
       />
 
       {/* Ticket Stats Section */}
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {tSupport("title")}
@@ -90,13 +92,13 @@ export default async function AdminSupportPage(props: Props) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalTickets}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mt-1">
               {tSupport("allTickets")}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {tSupport("openTickets")}
@@ -105,13 +107,13 @@ export default async function AdminSupportPage(props: Props) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{openTickets}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mt-1">
               {tSupport("awaitingResponse")}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {tSupport("statuses.inProgress")}
@@ -120,13 +122,13 @@ export default async function AdminSupportPage(props: Props) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{inProgressTickets}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mt-1">
               {tSupport("inProgressDescription")}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {tSupport("resolvedTickets")}
@@ -135,23 +137,21 @@ export default async function AdminSupportPage(props: Props) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{resolvedTickets}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mt-1">
               {tSupport("successfullyClosed")}
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="mt-8 px-1 sm:px-0">
-        <Card>
-          <CardHeader>
-            <CardTitle>{tSupport("allTickets")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <TicketAccordionTable data={tickets} locale={locale} />
-          </CardContent>
-        </Card>
-      </div>
+      <Card className="hover:shadow-md transition-all">
+        <CardHeader>
+          <CardTitle>{tSupport("allTickets")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TicketAccordionTable data={tickets} locale={locale} />
+        </CardContent>
+      </Card>
     </div>
   );
 }

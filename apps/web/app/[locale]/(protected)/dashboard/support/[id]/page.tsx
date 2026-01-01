@@ -63,8 +63,10 @@ export async function generateMetadata({
   const ticket = ticketResult.success ? ticketResult.data?.ticket : null;
 
   return constructMetadata({
-    title: ticket ? `Support Ticket: ${ticket.subject}` : "Support Ticket",
-    description: "View and respond to your support ticket",
+    title: ticket ? `Support Ticket: ${ticket.subject} | Professional Support` : "Support Ticket Details",
+    description: ticket 
+      ? `Track and manage your support ticket. Status: ${ticket.status}. Get real-time updates and communicate directly with our support team.`
+      : "View and respond to your support ticket with real-time updates and expert assistance.",
   });
 }
 
@@ -103,42 +105,51 @@ export default async function TicketPage({
   });
 
   return (
-    <>
+    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <ModernPageHeader
         title={ticket.subject}
-        description={t("viewAndRespond")}
+        description="Track your ticket status and communicate with our support team in real-time."
         icon={<MessageSquare className="h-5 w-5 text-primary" />}
         showBackButton
         backHref="/dashboard/support"
       />
 
-      <Card className="mt-6">
+      <Card className="hover:shadow-md transition-all border-border/50 bg-card/80 backdrop-blur-sm">
         <CardHeader>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <CardTitle className="text-xl">{t("ticketDetails")}</CardTitle>
+              <CardTitle className="text-xl">Ticket Details</CardTitle>
               <CardDescription>
-                {t("created")} {createdAt}
+                Created {createdAt} • Last updated {updatedAt}
               </CardDescription>
             </div>
-            <div className="mt-2 flex items-center gap-2 md:mt-0">
+            <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">{t("status")}:</span>
+                <span className="text-sm font-medium">Status:</span>
                 <Badge className={getStatusColor(ticket.status)}>
                   {formatStatus(ticket.status, t)}
                 </Badge>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">{t("priority")}:</span>
-                <span className="capitalize">{t(ticket.priority)}</span>
+                <span className="text-sm font-medium">Priority:</span>
+                <Badge variant="outline" className={
+                  ticket.priority === 'high' ? 'border-red-500 text-red-600' :
+                  ticket.priority === 'medium' ? 'border-orange-500 text-orange-600' :
+                  'border-blue-500 text-blue-600'
+                }>
+                  {ticket.priority.toUpperCase()}
+                </Badge>
               </div>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <div className="mb-6">
-            <h3 className="mb-2 font-medium">{t("description")}</h3>
-            <div className="whitespace-pre-wrap rounded-lg bg-muted p-4 text-sm">
+            <h3 className="mb-3 font-semibold flex items-center gap-2">
+              <div className="size-2 rounded-full bg-primary" />
+              Original Request
+            </h3>
+            <div className="whitespace-pre-wrap rounded-lg bg-gradient-to-br from-muted/50 to-muted/30 backdrop-blur-sm p-4 text-sm border border-border/50 leading-relaxed">
               {ticket.description}
             </div>
           </div>
@@ -146,10 +157,19 @@ export default async function TicketPage({
           <Separator className="my-6" />
 
           <div>
-            <h3 className="mb-4 font-medium">{t("conversation")}</h3>
+            <h3 className="mb-4 font-semibold flex items-center gap-2">
+              <div className="size-2 rounded-full bg-primary" />
+              Conversation History
+            </h3>
             {messages.length === 0 ? (
-              <div className="py-6 text-center text-muted-foreground">
-                {t("noMessages")}
+              <div className="py-8 text-center">
+                <div className="flex size-16 items-center justify-center rounded-full bg-muted/50 mx-auto mb-3">
+                  <MessageSquare className="size-8 text-muted-foreground" />
+                </div>
+                <p className="text-muted-foreground font-medium">No messages yet</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Our support team will respond within 2-4 hours
+                </p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -164,19 +184,27 @@ export default async function TicketPage({
             )}
           </div>
         </CardContent>
-        <CardFooter>
-          {ticket.status !== "closed" && (
+        <CardFooter className="flex-col gap-4 bg-muted/20">
+          {ticket.status !== "closed" ? (
             <div className="w-full">
+              <div className="mb-3 text-sm text-muted-foreground">
+                💬 Add a reply to continue the conversation
+              </div>
               <TicketReplyForm ticketId={ticket.id} />
             </div>
-          )}
-          {ticket.status === "closed" && (
-            <div className="w-full py-4 text-center text-muted-foreground">
-              {t("ticketClosed")}
+          ) : (
+            <div className="w-full py-6 text-center">
+              <div className="inline-flex items-center justify-center size-12 rounded-full bg-emerald-500/10 mb-3">
+                <MessageSquare className="size-6 text-emerald-600" />
+              </div>
+              <p className="font-semibold mb-1">This ticket has been closed</p>
+              <p className="text-sm text-muted-foreground">
+                If you need further assistance, please create a new ticket
+              </p>
             </div>
           )}
         </CardFooter>
       </Card>
-    </>
+    </div>
   );
 }

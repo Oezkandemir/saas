@@ -6,6 +6,8 @@ import { getCurrentUser } from "@/lib/session";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { constructMetadata } from "@/lib/utils";
 import { DeleteAccountSection } from "@/components/dashboard/delete-account";
+import { DataExport } from "@/components/gdpr/data-export";
+import { AccountDeletion } from "@/components/gdpr/account-deletion";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { UserAvatarForm } from "@/components/forms/user-avatar-form";
 import { UserNameForm } from "@/components/forms/user-name-form";
@@ -199,8 +201,24 @@ export default async function SettingsPage() {
           </SectionColumns>
         </div>
 
+        {/* GDPR Data Export Section */}
         <div className="pt-6">
-          <DeleteAccountSection />
+          <SectionColumns
+            title="Datenschutz & DSGVO"
+            description="Verwalten Sie Ihre Daten gemäß DSGVO"
+          >
+            <DataExport />
+          </SectionColumns>
+        </div>
+
+        {/* Account Deletion Section */}
+        <div className="pt-6">
+          <SectionColumns
+            title="Gefahrenzone"
+            description="Unwiderrufliche Aktionen"
+          >
+            <AccountDeletion />
+          </SectionColumns>
         </div>
       </div>
     </div>

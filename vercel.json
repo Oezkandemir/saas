@@ -1,0 +1,86 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "buildCommand": "cd apps/web && pnpm build",
+  "devCommand": "cd apps/web && pnpm dev",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "build": {
+    "env": {
+      "NODE_OPTIONS": "--max-old-space-size=4096",
+      "NEXT_TELEMETRY_DISABLED": "1",
+      "SKIP_PREFLIGHT_CHECK": "true"
+    }
+  },
+  "crons": [],
+  "env": {},
+  "functions": {
+    "apps/web/api/**/*.ts": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    },
+    {
+      "source": "/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/_next/static/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "redirects": [],
+  "rewrites": [],
+  "trailingSlash": false,
+  "cleanUrls": true,
+  "github": {
+    "silent": true
+  }
+}
+
