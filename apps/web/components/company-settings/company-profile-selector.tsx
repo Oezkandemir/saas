@@ -37,8 +37,16 @@ export function CompanyProfileSelector({
         // Auto-select default profile if no value is set
         if (!value && data.length > 0) {
           const defaultProfile = data.find((p) => p.is_default) || data[0];
-          if (onValueChange) onValueChange(defaultProfile.id);
-          if (onProfileSelect) onProfileSelect(defaultProfile);
+          if (defaultProfile) {
+            if (onValueChange) onValueChange(defaultProfile.id);
+            if (onProfileSelect) onProfileSelect(defaultProfile);
+          }
+        } else if (value) {
+          // If value is provided, find and set the corresponding profile
+          const profile = data.find((p) => p.id === value);
+          if (profile && onProfileSelect) {
+            onProfileSelect(profile);
+          }
         }
       } catch (error) {
         console.error("Error loading company profiles:", error);
@@ -48,7 +56,8 @@ export function CompanyProfileSelector({
     }
 
     loadProfiles();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   const handleValueChange = (profileId: string) => {
     if (onValueChange) onValueChange(profileId);

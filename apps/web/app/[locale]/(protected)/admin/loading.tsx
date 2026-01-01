@@ -1,23 +1,27 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { DashboardHeader } from "@/components/dashboard/header";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Shield } from "lucide-react";
 
 export default function AdminPanelLoading() {
   return (
-    <>
-      <DashboardHeader
-        heading="Admin Panel"
-        text="Access only for users with ADMIN role."
-      />
-      <div className="flex flex-col gap-5">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Skeleton className="h-32 w-full rounded-lg" />
-          <Skeleton className="h-32 w-full rounded-lg" />
-          <Skeleton className="h-32 w-full rounded-lg" />
-          <Skeleton className="h-32 w-full rounded-lg" />
-        </div>
+    <UnifiedPageLayout
+      title="Admin Panel"
+      description="Access only for users with ADMIN role."
+      icon={<Shield className="w-4 h-4 text-primary" />}
+      contentClassName="space-y-6"
+    >
+      {/* Statistics */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} className="h-32 w-full rounded-lg" />
+        ))}
+      </div>
+      
+      {/* Main Admin Modules */}
+      <div className="grid gap-4 md:grid-cols-2">
         <Skeleton className="h-[500px] w-full rounded-lg" />
         <Skeleton className="h-[500px] w-full rounded-lg" />
       </div>
-    </>
+    </UnifiedPageLayout>
   );
 }

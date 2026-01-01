@@ -1,105 +1,122 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight, Home } from "lucide-react";
-
 import { cn } from "@/lib/utils";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 
-interface BreadcrumbsProps {
-  items?: Array<{
-    label: string;
-    href?: string;
-  }>;
-  className?: string;
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+  icon?: React.ReactNode;
 }
 
-export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
+interface BreadcrumbsProps {
+  items?: BreadcrumbItem[];
+  className?: string;
+  sticky?: boolean;
+}
+
+export function Breadcrumbs({ items, className, sticky = false }: BreadcrumbsProps) {
   const pathname = usePathname();
+  const [isScrolled, setIsScrolled] = React.useState(false);
 
-  // If no items provided, generate from pathname
-  const breadcrumbItems = items || generateBreadcrumbsFromPath(pathname);
+  React.useEffect(() => {
+    if (!sticky) return;
 
-  if (breadcrumbItems.length === 0) {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [sticky]);
+  
+  // Auto-generate breadcrumbs from pathname if items not provided
+  const breadcrumbItems = React.useMemo(() => {
+    if (items) return items;
+
+    const paths = pathname.split("/").filter(Boolean);
+    const breadcrumbs: BreadcrumbItem[] = [
+      { label: "Dashboard", href: "/dashboard", icon: <Home className="size-4" /> },
+    ];
+
+    let currentPath = "";
+    paths.forEach((path, index) => {
+      currentPath += `/${path}`;
+      
+      // Skip locale if present
+      if (index === 0 && (path === "en" || path === "de")) {
+        return;
+      }
+
+      // Skip protected route prefix
+      if (path === "dashboard" || path === "protected") {
+        return;
+      }
+
+      const label = path
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+
+      const isLast = index === paths.length - 1;
+      breadcrumbs.push({
+        label,
+        href: isLast ? undefined : currentPath,
+      });
+    });
+
+    return breadcrumbs;
+  }, [pathname, items]);
+
+  if (breadcrumbItems.length <= 1) {
     return null;
   }
 
   return (
-    <Breadcrumb className={cn(className)}>
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink asChild>
-            <Link href="/dashboard">
-              <Home className="h-4 w-4" />
-            </Link>
-          </BreadcrumbLink>
-        </BreadcrumbItem>
+    <nav
+      aria-label="Breadcrumb"
+      className={cn(
+        "flex items-center space-x-1 text-sm text-muted-foreground py-2",
+        sticky && isScrolled && "shadow-sm backdrop-blur-sm bg-background/95",
+        className
+      )}
+    >
+      <ol className="flex items-center space-x-1">
         {breadcrumbItems.map((item, index) => {
           const isLast = index === breadcrumbItems.length - 1;
+
           return (
-            <div key={index} className="flex items-center">
-              <BreadcrumbSeparator>
-                <ChevronRight className="h-4 w-4" />
-              </BreadcrumbSeparator>
-              <BreadcrumbItem>
-                {isLast ? (
-                  <BreadcrumbPage>{item.label}</BreadcrumbPage>
-                ) : item.href ? (
-                  <BreadcrumbLink asChild>
-                    <Link href={item.href}>{item.label}</Link>
-                  </BreadcrumbLink>
-                ) : (
-                  <BreadcrumbPage>{item.label}</BreadcrumbPage>
-                )}
-              </BreadcrumbItem>
-            </div>
+            <li key={index} className="flex items-center">
+              {index > 0 && (
+                <ChevronRight className="mx-1 size-4 text-muted-foreground/50" />
+              )}
+              {item.href && !isLast ? (
+                <Link
+                  href={item.href}
+                  className="flex items-center gap-1 hover:text-foreground transition-colors"
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </Link>
+              ) : (
+                <span
+                  className={cn(
+                    "flex items-center gap-1",
+                    isLast && "text-foreground font-medium"
+                  )}
+                  aria-current={isLast ? "page" : undefined}
+                >
+                  {item.icon}
+                  {item.label}
+                </span>
+              )}
+            </li>
           );
         })}
-      </BreadcrumbList>
-    </Breadcrumb>
+      </ol>
+    </nav>
   );
 }
-
-function generateBreadcrumbsFromPath(pathname: string): Array<{
-  label: string;
-  href?: string;
-}> {
-  const segments = pathname.split("/").filter(Boolean);
-  const items: Array<{ label: string; href?: string }> = [];
-
-  // Skip locale and dashboard segments
-  const relevantSegments = segments.filter(
-    (seg) => seg !== "de" && seg !== "en" && seg !== "dashboard"
-  );
-
-  let currentPath = "/dashboard";
-
-  relevantSegments.forEach((segment, index) => {
-    currentPath += `/${segment}`;
-    const isLast = index === relevantSegments.length - 1;
-
-    // Capitalize and format segment
-    const label = segment
-      .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-
-    items.push({
-      label,
-      href: isLast ? undefined : currentPath,
-    });
-  });
-
-  return items;
-}
-
-
-

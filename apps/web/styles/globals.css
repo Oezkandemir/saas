@@ -123,6 +123,31 @@
 }
 
 @layer utilities {
+  /* Note: Custom utilities (border-subtle, shadow-subtle, etc.) are now defined in tailwind.config.ts as a plugin for better Turbopack compatibility */
+
+  /* Hover Effects - Subtle & Professional */
+  .hover-lift {
+    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.1);
+  }
+
+  .hover-scale {
+    transition: transform 0.15s ease-out;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+
+  .hover-scale:active {
+    transform: scale(0.98);
+  }
+
+  /* Shimmer Effect */
   .animate-shimmer {
     background: linear-gradient(
       90deg,
@@ -132,19 +157,6 @@
     );
     background-size: 1000px 100%;
     animation: shimmer 2s linear infinite;
-  }
-
-  .transition-smooth {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .hover-lift {
-    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-  }
-
-  .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
   /* Mobile-friendly touch targets */

@@ -57,7 +57,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
         <div className="flex gap-4 sm:gap-6 md:gap-10 items-center min-w-0 flex-1">
           <Link href="/" className="flex items-center space-x-1.5 shrink-0">
             <Icons.logo className="h-6 w-6 sm:h-7 sm:w-7" />
-            <span className="font-urban text-lg sm:text-xl font-bold hidden xs:inline">
+            <span className="font-urban text-base sm:text-lg md:text-xl font-bold">
               {meta("shortName")}
             </span>
           </Link>

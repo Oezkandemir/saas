@@ -84,12 +84,12 @@ export function CustomersTable({ customers }: CustomersTableProps) {
         {customers.map((customer) => (
           <Card 
             key={customer.id}
-            className="overflow-hidden hover:shadow-md transition-shadow touch-manipulation"
+            className="overflow-hidden hover interactive touch-manipulation"
           >
             <CardContent className="p-0">
               <Link
                 href={`/dashboard/customers/${customer.id}`}
-                className="block p-4 active:bg-muted/50 transition-colors"
+                className="block p-4 active:bg-muted/50 transition-subtle"
               >
                 {/* Customer Header */}
                 <div className="flex items-start justify-between gap-3 mb-3">
@@ -181,24 +181,24 @@ export function CustomersTable({ customers }: CustomersTableProps) {
       </div>
 
       {/* Desktop Table View - Hidden on mobile */}
-      <div className="hidden md:block rounded-lg border-2 shadow-lg overflow-hidden">
+      <div className="hidden md:block rounded-lg border border-subtle shadow-subtle overflow-hidden bg-card">
         <div className="overflow-x-auto">
           <Table>
           <TableHeader>
-            <TableRow className="bg-muted/50">
-              <TableHead className="font-semibold">Name</TableHead>
-              <TableHead className="font-semibold">Kontakt</TableHead>
-              <TableHead className="font-semibold">Unternehmen</TableHead>
-              <TableHead className="font-semibold">QR-Code</TableHead>
-              <TableHead className="font-semibold">Erstellt</TableHead>
-              <TableHead className="w-[70px] text-right font-semibold">Aktionen</TableHead>
+            <TableRow className="bg-muted/30 border-subtle">
+              <TableHead>Name</TableHead>
+              <TableHead>Kontakt</TableHead>
+              <TableHead>Unternehmen</TableHead>
+              <TableHead>QR-Code</TableHead>
+              <TableHead>Erstellt</TableHead>
+              <TableHead className="w-[70px] text-right">Aktionen</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {customers.map((customer) => (
               <TableRow
                 key={customer.id}
-                className="hover:bg-muted/30 transition-colors cursor-pointer"
+                className="cursor-pointer transition-subtle"
                 onClick={() => router.push(`/dashboard/customers/${customer.id}`)}
               >
                 <TableCell className="font-medium">

@@ -1,18 +1,17 @@
 import { redirect, notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
-import { getDocument } from "@/actions/documents-actions";
+import { getDocument, type Document } from "@/actions/documents-actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Edit, FileText } from "lucide-react";
 import Link from "next/link";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { DocumentStatusChanger } from "@/components/documents/document-status-changer";
 import { DocumentStatusTimeline } from "@/components/documents/document-status-timeline";
-import { PDFDownloadButton } from "@/components/documents/pdf-download-button";
-import { DocumentEmailButton } from "@/components/documents/document-email-button";
-import { InvoiceCompactPreview } from "@/components/documents/invoice-compact-preview";
-import { InvoiceFullscreenButton } from "@/components/documents/invoice-fullscreen-button";
+import { PDFActionButtons } from "@/components/documents/document-pdf-components";
+import { InvoiceFullPreview } from "@/components/documents/invoice-full-preview";
+import { getCompanyProfile, getDefaultCompanyProfile } from "@/actions/company-profiles-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -31,63 +30,59 @@ export default async function DocumentDetailPage({
     notFound();
   }
 
+  // Get company profile - try document's profile first, then default
+  let companyProfile: Awaited<ReturnType<typeof getDefaultCompanyProfile>> = null;
+  try {
+    // Check if document has company_profile_id (might exist in database but not in type)
+    const documentWithProfileId = document as Document & { company_profile_id?: string };
+    if (documentWithProfileId.company_profile_id) {
+      companyProfile = await getCompanyProfile(documentWithProfileId.company_profile_id);
+    }
+    if (!companyProfile) {
+      companyProfile = await getDefaultCompanyProfile();
+    }
+  } catch (error) {
+    console.error("Error loading company profile:", error);
+    // Continue without company profile - will use defaults
+  }
+
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Header */}
-      <div className="mb-6">
-        <ModernPageHeader
-          title={document.document_number}
-          description={document.type === "quote" ? "Angebot" : "Rechnung"}
-          icon={<FileText className="h-5 w-5 text-primary" />}
-          showBackButton
-          backHref="/dashboard/documents"
-          actions={
-            <>
-              <StatusBadge status={document.status as any} />
-              <DocumentStatusChanger
-                documentId={document.id}
-                currentStatus={document.status as any}
-                type={document.type}
-              />
-              <Link href={`/dashboard/documents/${document.id}/edit`}>
-                <Button variant="outline" className="gap-2">
-                  <Edit className="h-4 w-4" />
-                  Bearbeiten
-                </Button>
-              </Link>
-              <PDFDownloadButton
-                documentId={document.id}
-                pdfUrl={document.pdf_url}
-              />
-              {document.customer?.email && (
-                <DocumentEmailButton
-                  documentId={document.id}
-                  recipientEmail={document.customer.email}
-                  documentNumber={document.document_number}
-                  documentType={document.type}
-                />
-              )}
-            </>
-          }
-        />
+    <UnifiedPageLayout
+      title={document.document_number}
+      description={document.type === "quote" ? "Angebot" : "Rechnung"}
+      icon={<FileText className="h-4 w-4 text-primary" />}
+      showBackButton
+      backHref="/dashboard/documents"
+      actions={
+        <>
+          <StatusBadge status={document.status as any} />
+          <DocumentStatusChanger
+            documentId={document.id}
+            currentStatus={document.status as any}
+            type={document.type}
+          />
+          <Link href={`/dashboard/documents/${document.id}/edit`}>
+            <Button variant="outline" className="gap-2">
+              <Edit className="h-4 w-4" />
+              Bearbeiten
+            </Button>
+          </Link>
+          <PDFActionButtons
+            documentId={document.id}
+            pdfUrl={document.pdf_url}
+            customerEmail={document.customer?.email}
+            documentNumber={document.document_number}
+            documentType={document.type}
+          />
+        </>
+      }
+      contentClassName="space-y-6"
+    >
+      {/* Versteckte vollständige Preview für PDF-Generierung */}
+      <div className="fixed -left-[9999px] top-0 w-[210mm] opacity-0 pointer-events-none" data-pdf-preview>
+        <InvoiceFullPreview document={document} companyProfile={companyProfile} />
       </div>
-
-      {/* Kompakte Rechnungsvorschau */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <div className="space-y-1">
-            <CardTitle>Rechnungsvorschau</CardTitle>
-            <CardDescription>
-              Vorschau des {document.type === "quote" ? "Angebots" : "Rechnung"}-Inhalts
-            </CardDescription>
-          </div>
-          <InvoiceFullscreenButton document={document} />
-        </CardHeader>
-        <CardContent className="max-h-[600px] overflow-y-auto">
-          <InvoiceCompactPreview document={document} />
-        </CardContent>
-      </Card>
 
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-3">
@@ -236,7 +231,7 @@ export default async function DocumentDetailPage({
           />
         </div>
       </div>
-    </div>
+    </UnifiedPageLayout>
   );
 }
 

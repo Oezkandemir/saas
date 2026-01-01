@@ -4,10 +4,33 @@ import { getCustomers, type Customer } from "@/actions/customers-actions";
 import { getDocuments, type Document } from "@/actions/documents-actions";
 import { getQRCodes, type QRCode } from "@/actions/qr-codes-actions";
 import Link from "next/link";
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardHeader, 
+  CardTitle 
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Icons } from "@/components/shared/icons";
-import { Plus, Users, FileText, QrCode, CheckCircle2, XCircle } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Users,
+  FileText,
+  QrCode,
+  CheckCircle2,
+  XCircle,
+  TrendingUp,
+  ArrowRight,
+  DollarSign,
+} from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -26,121 +49,92 @@ export default async function DashboardPage() {
   const openQuotes = quotes.filter((d) => d.status === "draft" || d.status === "sent");
   const unpaidInvoices = invoices.filter((d) => d.status !== "paid");
   const paidInvoices = invoices.filter((d) => d.status === "paid");
+  
   const recentCustomers = customers.slice(0, 5);
-  const recentDocuments = documents.slice(0, 5).sort((a, b) => 
-    new Date(b.document_date).getTime() - new Date(a.document_date).getTime()
-  );
+  const recentDocuments = documents
+    .slice(0, 5)
+    .sort((a, b) => 
+      new Date(b.document_date).getTime() - new Date(a.document_date).getTime()
+    );
+
+  const totalRevenue = paidInvoices.reduce((sum, inv) => sum + (inv.total || 0), 0);
+  const pendingRevenue = unpaidInvoices.reduce((sum, inv) => sum + (inv.total || 0), 0);
 
   const stats = [
+    {
+      title: "Kunden",
+      value: customers.length,
+      icon: Users,
+      description: "Gesamt Kunden",
+      href: "/dashboard/customers",
+    },
     {
       title: "Offene Angebote",
       value: openQuotes.length,
       icon: FileText,
-      href: "/dashboard/documents?type=quote&status=draft,sent",
-      trend: "+12%",
+      description: "Entwurf & Gesendet",
+      href: "/dashboard/documents?type=quote",
     },
     {
       title: "Unbezahlte Rechnungen",
       value: unpaidInvoices.length,
       icon: XCircle,
-      href: "/dashboard/documents?type=invoice&status=sent,overdue",
-      trend: unpaidInvoices.length > 0 ? "Aktion erforderlich" : "Alles erledigt",
-    },
-    {
-      title: "QR-Codes",
-      value: qrCodes.length,
-      icon: QrCode,
-      href: "/dashboard/qr-codes",
-      trend: `${customers.filter((c) => c.qr_code).length} aktiv`,
-    },
-    {
-      title: "Kunden",
-      value: customers.length,
-      icon: Users,
-      href: "/dashboard/customers",
-      trend: "+5 diesen Monat",
+      description: "Ausstehend",
+      href: "/dashboard/documents?type=invoice&status=unpaid",
     },
     {
       title: "Bezahlte Rechnungen",
       value: paidInvoices.length,
       icon: CheckCircle2,
+      description: "Erfolgreich",
       href: "/dashboard/documents?type=invoice&status=paid",
-      trend: `${paidInvoices.length} erfolgreich`,
+    },
+    {
+      title: "QR-Codes",
+      value: qrCodes.length,
+      icon: QrCode,
+      description: "Aktive Codes",
+      href: "/dashboard/qr-codes",
     },
     {
       title: "Gesamt Dokumente",
       value: documents.length,
-      icon: FileText,
+      icon: TrendingUp,
+      description: "Alle Dokumente",
       href: "/dashboard/documents",
-      trend: `${quotes.length} Angebote, ${invoices.length} Rechnungen`,
-    },
-  ];
-
-  const quickActions = [
-    {
-      title: "Neuer Kunde",
-      description: "Kunden hinzufügen",
-      href: "/dashboard/customers/new",
-      icon: Users,
-    },
-    {
-      title: "Neues Angebot",
-      description: "Angebot erstellen",
-      href: "/dashboard/documents/new?type=quote",
-      icon: FileText,
-    },
-    {
-      title: "Neue Rechnung",
-      description: "Rechnung erstellen",
-      href: "/dashboard/documents/new?type=invoice",
-      icon: FileText,
-    },
-    {
-      title: "Neuer QR-Code",
-      description: "QR-Code generieren",
-      href: "/dashboard/qr-codes/new",
-      icon: QrCode,
     },
   ];
 
   return (
-    <div className="flex flex-col gap-4 sm:gap-6 px-2 sm:px-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="flex flex-col gap-4 p-4 sm:p-6">
       {/* Header */}
-      <div className="animate-in fade-in slide-in-from-top-4 duration-500 px-2 sm:px-0">
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-1 line-clamp-2">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+        <p className="text-sm text-muted-foreground">
           Willkommen zurück, {user.name || user.email}
-        </h1>
-        <p className="text-muted-foreground text-sm sm:text-base">
-          Übersicht über Ihr Business
         </p>
       </div>
 
-      {/* Statistics Grid - Better mobile layout */}
-      <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
-        {stats.map((stat, index) => {
+      {/* Statistics Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <Link
-              key={stat.title}
-              href={stat.href}
-              className="group block"
-            >
-              <Card hover interactive className="h-full touch-manipulation">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-4 lg:p-6">
-                  <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground line-clamp-2">
+            <Link key={stat.title} href={stat.href}>
+              <Card hover className="h-full">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
                     {stat.title}
                   </CardTitle>
-                  <Icon className="size-4 sm:size-5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
-                </CardHeader>
-                <CardContent className="p-3 sm:p-4 lg:p-6 pt-0">
-                  <div className="flex flex-col gap-1">
-                    <div className="text-xl sm:text-2xl font-semibold transition-colors group-hover:text-primary">
-                      {stat.value}
-                    </div>
-                    <div className="text-xs text-muted-foreground line-clamp-1">
-                      {stat.trend}
-                    </div>
+                  <div className="flex size-9 items-center justify-center rounded-md bg-muted/50 border border-border">
+                    <Icon className="size-4 text-muted-foreground" />
                   </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-semibold mb-1">{stat.value}</div>
+                  <CardDescription className="text-xs">
+                    {stat.description}
+                  </CardDescription>
                 </CardContent>
               </Card>
             </Link>
@@ -148,58 +142,75 @@ export default async function DashboardPage() {
         })}
       </div>
 
-      {/* Quick Actions & Recent Activity */}
-      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-        {/* Quick Actions */}
-        <Card hover className="animate-in fade-in slide-in-from-left-4 duration-500">
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-base sm:text-lg">Schnellaktionen</CardTitle>
-            <CardDescription className="text-sm">Häufig verwendete Aktionen</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2 p-4 sm:p-6 pt-0">
-            {quickActions.map((action, index) => {
-              const Icon = action.icon;
-              return (
-                <Link
-                  key={action.title}
-                  href={action.href}
-                  className="animate-in fade-in slide-in-from-bottom-4 duration-500"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start h-auto py-3 sm:py-4 px-3 sm:px-4 transition-all hover:scale-[1.02] active:scale-[0.98] touch-manipulation"
-                  >
-                    <Icon className="size-4 sm:size-5 mr-2 sm:mr-3 shrink-0 transition-colors" />
-                    <div className="text-left min-w-0 flex-1">
-                      <div className="font-medium text-sm sm:text-base truncate">{action.title}</div>
-                      <div className="text-xs sm:text-sm text-muted-foreground truncate">{action.description}</div>
-                    </div>
-                  </Button>
-                </Link>
-              );
-            })}
+      {/* Revenue Cards - Slim & Modern */}
+      <div className="grid gap-3 md:grid-cols-2">
+        <Card className="border-border/60 shadow-sm bg-card/50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-muted-foreground">Gesamtumsatz</p>
+                <p className="text-xl font-semibold">
+                  {new Intl.NumberFormat("de-DE", {
+                    style: "currency",
+                    currency: "EUR",
+                  }).format(totalRevenue)}
+                </p>
+                <p className="text-xs text-muted-foreground">Aus bezahlten Rechnungen</p>
+              </div>
+              <div className="flex size-10 items-center justify-center rounded-lg bg-muted/50 border border-border/40">
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        {/* Recent Activity */}
-        <Card hover className="animate-in fade-in slide-in-from-right-4 duration-500">
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-base sm:text-lg">Letzte Aktivitäten</CardTitle>
-            <CardDescription className="text-sm">Ihre neuesten Dokumente</CardDescription>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            {recentDocuments.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 text-center">
-                <FileText className="size-8 sm:size-10 text-muted-foreground mb-3" />
-                <p className="text-sm sm:text-base font-medium mb-1">Noch keine Dokumente</p>
-                <p className="text-xs sm:text-sm text-muted-foreground mb-4 px-4">
-                  Erstellen Sie Ihr erstes Dokument
+        <Card className="border-border/60 shadow-sm bg-card/50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-muted-foreground">Ausstehender Umsatz</p>
+                <p className="text-xl font-semibold">
+                  {new Intl.NumberFormat("de-DE", {
+                    style: "currency",
+                    currency: "EUR",
+                  }).format(pendingRevenue)}
                 </p>
+                <p className="text-xs text-muted-foreground">Aus unbezahlten Rechnungen</p>
+              </div>
+              <div className="flex size-10 items-center justify-center rounded-lg bg-muted/50 border border-border/40">
+                <XCircle className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Documents & Customers - Slim Cards */}
+      <div className="grid gap-3 md:grid-cols-2">
+        {/* Recent Documents */}
+        <Card className="border-border/60 shadow-sm bg-card/50">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-sm font-semibold">Letzte Dokumente</CardTitle>
+                <CardDescription className="text-xs">Die 5 neuesten Dokumente</CardDescription>
+              </div>
+              <Link href="/dashboard/documents">
+                <Button variant="ghost" size="sm" className="h-7 text-xs">
+                  Alle
+                  <ArrowRight className="ml-1 h-3 w-3" />
+                </Button>
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            {recentDocuments.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-6 text-center">
+                <FileText className="h-8 w-8 text-muted-foreground mb-2" />
+                <p className="text-xs font-medium mb-1">Noch keine Dokumente</p>
                 <Link href="/dashboard/documents/new">
-                  <Button size="sm" variant="outline" className="touch-manipulation">
-                    <Plus className="size-4 mr-2" />
-                    Dokument erstellen
+                  <Button size="sm" variant="outline" className="mt-2 h-7 text-xs">
+                    Erstellen
                   </Button>
                 </Link>
               </div>
@@ -209,23 +220,99 @@ export default async function DashboardPage() {
                   <Link
                     key={doc.id}
                     href={`/dashboard/documents/${doc.id}`}
-                    className="flex items-center gap-3 rounded-md border p-3 sm:p-4 transition-all hover:bg-muted hover:shadow-sm active:scale-[0.98] touch-manipulation"
+                    className="flex items-center justify-between rounded-md border border-border/40 p-2.5 hover:bg-muted/30 transition-colors group"
                   >
-                    <FileText className="size-4 sm:size-5 shrink-0 text-muted-foreground" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2 mb-1">
-                        <span className="text-sm sm:text-base font-medium truncate">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                      <div className="flex size-7 items-center justify-center rounded-md bg-muted/50 border border-border/40 shrink-0">
+                        <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                      </div>
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <span className="text-xs font-medium truncate">
                           {doc.document_number}
                         </span>
-                        <span className="text-xs sm:text-sm text-muted-foreground shrink-0">
-                          {doc.type === "quote" ? "Angebot" : "Rechnung"}
-                        </span>
-                      </div>
-                      <div className="text-xs sm:text-sm text-muted-foreground truncate">
-                        {new Date(doc.document_date).toLocaleDateString("de-DE")}
-                        {doc.status && ` • ${doc.status}`}
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">
+                            {doc.type === "quote" ? "Angebot" : "Rechnung"}
+                          </Badge>
+                          <span className="text-[10px] text-muted-foreground">
+                            {new Date(doc.document_date).toLocaleDateString("de-DE", {
+                              day: "2-digit",
+                              month: "2-digit",
+                            })}
+                          </span>
+                        </div>
                       </div>
                     </div>
+                    {doc.total && (
+                      <span className="text-xs font-semibold ml-2 shrink-0">
+                        {new Intl.NumberFormat("de-DE", {
+                          style: "currency",
+                          currency: "EUR",
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0,
+                        }).format(doc.total)}
+                      </span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Recent Customers */}
+        <Card className="border-border/60 shadow-sm bg-card/50">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-sm font-semibold">Neueste Kunden</CardTitle>
+                <CardDescription className="text-xs">Die 5 neuesten Kunden</CardDescription>
+              </div>
+              <Link href="/dashboard/customers">
+                <Button variant="ghost" size="sm" className="h-7 text-xs">
+                  Alle
+                  <ArrowRight className="ml-1 h-3 w-3" />
+                </Button>
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            {recentCustomers.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-6 text-center">
+                <Users className="h-8 w-8 text-muted-foreground mb-2" />
+                <p className="text-xs font-medium mb-1">Noch keine Kunden</p>
+                <Link href="/dashboard/customers/new">
+                  <Button size="sm" variant="outline" className="mt-2 h-7 text-xs">
+                    Erstellen
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {recentCustomers.map((customer) => (
+                  <Link
+                    key={customer.id}
+                    href={`/dashboard/customers/${customer.id}`}
+                    className="flex items-center justify-between rounded-md border border-border/40 p-2.5 hover:bg-muted/30 transition-colors group"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                      <div className="flex size-7 items-center justify-center rounded-md bg-muted/50 border border-border/40 shrink-0">
+                        <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                      </div>
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <span className="text-xs font-medium truncate">
+                          {customer.name || customer.company || "Unbenannt"}
+                        </span>
+                        {customer.email && (
+                          <span className="text-[10px] text-muted-foreground truncate mt-0.5">
+                            {customer.email}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {customer.qr_code && (
+                      <QrCode className="h-3.5 w-3.5 text-muted-foreground ml-2 shrink-0" />
+                    )}
                   </Link>
                 ))}
               </div>
@@ -234,46 +321,74 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      {/* Recent Customers */}
-      {recentCustomers.length > 0 && (
-        <Card hover className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <CardHeader className="p-4 sm:p-6">
-            <div className="flex items-center justify-between gap-2">
-              <div className="min-w-0 flex-1">
-                <CardTitle className="text-base sm:text-lg">Neueste Kunden</CardTitle>
-                <CardDescription className="text-sm">Zuletzt hinzugefügte Kunden</CardDescription>
-              </div>
-              <Link href="/dashboard/customers">
-                <Button variant="ghost" size="sm" className="shrink-0 text-xs sm:text-sm touch-manipulation">
-                  Alle anzeigen
-                </Button>
-              </Link>
-            </div>
+      {/* Quick Overview Table - Slim */}
+      {documents.length > 0 && (
+        <Card className="border-border/60 shadow-sm bg-card/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-semibold">Dokumente Übersicht</CardTitle>
+            <CardDescription className="text-xs">Übersicht nach Typ und Status</CardDescription>
           </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            <div className="space-y-2">
-              {recentCustomers.map((customer) => (
-                <Link
-                  key={customer.id}
-                  href={`/dashboard/customers/${customer.id}`}
-                  className="flex items-center gap-3 rounded-md border p-3 sm:p-4 transition-all hover:bg-muted hover:shadow-sm active:scale-[0.98] touch-manipulation"
-                >
-                  <Users className="size-4 sm:size-5 shrink-0 text-muted-foreground" />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm sm:text-base font-medium truncate">
-                      {customer.name || customer.company || "Unbenannt"}
-                    </div>
-                    {customer.email && (
-                      <div className="text-xs sm:text-sm text-muted-foreground truncate">
-                        {customer.email}
-                      </div>
-                    )}
-                  </div>
-                  {customer.qr_code && (
-                    <QrCode className="size-4 sm:size-5 shrink-0 text-muted-foreground" />
-                  )}
-                </Link>
-              ))}
+          <CardContent className="pt-0">
+            <div className="rounded-md border border-border/40 overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-border/40">
+                    <TableHead className="h-9 text-xs font-medium">Typ</TableHead>
+                    <TableHead className="h-9 text-xs font-medium">Status</TableHead>
+                    <TableHead className="h-9 text-xs font-medium">Anzahl</TableHead>
+                    <TableHead className="h-9 text-xs font-medium text-right">Gesamtbetrag</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow className="border-border/40">
+                    <TableCell className="text-xs font-medium py-2.5">Angebote</TableCell>
+                    <TableCell className="py-2.5">
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">Offen</Badge>
+                    </TableCell>
+                    <TableCell className="text-xs py-2.5">{openQuotes.length}</TableCell>
+                    <TableCell className="text-xs font-medium text-right py-2.5">
+                      {new Intl.NumberFormat("de-DE", {
+                        style: "currency",
+                        currency: "EUR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(
+                        openQuotes.reduce((sum, q) => sum + (q.total || 0), 0)
+                      )}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow className="border-border/40">
+                    <TableCell className="text-xs font-medium py-2.5">Rechnungen</TableCell>
+                    <TableCell className="py-2.5">
+                      <Badge variant="destructive" className="text-[10px] px-1.5 py-0 h-4">Unbezahlt</Badge>
+                    </TableCell>
+                    <TableCell className="text-xs py-2.5">{unpaidInvoices.length}</TableCell>
+                    <TableCell className="text-xs font-medium text-right py-2.5">
+                      {new Intl.NumberFormat("de-DE", {
+                        style: "currency",
+                        currency: "EUR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(pendingRevenue)}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="text-xs font-medium py-2.5">Rechnungen</TableCell>
+                    <TableCell className="py-2.5">
+                      <Badge variant="default" className="text-[10px] px-1.5 py-0 h-4">Bezahlt</Badge>
+                    </TableCell>
+                    <TableCell className="text-xs py-2.5">{paidInvoices.length}</TableCell>
+                    <TableCell className="text-xs font-medium text-right py-2.5">
+                      {new Intl.NumberFormat("de-DE", {
+                        style: "currency",
+                        currency: "EUR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(totalRevenue)}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
             </div>
           </CardContent>
         </Card>
@@ -281,4 +396,3 @@ export default async function DashboardPage() {
     </div>
   );
 }
-

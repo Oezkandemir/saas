@@ -224,7 +224,8 @@ export async function generatePDFFromHTML(
         }
       }
     }
-    console.error("Failed to load Puppeteer:", errorMessage);
+    const { logger } = await import("@/lib/logger");
+    logger.error("Failed to load Puppeteer:", errorMessage);
     throw new Error(`Failed to load Puppeteer: ${errorMessage}`);
   }
   
@@ -233,7 +234,8 @@ export async function generatePDFFromHTML(
   try {
     return await generatePDFWithRetry(puppeteer, html, mergedOptions);
   } catch (error) {
-    console.error("Error generating PDF:", error);
+    const { logger } = await import("@/lib/logger");
+    logger.error("Error generating PDF:", error);
     let errorMessage = "Unknown error";
     if (error instanceof Error) {
       errorMessage = error.message;
@@ -324,7 +326,8 @@ export async function uploadPDFToStorage(
 
     return publicUrl;
   } catch (error) {
-    console.error("Error in uploadPDFToStorage:", error);
+    const { logger } = await import("@/lib/logger");
+    logger.error("Error in uploadPDFToStorage:", error);
     if (error instanceof Error) {
       throw error;
     }
@@ -353,7 +356,8 @@ export async function generateAndUploadPDF(
 
     return pdfUrl;
   } catch (error) {
-    console.error("Error generating and uploading PDF:", error);
+    const { logger } = await import("@/lib/logger");
+    logger.error("Error generating and uploading PDF:", error);
     throw error;
   }
 }
@@ -381,7 +385,8 @@ export async function generatePDFInBackground(
     console.log(`PDF generated successfully for document ${document.id}`);
   } catch (error) {
     // Log error but don't throw - we don't want to break document creation/update
-    console.error(`Failed to generate PDF in background for document ${document.id}:`, error);
+    const { logger } = await import("@/lib/logger");
+    logger.error(`Failed to generate PDF in background for document ${document.id}:`, error);
     
     // Try to extract error message
     let errorMessage = "Unknown error";

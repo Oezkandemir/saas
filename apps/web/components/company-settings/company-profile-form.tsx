@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useAutoSave } from "@/lib/hooks/use-auto-save";
 
 import {
   CompanyProfile,
@@ -13,25 +14,17 @@ import {
   createCompanyProfile,
   updateCompanyProfile,
 } from "@/actions/company-profiles-actions";
-import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CompanyBasicFields } from "./company-basic-fields";
-import { CompanyLegalFields } from "./company-legal-fields";
-import { CompanyContactFields } from "./company-contact-fields";
-import { CompanyBankFields } from "./company-bank-fields";
-import { Building2, Scale, Mail, Landmark, Loader2, Tag } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormControl, 
-  FormDescription, 
-  FormMessage 
-} from "@/components/ui/form";
+import { Card, CardContent } from "@/components/ui/card";
+import { Building2, Scale, Mail, Landmark, Tag } from "lucide-react";
+import { MultiStepForm, Step } from "@/components/ui/multi-step-form";
+import {
+  CompanyProfileSettingsStep,
+  CompanyBasicInfoStep,
+  CompanyLegalInfoStep,
+  CompanyContactInfoStep,
+  CompanyBankInfoStep,
+} from "./company-profile-form-steps";
 
 const companyProfileSchema = z.object({
   profile_name: z.string().min(1, "Profilname ist erforderlich"),
@@ -84,6 +77,7 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
 
   const form = useForm<CompanyProfileFormValues>({
     resolver: zodResolver(companyProfileSchema),
+    mode: "onBlur", // Enable real-time validation on blur
     defaultValues: {
       profile_name: profile?.profile_name || "",
       is_default: profile?.is_default || false,
@@ -123,17 +117,27 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
     },
   });
 
+  // Auto-save form data
+  const storageKey = profile
+    ? `company-profile-form-${profile.id}`
+    : "company-profile-form-new";
+  const { clearSavedData } = useAutoSave({
+    form,
+    storageKey,
+    enabled: !profile, // Only auto-save for new profiles
+    debounceMs: 2000,
+  });
+
   async function onSubmit(data: CompanyProfileFormValues) {
     setIsLoading(true);
 
     try {
       if (profile) {
-        // Update existing profile
         await updateCompanyProfile(profile.id, data as CompanyProfileInput);
         toast.success("Firmenprofil erfolgreich aktualisiert");
       } else {
-        // Create new profile
         await createCompanyProfile(data as CompanyProfileInput);
+        clearSavedData(); // Clear auto-saved data on successful submit
         toast.success("Firmenprofil erfolgreich erstellt");
       }
 
@@ -146,165 +150,83 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
     } catch (error: any) {
       console.error("Error saving company profile:", error);
       toast.error(error.message || "Fehler beim Speichern des Profils");
+      throw error; // Re-throw to prevent form from completing
     } finally {
       setIsLoading(false);
     }
   }
 
+  const steps: Step<CompanyProfileFormValues>[] = [
+    {
+      id: "settings",
+      title: "Einstellungen",
+      description: "Profilname und Standard-Einstellungen",
+      icon: <Tag className="size-5" />,
+      fields: ["profile_name", "is_default"],
+      component: CompanyProfileSettingsStep,
+    },
+    {
+      id: "basic",
+      title: "Basisinformationen",
+      description: "Grundlegende Firmendaten",
+      icon: <Building2 className="size-5" />,
+      fields: [
+        "company_name",
+        "company_address",
+        "company_address_line2",
+        "company_postal_code",
+        "company_city",
+        "company_country",
+      ],
+      component: CompanyBasicInfoStep,
+    },
+    {
+      id: "legal",
+      title: "Rechtliche Informationen",
+      description: "Steuer- und Registrierungsdaten",
+      icon: <Scale className="size-5" />,
+      fields: ["company_tax_id", "company_vat_id", "company_registration_number"],
+      component: CompanyLegalInfoStep,
+    },
+    {
+      id: "contact",
+      title: "Kontaktinformationen",
+      description: "Kontaktmöglichkeiten",
+      icon: <Mail className="size-5" />,
+      fields: [
+        "company_email",
+        "company_phone",
+        "company_mobile",
+        "company_website",
+        "contact_person_name",
+        "contact_person_position",
+      ],
+      component: CompanyContactInfoStep,
+    },
+    {
+      id: "bank",
+      title: "Bankverbindung",
+      description: "Bankdaten für Rechnungen",
+      icon: <Landmark className="size-5" />,
+      fields: ["bank_name", "bank_account_holder", "iban", "bic"],
+      component: CompanyBankInfoStep,
+    },
+  ];
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* Profile Name and Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Profil-Einstellungen</CardTitle>
-            <CardDescription>
-              Grundlegende Einstellungen für dieses Firmenprofil
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <FormField
-              control={form.control}
-              name="profile_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <Tag className="h-4 w-4 text-primary" />
-                    Profilname *
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="z.B. Hauptfirma, Zweigstelle Berlin"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Ein eindeutiger Name für dieses Firmenprofil
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="is_default"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>
-                      Als Standard-Profil festlegen
-                    </FormLabel>
-                    <FormDescription>
-                      Dieses Profil wird automatisch für neue Dokumente verwendet
-                    </FormDescription>
-                  </div>
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-
-        <Tabs defaultValue="basic" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="basic" className="gap-2">
-              <Building2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Basis</span>
-            </TabsTrigger>
-            <TabsTrigger value="legal" className="gap-2">
-              <Scale className="h-4 w-4" />
-              <span className="hidden sm:inline">Legal</span>
-            </TabsTrigger>
-            <TabsTrigger value="contact" className="gap-2">
-              <Mail className="h-4 w-4" />
-              <span className="hidden sm:inline">Kontakt</span>
-            </TabsTrigger>
-            <TabsTrigger value="bank" className="gap-2">
-              <Landmark className="h-4 w-4" />
-              <span className="hidden sm:inline">Bank</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="basic" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Basisinformationen</CardTitle>
-                <CardDescription>
-                  Grundlegende Informationen über Ihr Unternehmen
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <CompanyBasicFields control={form.control} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="legal" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Rechtliche Informationen</CardTitle>
-                <CardDescription>
-                  Steuer- und Registrierungsinformationen
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <CompanyLegalFields control={form.control} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="contact" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Kontaktinformationen</CardTitle>
-                <CardDescription>
-                  Kontaktmöglichkeiten für Ihre Kunden
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <CompanyContactFields control={form.control} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="bank" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Bankverbindung</CardTitle>
-                <CardDescription>
-                  Bankdaten für Rechnungen und Zahlungen
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <CompanyBankFields control={form.control} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
-        {/* Form Actions */}
-        <div className="flex items-center justify-end gap-4 pt-4 border-t">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-            disabled={isLoading}
-          >
-            Abbrechen
-          </Button>
-          <Button type="submit" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {profile ? "Profil aktualisieren" : "Profil erstellen"}
-          </Button>
-        </div>
-      </form>
-    </Form>
+    <Card>
+      <CardContent className="p-4 sm:p-6">
+        <Form {...form}>
+          <MultiStepForm
+            form={form}
+            steps={steps}
+            onSubmit={onSubmit}
+            showProgress={true}
+            allowSkip={false}
+          />
+        </Form>
+      </CardContent>
+    </Card>
   );
 }
 

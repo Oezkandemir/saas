@@ -14,7 +14,7 @@ export function EmptyPlaceholder({
   return (
     <div
       className={cn(
-        "flex flex-1 items-center justify-center rounded-lg border border-dashed p-8 text-center shadow-sm animate-in fade-in-50",
+        "flex flex-1 items-center justify-center rounded-lg border border-dashed p-8 text-center shadow-sm",
         className,
       )}
       {...props}
@@ -47,8 +47,8 @@ EmptyPlaceholder.Icon = function EmptyPlaceholderIcon({
   }
 
   return (
-    <div className="flex size-20 items-center justify-center rounded-full bg-muted">
-      <Icon className={cn("size-10", className)} {...props} />
+    <div className="flex size-20 items-center justify-center rounded-full bg-muted/50 border border-border mb-4">
+      <Icon className={cn("size-10 text-muted-foreground", className)} {...props} />
     </div>
   );
 };
@@ -62,7 +62,7 @@ EmptyPlaceholder.Title = function EmptyPlaceholderTitle({
 }: EmptyPlaceholderTitleProps) {
   return (
     <h3
-      className={cn("mt-5 font-heading text-2xl font-bold", className)}
+      className={cn("text-lg font-semibold mb-2", className)}
       {...props}
     />
   );
@@ -78,7 +78,7 @@ EmptyPlaceholder.Description = function EmptyPlaceholderDescription({
   return (
     <p
       className={cn(
-        "mb-5 mt-1.5 text-center text-sm font-normal leading-6 text-muted-foreground",
+        "text-sm text-muted-foreground mb-6 text-center max-w-md",
         className,
       )}
       {...props}
@@ -94,6 +94,6 @@ EmptyPlaceholder.Action = function EmptyPlaceholderAction({
   ...props
 }: EmptyPlaceholderActionProps) {
   return (
-    <Button className={cn("mt-4", className)} {...props} />
+    <Button className={cn("gap-2", className)} {...props} />
   );
 };

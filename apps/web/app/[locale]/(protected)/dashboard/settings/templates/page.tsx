@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { getDocumentTemplates } from "@/actions/document-templates-actions";
-import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { FileText, Plus } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -21,20 +21,20 @@ export default async function TemplatesPage() {
   ]);
 
   return (
-    <div className="flex flex-col gap-6">
-      <ModernPageHeader
-        title="Rechnungs-Templates"
-        description="Verwalten Sie Ihre Rechnungs- und Angebots-Templates mit individuellem Branding"
-        icon={<FileText className="h-5 w-5 text-primary" />}
-        actions={
-          <Link href="/dashboard/settings/templates/new">
-            <Button className="gap-2">
-              <Plus className="h-4 w-4" />
-              Neues Template
-            </Button>
-          </Link>
-        }
-      />
+    <UnifiedPageLayout
+      title="Rechnungs-Templates"
+      description="Verwalten Sie Ihre Rechnungs- und Angebots-Templates mit individuellem Branding"
+      icon={<FileText className="h-4 w-4 text-primary" />}
+      actions={
+        <Link href="/dashboard/settings/templates/new">
+          <Button className="gap-2">
+            <Plus className="h-4 w-4" />
+            Neues Template
+          </Button>
+        </Link>
+      }
+      contentClassName="space-y-6"
+    >
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
@@ -83,7 +83,7 @@ export default async function TemplatesPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </UnifiedPageLayout>
   );
 }
 

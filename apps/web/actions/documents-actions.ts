@@ -225,18 +225,27 @@ export async function createDocument(
   import("@/lib/pdf/generator")
     .then(({ generatePDFInBackground }) => {
       import("@/lib/pdf/templates")
-        .then(({ generateInvoiceHTML }) => {
-          const htmlContent = generateInvoiceHTML(completeDoc);
-          generatePDFInBackground(completeDoc, htmlContent).catch((err) => {
-            console.error("Background PDF generation failed:", err);
-          });
+        .then(({ generateInvoiceHTMLAsync }) => {
+          generateInvoiceHTMLAsync(completeDoc)
+            .then((htmlContent) => {
+              generatePDFInBackground(completeDoc, htmlContent).catch(async (err) => {
+                const { logger } = await import("@/lib/logger");
+                logger.error("Background PDF generation failed:", err);
+              });
+            })
+            .catch(async (err) => {
+              const { logger } = await import("@/lib/logger");
+              logger.error("Failed to generate HTML for PDF:", err);
+            });
         })
-        .catch((err) => {
-          console.error("Failed to load PDF templates:", err);
+        .catch(async (err) => {
+          const { logger } = await import("@/lib/logger");
+          logger.error("Failed to load PDF templates:", err);
         });
     })
-    .catch((err) => {
-      console.error("Failed to load PDF generator:", err);
+    .catch(async (err) => {
+      const { logger } = await import("@/lib/logger");
+      logger.error("Failed to load PDF generator:", err);
     });
 
   revalidatePath("/dashboard/documents");
@@ -304,11 +313,16 @@ export async function updateDocument(
   import("@/lib/pdf/generator")
     .then(({ generatePDFInBackground }) => {
       import("@/lib/pdf/templates")
-        .then(({ generateInvoiceHTML }) => {
-          const htmlContent = generateInvoiceHTML(updatedDoc);
-          generatePDFInBackground(updatedDoc, htmlContent).catch((err) => {
-            console.error("Background PDF regeneration failed:", err);
-          });
+        .then(({ generateInvoiceHTMLAsync }) => {
+          generateInvoiceHTMLAsync(updatedDoc)
+            .then((htmlContent) => {
+              generatePDFInBackground(updatedDoc, htmlContent).catch((err) => {
+                console.error("Background PDF regeneration failed:", err);
+              });
+            })
+            .catch((err) => {
+              console.error("Failed to generate HTML for PDF:", err);
+            });
         })
         .catch((err) => {
           console.error("Failed to load PDF templates:", err);
@@ -391,11 +405,16 @@ export async function convertQuoteToInvoice(quoteId: string): Promise<Document> 
   import("@/lib/pdf/generator")
     .then(({ generatePDFInBackground }) => {
       import("@/lib/pdf/templates")
-        .then(({ generateInvoiceHTML }) => {
-          const htmlContent = generateInvoiceHTML(completeInvoice);
-          generatePDFInBackground(completeInvoice, htmlContent).catch((err) => {
-            console.error("Background PDF generation failed:", err);
-          });
+        .then(({ generateInvoiceHTMLAsync }) => {
+          generateInvoiceHTMLAsync(completeInvoice)
+            .then((htmlContent) => {
+              generatePDFInBackground(completeInvoice, htmlContent).catch((err) => {
+                console.error("Background PDF generation failed:", err);
+              });
+            })
+            .catch((err) => {
+              console.error("Failed to generate HTML for PDF:", err);
+            });
         })
         .catch((err) => {
           console.error("Failed to load PDF templates:", err);
@@ -499,11 +518,16 @@ export async function duplicateDocument(id: string): Promise<Document> {
   import("@/lib/pdf/generator")
     .then(({ generatePDFInBackground }) => {
       import("@/lib/pdf/templates")
-        .then(({ generateInvoiceHTML }) => {
-          const htmlContent = generateInvoiceHTML(completeDoc);
-          generatePDFInBackground(completeDoc, htmlContent).catch((err) => {
-            console.error("Background PDF generation failed:", err);
-          });
+        .then(({ generateInvoiceHTMLAsync }) => {
+          generateInvoiceHTMLAsync(completeDoc)
+            .then((htmlContent) => {
+              generatePDFInBackground(completeDoc, htmlContent).catch((err) => {
+                console.error("Background PDF generation failed:", err);
+              });
+            })
+            .catch((err) => {
+              console.error("Failed to generate HTML for PDF:", err);
+            });
         })
         .catch((err) => {
           console.error("Failed to load PDF templates:", err);

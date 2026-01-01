@@ -7,19 +7,19 @@ export const metadata: Metadata = {
   description: 'Search and discover users',
 };
 
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Users } from "lucide-react";
+
 export default function UsersPage() {
   return (
-    <div className="w-full py-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Users</h1>
-        <p className="text-muted-foreground">
-          Search and discover users in the community
-        </p>
-      </div>
-      
+    <UnifiedPageLayout
+      title="Users"
+      description="Search and discover users in the community"
+      icon={<Users className="h-4 w-4 text-primary" />}
+    >
       <Suspense fallback={<div>Loading...</div>}>
         <UserSearch />
       </Suspense>
-    </div>
+    </UnifiedPageLayout>
   );
 } 

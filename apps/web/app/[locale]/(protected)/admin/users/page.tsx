@@ -13,8 +13,8 @@ import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { columns } from "@/components/admin/users/columns";
-import { DataTable } from "@/components/admin/users/data-table";
-import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { DataTableWrapper } from "@/components/admin/users/data-table-wrapper";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export async function generateMetadata() {
   const t = await getTranslations("Admin.users");
@@ -53,15 +53,16 @@ export default async function AdminUsersPage(props: Props) {
   const result = await getAllUsers();
 
   if (!result.success || !result.data) {
-    console.error("Error fetching users:", result.error);
+    const { logger } = await import("@/lib/logger");
+    logger.error("Error fetching users:", result.error);
     return (
-      <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <ModernPageHeader
-          title={tUsers("title")}
-          description={tUsers("loadingError")}
-          icon={<Users className="w-5 h-5 text-primary" />}
-        />
-      </div>
+      <UnifiedPageLayout
+        title={tUsers("title")}
+        description={tUsers("loadingError")}
+        icon={<Users className="h-4 w-4 text-primary" />}
+      >
+        <div />
+      </UnifiedPageLayout>
     );
   }
 
@@ -100,13 +101,12 @@ export default async function AdminUsersPage(props: Props) {
   });
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <ModernPageHeader
-        title={tUsers("pageTitle")}
-        description={tUsers("pageDescription")}
-        icon={<Users className="w-5 h-5 text-primary" />}
-      />
-
+    <UnifiedPageLayout
+      title={tUsers("pageTitle")}
+      description={tUsers("pageDescription")}
+      icon={<Users className="h-4 w-4 text-primary" />}
+      contentClassName="space-y-4"
+    >
       {/* User Stats Section */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="hover:shadow-md transition-all">
@@ -172,9 +172,9 @@ export default async function AdminUsersPage(props: Props) {
 
       <Card className="hover:shadow-md transition-all">
         <CardContent className="pt-6">
-          <DataTable columns={columns} data={formattedUsers} />
+          <DataTableWrapper columns={columns} data={formattedUsers} />
         </CardContent>
       </Card>
-    </div>
+    </UnifiedPageLayout>
   );
 }

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { getDocument } from "@/actions/documents-actions";
-import { generateAndUploadPDF } from "@/lib/pdf/generator";
-import { generateInvoiceHTML } from "@/lib/pdf/templates";
+import { generateAndUploadPDF } from "@/lib/pdf/generator-vercel";
+import { generateInvoiceHTMLAsync } from "@/lib/pdf/templates";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 
@@ -41,8 +41,8 @@ export async function GET(
     }
 
     // PDF doesn't exist or force regeneration requested
-    // Generate HTML content
-    const htmlContent = generateInvoiceHTML(document);
+    // Generate HTML content with company profile data
+    const htmlContent = await generateInvoiceHTMLAsync(document);
 
     // Generate and upload PDF
     const pdfUrl = await generateAndUploadPDF(document, htmlContent);
@@ -120,8 +120,8 @@ export async function POST(
       return NextResponse.json({ error: "Document not found" }, { status: 404 });
     }
 
-    // Generate HTML content
-    const htmlContent = generateInvoiceHTML(document);
+    // Generate HTML content with company profile data
+    const htmlContent = await generateInvoiceHTMLAsync(document);
 
     // Generate and upload PDF (force regeneration)
     const pdfUrl = await generateAndUploadPDF(document, htmlContent);

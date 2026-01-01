@@ -26,6 +26,9 @@ import {
   Users,
   Sun,
   Moon,
+  LayoutDashboard,
+  Settings,
+  Home,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
@@ -316,9 +319,9 @@ export function UserAccountNav() {
               className="fixed inset-0 z-40 h-full bg-background/80 backdrop-blur-sm"
               onClick={closeDrawer}
             />
-            <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[20px] border-t border-l border-r bg-background shadow-xl">
-              <div className="sticky top-0 z-20 flex items-center justify-center w-full bg-inherit pt-3 pb-2">
-                <div className="h-1.5 w-20 rounded-full bg-muted-foreground/30" />
+            <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-hidden rounded-t-[16px] border-t bg-background shadow-2xl">
+              <div className="sticky top-0 z-20 flex items-center justify-center w-full bg-inherit pt-2 pb-2">
+                <div className="h-1 w-12 rounded-full bg-muted-foreground/40" />
               </div>
 
               <Drawer.Title className="sr-only">
@@ -328,223 +331,172 @@ export function UserAccountNav() {
                 Manage your account settings and preferences
               </DrawerDescription>
 
-              <div className="px-6 pb-4">
-                {/* User Info Card */}
-                <div className="relative overflow-hidden rounded-xl border bg-gradient-to-br from-background to-muted/20 p-5 shadow-sm">
-                  <div className="flex items-start gap-4">
-                    <UserAvatar
-                      user={{
-                        name: displayName,
-                        image: user.user_metadata?.image || null,
-                        avatar_url: user.user_metadata?.avatar_url || null,
-                      }}
-                      className="border-2 border-background size-16 shadow-md"
-                    />
-                    <div className="flex-1 min-w-0 space-y-3">
-                      {/* Username */}
-                      <div className="flex items-center gap-2">
-                        <UserIcon className="size-4 text-muted-foreground shrink-0" />
-                        <h3 className="text-lg font-semibold text-foreground truncate">
-                          {displayName}
-                        </h3>
-                      </div>
-                      
-                      {/* Email */}
-                      {userEmail && (
-                        <div className="flex items-center gap-2">
-                          <Mail className="size-4 text-muted-foreground shrink-0" />
-                          <p className="text-sm text-muted-foreground truncate">
-                            {userEmail}
-                          </p>
-                        </div>
-                      )}
-                      
-                      {/* Role Badge */}
-                      <div className="flex items-center gap-2">
-                        <Shield className="size-4 text-muted-foreground shrink-0" />
-                        <Badge
-                          variant={userRole === "ADMIN" ? "default" : "secondary"}
-                          className="text-xs font-medium"
-                        >
-                          {userRole === "ADMIN" ? "Administrator" : "User"}
-                        </Badge>
-                      </div>
-                      
-                      {/* Plan Badge */}
-                      {userPlan && (
-                        <div className="flex items-center gap-2">
-                          {userPlan.isPaid ? (
-                            <Crown className="size-4 text-yellow-500 shrink-0" />
-                          ) : (
-                            <Sparkles className="size-4 text-muted-foreground shrink-0" />
-                          )}
-                          <Badge
-                            variant={userPlan.isPaid ? "default" : "outline"}
-                            className={cn(
-                              "text-xs font-medium",
-                              userPlan.isPaid && "bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500/30"
-                            )}
-                          >
-                            {userPlan.title}
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <Separator className="mx-6" />
-
-              {/* Mobile-only Quick Actions and Theme Toggle */}
-              <div className="md:hidden px-6 py-4 space-y-2">
-                {/* Quick Actions */}
-                <div className="space-y-1">
-                  <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                    {quickActionsT("createNew")}
-                  </p>
-                  <Link
-                    href="/dashboard/documents/new?type=quote"
-                    onClick={closeDrawer}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
-                  >
-                    <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
-                      <FileText className="size-4 text-muted-foreground" />
-                    </div>
-                    <span className="text-sm font-medium">{quickActionsT("newQuote")}</span>
-                  </Link>
-                  <Link
-                    href="/dashboard/documents/new?type=invoice"
-                    onClick={closeDrawer}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
-                  >
-                    <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
-                      <FileText className="size-4 text-muted-foreground" />
-                    </div>
-                    <span className="text-sm font-medium">{quickActionsT("newInvoice")}</span>
-                  </Link>
-                  <Link
-                    href="/dashboard/customers/new"
-                    onClick={closeDrawer}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
-                  >
-                    <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
-                      <Users className="size-4 text-muted-foreground" />
-                    </div>
-                    <span className="text-sm font-medium">{quickActionsT("newCustomer")}</span>
-                  </Link>
-                  <Link
-                    href="/dashboard/qr-codes/new"
-                    onClick={closeDrawer}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
-                  >
-                    <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
-                      <QrCode className="size-4 text-muted-foreground" />
-                    </div>
-                    <span className="text-sm font-medium">{quickActionsT("newQRCode")}</span>
-                  </Link>
-                </div>
-
-                <Separator className="my-2" />
-
-                {/* Theme Toggle */}
-                <button
-                  onClick={() => {
-                    setTheme(theme === "dark" ? "light" : "dark");
-                  }}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
-                >
-                  <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
-                    {theme === "dark" ? (
-                      <Sun className="size-4 text-muted-foreground" />
-                    ) : (
-                      <Moon className="size-4 text-muted-foreground" />
+              {/* Compact User Info */}
+              <div className="px-4 pb-3">
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
+                  <UserAvatar
+                    user={{
+                      name: displayName,
+                      image: user.user_metadata?.image || null,
+                      avatar_url: user.user_metadata?.avatar_url || null,
+                    }}
+                    className="border size-12 shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold truncate">{displayName}</h3>
+                    {userEmail && (
+                      <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
                     )}
+                    <div className="flex items-center gap-2 mt-1">
+                      {userPlan && (
+                        <Badge
+                          variant={userPlan.isPaid ? "default" : "secondary"}
+                          className="text-xs h-5 px-2"
+                        >
+                          {userPlan.title}
+                        </Badge>
+                      )}
+                      {userRole === "ADMIN" && (
+                        <Badge variant="outline" className="text-xs h-5 px-2">
+                          Admin
+                        </Badge>
+                      )}
+                    </div>
                   </div>
-                  <span className="text-sm font-medium">
-                    {theme === "dark" ? "Hell-Modus" : theme === "light" ? "Dunkel-Modus" : "Theme wechseln"}
-                  </span>
-                </button>
+                </div>
               </div>
 
-              <Separator className="mx-6 md:hidden" />
-
-              <ul
-                role="list"
-                className="w-full px-6 py-4 mb-14 space-y-1"
-              >
-                {userRole === "ADMIN" ? (
+              {/* Compact Navigation Menu */}
+              <div className="overflow-y-auto max-h-[calc(85vh-140px)] px-4 pb-6">
+                <ul role="list" className="space-y-1">
+                  {/* Primary Actions */}
                   <li>
                     <Link
-                      href="/admin"
+                      href="/dashboard"
                       onClick={closeDrawer}
-                      className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
+                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium bg-primary/10 text-primary hover:bg-primary/20 active:bg-primary/30 transition-colors"
                     >
-                      <div className="flex items-center justify-center rounded-md bg-primary/10 p-1.5">
-                        <Lock className="size-4 text-primary" />
-                      </div>
-                      <span className="text-sm font-medium">{t("admin")}</span>
+                      <LayoutDashboard className="size-4" />
+                      <span>Dashboard</span>
                     </Link>
                   </li>
-                ) : null}
 
-                <li>
-                  <Link
-                    href="/blog"
-                    onClick={closeDrawer}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
-                  >
-                    <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
-                      <FileText className="size-4 text-muted-foreground" />
-                    </div>
-                    <span className="text-sm font-medium">Blog</span>
-                  </Link>
-                </li>
+                  <li>
+                    <Link
+                      href="/profile"
+                      onClick={closeDrawer}
+                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
+                    >
+                      <UserIcon className="size-4" />
+                      <span>Profile</span>
+                    </Link>
+                  </li>
 
-                <li>
-                  <Link
-                    href="/pricing"
-                    onClick={closeDrawer}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
-                  >
-                    <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
-                      <FileText className="size-4 text-muted-foreground" />
-                    </div>
-                    <span className="text-sm font-medium">Pricing</span>
-                  </Link>
-                </li>
+                  <li>
+                    <Link
+                      href="/dashboard/settings"
+                      onClick={closeDrawer}
+                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
+                    >
+                      <Settings className="size-4" />
+                      <span>Settings</span>
+                    </Link>
+                  </li>
 
-                <li>
-                  <Link
-                    href="/docs"
-                    onClick={closeDrawer}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-foreground transition-colors hover:bg-muted/80 active:bg-muted"
-                  >
-                    <div className="flex items-center justify-center rounded-md bg-muted p-1.5">
-                      <BookOpen className="size-4 text-muted-foreground" />
-                    </div>
-                    <span className="text-sm font-medium">Documentation</span>
-                  </Link>
-                </li>
+                  {userRole === "ADMIN" && (
+                    <li>
+                      <Link
+                        href="/admin"
+                        onClick={closeDrawer}
+                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 active:bg-amber-500/30 transition-colors"
+                      >
+                        <Lock className="size-4" />
+                        <span>Admin Panel</span>
+                      </Link>
+                    </li>
+                  )}
 
-                <Separator className="my-2" />
+                  <Separator className="my-3" />
 
-                <li>
-                  <button
-                    onClick={(event) => {
-                      event.preventDefault();
-                      handleSignOut();
-                      closeDrawer();
-                    }}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-destructive transition-colors hover:bg-destructive/10 active:bg-destructive/20"
-                  >
-                    <div className="flex items-center justify-center rounded-md bg-destructive/10 p-1.5">
-                      <LogOut className="size-4 text-destructive" />
-                    </div>
-                    <span className="text-sm font-medium">{t("logout")}</span>
-                  </button>
-                </li>
-              </ul>
+                  {/* Secondary Links */}
+                  <li>
+                    <Link
+                      href="/"
+                      onClick={closeDrawer}
+                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
+                    >
+                      <Home className="size-4" />
+                      <span>Home</span>
+                    </Link>
+                  </li>
+
+                  <li>
+                    <Link
+                      href="/blog"
+                      onClick={closeDrawer}
+                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
+                    >
+                      <FileText className="size-4" />
+                      <span>Blog</span>
+                    </Link>
+                  </li>
+
+                  <li>
+                    <Link
+                      href="/pricing"
+                      onClick={closeDrawer}
+                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
+                    >
+                      <Crown className="size-4" />
+                      <span>Pricing</span>
+                    </Link>
+                  </li>
+
+                  <li>
+                    <Link
+                      href="/docs"
+                      onClick={closeDrawer}
+                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
+                    >
+                      <BookOpen className="size-4" />
+                      <span>Documentation</span>
+                    </Link>
+                  </li>
+
+                  {/* Theme Toggle - Compact */}
+                  <li className="md:hidden pt-2">
+                    <button
+                      onClick={() => {
+                        setTheme(theme === "dark" ? "light" : "dark");
+                      }}
+                      className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
+                    >
+                      {theme === "dark" ? (
+                        <Sun className="size-4" />
+                      ) : (
+                        <Moon className="size-4" />
+                      )}
+                      <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+                    </button>
+                  </li>
+
+                  <Separator className="my-3" />
+
+                  <li>
+                    <button
+                      onClick={(event) => {
+                        event.preventDefault();
+                        handleSignOut();
+                        closeDrawer();
+                      }}
+                      className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 active:bg-destructive/20 transition-colors"
+                    >
+                      <LogOut className="size-4" />
+                      <span>Logout</span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
             </Drawer.Content>
             <Drawer.Overlay />
           </Drawer.Portal>

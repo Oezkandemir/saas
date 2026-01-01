@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
-import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Building2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CompanyProfileForm } from "@/components/company-settings/company-profile-form";
@@ -22,12 +22,13 @@ export default async function NewCompanyProfilePage() {
   if (!user) redirect("/login");
 
   return (
-    <div className="flex flex-col gap-6">
-      <ModernPageHeader
-        title="Neues Firmenprofil"
-        description="Erstellen Sie ein neues Firmenprofil für Ihre Dokumente"
-        icon={<Building2 className="h-5 w-5 text-primary" />}
-      />
+    <UnifiedPageLayout
+      title="Neues Firmenprofil"
+      description="Erstellen Sie ein neues Firmenprofil für Ihre Dokumente"
+      icon={<Building2 className="h-4 w-4 text-primary" />}
+      showBackButton
+      backHref="/dashboard/settings/company"
+    >
 
       <Card>
         <CardContent className="pt-6">
@@ -46,7 +47,7 @@ export default async function NewCompanyProfilePage() {
           <CompanyProfileForm />
         </CardContent>
       </Card>
-    </div>
+    </UnifiedPageLayout>
   );
 }
 

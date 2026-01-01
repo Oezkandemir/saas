@@ -1,15 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { generatePDFFromElement } from "@/lib/pdf/simple-generator";
+import { toast } from "sonner";
 
 interface PDFDownloadButtonProps {
   documentId: string;
   pdfUrl?: string | null;
   variant?: "default" | "outline" | "ghost" | "link" | "destructive" | "secondary";
   size?: "default" | "sm" | "lg" | "icon";
+  /**
+   * Optional: Pass a ref to the element to convert to PDF
+   * If not provided, will try to find the preview element automatically
+   */
+  previewElementRef?: React.RefObject<HTMLElement>;
 }
 
 export function PDFDownloadButton({
@@ -17,107 +23,82 @@ export function PDFDownloadButton({
   pdfUrl,
   variant = "outline",
   size = "default",
+  previewElementRef,
 }: PDFDownloadButtonProps) {
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleDownload = async () => {
-    await downloadPDF(0);
-  };
-
-  const downloadPDF = async (retryCount = 0): Promise<void> => {
     setLoading(true);
     try {
-      // If PDF doesn't exist, generate it first
-      if (!pdfUrl) {
-        const response = await fetch(`/api/documents/${documentId}/pdf`, {
-          method: "POST",
-        });
-        
-        // Handle non-JSON responses
-        let data;
-        try {
-          data = await response.json();
-        } catch (jsonError) {
-          const text = await response.text();
-          throw new Error(`Server error: ${response.status} ${response.statusText}. ${text.substring(0, 200)}`);
-        }
-        
-        if (!response.ok) {
-          // Extract error message from API response with better handling
-          let errorMessage = "Fehler beim Generieren des PDFs";
-          
-          if (data) {
-            if (typeof data === "string") {
-              errorMessage = data;
-            } else if (data.message) {
-              errorMessage = typeof data.message === "string" 
-                ? data.message 
-                : (data.message.message || JSON.stringify(data.message));
-            } else if (data.details) {
-              errorMessage = typeof data.details === "string" 
-                ? data.details 
-                : (data.details.message || JSON.stringify(data.details));
-            } else if (data.error) {
-              errorMessage = typeof data.error === "string" 
-                ? data.error 
-                : (data.error.message || JSON.stringify(data.error));
-            } else {
-              try {
-                errorMessage = JSON.stringify(data);
-              } catch {
-                errorMessage = "Unbekannter Fehler beim Generieren des PDFs";
-              }
-            }
-          }
-          
-          // Retry logic for connection errors
-          const isRetryable = errorMessage.includes("ECONNRESET") || 
-                             errorMessage.includes("socket hang up") ||
-                             errorMessage.includes("timeout") ||
-                             (response.status >= 500 && retryCount < 2);
-          
-          if (isRetryable && retryCount < 2) {
-            console.log(`PDF generation failed, retrying... (${retryCount + 1}/2)`);
-            await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
-            return downloadPDF(retryCount + 1);
-          }
-          
-          throw new Error(errorMessage);
-        }
-        
-        if (!data || !data.pdfUrl) {
-          throw new Error("PDF URL wurde nicht zurückgegeben");
-        }
-        
-        // Download the generated PDF
-        const link = document.createElement("a");
-        link.href = data.pdfUrl;
-        link.download = `document-${documentId}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        router.refresh();
-      } else {
-        // Download existing PDF
+      // If existing PDF URL exists, download it directly
+      if (pdfUrl) {
         const link = document.createElement("a");
         link.href = pdfUrl;
         link.download = `document-${documentId}.pdf`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        return;
       }
+
+      // Otherwise, generate PDF from preview element
+      let elementToConvert: HTMLElement | null = null;
+
+      // Try to use provided ref first
+      if (previewElementRef?.current) {
+        elementToConvert = previewElementRef.current;
+      } else {
+        // Try to find preview element automatically
+        // Look for common preview container classes/ids
+        const previewSelectors = [
+          '[data-pdf-preview]',
+          '.invoice-preview',
+          '.document-preview',
+          '#document-preview',
+        ];
+
+        for (const selector of previewSelectors) {
+          const element = document.querySelector<HTMLElement>(selector);
+          if (element) {
+            elementToConvert = element;
+            break;
+          }
+        }
+
+        // Fallback: try to find the main content area
+        if (!elementToConvert) {
+          const mainContent = document.querySelector<HTMLElement>('main, [role="main"]');
+          if (mainContent) {
+            elementToConvert = mainContent;
+          }
+        }
+      }
+
+      if (!elementToConvert) {
+        throw new Error(
+          "Kein Vorschau-Element gefunden. Bitte stellen Sie sicher, dass die Dokumentvorschau sichtbar ist."
+        );
+      }
+
+      // Generate and download PDF
+      await generatePDFFromElement(elementToConvert, {
+        filename: `document-${documentId}.pdf`,
+        format: "a4",
+        orientation: "portrait",
+      });
+
+      toast.success("PDF erfolgreich heruntergeladen");
     } catch (error) {
-      console.error("Error downloading PDF:", error);
+      console.error("Error generating PDF:", error);
       
-      let errorMessage = "Fehler beim Herunterladen des PDFs";
+      let errorMessage = "Fehler beim Generieren des PDFs";
       if (error instanceof Error) {
         errorMessage = error.message;
       } else if (typeof error === "string") {
         errorMessage = error;
       }
       
-      alert(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

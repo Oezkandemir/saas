@@ -1,4 +1,5 @@
 import type { Document } from "@/actions/documents-actions";
+import type { CompanyProfile } from "@/actions/company-profiles-actions";
 
 export interface CompanyInfo {
   name?: string;
@@ -62,8 +63,42 @@ const DEFAULT_COMPANY_INFO: CompanyInfo = {
 };
 
 /**
+ * Converts a CompanyProfile to CompanyInfo format for PDF generation
+ */
+export function convertCompanyProfileToInfo(
+  profile: CompanyProfile | null | undefined,
+): CompanyInfo | undefined {
+  if (!profile) return undefined;
+
+  // Combine address lines if both exist
+  const address = profile.company_address
+    ? profile.company_address_line2
+      ? `${profile.company_address}, ${profile.company_address_line2}`
+      : profile.company_address
+    : undefined;
+
+  return {
+    name: profile.company_name,
+    address: address,
+    city: profile.company_city || undefined,
+    postalCode: profile.company_postal_code || undefined,
+    country: profile.company_country || undefined,
+    taxId: profile.company_vat_id || profile.company_tax_id || undefined,
+    email: profile.company_email,
+    phone: profile.company_phone || profile.company_mobile || undefined,
+    website: profile.company_website || undefined,
+    iban: profile.iban || undefined,
+    bic: profile.bic || undefined,
+    bankName: profile.bank_name || undefined,
+  };
+}
+
+/**
  * Generates HTML content for an invoice/quote document
  * Professional design matching the preview
+ * 
+ * If companyInfo is not provided in options, it will try to load the default company profile.
+ * For async loading, use generateInvoiceHTMLAsync instead.
  */
 export function generateInvoiceHTML(
   document: Document,
@@ -235,13 +270,8 @@ export function generateInvoiceHTML(
           </div>
         ` : ""}
 
-        <!-- Hinweise -->
-        ${document.notes ? `
-          <div style="margin-bottom: 30px; padding: 16px; background-color: #dbeafe; border-left: 4px solid #2563eb; border-radius-right: 4px;">
-            <div style="font-size: 10pt; font-weight: bold; color: #111827; margin-bottom: 8px;">Hinweise</div>
-            <div style="font-size: 10pt; color: #374151; white-space: pre-wrap;">${document.notes}</div>
-          </div>
-        ` : ""}
+        <!-- Hinweise/Notizen werden absichtlich NICHT in das PDF aufgenommen -->
+        <!-- Notizen sind nur im Dashboard sichtbar, nicht in der generierten PDF-Rechnung -->
 
         <!-- Abschlusstext -->
         <div style="margin-bottom: 30px; font-size: 10pt; color: #374151;">
@@ -305,5 +335,40 @@ export function generateInvoiceHTML(
   `;
 
   return html;
+}
+
+/**
+ * Generates HTML content for an invoice/quote document with automatic company profile loading
+ * This version automatically loads the default company profile if none is provided
+ */
+export async function generateInvoiceHTMLAsync(
+  document: Document,
+  options: InvoiceTemplateOptions = {},
+): Promise<string> {
+  // If companyInfo is already provided, use it
+  if (options.companyInfo) {
+    return generateInvoiceHTML(document, options);
+  }
+
+  // Otherwise, try to load the default company profile
+  try {
+    const { getDefaultCompanyProfile } = await import("@/actions/company-profiles-actions");
+    const defaultProfile = await getDefaultCompanyProfile();
+    
+    if (defaultProfile) {
+      const companyInfo = convertCompanyProfileToInfo(defaultProfile);
+      return generateInvoiceHTML(document, {
+        ...options,
+        companyInfo: companyInfo ? { ...DEFAULT_COMPANY_INFO, ...companyInfo } : undefined,
+      });
+    }
+  } catch (error) {
+    // If loading fails, log but continue with defaults
+    const { logger } = await import("@/lib/logger");
+    logger.error("Failed to load company profile for PDF:", error);
+  }
+
+  // Fall back to default company info
+  return generateInvoiceHTML(document, options);
 }
 

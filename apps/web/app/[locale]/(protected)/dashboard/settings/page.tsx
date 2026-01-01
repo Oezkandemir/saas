@@ -12,7 +12,7 @@ import { SectionColumns } from "@/components/dashboard/section-columns";
 import { UserAvatarForm } from "@/components/forms/user-avatar-form";
 import { UserNameForm } from "@/components/forms/user-name-form";
 import { UserRoleForm } from "@/components/forms/user-role-form";
-import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Crown, Sparkles, Settings, ArrowRight, Building2 } from "lucide-react";
@@ -43,55 +43,38 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="relative flex flex-col gap-4 sm:gap-6 px-2 sm:px-0">
-      {/* Animated background decoration */}
-      <div className="absolute inset-0 -z-10 pointer-events-none">
-        <div className="absolute left-1/2 top-0 h-[400px] w-[400px] -translate-x-1/2 animate-pulse rounded-full bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 blur-3xl" />
-        <div className="absolute right-0 top-1/2 h-[300px] w-[300px] -translate-y-1/2 animate-pulse rounded-full bg-gradient-to-r from-purple-500/10 to-indigo-500/10 blur-3xl delay-1000" />
-      </div>
-
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
-
-      {/* Header */}
-      <div className="px-2 sm:px-0">
-        <ModernPageHeader
-          title={t("heading")}
-          description={t("text")}
-          icon={<Settings className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />}
-        />
-      </div>
-
-      <div className="divide-y divide-border/50 space-y-4 sm:space-y-6 pb-10">
+    <UnifiedPageLayout
+      title={t("heading")}
+      description={t("text")}
+      icon={<Settings className="h-4 w-4 text-primary" />}
+      contentClassName="divide-y divide-border/50 space-y-3 sm:space-y-4 pb-10"
+    >
         {/* Company Settings Section */}
-        <div className="pt-4 sm:pt-6">
+        <div className="pt-3 sm:pt-4">
           <SectionColumns
             title="Company Settings"
             description="Manage your company information for invoices and documents"
           >
-            <Card className="relative overflow-hidden border border-border/50 bg-card/80 backdrop-blur-sm">
-              {/* Gradient background */}
-              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5" />
-
-              <CardHeader className="p-4 sm:p-6">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="flex size-8 sm:size-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 text-blue-600 dark:text-blue-400 shadow-lg shrink-0">
-                    <Building2 className="size-4 sm:size-5" />
+            <Card>
+              <CardHeader className="p-3 sm:p-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex size-7 sm:size-8 items-center justify-center rounded-lg bg-muted/50 border border-border shrink-0">
+                    <Building2 className="size-3.5 sm:size-4 text-muted-foreground" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <CardTitle className="text-base sm:text-lg">Company Profiles</CardTitle>
-                    <CardDescription className="text-xs sm:text-sm">
+                    <CardTitle className="text-sm sm:text-base truncate">Company Profiles</CardTitle>
+                    <CardDescription className="text-xs truncate">
                       Manage company information for all your documents
                     </CardDescription>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="p-4 sm:p-6 pt-0">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                  <div className="text-sm text-muted-foreground">
+              <CardContent className="p-3 sm:p-4 pt-0">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
+                  <div className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
                     Centralized company data for invoices, quotes, and more
                   </div>
-                  <Link href="/dashboard/settings/company" className="group flex items-center gap-1 text-sm text-primary hover:gap-2 transition-all touch-manipulation shrink-0">
+                  <Link href="/dashboard/settings/company" className="group flex items-center gap-1 text-xs sm:text-sm text-primary hover:gap-2 transition-all touch-manipulation shrink-0">
                     Manage Profiles
                     <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
                   </Link>
@@ -103,29 +86,26 @@ export default async function SettingsPage() {
 
         {/* Subscription Plan Section */}
         {subscriptionPlan && (
-          <div className="pt-4 sm:pt-6">
+          <div className="pt-3 sm:pt-4">
             <SectionColumns
               title="Subscription Plan"
               description="Your current subscription plan"
             >
-              <Card className="relative overflow-hidden border border-border/50 bg-card/80 backdrop-blur-sm">
-                {/* Gradient background */}
-                <div className="absolute inset-0 -z-10 bg-gradient-to-br from-yellow-500/5 via-transparent to-orange-500/5" />
-
-                <CardHeader className="p-4 sm:p-6">
-                  <div className="flex items-center gap-2 sm:gap-3">
+              <Card>
+                <CardHeader className="p-3 sm:p-4">
+                  <div className="flex items-center gap-2">
                     {subscriptionPlan.isPaid ? (
-                      <div className="flex size-8 sm:size-10 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-500/20 to-orange-500/20 text-yellow-600 dark:text-yellow-400 shadow-lg shrink-0">
-                        <Crown className="size-4 sm:size-5" />
+                      <div className="flex size-7 sm:size-8 items-center justify-center rounded-lg bg-muted/50 border border-border shrink-0">
+                        <Crown className="size-3.5 sm:size-4 text-muted-foreground" />
                       </div>
                     ) : (
-                      <div className="flex size-8 sm:size-10 items-center justify-center rounded-xl bg-gradient-to-br from-muted/20 to-muted/10 text-muted-foreground shadow-lg shrink-0">
-                        <Sparkles className="size-4 sm:size-5" />
+                      <div className="flex size-7 sm:size-8 items-center justify-center rounded-lg bg-muted/50 border border-border shrink-0">
+                        <Sparkles className="size-3.5 sm:size-4 text-muted-foreground" />
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
-                      <CardTitle className="text-base sm:text-lg">Current Plan</CardTitle>
-                      <CardDescription className="text-xs sm:text-sm">
+                      <CardTitle className="text-sm sm:text-base truncate">Current Plan</CardTitle>
+                      <CardDescription className="text-xs truncate">
                         Manage your subscription and billing
                       </CardDescription>
                     </div>
@@ -136,12 +116,7 @@ export default async function SettingsPage() {
                     <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                       <Badge
                         variant={subscriptionPlan.isPaid ? "default" : "outline"}
-                        className={cn(
-                          "text-xs sm:text-sm",
-                          subscriptionPlan.isPaid 
-                            ? "bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500/30 text-yellow-900 dark:text-yellow-100"
-                            : ""
-                        )}
+                        className="text-xs sm:text-sm"
                       >
                         {subscriptionPlan.title}
                       </Badge>
@@ -179,12 +154,9 @@ export default async function SettingsPage() {
             title={t("userInformation")}
             description={t("debugInformation")}
           >
-            <Card className="relative overflow-hidden border border-border/50 bg-card/80 backdrop-blur-sm">
-              {/* Gradient background */}
-              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5" />
-
+            <Card>
               <CardContent className="p-3 sm:p-4">
-                <div className="rounded-md bg-muted/50 p-3 sm:p-4 backdrop-blur-sm border border-border/50">
+                <div className="rounded-md bg-muted/50 p-3 sm:p-4 border border-border">
                   <pre className="overflow-auto text-xs whitespace-pre-wrap break-words">
                     {JSON.stringify(
                       {
@@ -223,7 +195,6 @@ export default async function SettingsPage() {
             <AccountDeletion />
           </SectionColumns>
         </div>
-      </div>
-    </div>
+    </UnifiedPageLayout>
   );
 }

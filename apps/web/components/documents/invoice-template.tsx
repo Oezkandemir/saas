@@ -1,7 +1,7 @@
 "use client";
 
 import type { Document } from "@/actions/documents-actions";
-import { formatCurrency, formatDate } from "@/lib/pdf/generator";
+import { formatCurrency, formatDate } from "@/lib/pdf/generator-vercel";
 
 interface InvoiceTemplateProps {
   document: Document;

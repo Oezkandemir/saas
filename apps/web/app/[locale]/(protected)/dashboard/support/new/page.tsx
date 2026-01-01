@@ -3,9 +3,10 @@ import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { CreateTicketForm } from "@/components/support/create-ticket-form";
 import { MessageSquarePlus } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 export async function generateMetadata() {
   const t = await getTranslations("Support");
@@ -24,55 +25,60 @@ export default async function NewTicketPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <ModernPageHeader
-        title="Create Support Ticket"
-        description="Our support team typically responds within 2-4 hours. For urgent issues, please mark your ticket as high priority."
-        icon={<MessageSquarePlus className="h-5 w-5 text-primary" />}
-        showBackButton
-        backHref="/dashboard/support"
-      />
-
+    <UnifiedPageLayout
+      title="Create Support Ticket"
+      description="Our support team typically responds within 2-4 hours. For urgent issues, please mark your ticket as high priority."
+      icon={<MessageSquarePlus className="h-4 w-4 text-primary" />}
+      showBackButton
+      backHref="/dashboard/support"
+      contentClassName="space-y-6"
+    >
       {/* Help Tips */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="p-4 rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-blue-500/10">
-              <MessageSquarePlus className="size-4 text-blue-600" />
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="flex size-8 items-center justify-center rounded-md bg-muted/50 border border-border">
+                <MessageSquarePlus className="size-4 text-muted-foreground" />
+              </div>
+              <h3 className="font-semibold text-sm">Quick Response</h3>
             </div>
-            <h3 className="font-semibold text-sm">Quick Response</h3>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Average response time: 2-4 hours
-          </p>
-        </div>
+            <p className="text-xs text-muted-foreground">
+              Average response time: 2-4 hours
+            </p>
+          </CardContent>
+        </Card>
 
-        <div className="p-4 rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10">
-              <MessageSquarePlus className="size-4 text-emerald-600" />
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="flex size-8 items-center justify-center rounded-md bg-muted/50 border border-border">
+                <MessageSquarePlus className="size-4 text-muted-foreground" />
+              </div>
+              <h3 className="font-semibold text-sm">Expert Support</h3>
             </div>
-            <h3 className="font-semibold text-sm">Expert Support</h3>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Handled by experienced professionals
-          </p>
-        </div>
+            <p className="text-xs text-muted-foreground">
+              Handled by experienced professionals
+            </p>
+          </CardContent>
+        </Card>
 
-        <div className="p-4 rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-orange-500/10">
-              <MessageSquarePlus className="size-4 text-orange-600" />
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="flex size-8 items-center justify-center rounded-md bg-muted/50 border border-border">
+                <MessageSquarePlus className="size-4 text-muted-foreground" />
+              </div>
+              <h3 className="font-semibold text-sm">Full Tracking</h3>
             </div>
-            <h3 className="font-semibold text-sm">Full Tracking</h3>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Monitor your ticket status in real-time
-          </p>
-        </div>
+            <p className="text-xs text-muted-foreground">
+              Monitor your ticket status in real-time
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       <CreateTicketForm />
-    </div>
+    </UnifiedPageLayout>
   );
 }

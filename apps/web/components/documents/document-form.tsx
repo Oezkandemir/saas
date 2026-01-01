@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
@@ -66,6 +66,7 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
   const [isLoading, setIsLoading] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedProfile, setSelectedProfile] = useState<CompanyProfile | null>(null);
+  const [selectedProfileId, setSelectedProfileId] = useState<string>("");
 
   useEffect(() => {
     getCustomers().then(setCustomers).catch(() => {});
@@ -94,6 +95,7 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
 
   const form = useForm<DocumentInput>({
     resolver: zodResolver(documentSchema),
+    mode: "onBlur", // Enable real-time validation on blur
     defaultValues: normalizedDocument || {
       customer_id: defaultCustomerId || "",
       document_date: new Date().toISOString().split("T")[0],
@@ -114,6 +116,35 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
     control: form.control,
     name: "items",
   });
+
+  // Watch items and tax_rate for live calculation
+  const items = useWatch({
+    control: form.control,
+    name: "items",
+  });
+  const taxRate = useWatch({
+    control: form.control,
+    name: "tax_rate",
+  }) || 19;
+
+  // Calculate totals
+  const totals = useMemo(() => {
+    const subtotal = items?.reduce((sum, item) => {
+      const quantity = item.quantity || 0;
+      const unitPrice = item.unit_price || 0;
+      return sum + quantity * unitPrice;
+    }, 0) || 0;
+
+    const tax = (subtotal * taxRate) / 100;
+    const total = subtotal + tax;
+
+    return {
+      subtotal: Number(subtotal.toFixed(2)),
+      tax: Number(tax.toFixed(2)),
+      total: Number(total.toFixed(2)),
+      taxRate,
+    };
+  }, [items, taxRate]);
 
   const onSubmit = async (data: DocumentInput) => {
     setIsLoading(true);
@@ -161,10 +192,22 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                 Firmenprofil
               </label>
               <CompanyProfileSelector
-                onProfileSelect={setSelectedProfile}
+                value={selectedProfileId}
+                onValueChange={(profileId) => {
+                  setSelectedProfileId(profileId);
+                }}
+                onProfileSelect={(profile) => {
+                  setSelectedProfile(profile);
+                  if (profile) {
+                    setSelectedProfileId(profile.id);
+                  }
+                }}
               />
               <p className="text-sm text-muted-foreground">
                 Wählen Sie das Firmenprofil für dieses Dokument aus. Die Daten werden beim Generieren verwendet.
+                {selectedProfile?.is_default && (
+                  <span className="ml-1 text-green-600 dark:text-green-400">(Standard-Profil ausgewählt)</span>
+                )}
               </p>
             </div>
 
@@ -253,76 +296,94 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
             <div>
               <FormLabel>Artikel</FormLabel>
               <div className="mt-2 space-y-4">
-                {fields.map((field, index) => (
-                  <div
-                    key={field.id}
-                    className="flex gap-2 rounded-md border p-4"
-                  >
-                    <div className="flex-1 grid gap-2 md:grid-cols-3">
-                      <FormField
-                        control={form.control}
-                        name={`items.${index}.description`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input placeholder="Beschreibung" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`items.${index}.quantity`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                placeholder="Menge"
-                                {...field}
-                                onChange={(e) =>
-                                  field.onChange(parseFloat(e.target.value) || 0)
-                                }
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`items.${index}.unit_price`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                placeholder="Einzelpreis"
-                                {...field}
-                                onChange={(e) =>
-                                  field.onChange(parseFloat(e.target.value) || 0)
-                                }
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => remove(index)}
-                      disabled={fields.length === 1}
+                {fields.map((field, index) => {
+                  const item = items?.[index];
+                  const itemTotal = ((item?.quantity || 0) * (item?.unit_price || 0)).toFixed(2);
+                  
+                  return (
+                    <div
+                      key={field.id}
+                      className="flex gap-2 rounded-md border p-4"
                     >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
+                      <div className="flex-1 grid gap-2 md:grid-cols-3">
+                        <FormField
+                          control={form.control}
+                          name={`items.${index}.description`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input placeholder="Beschreibung" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`items.${index}.quantity`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  placeholder="Menge"
+                                  {...field}
+                                  onChange={(e) =>
+                                    field.onChange(parseFloat(e.target.value) || 0)
+                                  }
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`items.${index}.unit_price`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  placeholder="Einzelpreis"
+                                  {...field}
+                                  onChange={(e) =>
+                                    field.onChange(parseFloat(e.target.value) || 0)
+                                  }
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="text-right min-w-[80px]">
+                          <div className="text-sm font-medium">
+                            {parseFloat(itemTotal).toLocaleString("de-DE", {
+                              style: "currency",
+                              currency: "EUR",
+                            })}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Gesamt
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => remove(index)}
+                          disabled={fields.length === 1}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
                 <Button
                   type="button"
                   variant="outline"
@@ -335,6 +396,43 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                 </Button>
               </div>
             </div>
+
+            {/* Live Summary */}
+            <Card className="bg-muted/50">
+              <CardContent className="p-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Zwischensumme:</span>
+                    <span className="font-medium">
+                      {totals.subtotal.toLocaleString("de-DE", {
+                        style: "currency",
+                        currency: "EUR",
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      MwSt. ({totals.taxRate}%):
+                    </span>
+                    <span className="font-medium">
+                      {totals.tax.toLocaleString("de-DE", {
+                        style: "currency",
+                        currency: "EUR",
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t font-semibold text-base">
+                    <span>Gesamt:</span>
+                    <span>
+                      {totals.total.toLocaleString("de-DE", {
+                        style: "currency",
+                        currency: "EUR",
+                      })}
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             <FormField
               control={form.control}

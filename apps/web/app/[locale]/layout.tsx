@@ -10,12 +10,11 @@ import { ThemeProvider } from "next-themes";
 
 import { cn, constructMetadata } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
-import { Analytics } from "@/components/analytics";
 import { AvatarProvider } from "@/components/context/avatar-context";
 import { NotificationsProvider } from "@/components/context/notifications-context";
 import { ErrorBoundary } from "@/components/error-boundary";
-import ModalProvider from "@/components/modals/providers";
 import { QueryClientProvider } from "@/components/providers/query-client-provider";
+import { DynamicProviders } from "@/components/providers/dynamic-providers";
 import { SupabaseProvider } from "@/components/supabase-provider";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 
@@ -51,6 +50,21 @@ export default async function LocaleLayout({
     <html lang={locale} suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/site.webmanifest" />
+        {/* Preload critical fonts */}
+        <link
+          rel="preload"
+          href="/fonts/GeistVF.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/CalSans-SemiBold.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
       </head>
       <body
         className={cn(
@@ -73,8 +87,9 @@ export default async function LocaleLayout({
                 <AvatarProvider>
                   <QueryClientProvider>
                     <NotificationsProvider>
-                      <ModalProvider>{children}</ModalProvider>
-                      <Analytics />
+                      <DynamicProviders>
+                        {children}
+                      </DynamicProviders>
                       <Toaster richColors closeButton />
                       <TailwindIndicator />
                     </NotificationsProvider>

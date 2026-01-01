@@ -1,14 +1,16 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DashboardHeader } from "@/components/dashboard/header";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { TrendingUp } from "lucide-react";
 
 export default function AnalyticsLoading() {
   return (
-    <>
-      <DashboardHeader
-        heading="Analytics Dashboard"
-        text="Track key metrics and app performance"
-      />
+    <UnifiedPageLayout
+      title="Analytics Dashboard"
+      description="Track key metrics and app performance"
+      icon={<TrendingUp className="h-4 w-4 text-primary" />}
+      contentClassName="space-y-4"
+    >
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <Card key={i}>
@@ -23,7 +25,7 @@ export default function AnalyticsLoading() {
         ))}
       </div>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
         <Card className="col-span-1">
           <CardHeader>
             <Skeleton className="mb-1 h-5 w-32" />
@@ -45,7 +47,7 @@ export default function AnalyticsLoading() {
         </Card>
       </div>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
         <Card className="col-span-1">
           <CardHeader>
             <Skeleton className="mb-1 h-5 w-32" />
@@ -66,6 +68,6 @@ export default function AnalyticsLoading() {
           </CardContent>
         </Card>
       </div>
-    </>
+    </UnifiedPageLayout>
   );
 }

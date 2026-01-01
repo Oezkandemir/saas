@@ -11,12 +11,13 @@
   },
   "crons": [],
   "functions": {
-    "app/api/**/*.{ts,tsx}": {
-      "memory": 1024,
+    "app/api/**/route.{ts,tsx}": {
       "maxDuration": 10
     },
-    "app/[locale]/api/**/*.{ts,tsx}": {
-      "memory": 1024,
+    "app/[locale]/api/**/route.{ts,tsx}": {
+      "maxDuration": 10
+    },
+    "app/auth/**/route.{ts,tsx}": {
       "maxDuration": 10
     }
   },

@@ -3,10 +3,8 @@ import { View, ScrollView, Pressable, RefreshControl } from 'react-native';
 import { router } from 'expo-router';
 import { Card, CardContent } from '~/components/ui/card';
 import { Text } from '~/components/ui/text';
-import { Button } from '~/components/ui/button';
 import { Badge } from '~/components/ui/badge';
 import { H1, Muted } from '~/components/ui/typography';
-import { Separator } from '~/components/ui/separator';
 import { useNotifications } from '~/lib/notification-provider';
 
 export default function NotificationsTabScreen() {
@@ -84,34 +82,6 @@ export default function NotificationsTabScreen() {
             )}
           </View>
         </View>
-
-        {/* Quick Actions */}
-        {notifications.length > 0 && (
-          <View className="gap-4">
-            <View className="flex-row gap-3">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onPress={markAllAsRead}
-                className="flex-1"
-                disabled={unreadCount === 0}
-              >
-                <Text>Mark All Read ({unreadCount})</Text>
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onPress={clearAll}
-                className="flex-1"
-              >
-                <Text>Clear All</Text>
-              </Button>
-            </View>
-          </View>
-        )}
-
-        <Separator />
 
         {/* Notifications List */}
         {loading ? (

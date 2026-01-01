@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TicketAccordionTable } from "@/components/support/ticket-accordion-table";
 
 export async function generateMetadata() {
@@ -49,13 +49,13 @@ export default async function AdminSupportPage(props: Props) {
   if (!result.success || !result.data) {
     console.error("Error fetching tickets:", result.error);
     return (
-      <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <ModernPageHeader
-          title={tSupport("pageTitle")}
-          description={tSupport("loadingError")}
-          icon={<MessageSquare className="w-5 h-5 text-primary" />}
-        />
-      </div>
+      <UnifiedPageLayout
+        title={tSupport("pageTitle")}
+        description={tSupport("loadingError")}
+        icon={<MessageSquare className="h-4 w-4 text-primary" />}
+      >
+        <div />
+      </UnifiedPageLayout>
     );
   }
 
@@ -74,13 +74,12 @@ export default async function AdminSupportPage(props: Props) {
   ).length;
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <ModernPageHeader
-        title={tSupport("pageTitle")}
-        description={tSupport("pageDescription")}
-        icon={<MessageSquare className="w-5 h-5 text-primary" />}
-      />
-
+    <UnifiedPageLayout
+      title={tSupport("pageTitle")}
+      description={tSupport("pageDescription")}
+      icon={<MessageSquare className="h-4 w-4 text-primary" />}
+      contentClassName="space-y-4"
+    >
       {/* Ticket Stats Section */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="hover:shadow-md transition-all">
@@ -152,6 +151,6 @@ export default async function AdminSupportPage(props: Props) {
           <TicketAccordionTable data={tickets} locale={locale} />
         </CardContent>
       </Card>
-    </div>
+    </UnifiedPageLayout>
   );
 }

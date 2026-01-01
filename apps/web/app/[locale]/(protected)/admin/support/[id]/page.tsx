@@ -17,7 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TicketMessageItem } from "@/components/support/ticket-message";
 import { TicketReplyForm } from "@/components/support/ticket-reply-form";
 import { TicketStatusUpdater } from "@/components/support/ticket-status-updater";
@@ -74,24 +74,23 @@ export default async function AdminTicketPage({
   });
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <ModernPageHeader
-        title={ticket.subject}
-        description={`${t("ticketFrom")} ${ticket.user?.name || t("user")} (${ticket.user?.email || t("noEmail")})`}
-        icon={<MessageSquare className="w-5 h-5 text-primary" />}
-        showBackButton
-        backHref="/admin/support"
-        actions={
-          <TicketStatusUpdater
-            ticketId={ticket.id}
-            currentStatus={
-              ticket.status as "open" | "in_progress" | "resolved" | "closed"
-            }
-          />
-        }
-      />
-
-      <Card className="hover:shadow-md transition-all">
+    <UnifiedPageLayout
+      title={ticket.subject}
+      description={`${t("ticketFrom")} ${ticket.user?.name || t("user")} (${ticket.user?.email || t("noEmail")})`}
+      icon={<MessageSquare className="h-4 w-4 text-primary" />}
+      showBackButton
+      backHref="/admin/support"
+      actions={
+        <TicketStatusUpdater
+          ticketId={ticket.id}
+          currentStatus={
+            ticket.status as "open" | "in_progress" | "resolved" | "closed"
+          }
+        />
+      }
+      contentClassName="space-y-6"
+    >
+      <Card hover>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
@@ -154,6 +153,6 @@ export default async function AdminTicketPage({
           )}
         </CardFooter>
       </Card>
-    </div>
+    </UnifiedPageLayout>
   );
 }

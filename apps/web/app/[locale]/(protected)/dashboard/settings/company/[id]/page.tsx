@@ -2,7 +2,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import { getCompanyProfile } from "@/actions/company-profiles-actions";
-import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,12 +26,13 @@ export const dynamic = "force-dynamic";
 export default async function ViewCompanyProfilePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const profile = await getCompanyProfile(params.id);
+  const profile = await getCompanyProfile(id);
   if (!profile) notFound();
 
   const InfoRow = ({ icon: Icon, label, value }: any) => {
@@ -48,25 +49,26 @@ export default async function ViewCompanyProfilePage({
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <ModernPageHeader
-        title={profile.profile_name}
-        description={profile.company_name}
-        icon={<Building2 className="h-5 w-5 text-primary" />}
-        actions={
-          <Link href={`/dashboard/settings/company/${profile.id}/edit`}>
-            <Button className="gap-2">
-              <Edit className="h-4 w-4" />
-              Bearbeiten
-            </Button>
-          </Link>
-        }
-      />
-
+    <UnifiedPageLayout
+      title={profile.profile_name}
+      description={profile.company_name}
+      icon={<Building2 className="h-4 w-4 text-primary" />}
+      showBackButton
+      backHref="/dashboard/settings/company"
+      actions={
+        <Link href={`/dashboard/settings/company/${profile.id}/edit`}>
+          <Button className="gap-2">
+            <Edit className="h-4 w-4" />
+            Bearbeiten
+          </Button>
+        </Link>
+      }
+      contentClassName="space-y-6"
+    >
       {/* Profile Status */}
       <div className="flex items-center gap-2">
         {profile.is_default && (
-          <Badge className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-700 dark:text-green-300 border-green-500/30">
+          <Badge>
             <CheckCircle2 className="h-3 w-3 mr-1" />
             Standard-Profil
           </Badge>
@@ -176,7 +178,7 @@ export default async function ViewCompanyProfilePage({
           </CardContent>
         </Card>
       </div>
-    </div>
+    </UnifiedPageLayout>
   );
 }
 

@@ -1,51 +1,69 @@
 "use client";
 
 import { Document } from "@/actions/documents-actions";
+import { CompanyProfile } from "@/actions/company-profiles-actions";
 
 interface InvoiceFullPreviewProps {
   document: Document;
+  companyProfile?: CompanyProfile | null;
 }
 
 /**
  * Vollständige professionelle Rechnungsansicht mit Briefkopf und Footer
  * Wird im Fullscreen-Dialog angezeigt
  */
-export function InvoiceFullPreview({ document }: InvoiceFullPreviewProps) {
+export function InvoiceFullPreview({ document, companyProfile }: InvoiceFullPreviewProps) {
   const isInvoice = document.type === "invoice";
   const documentTitle = isInvoice ? "RECHNUNG" : "ANGEBOT";
 
+  // Use company profile data or fallback to defaults
+  const companyName = companyProfile?.company_name || "Ihr Unternehmen";
+  const companyAddress = companyProfile?.company_address || "Musterstraße 123";
+  const companyPostalCode = companyProfile?.company_postal_code || "12345";
+  const companyCity = companyProfile?.company_city || "Musterstadt";
+  const companyCountry = companyProfile?.company_country || "Deutschland";
+  const companyPhone = companyProfile?.company_phone || "+49 123 456789";
+  const companyEmail = companyProfile?.company_email || "info@ihr-unternehmen.de";
+  const companyWebsite = companyProfile?.company_website || "www.ihr-unternehmen.de";
+  const companyVatId = companyProfile?.company_vat_id || "DE123456789";
+  const companyTaxId = companyProfile?.company_tax_id || "";
+  const companyRegistrationNumber = companyProfile?.company_registration_number || "";
+  const bankName = companyProfile?.bank_name || "Musterbank AG";
+  const iban = companyProfile?.iban || "DE89 3704 0044 0532 0130 00";
+  const bic = companyProfile?.bic || "COBADEFFXXX";
+  const contactPerson = companyProfile?.contact_person_name || "";
+
   return (
-    <div className="w-full max-w-[210mm] mx-auto bg-white text-black p-[20mm]" style={{ fontSize: '11pt' }}>
+    <div className="w-full max-w-[210mm] mx-auto bg-white text-black p-[20mm] pb-[10mm]" style={{ fontSize: '11pt', minHeight: 'auto' }} data-pdf-preview>
       {/* Briefkopf / Header */}
-      <div className="mb-8 border-b-4 border-gray-900 pb-6">
+      <div className="mb-6 border-b-4 border-gray-900 pb-4">
         <div className="flex justify-between items-start">
           {/* Firmenlogo/Name - links */}
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Ihr Unternehmen</h1>
-            <p className="text-sm text-gray-600">Musterstraße 123</p>
-            <p className="text-sm text-gray-600">12345 Musterstadt</p>
-            <p className="text-sm text-gray-600">Deutschland</p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-1">{companyName}</h1>
+            {companyAddress && <p className="text-sm text-gray-600">{companyAddress}</p>}
+            {(companyPostalCode || companyCity) && (
+              <p className="text-sm text-gray-600">{companyPostalCode} {companyCity}</p>
+            )}
+            {companyCountry && <p className="text-sm text-gray-600">{companyCountry}</p>}
           </div>
           
           {/* Kontaktinformationen - rechts */}
           <div className="text-right text-sm">
-            <p className="text-gray-600">Tel: +49 123 456789</p>
-            <p className="text-gray-600">E-Mail: info@ihr-unternehmen.de</p>
-            <p className="text-gray-600">Web: www.ihr-unternehmen.de</p>
-            <p className="text-gray-600 mt-2">USt-IdNr.: DE123456789</p>
+            {companyPhone && <p className="text-gray-600">Tel: {companyPhone}</p>}
+            {companyEmail && <p className="text-gray-600">E-Mail: {companyEmail}</p>}
+            {companyWebsite && <p className="text-gray-600">Web: {companyWebsite}</p>}
+            {companyVatId && <p className="text-gray-600 mt-2">USt-IdNr.: {companyVatId}</p>}
           </div>
         </div>
       </div>
 
       {/* Dokumentkopf */}
-      <div className="flex justify-between items-start mb-8">
+      <div className="flex justify-between items-start mb-6">
         <div className="flex-1">
           {/* Kundenadresse */}
           {document.customer && (
-            <div className="mb-6">
-              <p className="text-xs text-gray-500 mb-2">
-                Ihr Unternehmen · Musterstraße 123 · 12345 Musterstadt
-              </p>
+            <div className="mb-4">
               <div className="border-l-4 border-gray-900 pl-4">
                 <p className="text-sm font-semibold text-gray-900">{document.customer.name}</p>
                 {document.customer.email && (
@@ -58,7 +76,7 @@ export function InvoiceFullPreview({ document }: InvoiceFullPreviewProps) {
         
         {/* Dokumentinformationen - rechts */}
         <div className="text-right ml-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">{documentTitle}</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">{documentTitle}</h2>
           <div className="text-sm space-y-1">
             <div className="flex justify-between gap-8">
               <span className="text-gray-600">Rechnungsnr.:</span>
@@ -91,8 +109,8 @@ export function InvoiceFullPreview({ document }: InvoiceFullPreviewProps) {
       </div>
 
       {/* Anrede */}
-      <div className="mb-8">
-        <p className="text-sm text-gray-700">
+      <div className="mb-6">
+        <p className="text-sm text-gray-700 whitespace-pre-line">
           {isInvoice 
             ? `Sehr geehrte Damen und Herren,\n\nhiermit stellen wir Ihnen folgende Leistungen in Rechnung:`
             : `Sehr geehrte Damen und Herren,\n\nhiermit unterbreiten wir Ihnen folgendes Angebot:`
@@ -102,7 +120,7 @@ export function InvoiceFullPreview({ document }: InvoiceFullPreviewProps) {
 
       {/* Leistungstabelle */}
       {document.items && document.items.length > 0 && (
-        <div className="mb-8">
+        <div className="mb-6">
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-gray-100 border-y-2 border-gray-900">
@@ -139,7 +157,7 @@ export function InvoiceFullPreview({ document }: InvoiceFullPreviewProps) {
       )}
 
       {/* Summen */}
-      <div className="flex justify-end mb-8">
+      <div className="flex justify-end mb-6">
         <div className="w-96">
           <div className="space-y-2">
             <div className="flex justify-between py-2 border-b border-gray-300">
@@ -175,41 +193,22 @@ export function InvoiceFullPreview({ document }: InvoiceFullPreviewProps) {
 
       {/* Zahlungsinformationen */}
       {isInvoice && (
-        <div className="mb-8 p-4 bg-gray-50 border-l-4 border-gray-900">
-          <h3 className="text-sm font-bold text-gray-900 mb-3">Zahlungsinformationen</h3>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-gray-600 mb-1">Zahlungsziel:</p>
-              <p className="font-semibold text-gray-900">
-                {document.due_date 
-                  ? new Date(document.due_date).toLocaleDateString("de-DE")
-                  : "Bei Erhalt"
-                }
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-600 mb-1">Zahlungsweise:</p>
-              <p className="font-semibold text-gray-900">Überweisung</p>
-            </div>
-          </div>
-          <div className="mt-3 pt-3 border-t border-gray-300">
-            <p className="text-xs text-gray-600">
-              Bitte überweisen Sie den Betrag unter Angabe der Rechnungsnummer auf unser Konto.
-            </p>
-          </div>
+        <div className="mb-6 p-3 bg-gray-50 border-l-4 border-gray-900">
+          <p className="text-xs text-gray-700">
+            <span className="font-semibold">Zahlungsziel:</span> {document.due_date 
+              ? new Date(document.due_date).toLocaleDateString("de-DE")
+              : "Bei Erhalt"
+            } | <span className="font-semibold">Zahlungsweise:</span> Überweisung | Bitte überweisen Sie den Betrag unter Angabe der Rechnungsnummer auf unser Konto.
+          </p>
         </div>
       )}
 
-      {/* Hinweise */}
-      {document.notes && (
-        <div className="mb-8 p-4 bg-blue-50 border-l-4 border-blue-600 rounded-r">
-          <h3 className="text-sm font-bold text-gray-900 mb-2">Hinweise</h3>
-          <p className="text-sm text-gray-700 whitespace-pre-wrap">{document.notes}</p>
-        </div>
-      )}
+      {/* Hinweise - NICHT in PDF anzeigen, nur im Dashboard */}
+      {/* Notizen werden absichtlich nicht in dieser Preview-Komponente angezeigt, 
+          da diese für PDF-Generierung verwendet wird. Notizen sind nur im Dashboard sichtbar. */}
 
       {/* Abschlusstext */}
-      <div className="mb-8 text-sm text-gray-700">
+      <div className="mb-6 text-sm text-gray-700">
         <p>
           {isInvoice 
             ? "Wir bedanken uns für Ihren Auftrag und das entgegengebrachte Vertrauen."
@@ -217,52 +216,30 @@ export function InvoiceFullPreview({ document }: InvoiceFullPreviewProps) {
           }
         </p>
         <p className="mt-2">Mit freundlichen Grüßen</p>
-        <p className="mt-4 font-semibold">Ihr Unternehmen</p>
+        <p className="mt-3 font-semibold">{companyName}</p>
       </div>
 
-      {/* Professioneller Footer */}
-      <div className="mt-12 pt-6 border-t-2 border-gray-900">
-        <div className="grid grid-cols-3 gap-8 text-xs text-gray-600">
-          {/* Kontaktdaten */}
-          <div>
-            <h4 className="font-bold text-gray-900 mb-2 text-sm">Kontakt</h4>
-            <p className="mb-1">Ihr Unternehmen GmbH</p>
-            <p className="mb-1">Musterstraße 123</p>
-            <p className="mb-1">12345 Musterstadt</p>
-            <p className="mb-2">Deutschland</p>
-            <p className="mb-1">Tel: +49 123 456789</p>
-            <p className="mb-1">Fax: +49 123 456788</p>
-            <p className="mb-1">E-Mail: info@ihr-unternehmen.de</p>
-            <p>Web: www.ihr-unternehmen.de</p>
-          </div>
-
-          {/* Bankverbindung */}
-          <div>
-            <h4 className="font-bold text-gray-900 mb-2 text-sm">Bankverbindung</h4>
-            <p className="mb-1">Musterbank AG</p>
-            <p className="mb-1">IBAN: DE89 3704 0044 0532 0130 00</p>
-            <p className="mb-1">BIC: COBADEFFXXX</p>
-            <p className="mb-2">Konto-Nr: 532 013 000</p>
-            <p className="mb-1">BLZ: 370 400 44</p>
-          </div>
-
-          {/* Rechtliches */}
-          <div>
-            <h4 className="font-bold text-gray-900 mb-2 text-sm">Rechtliches</h4>
-            <p className="mb-1">Geschäftsführer: Max Mustermann</p>
-            <p className="mb-1">Handelsregister: HRB 12345</p>
-            <p className="mb-1">Amtsgericht Musterstadt</p>
-            <p className="mb-2">USt-IdNr.: DE123456789</p>
-            <p className="mb-1">Steuernummer: 123/456/78910</p>
-          </div>
-        </div>
-
-        {/* Zusatzinformationen */}
-        <div className="mt-6 pt-4 border-t border-gray-300 text-center">
-          <p className="text-xs text-gray-500">
-            Alle Preise verstehen sich in Euro. Es gelten unsere Allgemeinen Geschäftsbedingungen.
+      {/* Vereinfachter Footer */}
+      <div className="mt-4 pt-3 border-t border-gray-400">
+        <div className="text-xs text-gray-600 space-y-1">
+          <p className="font-semibold text-gray-900">
+            {companyName}
+            {companyAddress && ` · ${companyAddress}`}
+            {companyPostalCode && companyCity && ` · ${companyPostalCode} ${companyCity}`}
+            {companyCountry && ` · ${companyCountry}`}
           </p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="leading-relaxed">
+            {companyPhone && `Tel: ${companyPhone}`}
+            {companyEmail && ` · E-Mail: ${companyEmail}`}
+            {companyWebsite && ` · Web: ${companyWebsite}`}
+            {iban && ` · IBAN: ${iban}`}
+            {bic && ` · BIC: ${bic}`}
+            {companyVatId && ` · USt-IdNr.: ${companyVatId}`}
+            {contactPerson && ` · Geschäftsführer: ${contactPerson}`}
+            {companyRegistrationNumber && ` · HRB ${companyRegistrationNumber}`}
+          </p>
+          <p className="text-center text-gray-500 pt-1 border-t border-gray-300 mt-1">
+            Alle Preise verstehen sich in Euro. Es gelten unsere Allgemeinen Geschäftsbedingungen. 
             Dieses Dokument wurde elektronisch erstellt und ist ohne Unterschrift gültig.
           </p>
         </div>

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CustomerQRCode } from "@/components/customers/customer-qr-code";
-import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { CustomerQuickActions } from "@/components/customers/customer-quick-actions";
 import { CustomerStats } from "@/components/customers/customer-stats";
 import { CustomerActivityTimeline } from "@/components/customers/customer-activity-timeline";
@@ -34,26 +34,22 @@ export default async function CustomerDetailPage({
   const customerDocuments: Document[] = await getDocuments(undefined, id).catch(() => []);
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Header */}
-      <ModernPageHeader
-        title={customer.name}
-        description={customer.company || "Kundendetails und Informationen"}
-        icon={<User className="h-5 w-5 text-primary" />}
-        showBackButton
-        backHref="/dashboard/customers"
-        actions={
-          <>
-            <Link href={`/dashboard/customers/${customer.id}/edit`}>
-              <Button variant="outline" className="gap-2">
-                <Edit className="h-4 w-4" />
-                Bearbeiten
-              </Button>
-            </Link>
-          </>
-        }
-      />
-
+    <UnifiedPageLayout
+      title={customer.name}
+      description={customer.company || "Kundendetails und Informationen"}
+      icon={<User className="h-4 w-4 text-primary" />}
+      showBackButton
+      backHref="/dashboard/customers"
+      actions={
+        <Link href={`/dashboard/customers/${customer.id}/edit`}>
+          <Button variant="outline" className="gap-2">
+            <Edit className="h-4 w-4" />
+            Bearbeiten
+          </Button>
+        </Link>
+      }
+      contentClassName="space-y-6"
+    >
       {/* Quick Actions */}
       <CustomerQuickActions customer={customer} />
 
@@ -73,10 +69,10 @@ export default async function CustomerDetailPage({
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
           {/* Kontaktinformationen */}
-          <Card className="border-2 shadow-lg">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-xl flex items-center gap-2">
-                <Mail className="h-5 w-5" />
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Mail className="h-4 w-4" />
                 Kontaktinformationen
               </CardTitle>
             </CardHeader>
@@ -123,10 +119,10 @@ export default async function CustomerDetailPage({
 
           {/* Adresse */}
           {(customer.address_line1 || customer.city || customer.postal_code) && (
-            <Card className="border-2 shadow-lg">
+            <Card>
               <CardHeader>
-                <CardTitle className="text-xl flex items-center gap-2">
-                  <MapPin className="h-5 w-5" />
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
                   Adresse
                 </CardTitle>
               </CardHeader>
@@ -163,10 +159,10 @@ export default async function CustomerDetailPage({
 
           {/* Weitere Informationen */}
           {(customer.tax_id || customer.notes) && (
-            <Card className="border-2 shadow-lg">
+            <Card>
               <CardHeader>
-                <CardTitle className="text-xl flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
                   Weitere Informationen
                 </CardTitle>
               </CardHeader>
@@ -203,10 +199,10 @@ export default async function CustomerDetailPage({
               <CustomerQRCode customer={customer} />
 
               {/* Metadaten */}
-              <Card className="border-2">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="text-xl flex items-center gap-2">
-                    <Calendar className="h-5 w-5" />
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
                     Informationen
                   </CardTitle>
                 </CardHeader>
@@ -254,11 +250,11 @@ export default async function CustomerDetailPage({
         </TabsContent>
 
         <TabsContent value="documents" className="mt-6">
-          <Card className="border-2 shadow-lg">
+          <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-xl flex items-center gap-2">
-                  <FileDown className="h-5 w-5" />
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <FileDown className="h-4 w-4" />
                   Dokumente ({customerDocuments.length})
                 </CardTitle>
                 <div className="flex gap-2">
@@ -290,10 +286,10 @@ export default async function CustomerDetailPage({
                   </Link>
                 </div>
               ) : (
-                <div className="rounded-md border overflow-x-auto">
+                <div className="rounded-lg border border-subtle overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow>
+                      <TableRow className="bg-muted/30">
                         <TableHead>Nummer</TableHead>
                         <TableHead>Typ</TableHead>
                         <TableHead>Datum</TableHead>
@@ -353,10 +349,10 @@ export default async function CustomerDetailPage({
               <CustomerActivityTimeline customer={customer} documents={customerDocuments} />
             </div>
             <div>
-              <Card className="border-2">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="text-xl flex items-center gap-2">
-                    <Calendar className="h-5 w-5" />
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
                     Informationen
                   </CardTitle>
                 </CardHeader>
@@ -393,7 +389,7 @@ export default async function CustomerDetailPage({
           </div>
         </TabsContent>
       </Tabs>
-    </div>
+    </UnifiedPageLayout>
   );
 }
 

@@ -10,6 +10,11 @@ const config = {
     "./ui/**/*.{ts,tsx}",
     "./content/**/*.{md,mdx}",
   ],
+  safelist: [
+    {
+      pattern: /^(border-subtle|shadow-subtle|transition-subtle|transition-smooth|hover-lift|hover-scale)/,
+    },
+  ],
   future: {
     hoverOnlyWhenSupported: true,
   },
@@ -246,7 +251,45 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+  plugins: [
+    require("tailwindcss-animate"), 
+    require("@tailwindcss/typography"),
+    // Custom utilities plugin
+    function({ addUtilities }: any) {
+      addUtilities({
+        '.border-subtle': {
+          'border-color': 'hsl(var(--border) / 0.5)',
+        },
+        '.shadow-subtle': {
+          'box-shadow': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+        },
+        '.shadow-subtle-md': {
+          'box-shadow': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+        },
+        '.shadow-subtle-lg': {
+          'box-shadow': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+        },
+        '.transition-subtle': {
+          'transition': 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
+        },
+        '.transition-smooth': {
+          'transition': 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+        },
+        '.transition-smooth-lg': {
+          'transition': 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        },
+        '.dark .shadow-subtle': {
+          'box-shadow': '0 1px 2px 0 rgb(0 0 0 / 0.3)',
+        },
+        '.dark .shadow-subtle-md': {
+          'box-shadow': '0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3)',
+        },
+        '.dark .shadow-subtle-lg': {
+          'box-shadow': '0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3)',
+        },
+      });
+    },
+  ],
 } satisfies Config;
 
 export default config;

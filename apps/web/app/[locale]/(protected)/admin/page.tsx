@@ -26,7 +26,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ConfigureStripePortalButton } from "@/components/admin/configure-stripe-button";
-import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export async function generateMetadata() {
   const t = await getTranslations("Admin.panel");
@@ -102,203 +102,154 @@ export default async function AdminPanelPage(props: Props) {
     ).length;
   }
 
+  const stats = [
+    {
+      title: "Benutzer",
+      value: totalUsers,
+      icon: Users,
+      description: "Gesamt Benutzer",
+    },
+    {
+      title: "Admins",
+      value: adminUsers,
+      icon: ShieldCheck,
+      description: "Administratoren",
+    },
+    {
+      title: "Abonnements",
+      value: subscribedUsers,
+      icon: CreditCard,
+      description: "Aktive Abos",
+    },
+    {
+      title: "Offene Tickets",
+      value: openTickets,
+      icon: AlertTriangle,
+      description: "Benötigen Aufmerksamkeit",
+    },
+    {
+      title: "In Bearbeitung",
+      value: inProgressTickets,
+      icon: Clock,
+      description: "Werden bearbeitet",
+    },
+    {
+      title: "Gelöst",
+      value: resolvedTickets,
+      icon: CheckCircle,
+      description: "Erfolgreich abgeschlossen",
+    },
+  ];
+
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <ModernPageHeader
-        title={tPanel("heading")}
-        description={tPanel("subheading")}
-        icon={<Shield className="w-5 h-5 text-primary" />}
-      />
-
-      {/* User Stats Section */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="hover:shadow-md transition-all">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {tUsers("totalUsers")}
-            </CardTitle>
-            <Users className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalUsers}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Registrierte Benutzer
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-all">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {tUsers("adminUsers")}
-            </CardTitle>
-            <ShieldCheck className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{adminUsers}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Mit Admin-Rechten
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-all">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {tUsers("subscribers")}
-            </CardTitle>
-            <CreditCard className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{subscribedUsers}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Aktive Abonnements
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-all">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {tSupport("openTickets")}
-            </CardTitle>
-            <MessageSquare className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{openTickets}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Benötigen Antwort
-            </p>
-          </CardContent>
-        </Card>
+    <UnifiedPageLayout
+      title={tPanel("heading")}
+      description={tPanel("subheading")}
+      icon={<Shield className="w-4 h-4 text-primary" />}
+      contentClassName="space-y-6"
+    >
+      {/* Statistics */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <Card key={stat.title} hover>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {stat.title}
+                </CardTitle>
+                <div className="flex size-9 items-center justify-center rounded-md bg-muted/50 border border-border">
+                  <Icon className="size-4 text-muted-foreground" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-semibold mb-1">{stat.value}</div>
+                <CardDescription className="text-xs">
+                  {stat.description}
+                </CardDescription>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
+        {/* Main Admin Modules */}
+        <div className="grid gap-4 md:grid-cols-2">
+          <Link href={`/${locale}/admin/users`} className="group">
+            <Card className="h-full hover interactive">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Users className="size-4 text-primary" />
+                  {tUsers("management")}
+                </CardTitle>
+                <CardDescription className="text-xs">{tUsers("description")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground mb-3">
+                  {tStats("userManagementDesc")}
+                </p>
+                <Button size="sm" className="gap-2 w-full sm:w-auto text-xs h-8">
+                  {tUsers("manageUsers")}
+                  <Users className="size-3.5" />
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
 
-      {/* Support Ticket Stats Section */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="hover:shadow-md transition-all">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {tStats("newTickets")}
-            </CardTitle>
-            <AlertTriangle className="size-4 text-amber-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{openTickets}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {tStats("awaitingResponse")}
-            </p>
-          </CardContent>
-        </Card>
+          <Link href={`/${locale}/admin/support`} className="group">
+            <Card className="h-full hover interactive">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <MessageSquare className="size-4 text-primary" />
+                  {tSupport("tickets")}
+                </CardTitle>
+                <CardDescription className="text-xs">{tSupport("description")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground mb-3">
+                  {tStats("supportTicketsDesc")}
+                </p>
+                <Button size="sm" className="gap-2 w-full sm:w-auto text-xs h-8">
+                  {tSupport("manageTickets")}
+                  <MessageSquare className="size-3.5" />
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
 
-        <Card className="hover:shadow-md transition-all">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {tSupport("statuses.inProgress")}
-            </CardTitle>
-            <Clock className="size-4 text-orange-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{inProgressTickets}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {tStats("currentlyHandled")}
-            </p>
-          </CardContent>
-        </Card>
+          <Link href={`/${locale}/admin/analytics`} className="group">
+            <Card className="h-full hover interactive">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <BarChart4 className="size-4 text-primary" />
+                  {tStats("analyticsDashboard")}
+                </CardTitle>
+                <CardDescription className="text-xs">{tStats("trackMetrics")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground mb-3">
+                  {tStats("analyticsDashboard")} - {tStats("trackMetrics")}
+                </p>
+                <Button size="sm" className="gap-2 w-full sm:w-auto text-xs h-8">
+                  {tStats("viewAnalytics")}
+                  <BarChart4 className="size-3.5" />
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
 
-        <Card className="hover:shadow-md transition-all">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {tSupport("statuses.resolved")}
-            </CardTitle>
-            <CheckCircle className="size-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{resolvedTickets}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {tStats("completedTickets")}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Admin Modules */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Link href={`/${locale}/admin/users`} className="group">
-          <Card className="h-full hover:shadow-md transition-all hover:scale-[1.02]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="size-5 text-primary" />
-                {tUsers("management")}
+          <Card className="h-full hover">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <Settings className="size-4 text-primary" />
+                Stripe {tConfig("title")}
               </CardTitle>
-              <CardDescription>{tUsers("description")}</CardDescription>
+              <CardDescription className="text-xs">{tConfig("description")}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                {tStats("userManagementDesc")}
-              </p>
-              <Button className="gap-2 w-full sm:w-auto">
-                {tUsers("manageUsers")}
-                <Users className="size-4" />
-              </Button>
+              <ConfigureStripePortalButton />
             </CardContent>
           </Card>
-        </Link>
-
-        <Link href={`/${locale}/admin/support`} className="group">
-          <Card className="h-full hover:shadow-md transition-all hover:scale-[1.02]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="size-5 text-primary" />
-                {tSupport("tickets")}
-              </CardTitle>
-              <CardDescription>{tSupport("description")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                {tStats("supportTicketsDesc")}
-              </p>
-              <Button className="gap-2 w-full sm:w-auto">
-                {tSupport("manageTickets")}
-                <MessageSquare className="size-4" />
-              </Button>
-            </CardContent>
-          </Card>
-        </Link>
-
-        <Link href={`/${locale}/admin/analytics`} className="group">
-          <Card className="h-full hover:shadow-md transition-all hover:scale-[1.02]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart4 className="size-5 text-primary" />
-                {tStats("analyticsDashboard")}
-              </CardTitle>
-              <CardDescription>{tStats("trackMetrics")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                {tStats("analyticsDashboard")} - {tStats("trackMetrics")}
-              </p>
-              <Button className="gap-2 w-full sm:w-auto">
-                {tStats("viewAnalytics")}
-                <BarChart4 className="size-4" />
-              </Button>
-            </CardContent>
-          </Card>
-        </Link>
-
-        <Card className="h-full hover:shadow-md transition-all">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="size-5 text-primary" />
-              Stripe {tConfig("title")}
-            </CardTitle>
-            <CardDescription>{tConfig("description")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ConfigureStripePortalButton />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+        </div>
+    </UnifiedPageLayout>
   );
 }

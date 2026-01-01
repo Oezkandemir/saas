@@ -16,7 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TicketMessageItem } from "@/components/support/ticket-message";
 import { TicketReplyForm } from "@/components/support/ticket-reply-form";
 import { MessageSquare } from "lucide-react";
@@ -105,16 +105,15 @@ export default async function TicketPage({
   });
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <ModernPageHeader
-        title={ticket.subject}
-        description="Track your ticket status and communicate with our support team in real-time."
-        icon={<MessageSquare className="h-5 w-5 text-primary" />}
-        showBackButton
-        backHref="/dashboard/support"
-      />
-
-      <Card className="hover:shadow-md transition-all border-border/50 bg-card/80 backdrop-blur-sm">
+    <UnifiedPageLayout
+      title={ticket.subject}
+      description="Track your ticket status and communicate with our support team in real-time."
+      icon={<MessageSquare className="h-4 w-4 text-primary" />}
+      showBackButton
+      backHref="/dashboard/support"
+      contentClassName="space-y-6"
+    >
+      <Card hover>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
@@ -149,7 +148,7 @@ export default async function TicketPage({
               <div className="size-2 rounded-full bg-primary" />
               Original Request
             </h3>
-            <div className="whitespace-pre-wrap rounded-lg bg-gradient-to-br from-muted/50 to-muted/30 backdrop-blur-sm p-4 text-sm border border-border/50 leading-relaxed">
+            <div className="whitespace-pre-wrap rounded-lg bg-muted/50 p-4 text-sm border border-border leading-relaxed">
               {ticket.description}
             </div>
           </div>
@@ -184,7 +183,7 @@ export default async function TicketPage({
             )}
           </div>
         </CardContent>
-        <CardFooter className="flex-col gap-4 bg-muted/20">
+        <CardFooter className="flex-col gap-4 bg-muted/30">
           {ticket.status !== "closed" ? (
             <div className="w-full">
               <div className="mb-3 text-sm text-muted-foreground">
@@ -194,8 +193,8 @@ export default async function TicketPage({
             </div>
           ) : (
             <div className="w-full py-6 text-center">
-              <div className="inline-flex items-center justify-center size-12 rounded-full bg-emerald-500/10 mb-3">
-                <MessageSquare className="size-6 text-emerald-600" />
+              <div className="inline-flex items-center justify-center size-12 rounded-lg bg-muted/50 border border-border mb-3">
+                <MessageSquare className="size-6 text-muted-foreground" />
               </div>
               <p className="font-semibold mb-1">This ticket has been closed</p>
               <p className="text-sm text-muted-foreground">
@@ -205,6 +204,6 @@ export default async function TicketPage({
           )}
         </CardFooter>
       </Card>
-    </div>
+    </UnifiedPageLayout>
   );
 }

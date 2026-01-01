@@ -4,7 +4,7 @@ import { getQRCode, getQRCodeEvents, type QRCodeEvent } from "@/actions/qr-codes
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Edit, ExternalLink, QrCode } from "lucide-react";
 import Link from "next/link";
 import { QRCodeDisplay } from "@/components/qr-codes/qr-code-display";
@@ -37,23 +37,22 @@ export default async function QRCodeDetailPage({
   const events: QRCodeEvent[] = await getQRCodeEvents(id).catch(() => []);
 
   return (
-    <div className="flex flex-col gap-4">
-      <ModernPageHeader
-        title={qrCode.name}
-        description="QR-Code Details und Statistiken"
-        icon={<QrCode className="w-5 h-5 text-primary" />}
-        showBackButton
-        backHref="/dashboard/qr-codes"
-        actions={
-          <Link href={`/dashboard/qr-codes/${qrCode.id}/edit`}>
-            <Button variant="outline" className="gap-2">
-              <Edit className="w-4 h-4" />
-              Bearbeiten
-            </Button>
-          </Link>
-        }
-      />
-
+    <UnifiedPageLayout
+      title={qrCode.name}
+      description="QR-Code Details und Statistiken"
+      icon={<QrCode className="h-4 w-4 text-primary" />}
+      showBackButton
+      backHref="/dashboard/qr-codes"
+      actions={
+        <Link href={`/dashboard/qr-codes/${qrCode.id}/edit`}>
+          <Button variant="outline" className="gap-2">
+            <Edit className="h-4 w-4" />
+            Bearbeiten
+          </Button>
+        </Link>
+      }
+      contentClassName="space-y-4"
+    >
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
@@ -205,7 +204,7 @@ export default async function QRCodeDetailPage({
           </CardContent>
         </Card>
       )}
-    </div>
+    </UnifiedPageLayout>
   );
 }
 

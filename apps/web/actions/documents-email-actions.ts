@@ -7,6 +7,8 @@ import { resend } from "@/lib/email";
 import { siteConfig } from "@/config/site";
 import { logger } from "@/lib/logger";
 import { getSupabaseServer } from "@/lib/supabase-server";
+import { generateInvoiceHTMLAsync } from "@/lib/pdf/templates";
+import { generateAndUploadPDF } from "@/lib/pdf/generator-vercel";
 
 export interface SendDocumentEmailInput {
   documentId: string;
@@ -26,28 +28,41 @@ export async function sendDocumentEmail(
     if (!user) throw new Error("Unauthorized");
 
     // Get document
-    const document = await getDocument(input.documentId);
+    let document = await getDocument(input.documentId);
     if (!document) {
       throw new Error("Document not found");
     }
 
-    // Ensure PDF exists
+    // Ensure PDF exists - generate directly without HTTP fetch to avoid SSL issues
     if (!document.pdf_url) {
-      // Generate PDF if it doesn't exist
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/documents/${document.id}/pdf`,
-        {
-          method: "POST",
-        },
-      );
-      if (!response.ok) {
-        throw new Error("Failed to generate PDF");
-      }
-      const data = await response.json();
-      // Reload document to get updated pdf_url
-      const updatedDocument = await getDocument(input.documentId);
-      if (!updatedDocument?.pdf_url) {
-        throw new Error("Failed to generate PDF");
+      try {
+        // Generate HTML content with company profile data
+        const htmlContent = await generateInvoiceHTMLAsync(document);
+        
+        // Generate and upload PDF directly
+        const pdfUrl = await generateAndUploadPDF(document, htmlContent);
+        
+        // Update document with PDF URL in database
+        const supabase = await getSupabaseServer();
+        await supabase
+          .from("documents")
+          .update({ pdf_url: pdfUrl })
+          .eq("id", document.id)
+          .eq("user_id", user.id);
+        
+        // Reload document to get updated pdf_url
+        const updatedDocument = await getDocument(input.documentId);
+        if (!updatedDocument?.pdf_url) {
+          throw new Error("Failed to generate PDF");
+        }
+        document = updatedDocument;
+      } catch (error) {
+        logger.error("Error generating PDF for email:", error);
+        throw new Error(
+          error instanceof Error
+            ? `Fehler beim Generieren des PDFs: ${error.message}`
+            : "Fehler beim Generieren des PDFs"
+        );
       }
     }
 

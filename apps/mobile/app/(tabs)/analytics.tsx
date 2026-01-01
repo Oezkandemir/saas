@@ -3,10 +3,15 @@ import { View, RefreshControl } from 'react-native';
 import { AppScrollView } from '~/components/ui/scroll-view';
 import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card';
 import { Text } from '~/components/ui/text';
-import { H1, H2, Muted } from '~/components/ui/typography';
+import { H1, Muted } from '~/components/ui/typography';
 import { Badge } from '~/components/ui/badge';
-import { Button } from '~/components/ui/button';
 import { supabase } from '~/lib/supabase';
+import { Users } from '~/lib/icons/Users';
+import { UserPlus } from '~/lib/icons/UserPlus';
+import { Activity } from '~/lib/icons/Activity';
+import { BarChart3 } from '~/lib/icons/BarChart3';
+import { useColorScheme } from '~/lib/useColorScheme';
+import { StatusBar } from '~/components/layout/StatusBar';
 
 interface AnalyticsData {
   totalUsers: number;
@@ -18,6 +23,7 @@ interface AnalyticsData {
 }
 
 export default function AnalyticsScreen() {
+  const { isDarkColorScheme } = useColorScheme();
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -91,6 +97,29 @@ export default function AnalyticsScreen() {
     fetchAnalytics();
   };
 
+  const statusBarItems = [
+    {
+      icon: <Users size={16} color={isDarkColorScheme ? '#9ca3af' : '#6b7280'} />,
+      value: analytics?.totalUsers?.toString() || '0',
+      label: 'Total Users',
+    },
+    {
+      icon: <UserPlus size={16} color={isDarkColorScheme ? '#9ca3af' : '#6b7280'} />,
+      value: analytics?.newUsersThisMonth?.toString() || '0',
+      label: 'New This Month',
+    },
+    {
+      icon: <Activity size={16} color={isDarkColorScheme ? '#9ca3af' : '#6b7280'} />,
+      value: analytics?.activeUsers?.toString() || '0',
+      label: 'Active Users',
+    },
+    {
+      icon: <BarChart3 size={16} color={isDarkColorScheme ? '#9ca3af' : '#6b7280'} />,
+      value: `${((analytics?.activeUsers || 0) / Math.max(analytics?.totalUsers || 1, 1) * 100).toFixed(1)}%`,
+      label: 'Engagement',
+    },
+  ];
+
   if (loading) {
     return (
       <View className="flex-1 bg-background justify-center items-center">
@@ -100,71 +129,22 @@ export default function AnalyticsScreen() {
   }
 
   return (
-    <AppScrollView 
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
-      <View className="p-6 gap-6">
-        {/* Header */}
-        <View className="gap-2">
-          <H1>Analytics Dashboard</H1>
-          <Muted>Track your app's performance and user engagement</Muted>
-        </View>
-
-        {/* Key Metrics */}
-        <View className="gap-4">
-          <H2>Key Metrics</H2>
-          
-          <View className="flex-row flex-wrap gap-3">
-            <Card className="flex-1 min-w-[45%]">
-              <CardContent className="p-4">
-                <Text className="text-2xl font-bold text-foreground">
-                  {analytics?.totalUsers || 0}
-                </Text>
-                <Text className="font-medium text-foreground">Total Users</Text>
-                <Muted className="text-xs">All time registrations</Muted>
-              </CardContent>
-            </Card>
-
-            <Card className="flex-1 min-w-[45%]">
-              <CardContent className="p-4">
-                <Text className="text-2xl font-bold text-foreground">
-                  {analytics?.newUsersThisMonth || 0}
-                </Text>
-                <Text className="font-medium text-foreground">New This Month</Text>
-                <View className="flex-row items-center gap-1">
-                  <Badge variant="default" className="py-0">
-                    <Text className="text-xs">+{analytics?.userGrowthRate.toFixed(1)}%</Text>
-                  </Badge>
-                </View>
-              </CardContent>
-            </Card>
-
-            <Card className="flex-1 min-w-[45%]">
-              <CardContent className="p-4">
-                <Text className="text-2xl font-bold text-foreground">
-                  {analytics?.activeUsers || 0}
-                </Text>
-                <Text className="font-medium text-foreground">Active Users</Text>
-                <Muted className="text-xs">Last 30 days</Muted>
-              </CardContent>
-            </Card>
-
-            <Card className="flex-1 min-w-[45%]">
-              <CardContent className="p-4">
-                <Text className="text-2xl font-bold text-foreground">
-                  {((analytics?.activeUsers || 0) / Math.max(analytics?.totalUsers || 1, 1) * 100).toFixed(1)}%
-                </Text>
-                <Text className="font-medium text-foreground">Engagement Rate</Text>
-                <Muted className="text-xs">Active vs total</Muted>
-              </CardContent>
-            </Card>
+    <View className="flex-1 bg-background">
+      <StatusBar items={statusBarItems} />
+      <AppScrollView 
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View className="p-6 gap-6">
+          {/* Header */}
+          <View className="gap-2">
+            <H1>Analytics Dashboard</H1>
+            <Muted>Track your app's performance and user engagement</Muted>
           </View>
-        </View>
 
         {/* User Growth Chart */}
-        <Card>
+        <Card className="border-border/60 shadow-sm">
           <CardHeader>
             <CardTitle>User Growth Trend</CardTitle>
           </CardHeader>
@@ -196,7 +176,7 @@ export default function AnalyticsScreen() {
         </Card>
 
         {/* Top Countries */}
-        <Card>
+        <Card className="border-border/60 shadow-sm">
           <CardHeader>
             <CardTitle>Top Countries</CardTitle>
           </CardHeader>
@@ -228,7 +208,7 @@ export default function AnalyticsScreen() {
         </Card>
 
         {/* Performance Metrics */}
-        <Card>
+        <Card className="border-border/60 shadow-sm">
           <CardHeader>
             <CardTitle>Performance Insights</CardTitle>
           </CardHeader>
@@ -262,18 +242,8 @@ export default function AnalyticsScreen() {
             </View>
           </CardContent>
         </Card>
-
-        {/* Export Options */}
-        <View className="gap-3">
-          <Button variant="outline">
-            <Text>📊 Export Analytics Report</Text>
-          </Button>
-          
-          <Button variant="outline">
-            <Text>📈 View Detailed Metrics</Text>
-          </Button>
-        </View>
       </View>
     </AppScrollView>
+    </View>
   );
 } 

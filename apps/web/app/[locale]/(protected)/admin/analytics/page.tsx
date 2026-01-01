@@ -39,7 +39,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export const metadata = constructMetadata({
   title: "Analytics – Cenety",
@@ -76,12 +76,11 @@ export default async function AnalyticsPage() {
 
   if (!result.success) {
     return (
-      <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <ModernPageHeader
-          title="Analytics Dashboard"
-          description="Track key metrics and app performance"
-          icon={<TrendingUp className="w-5 h-5 text-primary" />}
-        />
+      <UnifiedPageLayout
+        title="Analytics Dashboard"
+        description="Track key metrics and app performance"
+        icon={<TrendingUp className="h-4 w-4 text-primary" />}
+      >
         <Card>
           <CardContent className="pt-8 text-center">
             <h2 className="text-xl font-semibold">
@@ -92,7 +91,7 @@ export default async function AnalyticsPage() {
             </p>
           </CardContent>
         </Card>
-      </div>
+      </UnifiedPageLayout>
     );
   }
 
@@ -156,13 +155,12 @@ export default async function AnalyticsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <ModernPageHeader
-        title="Analytics Dashboard"
-        description="Track key metrics and app performance"
-        icon={<TrendingUp className="w-5 h-5 text-primary" />}
-      />
-
+    <UnifiedPageLayout
+      title="Analytics Dashboard"
+      description="Track key metrics and app performance"
+      icon={<TrendingUp className="h-4 w-4 text-primary" />}
+      contentClassName="space-y-4"
+    >
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -651,6 +649,6 @@ export default async function AnalyticsPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </UnifiedPageLayout>
   );
 }

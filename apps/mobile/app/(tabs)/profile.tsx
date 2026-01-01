@@ -236,33 +236,6 @@ export default function ProfileScreen() {
             </CardContent>
           </Card>
 
-          {/* Quick Actions */}
-          <Card className="mt-4 border-border/40 shadow-none">
-            <CardContent className="p-6">
-              <Text className="mb-4 text-sm font-medium text-foreground">
-                Quick Actions
-              </Text>
-              
-              <View className="gap-3">
-                <Button
-                  variant="ghost"
-                  className="h-auto justify-start rounded-lg border border-border/40 p-3"
-                  onPress={() => Alert.alert('Coming Soon', 'Change password feature will be available soon')}
-                >
-                  <Text className="text-sm text-foreground">Change Password</Text>
-                </Button>
-                
-                <Button
-                  variant="ghost"
-                  className="h-auto justify-start rounded-lg border border-border/40 p-3"
-                  onPress={() => Alert.alert('Coming Soon', 'Export data feature will be available soon')}
-                >
-                  <Text className="text-sm text-foreground">Export Data</Text>
-                </Button>
-              </View>
-            </CardContent>
-          </Card>
-
           {/* Danger Zone */}
           <Card className="mb-6 mt-6 border-red-200 shadow-none dark:border-red-800">
             <CardContent className="p-6">
