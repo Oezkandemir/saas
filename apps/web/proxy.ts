@@ -202,22 +202,32 @@ export default async function proxy(request: NextRequest) {
   }
 
   // Add Content Security Policy
+  // Only add upgrade-insecure-requests in production (not on localhost)
+  const isProduction = process.env.NODE_ENV === "production" && 
+                       !request.nextUrl.hostname.includes("localhost") &&
+                       !request.nextUrl.hostname.includes("127.0.0.1");
+  
+  const cspDirectives = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com data:",
+    "img-src 'self' data: https: blob:",
+    "connect-src 'self' https://*.supabase.co https://*.vercel.app wss://*.supabase.co",
+    "frame-src 'self' https://vercel.live",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+  ];
+  
+  if (isProduction) {
+    cspDirectives.push("upgrade-insecure-requests");
+  }
+  
   response.headers.set(
     "Content-Security-Policy",
-    [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com data:",
-      "img-src 'self' data: https: blob:",
-      "connect-src 'self' https://*.supabase.co https://*.vercel.app wss://*.supabase.co",
-      "frame-src 'self' https://vercel.live",
-      "object-src 'none'",
-      "base-uri 'self'",
-      "form-action 'self'",
-      "frame-ancestors 'none'",
-      "upgrade-insecure-requests",
-    ].join("; "),
+    cspDirectives.join("; "),
   );
 
   // Return the response we've built up

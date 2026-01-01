@@ -90,8 +90,12 @@ export function getURL() {
     process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
     "http://localhost:3000";
 
-  // Make sure to include `https://` when not localhost.
-  url = url.startsWith("http") ? url : `https://${url}`;
+  // Make sure to include protocol when not present, but preserve http for localhost
+  if (!url.startsWith("http")) {
+    // Only use https if it's not localhost
+    const isLocalhost = url.includes("localhost") || url.includes("127.0.0.1");
+    url = isLocalhost ? `http://${url}` : `https://${url}`;
+  }
 
   // Make sure to include a trailing `/`.
   url = url.endsWith("/") ? url : `${url}/`;
