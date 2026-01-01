@@ -1,13 +1,11 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { DashboardHeader } from "@/components/dashboard/header";
+import { ModernPageHeader } from "@/components/layout/modern-page-header";
 import { CreateTicketForm } from "@/components/support/create-ticket-form";
+import { MessageSquarePlus } from "lucide-react";
 
 export async function generateMetadata() {
   const t = await getTranslations("Support");
@@ -27,18 +25,12 @@ export default async function NewTicketPage() {
 
   return (
     <>
-      <div className="mb-4 flex items-center">
-        <Link href="/dashboard/support">
-          <Button variant="outline" size="sm" className="gap-1">
-            <ChevronLeft className="size-4" />
-            Back to Support
-          </Button>
-        </Link>
-      </div>
-
-      <DashboardHeader
-        heading="Create Support Ticket"
-        text="Submit a new support request and we'll get back to you as soon as possible."
+      <ModernPageHeader
+        title="Create Support Ticket"
+        description="Submit a new support request and we'll get back to you as soon as possible."
+        icon={<MessageSquarePlus className="h-5 w-5 text-primary" />}
+        showBackButton
+        backHref="/dashboard/support"
       />
 
       <div className="mt-6">

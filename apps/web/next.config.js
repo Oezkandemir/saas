@@ -23,9 +23,10 @@ const nextConfig = {
       '@supabase/supabase-js',
       'date-fns',
     ],
-    webpackBuildWorker: true,
-    parallelServerCompiles: true,
-    parallelServerBuildTraces: true,
+    // Disable parallel builds to avoid EBADF errors with Turbopack
+    // webpackBuildWorker: true,
+    // parallelServerCompiles: true,
+    // parallelServerBuildTraces: true,
   },
 
   // Optimized webpack configuration

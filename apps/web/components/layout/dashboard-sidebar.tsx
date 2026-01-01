@@ -9,7 +9,6 @@ import { useTranslations } from "next-intl";
 
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
-import { useMediaQuery } from "@/hooks/use-media-query";
 import { useNotifications } from "@/hooks/use-notifications";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,17 +25,27 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { UpgradeCard } from "@/components/dashboard/upgrade-card";
 import { Icons } from "@/components/shared/icons";
+import { Separator } from "@/components/ui/separator";
+import { useSupabase } from "@/components/supabase-provider";
+import { LayoutDashboard, Mail } from "lucide-react";
 
 interface DashboardSidebarProps {
   links: SidebarNavItem[];
+  isFreePlan?: boolean;
 }
 
-export function DashboardSidebar({ links }: DashboardSidebarProps) {
+function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarProps) {
   const path = usePathname();
+  // Desktop sidebar is always expanded by default (only shown on lg+ screens, 1024px+)
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const t = useTranslations("DashboardSidebar");
   const { unreadCount } = useNotifications();
+  const { session } = useSupabase();
+  const userEmail = session?.user?.email || "";
+  
+  // Check if we're on dashboard page
+  const isDashboardPage = path === "/dashboard" || path.startsWith("/dashboard/");
 
   // NOTE: Use this if you want save in local storage -- Credits: Hosna Qasmei
   //
@@ -57,51 +66,48 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
   //   }
   // }, [isSidebarExpanded]);
 
-  const { isTablet } = useMediaQuery();
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(!isTablet);
-
   const toggleSidebar = () => {
     setIsSidebarExpanded(!isSidebarExpanded);
   };
 
-  useEffect(() => {
-    setIsSidebarExpanded(!isTablet);
-  }, [isTablet]);
+  // Sidebar expansion state is managed by user toggle on desktop
+  // No automatic collapsing based on screen size since sidebar is hidden on mobile/tablet
 
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="sticky top-0 h-full">
-        <ScrollArea className="h-full overflow-y-auto border-r">
-          <aside
-            className={cn(
-              isSidebarExpanded ? "w-[260px] xl:w-[300px]" : "w-[68px]",
-              "hidden h-screen md:block",
-            )}
-          >
-            <div className="flex h-full max-h-screen flex-1 flex-col gap-2">
-              <div className="flex h-14 items-center p-4 lg:h-[60px]">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="ml-auto size-9 lg:size-8"
-                  onClick={toggleSidebar}
-                >
-                  {isSidebarExpanded ? (
-                    <PanelLeftClose
-                      size={18}
-                      className="stroke-muted-foreground"
-                    />
-                  ) : (
-                    <PanelRightClose
-                      size={18}
-                      className="stroke-muted-foreground"
-                    />
-                  )}
-                  <span className="sr-only">{t("toggleSidebar")}</span>
-                </Button>
-              </div>
+      <div className="sticky top-0 h-screen border-r bg-background">
+        <aside
+          className={cn(
+            isSidebarExpanded ? "w-[260px] xl:w-[300px]" : "w-[68px]",
+            "hidden h-full lg:flex lg:flex-col",
+          )}
+        >
+          {/* Sidebar Header - merged with main header */}
+          <div className="flex h-14 shrink-0 items-center border-b px-4 lg:h-[60px]">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-9 lg:size-8"
+              onClick={toggleSidebar}
+            >
+              {isSidebarExpanded ? (
+                <PanelLeftClose
+                  size={18}
+                  className="stroke-muted-foreground"
+                />
+              ) : (
+                <PanelRightClose
+                  size={18}
+                  className="stroke-muted-foreground"
+                />
+              )}
+              <span className="sr-only">{t("toggleSidebar")}</span>
+            </Button>
+          </div>
 
-              <nav className="flex flex-1 flex-col gap-8 px-4 pt-4">
+          {/* Scrollable navigation area */}
+          <ScrollArea className="flex-1">
+            <nav className="flex flex-col gap-8 px-4 pt-4">
                 {links.map((section) => (
                   <section
                     key={section.title}
@@ -115,7 +121,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                       <div className="h-4" />
                     )}
                     {section.items.map((item) => {
-                      const Icon = Icons[item.icon || "arrowRight"];
+                      const Icon = Icons[item.icon || "arrowRight"] || Icons.arrowRight;
                       const translatedTitle = t(
                         `items.${item.title.toLowerCase().replace(/\s+/g, "_")}`,
                         {
@@ -136,7 +142,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                 key={`link-${item.title}`}
                                 href={item.disabled ? "#" : item.href}
                                 className={cn(
-                                  "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted",
+                                  "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted transition-colors",
                                   path === item.href
                                     ? "bg-muted"
                                     : "text-muted-foreground hover:text-accent-foreground",
@@ -170,7 +176,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                     key={`link-tooltip-${item.title}`}
                                     href={item.disabled ? "#" : item.href}
                                     className={cn(
-                                      "flex items-center gap-3 rounded-md py-2 text-sm font-medium hover:bg-muted",
+                                      "flex items-center gap-3 rounded-md py-2 text-sm font-medium hover:bg-muted transition-colors",
                                       path === item.href
                                         ? "bg-muted"
                                         : "text-muted-foreground hover:text-accent-foreground",
@@ -201,43 +207,85 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                     })}
                   </section>
                 ))}
-              </nav>
+            </nav>
+          </ScrollArea>
 
-              <div className="mt-auto xl:p-4">
-                {isSidebarExpanded ? <UpgradeCard /> : null}
+          {/* Sidebar Footer - Dashboard Info */}
+          {isDashboardPage && (
+            <div className="border-t bg-background/50 backdrop-blur-sm">
+              <div className={cn(
+                "flex flex-col gap-2 p-4",
+                !isSidebarExpanded && "items-center"
+              )}>
+                {isSidebarExpanded ? (
+                  <>
+                    <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                      <LayoutDashboard className="size-4 text-primary" />
+                      <span>Dashboard</span>
+                    </div>
+                    {userEmail && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Mail className="size-3" />
+                        <span className="truncate">{userEmail}</span>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex flex-col items-center gap-1">
+                        <LayoutDashboard className="size-4 text-primary" />
+                        {userEmail && (
+                          <Mail className="size-3 text-muted-foreground" />
+                        )}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <div className="flex flex-col gap-1">
+                        <span className="font-medium">Dashboard</span>
+                        {userEmail && <span className="text-xs">{userEmail}</span>}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
               </div>
             </div>
-          </aside>
-        </ScrollArea>
+          )}
+
+        </aside>
       </div>
     </TooltipProvider>
   );
 }
 
-export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
+// Internal component - use DashboardSidebarWrapper for SSR safety
+export function DashboardSidebar({ links }: DashboardSidebarProps) {
+  return <DashboardSidebarContent links={links} />;
+}
+
+function MobileSheetSidebarContent({ links, isFreePlan = true }: DashboardSidebarProps) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
-  const { isSm, isMobile } = useMediaQuery();
   const t = useTranslations("DashboardSidebar");
   const { unreadCount } = useNotifications();
 
-  if (isSm || isMobile) {
-    return (
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-9 shrink-0 md:hidden"
-          >
-            <Menu className="size-5" />
-            <span className="sr-only">{t("toggleNavigationMenu")}</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent
-          side="left"
-          className="flex max-w-[280px] flex-col p-0 sm:max-w-[320px]"
+  // Mobile sidebar shown as overlay on all screens smaller than lg (1024px)
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-9 shrink-0 lg:hidden"
         >
+          <Menu className="size-5" />
+          <span className="sr-only">{t("toggleNavigationMenu")}</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent
+        side="left"
+        className="flex w-[280px] flex-col p-0 sm:w-[320px] overflow-hidden"
+      >
           <ScrollArea className="h-full overflow-y-auto">
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
             <div className="flex h-screen flex-col">
@@ -262,7 +310,7 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                     </p>
 
                     {section.items.map((item) => {
-                      const Icon = Icons[item.icon || "arrowRight"];
+                      const Icon = Icons[item.icon || "arrowRight"] || Icons.arrowRight;
                       const translatedTitle = t(
                         `items.${item.title.toLowerCase().replace(/\s+/g, "_")}`,
                         {
@@ -319,12 +367,15 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                   </section>
                 ))}
               </nav>
+              
             </div>
           </ScrollArea>
         </SheetContent>
       </Sheet>
-    );
-  }
+  );
+}
 
-  return null;
+// Internal component - use MobileSheetSidebarWrapper for SSR safety
+export function MobileSheetSidebar({ links, isFreePlan = true }: DashboardSidebarProps) {
+  return <MobileSheetSidebarContent links={links} isFreePlan={isFreePlan} />;
 }

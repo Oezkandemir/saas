@@ -1,8 +1,6 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getTicketWithMessages } from "@/actions/support-ticket-actions";
 import { formatDistance } from "date-fns";
-import { ChevronLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
@@ -18,9 +16,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { DashboardHeader } from "@/components/dashboard/header";
+import { ModernPageHeader } from "@/components/layout/modern-page-header";
 import { TicketMessageItem } from "@/components/support/ticket-message";
 import { TicketReplyForm } from "@/components/support/ticket-reply-form";
+import { MessageSquare } from "lucide-react";
 
 // Helper function to get status badge color
 const getStatusColor = (status: string) => {
@@ -105,20 +104,13 @@ export default async function TicketPage({
 
   return (
     <>
-      <div className="mb-4 flex items-center">
-        <Link href="/dashboard/support">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1"
-          >
-            <ChevronLeft className="size-4" />
-            {t("backToSupport")}
-          </Button>
-        </Link>
-      </div>
-
-      <DashboardHeader heading={ticket.subject} text={t("viewAndRespond")} />
+      <ModernPageHeader
+        title={ticket.subject}
+        description={t("viewAndRespond")}
+        icon={<MessageSquare className="h-5 w-5 text-primary" />}
+        showBackButton
+        backHref="/dashboard/support"
+      />
 
       <Card className="mt-6">
         <CardHeader>

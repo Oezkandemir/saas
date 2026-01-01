@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/shared/icons";
+import { Button } from "@/components/ui/button";
 
 interface EmptyPlaceholderProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -82,5 +83,17 @@ EmptyPlaceholder.Description = function EmptyPlaceholderDescription({
       )}
       {...props}
     />
+  );
+};
+
+interface EmptyPlaceholderActionProps
+  extends React.ComponentProps<typeof Button> {}
+
+EmptyPlaceholder.Action = function EmptyPlaceholderAction({
+  className,
+  ...props
+}: EmptyPlaceholderActionProps) {
+  return (
+    <Button className={cn("mt-4", className)} {...props} />
   );
 };

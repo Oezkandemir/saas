@@ -4,63 +4,80 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-
-import { HeaderSection } from "../shared/header-section";
+import { HelpCircle } from "lucide-react";
+import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 const pricingFaqData = [
   {
     id: "item-1",
-    question: "What is the cost of the free plan?",
+    question: "Was ist ein dynamischer QR-Code?",
     answer:
-      "Our free plan is completely free, with no monthly or annual charges. It's a great way to get started and explore our basic features.",
+      "Ein dynamischer QR-Code ist ein QR-Code, dessen Ziel-URL Sie jederzeit ändern können, ohne den Code selbst neu drucken zu müssen. Der QR-Code bleibt gleich, aber die Zieladresse kann aktualisiert werden.",
   },
   {
     id: "item-2",
-    question: "How much does the Basic Monthly plan cost?",
+    question: "Kann ich den Link später ändern?",
     answer:
-      "The Basic Monthly plan is priced at $15 per month. It provides access to our core features and is billed on a monthly basis.",
+      "Ja, absolut! Mit dynamischen QR-Codes können Sie die Ziel-URL jederzeit ändern, ohne den QR-Code neu zu generieren oder zu drucken. Einmal gedruckt, bleibt der Code gültig, während Sie das Ziel flexibel anpassen können.",
   },
   {
     id: "item-3",
-    question: "What is the price of the Pro Monthly plan?",
+    question: "Wie funktioniert die Rechnungserstellung?",
     answer:
-      "The Pro Monthly plan is available for $25 per month. It offers advanced features and is billed on a monthly basis for added flexibility.",
+      "Sie können Angebote erstellen und diese später direkt in Rechnungen umwandeln. Alle Daten werden automatisch übernommen. Die Dokumente können als PDF exportiert und per E-Mail versendet werden.",
   },
   {
     id: "item-4",
-    question: "Do you offer any annual subscription plans?",
+    question: "Was passiert, wenn ich mein Limit erreiche?",
     answer:
-      "Yes, we offer annual subscription plans for even more savings. The Basic Annual plan is $144 per year, and the Pro Annual plan is $300 per year.",
+      "Wenn Sie Ihr Limit erreichen, können Sie entweder auf einen höheren Plan upgraden oder warten, bis der Zähler im nächsten Monat zurückgesetzt wird. Bei Dokumenten wird der Zähler monatlich zurückgesetzt.",
   },
   {
     id: "item-5",
-    question: "Is there a trial period for the paid plans?",
+    question: "Kann ich jederzeit upgraden oder downgraden?",
     answer:
-      "We offer a 14-day free trial for both the Pro Monthly and Pro Annual plans. It's a great way to experience all the features before committing to a paid subscription.",
+      "Ja, Sie können jederzeit zwischen den Plänen wechseln. Beim Upgrade werden die zusätzlichen Features sofort freigeschaltet. Beim Downgrade bleiben Ihre Daten erhalten, aber einige Features werden eingeschränkt.",
   },
 ];
 
 export function PricingFaq() {
   return (
-    <section className="container max-w-4xl py-2">
-      <HeaderSection
-        label="FAQ"
-        title="Frequently Asked Questions"
-        subtitle="Explore our comprehensive FAQ to find quick answers to common
-          inquiries. If you need further assistance, don't hesitate to
-          contact us for personalized help."
-      />
+    <MaxWidthWrapper>
+      <section className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-12 text-center animate-in fade-in slide-in-from-top-4 duration-700">
+          <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-4">
+            <HelpCircle className="h-4 w-4" />
+            FAQ
+          </div>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
+            Häufig gestellte Fragen
+          </h2>
+          <p className="max-w-2xl mx-auto text-lg text-muted-foreground">
+            Finden Sie schnelle Antworten auf häufige Fragen. Bei weiteren Fragen kontaktieren Sie uns gerne.
+          </p>
+        </div>
 
-      <Accordion type="single" collapsible className="my-12 w-full">
-        {pricingFaqData.map((faqItem) => (
-          <AccordionItem key={faqItem.id} value={faqItem.id}>
-            <AccordionTrigger>{faqItem.question}</AccordionTrigger>
-            <AccordionContent className="text-sm text-muted-foreground sm:text-[15px]">
-              {faqItem.answer}
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
-    </section>
+        {/* Accordion */}
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+          <Accordion type="single" collapsible className="w-full space-y-2">
+            {pricingFaqData.map((faqItem, index) => (
+              <AccordionItem 
+                key={faqItem.id} 
+                value={faqItem.id}
+                className="rounded-lg border bg-card px-4 transition-all hover:bg-muted/50"
+              >
+                <AccordionTrigger className="text-left font-semibold hover:no-underline py-4">
+                  {faqItem.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground pb-4 leading-relaxed sm:text-base">
+                  {faqItem.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </section>
+    </MaxWidthWrapper>
   );
 }

@@ -72,6 +72,9 @@ export async function syncUserSubscriptionFromStripe() {
     // Log successful sync
     logger.info("Successfully synced subscription for user", { userId: user.id, customerId, subscriptionId: subscription.id, priceId });
 
+    // Note: Revalidation removed temporarily to fix compilation issues
+    // The UI will update on next page navigation/refresh
+
     return {
       success: true,
       message: "Subscription synced successfully",

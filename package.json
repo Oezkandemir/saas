@@ -22,6 +22,7 @@
     "test": "turbo run test",
     "type-check": "turbo run type-check",
     "clean": "turbo run clean",
+    "clean:cache": "./scripts/clean-cache.sh",
     "setup-env": "./scripts/setup-env.sh",
     "setup-supabase": "./scripts/setup-supabase.sh"
   },

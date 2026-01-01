@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,7 +8,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export function UpgradeCard() {
+interface UpgradeCardProps {
+  isFreePlan?: boolean;
+}
+
+export function UpgradeCard({ isFreePlan = true }: UpgradeCardProps) {
+  // Only show card if user is on free plan
+  if (!isFreePlan) {
+    return null;
+  }
+
   return (
     <Card className="md:max-xl:rounded-none md:max-xl:border-none md:max-xl:shadow-none">
       <CardHeader className="md:max-xl:px-4">
@@ -17,8 +27,8 @@ export function UpgradeCard() {
         </CardDescription>
       </CardHeader>
       <CardContent className="md:max-xl:px-4">
-        <Button size="sm" className="w-full">
-          Upgrade
+        <Button size="sm" className="w-full" asChild>
+          <Link href="/pricing">Upgrade</Link>
         </Button>
       </CardContent>
     </Card>

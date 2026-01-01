@@ -1,14 +1,20 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 
 import { getCurrentUser } from "@/lib/session";
+import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { constructMetadata } from "@/lib/utils";
 import { DeleteAccountSection } from "@/components/dashboard/delete-account";
-import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { UserAvatarForm } from "@/components/forms/user-avatar-form";
 import { UserNameForm } from "@/components/forms/user-name-form";
 import { UserRoleForm } from "@/components/forms/user-role-form";
+import { ModernPageHeader } from "@/components/layout/modern-page-header";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Crown, Sparkles, Settings, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export async function generateMetadata() {
   const t = await getTranslations("Settings");
@@ -25,45 +31,139 @@ export default async function SettingsPage() {
 
   if (!user?.id) redirect("/login");
 
-  // Ensure we have the necessary user information
-  console.log("User data in settings page:", JSON.stringify(user, null, 2));
+  // Get user subscription plan
+  let subscriptionPlan = null;
+  try {
+    subscriptionPlan = await getUserSubscriptionPlan(user.id, user.email);
+  } catch (error) {
+    console.error("Error fetching subscription plan:", error);
+  }
 
   return (
-    <>
-      <DashboardHeaderWithLanguageSwitcher
-        heading={t("heading")}
-        text={t("text")}
-      />
-      <div className="divide-y divide-muted pb-10">
-        <UserAvatarForm
-          user={{ id: user.id, avatar_url: user.user_metadata?.avatar_url }}
-        />
-        <UserNameForm user={{ id: user.id, name: user.name || "" }} />
-        <UserRoleForm user={{ id: user.id, role: user.role || "USER" }} />
-
-        <SectionColumns
-          title={t("userInformation")}
-          description={t("debugInformation")}
-        >
-          <div className="rounded-md bg-muted p-4">
-            <pre className="overflow-auto text-xs">
-              {JSON.stringify(
-                {
-                  id: user.id,
-                  email: user.email,
-                  name: user.name,
-                  role: user.role,
-                  metadata: user.user_metadata,
-                },
-                null,
-                2,
-              )}
-            </pre>
-          </div>
-        </SectionColumns>
-
-        <DeleteAccountSection />
+    <div className="relative flex flex-col gap-6">
+      {/* Animated background decoration */}
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <div className="absolute left-1/2 top-0 h-[400px] w-[400px] -translate-x-1/2 animate-pulse rounded-full bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 blur-3xl" />
+        <div className="absolute right-0 top-1/2 h-[300px] w-[300px] -translate-y-1/2 animate-pulse rounded-full bg-gradient-to-r from-purple-500/10 to-indigo-500/10 blur-3xl delay-1000" />
       </div>
-    </>
+
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+
+      {/* Header */}
+      <ModernPageHeader
+        title={t("heading")}
+        description={t("text")}
+        icon={<Settings className="h-5 w-5 text-primary" />}
+      />
+
+      <div className="divide-y divide-border/50 space-y-6 pb-10">
+        {/* Subscription Plan Section */}
+        {subscriptionPlan && (
+          <div className="pt-6">
+            <SectionColumns
+              title="Subscription Plan"
+              description="Your current subscription plan"
+            >
+              <Card className="relative overflow-hidden border border-border/50 bg-card/80 backdrop-blur-sm">
+                {/* Gradient background */}
+                <div className="absolute inset-0 -z-10 bg-gradient-to-br from-yellow-500/5 via-transparent to-orange-500/5" />
+
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    {subscriptionPlan.isPaid ? (
+                      <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-500/20 to-orange-500/20 text-yellow-600 dark:text-yellow-400 shadow-lg">
+                        <Crown className="size-5" />
+                      </div>
+                    ) : (
+                      <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-muted/20 to-muted/10 text-muted-foreground shadow-lg">
+                        <Sparkles className="size-5" />
+                      </div>
+                    )}
+                    <div>
+                      <CardTitle className="text-lg">Current Plan</CardTitle>
+                      <CardDescription>
+                        Manage your subscription and billing
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Badge
+                        variant={subscriptionPlan.isPaid ? "default" : "outline"}
+                        className={cn(
+                          subscriptionPlan.isPaid 
+                            ? "bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500/30 text-yellow-900 dark:text-yellow-100"
+                            : ""
+                        )}
+                      >
+                        {subscriptionPlan.title}
+                      </Badge>
+                      {subscriptionPlan.isPaid && (
+                        <span className="text-sm text-muted-foreground">
+                          {subscriptionPlan.interval === "month" ? "Monthly" : subscriptionPlan.interval === "year" ? "Yearly" : ""}
+                        </span>
+                      )}
+                    </div>
+                    <Link href="/dashboard/billing" className="group flex items-center gap-1 text-sm text-primary hover:gap-2 transition-all">
+                      Manage Billing
+                      <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            </SectionColumns>
+          </div>
+        )}
+
+        <div className="pt-6">
+          <UserAvatarForm
+            user={{ id: user.id, avatar_url: user.user_metadata?.avatar_url }}
+          />
+        </div>
+        <div className="pt-6">
+          <UserNameForm user={{ id: user.id, name: user.name || "" }} />
+        </div>
+        <div className="pt-6">
+          <UserRoleForm user={{ id: user.id, role: user.role || "USER" }} />
+        </div>
+
+        <div className="pt-6">
+          <SectionColumns
+            title={t("userInformation")}
+            description={t("debugInformation")}
+          >
+            <Card className="relative overflow-hidden border border-border/50 bg-card/80 backdrop-blur-sm">
+              {/* Gradient background */}
+              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5" />
+
+              <CardContent className="p-4">
+                <div className="rounded-md bg-muted/50 p-4 backdrop-blur-sm border border-border/50">
+                  <pre className="overflow-auto text-xs">
+                    {JSON.stringify(
+                      {
+                        id: user.id,
+                        email: user.email,
+                        name: user.name,
+                        role: user.role,
+                        metadata: user.user_metadata,
+                      },
+                      null,
+                      2,
+                    )}
+                  </pre>
+                </div>
+              </CardContent>
+            </Card>
+          </SectionColumns>
+        </div>
+
+        <div className="pt-6">
+          <DeleteAccountSection />
+        </div>
+      </div>
+    </div>
   );
 }

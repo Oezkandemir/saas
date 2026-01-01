@@ -3,18 +3,20 @@ import { env } from "@/env.mjs";
 
 export const pricingData: SubscriptionPlan[] = [
   {
-    title: "Starter",
-    description: "For Beginners",
+    title: "Free",
+    description: "Für den Einstieg",
     benefits: [
-      "Up to 100 monthly posts",
-      "Basic analytics and reporting",
-      "Access to standard templates",
+      "3 Kunden",
+      "3 QR-Codes",
+      "3 Dokumente pro Monat",
+      "PDF-Export",
+      "Grundlegende Statusverwaltung",
     ],
     limitations: [
-      "No priority access to new features.",
-      "Limited customer support",
-      "No custom branding",
-      "Limited access to business resources.",
+      "Cenety Branding auf Dokumenten",
+      "Kein Scan-Tracking",
+      "Kein Custom QR Alias",
+      "Kein eigenes Logo/Footer",
     ],
     prices: {
       monthly: 0,
@@ -27,139 +29,156 @@ export const pricingData: SubscriptionPlan[] = [
   },
   {
     title: "Pro",
-    description: "Unlock Advanced Features",
+    description: "Für professionelle Nutzer",
     benefits: [
-      "Up to 500 monthly posts",
-      "Advanced analytics and reporting",
-      "Access to business templates",
-      "Priority customer support",
-      "Exclusive webinars and training.",
-    ],
-    limitations: [
-      "No custom branding",
-      "Limited access to business resources.",
-    ],
-    prices: {
-      monthly: 15,
-      yearly: 144,
-    },
-    stripeIds: {
-      monthly: "price_1RJKt5P6RFbJXLAuShEYRHmK",
-      yearly: "price_1RJKpbP6RFbJXLAuxEusMlxJ",
-    },
-    productId: "prod_SDmREGQQyYpwT4",
-  },
-  {
-    title: "Business",
-    description: "For Power Users",
-    benefits: [
-      "Unlimited posts",
-      "Real-time analytics and reporting",
-      "Access to all templates, including custom branding",
-      "24/7 business customer support",
-      "Personalized onboarding and account management.",
+      "Unbegrenzt Kunden",
+      "Unbegrenzt QR-Codes",
+      "Unbegrenzt Dokumente",
+      "QR-Code Scan-Tracking",
+      "Custom QR Alias",
+      "Eigenes Logo & Footer",
+      "Kein Cenety Branding",
+      "PDF-Export",
+      "Vollständige Statusverwaltung",
+      "Angebot zu Rechnung umwandeln",
     ],
     limitations: [],
     prices: {
-      monthly: 30,
-      yearly: 300,
+      monthly: 10,
+      yearly: 100,
     },
     stripeIds: {
-      monthly: "price_1RJKttP6RFbJXLAud1GJmfMC",
-      yearly: "price_1RJKvFP6RFbJXLAutOjKOsMJ",
+      monthly: (env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID && env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID.startsWith("price_")) 
+        ? env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID 
+        : null,
+      yearly: (env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID && env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID.startsWith("price_")) 
+        ? env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID 
+        : null,
     },
-    productId: "prod_SDmSl1ZZmn7xQG",
+  },
+  {
+    title: "Enterprise",
+    description: "Für große Unternehmen",
+    benefits: [
+      "Unbegrenzt Kunden",
+      "Unbegrenzt QR-Codes",
+      "Unbegrenzt Dokumente",
+      "QR-Code Scan-Tracking",
+      "Custom QR Alias",
+      "Eigenes Logo & Footer",
+      "Kein Cenety Branding",
+      "PDF-Export",
+      "Vollständige Statusverwaltung",
+      "Angebot zu Rechnung umwandeln",
+      "Priority Support",
+      "API-Zugang",
+    ],
+    limitations: [],
+    prices: {
+      monthly: 20,
+      yearly: 200,
+    },
+    stripeIds: {
+      // Use BUSINESS plan IDs for Enterprise plan
+      monthly: (env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID && env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID.startsWith("price_")) 
+        ? env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID 
+        : null,
+      yearly: (env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID && env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID.startsWith("price_")) 
+        ? env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID 
+        : null,
+    },
   },
 ];
 
 export const plansColumns = [
-  "starter",
+  "free",
   "pro",
-  "business",
   "enterprise",
 ] as const;
 
 export const comparePlans: PlansRow[] = [
   {
-    feature: "Access to Analytics",
-    starter: true,
-    pro: true,
-    business: true,
-    enterprise: "Custom",
-    tooltip: "All plans include basic analytics for tracking performance.",
+    feature: "Kunden",
+    free: "3",
+    pro: "Unbegrenzt",
+    enterprise: "Unbegrenzt",
+    tooltip: "Anzahl der Kunden, die Sie verwalten können.",
   },
   {
-    feature: "Custom Branding",
-    starter: null,
-    pro: "500/mo",
-    business: "1,500/mo",
-    enterprise: "Unlimited",
-    tooltip: "Custom branding is available from the Pro plan onwards.",
+    feature: "QR-Codes",
+    free: "3",
+    pro: "Unbegrenzt",
+    enterprise: "Unbegrenzt",
+    tooltip: "Anzahl der dynamischen QR-Codes, die Sie erstellen können.",
+  },
+  {
+    feature: "Dokumente pro Monat",
+    free: "3",
+    pro: "Unbegrenzt",
+    enterprise: "Unbegrenzt",
+    tooltip: "Anzahl der Angebote und Rechnungen, die Sie pro Monat erstellen können.",
+  },
+  {
+    feature: "PDF-Export",
+    free: true,
+    pro: true,
+    enterprise: true,
+    tooltip: "Dokumente als PDF herunterladen.",
+  },
+  {
+    feature: "Statusverwaltung",
+    free: true,
+    pro: true,
+    enterprise: true,
+    tooltip: "Status von Dokumenten verwalten (Entwurf, Gesendet, Bezahlt, etc.).",
+  },
+  {
+    feature: "Angebot zu Rechnung",
+    free: false,
+    pro: true,
+    enterprise: true,
+    tooltip: "Angebote direkt in Rechnungen umwandeln.",
+  },
+  {
+    feature: "QR-Code Scan-Tracking",
+    free: false,
+    pro: true,
+    enterprise: true,
+    tooltip: "Verfolgen Sie, wann und wo Ihre QR-Codes gescannt wurden.",
+  },
+  {
+    feature: "Custom QR Alias",
+    free: false,
+    pro: true,
+    enterprise: true,
+    tooltip: "Eigene, benutzerdefinierte Links für QR-Codes erstellen.",
+  },
+  {
+    feature: "Eigenes Logo & Footer",
+    free: false,
+    pro: true,
+    enterprise: true,
+    tooltip: "Eigenes Logo und Footer auf Dokumenten verwenden.",
   },
   {
     feature: "Priority Support",
-    starter: null,
-    pro: "Email",
-    business: "Email & Chat",
-    enterprise: "24/7 Support",
-  },
-  {
-    feature: "Advanced Reporting",
-    starter: null,
-    pro: null,
-    business: true,
-    enterprise: "Custom",
-    tooltip:
-      "Advanced reporting is available in Business and Enterprise plans.",
-  },
-  {
-    feature: "Dedicated Manager",
-    starter: null,
-    pro: null,
-    business: null,
-    enterprise: true,
-    tooltip: "Enterprise plan includes a dedicated account manager.",
-  },
-  {
-    feature: "API Access",
-    starter: "Limited",
-    pro: "Standard",
-    business: "Enhanced",
-    enterprise: "Full",
-  },
-  {
-    feature: "Monthly Webinars",
-    starter: false,
-    pro: true,
-    business: true,
-    enterprise: "Custom",
-    tooltip: "Pro and higher plans include access to monthly webinars.",
-  },
-  {
-    feature: "Custom Integrations",
-    starter: false,
+    free: false,
     pro: false,
-    business: "Available",
-    enterprise: "Available",
-    tooltip:
-      "Custom integrations are available in Business and Enterprise plans.",
+    enterprise: true,
+    tooltip: "Priorisierter Support mit schnellerer Antwortzeit.",
   },
   {
-    feature: "Roles and Permissions",
-    starter: null,
-    pro: "Basic",
-    business: "Advanced",
-    enterprise: "Advanced",
-    tooltip:
-      "User roles and permissions management improves with higher plans.",
+    feature: "API-Zugang",
+    free: false,
+    pro: false,
+    enterprise: true,
+    tooltip: "API-Zugang für Integrationen.",
   },
   {
-    feature: "Onboarding Assistance",
-    starter: false,
-    pro: "Self-service",
-    business: "Assisted",
-    enterprise: "Full Service",
-    tooltip: "Higher plans include more comprehensive onboarding assistance.",
+    feature: "Cenety Branding",
+    free: true,
+    pro: false,
+    enterprise: false,
+    tooltip: "Cenety Branding wird auf Ihren Dokumenten angezeigt.",
   },
-  // Add more rows as needed
 ];

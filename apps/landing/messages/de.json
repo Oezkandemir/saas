@@ -1,0 +1,90 @@
+{
+  "Landing": {
+    "hero": {
+      "title": "Verwalten Sie Ihr Business mit Cenety",
+      "subtitle": "Erstellen Sie Angebote, Rechnungen, verwalten Sie Kunden und nutzen Sie dynamische QR-Codes. Alles, was Sie für Ihr Freelance- oder Kleinunternehmen brauchen, an einem Ort.",
+      "ctaPrimary": "Jetzt kostenlos starten",
+      "ctaSecondary": "Mehr erfahren",
+      "trustBadge": "Vertrauen Sie über 10.000+ Unternehmen weltweit"
+    },
+    "features": {
+      "title": "Alles, was Sie für Ihr Business brauchen",
+      "subtitle": "Von der Kundenverwaltung bis zur Rechnungsstellung – Cenety bietet alle Tools, die Sie benötigen, um Ihr Geschäft erfolgreich zu führen.",
+      "customerManagement": {
+        "title": "CRM Light – Kundenverwaltung leicht gemacht",
+        "description": "Verwalten Sie alle Ihre Kundenkontakte zentral. Speichern Sie Kontaktdaten, Notizen und Interaktionshistorie an einem Ort. Perfekt für Freelancer und kleine Teams, die keine komplexe CRM-Software benötigen."
+      },
+      "quotesInvoices": {
+        "title": "Professionelle Angebote & Rechnungen",
+        "description": "Erstellen Sie in Minuten professionelle Angebote und Rechnungen mit automatischer PDF-Generierung. Passen Sie Designs an, fügen Sie Ihr Logo hinzu und versenden Sie Dokumente direkt an Ihre Kunden."
+      },
+      "dynamicQRCodes": {
+        "title": "Dynamische QR-Codes mit Analytics",
+        "description": "Erstellen Sie QR-Codes mit stabilen Links, die Sie jederzeit bearbeiten können. Verfolgen Sie Scans in Echtzeit und erhalten Sie detaillierte Analytics über die Nutzung Ihrer QR-Codes."
+      },
+      "secure": {
+        "title": "Sicherheit auf Unternehmensniveau",
+        "description": "Ihre Daten sind sicher mit Enterprise-Grade-Verschlüsselung und modernsten Sicherheitsstandards. DSGVO-konform und regelmäßig auditiert."
+      },
+      "fast": {
+        "title": "Blitzschnell & zuverlässig",
+        "description": "Gebaut mit modernsten Technologien für optimale Performance. Schnelle Ladezeiten und 99,9% Uptime-Garantie für maximale Produktivität."
+      },
+      "scalable": {
+        "title": "Wächst mit Ihrem Business",
+        "description": "Von Solo-Freelancern bis zu kleinen Teams – Cenety skaliert mit Ihnen. Keine Infrastruktur-Sorgen, keine versteckten Kosten."
+      }
+    },
+    "benefits": {
+      "title": "Warum Cenety wählen?",
+      "subtitle": "Tausende von Freelancern und kleinen Unternehmen vertrauen auf Cenety, um ihre Geschäftsprozesse zu optimieren.",
+      "saveTime": {
+        "title": "Sparen Sie bis zu 10 Stunden pro Woche",
+        "description": "Automatisieren Sie wiederkehrende Aufgaben und konzentrieren Sie sich auf das, was wirklich zählt – Ihr Business."
+      },
+      "professional": {
+        "title": "Professioneller Auftritt",
+        "description": "Erstellen Sie professionelle Dokumente, die Ihre Marke widerspiegeln. Beeindrucken Sie Kunden mit hochwertigen Angeboten und Rechnungen."
+      },
+      "affordable": {
+        "title": "Erschwingliche Preise",
+        "description": "Keine versteckten Kosten, keine langfristigen Verträge. Bezahlen Sie nur für das, was Sie nutzen, mit flexiblen Preismodellen."
+      },
+      "support": {
+        "title": "Ausgezeichneter Support",
+        "description": "Unser Team steht Ihnen jederzeit zur Verfügung. Schnelle Antwortzeiten und hilfreiche Ressourcen, wenn Sie sie brauchen."
+      }
+    },
+    "testimonials": {
+      "title": "Was unsere Kunden sagen",
+      "subtitle": "Entdecken Sie das Feedback unserer zufriedenen Kunden weltweit.",
+      "testimonial1": {
+        "name": "Sarah Müller",
+        "role": "Freelance Designerin",
+        "text": "Cenety hat meine Arbeitsweise komplett verändert. Ich spare jetzt Stunden bei der Rechnungsstellung und kann mich auf meine kreative Arbeit konzentrieren."
+      },
+      "testimonial2": {
+        "name": "Michael Schmidt",
+        "role": "Geschäftsführer, TechStart GmbH",
+        "text": "Die Kundenverwaltung ist so intuitiv. Wir haben unsere Prozesse deutlich optimiert und sparen jetzt wertvolle Zeit."
+      },
+      "testimonial3": {
+        "name": "Lisa Weber",
+        "role": "Selbstständige Beraterin",
+        "text": "Die dynamischen QR-Codes sind ein Game-Changer. Ich kann sie jederzeit aktualisieren, ohne neue Codes zu drucken. Genial!"
+      }
+    },
+    "cta": {
+      "title": "Bereit, Ihr Business zu optimieren?",
+      "subtitle": "Starten Sie noch heute kostenlos. Keine Kreditkarte erforderlich.",
+      "button": "Jetzt kostenlos starten",
+      "noCreditCard": "Keine Kreditkarte erforderlich"
+    },
+    "seo": {
+      "title": "Cenety – Business-Toolkit für Freelancer | CRM, Angebote, Rechnungen & QR-Codes",
+      "description": "Professionelles Business-Toolkit für Freelancer und kleine Unternehmen. Kundenverwaltung, Angebote, Rechnungen und dynamische QR-Codes in einer Plattform. Jetzt kostenlos starten!",
+      "keywords": "Business-Toolkit, Freelancer-Software, CRM, Angebote erstellen, Rechnungen erstellen, QR-Code Generator, Kundenverwaltung, PDF-Generierung, Business-Management, SaaS"
+    }
+  }
+}
+

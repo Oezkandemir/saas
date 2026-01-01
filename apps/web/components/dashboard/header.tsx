@@ -1,6 +1,13 @@
+import { ReactNode } from "react";
+import { LucideIcon } from "lucide-react";
+import { ModernPageHeader } from "@/components/layout/modern-page-header";
+
 interface DashboardHeaderProps {
   heading: string;
   text?: string;
+  icon?: LucideIcon;
+  showBackButton?: boolean;
+  backHref?: string;
   children?: React.ReactNode;
   actions?: React.ReactNode;
 }
@@ -8,19 +15,20 @@ interface DashboardHeaderProps {
 export function DashboardHeader({
   heading,
   text,
+  icon,
+  showBackButton = false,
+  backHref,
   children,
   actions,
 }: DashboardHeaderProps) {
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="grid gap-1">
-        <h1 className="font-heading text-2xl font-semibold">{heading}</h1>
-        {text && <p className="text-base text-muted-foreground">{text}</p>}
-      </div>
-      <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
-        {actions && <div className="mr-2">{actions}</div>}
-        {children}
-      </div>
-    </div>
+    <ModernPageHeader
+      title={heading}
+      description={text}
+      icon={icon}
+      showBackButton={showBackButton}
+      backHref={backHref}
+      actions={actions || children}
+    />
   );
 }

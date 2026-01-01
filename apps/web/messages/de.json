@@ -1,7 +1,11 @@
 {
   "Index": {
     "title": "Cenety",
-    "description": "Ihre komplette SaaS-Lösung mit Stripe-Integration"
+    "description": "Business-Toolkit für Freelancer und kleine Unternehmen: Angebote, Rechnungen, Kundenverwaltung und dynamische QR-Codes",
+    "seo": {
+      "title": "Cenety - Business-Toolkit für Freelancer & kleine Unternehmen",
+      "description": "Professionelles Business-Toolkit: Kundenverwaltung, Angebote & Rechnungen erstellen, dynamische QR-Codes. Alles in einem Tool für Freelancer und kleine Unternehmen."
+    }
   },
   "Navigation": {
     "home": "Startseite",
@@ -203,74 +207,84 @@
   },
   "Hero": {
     "introducing": "Vorstellung",
-    "nextAuthRoles": "Next Auth Rollen-Vorlage auf",
-    "kickOff": "Starten Sie mit Schwung mit",
+    "nextAuthRoles": "Ihr Business-Toolkit",
+    "kickOff": "Verwalten Sie Ihr Business mit",
     "saasStarter": "Cenety",
-    "buildNextProject": "Entwickeln Sie Ihr nächstes Projekt mit Next.js 15, Supabase, Next-Intl, Contentlayer, Resend, React Email, Shadcn/ui, Stripe.",
-    "goPricing": "Zu den Preisen",
-    "starOn": "Stern auf"
+    "buildNextProject": "Erstellen Sie Angebote, Rechnungen, verwalten Sie Kunden und nutzen Sie dynamische QR-Codes. Alles, was Sie für Ihr Freelance- oder Kleinunternehmen brauchen, an einem Ort.",
+    "goPricing": "Jetzt starten",
+    "starOn": "Stern auf",
+    "badge": "Jetzt verfügbar",
+    "title": "Das Business-Toolkit für",
+    "titleHighlight": "moderne Unternehmen",
+    "description": "Verwalten Sie Kunden, erstellen Sie professionelle Angebote und Rechnungen, nutzen Sie dynamische QR-Codes – alles in einer intuitiven Plattform.",
+    "ctaPrimary": "Kostenlos starten",
+    "ctaSecondary": "Demo ansehen",
+    "trust1": "Keine Kreditkarte erforderlich",
+    "trust2": "14 Tage kostenlos testen",
+    "trust3": "DSGVO-konform"
   },
   "Features": {
     "label": "Funktionen",
-    "title": "Entdecken Sie alle Funktionen.",
-    "subtitle": "Harum quae dolore inventore repudiandae? Orrupti aut temporibus ariatur.",
-    "visitSite": "Website besuchen",
+    "title": "Alles was Sie brauchen.",
+    "subtitle": "Ein komplettes Business-Toolkit für Freelancer und kleine Unternehmen.",
+    "visitSite": "Mehr erfahren",
+    "learnMore": "Mehr erfahren",
     "feature1": {
-      "title": "Funktion 1",
-      "description": "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente."
+      "title": "Kundenverwaltung",
+      "description": "Verwalten Sie Ihre Kunden zentral. Speichern Sie Kontaktdaten, Adressen und Notizen an einem Ort."
     },
     "feature2": {
-      "title": "Funktion 2",
-      "description": "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente."
+      "title": "Angebote erstellen",
+      "description": "Erstellen Sie professionelle Angebote mit automatischer Nummerierung und PDF-Export."
     },
     "feature3": {
-      "title": "Funktion 3",
-      "description": "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente."
+      "title": "Rechnungen",
+      "description": "Wandeln Sie Angebote mit einem Klick in Rechnungen um. Automatische Berechnung von Steuern und Gesamtbeträgen."
     },
     "feature4": {
-      "title": "Funktion 4",
-      "description": "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente."
+      "title": "Dynamische QR-Codes",
+      "description": "Erstellen Sie QR-Codes mit stabilem Link. Ändern Sie das Ziel jederzeit, ohne den QR-Code neu zu drucken."
     },
     "feature5": {
-      "title": "Funktion 5",
-      "description": "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente."
+      "title": "PDF-Export",
+      "description": "Generieren Sie professionelle PDFs für alle Ihre Dokumente. Perfekt zum Versenden per E-Mail."
     },
     "feature6": {
-      "title": "Funktion 6",
-      "description": "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente."
+      "title": "Scan-Tracking",
+      "description": "Verfolgen Sie QR-Code-Scans mit detaillierten Analytics (Pro-Feature)."
     }
   },
   "Info": {
     "empower": {
-      "title": "Stärken Sie Ihre Projekte",
-      "description": "Entfalten Sie das volle Potenzial Ihrer Projekte mit unserer Open-Source-SaaS-Plattform. Arbeiten Sie nahtlos zusammen, innovieren Sie mühelos und skalieren Sie grenzenlos.",
+      "title": "Alles in einem Werkzeug",
+      "description": "Cenety ist Ihr komplettes Business-Toolkit für Freelancer und lokale Unternehmen. Verwalten Sie Kunden, erstellen Sie Angebote und Rechnungen, und nutzen Sie dynamische QR-Codes – alles an einem Ort.",
       "collaborative": {
-        "title": "Kollaborativ",
-        "description": "Arbeiten Sie in Echtzeit mit Ihren Teammitgliedern zusammen."
+        "title": "CRM Light",
+        "description": "Verwalten Sie Ihre Kunden einfach und effizient."
       },
       "innovative": {
-        "title": "Innovativ",
-        "description": "Bleiben Sie mit ständigen Updates der Konkurrenz einen Schritt voraus."
+        "title": "Angebote & Rechnungen",
+        "description": "Erstellen Sie professionelle Dokumente mit PDF-Export."
       },
       "scalable": {
-        "title": "Skalierbar",
-        "description": "Unsere Plattform bietet die Skalierbarkeit, die Sie benötigen, um sich an Ihre Anforderungen anzupassen."
+        "title": "Dynamische QR-Codes",
+        "description": "QR-Codes mit stabilem Link, aber editierbarem Ziel."
       }
     },
     "integration": {
-      "title": "Nahtlose Integration",
-      "description": "Integrieren Sie unsere Open-Source-SaaS nahtlos in Ihre bestehenden Arbeitsabläufe. Verbinden Sie mühelos Ihre Lieblingstools und -dienste für eine optimierte Erfahrung.",
+      "title": "Professionell & Einfach",
+      "description": "Cenety kombiniert professionelle Funktionen mit einer intuitiven Benutzeroberfläche. Perfekt für Freelancer und kleine Unternehmen, die ihre Geschäftsprozesse optimieren möchten.",
       "flexible": {
-        "title": "Flexibel",
-        "description": "Passen Sie Ihre Integrationen an Ihre individuellen Anforderungen an."
+        "title": "Schnell",
+        "description": "Erstellen Sie Angebote und Rechnungen in Minuten, nicht Stunden."
       },
       "efficient": {
-        "title": "Effizient",
-        "description": "Optimieren Sie Ihre Prozesse und reduzieren Sie den manuellen Aufwand."
+        "title": "Professionell",
+        "description": "PDF-Generierung und professionelle Dokumente."
       },
       "reliable": {
-        "title": "Zuverlässig",
-        "description": "Verlassen Sie sich auf unsere robuste Infrastruktur und umfassende Dokumentation."
+        "title": "Flexibel",
+        "description": "Dynamische QR-Codes, die Sie jederzeit anpassen können."
       }
     }
   },
@@ -460,8 +474,14 @@
     "items": {
       "admin_panel": "Admin-Panel",
       "dashboard": "Dashboard",
+      "overview": "Übersicht",
+      "customers": "Kunden",
+      "documents": "Dokumente",
+      "qr_codes": "QR-Codes",
+      "profile": "Profil",
       "billing": "Abrechnung",
       "settings": "Einstellungen",
+      "templates": "Vorlagen",
       "homepage": "Startseite",
       "documentation": "Dokumentation",
       "support": "Support",
@@ -948,6 +968,152 @@
       "inviteResendErrors": {
         "default": "Fehler beim erneuten Senden der Einladung. Bitte versuchen Sie es erneut."
       }
+    }
+  },
+  "QuickActions": {
+    "new": "Neu erstellen",
+    "createNew": "Neu erstellen",
+    "newQuote": "Neues Angebot",
+    "newInvoice": "Neue Rechnung",
+    "newCustomer": "Neuer Kunde",
+    "newQRCode": "Neuer QR-Code"
+  },
+  "Search": {
+    "label": "Suchen",
+    "placeholder": "Suchen...",
+    "inputPlaceholder": "Befehl eingeben oder suchen...",
+    "noResults": "Keine Ergebnisse gefunden."
+  },
+  "Stats": {
+    "stat1": {
+      "value": "10.000+",
+      "label": "Aktive Nutzer"
+    },
+    "stat2": {
+      "value": "50.000+",
+      "label": "Dokumente erstellt"
+    },
+    "stat3": {
+      "value": "100.000+",
+      "label": "QR-Codes generiert"
+    },
+    "stat4": {
+      "value": "99.9%",
+      "label": "Uptime"
+    }
+  },
+  "CTA": {
+    "title": "Bereit, Ihr Business zu optimieren?",
+    "description": "Starten Sie noch heute und verwalten Sie Ihr gesamtes Business von einem Ort aus.",
+    "buttonPrimary": "Jetzt kostenlos starten",
+    "buttonSecondary": "Mehr erfahren"
+  },
+  "Offerings": {
+    "title": "Was wir anbieten",
+    "subtitle": "Ein komplettes Business-Toolkit mit allen Funktionen, die Sie benötigen",
+    "offering1": {
+      "title": "Kundenverwaltung (CRM)",
+      "description": "Verwalten Sie alle Ihre Kundenbeziehungen an einem zentralen Ort",
+      "feature1": "Zentrale Kunden-Datenbank mit allen Kontaktdaten",
+      "feature2": "Notizen und Interaktionshistorie pro Kunde",
+      "feature3": "Schnelle Suche und Filterung nach verschiedenen Kriterien"
+    },
+    "offering2": {
+      "title": "Angebote & Rechnungen",
+      "description": "Erstellen Sie professionelle Dokumente in wenigen Minuten",
+      "feature1": "Automatische Nummerierung und Datierung",
+      "feature2": "Professionelle PDF-Generierung mit Ihrem Branding",
+      "feature3": "Angebote mit einem Klick in Rechnungen umwandeln"
+    },
+    "offering3": {
+      "title": "Dynamische QR-Codes",
+      "description": "QR-Codes mit stabilem Link, aber editierbarem Ziel",
+      "feature1": "Erstellen Sie QR-Codes mit permanentem Link",
+      "feature2": "Ändern Sie das Ziel jederzeit ohne Neudruck",
+      "feature3": "Tracking und Analytics für jeden QR-Code (Pro)"
+    },
+    "offering4": {
+      "title": "Analytics & Reporting",
+      "description": "Behalten Sie den Überblick über Ihr Business",
+      "feature1": "Detaillierte Statistiken zu Dokumenten und Kunden",
+      "feature2": "QR-Code Scan-Tracking mit Standortdaten",
+      "feature3": "Export-Funktionen für alle Daten"
+    }
+  },
+  "HowItWorks": {
+    "title": "So funktioniert's",
+    "subtitle": "In 4 einfachen Schritten zu Ihrem optimierten Business",
+    "step1": {
+      "title": "Konto erstellen",
+      "description": "Registrieren Sie sich kostenlos und erstellen Sie Ihr Konto in weniger als einer Minute. Keine Kreditkarte erforderlich."
+    },
+    "step2": {
+      "title": "Kunden hinzufügen",
+      "description": "Beginnen Sie mit der Eingabe Ihrer Kunden. Importieren Sie bestehende Daten oder fügen Sie neue Kunden manuell hinzu."
+    },
+    "step3": {
+      "title": "Dokumente erstellen",
+      "description": "Erstellen Sie Ihr erstes Angebot oder Ihre erste Rechnung. Nutzen Sie unsere Vorlagen oder passen Sie alles an Ihre Bedürfnisse an."
+    },
+    "step4": {
+      "title": "Business optimieren",
+      "description": "Nutzen Sie Analytics und Reporting, um Ihr Business zu optimieren und zu wachsen. Verfolgen Sie alle wichtigen Metriken."
+    }
+  },
+  "Benefits": {
+    "title": "Ihre Vorteile",
+    "subtitle": "Warum Unternehmen Cenety wählen",
+    "benefit1": {
+      "title": "Zeitersparnis",
+      "description": "Automatisieren Sie wiederkehrende Aufgaben und sparen Sie Stunden pro Woche"
+    },
+    "benefit2": {
+      "title": "Professionell",
+      "description": "Erstellen Sie professionelle Dokumente, die Ihre Marke widerspiegeln"
+    },
+    "benefit3": {
+      "title": "Zentralisiert",
+      "description": "Alles an einem Ort – keine Notwendigkeit für mehrere Tools"
+    },
+    "benefit4": {
+      "title": "DSGVO-konform",
+      "description": "Ihre Daten sind sicher und entsprechen den höchsten Datenschutzstandards"
+    },
+    "benefit5": {
+      "title": "Skalierbar",
+      "description": "Wächst mit Ihrem Business – von Einzelpersonen bis zu Teams"
+    },
+    "benefit6": {
+      "title": "Support",
+      "description": "Unser Team steht Ihnen jederzeit zur Verfügung, um Ihnen zu helfen"
+    }
+  },
+  "FAQ": {
+    "title": "Häufig gestellte Fragen",
+    "subtitle": "Alles was Sie wissen müssen",
+    "q1": {
+      "question": "Wie funktioniert die Kundenverwaltung?",
+      "answer": "Unsere Kundenverwaltung ermöglicht es Ihnen, alle Kontaktdaten, Adressen, Notizen und Interaktionshistorie Ihrer Kunden an einem zentralen Ort zu speichern. Sie können schnell suchen, filtern und alle wichtigen Informationen auf einen Blick sehen."
+    },
+    "q2": {
+      "question": "Kann ich Angebote in Rechnungen umwandeln?",
+      "answer": "Ja, absolut! Mit einem einzigen Klick können Sie jedes Angebot in eine Rechnung umwandeln. Alle Daten werden automatisch übernommen, und Sie müssen nur noch die Rechnungsnummer anpassen."
+    },
+    "q3": {
+      "question": "Wie funktionieren dynamische QR-Codes?",
+      "answer": "Dynamische QR-Codes haben einen permanenten Link, aber das Ziel kann jederzeit geändert werden. Das bedeutet, Sie müssen den QR-Code nicht neu drucken, wenn sich die Ziel-URL ändert. Perfekt für Marketing-Materialien, die länger verwendet werden."
+    },
+    "q4": {
+      "question": "Ist meine Daten sicher?",
+      "answer": "Absolut! Wir verwenden modernste Verschlüsselungstechnologien und sind vollständig DSGVO-konform. Ihre Daten werden sicher gespeichert und niemals an Dritte weitergegeben."
+    },
+    "q5": {
+      "question": "Gibt es eine kostenlose Testversion?",
+      "answer": "Ja, Sie können Cenety 14 Tage lang kostenlos testen. Keine Kreditkarte erforderlich. Nach der Testphase können Sie zwischen verschiedenen Plänen wählen, die zu Ihrem Business passen."
+    },
+    "q6": {
+      "question": "Kann ich meine Daten exportieren?",
+      "answer": "Ja, Sie können alle Ihre Daten jederzeit exportieren. Wir bieten Export-Funktionen für Kunden, Dokumente und alle anderen Daten in verschiedenen Formaten (CSV, PDF, JSON)."
     }
   }
 }

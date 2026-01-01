@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormField } from "@/components/ui/form";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { Icons } from "@/components/shared/icons";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSupabase } from "@/components/supabase-provider";
 
 export enum UserRole {
@@ -113,7 +114,7 @@ export function UserRoleForm({ user }: UserNameFormProps) {
               className="w-[67px] shrink-0 px-0 sm:w-[130px]"
             >
               {isPending ? (
-                <Icons.spinner className="size-4 animate-spin" />
+                <LoadingSpinner size="sm" variant="primary" />
               ) : (
                 <p>
                   Save

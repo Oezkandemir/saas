@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getUserNotifications } from "@/actions/user-profile-actions";
+import { getUserPlan } from "@/actions/get-user-plan";
 import {
   Link as I18nLink,
 } from "@/i18n/routing";
@@ -18,10 +19,13 @@ import {
   Mail,
   Shield,
   User as UserIcon,
+  Crown,
+  Sparkles,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Drawer } from "vaul";
+import { DrawerDescription } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { useNotifications } from "@/hooks/use-notifications";
 import { ModalContext } from "@/components/modals/providers";
@@ -98,6 +102,9 @@ function NotificationDrawer() {
           </div>
 
           <Drawer.Title className="sr-only">Notifications</Drawer.Title>
+          <DrawerDescription className="sr-only">
+            View and manage your notifications
+          </DrawerDescription>
 
           <div className="w-full mt-1 mb-14">
             <div className="p-4 overflow-y-auto max-h-96">
@@ -191,6 +198,7 @@ export function UserAccountNav() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dbUserName, setDbUserName] = useState<string | null>(null);
   const [dbUserRole, setDbUserRole] = useState<string | null>(null);
+  const [userPlan, setUserPlan] = useState<{ title: string; isPaid: boolean } | null>(null);
 
   const closeDrawer = () => {
     setDrawerOpen(false);
@@ -211,7 +219,7 @@ export function UserAccountNav() {
     }
   };
 
-  // Fetch user name and role from database when component mounts
+  // Fetch user name, role, and plan from database when component mounts
   useEffect(() => {
     async function fetchUserData() {
       try {
@@ -225,6 +233,15 @@ export function UserAccountNav() {
           if (!error && data) {
             setDbUserName(data.name);
             setDbUserRole(data.role);
+          }
+
+          // Fetch subscription plan
+          const plan = await getUserPlan();
+          if (plan) {
+            setUserPlan({
+              title: plan.title,
+              isPaid: plan.isPaid,
+            });
           }
         }
       } catch (err) {
@@ -299,6 +316,9 @@ export function UserAccountNav() {
               <Drawer.Title className="sr-only">
                 User Account Menu
               </Drawer.Title>
+              <DrawerDescription className="sr-only">
+                Manage your account settings and preferences
+              </DrawerDescription>
 
               <div className="px-6 pb-4">
                 {/* User Info Card */}
@@ -341,6 +361,26 @@ export function UserAccountNav() {
                           {userRole === "ADMIN" ? "Administrator" : "User"}
                         </Badge>
                       </div>
+                      
+                      {/* Plan Badge */}
+                      {userPlan && (
+                        <div className="flex items-center gap-2">
+                          {userPlan.isPaid ? (
+                            <Crown className="size-4 text-yellow-500 shrink-0" />
+                          ) : (
+                            <Sparkles className="size-4 text-muted-foreground shrink-0" />
+                          )}
+                          <Badge
+                            variant={userPlan.isPaid ? "default" : "outline"}
+                            className={cn(
+                              "text-xs font-medium",
+                              userPlan.isPaid && "bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500/30"
+                            )}
+                          >
+                            {userPlan.title}
+                          </Badge>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

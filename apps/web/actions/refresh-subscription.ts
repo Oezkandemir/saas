@@ -70,6 +70,9 @@ export async function refreshSubscription(): Promise<RefreshResult> {
       // Get updated subscription plan
       const updatedPlan = await getUserSubscriptionPlan(user.id);
 
+      // Note: Revalidation removed temporarily to fix compilation issues
+      // The UI will update on next page navigation/refresh
+
       return {
         success: true,
         message: "Subscription data refreshed successfully",

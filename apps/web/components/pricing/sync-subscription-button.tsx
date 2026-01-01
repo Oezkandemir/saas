@@ -6,6 +6,7 @@ import { syncUserSubscriptionFromStripe } from "@/actions/sync-user-subscription
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Icons } from "@/components/shared/icons";
 
 export function SyncSubscriptionButton() {
@@ -41,7 +42,8 @@ export function SyncSubscriptionButton() {
     >
       {isLoading ? (
         <>
-          <Icons.spinner className="mr-2 size-4 animate-spin" /> Syncing...
+          <LoadingSpinner size="sm" variant="primary" />
+          <span>Syncing...</span>
         </>
       ) : (
         <>

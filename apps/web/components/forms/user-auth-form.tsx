@@ -18,6 +18,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/shared/icons";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSupabase } from "@/components/supabase-provider";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -227,9 +228,7 @@ export function UserAuthForm({
             disabled={isLoading}
             type="submit"
           >
-            {isLoading && (
-              <Icons.spinner className="mr-2 size-4 animate-spin" />
-            )}
+            {isLoading && <LoadingSpinner size="sm" variant="primary" />}
             {type === "register" ? "Sign Up with Email" : "Sign In with Email"}
           </button>
         </div>

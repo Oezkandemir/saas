@@ -28,18 +28,34 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       );
     }
 
-    const client = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey);
+    return createBrowserClient<Database>(supabaseUrl, supabaseAnonKey);
+  });
+  const [session, setSession] = useState<Session | null>(null);
 
-    // Enable realtime for user_notifications table
+  // Subscribe to realtime notifications channel (only once)
+  useEffect(() => {
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
     try {
-      client.channel("global_notifications_changes").subscribe();
+      channel = supabase.channel("global_notifications_changes");
+      channel.subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          console.log("✅ Successfully subscribed to realtime notifications");
+        } else if (status === "CHANNEL_ERROR") {
+          console.warn("Failed to subscribe to realtime notifications:", status);
+        }
+      });
     } catch (error) {
       console.warn("Failed to subscribe to realtime notifications:", error);
     }
 
-    return client;
-  });
-  const [session, setSession] = useState<Session | null>(null);
+    // Cleanup: unsubscribe when component unmounts
+    return () => {
+      if (channel) {
+        channel.unsubscribe();
+      }
+    };
+  }, [supabase]);
 
   useEffect(() => {
     const {

@@ -58,11 +58,41 @@ export default async function PricingPage() {
   }
 
   return (
-    <div className="flex w-full flex-col gap-16 py-8 md:py-8">
-      <PricingCards userId={user?.id} subscriptionPlan={subscriptionPlan} />
-      <hr className="container" />
-      <ComparePlans />
-      <PricingFaq />
+    <div className="flex w-full flex-col">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden border-b bg-gradient-to-b from-background via-background to-muted/20 py-16 md:py-24">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        <div className="container relative z-10 flex flex-col items-center gap-6 text-center animate-in fade-in slide-in-from-top-4 duration-700">
+          <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-2">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
+            </span>
+            Transparente Preise, keine versteckten Kosten
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-transparent">
+            Ein QR-Code, der immer bleibt.
+          </h1>
+          <p className="max-w-2xl text-lg text-muted-foreground sm:text-xl leading-relaxed">
+            Angebote & Rechnungen in Minuten. Dynamische QR-Codes für Ihr Business.
+          </p>
+        </div>
+      </div>
+
+      {/* Pricing Cards Section */}
+      <div className="py-16 md:py-24">
+        <PricingCards userId={user?.id} subscriptionPlan={subscriptionPlan} />
+      </div>
+
+      {/* Compare Plans Section */}
+      <div className="border-t bg-muted/30 py-16 md:py-24">
+        <ComparePlans />
+      </div>
+
+      {/* FAQ Section */}
+      <div className="border-t py-16 md:py-24">
+        <PricingFaq />
+      </div>
     </div>
   );
 }

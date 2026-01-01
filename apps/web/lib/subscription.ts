@@ -119,13 +119,25 @@ export async function getUserSubscriptionPlan(
 
     // Find the pricing data corresponding to the user's plan
     // First check monthly prices, then yearly prices
-    const userPlan =
+    let userPlan =
       pricingData.find(
         (plan) => plan.stripeIds.monthly === user.stripePriceId,
       ) ||
       pricingData.find((plan) => plan.stripeIds.yearly === user.stripePriceId);
 
-    logger.debug("Matched plan", { planTitle: userPlan?.title || "No matching plan found" });
+    // If no exact match found but user has a paid subscription, 
+    // check if the price ID starts with "price_" (valid Stripe price ID)
+    // and assign to Pro plan as fallback
+    if (!userPlan && isPaid && user.stripePriceId?.startsWith("price_")) {
+      logger.debug("No exact price ID match found, but user has active subscription. Assigning to Pro plan.");
+      userPlan = pricingData.find((plan) => plan.title === "Pro");
+    }
+
+    logger.debug("Matched plan", { 
+      planTitle: userPlan?.title || "No matching plan found",
+      priceId: user.stripePriceId,
+      isPaid,
+    });
 
     // Use the found plan or default to free
     const plan = isPaid && userPlan ? userPlan : pricingData[0];

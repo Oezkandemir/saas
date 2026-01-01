@@ -112,7 +112,15 @@ export function NavBar({ scroll = false }: NavBarProps) {
           ) : null}
 
           {session ? (
-            <div className="pr-0 md:pr-0">
+            <div className="flex items-center gap-2 pr-0 md:pr-0">
+              <Link
+                href="/dashboard"
+                className={cn(
+                  "hidden items-center rounded-full border border-input bg-background px-4 py-1.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground md:flex",
+                )}
+              >
+                {t("dashboard")}
+              </Link>
               <UserAccountNav />
             </div>
           ) : (

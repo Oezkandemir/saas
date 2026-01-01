@@ -10,6 +10,8 @@ const intlMiddleware = createIntlMiddleware({
   locales: routing.locales,
   defaultLocale: routing.defaultLocale,
   localePrefix: "as-needed", // Only add locale prefix when needed
+  // Use cookie for locale detection
+  localeDetection: true, // Enable automatic locale detection
 });
 
 // Cache for user status to avoid repeated DB calls

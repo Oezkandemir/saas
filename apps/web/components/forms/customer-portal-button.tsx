@@ -5,6 +5,7 @@ import { openCustomerPortal } from "@/actions/open-customer-portal";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Icons } from "@/components/shared/icons";
 
 // Direct link to the test customer portal - keeping it in component for easy testing
@@ -51,8 +52,8 @@ export function CustomerPortalButton({
     <Button variant="default" disabled={isPending} onClick={handleOpenPortal}>
       {isPending ? (
         <>
-          <Icons.spinner className="mr-2 size-4 animate-spin" />
-          Opening Portal...
+          <LoadingSpinner size="sm" variant="primary" />
+          <span>Opening Portal...</span>
         </>
       ) : (
         <>

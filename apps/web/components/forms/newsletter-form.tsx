@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useNotificationsContext } from "@/components/context/notifications-context";
 import { Icons } from "@/components/shared/icons";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSupabase } from "@/components/supabase-provider";
 
 export function NewsletterForm() {
@@ -108,8 +109,8 @@ export function NewsletterForm() {
         >
           {isLoading ? (
             <>
-              <Icons.spinner className="mr-2 size-4 animate-spin" />
-              {t("subscribingButton")}
+              <LoadingSpinner size="sm" variant="primary" />
+              <span>{t("subscribingButton")}</span>
             </>
           ) : (
             t("subscribeButton")

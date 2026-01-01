@@ -12,6 +12,7 @@
   "dependencies": {
     "@cenety/ui": "workspace:*",
     "next": "15.3.8",
+    "next-intl": "^3.0.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "tailwindcss": "^3.4.6",

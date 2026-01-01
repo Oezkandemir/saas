@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Icons } from "@/components/shared/icons";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export function ConfigureStripePortalButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -93,8 +94,8 @@ export function ConfigureStripePortalButton() {
         <Button onClick={handleConfigure} disabled={isLoading}>
           {isLoading ? (
             <>
-              <Icons.spinner className="mr-2 size-4 animate-spin" />{" "}
-              Configuring...
+              <LoadingSpinner size="sm" variant="primary" />
+              <span>Configuring...</span>
             </>
           ) : (
             <>

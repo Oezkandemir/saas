@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Icons } from "@/components/shared/icons";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function NewsletterUnsubscribe() {
   const t = useTranslations("Newsletter");
@@ -107,7 +108,7 @@ export default function NewsletterUnsubscribe() {
         <CardContent className="flex flex-col items-center space-y-4 pt-4">
           {isLoading ? (
             <div className="flex flex-col items-center space-y-4">
-              <Icons.spinner className="size-12 animate-spin" />
+              <LoadingSpinner size="xl" variant="primary" />
               <p className="text-sm text-muted-foreground">
                 {t("unsubscribeProcessing")}
               </p>

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useAvatar } from "@/components/context/avatar-context";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { Icons } from "@/components/shared/icons";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 interface UserAvatarFormProps {
   user: Pick<User, "id"> & {
@@ -120,7 +121,7 @@ export function UserAvatarForm({ user }: UserAvatarFormProps) {
             )}
             {isPending && (
               <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-                <Icons.spinner className="size-8 animate-spin text-primary" />
+                <LoadingSpinner size="lg" variant="primary" />
               </div>
             )}
           </div>
@@ -143,8 +144,8 @@ export function UserAvatarForm({ user }: UserAvatarFormProps) {
                 >
                   {isPending ? (
                     <>
-                      <Icons.spinner className="mr-2 size-4 animate-spin" />
-                      Saving...
+                      <LoadingSpinner size="sm" variant="primary" />
+                      <span>Saving...</span>
                     </>
                   ) : (
                     "Save Avatar"

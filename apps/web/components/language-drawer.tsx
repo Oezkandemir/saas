@@ -13,7 +13,21 @@ export default function LanguageDrawer() {
   const pathname = usePathname();
   const t = useTranslations("Navigation");
 
-  const switchLanguage = (locale: string) => {
+  const switchLanguage = async (locale: string) => {
+    // Save locale preference to cookie
+    try {
+      await fetch("/api/locale", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ locale }),
+      });
+    } catch (error) {
+      console.error("Failed to save locale preference:", error);
+    }
+
+    // Navigate to new locale
     router.replace(pathname, { locale });
     setOpen(false);
   };

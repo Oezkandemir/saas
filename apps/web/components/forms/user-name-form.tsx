@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { Icons } from "@/components/shared/icons";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSupabase } from "@/components/supabase-provider";
 
 interface UserNameFormProps {
@@ -84,7 +85,7 @@ export function UserNameForm({ user }: UserNameFormProps) {
             className="w-[67px] shrink-0 px-0 sm:w-[130px]"
           >
             {isPending ? (
-              <Icons.spinner className="size-4 animate-spin" />
+              <LoadingSpinner size="sm" variant="primary" />
             ) : (
               <p>
                 Save

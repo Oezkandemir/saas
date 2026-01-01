@@ -90,3 +90,29 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+@layer utilities {
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted-foreground) / 0.1) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s linear infinite;
+  }
+
+  .transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hover-lift {
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}

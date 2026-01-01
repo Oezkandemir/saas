@@ -1,0 +1,316 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { getSupabaseServer } from "@/lib/supabase-server";
+import { getCurrentUser } from "@/lib/session";
+import { enforcePlanLimit } from "@/lib/plan-limits";
+
+export type Customer = {
+  id: string;
+  user_id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  company: string | null;
+  address_line1: string | null;
+  address_line2: string | null;
+  city: string | null;
+  postal_code: string | null;
+  country: string | null;
+  tax_id: string | null;
+  notes: string | null;
+  qr_code: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CustomerInput = {
+  name: string;
+  email?: string;
+  phone?: string;
+  company?: string;
+  address_line1?: string;
+  address_line2?: string;
+  city?: string;
+  postal_code?: string;
+  country?: string;
+  tax_id?: string;
+  notes?: string;
+};
+
+export async function getCustomers(): Promise<Customer[]> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const supabase = await getSupabaseServer();
+    const { data, error } = await supabase
+      .from("customers")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching customers:", error);
+      // Return empty array instead of throwing to prevent UI breakage
+      return [];
+    }
+    
+    return data || [];
+  } catch (error) {
+    console.error("Error in getCustomers:", error);
+    // Return empty array on any error to prevent UI breakage
+    return [];
+  }
+}
+
+export async function getCustomer(id: string): Promise<Customer | null> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) throw new Error("Unauthorized");
+
+    if (!id || id.trim().length === 0) {
+      return null;
+    }
+
+    const supabase = await getSupabaseServer();
+    const { data, error } = await supabase
+      .from("customers")
+      .select("*")
+      .eq("id", id)
+      .eq("user_id", user.id)
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") return null;
+      console.error("Error fetching customer:", error);
+      return null;
+    }
+    
+    return data || null;
+  } catch (error) {
+    console.error("Error in getCustomer:", error);
+    return null;
+  }
+}
+
+/**
+ * Generate a unique QR code for a customer
+ * Uses a combination of timestamp and random string for uniqueness
+ */
+function generateUniqueQRCode(): string {
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+  return `CUST-${timestamp}-${random}`;
+}
+
+export async function createCustomer(input: CustomerInput): Promise<Customer> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) throw new Error("Unauthorized");
+
+    // Check plan limits before creating customer
+    await enforcePlanLimit(user.id, "customers");
+
+    // Validate required fields
+    if (!input.name || input.name.trim().length === 0) {
+      throw new Error("Name ist erforderlich");
+    }
+
+    // Validate email format if provided
+    if (input.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email)) {
+      throw new Error("Ungültige E-Mail-Adresse");
+    }
+
+    const supabase = await getSupabaseServer();
+    
+    // Generate unique QR code directly (no RPC call needed - faster and safer)
+    let qrCode = generateUniqueQRCode();
+    let attempts = 0;
+    const maxAttempts = 5;
+
+    // Ensure QR code is unique by checking database
+    while (attempts < maxAttempts) {
+      const { data: existing } = await supabase
+        .from("customers")
+        .select("id")
+        .eq("qr_code", qrCode)
+        .limit(1)
+        .single();
+
+      if (!existing) {
+        // QR code is unique, break the loop
+        break;
+      }
+
+      // Generate new QR code if collision detected
+      qrCode = generateUniqueQRCode();
+      attempts++;
+    }
+
+    // Insert customer with generated QR code
+    const { data, error } = await supabase
+      .from("customers")
+      .insert({
+        user_id: user.id,
+        name: input.name.trim(),
+        email: input.email?.trim() || null,
+        phone: input.phone?.trim() || null,
+        company: input.company?.trim() || null,
+        address_line1: input.address_line1?.trim() || null,
+        address_line2: input.address_line2?.trim() || null,
+        city: input.city?.trim() || null,
+        postal_code: input.postal_code?.trim() || null,
+        country: input.country?.trim() || "DE",
+        tax_id: input.tax_id?.trim() || null,
+        notes: input.notes?.trim() || null,
+        qr_code: qrCode,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      // Provide user-friendly error messages
+      if (error.code === "23505") {
+        throw new Error("Ein Kunde mit diesen Daten existiert bereits");
+      }
+      if (error.code === "23503") {
+        throw new Error("Ungültige Benutzer-ID");
+      }
+      throw new Error(`Fehler beim Erstellen des Kunden: ${error.message}`);
+    }
+
+    if (!data) {
+      throw new Error("Kunde konnte nicht erstellt werden");
+    }
+
+    revalidatePath("/dashboard/customers");
+    return data;
+  } catch (error) {
+    // Re-throw validation errors as-is
+    if (error instanceof Error && (
+      error.message.includes("erforderlich") ||
+      error.message.includes("Ungültige") ||
+      error.message.includes("Unauthorized")
+    )) {
+      throw error;
+    }
+    
+    // Wrap other errors with user-friendly message
+    throw new Error(
+      error instanceof Error 
+        ? error.message 
+        : "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+    );
+  }
+}
+
+export async function updateCustomer(
+  id: string,
+  input: CustomerInput,
+): Promise<Customer> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) throw new Error("Unauthorized");
+
+    if (!id || id.trim().length === 0) {
+      throw new Error("Ungültige Kunden-ID");
+    }
+
+    // Validate required fields
+    if (!input.name || input.name.trim().length === 0) {
+      throw new Error("Name ist erforderlich");
+    }
+
+    // Validate email format if provided
+    if (input.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email)) {
+      throw new Error("Ungültige E-Mail-Adresse");
+    }
+
+    const supabase = await getSupabaseServer();
+    const { data, error } = await supabase
+      .from("customers")
+      .update({
+        name: input.name.trim(),
+        email: input.email?.trim() || null,
+        phone: input.phone?.trim() || null,
+        company: input.company?.trim() || null,
+        address_line1: input.address_line1?.trim() || null,
+        address_line2: input.address_line2?.trim() || null,
+        city: input.city?.trim() || null,
+        postal_code: input.postal_code?.trim() || null,
+        country: input.country?.trim() || "DE",
+        tax_id: input.tax_id?.trim() || null,
+        notes: input.notes?.trim() || null,
+      })
+      .eq("id", id)
+      .eq("user_id", user.id)
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") {
+        throw new Error("Kunde nicht gefunden");
+      }
+      throw new Error(`Fehler beim Aktualisieren: ${error.message}`);
+    }
+
+    if (!data) {
+      throw new Error("Kunde konnte nicht aktualisiert werden");
+    }
+
+    revalidatePath("/dashboard/customers");
+    revalidatePath(`/dashboard/customers/${id}`);
+    return data;
+  } catch (error) {
+    // Re-throw validation errors as-is
+    if (error instanceof Error && (
+      error.message.includes("erforderlich") ||
+      error.message.includes("Ungültige") ||
+      error.message.includes("Unauthorized") ||
+      error.message.includes("nicht gefunden")
+    )) {
+      throw error;
+    }
+    
+    throw new Error(
+      error instanceof Error 
+        ? error.message 
+        : "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+    );
+  }
+}
+
+export async function deleteCustomer(id: string): Promise<void> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) throw new Error("Unauthorized");
+
+    if (!id || id.trim().length === 0) {
+      throw new Error("Ungültige Kunden-ID");
+    }
+
+    const supabase = await getSupabaseServer();
+    const { error } = await supabase
+      .from("customers")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user.id);
+
+    if (error) {
+      if (error.code === "23503") {
+        throw new Error("Kunde kann nicht gelöscht werden, da er noch verwendet wird");
+      }
+      throw new Error(`Fehler beim Löschen: ${error.message}`);
+    }
+
+    revalidatePath("/dashboard/customers");
+  } catch (error) {
+    throw new Error(
+      error instanceof Error 
+        ? error.message 
+        : "Ein Fehler ist beim Löschen aufgetreten. Bitte versuchen Sie es erneut."
+    );
+  }
+}
+

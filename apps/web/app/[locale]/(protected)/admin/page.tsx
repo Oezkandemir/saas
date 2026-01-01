@@ -111,7 +111,7 @@ export default async function AdminPanelPage(props: Props) {
       {/* User Stats Section */}
       <div className="my-6">
         <h2 className="mb-3 text-lg font-medium">{tStats("userStats")}</h2>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:grid-cols-4">
           <Card className="overflow-hidden border-l-4 border-l-blue-500">
             <CardContent className="flex items-center justify-between p-4">
               <div>
@@ -173,7 +173,7 @@ export default async function AdminPanelPage(props: Props) {
       {/* Support Ticket Stats Section */}
       <div className="mb-8">
         <h2 className="mb-3 text-lg font-medium">{tStats("ticketStatus")}</h2>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:grid-cols-3">
           <Card className="overflow-hidden border-l-4 border-l-amber-500">
             <CardContent className="flex items-center justify-between p-4">
               <div>

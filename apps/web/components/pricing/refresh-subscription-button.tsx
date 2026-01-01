@@ -6,6 +6,7 @@ import { refreshSubscription } from "@/actions/refresh-subscription";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Icons } from "@/components/shared/icons";
 
 export function RefreshSubscriptionButton() {
@@ -40,7 +41,8 @@ export function RefreshSubscriptionButton() {
     >
       {isLoading ? (
         <>
-          <Icons.spinner className="mr-2 size-4 animate-spin" /> Refreshing...
+          <LoadingSpinner size="sm" variant="primary" />
+          <span>Refreshing...</span>
         </>
       ) : (
         <>
