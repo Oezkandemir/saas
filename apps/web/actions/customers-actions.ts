@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSupabaseServer } from "@/lib/supabase-server";
+import { getSupabaseServer, getSupabaseStatic } from "@/lib/supabase-server";
 import { getCurrentUser } from "@/lib/session";
 import { enforcePlanLimit } from "@/lib/plan-limits";
 
@@ -311,6 +311,62 @@ export async function deleteCustomer(id: string): Promise<void> {
         ? error.message 
         : "Ein Fehler ist beim Löschen aufgetreten. Bitte versuchen Sie es erneut."
     );
+  }
+}
+
+/**
+ * Track a customer QR code scan (public function, no auth required)
+ */
+export async function trackCustomerQRCodeScan(
+  qrCode: string,
+  customerId: string,
+  metadata?: {
+    user_agent?: string;
+    referrer?: string;
+    country?: string;
+    ip_address?: string;
+  },
+): Promise<void> {
+  try {
+    // Use static client for public tracking (no authentication required)
+    const supabase = getSupabaseStatic();
+    
+    // Insert scan event
+    await supabase.from("customer_qr_events").insert({
+      customer_id: customerId,
+      qr_code: qrCode,
+      user_agent: metadata?.user_agent || null,
+      referrer: metadata?.referrer || null,
+      country: metadata?.country || null,
+      ip_address: metadata?.ip_address || null,
+    });
+  } catch (error) {
+    // Silently fail tracking - don't break the user experience
+    console.error("Error tracking customer QR code scan:", error);
+  }
+}
+
+/**
+ * Get customer by QR code (public function for QR code scanning)
+ */
+export async function getCustomerByQRCode(qrCode: string): Promise<Customer | null> {
+  try {
+    const supabase = getSupabaseStatic();
+    
+    const { data, error } = await supabase
+      .from("customers")
+      .select("*")
+      .eq("qr_code", qrCode)
+      .single();
+
+    if (error || !data) {
+      return null;
+    }
+    
+    return data;
+  } catch (error) {
+    console.error("Error fetching customer by QR code:", error);
+    return null;
   }
 }
 

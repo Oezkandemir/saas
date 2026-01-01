@@ -3,28 +3,11 @@ import { routing } from "@/i18n/routing";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 
-import "@/styles/globals.css";
-
-import { fontGeist, fontHeading, fontSans, fontUrban } from "@/assets/fonts";
-import { ThemeProvider } from "next-themes";
-
-import { cn, constructMetadata } from "@/lib/utils";
-import { Toaster } from "@/components/ui/sonner";
-import { AvatarProvider } from "@/components/context/avatar-context";
-import { NotificationsProvider } from "@/components/context/notifications-context";
-import { ErrorBoundary } from "@/components/error-boundary";
-import { QueryClientProvider } from "@/components/providers/query-client-provider";
-import { DynamicProviders } from "@/components/providers/dynamic-providers";
-import { SupabaseProvider } from "@/components/supabase-provider";
-import { TailwindIndicator } from "@/components/tailwind-indicator";
-
 export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
-
-export const metadata = constructMetadata();
 
 export default async function LocaleLayout({
   children,
@@ -46,60 +29,12 @@ export default async function LocaleLayout({
   // Get messages for the current locale
   const messages = await getMessages();
 
+  // Locale layout no longer needs html/body tags as they're in root layout
+  // But we need to provide locale-specific messages, so we wrap with NextIntlClientProvider
+  // This will override the default locale messages from root layout
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <head>
-        <link rel="manifest" href="/site.webmanifest" />
-        {/* Preload critical fonts */}
-        <link
-          rel="preload"
-          href="/fonts/GeistVF.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/CalSans-SemiBold.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-      </head>
-      <body
-        className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable,
-          fontUrban.variable,
-          fontHeading.variable,
-          fontGeist.variable,
-        )}
-      >
-        <ErrorBoundary>
-          <SupabaseProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <NextIntlClientProvider messages={messages} locale={locale}>
-                <AvatarProvider>
-                  <QueryClientProvider>
-                    <NotificationsProvider>
-                      <DynamicProviders>
-                        {children}
-                      </DynamicProviders>
-                      <Toaster richColors closeButton />
-                      <TailwindIndicator />
-                    </NotificationsProvider>
-                  </QueryClientProvider>
-                </AvatarProvider>
-              </NextIntlClientProvider>
-            </ThemeProvider>
-          </SupabaseProvider>
-        </ErrorBoundary>
-      </body>
-    </html>
+    <NextIntlClientProvider messages={messages} locale={locale}>
+      {children}
+    </NextIntlClientProvider>
   );
 }

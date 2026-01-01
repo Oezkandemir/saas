@@ -3,7 +3,6 @@ import { getSupabaseStatic } from "@/lib/supabase-server";
 import { trackQRCodeScan } from "@/actions/qr-codes-actions";
 
 export const dynamic = "force-dynamic";
-export const runtime = "edge";
 
 export async function GET(
   request: NextRequest,
@@ -23,7 +22,77 @@ export async function GET(
       .single();
 
     if (error || !qrCode) {
-      return new NextResponse("QR-Code nicht gefunden", { status: 404 });
+      console.error("QR code not found:", { code, error });
+      return new NextResponse(
+        `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR-Code nicht gefunden</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+    }
+    .icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #1a202c;
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+    p {
+      color: #718096;
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    .code {
+      font-family: monospace;
+      background: #f7fafc;
+      padding: 8px 12px;
+      border-radius: 6px;
+      color: #2d3748;
+      font-size: 14px;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">❌</div>
+    <h1>QR-Code nicht gefunden</h1>
+    <p>Der gescannte QR-Code konnte nicht gefunden werden.</p>
+    <p>Bitte überprüfen Sie den Code und versuchen Sie es erneut.</p>
+    <div class="code">Code: ${escapeHtml(code)}</div>
+  </div>
+</body>
+</html>`,
+        {
+          status: 404,
+          headers: {
+            "Content-Type": "text/html; charset=utf-8",
+          },
+        }
+      );
     }
 
     // Track scan (async, don't wait)
@@ -42,24 +111,33 @@ export async function GET(
 
     // Handle different types
     switch (qrCode.type) {
-      case "url":
+      case "url": {
         // Validate URL to prevent open redirects
         const url = qrCode.destination;
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
           return new NextResponse("Ungültige URL", { status: 400 });
         }
         return NextResponse.redirect(url, { status: 302 });
+      }
 
-      case "pdf":
+      case "pdf": {
         // Redirect to PDF URL
         const pdfUrl = qrCode.destination;
         if (!pdfUrl.startsWith("http://") && !pdfUrl.startsWith("https://")) {
           return new NextResponse("Ungültige PDF-URL", { status: 400 });
         }
         return NextResponse.redirect(pdfUrl, { status: 302 });
+      }
 
-      case "text":
+      case "text": {
         // Render text page
+        const escapedText = qrCode.destination
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+        
         return new NextResponse(
           `<!DOCTYPE html>
 <html lang="de">
@@ -68,34 +146,70 @@ export async function GET(
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QR-Code Inhalt</title>
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
       margin: 0;
       padding: 20px;
-      background: #f5f5f5;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
     .container {
       max-width: 600px;
+      width: 100%;
       background: white;
       padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .header h1 {
+      font-size: 24px;
+      color: #2d3748;
+      margin-bottom: 8px;
+    }
+    .header p {
+      font-size: 14px;
+      color: #718096;
     }
     .text {
       white-space: pre-wrap;
       word-wrap: break-word;
-      font-size: 16px;
-      line-height: 1.6;
+      font-size: 18px;
+      line-height: 1.8;
+      color: #2d3748;
+      text-align: center;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid #e2e8f0;
+      text-align: center;
+    }
+    .footer-text {
+      font-size: 12px;
+      color: #a0aec0;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="text">${qrCode.destination.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+    <div class="header">
+      <h1>${escapeHtml(qrCode.name)}</h1>
+      <p>QR-Code Inhalt</p>
+    </div>
+    <div class="text">${escapedText}</div>
+    <div class="footer">
+      <div class="footer-text">Gescannt via Cenety QR-Code</div>
+    </div>
   </div>
 </body>
 </html>`,
@@ -105,27 +219,96 @@ export async function GET(
             },
           },
         );
+      }
 
-      case "whatsapp":
+      case "whatsapp": {
         // Build WhatsApp URL
         const phone = qrCode.destination.replace(/[^0-9+]/g, "");
         const whatsappUrl = `https://wa.me/${phone}`;
         return NextResponse.redirect(whatsappUrl, { status: 302 });
+      }
 
-      case "maps":
+      case "maps": {
         // Build Google Maps URL
         const address = encodeURIComponent(qrCode.destination);
         const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${address}`;
         return NextResponse.redirect(mapsUrl, { status: 302 });
+      }
 
       default:
         return new NextResponse("Unbekannter QR-Code-Typ", { status: 400 });
     }
   } catch (error) {
     console.error("QR redirect error:", error);
-    return new NextResponse("Fehler beim Verarbeiten des QR-Codes", {
-      status: 500,
-    });
+    return new NextResponse(
+      `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fehler</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+    }
+    .icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #1a202c;
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+    p {
+      color: #718096;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">⚠️</div>
+    <h1>Fehler beim Verarbeiten</h1>
+    <p>Es ist ein Fehler beim Verarbeiten des QR-Codes aufgetreten. Bitte versuchen Sie es später erneut.</p>
+  </div>
+</body>
+</html>`,
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+        },
+      }
+    );
   }
+}
+
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
+  };
+  return text.replace(/[&<>"']/g, (m) => map[m]);
 }
 

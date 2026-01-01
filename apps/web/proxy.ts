@@ -31,6 +31,11 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Skip i18n middleware for QR code routes (public routes that don't need locale)
+  if (pathname.startsWith("/q/") || pathname.startsWith("/c/")) {
+    return NextResponse.next();
+  }
+
   // Handle i18n routing first - simplified approach
   try {
     const intlResponse = await intlMiddleware(request);
