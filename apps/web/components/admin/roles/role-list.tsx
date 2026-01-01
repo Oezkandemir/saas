@@ -152,11 +152,11 @@ export function RoleList({ initialRoles, locale }: RoleListProps) {
                             Keine
                           </span>
                         )}
-                        {Object.keys(role.permissions || {}).filter(
+                        {Object.entries(role.permissions || {}).filter(
                           ([, value]) => value === true,
                         ).length > 3 && (
                           <Badge variant="outline" className="text-xs">
-                            +{Object.keys(role.permissions || {}).filter(
+                            +{Object.entries(role.permissions || {}).filter(
                               ([, value]) => value === true,
                             ).length - 3}
                           </Badge>
