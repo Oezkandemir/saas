@@ -73,7 +73,7 @@ export async function sendCustomerEmail(input: SendCustomerEmailInput) {
     const { data, error } = await resend.emails.send({
       from: `${user.name || siteConfig.name} <hello@cenety.com>`,
       to: recipientEmail,
-      replyTo: user.email || "hello@cenety.com",
+      reply_to: user.email || "hello@cenety.com",
       subject: input.subject,
       html: htmlContent,
       headers: {
