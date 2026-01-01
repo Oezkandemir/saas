@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
@@ -32,24 +33,11 @@ export default async function RootLayout({
   // Default locale for root layout
   const locale = routing.defaultLocale;
   
-  // Set locale for server-side rendering
+  // Enable static rendering
   setRequestLocale(locale);
 
-  // Get messages for the default locale with error handling
-  let messages;
-  try {
-    messages = await getMessages();
-  } catch (error) {
-    // Fallback to empty messages if loading fails
-    console.error("Failed to load messages in root layout:", error);
-    try {
-      // Try to load default locale messages directly
-      messages = (await import(`../messages/${locale}.json`)).default;
-    } catch (fallbackError) {
-      console.error("Failed to load fallback messages:", fallbackError);
-      messages = {};
-    }
-  }
+  // Get messages for the default locale
+  const messages = await getMessages();
 
   return (
     <html lang={locale} suppressHydrationWarning>
