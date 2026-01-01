@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import type { PlanFeaturesInfo } from "@/lib/plan-features";
-import { CheckCircle, XCircle, Infinity } from "lucide-react";
+import { CheckCircle, XCircle, Infinity as InfinityIcon } from "lucide-react";
 
 interface UsageDashboardProps {
   planFeatures: PlanFeaturesInfo;
@@ -56,7 +56,7 @@ export function UsageDashboard({ planFeatures }: UsageDashboardProps) {
                 <div className="flex items-center gap-2 text-xs">
                   {feature.limit.max === "unlimited" || feature.limit.max === Infinity ? (
                     <>
-                      <Infinity className="size-3 text-muted-foreground" />
+                      <InfinityIcon className="size-3 text-muted-foreground" />
                       <span className="text-muted-foreground">Unlimited</span>
                     </>
                   ) : (

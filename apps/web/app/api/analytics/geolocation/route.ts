@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     // Get client IP from headers
     const forwarded = request.headers.get("x-forwarded-for");
     const realIp = request.headers.get("x-real-ip");
-    const ip = forwarded?.split(",")[0]?.trim() || realIp?.trim() || request.ip || "";
+    const ip = forwarded?.split(",")[0]?.trim() || realIp?.trim() || "";
 
     // If no IP found, use empty string to get current request IP
     const ipToUse = ip || "";

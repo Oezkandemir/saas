@@ -16,7 +16,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Users, Mail, Download, Ban, UserCog, CreditCard } from "lucide-react";
 import { bulkUserActions, bulkExportUsers, bulkSendEmail } from "@/actions/admin-bulk-actions";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 
 interface BulkOperationsPanelProps {
