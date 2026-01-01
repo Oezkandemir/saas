@@ -185,6 +185,21 @@ export async function createCustomer(input: CustomerInput): Promise<Customer> {
       throw new Error("Kunde konnte nicht erstellt werden");
     }
 
+    // Create notification for customer creation
+    try {
+      const { createCustomerNotification } = await import("@/lib/notifications");
+      await createCustomerNotification({
+        userId: user.id,
+        customerId: data.id,
+        action: "created",
+        customerName: data.name,
+      });
+    } catch (notificationError) {
+      // Don't fail the operation if notification fails
+      const { logger } = await import("@/lib/logger");
+      logger.error("Failed to create customer notification", notificationError);
+    }
+
     revalidatePath("/dashboard/customers");
     return data;
   } catch (error) {
@@ -260,6 +275,21 @@ export async function updateCustomer(
       throw new Error("Kunde konnte nicht aktualisiert werden");
     }
 
+    // Create notification for customer update
+    try {
+      const { createCustomerNotification } = await import("@/lib/notifications");
+      await createCustomerNotification({
+        userId: user.id,
+        customerId: id,
+        action: "updated",
+        customerName: data.name,
+      });
+    } catch (notificationError) {
+      // Don't fail the operation if notification fails
+      const { logger } = await import("@/lib/logger");
+      logger.error("Failed to create customer notification", notificationError);
+    }
+
     revalidatePath("/dashboard/customers");
     revalidatePath(`/dashboard/customers/${id}`);
     return data;
@@ -292,6 +322,15 @@ export async function deleteCustomer(id: string): Promise<void> {
     }
 
     const supabase = await getSupabaseServer();
+    
+    // Get customer info before deleting for notification
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("name")
+      .eq("id", id)
+      .eq("user_id", user.id)
+      .single();
+
     const { error } = await supabase
       .from("customers")
       .delete()
@@ -303,6 +342,23 @@ export async function deleteCustomer(id: string): Promise<void> {
         throw new Error("Kunde kann nicht gelöscht werden, da er noch verwendet wird");
       }
       throw new Error(`Fehler beim Löschen: ${error.message}`);
+    }
+
+    // Create notification for customer deletion
+    if (customer) {
+      try {
+        const { createCustomerNotification } = await import("@/lib/notifications");
+        await createCustomerNotification({
+          userId: user.id,
+          customerId: id,
+          action: "deleted",
+          customerName: customer.name,
+        });
+      } catch (notificationError) {
+        // Don't fail the operation if notification fails
+        const { logger } = await import("@/lib/logger");
+        logger.error("Failed to create customer notification", notificationError);
+      }
     }
 
     revalidatePath("/dashboard/customers");

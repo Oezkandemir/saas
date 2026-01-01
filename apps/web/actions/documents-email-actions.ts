@@ -173,6 +173,21 @@ export async function sendDocumentEmail(
       `Document email sent: ${documentType} ${document.document_number} to ${input.recipientEmail}`,
     );
 
+    // Create notification for document sent
+    try {
+      const { createDocumentNotification } = await import("@/lib/notifications");
+      await createDocumentNotification({
+        userId: user.id,
+        documentId: document.id,
+        action: "sent",
+        documentType: documentType,
+        documentNumber: document.document_number,
+      });
+    } catch (notificationError) {
+      // Don't fail the operation if notification fails
+      logger.error("Failed to create document notification", notificationError);
+    }
+
     revalidatePath(`/dashboard/documents/${document.id}`);
 
     return {

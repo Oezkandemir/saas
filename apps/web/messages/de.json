@@ -465,8 +465,10 @@
       "removeAdmin": "Admin-Rechte entfernen"
     },
     "webhooks": {
-      "title": "Webhook-Verwaltung",
-      "description": "Konfigurieren Sie Webhooks für Event-Benachrichtigungen",
+      "title": "Webhooks",
+      "description": "Webhook-Konfiguration für Event-Benachrichtigungen",
+      "manageDescription": "Konfigurieren Sie Webhooks, um über wichtige Events benachrichtigt zu werden",
+      "manageWebhooks": "Webhooks verwalten",
       "create": "Webhook erstellen",
       "update": "Webhook aktualisieren",
       "delete": "Webhook löschen",
@@ -478,8 +480,10 @@
       "generateSecret": "Secret generieren"
     },
     "roles": {
-      "title": "Rollen-Verwaltung",
-      "description": "Verwalten Sie Custom Rollen und Berechtigungen",
+      "title": "Rollen & Berechtigungen",
+      "description": "Custom Rollen und Berechtigungen verwalten",
+      "manageDescription": "Erstellen Sie eigene Rollen mit spezifischen Berechtigungen",
+      "manageRoles": "Rollen verwalten",
       "create": "Rolle erstellen",
       "update": "Rolle aktualisieren",
       "delete": "Rolle löschen",
@@ -493,6 +497,8 @@
     "usageStats": {
       "title": "Nutzungsstatistiken",
       "description": "Feature-Nutzung und Peak-Zeiten analysieren",
+      "manageDescription": "Verfolgen Sie, wie Benutzer die Features nutzen",
+      "viewStats": "Statistiken anzeigen",
       "featureUsage": "Feature-Nutzung",
       "peakTimes": "Peak-Zeiten",
       "userActivity": "Benutzer-Aktivität"
@@ -505,7 +511,21 @@
       "subscriptionMetrics": "Abonnement-Metriken",
       "totalMRR": "Gesamt MRR",
       "churnRate": "Churn-Rate",
-      "avgRevenuePerUser": "Durchschnittlicher Umsatz pro Benutzer"
+      "avgRevenuePerUser": "Durchschnittlicher Umsatz pro Benutzer",
+      "viewRevenue": "Revenue anzeigen",
+      "analyzeDescription": "Analysieren Sie Umsatz, Abonnements und Churn-Rate"
+    },
+    "system": {
+      "title": "System-Monitoring",
+      "description": "System-Status und Fehlerüberwachung",
+      "monitoringDescription": "Überwachung des Systemstatus, Fehlerverfolgung und Health-Checks",
+      "viewSystem": "System anzeigen"
+    },
+    "emails": {
+      "title": "E-Mail-Templates",
+      "description": "E-Mail-Templates verwalten und Resend testen",
+      "manageDescription": "Übersicht aller E-Mail-Templates und Resend-Konfiguration prüfen",
+      "manageTemplates": "Templates verwalten"
     }
   },
   "DashboardSidebar": {

@@ -188,6 +188,19 @@ export async function POST(req: Request) {
       logger.debug(
         `Updated period end: ${new Date(subscription.current_period_end * 1000).toISOString()}`,
       );
+
+      // Create subscription notification
+      try {
+        const { createSubscriptionNotification } = await import("@/lib/notifications");
+        const planName = subscription.items.data[0].price.nickname || "Premium";
+        await createSubscriptionNotification({
+          userId: session.metadata.userId,
+          action: "created",
+          planName,
+        });
+      } catch (notificationError) {
+        logger.error("Failed to create subscription notification", notificationError);
+      }
     }
 
     if (event.type === "invoice.payment_succeeded") {
@@ -259,6 +272,30 @@ export async function POST(req: Request) {
         logger.debug(
           `Updated period end: ${new Date(subscription.current_period_end * 1000).toISOString()}`,
         );
+
+        // Create subscription renewal notification
+        try {
+          const { createSubscriptionNotification } = await import("@/lib/notifications");
+          const userDataForNotification = userData && userData.length > 0 
+            ? userData[0] 
+            : await supabaseAdmin
+                .from("users")
+                .select("id")
+                .eq("stripe_customer_id", customerId)
+                .single()
+                .then(({ data }) => data);
+          
+          if (userDataForNotification?.id) {
+            const planName = subscription.items.data[0].price.nickname || "Premium";
+            await createSubscriptionNotification({
+              userId: userDataForNotification.id,
+              action: "renewed",
+              planName,
+            });
+          }
+        } catch (notificationError) {
+          logger.error("Failed to create subscription notification", notificationError);
+        }
       }
     }
 
@@ -267,6 +304,13 @@ export async function POST(req: Request) {
       const customerId = subscription.customer as string;
 
       logger.info(`Subscription deleted for customer: ${customerId}`);
+
+      // Get user ID before updating
+      const { data: userData } = await supabaseAdmin
+        .from("users")
+        .select("id")
+        .eq("stripe_customer_id", customerId)
+        .single();
 
       // Update user record to remove subscription details
       const { error } = await supabaseAdmin
@@ -289,6 +333,19 @@ export async function POST(req: Request) {
       }
 
       logger.info("Successfully removed subscription information");
+
+      // Create subscription cancellation notification
+      if (userData?.id) {
+        try {
+          const { createSubscriptionNotification } = await import("@/lib/notifications");
+          await createSubscriptionNotification({
+            userId: userData.id,
+            action: "cancelled",
+          });
+        } catch (notificationError) {
+          logger.error("Failed to create subscription notification", notificationError);
+        }
+      }
     }
 
     return new Response(null, { status: 200 });

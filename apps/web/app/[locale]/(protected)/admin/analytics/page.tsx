@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { RealtimeAnalytics } from "@/components/analytics/realtime-analytics";
 
 export const metadata = constructMetadata({
   title: "Analytics – Cenety",
@@ -161,13 +162,29 @@ export default async function AnalyticsPage() {
       icon={<TrendingUp className="h-4 w-4 text-primary" />}
       contentClassName="space-y-4"
     >
-      <Tabs defaultValue="overview" className="space-y-4">
+      <Tabs defaultValue="realtime" className="space-y-4">
         <TabsList>
+          <TabsTrigger value="realtime">Echtzeit</TabsTrigger>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="user-behavior">User Behavior</TabsTrigger>
           <TabsTrigger value="page-analytics">Page Analytics</TabsTrigger>
           <TabsTrigger value="technical">Technical</TabsTrigger>
         </TabsList>
+
+        {/* Real-time Tab */}
+        <TabsContent value="realtime" className="space-y-4">
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Echtzeit-Analytics</CardTitle>
+                <CardDescription>
+                  Live-Daten über aktive User, Page Views, Standorte und Geräte
+                </CardDescription>
+              </CardHeader>
+            </Card>
+            <RealtimeAnalytics />
+          </div>
+        </TabsContent>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">

@@ -220,6 +220,22 @@ export async function createDocument(
   const completeDoc = await getDocument(document.id);
   if (!completeDoc) throw new Error("Failed to fetch created document");
 
+  // Create notification for document creation
+  try {
+    const { createDocumentNotification } = await import("@/lib/notifications");
+    await createDocumentNotification({
+      userId: user.id,
+      documentId: document.id,
+      action: "created",
+      documentType: type === "quote" ? "Quote" : "Invoice",
+      documentNumber: document_number,
+    });
+  } catch (notificationError) {
+    // Don't fail the operation if notification fails
+    const { logger } = await import("@/lib/logger");
+    logger.error("Failed to create document notification", notificationError);
+  }
+
   // Generate PDF in background (non-blocking)
   // Don't await - let it run in the background
   import("@/lib/pdf/generator-vercel")
@@ -307,6 +323,22 @@ export async function updateDocument(
 
   const updatedDoc = await getDocument(id);
   if (!updatedDoc) throw new Error("Failed to fetch updated document");
+
+  // Create notification for document update
+  try {
+    const { createDocumentNotification } = await import("@/lib/notifications");
+    await createDocumentNotification({
+      userId: user.id,
+      documentId: id,
+      action: "updated",
+      documentType: updatedDoc.type === "quote" ? "Quote" : "Invoice",
+      documentNumber: updatedDoc.document_number,
+    });
+  } catch (notificationError) {
+    // Don't fail the operation if notification fails
+    const { logger } = await import("@/lib/logger");
+    logger.error("Failed to create document notification", notificationError);
+  }
 
   // Regenerate PDF in background when document is updated (non-blocking)
   // Don't await - let it run in the background
@@ -433,6 +465,15 @@ export async function deleteDocument(id: string): Promise<void> {
   if (!user) throw new Error("Unauthorized");
 
   const supabase = await getSupabaseServer();
+  
+  // Get document info before deleting for notification
+  const { data: document } = await supabase
+    .from("documents")
+    .select("document_number, type")
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .single();
+
   const { error } = await supabase
     .from("documents")
     .delete()
@@ -440,6 +481,25 @@ export async function deleteDocument(id: string): Promise<void> {
     .eq("user_id", user.id);
 
   if (error) throw error;
+
+  // Create notification for document deletion
+  if (document) {
+    try {
+      const { createDocumentNotification } = await import("@/lib/notifications");
+      await createDocumentNotification({
+        userId: user.id,
+        documentId: id,
+        action: "deleted",
+        documentType: document.type === "quote" ? "Quote" : "Invoice",
+        documentNumber: document.document_number,
+      });
+    } catch (notificationError) {
+      // Don't fail the operation if notification fails
+      const { logger } = await import("@/lib/logger");
+      logger.error("Failed to create document notification", notificationError);
+    }
+  }
+
   revalidatePath("/dashboard/documents");
 }
 

@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { AdminUserAttributes } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { supabaseAdmin } from "@/lib/db";
@@ -177,6 +176,7 @@ export async function toggleUserAdminStatus(
 
 /**
  * Get all users (admin only)
+ * Optimized: Only fetches from users table, no unnecessary auth.users fetch
  *
  * @returns List of all users or error
  */
@@ -188,10 +188,12 @@ export async function getAllUsers() {
       return { success: false, error: "Unauthorized: Admin access required" };
     }
 
-    // Fetch user data from the database including avatar_url column
+    // Fetch user data from the database - only select needed columns for better performance
     const { data: users, error } = await supabaseAdmin
       .from("users")
-      .select("*")
+      .select(
+        "id, email, name, role, status, avatar_url, stripe_subscription_id, created_at, updated_at",
+      )
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -202,43 +204,7 @@ export async function getAllUsers() {
       };
     }
 
-    // Get additional metadata from auth.users if needed
-    const { data: authUsers, error: authError } =
-      await supabaseAdmin.auth.admin.listUsers();
-
-    if (authError) {
-      logger.error("Error fetching auth users:", authError);
-      // Continue without auth data since we have the basic users
-    }
-
-    // Create a map of auth user metadata if available
-    const authUserMap = new Map();
-    if (authUsers?.users) {
-      // Use any type since we know the structure from Supabase Auth
-      (authUsers.users as any[]).forEach((authUser) => {
-        authUserMap.set(authUser.id, {
-          email_verified: authUser.email_confirmed_at ? true : false,
-          last_sign_in: authUser.last_sign_in_at || null,
-          avatar_url: authUser.user_metadata?.avatar_url || null,
-        });
-      });
-    }
-
-    // Combine the data, preferring database avatar_url but falling back to auth metadata
-    const enhancedUsers = users.map((user) => {
-      const authUserData = authUserMap.get(user.id) || {};
-
-      return {
-        ...user,
-        // Use database avatar_url first, fall back to auth metadata
-        avatar_url: user.avatar_url || authUserData.avatar_url || null,
-        // Additional useful fields from auth
-        email_verified: authUserData.email_verified || false,
-        last_sign_in: authUserData.last_sign_in || null,
-      };
-    });
-
-    return { success: true, data: enhancedUsers };
+    return { success: true, data: users || [] };
   } catch (error) {
     logger.error("Error in getAllUsers:", error);
     return { success: false, error: "An unexpected error occurred" };

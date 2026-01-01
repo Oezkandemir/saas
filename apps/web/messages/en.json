@@ -465,8 +465,10 @@
       "removeAdmin": "Remove Admin Rights"
     },
     "webhooks": {
-      "title": "Webhook Management",
-      "description": "Configure webhooks for event notifications",
+      "title": "Webhooks",
+      "description": "Webhook configuration for event notifications",
+      "manageDescription": "Configure webhooks to be notified about important events",
+      "manageWebhooks": "Manage Webhooks",
       "create": "Create Webhook",
       "update": "Update Webhook",
       "delete": "Delete Webhook",
@@ -478,8 +480,10 @@
       "generateSecret": "Generate Secret"
     },
     "roles": {
-      "title": "Role Management",
+      "title": "Roles & Permissions",
       "description": "Manage custom roles and permissions",
+      "manageDescription": "Create your own roles with specific permissions",
+      "manageRoles": "Manage Roles",
       "create": "Create Role",
       "update": "Update Role",
       "delete": "Delete Role",
@@ -493,6 +497,8 @@
     "usageStats": {
       "title": "Usage Statistics",
       "description": "Analyze feature usage and peak times",
+      "manageDescription": "Track how users utilize features",
+      "viewStats": "View Statistics",
       "featureUsage": "Feature Usage",
       "peakTimes": "Peak Times",
       "userActivity": "User Activity"
@@ -505,7 +511,21 @@
       "subscriptionMetrics": "Subscription Metrics",
       "totalMRR": "Total MRR",
       "churnRate": "Churn Rate",
-      "avgRevenuePerUser": "Average Revenue per User"
+      "avgRevenuePerUser": "Average Revenue per User",
+      "viewRevenue": "View Revenue",
+      "analyzeDescription": "Analyze revenue, subscriptions, and churn rate"
+    },
+    "system": {
+      "title": "System Monitoring",
+      "description": "System status and error monitoring",
+      "monitoringDescription": "Monitor system status, error tracking, and health checks",
+      "viewSystem": "View System"
+    },
+    "emails": {
+      "title": "Email Templates",
+      "description": "Manage email templates and test Resend",
+      "manageDescription": "Overview of all email templates and Resend configuration check",
+      "manageTemplates": "Manage Templates"
     }
   },
   "DashboardSidebar": {

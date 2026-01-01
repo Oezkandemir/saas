@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getAllUsers } from "@/actions/admin-user-actions";
-import { getAllTickets } from "@/actions/support-ticket-actions";
 import {
   AlertTriangle,
   BarChart4,
@@ -18,10 +16,12 @@ import {
   UserCog,
   TrendingUp,
   DollarSign,
+  Mail,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
+import { getAdminStats } from "@/actions/admin-stats-actions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -64,6 +64,12 @@ export default async function AdminPanelPage(props: Props) {
   const tSupport = await getTranslations("Admin.support");
   const tStats = await getTranslations("Admin.stats");
   const tConfig = await getTranslations("Admin.configuration");
+  const tSystem = await getTranslations("Admin.system");
+  const tWebhooks = await getTranslations("Admin.webhooks");
+  const tRoles = await getTranslations("Admin.roles");
+  const tUsageStats = await getTranslations("Admin.usageStats");
+  const tRevenue = await getTranslations("Admin.revenue");
+  const tEmails = await getTranslations("Admin.emails");
 
   if (!user?.email) {
     redirect("/login");
@@ -76,76 +82,58 @@ export default async function AdminPanelPage(props: Props) {
     redirect("/dashboard");
   }
 
-  // Fetch data for stats
-  const usersResult = await getAllUsers();
-  const ticketsResult = await getAllTickets();
+  // Fetch optimized admin statistics using SQL function
+  const statsResult = await getAdminStats();
 
   // Default values in case of errors
-  let totalUsers = 0;
-  let adminUsers = 0;
-  let subscribedUsers = 0;
-  let totalTickets = 0;
-  let openTickets = 0;
-  let inProgressTickets = 0;
-  let resolvedTickets = 0;
-
-  if (usersResult.success && usersResult.data) {
-    const users = usersResult.data;
-    totalUsers = users.length;
-    adminUsers = users.filter((user) => user.role === "ADMIN").length;
-    subscribedUsers = users.filter(
-      (user) => user.stripe_subscription_id,
-    ).length;
-  }
-
-  if (ticketsResult.success && ticketsResult.data) {
-    const tickets = ticketsResult.data;
-    totalTickets = tickets.length;
-    openTickets = tickets.filter((ticket) => ticket.status === "open").length;
-    inProgressTickets = tickets.filter(
-      (ticket) => ticket.status === "in_progress",
-    ).length;
-    resolvedTickets = tickets.filter(
-      (ticket) => ticket.status === "resolved" || ticket.status === "closed",
-    ).length;
-  }
+  const statsData = statsResult.success && statsResult.data
+    ? statsResult.data
+    : {
+        totalUsers: 0,
+        adminUsers: 0,
+        subscribedUsers: 0,
+        totalTickets: 0,
+        openTickets: 0,
+        inProgressTickets: 0,
+        resolvedTickets: 0,
+      };
 
   const stats = [
     {
-      title: "Benutzer",
-      value: totalUsers,
+      title: tStats("userStats"),
+      value: statsData.totalUsers,
       icon: Users,
-      description: "Gesamt Benutzer",
+      description: tUsers("allRegistered"),
     },
     {
-      title: "Admins",
-      value: adminUsers,
+      title: tUsers("adminUsers"),
+      value: statsData.adminUsers,
       icon: ShieldCheck,
-      description: "Administratoren",
+      description: tUsers("withAdminPrivileges"),
     },
     {
-      title: "Abonnements",
-      value: subscribedUsers,
+      title: tUsers("subscribers"),
+      value: statsData.subscribedUsers,
       icon: CreditCard,
-      description: "Aktive Abos",
+      description: tUsers("activePaid"),
     },
     {
-      title: "Offene Tickets",
-      value: openTickets,
+      title: tSupport("openTickets"),
+      value: statsData.openTickets,
       icon: AlertTriangle,
-      description: "Benötigen Aufmerksamkeit",
+      description: tSupport("awaitingResponse"),
     },
     {
-      title: "In Bearbeitung",
-      value: inProgressTickets,
+      title: tSupport("statuses.inProgress"),
+      value: statsData.inProgressTickets,
       icon: Clock,
-      description: "Werden bearbeitet",
+      description: tSupport("inProgressDescription"),
     },
     {
-      title: "Gelöst",
-      value: resolvedTickets,
+      title: tSupport("statuses.resolved"),
+      value: statsData.resolvedTickets,
       icon: CheckCircle,
-      description: "Erfolgreich abgeschlossen",
+      description: tSupport("successfullyClosed"),
     },
   ];
 
@@ -250,18 +238,18 @@ export default async function AdminPanelPage(props: Props) {
               <CardHeader className="pb-3">
                 <CardTitle className="flex gap-2 items-center text-sm">
                   <Activity className="size-4 text-primary" />
-                  System-Monitoring
+                  {tSystem("title")}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  System-Status und Fehlerüberwachung
+                  {tSystem("description")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="mb-3 text-xs text-muted-foreground">
-                  Überwachung des Systemstatus, Fehlerverfolgung und Health-Checks
+                  {tSystem("monitoringDescription")}
                 </p>
                 <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  System anzeigen
+                  {tSystem("viewSystem")}
                   <Activity className="size-3.5" />
                 </Button>
               </CardContent>
@@ -273,18 +261,18 @@ export default async function AdminPanelPage(props: Props) {
               <CardHeader className="pb-3">
                 <CardTitle className="flex gap-2 items-center text-sm">
                   <Webhook className="size-4 text-primary" />
-                  Webhooks
+                  {tWebhooks("title")}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Webhook-Konfiguration für Event-Benachrichtigungen
+                  {tWebhooks("description")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="mb-3 text-xs text-muted-foreground">
-                  Konfigurieren Sie Webhooks, um über wichtige Events benachrichtigt zu werden
+                  {tWebhooks("manageDescription")}
                 </p>
                 <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  Webhooks verwalten
+                  {tWebhooks("manageWebhooks")}
                   <Webhook className="size-3.5" />
                 </Button>
               </CardContent>
@@ -296,18 +284,18 @@ export default async function AdminPanelPage(props: Props) {
               <CardHeader className="pb-3">
                 <CardTitle className="flex gap-2 items-center text-sm">
                   <UserCog className="size-4 text-primary" />
-                  Rollen & Berechtigungen
+                  {tRoles("title")}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Custom Rollen und Berechtigungen verwalten
+                  {tRoles("description")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="mb-3 text-xs text-muted-foreground">
-                  Erstellen Sie eigene Rollen mit spezifischen Berechtigungen
+                  {tRoles("manageDescription")}
                 </p>
                 <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  Rollen verwalten
+                  {tRoles("manageRoles")}
                   <UserCog className="size-3.5" />
                 </Button>
               </CardContent>
@@ -319,18 +307,18 @@ export default async function AdminPanelPage(props: Props) {
               <CardHeader className="pb-3">
                 <CardTitle className="flex gap-2 items-center text-sm">
                   <TrendingUp className="size-4 text-primary" />
-                  Nutzungsstatistiken
+                  {tUsageStats("title")}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Feature-Nutzung und Peak-Zeiten analysieren
+                  {tUsageStats("description")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="mb-3 text-xs text-muted-foreground">
-                  Verfolgen Sie, wie Benutzer die Features nutzen
+                  {tUsageStats("manageDescription")}
                 </p>
                 <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  Statistiken anzeigen
+                  {tUsageStats("viewStats")}
                   <TrendingUp className="size-3.5" />
                 </Button>
               </CardContent>
@@ -342,19 +330,42 @@ export default async function AdminPanelPage(props: Props) {
               <CardHeader className="pb-3">
                 <CardTitle className="flex gap-2 items-center text-sm">
                   <DollarSign className="size-4 text-primary" />
-                  Revenue Analytics
+                  {tRevenue("title")}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Detaillierte Umsatz-Analysen und Metriken
+                  {tRevenue("description")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="mb-3 text-xs text-muted-foreground">
-                  Analysieren Sie Umsatz, Abonnements und Churn-Rate
+                  {tRevenue("analyzeDescription")}
                 </p>
                 <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  Revenue anzeigen
+                  {tRevenue("viewRevenue")}
                   <DollarSign className="size-3.5" />
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href={`/${locale}/admin/emails`} className="group">
+            <Card className="h-full hover interactive">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex gap-2 items-center text-sm">
+                  <Mail className="size-4 text-primary" />
+                  {tEmails("title")}
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  {tEmails("description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-3 text-xs text-muted-foreground">
+                  {tEmails("manageDescription")}
+                </p>
+                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
+                  {tEmails("manageTemplates")}
+                  <Mail className="size-3.5" />
                 </Button>
               </CardContent>
             </Card>

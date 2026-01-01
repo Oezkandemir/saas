@@ -23,7 +23,7 @@ const defaultCSP = [
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
   "img-src 'self' data: https: blob:",
-  "connect-src 'self' https://*.supabase.co https://*.vercel.app wss://*.supabase.co",
+  "connect-src 'self' https://*.supabase.co https://*.vercel.app wss://*.supabase.co https://ipapi.co",
   "frame-src 'self' https://vercel.live",
   "object-src 'none'",
   "base-uri 'self'",
@@ -49,7 +49,7 @@ export function applySecurityHeaders(
     xFrameOptions: "DENY",
     xContentTypeOptions: "nosniff",
     referrerPolicy: "strict-origin-when-cross-origin",
-    permissionsPolicy: "geolocation=(), microphone=(), camera=()",
+    permissionsPolicy: "geolocation=(self), microphone=(), camera=()",
     xXSSProtection: "1; mode=block",
     ...customConfig,
   };
