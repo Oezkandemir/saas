@@ -219,12 +219,12 @@ export async function getAllUsers() {
 
     // Create a map of auth user data by ID
     const authUserMap = new Map(
-      authUsers?.users?.map((authUser) => [
+      (authUsers?.users?.map((authUser) => [
         authUser.id,
         {
           last_sign_in_at: authUser.last_sign_in_at,
         },
-      ]) || [],
+      ]) || []) as Array<[string, { last_sign_in_at: string | null }]>,
     );
 
     // Merge public.users data with auth.users data

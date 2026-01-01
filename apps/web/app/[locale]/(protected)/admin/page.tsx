@@ -17,6 +17,8 @@ import {
   TrendingUp,
   DollarSign,
   Mail,
+  FileText,
+  Layers,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
@@ -70,6 +72,9 @@ export default async function AdminPanelPage(props: Props) {
   const tUsageStats = await getTranslations("Admin.usageStats");
   const tRevenue = await getTranslations("Admin.revenue");
   const tEmails = await getTranslations("Admin.emails");
+  const tPlans = await getTranslations("Admin.plans");
+  const tAudit = await getTranslations("Admin.audit");
+  const tBulk = await getTranslations("Admin.bulk");
 
   if (!user?.email) {
     redirect("/login");
@@ -366,6 +371,75 @@ export default async function AdminPanelPage(props: Props) {
                 <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
                   {tEmails("manageTemplates")}
                   <Mail className="size-3.5" />
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href={`/${locale}/admin/plans`} className="group">
+            <Card className="h-full hover interactive">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex gap-2 items-center text-sm">
+                  <CreditCard className="size-4 text-primary" />
+                  {t("plans.title")}
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  {t("plans.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-3 text-xs text-muted-foreground">
+                  {t("plans.subheading")}
+                </p>
+                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
+                  {t("plans.title")}
+                  <CreditCard className="size-3.5" />
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href={`/${locale}/admin/audit`} className="group">
+            <Card className="h-full hover interactive">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex gap-2 items-center text-sm">
+                  <FileText className="size-4 text-primary" />
+                  {tAudit("title")}
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  {tAudit("description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-3 text-xs text-muted-foreground">
+                  {tAudit("subheading")}
+                </p>
+                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
+                  {tAudit("title")}
+                  <FileText className="size-3.5" />
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href={`/${locale}/admin/bulk`} className="group">
+            <Card className="h-full hover interactive">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex gap-2 items-center text-sm">
+                  <Layers className="size-4 text-primary" />
+                  {tBulk("title")}
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  {tBulk("description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-3 text-xs text-muted-foreground">
+                  {tBulk("subheading")}
+                </p>
+                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
+                  {tBulk("title")}
+                  <Layers className="size-3.5" />
                 </Button>
               </CardContent>
             </Card>

@@ -526,6 +526,38 @@
       "description": "Manage email templates and test Resend",
       "manageDescription": "Overview of all email templates and Resend configuration check",
       "manageTemplates": "Manage Templates"
+    },
+    "plans": {
+      "title": "Plan Management",
+      "description": "Manage subscription plans, limits, and features",
+      "heading": "Plan Management",
+      "subheading": "Manage subscription plans, view statistics, and configure limits",
+      "stats": {
+        "totalMRR": "Total MRR",
+        "totalARR": "Total ARR",
+        "totalUsers": "Total Users",
+        "activePlans": "Active Plans",
+        "monthlyRecurring": "Monthly Recurring Revenue",
+        "annualRecurring": "Annual Recurring Revenue",
+        "activeSubscribers": "Active Subscribers",
+        "availablePlans": "Available Plans"
+      },
+      "planStatistics": "Plan Statistics",
+      "planStatisticsDescription": "Revenue and user statistics per plan",
+      "recentMigrations": "Recent Plan Migrations",
+      "recentMigrationsDescription": "Recent upgrades, downgrades, and plan changes"
+    },
+    "audit": {
+      "title": "Audit Log",
+      "description": "View all admin actions and changes",
+      "heading": "Audit Log",
+      "subheading": "Track all administrative actions for compliance and security"
+    },
+    "bulk": {
+      "title": "Bulk Operations",
+      "description": "Perform actions on multiple users at once",
+      "heading": "Bulk Operations",
+      "subheading": "Manage multiple users, export data, and send bulk emails"
     }
   },
   "DashboardSidebar": {

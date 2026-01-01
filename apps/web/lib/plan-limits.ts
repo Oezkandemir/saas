@@ -1,8 +1,18 @@
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { logger } from "@/lib/logger";
+import { supabaseAdmin } from "@/lib/db";
 
-export type LimitType = "customers" | "qr_codes" | "documents";
+export type LimitType = 
+  | "customers" 
+  | "qr_codes" 
+  | "documents"
+  | "api_calls"
+  | "storage"
+  | "team_members"
+  | "webhooks"
+  | "custom_domains"
+  | "email_sends";
 
 export interface LimitCheckResult {
   allowed: boolean;
@@ -13,24 +23,111 @@ export interface LimitCheckResult {
 }
 
 /**
- * Get the limit for a specific resource based on the user's plan
+ * Get the limit for a specific resource based on the user's plan from database
  */
-function getPlanLimit(planTitle: string, limitType: LimitType): number {
-  // Free plan limits
-  if (planTitle === "Free") {
+async function getPlanLimitFromDB(planId: string, limitType: LimitType): Promise<number | null> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("plan_limits")
+      .select("limit_value")
+      .eq("plan_id", planId)
+      .eq("limit_type", limitType)
+      .single();
+
+    if (error || !data) {
+      return null;
+    }
+
+    return data.limit_value === null ? Infinity : Number(data.limit_value);
+  } catch (error) {
+    logger.error("Error fetching plan limit from DB:", error);
+    return null;
+  }
+}
+
+/**
+ * Get plan ID from plan key
+ */
+async function getPlanIdFromKey(planKey: string): Promise<string | null> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("plans")
+      .select("id")
+      .eq("plan_key", planKey.toLowerCase())
+      .single();
+
+    if (error || !data) {
+      return null;
+    }
+
+    return data.id;
+  } catch (error) {
+    logger.error("Error fetching plan ID from key:", error);
+    return null;
+  }
+}
+
+/**
+ * Get the limit for a specific resource based on the user's plan
+ * Falls back to hardcoded limits if database lookup fails
+ */
+async function getPlanLimit(planTitle: string, planKey: string, limitType: LimitType): Promise<number> {
+  // Try to get from database first
+  const planId = await getPlanIdFromKey(planKey);
+  if (planId) {
+    const dbLimit = await getPlanLimitFromDB(planId, limitType);
+    if (dbLimit !== null) {
+      return dbLimit;
+    }
+  }
+
+  // Fallback to hardcoded limits
+  if (planTitle === "Free" || planKey === "free") {
     switch (limitType) {
       case "customers":
         return 3;
       case "qr_codes":
-        return 3; // Same as customers since each customer gets a QR code
+        return 3;
       case "documents":
-        return 3; // Per month
+        return 3;
+      case "api_calls":
+        return 100;
+      case "storage":
+        return 100; // MB
+      case "team_members":
+        return 1;
+      case "webhooks":
+        return 0;
+      case "custom_domains":
+        return 0;
+      case "email_sends":
+        return 100;
       default:
         return Infinity;
     }
   }
-  
-  // Pro and Enterprise plans have unlimited resources
+
+  // Pro plan fallback limits
+  if (planTitle === "Pro" || planKey === "pro") {
+    switch (limitType) {
+      case "api_calls":
+        return 10000;
+      case "storage":
+        return 10240; // 10 GB in MB
+      case "team_members":
+        return 5;
+      case "webhooks":
+        return 10;
+      case "custom_domains":
+        return 1;
+      case "email_sends":
+        return 10000;
+      default:
+        return Infinity;
+    }
+  }
+
+  // Enterprise plan has unlimited for most
   return Infinity;
 }
 
@@ -43,7 +140,8 @@ export async function checkPlanLimit(
 ): Promise<LimitCheckResult> {
   try {
     const subscriptionPlan = await getUserSubscriptionPlan(userId);
-    const limit = getPlanLimit(subscriptionPlan.title, limitType);
+    const planKey = subscriptionPlan.title.toLowerCase() as string;
+    const limit = await getPlanLimit(subscriptionPlan.title, planKey, limitType);
     
     // Unlimited plans don't need checking
     if (limit === Infinity) {
@@ -124,6 +222,107 @@ export async function checkPlanLimit(
         }
         
         current = count || 0;
+        break;
+      }
+      
+      case "api_calls": {
+        // Get API calls from usage_metrics for current month
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        
+        const { data, error } = await supabase
+          .from("usage_metrics")
+          .select("metric_value")
+          .eq("user_id", userId)
+          .eq("metric_type", "api_calls")
+          .gte("metric_period_start", startOfMonth.toISOString())
+          .lt("metric_period_end", endOfMonth.toISOString());
+        
+        if (error) {
+          logger.error("Error counting API calls", error);
+          return {
+            allowed: true,
+            current: 0,
+            limit,
+            limitType,
+          };
+        }
+        
+        current = data?.reduce((sum, m) => sum + Number(m.metric_value || 0), 0) || 0;
+        break;
+      }
+      
+      case "storage": {
+        // Get storage usage from usage_metrics (lifetime)
+        const { data, error } = await supabase
+          .from("usage_metrics")
+          .select("metric_value")
+          .eq("user_id", userId)
+          .eq("metric_type", "storage");
+        
+        if (error) {
+          logger.error("Error counting storage", error);
+          return {
+            allowed: true,
+            current: 0,
+            limit,
+            limitType,
+          };
+        }
+        
+        current = data?.reduce((sum, m) => sum + Number(m.metric_value || 0), 0) || 0;
+        break;
+      }
+      
+      case "team_members": {
+        // Count team members (if teams table exists)
+        // For now, return 1 as default
+        current = 1;
+        break;
+      }
+      
+      case "webhooks": {
+        // Count webhooks (if webhooks table exists)
+        const { count, error } = await supabase
+          .from("webhooks")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", userId);
+        
+        if (error) {
+          // Table might not exist, default to 0
+          current = 0;
+        } else {
+          current = count || 0;
+        }
+        break;
+      }
+      
+      case "email_sends": {
+        // Get email sends from usage_metrics for current month
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        
+        const { data, error } = await supabase
+          .from("usage_metrics")
+          .select("metric_value")
+          .eq("user_id", userId)
+          .eq("metric_type", "email_sends")
+          .gte("metric_period_start", startOfMonth.toISOString())
+          .lt("metric_period_end", endOfMonth.toISOString());
+        
+        if (error) {
+          logger.error("Error counting email sends", error);
+          return {
+            allowed: true,
+            current: 0,
+            limit,
+            limitType,
+          };
+        }
+        
+        current = data?.reduce((sum, m) => sum + Number(m.metric_value || 0), 0) || 0;
         break;
       }
     }

@@ -526,6 +526,38 @@
       "description": "E-Mail-Templates verwalten und Resend testen",
       "manageDescription": "Übersicht aller E-Mail-Templates und Resend-Konfiguration prüfen",
       "manageTemplates": "Templates verwalten"
+    },
+    "plans": {
+      "title": "Plan-Verwaltung",
+      "description": "Abonnement-Pläne, Limits und Features verwalten",
+      "heading": "Plan-Verwaltung",
+      "subheading": "Abonnement-Pläne verwalten, Statistiken anzeigen und Limits konfigurieren",
+      "stats": {
+        "totalMRR": "Gesamt MRR",
+        "totalARR": "Gesamt ARR",
+        "totalUsers": "Gesamt Benutzer",
+        "activePlans": "Aktive Pläne",
+        "monthlyRecurring": "Monatliches wiederkehrendes Einkommen",
+        "annualRecurring": "Jährliches wiederkehrendes Einkommen",
+        "activeSubscribers": "Aktive Abonnenten",
+        "availablePlans": "Verfügbare Pläne"
+      },
+      "planStatistics": "Plan-Statistiken",
+      "planStatisticsDescription": "Einnahmen- und Benutzerstatistiken pro Plan",
+      "recentMigrations": "Letzte Plan-Migrationen",
+      "recentMigrationsDescription": "Letzte Upgrades, Downgrades und Plan-Änderungen"
+    },
+    "audit": {
+      "title": "Audit-Log",
+      "description": "Alle Admin-Aktionen und Änderungen anzeigen",
+      "heading": "Audit-Log",
+      "subheading": "Alle administrativen Aktionen für Compliance und Sicherheit verfolgen"
+    },
+    "bulk": {
+      "title": "Massenoperationen",
+      "description": "Aktionen für mehrere Benutzer gleichzeitig ausführen",
+      "heading": "Massenoperationen",
+      "subheading": "Mehrere Benutzer verwalten, Daten exportieren und Massen-E-Mails senden"
     }
   },
   "DashboardSidebar": {
