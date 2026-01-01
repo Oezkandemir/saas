@@ -3,6 +3,36 @@
  * Tracks Core Web Vitals and custom performance metrics
  */
 
+// Web API type definitions for Performance Observer entries
+interface LayoutShift extends PerformanceEntry {
+  value: number;
+  hadRecentInput: boolean;
+  sources: LayoutShiftAttribution[];
+}
+
+interface LayoutShiftAttribution {
+  node?: Node;
+  previousRect: DOMRectReadOnly;
+  currentRect: DOMRectReadOnly;
+}
+
+interface PerformanceEventTiming extends PerformanceEntry {
+  processingStart: number;
+  processingEnd: number;
+  duration: number;
+  cancelable: boolean;
+}
+
+interface PerformanceNavigationTiming extends PerformanceEntry {
+  requestStart: number;
+  responseStart: number;
+  responseEnd: number;
+  domContentLoadedEventStart: number;
+  domContentLoadedEventEnd: number;
+  loadEventStart: number;
+  loadEventEnd: number;
+}
+
 export interface CoreWebVitals {
   lcp?: number; // Largest Contentful Paint
   fid?: number; // First Input Delay
