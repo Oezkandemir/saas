@@ -155,16 +155,16 @@ export default async function AdminPanelPage(props: Props) {
           const Icon = stat.icon;
           return (
             <Card key={stat.title} hover>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardHeader className="flex flex-row justify-between items-center pb-3 space-y-0">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {stat.title}
                 </CardTitle>
-                <div className="flex size-9 items-center justify-center rounded-md bg-muted/50 border border-border">
+                <div className="flex justify-center items-center rounded-md border size-9 bg-muted/50 border-border">
                   <Icon className="size-4 text-muted-foreground" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-semibold mb-1">{stat.value}</div>
+                <div className="mb-1 text-2xl font-semibold">{stat.value}</div>
                 <CardDescription className="text-xs">
                   {stat.description}
                 </CardDescription>
@@ -178,17 +178,17 @@ export default async function AdminPanelPage(props: Props) {
           <Link href={`/${locale}/admin/users`} className="group">
             <Card className="h-full hover interactive">
               <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-sm">
+                <CardTitle className="flex gap-2 items-center text-sm">
                   <Users className="size-4 text-primary" />
                   {tUsers("management")}
                 </CardTitle>
                 <CardDescription className="text-xs">{tUsers("description")}</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground mb-3">
+                <p className="mb-3 text-xs text-muted-foreground">
                   {tStats("userManagementDesc")}
                 </p>
-                <Button size="sm" className="gap-2 w-full sm:w-auto text-xs h-8">
+                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
                   {tUsers("manageUsers")}
                   <Users className="size-3.5" />
                 </Button>
@@ -199,17 +199,17 @@ export default async function AdminPanelPage(props: Props) {
           <Link href={`/${locale}/admin/support`} className="group">
             <Card className="h-full hover interactive">
               <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-sm">
+                <CardTitle className="flex gap-2 items-center text-sm">
                   <MessageSquare className="size-4 text-primary" />
                   {tSupport("tickets")}
                 </CardTitle>
                 <CardDescription className="text-xs">{tSupport("description")}</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground mb-3">
+                <p className="mb-3 text-xs text-muted-foreground">
                   {tStats("supportTicketsDesc")}
                 </p>
-                <Button size="sm" className="gap-2 w-full sm:w-auto text-xs h-8">
+                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
                   {tSupport("manageTickets")}
                   <MessageSquare className="size-3.5" />
                 </Button>
@@ -220,17 +220,17 @@ export default async function AdminPanelPage(props: Props) {
           <Link href={`/${locale}/admin/analytics`} className="group">
             <Card className="h-full hover interactive">
               <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-sm">
+                <CardTitle className="flex gap-2 items-center text-sm">
                   <BarChart4 className="size-4 text-primary" />
                   {tStats("analyticsDashboard")}
                 </CardTitle>
                 <CardDescription className="text-xs">{tStats("trackMetrics")}</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground mb-3">
+                <p className="mb-3 text-xs text-muted-foreground">
                   {tStats("analyticsDashboard")} - {tStats("trackMetrics")}
                 </p>
-                <Button size="sm" className="gap-2 w-full sm:w-auto text-xs h-8">
+                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
                   {tStats("viewAnalytics")}
                   <BarChart4 className="size-3.5" />
                 </Button>
@@ -241,7 +241,7 @@ export default async function AdminPanelPage(props: Props) {
           <Link href={`/${locale}/admin/system`} className="group">
             <Card className="h-full hover interactive">
               <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-sm">
+                <CardTitle className="flex gap-2 items-center text-sm">
                   <Activity className="size-4 text-primary" />
                   System-Monitoring
                 </CardTitle>
@@ -250,10 +250,10 @@ export default async function AdminPanelPage(props: Props) {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground mb-3">
+                <p className="mb-3 text-xs text-muted-foreground">
                   Überwachung des Systemstatus, Fehlerverfolgung und Health-Checks
                 </p>
-                <Button size="sm" className="gap-2 w-full sm:w-auto text-xs h-8">
+                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
                   System anzeigen
                   <Activity className="size-3.5" />
                 </Button>
@@ -263,7 +263,7 @@ export default async function AdminPanelPage(props: Props) {
 
           <Card className="h-full hover">
             <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-sm">
+              <CardTitle className="flex gap-2 items-center text-sm">
                 <Settings className="size-4 text-primary" />
                 Stripe {tConfig("title")}
               </CardTitle>
