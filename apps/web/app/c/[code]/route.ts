@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSupabaseServer } from "@/lib/supabase-server";
+import { getSupabaseStatic } from "@/lib/supabase-server";
 
 export async function GET(
   request: Request,
@@ -12,7 +12,8 @@ export async function GET(
       return new NextResponse("QR-Code nicht gefunden", { status: 404 });
     }
 
-    const supabase = await getSupabaseServer();
+    // Use static client for public QR code access (no authentication required)
+    const supabase = getSupabaseStatic();
     
     // Find customer by QR code
     const { data: customer, error } = await supabase

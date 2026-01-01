@@ -28,7 +28,8 @@ import {
 import { Icons } from "@/components/shared/icons";
 import { Separator } from "@/components/ui/separator";
 import { useSupabase } from "@/components/supabase-provider";
-import { LayoutDashboard, Mail } from "lucide-react";
+import { LayoutDashboard, Mail, Sparkles } from "lucide-react";
+import { getUserPlan } from "@/actions/get-user-plan";
 
 interface DashboardSidebarProps {
   links: SidebarNavItem[];
@@ -39,13 +40,53 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
   const path = usePathname();
   // Desktop sidebar is always expanded by default (only shown on lg+ screens, 1024px+)
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const [userPlan, setUserPlan] = useState<{ title: string; isPaid: boolean } | null>(null);
+  const [isNewUser, setIsNewUser] = useState(false);
   const t = useTranslations("DashboardSidebar");
   const { unreadCount } = useNotifications();
-  const { session } = useSupabase();
+  const { session, supabase } = useSupabase();
   const userEmail = session?.user?.email || "";
   
   // Check if we're on dashboard page
   const isDashboardPage = path === "/dashboard" || path.startsWith("/dashboard/");
+
+  // Fetch user plan and check if user is new
+  useEffect(() => {
+    async function fetchUserData() {
+      try {
+        if (session?.user?.id) {
+          // Fetch subscription plan
+          const plan = await getUserPlan();
+          if (plan) {
+            setUserPlan({
+              title: plan.title,
+              isPaid: plan.isPaid,
+            });
+          }
+
+          // Check if user is new (created within last 30 days)
+          const { data: userData } = await supabase
+            .from("users")
+            .select("created_at")
+            .eq("id", session.user.id)
+            .single();
+
+          if (userData?.created_at) {
+            const createdDate = new Date(userData.created_at);
+            const daysSinceCreation = Math.floor(
+              (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+            );
+            // Consider user "new" if created within last 30 days
+            setIsNewUser(daysSinceCreation <= 30);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      }
+    }
+
+    fetchUserData();
+  }, [session, supabase]);
 
   // NOTE: Use this if you want save in local storage -- Credits: Hosna Qasmei
   //
@@ -217,6 +258,47 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
                 "flex flex-col gap-2 p-4",
                 !isSidebarExpanded && "items-center"
               )}>
+                {/* Upgrade Banner - Only show for new users on free plan */}
+                {isNewUser && userPlan && !userPlan.isPaid && userPlan.title === "Free" && (
+                  <>
+                    {isSidebarExpanded ? (
+                      <Link
+                        href="/pricing"
+                        className="group relative overflow-hidden rounded-lg border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-3 transition-all hover:border-primary/40 hover:shadow-md"
+                      >
+                        <div className="flex items-start gap-2">
+                          <Sparkles className="mt-0.5 size-4 shrink-0 text-primary" />
+                          <div className="flex-1 space-y-1">
+                            <p className="text-xs font-semibold text-foreground">
+                              Upgrade empfohlen
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Für mehr Features upgraden
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    ) : (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link
+                            href="/pricing"
+                            className="flex items-center justify-center rounded-lg border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-2 transition-all hover:border-primary/40 hover:shadow-md"
+                          >
+                            <Sparkles className="size-4 text-primary" />
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                          <div className="flex flex-col gap-1">
+                            <span className="font-semibold">Upgrade empfohlen</span>
+                            <span className="text-xs">Für mehr Features upgraden</span>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                  </>
+                )}
+
                 {isSidebarExpanded ? (
                   <>
                     <div className="flex items-center gap-2 text-sm font-medium text-foreground">
@@ -266,8 +348,49 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
 function MobileSheetSidebarContent({ links, isFreePlan = true }: DashboardSidebarProps) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
+  const [userPlan, setUserPlan] = useState<{ title: string; isPaid: boolean } | null>(null);
+  const [isNewUser, setIsNewUser] = useState(false);
   const t = useTranslations("DashboardSidebar");
   const { unreadCount } = useNotifications();
+  const { session, supabase } = useSupabase();
+
+  // Fetch user plan and check if user is new
+  useEffect(() => {
+    async function fetchUserData() {
+      try {
+        if (session?.user?.id) {
+          // Fetch subscription plan
+          const plan = await getUserPlan();
+          if (plan) {
+            setUserPlan({
+              title: plan.title,
+              isPaid: plan.isPaid,
+            });
+          }
+
+          // Check if user is new (created within last 30 days)
+          const { data: userData } = await supabase
+            .from("users")
+            .select("created_at")
+            .eq("id", session.user.id)
+            .single();
+
+          if (userData?.created_at) {
+            const createdDate = new Date(userData.created_at);
+            const daysSinceCreation = Math.floor(
+              (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+            );
+            // Consider user "new" if created within last 30 days
+            setIsNewUser(daysSinceCreation <= 30);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      }
+    }
+
+    fetchUserData();
+  }, [session, supabase]);
 
   // Mobile sidebar shown as overlay on all screens smaller than lg (1024px)
   return (
@@ -366,6 +489,29 @@ function MobileSheetSidebarContent({ links, isFreePlan = true }: DashboardSideba
                     })}
                   </section>
                 ))}
+
+                {/* Upgrade Banner - Only show for new users on free plan */}
+                {isNewUser && userPlan && !userPlan.isPaid && userPlan.title === "Free" && (
+                  <div className="mt-4 border-t pt-4">
+                    <Link
+                      href="/pricing"
+                      onClick={() => setOpen(false)}
+                      className="group relative overflow-hidden rounded-lg border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-3 transition-all hover:border-primary/40 hover:shadow-md"
+                    >
+                      <div className="flex items-start gap-2">
+                        <Sparkles className="mt-0.5 size-4 shrink-0 text-primary" />
+                        <div className="flex-1 space-y-1">
+                          <p className="text-xs font-semibold text-foreground">
+                            Upgrade empfohlen
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Für mehr Features upgraden
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                )}
               </nav>
               
             </div>
