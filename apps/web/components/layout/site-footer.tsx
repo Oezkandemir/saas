@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { footerLinks, siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "@/components/layout/mode-toggle";
+import { SystemStatusLink } from "./system-status-link";
 
 import { NewsletterForm } from "../forms/newsletter-form";
 import { Icons } from "../shared/icons";
@@ -43,7 +44,9 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
 
       <div className="border-t py-4">
         <div className="container grid max-w-6xl grid-cols-3 items-center">
-          <div className="hidden sm:block"></div>
+          <div className="hidden sm:block">
+            <SystemStatusLink />
+          </div>
           <p className="col-span-3 text-center text-sm text-muted-foreground sm:col-span-1">
             Powered by Cenety &copy; 2025.
           </p>
@@ -59,6 +62,10 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
             </Link>
             <ModeToggle />
           </div>
+        </div>
+        {/* Mobile: Show system status below */}
+        <div className="container max-w-6xl sm:hidden mt-4 flex justify-center">
+          <SystemStatusLink />
         </div>
       </div>
     </footer>

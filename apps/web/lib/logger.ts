@@ -44,10 +44,76 @@ class Logger {
       console.error(this.formatMessage('error', message));
     }
 
+    // Log to system monitoring if server-side
+    if (!this.isClient) {
+      this.logToSystemMonitoring(message, error).catch((err) => {
+        // Don't throw - logging failures shouldn't break the app
+        console.error('Failed to log to system monitoring:', err);
+      });
+    }
+
     // In production, you might want to send errors to a service like Sentry
     if (!this.isDevelopment && this.isClient) {
       // TODO: Send to error tracking service
       // Example: Sentry.captureException(error);
+    }
+  }
+
+  private async logToSystemMonitoring(message: string, error?: any) {
+    try {
+      // Skip logging if this is an RLS error to prevent infinite loops
+      if (error?.code === '42501' || error?.message?.includes('row-level security')) {
+        return;
+      }
+
+      // Skip logging if message is about failed system error logging
+      if (message.includes('Failed to log system error')) {
+        return;
+      }
+
+      // Only import on server side
+      const { logSystemError } = await import('./system-monitoring');
+      
+      // Determine component from error or default to 'api'
+      let component: 'database' | 'api' | 'auth' | 'email' | 'storage' | 'payment' = 'api';
+      if (error) {
+        const errorMessage = error.message || String(error);
+        if (errorMessage.includes('database') || errorMessage.includes('supabase') || errorMessage.includes('postgres')) {
+          component = 'database';
+        } else if (errorMessage.includes('auth') || errorMessage.includes('login') || errorMessage.includes('session')) {
+          component = 'auth';
+        } else if (errorMessage.includes('email') || errorMessage.includes('resend')) {
+          component = 'email';
+        } else if (errorMessage.includes('storage') || errorMessage.includes('s3')) {
+          component = 'storage';
+        } else if (errorMessage.includes('stripe') || errorMessage.includes('payment')) {
+          component = 'payment';
+        }
+      }
+
+      // Determine error type
+      let errorType: 'critical' | 'warning' | 'info' = 'warning';
+      if (error) {
+        const errorMessage = error.message || String(error);
+        if (errorMessage.includes('critical') || errorMessage.includes('fatal') || errorMessage.includes('down')) {
+          errorType = 'critical';
+        }
+      }
+
+      await logSystemError({
+        component,
+        errorType,
+        errorMessage: message,
+        errorStack: error?.stack || (error ? String(error) : undefined),
+        context: error ? { error: String(error) } : undefined,
+      });
+    } catch (err) {
+      // Silently fail - don't break logging
+      // This prevents infinite loops if logging itself fails
+      // Don't log RLS errors to prevent loops
+      if (process.env.NODE_ENV === 'development' && err && typeof err === 'object' && 'code' in err && err.code !== '42501') {
+        console.error('Failed to log to system monitoring:', err);
+      }
     }
   }
 

@@ -4,8 +4,10 @@ import Link from "next/link";
 
 import { getCurrentUser } from "@/lib/session";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
+import { getAllPlanFeatures, type PlanFeaturesInfo } from "@/lib/plan-features";
 import { constructMetadata } from "@/lib/utils";
 import { DeleteAccountSection } from "@/components/dashboard/delete-account";
+import { PlanFeaturesDisplay } from "@/components/dashboard/plan-features-display";
 import { DataExport } from "@/components/gdpr/data-export";
 import { AccountDeletion } from "@/components/gdpr/account-deletion";
 import { SectionColumns } from "@/components/dashboard/section-columns";
@@ -15,7 +17,7 @@ import { UserRoleForm } from "@/components/forms/user-role-form";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Crown, Sparkles, Settings, ArrowRight, Building2 } from "lucide-react";
+import { Crown, Sparkles, Settings, ArrowRight, Building2, Shield, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserSubscriptionPlan } from "@/types";
 
@@ -36,8 +38,10 @@ export default async function SettingsPage() {
 
   // Get user subscription plan
   let subscriptionPlan: UserSubscriptionPlan | null = null;
+  let planFeatures: PlanFeaturesInfo | null = null;
   try {
     subscriptionPlan = await getUserSubscriptionPlan(user.id, user.email);
+    planFeatures = await getAllPlanFeatures(user.id);
   } catch (error) {
     console.error("Error fetching subscription plan:", error);
   }
@@ -137,6 +141,18 @@ export default async function SettingsPage() {
           </div>
         )}
 
+        {/* Plan Features & Limits Section */}
+        {planFeatures && (
+          <div className="pt-3 sm:pt-4">
+            <SectionColumns
+              title="Features & Limits"
+              description="Detaillierte Übersicht über Ihre verfügbaren Features und aktuellen Limits"
+            >
+              <PlanFeaturesDisplay planInfo={planFeatures} />
+            </SectionColumns>
+          </div>
+        )}
+
         <div className="pt-4 sm:pt-6">
           <UserAvatarForm
             user={{ id: user.id, avatar_url: user.user_metadata?.avatar_url }}
@@ -176,13 +192,108 @@ export default async function SettingsPage() {
           </SectionColumns>
         </div>
 
+        {/* Preferences Section */}
+        <div className="pt-4 sm:pt-6">
+          <SectionColumns
+            title="Preferences"
+            description="Customize your application preferences"
+          >
+            <Card>
+              <CardHeader className="p-3 sm:p-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex size-7 sm:size-8 items-center justify-center rounded-lg bg-muted/50 border border-border shrink-0">
+                    <Settings className="size-3.5 sm:size-4 text-muted-foreground" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <CardTitle className="text-sm sm:text-base truncate">Application Preferences</CardTitle>
+                    <CardDescription className="text-xs truncate">
+                      Theme, language, notifications, and format settings
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-3 sm:p-4 pt-0">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
+                  <div className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
+                    Customize theme, language, date/time formats, and notification preferences
+                  </div>
+                  <Link href="/dashboard/settings/preferences" className="group flex items-center gap-1 text-xs sm:text-sm text-primary hover:gap-2 transition-all touch-manipulation shrink-0">
+                    Manage Preferences
+                    <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </SectionColumns>
+        </div>
+
+        {/* Security Settings Section */}
+        <div className="pt-4 sm:pt-6">
+          <SectionColumns
+            title="Sicherheit"
+            description="Verwalten Sie Ihre Sicherheitseinstellungen"
+          >
+            <Card>
+              <CardHeader className="p-3 sm:p-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex size-7 sm:size-8 items-center justify-center rounded-lg bg-muted/50 border border-border shrink-0">
+                    <Shield className="size-3.5 sm:size-4 text-muted-foreground" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <CardTitle className="text-sm sm:text-base truncate">Sicherheitseinstellungen</CardTitle>
+                    <CardDescription className="text-xs truncate">
+                      2FA, Sessions und Login-Historie verwalten
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-3 sm:p-4 pt-0">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
+                  <div className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
+                    Zwei-Faktor-Authentifizierung, aktive Sessions und Login-Historie
+                  </div>
+                  <Link href="/dashboard/settings/security" className="group flex items-center gap-1 text-xs sm:text-sm text-primary hover:gap-2 transition-all touch-manipulation shrink-0">
+                    Sicherheit verwalten
+                    <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </SectionColumns>
+        </div>
+
         {/* GDPR Data Export Section */}
         <div className="pt-4 sm:pt-6">
           <SectionColumns
             title="Datenschutz & DSGVO"
             description="Verwalten Sie Ihre Daten gemäß DSGVO"
           >
-            <DataExport />
+            <Card>
+              <CardHeader className="p-3 sm:p-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex size-7 sm:size-8 items-center justify-center rounded-lg bg-muted/50 border border-border shrink-0">
+                    <FileText className="size-3.5 sm:size-4 text-muted-foreground" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <CardTitle className="text-sm sm:text-base truncate">Datenschutz-Einstellungen</CardTitle>
+                    <CardDescription className="text-xs truncate">
+                      Einwilligungen und Datenexport verwalten
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-3 sm:p-4 pt-0">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
+                  <div className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
+                    Verwalten Sie Ihre Einwilligungen und exportieren Sie Ihre Daten
+                  </div>
+                  <Link href="/dashboard/settings/privacy" className="group flex items-center gap-1 text-xs sm:text-sm text-primary hover:gap-2 transition-all touch-manipulation shrink-0">
+                    Datenschutz verwalten
+                    <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
           </SectionColumns>
         </div>
 

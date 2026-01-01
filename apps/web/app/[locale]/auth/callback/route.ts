@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
   if (code) {
     // Exchange code for session
     try {
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
+      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
         console.error("Error exchanging code for session:", error.message);
@@ -30,6 +30,17 @@ export async function GET(request: NextRequest) {
             `/${locale}/login?error=${encodeURIComponent(error.message)}`,
             requestUrl.origin,
           ),
+        );
+      }
+
+      // Create login session and log to history
+      if (data.session && data.user) {
+        const { createLoginSession } = await import("@/lib/session-tracking");
+        const expiresAt = new Date(data.session.expires_at! * 1000);
+        await createLoginSession(
+          data.user.id,
+          data.session.access_token,
+          expiresAt,
         );
       }
 

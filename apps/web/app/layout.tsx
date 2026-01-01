@@ -17,6 +17,7 @@ import { QueryClientProvider } from "@/components/providers/query-client-provide
 import { DynamicProviders } from "@/components/providers/dynamic-providers";
 import { SupabaseProvider } from "@/components/supabase-provider";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
+import { ThemeSyncProvider } from "@/components/providers/theme-sync-provider";
 
 export const dynamic = "force-dynamic";
 
@@ -73,19 +74,21 @@ export default async function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <NextIntlClientProvider messages={messages} locale={locale}>
-                <AvatarProvider>
-                  <QueryClientProvider>
-                    <NotificationsProvider>
-                      <DynamicProviders>
-                        {children}
-                      </DynamicProviders>
-                      <Toaster richColors closeButton />
-                      <TailwindIndicator />
-                    </NotificationsProvider>
-                  </QueryClientProvider>
-                </AvatarProvider>
-              </NextIntlClientProvider>
+              <ThemeSyncProvider>
+                <NextIntlClientProvider messages={messages} locale={locale}>
+                  <AvatarProvider>
+                    <QueryClientProvider>
+                      <NotificationsProvider>
+                        <DynamicProviders>
+                          {children}
+                        </DynamicProviders>
+                        <Toaster richColors closeButton />
+                        <TailwindIndicator />
+                      </NotificationsProvider>
+                    </QueryClientProvider>
+                  </AvatarProvider>
+                </NextIntlClientProvider>
+              </ThemeSyncProvider>
             </ThemeProvider>
           </SupabaseProvider>
         </ErrorBoundary>

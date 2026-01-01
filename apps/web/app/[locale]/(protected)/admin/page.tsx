@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Users,
   Shield,
+  Activity,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
@@ -232,6 +233,29 @@ export default async function AdminPanelPage(props: Props) {
                 <Button size="sm" className="gap-2 w-full sm:w-auto text-xs h-8">
                   {tStats("viewAnalytics")}
                   <BarChart4 className="size-3.5" />
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href={`/${locale}/admin/system`} className="group">
+            <Card className="h-full hover interactive">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Activity className="size-4 text-primary" />
+                  System-Monitoring
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  System-Status und Fehlerüberwachung
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Überwachung des Systemstatus, Fehlerverfolgung und Health-Checks
+                </p>
+                <Button size="sm" className="gap-2 w-full sm:w-auto text-xs h-8">
+                  System anzeigen
+                  <Activity className="size-3.5" />
                 </Button>
               </CardContent>
             </Card>

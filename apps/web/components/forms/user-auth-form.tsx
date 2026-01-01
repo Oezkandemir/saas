@@ -147,6 +147,15 @@ export function UserAuthForm({
           });
         }
 
+        // Track login session
+        if (signInResult.data.session) {
+          const { trackLoginSession } = await import("@/actions/auth-actions");
+          await trackLoginSession(
+            signInResult.data.session.access_token,
+            signInResult.data.session.expires_at!,
+          );
+        }
+
         toast.success("Successfully signed in", {
           description: "You are now logged in to your account.",
         });

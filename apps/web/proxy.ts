@@ -183,6 +183,43 @@ export default async function proxy(request: NextRequest) {
     );
   }
 
+  // Add security headers to the response
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-XSS-Protection", "1; mode=block");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set(
+    "Permissions-Policy",
+    "geolocation=(), microphone=(), camera=()",
+  );
+
+  // Add HSTS header for HTTPS
+  if (request.nextUrl.protocol === "https:") {
+    response.headers.set(
+      "Strict-Transport-Security",
+      "max-age=31536000; includeSubDomains; preload",
+    );
+  }
+
+  // Add Content Security Policy
+  response.headers.set(
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com data:",
+      "img-src 'self' data: https: blob:",
+      "connect-src 'self' https://*.supabase.co https://*.vercel.app wss://*.supabase.co",
+      "frame-src 'self' https://vercel.live",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "upgrade-insecure-requests",
+    ].join("; "),
+  );
+
   // Return the response we've built up
   return response;
 }
