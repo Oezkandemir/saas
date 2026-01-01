@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { getCustomer } from "@/actions/customers-actions";
-import { getDocuments } from "@/actions/documents-actions";
+import { getDocuments, type Document } from "@/actions/documents-actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +31,7 @@ export default async function CustomerDetailPage({
   if (!customer) redirect("/dashboard/customers");
 
   // Get documents for this customer
-  const customerDocuments = await getDocuments(undefined, id).catch(() => []);
+  const customerDocuments: Document[] = await getDocuments(undefined, id).catch(() => []);
 
   return (
     <div className="flex flex-col gap-6">

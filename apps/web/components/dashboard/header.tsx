@@ -15,7 +15,7 @@ interface DashboardHeaderProps {
 export function DashboardHeader({
   heading,
   text,
-  icon,
+  icon: Icon,
   showBackButton = false,
   backHref,
   children,
@@ -25,7 +25,7 @@ export function DashboardHeader({
     <ModernPageHeader
       title={heading}
       description={text}
-      icon={icon}
+      icon={Icon ? <Icon className="h-5 w-5 text-primary" /> : undefined}
       showBackButton={showBackButton}
       backHref={backHref}
       actions={actions || children}

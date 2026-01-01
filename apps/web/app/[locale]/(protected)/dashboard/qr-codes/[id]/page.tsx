@@ -1,6 +1,6 @@
 import { redirect, notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
-import { getQRCode, getQRCodeEvents } from "@/actions/qr-codes-actions";
+import { getQRCode, getQRCodeEvents, type QRCodeEvent } from "@/actions/qr-codes-actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,20 +34,20 @@ export default async function QRCodeDetailPage({
     notFound();
   }
 
-  const events = await getQRCodeEvents(id).catch(() => []);
+  const events: QRCodeEvent[] = await getQRCodeEvents(id).catch(() => []);
 
   return (
     <div className="flex flex-col gap-4">
       <ModernPageHeader
         title={qrCode.name}
         description="QR-Code Details und Statistiken"
-        icon={<QrCode className="h-5 w-5 text-primary" />}
+        icon={<QrCode className="w-5 h-5 text-primary" />}
         showBackButton
         backHref="/dashboard/qr-codes"
         actions={
           <Link href={`/dashboard/qr-codes/${qrCode.id}/edit`}>
             <Button variant="outline" className="gap-2">
-              <Edit className="h-4 w-4" />
+              <Edit className="w-4 h-4" />
               Bearbeiten
             </Button>
           </Link>
@@ -81,13 +81,13 @@ export default async function QRCodeDetailPage({
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Code</label>
-              <code className="text-xs bg-muted px-2 py-1 rounded block w-fit">
+              <code className="block px-2 py-1 text-xs rounded bg-muted w-fit">
                 {qrCode.code}
               </code>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Ziel</label>
-              <div className="flex items-center gap-2">
+              <div className="flex gap-2 items-center">
                 <p className="text-base break-all">{qrCode.destination}</p>
                 {qrCode.type === "url" && (
                   <a
@@ -96,7 +96,7 @@ export default async function QRCodeDetailPage({
                     rel="noopener noreferrer"
                     className="text-primary hover:underline"
                   >
-                    <ExternalLink className="h-4 w-4" />
+                    <ExternalLink className="w-4 h-4" />
                   </a>
                 )}
               </div>
@@ -186,7 +186,7 @@ export default async function QRCodeDetailPage({
               {events.slice(0, 10).map((event) => (
                 <div
                   key={event.id}
-                  className="flex items-center justify-between border-b pb-3 last:border-0"
+                  className="flex justify-between items-center pb-3 border-b last:border-0"
                 >
                   <div className="flex-1">
                     <p className="text-sm font-medium">

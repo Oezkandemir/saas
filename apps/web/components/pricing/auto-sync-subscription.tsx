@@ -29,6 +29,11 @@ export function AutoSyncSubscription() {
         // Wait a bit for webhook to process
         await new Promise((resolve) => setTimeout(resolve, 2000));
         
+        // Type guard: sessionId is already checked above, but TypeScript needs explicit check
+        if (!sessionId) {
+          return;
+        }
+        
         const result = await syncSubscriptionFromSession(sessionId);
         
         if (result.success) {

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
-import { getQRCodes } from "@/actions/qr-codes-actions";
-import { getCustomers } from "@/actions/customers-actions";
+import { getQRCodes, type QRCode } from "@/actions/qr-codes-actions";
+import { getCustomers, type Customer } from "@/actions/customers-actions";
 import { Button } from "@/components/ui/button";
 import { Plus, QrCode, TrendingUp, Scan, Download, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
@@ -17,7 +17,7 @@ export default async function QRCodesPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const [qrCodes, customers] = await Promise.all([
+  const [qrCodes, customers]: [QRCode[], Customer[]] = await Promise.all([
     getQRCodes().catch(() => []),
     getCustomers().catch(() => []),
   ]);

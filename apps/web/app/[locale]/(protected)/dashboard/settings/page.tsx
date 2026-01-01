@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Crown, Sparkles, Settings, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { UserSubscriptionPlan } from "@/types";
 
 export async function generateMetadata() {
   const t = await getTranslations("Settings");
@@ -32,7 +33,7 @@ export default async function SettingsPage() {
   if (!user?.id) redirect("/login");
 
   // Get user subscription plan
-  let subscriptionPlan = null;
+  let subscriptionPlan: UserSubscriptionPlan | null = null;
   try {
     subscriptionPlan = await getUserSubscriptionPlan(user.id, user.email);
   } catch (error) {

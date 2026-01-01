@@ -34,7 +34,7 @@ export function CustomerActivityTimeline({
   const activities: Activity[] = [
     {
       id: "created",
-      type: "created",
+      type: "created" as const,
       title: "Kunde erstellt",
       date: customer.created_at,
     },

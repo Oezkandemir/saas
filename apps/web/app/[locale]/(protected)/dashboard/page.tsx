@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
-import { getCustomers } from "@/actions/customers-actions";
-import { getDocuments } from "@/actions/documents-actions";
-import { getQRCodes } from "@/actions/qr-codes-actions";
+import { getCustomers, type Customer } from "@/actions/customers-actions";
+import { getDocuments, type Document } from "@/actions/documents-actions";
+import { getQRCodes, type QRCode } from "@/actions/qr-codes-actions";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +15,7 @@ export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const [customers, documents, qrCodes] = await Promise.all([
+  const [customers, documents, qrCodes]: [Customer[], Document[], QRCode[]] = await Promise.all([
     getCustomers().catch(() => []),
     getDocuments().catch(() => []),
     getQRCodes().catch(() => []),
@@ -258,7 +258,7 @@ export default async function DashboardPage() {
                   <Users className="size-4 text-muted-foreground" />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium truncate">
-                      {customer.name || customer.company_name || "Unbenannt"}
+                      {customer.name || customer.company || "Unbenannt"}
                     </div>
                     {customer.email && (
                       <div className="text-xs text-muted-foreground truncate">

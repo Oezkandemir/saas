@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
-import { getCustomers } from "@/actions/customers-actions";
+import { getCustomers, type Customer } from "@/actions/customers-actions";
 import { Button } from "@/components/ui/button";
 import { Plus, Users, QrCode, Mail, TrendingUp, ArrowRight, Building2, Phone, MapPin } from "lucide-react";
 import Link from "next/link";
@@ -17,7 +17,7 @@ export default async function CustomersPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const customers = await getCustomers().catch(() => []);
+  const customers: Customer[] = await getCustomers().catch(() => []);
 
   const stats = [
     {
@@ -54,7 +54,7 @@ export default async function CustomersPage() {
     },
     {
       title: "Mit Adresse",
-      value: customers.filter((c) => c.address || c.city).length,
+      value: customers.filter((c) => c.address_line1 || c.city).length,
       icon: MapPin,
       gradient: "from-indigo-500/20 to-blue-500/20",
       iconGradient: "from-indigo-500 to-blue-500",
@@ -62,7 +62,7 @@ export default async function CustomersPage() {
     },
     {
       title: "Unternehmen",
-      value: customers.filter((c) => c.company_name).length,
+      value: customers.filter((c) => c.company).length,
       icon: Building2,
       gradient: "from-violet-500/20 to-purple-500/20",
       iconGradient: "from-violet-500 to-purple-500",

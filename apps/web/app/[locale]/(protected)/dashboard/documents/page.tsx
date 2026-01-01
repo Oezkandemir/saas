@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
-import { getDocuments } from "@/actions/documents-actions";
+import { getDocuments, type Document } from "@/actions/documents-actions";
 import { Button } from "@/components/ui/button";
 import { Plus, FileText, FileCheck, FileX, TrendingUp, ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -20,7 +20,7 @@ export default async function DocumentsPage({
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const allDocuments = await getDocuments().catch(() => []);
+  const allDocuments: Document[] = await getDocuments().catch(() => []);
   const quotes = allDocuments.filter((d) => d.type === "quote");
   const invoices = allDocuments.filter((d) => d.type === "invoice");
   const draftQuotes = quotes.filter((d) => d.status === "draft");
