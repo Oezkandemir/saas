@@ -97,3 +97,4 @@ Falls das Problem weiterhin besteht, können Sie Turbopack in der `package.json`
 - [Next.js Troubleshooting](https://nextjs.org/docs/app/building-your-application/troubleshooting)
 - [Turbopack Issues](https://github.com/vercel/next.js/issues?q=is%3Aissue+EBADF)
 
+

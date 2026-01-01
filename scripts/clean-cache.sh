@@ -37,3 +37,4 @@ echo "Next steps:"
 echo "1. Restart your dev server: pnpm dev:web"
 echo "2. If the issue persists, try: pnpm install"
 
+

@@ -67,3 +67,4 @@ Falls das Problem weiterhin besteht:
 2. Überprüfen Sie, ob Sie den richtigen Stripe Account verwenden
 3. Stellen Sie sicher, dass die Price IDs aktiv sind (nicht archiviert)
 
+

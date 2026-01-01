@@ -182,3 +182,4 @@ Run the migration file in Supabase SQL Editor:
 - `apps/web/components/shared/icons.tsx` - Added missing icons
 - `apps/web/app/[locale]/(protected)/layout.tsx` - Added sidebar
 
+
