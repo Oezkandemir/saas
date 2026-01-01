@@ -51,25 +51,25 @@ export function NavBar({ scroll = false }: NavBarProps) {
       }`}
     >
       <MaxWidthWrapper
-        className="flex h-14 items-center justify-between py-4"
+        className="flex h-14 sm:h-16 items-center justify-between py-3 sm:py-4 px-4 sm:px-6"
         large={documentation}
       >
-        <div className="flex gap-6 md:gap-10">
-          <Link href="/" className="flex items-center space-x-1.5">
-            <Icons.logo />
-            <span className="font-urban text-xl font-bold">
+        <div className="flex gap-4 sm:gap-6 md:gap-10 items-center min-w-0 flex-1">
+          <Link href="/" className="flex items-center space-x-1.5 shrink-0">
+            <Icons.logo className="h-6 w-6 sm:h-7 sm:w-7" />
+            <span className="font-urban text-lg sm:text-xl font-bold hidden xs:inline">
               {meta("shortName")}
             </span>
           </Link>
 
           {links && links.length > 0 ? (
-            <nav className="hidden gap-6 md:flex">
+            <nav className="hidden gap-4 md:flex md:gap-6">
               {links.map((item, index) => (
                 <Link
                   key={index}
                   href={item.disabled ? "#" : item.href}
                   className={cn(
-                    "flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm",
+                    "flex items-center text-base font-medium transition-colors hover:text-foreground/80 lg:text-sm",
                     item.href.startsWith(`/${selectedLayout}`)
                       ? "text-foreground"
                       : "text-foreground/60",
@@ -83,9 +83,9 @@ export function NavBar({ scroll = false }: NavBarProps) {
           ) : null}
         </div>
 
-        <div className="flex items-center space-x-1 sm:space-x-2">
+        <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
           {/* Language Switcher - Now using drawer for all screen sizes */}
-          <div className="flex items-center pr-2 md:pr-0">
+          <div className="flex items-center pr-1 sm:pr-2 md:pr-0">
             <LanguageDrawer />
           </div>
 
@@ -112,11 +112,11 @@ export function NavBar({ scroll = false }: NavBarProps) {
           ) : null}
 
           {session ? (
-            <div className="flex items-center gap-2 pr-0 md:pr-0">
+            <div className="flex items-center gap-1 sm:gap-2 pr-0 md:pr-0">
               <Link
                 href="/dashboard"
                 className={cn(
-                  "hidden items-center rounded-full border border-input bg-background px-4 py-1.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground md:flex",
+                  "hidden items-center rounded-full border border-input bg-background px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground md:flex touch-manipulation",
                 )}
               >
                 {t("dashboard")}
@@ -126,18 +126,18 @@ export function NavBar({ scroll = false }: NavBarProps) {
           ) : (
             <>
               <Button
-                className="hidden gap-2 px-5 md:flex"
+                className="hidden gap-2 px-4 sm:px-5 text-sm md:flex touch-manipulation"
                 variant="default"
                 size="sm"
                 rounded="full"
                 onClick={() => setShowSignInModal(true)}
               >
                 <span>{t("signIn")}</span>
-                <Icons.arrowRight className="size-4" />
+                <Icons.arrowRight className="size-3 sm:size-4" />
               </Button>
 
               <Button
-                className="hidden gap-2 px-5 md:flex"
+                className="hidden gap-2 px-4 sm:px-5 text-sm md:flex touch-manipulation"
                 variant="outline"
                 size="sm"
                 rounded="full"

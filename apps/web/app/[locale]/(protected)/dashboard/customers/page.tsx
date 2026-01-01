@@ -71,7 +71,7 @@ export default async function CustomersPage() {
   ];
 
   return (
-    <div className="relative flex flex-col gap-6">
+    <div className="relative flex flex-col gap-4 sm:gap-6 px-2 sm:px-0">
       {/* Animated background decoration */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <div className="absolute left-1/2 top-0 h-[400px] w-[400px] -translate-x-1/2 animate-pulse rounded-full bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 blur-3xl" />
@@ -82,33 +82,36 @@ export default async function CustomersPage() {
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
 
       {/* Header */}
-      <ModernPageHeader
-        title="Kunden"
-        description="Verwalten Sie Ihre Kunden und deren Informationen. Jeder Kunde erhält automatisch einen QR-Code."
-        icon={<Users className="h-5 w-5 text-primary" />}
-        actions={
-          <Link href="/dashboard/customers/new">
-            <Button className="gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700">
-              <Plus className="h-4 w-4" />
-              Neuer Kunde
-            </Button>
-          </Link>
-        }
-      />
+      <div className="px-2 sm:px-0">
+        <ModernPageHeader
+          title="Kunden"
+          description="Verwalten Sie Ihre Kunden und deren Informationen. Jeder Kunde erhält automatisch einen QR-Code."
+          icon={<Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />}
+          actions={
+            <Link href="/dashboard/customers/new">
+              <Button className="gap-2 text-sm sm:text-base bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 touch-manipulation">
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">Neuer Kunde</span>
+                <span className="sm:hidden">Neu</span>
+              </Button>
+            </Link>
+          }
+        />
+      </div>
 
       {/* Plan Limit Warning */}
       <PlanLimitWarning userId={user.id} limitType="customers" />
 
       {/* Statistics */}
       {customers.length > 0 && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
               <Card
                 key={stat.title}
                 className={cn(
-                  "group relative overflow-hidden border border-border/50 bg-card/80 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:bg-card hover:shadow-xl hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-4",
+                  "group relative overflow-hidden border border-border/50 bg-card/80 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:bg-card hover:shadow-xl hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-4 touch-manipulation",
                   stat.gradient
                 )}
                 style={{ animationDelay: `${index * 100}ms` }}
@@ -116,24 +119,21 @@ export default async function CustomersPage() {
                 {/* Gradient background on hover */}
                 <div className={cn("absolute inset-0 -z-10 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-100", stat.gradient)} />
 
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:pb-3 sm:p-4 lg:p-6">
+                  <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground line-clamp-2">
                     {stat.title}
                   </CardTitle>
-                  <div className={cn("flex size-10 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg transition-transform duration-300 group-hover:scale-110", stat.iconGradient)}>
-                    <Icon className="size-5" />
+                  <div className={cn("flex size-8 sm:size-10 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg transition-transform duration-300 group-hover:scale-110 shrink-0", stat.iconGradient)}>
+                    <Icon className="size-4 sm:size-5" />
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="flex items-baseline justify-between">
-                    <div className="text-3xl font-bold">{stat.value}</div>
-                    <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-                      <TrendingUp className="size-3" />
-                    </div>
+                <CardContent className="p-3 sm:p-4 lg:p-6 pt-0">
+                  <div className="flex flex-col gap-1">
+                    <div className="text-2xl sm:text-3xl font-bold">{stat.value}</div>
+                    <CardDescription className="text-xs sm:text-sm line-clamp-1">
+                      {stat.description}
+                    </CardDescription>
                   </div>
-                  <CardDescription className="mt-2">
-                    {stat.description}
-                  </CardDescription>
                 </CardContent>
               </Card>
             );
@@ -147,18 +147,18 @@ export default async function CustomersPage() {
           {/* Gradient background */}
           <div className="absolute inset-0 -z-10 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5" />
 
-          <CardContent className="flex flex-col items-center justify-center py-16">
+          <CardContent className="flex flex-col items-center justify-center py-12 sm:py-16 px-4">
             <EmptyPlaceholder>
-              <div className="flex size-20 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-500/20 mb-6">
-                <Users className="size-10 text-emerald-600 dark:text-emerald-400" />
+              <div className="flex size-16 sm:size-20 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-500/20 mb-4 sm:mb-6">
+                <Users className="size-8 sm:size-10 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <EmptyPlaceholder.Title>Keine Kunden gefunden</EmptyPlaceholder.Title>
-              <EmptyPlaceholder.Description>
+              <EmptyPlaceholder.Title className="text-base sm:text-lg">Keine Kunden gefunden</EmptyPlaceholder.Title>
+              <EmptyPlaceholder.Description className="text-sm sm:text-base px-4">
                 Erstellen Sie Ihren ersten Kunden, um zu beginnen. Jeder Kunde erhält automatisch einen QR-Code für schnellen Zugriff.
               </EmptyPlaceholder.Description>
-              <Link href="/dashboard/customers/new" className="mt-6">
-                <Button size="lg" className="gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-lg transition-all hover:scale-105">
-                  <Plus className="h-5 w-5" />
+              <Link href="/dashboard/customers/new" className="mt-4 sm:mt-6">
+                <Button size="lg" className="gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-lg transition-all hover:scale-105 touch-manipulation">
+                  <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
                   Kunde erstellen
                 </Button>
               </Link>
@@ -170,22 +170,22 @@ export default async function CustomersPage() {
           {/* Gradient background */}
           <div className="absolute inset-0 -z-10 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5" />
 
-          <CardHeader>
+          <CardHeader className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-600 dark:text-emerald-400 shadow-lg">
-                  <Users className="size-5" />
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex size-8 sm:size-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-600 dark:text-emerald-400 shadow-lg shrink-0">
+                  <Users className="size-4 sm:size-5" />
                 </div>
-                <div>
-                  <CardTitle>Kundenliste</CardTitle>
-                  <CardDescription>
+                <div className="min-w-0 flex-1">
+                  <CardTitle className="text-base sm:text-lg">Kundenliste</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
                     {customers.length} {customers.length === 1 ? "Kunde" : "Kunden"} insgesamt
                   </CardDescription>
                 </div>
               </div>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-6 pt-0">
             <CustomersTable customers={customers} />
           </CardContent>
         </Card>

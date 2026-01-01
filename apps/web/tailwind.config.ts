@@ -17,9 +17,34 @@ const config = {
   theme: {
     container: {
       center: true,
-      padding: ".8rem",
+      padding: {
+        DEFAULT: "1rem",
+        sm: "1.5rem",
+        md: "2rem",
+        lg: "2.5rem",
+        xl: "3rem",
+      },
     },
     extend: {
+      fontSize: {
+        // Mobile-optimized font sizes
+        "xs": ["0.75rem", { lineHeight: "1.5" }],
+        "sm": ["0.875rem", { lineHeight: "1.5" }],
+        "base": ["1rem", { lineHeight: "1.6" }],
+        "lg": ["1.125rem", { lineHeight: "1.6" }],
+        "xl": ["1.25rem", { lineHeight: "1.6" }],
+        "2xl": ["1.5rem", { lineHeight: "1.4" }],
+        "3xl": ["1.875rem", { lineHeight: "1.3" }],
+        "4xl": ["2.25rem", { lineHeight: "1.2" }],
+        "5xl": ["3rem", { lineHeight: "1.1" }],
+      },
+      spacing: {
+        // Better mobile spacing options
+        "safe-top": "env(safe-area-inset-top)",
+        "safe-bottom": "env(safe-area-inset-bottom)",
+        "safe-left": "env(safe-area-inset-left)",
+        "safe-right": "env(safe-area-inset-right)",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

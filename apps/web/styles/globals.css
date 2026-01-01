@@ -69,6 +69,37 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    /* Better font rendering on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Prevent text size adjustment on mobile */
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Better touch targets for mobile */
+  button, a, [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* Smooth scrolling for better UX */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Better input styling on mobile */
+  input, textarea, select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Remove default mobile button styles */
+  button, input[type="submit"], input[type="button"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
   }
 }
 
@@ -114,5 +145,81 @@
   .hover-lift:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Mobile-friendly touch targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Better mobile spacing */
+  .mobile-safe-padding {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  .mobile-safe-margin {
+    margin-left: max(1rem, env(safe-area-inset-left));
+    margin-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  /* Smooth transitions for mobile interactions */
+  .mobile-tap {
+    transition: background-color 0.15s ease, transform 0.1s ease;
+  }
+
+  .mobile-tap:active {
+    transform: scale(0.98);
+  }
+
+  /* Better scrolling for mobile */
+  .smooth-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Optimize for mobile performance */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+}
+
+/* Mobile-specific animations */
+@media (max-width: 768px) {
+  /* Reduce motion for better mobile performance */
+  .animate-in {
+    animation-duration: 0.3s !important;
+  }
+
+  /* Better focus states for mobile */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+}
+
+/* Responsive text truncation */
+@media (max-width: 640px) {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* Better mobile table handling */
+@media (max-width: 768px) {
+  /* Hide horizontal scrollbars but keep functionality */
+  .overflow-x-auto {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar {
+    display: none;
   }
 }

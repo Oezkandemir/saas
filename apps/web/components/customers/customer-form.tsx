@@ -147,44 +147,44 @@ export function CustomerForm({ customer }: CustomerFormProps) {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
+    <div className="space-y-4 sm:space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 relative px-2 sm:px-0">
       <LoadingOverlay
         isLoading={isLoading}
         text={customer ? "Kunde wird aktualisiert..." : "Kunde wird erstellt..."}
         spinnerSize="lg"
       />
       <Card hover interactive className="border shadow-md">
-        <CardHeader className="pb-4">
+        <CardHeader className="pb-3 sm:pb-4 p-4 sm:p-6">
           {/* Header moved to page level using ModernPageHeader */}
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
               {/* Persönliche Informationen */}
-              <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+              <div className="space-y-3 sm:space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
                 <div className="flex items-center gap-2 pb-2">
-                  <User className="h-5 w-5 text-muted-foreground transition-colors duration-200" />
-                  <h3 className="text-lg font-semibold">Persönliche Informationen</h3>
+                  <User className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground transition-colors duration-200" />
+                  <h3 className="text-base sm:text-lg font-semibold">Persönliche Informationen</h3>
                 </div>
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
                     name="name"
                     render={({ field }) => (
                       <FormItem className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                        <FormLabel className="text-base font-medium flex items-center gap-2 transition-colors duration-200">
-                          <User className="h-4 w-4 text-primary" />
+                        <FormLabel className="text-sm sm:text-base font-medium flex items-center gap-2 transition-colors duration-200">
+                          <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                           Name *
                         </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
                             placeholder="Max Mustermann"
-                            className="h-11 text-base transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                            className="h-11 sm:h-12 text-base transition-all duration-200 focus:ring-2 focus:ring-primary/20 touch-manipulation"
                             disabled={isLoading}
                           />
                         </FormControl>
-                        <FormDescription className="transition-opacity duration-200">
+                        <FormDescription className="text-xs sm:text-sm transition-opacity duration-200">
                           Vollständiger Name des Kunden
                         </FormDescription>
                         <FormMessage />
@@ -196,8 +196,8 @@ export function CustomerForm({ customer }: CustomerFormProps) {
                     name="email"
                     render={({ field }) => (
                       <FormItem className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-75">
-                        <FormLabel className="text-base font-medium flex items-center gap-2 transition-colors duration-200">
-                          <Mail className="h-4 w-4 text-primary" />
+                        <FormLabel className="text-sm sm:text-base font-medium flex items-center gap-2 transition-colors duration-200">
+                          <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                           E-Mail
                         </FormLabel>
                         <FormControl>
@@ -205,11 +205,11 @@ export function CustomerForm({ customer }: CustomerFormProps) {
                             type="email"
                             {...field}
                             placeholder="max@example.com"
-                            className="h-11 text-base transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                            className="h-11 sm:h-12 text-base transition-all duration-200 focus:ring-2 focus:ring-primary/20 touch-manipulation"
                             disabled={isLoading}
                           />
                         </FormControl>
-                        <FormDescription className="transition-opacity duration-200">
+                        <FormDescription className="text-xs sm:text-sm transition-opacity duration-200">
                           E-Mail-Adresse für Kommunikation
                         </FormDescription>
                         <FormMessage />
@@ -221,19 +221,20 @@ export function CustomerForm({ customer }: CustomerFormProps) {
                     name="phone"
                     render={({ field }) => (
                       <FormItem className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-100">
-                        <FormLabel className="text-base font-medium flex items-center gap-2 transition-colors duration-200">
-                          <Phone className="h-4 w-4 text-primary" />
+                        <FormLabel className="text-sm sm:text-base font-medium flex items-center gap-2 transition-colors duration-200">
+                          <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                           Telefon
                         </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
                             placeholder="+49 123 456789"
-                            className="h-11 text-base transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                            className="h-11 sm:h-12 text-base transition-all duration-200 focus:ring-2 focus:ring-primary/20 touch-manipulation"
                             disabled={isLoading}
+                            type="tel"
                           />
                         </FormControl>
-                        <FormDescription className="transition-opacity duration-200">
+                        <FormDescription className="text-xs sm:text-sm transition-opacity duration-200">
                           Telefonnummer mit Ländervorwahl
                         </FormDescription>
                         <FormMessage />
@@ -245,19 +246,19 @@ export function CustomerForm({ customer }: CustomerFormProps) {
                     name="company"
                     render={({ field }) => (
                       <FormItem className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-150">
-                        <FormLabel className="text-base font-medium flex items-center gap-2 transition-colors duration-200">
-                          <Building2 className="h-4 w-4 text-primary" />
+                        <FormLabel className="text-sm sm:text-base font-medium flex items-center gap-2 transition-colors duration-200">
+                          <Building2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                           Unternehmen
                         </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
                             placeholder="Musterfirma GmbH"
-                            className="h-11 text-base transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                            className="h-11 sm:h-12 text-base transition-all duration-200 focus:ring-2 focus:ring-primary/20 touch-manipulation"
                             disabled={isLoading}
                           />
                         </FormControl>
-                        <FormDescription className="transition-opacity duration-200">
+                        <FormDescription className="text-xs sm:text-sm transition-opacity duration-200">
                           Firmenname (falls vorhanden)
                         </FormDescription>
                         <FormMessage />
@@ -267,26 +268,26 @@ export function CustomerForm({ customer }: CustomerFormProps) {
                 </div>
               </div>
 
-              <Separator className="my-6 transition-opacity duration-300" />
+              <Separator className="my-4 sm:my-6 transition-opacity duration-300" />
 
               {/* Adresse */}
-              <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-200">
+              <div className="space-y-3 sm:space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-200">
                 <div className="flex items-center gap-2 pb-2">
-                  <MapPin className="h-5 w-5 text-muted-foreground transition-colors duration-200" />
-                  <h3 className="text-lg font-semibold">Adresse</h3>
+                  <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground transition-colors duration-200" />
+                  <h3 className="text-base sm:text-lg font-semibold">Adresse</h3>
                 </div>
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
                     name="address_line1"
                     render={({ field }) => (
                       <FormItem className="md:col-span-2">
-                        <FormLabel className="text-base font-medium">Straße und Hausnummer</FormLabel>
+                        <FormLabel className="text-sm sm:text-base font-medium">Straße und Hausnummer</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
                             placeholder="Musterstraße 123"
-                            className="h-11 text-base transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                            className="h-11 sm:h-12 text-base transition-all duration-200 focus:ring-2 focus:ring-primary/20 touch-manipulation"
                             disabled={isLoading}
                           />
                         </FormControl>

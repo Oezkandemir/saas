@@ -20,10 +20,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { MoreVertical, Pencil, Trash2, Eye, QrCode, Mail, Phone, Building2 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { MoreVertical, Pencil, Trash2, Eye, QrCode, Mail, Phone, Building2, ChevronRight } from "lucide-react";
 import { deleteCustomer } from "@/actions/customers-actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -77,7 +79,109 @@ export function CustomersTable({ customers }: CustomersTableProps) {
 
   return (
     <>
-      <div className="rounded-lg border-2 shadow-lg overflow-hidden">
+      {/* Mobile Card View - Hidden on desktop */}
+      <div className="md:hidden space-y-3">
+        {customers.map((customer) => (
+          <Card 
+            key={customer.id}
+            className="overflow-hidden hover:shadow-md transition-shadow touch-manipulation"
+          >
+            <CardContent className="p-0">
+              <Link
+                href={`/dashboard/customers/${customer.id}`}
+                className="block p-4 active:bg-muted/50 transition-colors"
+              >
+                {/* Customer Header */}
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-base truncate mb-1">
+                      {customer.name}
+                    </h3>
+                    {customer.company && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Building2 className="h-3.5 w-3.5 shrink-0" />
+                        <span className="truncate">{customer.company}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {customer.qr_code && (
+                      <Badge variant="secondary" className="text-xs">
+                        <QrCode className="h-3 w-3" />
+                      </Badge>
+                    )}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={deletingId === customer.id}
+                          className="h-8 w-8 shrink-0"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem asChild>
+                          <Link href={`/dashboard/customers/${customer.id}`}>
+                            <Eye className="mr-2 h-4 w-4" />
+                            Details anzeigen
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/dashboard/customers/${customer.id}/edit`}>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Bearbeiten
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => handleDeleteClick(customer.id)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Löschen
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+
+                {/* Customer Details */}
+                <div className="space-y-2">
+                  {customer.email && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Mail className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <span className="text-muted-foreground truncate">{customer.email}</span>
+                    </div>
+                  )}
+                  {customer.phone && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Phone className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <span className="text-muted-foreground truncate">{customer.phone}</span>
+                    </div>
+                  )}
+                  
+                  {/* Date */}
+                  <div className="flex items-center justify-between pt-2 border-t">
+                    <span className="text-xs text-muted-foreground">
+                      Erstellt: {new Date(customer.created_at).toLocaleDateString("de-DE", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                </div>
+              </Link>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Desktop Table View - Hidden on mobile */}
+      <div className="hidden md:block rounded-lg border-2 shadow-lg overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
           <TableHeader>

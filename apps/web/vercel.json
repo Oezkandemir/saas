@@ -1,25 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "buildCommand": "pnpm turbo run build --filter=@cenety/web",
-  "devCommand": "pnpm turbo run dev --filter=@cenety/web",
-  "installCommand": "pnpm install",
-  "outputDirectory": "apps/web/.next",
-  "framework": null,
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./apps/web ./packages",
+  "framework": "nextjs",
+  "regions": ["iad1"],
   "build": {
     "env": {
       "NODE_OPTIONS": "--max-old-space-size=4096",
-      "NEXT_TELEMETRY_DISABLED": "1",
-      "SKIP_PREFLIGHT_CHECK": "true",
-      "TURBO_TEAM": "team_vercel",
-      "TURBO_REMOTE_ONLY": "true"
+      "NEXT_TELEMETRY_DISABLED": "1"
     }
   },
   "crons": [],
-  "env": {},
   "functions": {
-    "apps/web/api/**/*.ts": {
+    "api/**/*.ts": {
       "memory": 1024,
       "maxDuration": 10
     }
@@ -81,8 +73,6 @@
   "redirects": [],
   "rewrites": [],
   "trailingSlash": false,
-  "cleanUrls": true,
-  "github": {
-    "silent": true
-  }
+  "cleanUrls": true
 }
+
