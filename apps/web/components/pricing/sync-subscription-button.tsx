@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { syncUserSubscriptionFromStripe } from "@/actions/sync-user-subscription";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Icons } from "@/components/shared/icons";
 

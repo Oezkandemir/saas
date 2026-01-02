@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -81,6 +81,7 @@ export function DocumentStatusChanger({
     </DropdownMenu>
   );
 }
+
 
 
 

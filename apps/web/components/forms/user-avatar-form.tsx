@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { userAvatarSchema } from "@/lib/validations/user";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { useAvatar } from "@/components/context/avatar-context";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { Icons } from "@/components/shared/icons";

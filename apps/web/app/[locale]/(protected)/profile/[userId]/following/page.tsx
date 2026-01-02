@@ -6,16 +6,16 @@ import { ArrowLeft, UserCheck, Crown, Users } from "lucide-react";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { constructMetadata } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/alignui/data-display/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
+import { Badge } from '@/components/alignui/data-display/badge';
 import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
 import { getFollowing } from "@/actions/follow-actions";
 import { FollowButton } from "@/components/follow-button";

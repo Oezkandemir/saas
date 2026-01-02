@@ -2,19 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { X } from "lucide-react";
+import { Cookie } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
+import { Avatar, AvatarImage } from '@/components/alignui/data-display/avatar';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 
 const COOKIE_CONSENT_KEY = "cenety-cookie-consent";
 const COOKIE_CONSENT_VERSION = "1.0";
@@ -27,10 +28,18 @@ interface CookieConsent {
   version: string;
 }
 
-export function CookieConsent() {
+interface CookieConsentProps {
+  /** Whether to show the modal automatically on first visit */
+  autoShow?: boolean;
+  /** External control for opening the modal */
+  open?: boolean;
+  /** Callback when modal open state changes */
+  onOpenChange?: (open: boolean) => void;
+}
+
+export function CookieConsent({ autoShow = true, open: controlledOpen, onOpenChange }: CookieConsentProps = {}) {
   const t = useTranslations("CookieConsent");
-  const [isVisible, setIsVisible] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const [preferences, setPreferences] = useState<CookieConsent>({
     necessary: true, // Always required
     analytics: false,
@@ -39,21 +48,27 @@ export function CookieConsent() {
     version: COOKIE_CONSENT_VERSION,
   });
 
+  // Use controlled open if provided, otherwise use internal state
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
+
   useEffect(() => {
     // Check if consent was already given
     const savedConsent = localStorage.getItem(COOKIE_CONSENT_KEY);
     if (!savedConsent) {
-      // Show banner after a short delay for better UX
-      setTimeout(() => setIsVisible(true), 1000);
+      // Show modal after a short delay for better UX (only if autoShow is true)
+      if (autoShow) {
+        setTimeout(() => setOpen(true), 1000);
+      }
     } else {
       const consent: CookieConsent = JSON.parse(savedConsent);
       // Check if consent is still valid (version match)
-      if (consent.version !== COOKIE_CONSENT_VERSION) {
-        setIsVisible(true);
+      if (consent.version !== COOKIE_CONSENT_VERSION && autoShow) {
+        setOpen(true);
       }
       setPreferences(consent);
     }
-  }, []);
+  }, [autoShow, setOpen]);
 
   const saveConsent = (consent: CookieConsent) => {
     localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(consent));
@@ -71,7 +86,7 @@ export function CookieConsent() {
       disableMarketing();
     }
     
-    setIsVisible(false);
+    setOpen(false);
   };
 
   const acceptAll = () => {
@@ -127,140 +142,118 @@ export function CookieConsent() {
     console.log("Marketing disabled");
   };
 
-  if (!isVisible) return null;
+  // Don't render if not open (unless autoShow is true and we're waiting to show)
+  if (!open && !autoShow) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-background/80 p-4 backdrop-blur-sm sm:items-center">
-      <Card className="relative w-full max-w-2xl shadow-lg">
-        <button
-          onClick={acceptNecessary}
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-          aria-label="Close"
-        >
-          <X className="h-4 w-4" />
-        </button>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <div className="flex gap-3 items-center">
+            <div className="flex justify-center items-center w-10 h-10 rounded-lg bg-primary/10">
+              <Cookie className="w-5 h-5 text-primary" />
+            </div>
+            <div className="flex-1">
+              <DialogTitle className="text-xl">{t("title")}</DialogTitle>
+              <DialogDescription className="mt-1">
+                {t("description")}
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
 
-        <CardHeader>
-          <CardTitle className="text-xl">🍪 {t("title")}</CardTitle>
-          <CardDescription>{t("description")}</CardDescription>
-        </CardHeader>
+        <div className="py-4 space-y-6">
+          {/* Cookie Categories */}
+          <div className="space-y-4">
+            {/* Necessary Cookies */}
+            <div className="flex items-center gap-3.5">
+              <Avatar size={40}>
+                <AvatarImage src="/favicon.ico" alt="Necessary" />
+              </Avatar>
+              <div className="flex-1 space-y-1">
+                <div className="text-sm font-semibold">{t("necessary")}</div>
+                <div className="text-xs text-muted-foreground">
+                  {t("necessaryDescription")}
+                </div>
+              </div>
+              <Switch
+                checked={true}
+                disabled
+                className="opacity-50"
+              />
+            </div>
 
-        {!showDetails ? (
-          <CardFooter className="flex flex-col gap-3 sm:flex-row sm:justify-between">
+            {/* Analytics Cookies */}
+            <div className="flex items-center gap-3.5">
+              <Avatar size={40}>
+                <AvatarImage src="/favicon.ico" alt="Analytics" />
+              </Avatar>
+              <div className="flex-1 space-y-1">
+                <div className="text-sm font-semibold">{t("analytics")}</div>
+                <div className="text-xs text-muted-foreground">
+                  {t("analyticsDescription")}
+                </div>
+              </div>
+              <Switch
+                checked={preferences.analytics}
+                onCheckedChange={(checked) =>
+                  setPreferences({ ...preferences, analytics: checked })
+                }
+              />
+            </div>
+
+            {/* Marketing Cookies */}
+            <div className="flex items-center gap-3.5">
+              <Avatar size={40}>
+                <AvatarImage src="/favicon.ico" alt="Marketing" />
+              </Avatar>
+              <div className="flex-1 space-y-1">
+                <div className="text-sm font-semibold">{t("marketing")}</div>
+                <div className="text-xs text-muted-foreground">
+                  {t("marketingDescription")}
+                </div>
+              </div>
+              <Switch
+                checked={preferences.marketing}
+                onCheckedChange={(checked) =>
+                  setPreferences({ ...preferences, marketing: checked })
+                }
+              />
+            </div>
+          </div>
+
+          {/* Privacy Policy Link */}
+          <p className="text-xs text-muted-foreground">
+            {t("moreInfo")}{" "}
+            <a
+              href="/privacy"
+              className="underline underline-offset-2 hover:text-primary"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("privacyPolicy")}
+            </a>
+          </p>
+        </div>
+
+        <DialogFooter className="flex-col gap-2 sm:flex-row">
+          <DialogClose asChild>
             <Button
               variant="outline"
-              onClick={() => setShowDetails(true)}
+              onClick={acceptNecessary}
               className="w-full sm:w-auto"
             >
-              {t("customize")}
+              {t("acceptNecessary")}
             </Button>
-            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-              <Button
-                variant="outline"
-                onClick={acceptNecessary}
-                className="w-full sm:w-auto"
-              >
-                {t("acceptNecessary")}
-              </Button>
-              <Button onClick={acceptAll} className="w-full sm:w-auto">
-                {t("acceptAll")}
-              </Button>
-            </div>
-          </CardFooter>
-        ) : (
-          <>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label htmlFor="necessary" className="font-semibold">
-                    {t("necessary")}
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t("necessaryDescription")}
-                  </p>
-                </div>
-                <Switch
-                  id="necessary"
-                  checked={true}
-                  disabled
-                  className="opacity-50"
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label htmlFor="analytics" className="font-semibold">
-                    {t("analytics")}
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t("analyticsDescription")}
-                  </p>
-                </div>
-                <Switch
-                  id="analytics"
-                  checked={preferences.analytics}
-                  onCheckedChange={(checked) =>
-                    setPreferences({ ...preferences, analytics: checked })
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label htmlFor="marketing" className="font-semibold">
-                    {t("marketing")}
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t("marketingDescription")}
-                  </p>
-                </div>
-                <Switch
-                  id="marketing"
-                  checked={preferences.marketing}
-                  onCheckedChange={(checked) =>
-                    setPreferences({ ...preferences, marketing: checked })
-                  }
-                />
-              </div>
-
-              <p className="text-xs text-muted-foreground">
-                {t("moreInfo")}{" "}
-                <a
-                  href="/privacy"
-                  className="underline underline-offset-2 hover:text-primary"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t("privacyPolicy")}
-                </a>
-              </p>
-            </CardContent>
-
-            <CardFooter className="flex flex-col gap-3 sm:flex-row sm:justify-between">
-              <Button
-                variant="ghost"
-                onClick={() => setShowDetails(false)}
-                className="w-full sm:w-auto"
-              >
-                {t("back")}
-              </Button>
-              <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-                <Button
-                  variant="outline"
-                  onClick={acceptNecessary}
-                  className="w-full sm:w-auto"
-                >
-                  {t("acceptNecessary")}
-                </Button>
-                <Button onClick={saveCustom} className="w-full sm:w-auto">
-                  {t("savePreferences")}
-                </Button>
-              </div>
-            </CardFooter>
-          </>
-        )}
-      </Card>
-    </div>
+          </DialogClose>
+          <Button
+            onClick={saveCustom}
+            className="w-full sm:w-auto"
+          >
+            {t("savePreferences")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
-

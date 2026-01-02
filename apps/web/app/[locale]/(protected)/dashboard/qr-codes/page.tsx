@@ -2,13 +2,13 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { getQRCodes, type QRCode } from "@/actions/qr-codes-actions";
 import { getCustomers, type Customer } from "@/actions/customers-actions";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { Plus, QrCode, Scan, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
 import { QRCodesTable } from "@/components/qr-codes/qr-codes-table";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 
 export const dynamic = "force-dynamic";
 

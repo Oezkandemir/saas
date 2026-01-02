@@ -4,7 +4,7 @@ import * as React from "react";
 import { UseFormReturn, FieldValues, Path } from "react-hook-form";
 import { Check, ChevronRight, ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { Progress } from "@/components/ui/progress";
 import { logger } from "@/lib/logger";
 

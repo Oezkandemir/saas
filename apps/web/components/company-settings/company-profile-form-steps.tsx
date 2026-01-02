@@ -14,7 +14,7 @@ import {
   FormDescription,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input } from '@/components/alignui/forms/input';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tag, Percent, Calendar, CreditCard } from "lucide-react";
 

@@ -17,7 +17,7 @@ import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { Input } from '@/components/alignui/forms/input';
 
 interface SearchResult {
   id: string;

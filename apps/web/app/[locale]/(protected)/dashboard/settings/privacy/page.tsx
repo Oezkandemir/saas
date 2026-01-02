@@ -8,6 +8,7 @@ import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { ConsentManager } from "@/components/gdpr/consent-manager";
 import { DataExport } from "@/components/gdpr/data-export";
+import { CookieSettingsButton } from "@/components/gdpr/cookie-settings-button";
 
 export async function generateMetadata() {
   return constructMetadata({
@@ -29,6 +30,16 @@ export default async function PrivacySettingsPage() {
       icon={<Shield className="h-4 w-4 text-primary" />}
       contentClassName="space-y-6 pb-10"
     >
+      {/* Cookie Settings Section */}
+      <div>
+        <SectionColumns
+          title="Cookie-Einstellungen"
+          description="Verwalten Sie Ihre Cookie-Präferenzen und Kontaktmethoden"
+        >
+          <CookieSettingsButton />
+        </SectionColumns>
+      </div>
+
       {/* Consent Management Section */}
       <div>
         <SectionColumns

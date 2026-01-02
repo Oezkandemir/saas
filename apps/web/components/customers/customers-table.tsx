@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,8 +19,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from '@/components/alignui/data-display/badge';
+import { Card, CardContent } from '@/components/alignui/data-display/card';
 import { MoreVertical, Pencil, Trash2, Eye, QrCode, Mail, Phone, Building2, ChevronRight } from "lucide-react";
 import { deleteCustomer } from "@/actions/customers-actions";
 import { useRouter } from "next/navigation";

@@ -11,7 +11,7 @@ import { RefreshSubscriptionButton } from "@/components/pricing/refresh-subscrip
 import { AutoSyncSubscription } from "@/components/pricing/auto-sync-subscription";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Icons } from "@/components/shared/icons";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { CreditCard, Sparkles } from "lucide-react";
 
 export async function generateMetadata() {

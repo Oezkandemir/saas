@@ -17,6 +17,7 @@ interface ModalProps {
   desktopOnly?: boolean;
   preventDefaultClose?: boolean;
   title?: string;
+  fullscreenOnMobile?: boolean;
 }
 
 export function Modal({
@@ -28,6 +29,7 @@ export function Modal({
   desktopOnly,
   preventDefaultClose,
   title = "Dialog",
+  fullscreenOnMobile = false,
 }: ModalProps) {
   // const router = useRouter();
 
@@ -63,13 +65,17 @@ export function Modal({
         <Drawer.Portal>
           <Drawer.Content
             className={cn(
-              "fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background",
+              fullscreenOnMobile
+                ? "fixed inset-0 z-50 overflow-hidden border-0 bg-background"
+                : "fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background",
               className,
             )}
           >
-            <div className="sticky top-0 z-20 flex w-full items-center justify-center bg-inherit">
-              <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
-            </div>
+            {!fullscreenOnMobile && (
+              <div className="sticky top-0 z-20 flex w-full items-center justify-center bg-inherit">
+                <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
+              </div>
+            )}
             {/* The title is visually hidden but still present for accessibility */}
             <h2 className="sr-only">{title}</h2>
             {children}

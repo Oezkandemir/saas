@@ -1,7 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
+import { Badge } from '@/components/alignui/data-display/badge';
 import { Progress } from "@/components/ui/progress";
 import { Check, X, Infinity } from "lucide-react";
 import { cn } from "@/lib/utils";

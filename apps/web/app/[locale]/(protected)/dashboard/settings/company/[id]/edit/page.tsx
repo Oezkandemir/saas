@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/session";
 import { getCompanyProfile } from "@/actions/company-profiles-actions";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Building2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from '@/components/alignui/data-display/card';
 import { CompanyProfileForm } from "@/components/company-settings/company-profile-form";
 
 export const dynamic = "force-dynamic";

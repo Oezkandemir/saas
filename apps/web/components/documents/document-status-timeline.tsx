@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { StatusBadge, DocumentStatus } from "@/components/shared/status-badge";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   DropdownMenu,
   DropdownMenuContent,

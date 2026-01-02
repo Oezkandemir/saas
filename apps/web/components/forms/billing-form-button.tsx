@@ -5,7 +5,7 @@ import { generateUserStripe } from "@/actions/generate-user-stripe";
 import { SubscriptionPlan, UserSubscriptionPlan } from "@/types";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Icons } from "@/components/shared/icons";
 

@@ -18,7 +18,7 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   Drawer,
   DrawerClose,

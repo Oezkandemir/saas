@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Lock } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   Tooltip,
   TooltipContent,
@@ -65,6 +65,7 @@ export function PlanGate({
     </TooltipProvider>
   );
 }
+
 
 
 

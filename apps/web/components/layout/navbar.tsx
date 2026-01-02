@@ -10,7 +10,7 @@ import { marketingConfig } from "@/config/marketing";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { useScroll } from "@/hooks/use-scroll";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { Skeleton } from "@/components/ui/skeleton";
 import { DocsSearch } from "@/components/docs/search";
 import LanguageDrawer from "@/components/language-drawer";
@@ -127,6 +127,19 @@ export function NavBar({ scroll = false }: NavBarProps) {
             </div>
           ) : (
             <>
+              {/* Icon button for small screens */}
+              <Button
+                className="flex md:hidden gap-2 px-3 py-2 text-sm touch-manipulation"
+                variant="default"
+                size="sm"
+                rounded="full"
+                onClick={() => setShowSignInModal(true)}
+                aria-label={t("signIn")}
+              >
+                <Icons.user className="size-4" />
+              </Button>
+
+              {/* Text button for larger screens */}
               <Button
                 className="hidden gap-2 px-4 sm:px-5 text-sm md:flex touch-manipulation"
                 variant="default"

@@ -10,8 +10,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { userNameSchema } from "@/lib/validations/user";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from '@/components/alignui/actions/button';
+import { Input } from '@/components/alignui/forms/input';
 import { Label } from "@/components/ui/label";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { Icons } from "@/components/shared/icons";

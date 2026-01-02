@@ -7,14 +7,14 @@ import { Monitor, MapPin, Calendar, Trash2, AlertTriangle, LogOut } from "lucide
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import { useToast } from "@/components/ui/use-toast";
 import {
   getActiveSessions,
@@ -23,7 +23,7 @@ import {
   clearAllSessions,
   type ActiveSession,
 } from "@/actions/security-actions";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/alignui/data-display/badge';
 import {
   AlertDialog,
   AlertDialogAction,

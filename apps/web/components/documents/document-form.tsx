@@ -15,7 +15,7 @@ import {
 import { CompanyProfile } from "@/actions/company-profiles-actions";
 import { CompanyProfileSelector } from "@/components/company-settings/company-profile-selector";
 import { CustomerSelector } from "@/components/documents/customer-selector";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   Form,
   FormControl,
@@ -25,9 +25,9 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input } from '@/components/alignui/forms/input';
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2, FileText, Calendar, ShoppingCart, Receipt, Loader2 } from "lucide-react";
 import { toast } from "sonner";

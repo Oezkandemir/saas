@@ -3,7 +3,7 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function CardSkeleton() {

@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/alignui/data-display/badge';
 import { cn } from "@/lib/utils";
 
 export function ComparePlans() {

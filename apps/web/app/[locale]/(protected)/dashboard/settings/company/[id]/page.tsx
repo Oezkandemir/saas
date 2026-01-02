@@ -3,9 +3,9 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import { getCompanyProfile } from "@/actions/company-profiles-actions";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from '@/components/alignui/actions/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
+import { Badge } from '@/components/alignui/data-display/badge';
 import { Separator } from "@/components/ui/separator";
 import { CopyButton } from "@/components/company-settings/copy-button";
 import {

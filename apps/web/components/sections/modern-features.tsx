@@ -2,7 +2,7 @@ import { Link } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 
 import { features } from "@/config/landing";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { cn } from "@/lib/utils";

@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
+import { Badge } from '@/components/alignui/data-display/badge';
 import {
   Card,
   CardContent,
@@ -11,7 +11,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 
 export const metadata: Metadata = constructMetadata({
   title: "Customers",

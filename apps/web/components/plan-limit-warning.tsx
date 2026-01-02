@@ -1,5 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { AlertTriangle, ArrowUp } from "lucide-react";
 import Link from "next/link";
 import { getPlanLimitInfo } from "@/actions/plan-limits-actions";

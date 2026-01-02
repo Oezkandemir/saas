@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { FileText, Euro, TrendingUp, Calendar } from "lucide-react";
 import { Customer } from "@/actions/customers-actions";
 import { useMemo } from "react";
@@ -106,6 +106,7 @@ export function CustomerStats({ customer, documents }: CustomerStatsProps) {
     </div>
   );
 }
+
 
 
 

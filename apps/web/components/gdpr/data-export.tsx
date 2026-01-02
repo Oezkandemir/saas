@@ -4,14 +4,14 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Download, FileJson, FileSpreadsheet, Loader2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import { useToast } from "@/components/ui/use-toast";
 import { exportUserData, exportUserDataCSV } from "@/actions/gdpr-actions";
 

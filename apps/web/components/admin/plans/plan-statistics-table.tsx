@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/alignui/data-display/badge';
 import type { PlanStatistics } from "@/actions/admin-plan-actions";
 
 interface PlanStatisticsTableProps {
@@ -66,6 +66,7 @@ export function PlanStatisticsTable({ statistics }: PlanStatisticsTableProps) {
     </div>
   );
 }
+
 
 
 

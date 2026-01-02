@@ -4,7 +4,7 @@ import { getCompanyProfiles } from "@/actions/company-profiles-actions";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Building2, Plus } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { CompanyProfilesList } from "@/components/company-settings/company-profiles-list";
 
 export const dynamic = "force-dynamic";

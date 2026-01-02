@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { Plus, Webhook as WebhookIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import { WebhookForm } from "./webhook-form";
 import { Webhook } from "@/actions/webhook-actions";
 import {
@@ -129,6 +129,7 @@ export function WebhookList({ initialWebhooks, locale }: WebhookListProps) {
     </div>
   );
 }
+
 
 
 

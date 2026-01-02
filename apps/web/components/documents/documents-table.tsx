@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, Pencil, Trash2, FileDown, Copy, Search, Check, X } from "lucide-react";
 import { deleteDocument, convertQuoteToInvoice, duplicateDocument } from "@/actions/documents-actions";
-import { Input } from "@/components/ui/input";
+import { Input } from '@/components/alignui/forms/input';
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { StatusBadge } from "@/components/shared/status-badge";

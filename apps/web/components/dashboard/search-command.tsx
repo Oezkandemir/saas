@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { SidebarNavItem } from "@/types";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   CommandDialog,
   CommandEmpty,

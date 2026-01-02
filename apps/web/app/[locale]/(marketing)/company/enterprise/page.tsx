@@ -3,14 +3,14 @@ import { Check } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 
 export const metadata: Metadata = constructMetadata({
   title: "Enterprise Solutions",

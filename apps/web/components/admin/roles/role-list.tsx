@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { Plus, UserCog, Shield } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import {
   Table,
   TableBody,
@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/alignui/data-display/badge';
 import { RoleForm } from "./role-form";
 import { Role } from "@/actions/role-actions";
 import {

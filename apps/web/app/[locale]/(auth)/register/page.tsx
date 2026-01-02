@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from '@/components/alignui/actions/button';
 import { UserAuthForm } from "@/components/forms/user-auth-form";
 import { Icons } from "@/components/shared/icons";
 

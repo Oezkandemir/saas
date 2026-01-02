@@ -10,8 +10,8 @@ import {
   getPlanMigrations,
   getUsersByPlan,
 } from "@/actions/admin-plan-actions";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
+import { Button } from '@/components/alignui/actions/button';
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { PlanStatisticsTable } from "@/components/admin/plans/plan-statistics-table";
 import { PlansOverview } from "@/components/admin/plans/plans-overview";

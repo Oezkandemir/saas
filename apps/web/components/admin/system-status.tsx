@@ -12,15 +12,15 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/alignui/data-display/card';
+import { Badge } from '@/components/alignui/data-display/badge';
 import { useToast } from "@/components/ui/use-toast";
 import {
   getSystemStatusOverview,
@@ -253,6 +253,7 @@ export function SystemStatus() {
     </Card>
   );
 }
+
 
 
 

@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader } from '@/components/alignui/data-display/card';
+import { Input } from '@/components/alignui/forms/input';
+import { Button } from '@/components/alignui/actions/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
+import { Badge } from '@/components/alignui/data-display/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Users, Crown, Search } from 'lucide-react';
 import { FollowButton } from '@/components/follow-button';

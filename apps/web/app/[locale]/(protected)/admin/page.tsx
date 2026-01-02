@@ -24,14 +24,14 @@ import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { getAdminStats } from "@/actions/admin-stats-actions";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import { ConfigureStripePortalButton } from "@/components/admin/configure-stripe-button";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 

@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { getDocuments, type Document } from "@/actions/documents-actions";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { Plus, FileText, FileCheck, FileX } from "lucide-react";
 import Link from "next/link";
 import { DocumentsTabs } from "@/components/documents/documents-tabs";
 import { PlanLimitWarning } from "@/components/plan-limit-warning";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export const dynamic = "force-dynamic";

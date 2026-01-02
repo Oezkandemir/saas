@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/alignui/actions/button';
 import { followUser, unfollowUser } from '@/actions/follow-actions';
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, UserPlus, UserMinus } from 'lucide-react';

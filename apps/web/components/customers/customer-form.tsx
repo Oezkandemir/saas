@@ -8,7 +8,7 @@ import * as z from "zod";
 import { CustomerInput, createCustomer, updateCustomer, Customer } from "@/actions/customers-actions";
 import { Form } from "@/components/ui/form";
 import { toast } from "sonner";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from '@/components/alignui/data-display/card';
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { User, MapPin, FileText } from "lucide-react";
 import { MultiStepForm, Step } from "@/components/ui/multi-step-form";

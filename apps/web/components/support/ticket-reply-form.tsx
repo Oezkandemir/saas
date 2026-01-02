@@ -5,7 +5,7 @@ import { addTicketMessage } from "@/actions/support-ticket-actions";
 import { AlertCircle, Loader2, SendIcon } from "lucide-react";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { Textarea } from "@/components/ui/textarea";
 
 interface TicketReplyFormProps {

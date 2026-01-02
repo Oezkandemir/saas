@@ -10,8 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Building2, CheckCircle2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from '@/components/alignui/data-display/badge';
+import { Button } from '@/components/alignui/actions/button';
 import Link from "next/link";
 
 interface CompanyProfileSelectorProps {

@@ -8,8 +8,8 @@ import * as z from "zod";
 import { Shield, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { buttonVariants } from '@/components/alignui/actions/button';
+import { Input } from '@/components/alignui/forms/input';
 import { Label } from "@/components/ui/label";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
@@ -18,7 +18,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import { verifyTwoFactorCodeForSignIn } from "@/actions/two-factor-actions";
 
 interface TwoFactorLoginFormProps {
@@ -90,20 +90,20 @@ export function TwoFactorLoginForm({
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="text-center">
+    <Card className="w-full max-w-md mx-auto md:border md:shadow-md">
+      <CardHeader className="text-center px-4 pt-6 pb-4 md:px-6 md:pt-6">
         <div className="flex justify-center mb-2">
           <Shield className="h-12 w-12 text-primary" />
         </div>
-        <CardTitle>Two-Factor Authentication</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-xl md:text-2xl">Two-Factor Authentication</CardTitle>
+        <CardDescription className="text-sm md:text-base">
           Enter the 6-digit code from your authenticator app
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <CardContent className="px-4 pb-6 md:px-6 md:pb-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="code">Verification Code</Label>
+            <Label htmlFor="code" className="text-sm md:text-base">Verification Code</Label>
             <Input
               id="code"
               type="text"
@@ -111,7 +111,7 @@ export function TwoFactorLoginForm({
               pattern="[0-9]*"
               maxLength={6}
               placeholder="000000"
-              className="text-center text-2xl font-mono tracking-widest h-14"
+              className="text-center text-2xl md:text-3xl font-mono tracking-widest h-14 md:h-16"
               disabled={isLoading}
               autoFocus
               {...register("code", {
@@ -125,7 +125,7 @@ export function TwoFactorLoginForm({
             {errors?.code && (
               <p className="px-1 text-xs text-red-600">{errors.code.message}</p>
             )}
-            <p className="text-xs text-muted-foreground text-center">
+            <p className="text-xs md:text-sm text-muted-foreground text-center">
               Enter the code from your authenticator app or use a backup code
             </p>
           </div>
@@ -133,7 +133,7 @@ export function TwoFactorLoginForm({
           <div className="flex gap-2">
             <button
               type="submit"
-              className={cn(buttonVariants(), "flex-1")}
+              className={cn(buttonVariants(), "flex-1 h-11 md:h-12 text-base")}
               disabled={isLoading || !codeValue || codeValue.length !== 6}
             >
               {isLoading ? (
@@ -152,7 +152,7 @@ export function TwoFactorLoginForm({
               onClick={onCancel}
               className={cn(
                 buttonVariants({ variant: "ghost", size: "sm" }),
-                "w-full text-muted-foreground",
+                "w-full text-muted-foreground h-10 md:h-11",
               )}
               disabled={isLoading}
             >

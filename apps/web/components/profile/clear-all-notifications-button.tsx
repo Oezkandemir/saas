@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { deleteAllNotifications } from "@/actions/user-profile-actions";
 import { Loader2, Trash2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { useToast } from "@/components/ui/use-toast";
 import { useNotificationsContext } from "@/components/context/notifications-context";
 

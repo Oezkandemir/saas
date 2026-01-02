@@ -12,10 +12,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Badge } from '@/components/alignui/data-display/badge';
+import { Button } from '@/components/alignui/actions/button';
+import { Card, CardContent } from '@/components/alignui/data-display/card';
+import { Input } from '@/components/alignui/forms/input';
 
 interface UserTicketAccordionProps {
   data: Ticket[];

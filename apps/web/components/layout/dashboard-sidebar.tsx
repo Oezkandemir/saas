@@ -10,8 +10,8 @@ import { useTranslations } from "next-intl";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { useNotifications } from "@/hooks/use-notifications";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from '@/components/alignui/data-display/badge';
+import { Button } from '@/components/alignui/actions/button';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,

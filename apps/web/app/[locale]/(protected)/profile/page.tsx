@@ -21,20 +21,20 @@ import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { constructMetadata } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
+import { Button } from '@/components/alignui/actions/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { UserTicketAccordion } from "@/components/support/user-ticket-accordion";
 import { getDefaultCompanyProfile, getCompanyProfiles } from "@/actions/company-profiles-actions";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/alignui/data-display/badge';
 import {
   Accordion,
   AccordionContent,

@@ -15,7 +15,7 @@ import {
 import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { useToast } from "@/components/ui/use-toast";
 
 interface TicketActionsProps {

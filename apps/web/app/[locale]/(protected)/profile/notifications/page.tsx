@@ -10,7 +10,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
 import { ClearAllNotificationsButton } from "@/components/profile/clear-all-notifications-button";
 import { MarkAllAsReadButton } from "@/components/profile/mark-all-as-read-button";

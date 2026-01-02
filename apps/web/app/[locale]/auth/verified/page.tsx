@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 
 import { siteConfig } from "@/config/site";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from '@/components/alignui/actions/button';
 import { Icons } from "@/components/shared/icons";
 
 export default function VerifiedPage() {

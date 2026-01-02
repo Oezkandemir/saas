@@ -11,7 +11,7 @@ import {
 import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { columns } from "@/components/admin/users/columns";
 import { DataTableWrapper } from "@/components/admin/users/data-table-wrapper";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";

@@ -1,9 +1,9 @@
 import { redirect, notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { getQRCode, getQRCodeEvents, type QRCodeEvent } from "@/actions/qr-codes-actions";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
+import { Badge } from '@/components/alignui/data-display/badge';
+import { Button } from '@/components/alignui/actions/button';
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Edit, ExternalLink, QrCode } from "lucide-react";
 import Link from "next/link";

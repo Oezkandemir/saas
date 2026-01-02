@@ -9,11 +9,12 @@ import {
 } from "react";
 
 import { siteConfig } from "@/config/site";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { Modal } from "@/components/ui/modal";
 import { DialogDescription } from "@/components/ui/dialog";
 import { UserAuthForm } from "@/components/forms/user-auth-form";
 import { Icons } from "@/components/shared/icons";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 function SignUpModal({
   showSignUpModal,
@@ -22,6 +23,7 @@ function SignUpModal({
   showSignUpModal: boolean;
   setShowSignUpModal: Dispatch<SetStateAction<boolean>>;
 }) {
+  const { isMobile } = useMediaQuery();
   const handleSuccess = () => {
     setShowSignUpModal(false); // Close modal after successful authentication
   };
@@ -31,9 +33,19 @@ function SignUpModal({
       showModal={showSignUpModal}
       setShowModal={setShowSignUpModal}
       title="Sign Up"
+      fullscreenOnMobile={true}
     >
-      <div className="w-full">
-        <div className="flex flex-col items-center justify-center space-y-3 border-b bg-background px-4 py-6 pt-8 text-center md:px-16">
+      <div className="w-full h-full flex flex-col">
+        <div className="flex flex-col items-center justify-center space-y-3 border-b bg-background px-4 py-6 pt-8 text-center md:px-16 md:pt-8 relative">
+          {isMobile && (
+            <button
+              onClick={() => setShowSignUpModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-full hover:bg-accent transition-colors"
+              aria-label="Close"
+            >
+              <Icons.close className="size-5" />
+            </button>
+          )}
           <a href={siteConfig.url}>
             <Icons.logo className="size-10" />
           </a>
@@ -43,7 +55,7 @@ function SignUpModal({
           </DialogDescription>
         </div>
 
-        <div className="flex flex-col space-y-4 bg-secondary/50 px-4 py-8 md:px-16">
+        <div className="flex flex-col space-y-4 bg-secondary/50 px-4 py-8 md:px-16 flex-1 justify-center">
           <UserAuthForm
             type="register"
             className="w-full"

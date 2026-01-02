@@ -8,8 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from '@/components/alignui/data-display/badge';
+import { Avatar, AvatarFallback } from '@/components/alignui/data-display/avatar';
 import type { PlanUser } from "@/actions/admin-plan-actions";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
@@ -132,4 +132,5 @@ export function PlanUsersTable({ users }: PlanUsersTableProps) {
     </div>
   );
 }
+
 

@@ -52,3 +52,4 @@ COMMENT ON FUNCTION public.handle_new_user() IS
 preserves the existing role to prevent admin roles from being reset. Only admins 
 can change roles through the admin interface, not through automatic triggers.';
 
+

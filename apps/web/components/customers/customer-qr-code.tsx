@@ -2,8 +2,8 @@
 
 import { Customer } from "@/actions/customers-actions";
 import { Copy, Download, QrCode, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from '@/components/alignui/actions/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { Icons } from "@/components/shared/icons";

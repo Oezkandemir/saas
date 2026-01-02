@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/alignui/data-display/badge';
 import { cn } from "@/lib/utils";
 
 export type DocumentStatus =
@@ -39,6 +39,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
     </Badge>
   );
 }
+
 
 
 

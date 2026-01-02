@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { getCustomers, type Customer } from "@/actions/customers-actions";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { Plus, Users, QrCode, Mail, Phone, MapPin, Building2 } from "lucide-react";
 import Link from "next/link";
 import { CustomersTable } from "@/components/customers/customers-table";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { PlanLimitWarning } from "@/components/plan-limit-warning";
 
 // ISR: Revalidate every 60 seconds for fresh customer data

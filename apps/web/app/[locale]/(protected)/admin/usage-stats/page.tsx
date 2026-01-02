@@ -15,7 +15,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import {
   Table,
   TableBody,
@@ -275,6 +275,7 @@ export default async function AdminUsageStatsPage(props: Props) {
     </UnifiedPageLayout>
   );
 }
+
 
 
 

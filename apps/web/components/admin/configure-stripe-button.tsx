@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { configureStripePortal } from "@/actions/configure-stripe-portal";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   Card,
   CardContent,
@@ -12,7 +12,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import { Icons } from "@/components/shared/icons";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 

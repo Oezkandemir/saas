@@ -2,7 +2,7 @@
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import Link from "next/link";
 
 interface UsageWarning {
@@ -55,6 +55,7 @@ export function UsageWarnings({ warnings, locale = "en" }: UsageWarningsProps) {
     </Alert>
   );
 }
+
 
 
 

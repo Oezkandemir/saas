@@ -8,8 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from '@/components/alignui/data-display/badge';
+import { Button } from '@/components/alignui/actions/button';
 import { formatDistance } from "date-fns";
 import { de } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -146,6 +146,7 @@ export function AuditLogTable({
     </div>
   );
 }
+
 
 
 

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DocumentsTable } from "@/components/documents/documents-table";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { Plus } from "lucide-react";
 import { Document, DocumentType } from "@/actions/documents-actions";
 

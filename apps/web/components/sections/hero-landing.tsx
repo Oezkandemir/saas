@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
 import { cn, nFormatter } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from '@/components/alignui/actions/button';
 import { Icons } from "@/components/shared/icons";
 
 export default async function HeroLanding() {

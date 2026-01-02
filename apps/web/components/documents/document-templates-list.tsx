@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from '@/components/alignui/actions/button';
+import { Badge } from '@/components/alignui/data-display/badge';
 import { Edit, Trash2, Eye } from "lucide-react";
 import type { DocumentTemplate } from "@/actions/document-templates-actions";
 import type { DocumentType } from "@/actions/documents-actions";
@@ -110,6 +110,7 @@ export function DocumentTemplatesList({
     </div>
   );
 }
+
 
 
 

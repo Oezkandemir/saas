@@ -12,8 +12,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/alignui/data-display/card';
+import { Badge } from '@/components/alignui/data-display/badge';
 import { getLoginHistory, type LoginHistoryEntry } from "@/actions/security-actions";
 
 export function LoginHistory() {

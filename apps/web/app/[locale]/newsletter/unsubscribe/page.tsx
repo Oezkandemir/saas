@@ -7,14 +7,14 @@ import { unsubscribeFromNewsletter } from "@/actions/newsletter";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import { Icons } from "@/components/shared/icons";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 

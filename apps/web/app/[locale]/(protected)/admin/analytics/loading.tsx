@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from '@/components/alignui/data-display/card';
 import { Skeleton } from "@/components/ui/skeleton";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TrendingUp } from "lucide-react";

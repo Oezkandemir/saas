@@ -12,7 +12,7 @@ import {
   QRCode,
   QRCodeType,
 } from "@/actions/qr-codes-actions";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   Form,
   FormControl,
@@ -22,7 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input } from '@/components/alignui/forms/input';
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -32,7 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { toast } from "sonner";

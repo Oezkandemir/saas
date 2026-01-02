@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { UserSubscriptionPlan } from "types";
 import { cn, formatDate } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from '@/components/alignui/actions/button';
 import {
   Card,
   CardContent,
@@ -11,7 +11,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import { CustomerPortalButton } from "@/components/forms/customer-portal-button";
 import { Icons } from "@/components/shared/icons";
 

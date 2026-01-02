@@ -4,9 +4,9 @@ import { getDocumentTemplates } from "@/actions/document-templates-actions";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { FileText, Plus } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from '@/components/alignui/actions/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
+import { Badge } from '@/components/alignui/data-display/badge';
 import { DocumentTemplatesList } from "@/components/documents/document-templates-list";
 
 export const dynamic = "force-dynamic";

@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/alignui/data-display/badge';
 import { formatDistance } from "date-fns";
 import { de } from "date-fns/locale";
 import type { PlanMigration } from "@/actions/admin-plan-actions";
@@ -85,6 +85,7 @@ export function PlanMigrationsTable({ migrations }: PlanMigrationsTableProps) {
     </div>
   );
 }
+
 
 
 

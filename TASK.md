@@ -776,3 +776,118 @@
 - Bundle size: ~15-25% reduction with tree shaking
 - Runtime performance: ~20-30% improvement with optimizations
 - Core Web Vitals: Significant improvements in all metrics
+
+## [2026-01-03] Migration zu AlignUI Pro Komponenten 🚧
+
+**Vollständige Migration der Plattform von shadcn/ui zu AlignUI Pro**
+
+### **Phase 1: Setup & Vorbereitung** ✅
+- Migrationsplan und Dokumentation erstellt ✅
+- AlignUI Komponenten-Struktur erstellt ✅
+- Index-Datei und README erstellt ✅
+- TODO-Liste für Migration erstellt ✅
+
+### **Phase 2: Basis-Komponenten Migration** 🚧
+- [ ] Button (actions/button.tsx)
+- [ ] ButtonGroup (actions/button-group.tsx)
+- [ ] LinkButton (actions/link-button.tsx)
+- [ ] Card (data-display/card.tsx)
+- [ ] Input (forms/input.tsx)
+- [ ] Badge (data-display/badge.tsx)
+- [ ] Avatar (data-display/avatar.tsx)
+- [ ] Label (forms/label.tsx)
+
+### **Phase 3: Form-Komponenten Migration** 🚧
+- [ ] Form (forms/form.tsx)
+- [ ] Select (forms/select.tsx)
+- [ ] Checkbox (forms/checkbox.tsx)
+- [ ] Radio Group (forms/radio-group.tsx)
+- [ ] Switch (forms/switch.tsx)
+- [ ] Textarea (forms/textarea.tsx)
+- [ ] Datepicker (forms/datepicker.tsx)
+- [ ] File Upload (forms/file-upload.tsx)
+- [ ] Color Picker (forms/color-picker.tsx)
+- [ ] Digit Input (forms/digit-input.tsx)
+- [ ] Slider (forms/slider.tsx)
+- [ ] Hint (forms/hint.tsx)
+
+### **Phase 4: Overlay-Komponenten Migration** 🚧
+- [ ] Dialog/Modal (overlays/dialog.tsx)
+- [ ] Popover (overlays/popover.tsx)
+- [ ] Dropdown Menu (overlays/dropdown-menu.tsx)
+- [ ] Command Menu (overlays/command-menu.tsx)
+- [ ] Drawer (overlays/drawer.tsx)
+- [ ] Tooltip (overlays/tooltip.tsx)
+
+### **Phase 5: Layout-Komponenten Migration** 🚧
+- [ ] Tabs (layout/tabs.tsx)
+- [ ] Accordion (layout/accordion.tsx)
+- [ ] Breadcrumb (layout/breadcrumb.tsx)
+- [ ] Segmented Control (layout/segmented-control.tsx)
+- [ ] Tab Menu Horizontal (layout/tab-menu-horizontal.tsx)
+- [ ] Tab Menu Vertical (layout/tab-menu-vertical.tsx)
+
+### **Phase 6: Feedback-Komponenten Migration** 🚧
+- [ ] Toast (feedback/toast.tsx)
+- [ ] Alert (feedback/alert.tsx)
+- [ ] Notification (feedback/notification.tsx)
+- [ ] Progress Bar (feedback/progress-bar.tsx)
+- [ ] Progress Circle (feedback/progress-circle.tsx)
+
+### **Phase 7: Data-Display-Komponenten Migration** 🚧
+- [ ] Table (data-display/table.tsx)
+- [ ] Data Table (data-display/data-table.tsx)
+- [ ] Avatar Group (data-display/avatar-group.tsx)
+- [ ] Avatar Group Compact (data-display/avatar-group-compact.tsx)
+- [ ] Status Badge (data-display/status-badge.tsx)
+- [ ] Tag (data-display/tag.tsx)
+- [ ] Rating (data-display/rating.tsx)
+- [ ] Banner (data-display/banner.tsx)
+- [ ] Kbd (data-display/kbd.tsx)
+- [ ] Divider (data-display/divider.tsx)
+
+### **Phase 8: Navigation-Komponenten Migration** 🚧
+- [ ] Pagination (navigation/pagination.tsx)
+- [ ] Horizontal Stepper (navigation/horizontal-stepper.tsx)
+- [ ] Vertical Stepper (navigation/vertical-stepper.tsx)
+- [ ] Dot Stepper (navigation/dot-stepper.tsx)
+
+### **Phase 9: Imports Aktualisieren** 🚧
+- [ ] Alle Imports in Web-App aktualisieren
+- [ ] Landing Page Imports aktualisieren (falls verwendet)
+- [ ] Shared Components aktualisieren
+- [ ] Tests aktualisieren
+
+### **Phase 10: Mobile App Migration** 🚧
+- [ ] Prüfen ob AlignUI React Native Komponenten verfügbar sind
+- [ ] Mobile-spezifische Komponenten migrieren
+- [ ] NativeWind Integration sicherstellen
+- [ ] Mobile App Imports aktualisieren
+
+### **Phase 11: Cleanup** 🚧
+- [ ] Alte shadcn/ui Komponenten entfernen
+- [ ] Nicht mehr benötigte Radix UI Dependencies entfernen
+- [ ] components.json aktualisieren oder entfernen
+- [ ] Package.json bereinigen
+
+### **Phase 12: Testing & Qualitätssicherung** 🚧
+- [ ] Alle Seiten testen
+- [ ] Dark Mode testen
+- [ ] Responsive Design testen
+- [ ] Accessibility-Tests durchführen
+- [ ] Performance-Tests durchführen
+- [ ] Browser-Kompatibilität testen
+
+### **Dokumentation:**
+- Migrations-Guide: `docs/ALIGNUI_MIGRATION.md` ✅
+- Komponenten-README: `apps/web/components/alignui/README.md` ✅
+- Index-Datei: `apps/web/components/alignui/index.ts` ✅
+
+### **Nächste Schritte:**
+1. AlignUI Pro Account einrichten: [pro.alignui.com/sign-in](https://pro.alignui.com/sign-in)
+2. Erste Komponente migrieren (Button empfohlen)
+3. Schrittweise alle Komponenten migrieren
+4. Tests durchführen
+5. Cleanup durchführen
+
+**Current Status:** 🚧 **IN PROGRESS** - Phase 1 abgeschlossen, bereit für Komponenten-Migration

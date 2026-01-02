@@ -26,12 +26,12 @@ import {
 import { SubscriptionPlan } from "@/types/index";
 import { pricingData } from "@/config/subscriptions";
 import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from '@/components/alignui/actions/button';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { BillingFormButton } from "@/components/forms/billing-form-button";
 import { ModalContext } from "@/components/modals/providers";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/alignui/data-display/badge';
 
 interface PricingCardsProps {
   userId?: string;

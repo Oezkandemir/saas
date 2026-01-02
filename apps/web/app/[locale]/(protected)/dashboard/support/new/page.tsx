@@ -6,7 +6,7 @@ import { constructMetadata } from "@/lib/utils";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { CreateTicketForm } from "@/components/support/create-ticket-form";
 import { MessageSquarePlus } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from '@/components/alignui/data-display/card';
 
 export async function generateMetadata() {
   const t = await getTranslations("Support");

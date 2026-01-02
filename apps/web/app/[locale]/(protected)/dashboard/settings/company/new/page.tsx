@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Building2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from '@/components/alignui/data-display/card';
 import { CompanyProfileForm } from "@/components/company-settings/company-profile-form";
 import {
   FormField,
@@ -12,7 +12,7 @@ import {
   FormDescription,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input } from '@/components/alignui/forms/input';
 import { Checkbox } from "@/components/ui/checkbox";
 
 export const dynamic = "force-dynamic";

@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from '@/components/alignui/actions/button';
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 

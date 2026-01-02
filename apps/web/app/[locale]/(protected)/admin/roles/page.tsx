@@ -11,7 +11,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import {
   Table,
   TableBody,
@@ -20,8 +20,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from '@/components/alignui/data-display/badge';
+import { Button } from '@/components/alignui/actions/button';
 import { RoleList } from "@/components/admin/roles/role-list";
 
 export async function generateMetadata() {
@@ -69,6 +69,7 @@ export default async function AdminRolesPage(props: Props) {
     </UnifiedPageLayout>
   );
 }
+
 
 
 

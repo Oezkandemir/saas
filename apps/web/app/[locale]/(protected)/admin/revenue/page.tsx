@@ -11,7 +11,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import {
   Table,
   TableBody,
@@ -21,7 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/alignui/data-display/badge';
 
 export async function generateMetadata() {
   const t = await getTranslations("Admin.revenue");
@@ -327,6 +327,7 @@ export default async function AdminRevenuePage(props: Props) {
     </UnifiedPageLayout>
   );
 }
+
 
 
 

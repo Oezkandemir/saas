@@ -15,7 +15,7 @@ import {
   updateCompanyProfile,
 } from "@/actions/company-profiles-actions";
 import { Form } from "@/components/ui/form";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from '@/components/alignui/data-display/card';
 import { Building2, Scale, Mail, Landmark, Tag, FileText } from "lucide-react";
 import { MultiStepForm, Step } from "@/components/ui/multi-step-form";
 import {

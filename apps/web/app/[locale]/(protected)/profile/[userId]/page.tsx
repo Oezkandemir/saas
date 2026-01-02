@@ -12,14 +12,14 @@ import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { constructMetadata } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
 import { FollowButton } from "@/components/follow-button";
 import { FollowStats } from "@/components/follow-stats";

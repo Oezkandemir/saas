@@ -1,7 +1,7 @@
 "use client";
 
 import { Phone, Mail, MessageSquare, FileText, Calendar, Copy, Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { Customer } from "@/actions/customers-actions";
 import { SendEmailDialog } from "./send-email-dialog";
 import Link from "next/link";
@@ -94,6 +94,7 @@ export function CustomerQuickActions({ customer }: CustomerQuickActionsProps) {
     </div>
   );
 }
+
 
 
 

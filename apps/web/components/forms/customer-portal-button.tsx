@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { openCustomerPortal } from "@/actions/open-customer-portal";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Icons } from "@/components/shared/icons";
 

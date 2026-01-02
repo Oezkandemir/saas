@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { Download, ZoomIn, ZoomOut, Loader2, Maximize2, FileText } from "lucide-react";
 import {
   Dialog,

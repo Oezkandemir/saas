@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { userRoleSchema } from "@/lib/validations/user";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import { Form, FormField } from "@/components/ui/form";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { Icons } from "@/components/shared/icons";

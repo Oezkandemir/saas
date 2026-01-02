@@ -11,9 +11,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+} from '@/components/alignui/data-display/card';
+import { Badge } from '@/components/alignui/data-display/badge';
+import { Button } from '@/components/alignui/actions/button';
 import {
   getRecentErrors,
   resolveError,
@@ -271,6 +271,7 @@ export function SystemErrors() {
     </Card>
   );
 }
+
 
 
 

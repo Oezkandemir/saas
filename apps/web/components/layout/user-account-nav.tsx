@@ -44,7 +44,7 @@ import { Icons } from "@/components/shared/icons";
 import { getNotificationIcon } from "@/components/shared/notifications-popover";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { useSupabase } from "@/components/supabase-provider";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/alignui/data-display/badge';
 import { Separator } from "@/components/ui/separator";
 
 import { ModeToggle } from "./mode-toggle";

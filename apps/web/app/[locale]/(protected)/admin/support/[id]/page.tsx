@@ -7,7 +7,7 @@ import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 import {
   Card,
   CardContent,
@@ -15,7 +15,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/alignui/data-display/card';
 import { Separator } from "@/components/ui/separator";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TicketMessageItem } from "@/components/support/ticket-message";

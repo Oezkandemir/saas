@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 import { constructMetadata } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/alignui/actions/button';
 
 export const metadata: Metadata = constructMetadata({
   title: "Datenschutzerklärung",

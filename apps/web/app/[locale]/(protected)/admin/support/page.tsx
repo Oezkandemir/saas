@@ -4,7 +4,7 @@ import { AlertTriangle, CheckCircle, Clock, HelpCircle, MessageSquare } from "lu
 import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TicketAccordionTable } from "@/components/support/ticket-accordion-table";
 
