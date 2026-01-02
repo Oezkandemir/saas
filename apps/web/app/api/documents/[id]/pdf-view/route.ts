@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { getDocument } from "@/actions/documents-actions";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,7 @@ export async function GET(
         },
       });
     } catch (fetchError) {
-      console.error("Error fetching PDF from storage:", fetchError);
+      logger.error("Error fetching PDF from storage:", fetchError);
       return NextResponse.json(
         { error: "Failed to fetch PDF from storage" },
         { status: 500 },
@@ -46,7 +47,10 @@ export async function GET(
     }
     
     if (!pdfResponse.ok) {
-      console.error("PDF fetch failed:", pdfResponse.status, pdfResponse.statusText);
+      logger.error("PDF fetch failed", {
+        status: pdfResponse.status,
+        statusText: pdfResponse.statusText,
+      });
       return NextResponse.json(
         { error: `Failed to fetch PDF: ${pdfResponse.status} ${pdfResponse.statusText}` },
         { status: pdfResponse.status },
@@ -54,6 +58,20 @@ export async function GET(
     }
 
     const pdfBuffer = await pdfResponse.arrayBuffer();
+
+    // SECURITY: Get origin from request for CORS
+    const origin = request.headers.get("origin");
+    const allowedOrigins = [
+      process.env.NEXT_PUBLIC_APP_URL,
+      // Add other allowed origins from env if needed
+      ...(process.env.ALLOWED_ORIGINS?.split(",") || []),
+    ].filter(Boolean);
+
+    // SECURITY: Only allow same-origin or explicitly allowed origins
+    const isAllowedOrigin =
+      !origin ||
+      origin === request.nextUrl.origin ||
+      allowedOrigins.some((allowed) => origin.startsWith(allowed));
 
     // Return PDF with proper headers for iframe embedding
     return new NextResponse(pdfBuffer, {
@@ -63,15 +81,20 @@ export async function GET(
         "Content-Disposition": `inline; filename="${document.document_number}.pdf"`,
         "Cache-Control": "public, max-age=3600",
         "X-Content-Type-Options": "nosniff",
-        // Allow iframe embedding
+        // Allow iframe embedding only from same origin
         "X-Frame-Options": "SAMEORIGIN",
-        // CORS headers for iframe
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET",
+        // SECURITY: CORS headers - only allow same-origin or explicitly allowed origins
+        ...(isAllowedOrigin
+          ? {
+              "Access-Control-Allow-Origin": origin || request.nextUrl.origin,
+              "Access-Control-Allow-Methods": "GET",
+              "Access-Control-Allow-Credentials": "true",
+            }
+          : {}),
       },
     });
   } catch (error) {
-    console.error("Error proxying PDF:", error);
+    logger.error("Error proxying PDF:", error);
     return NextResponse.json(
       { error: "Failed to load PDF" },
       { status: 500 },

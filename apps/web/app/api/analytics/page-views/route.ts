@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
+import { applyAPIMiddleware } from "@/lib/api-middleware";
 
 /**
  * GET handler to fetch the most viewed pages
@@ -11,6 +12,18 @@ import { logger } from "@/lib/logger";
  */
 export async function GET(request: NextRequest) {
   try {
+    // SECURITY: Apply middleware (rate limiting)
+    const middleware = await applyAPIMiddleware(request, {
+      rateLimit: {
+        endpoint: "/api/analytics/page-views",
+        useUserBasedLimit: false,
+      },
+    });
+
+    if (!middleware.valid) {
+      return middleware.response;
+    }
+
     const url = new URL(request.url);
     const limit = parseInt(url.searchParams.get("limit") || "5", 10);
     const offset = parseInt(url.searchParams.get("offset") || "0", 10);

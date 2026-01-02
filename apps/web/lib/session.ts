@@ -2,6 +2,7 @@ import { cache } from "react";
 import { type Session } from "@supabase/supabase-js";
 
 import { getSupabaseServer } from "@/lib/supabase-server";
+import { logger } from "@/lib/logger";
 
 import "server-only";
 
@@ -34,7 +35,7 @@ async function _getCurrentUserInternal() {
     
     // If database query fails, log error but don't fail the whole request
     if (roleError) {
-      console.error("Error fetching user role from database:", roleError);
+      logger.error("Error fetching user role from database:", roleError);
     }
 
     // Auch Benutzerdaten aus der Datenbank abrufen für zusätzliche Felder wie avatar_url
@@ -63,7 +64,7 @@ async function _getCurrentUserInternal() {
       status: dbUser?.status || "active",
     };
   } catch (error) {
-    console.error("Error getting current user:", error);
+    logger.error("Error getting current user:", error);
     return null;
   }
 }
@@ -87,7 +88,7 @@ export async function getSession(): Promise<Session | null> {
 
     return session;
   } catch (error) {
-    console.error("Error getting session:", error);
+    logger.error("Error getting session:", error);
     return null;
   }
 }

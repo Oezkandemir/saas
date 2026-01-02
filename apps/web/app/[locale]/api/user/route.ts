@@ -1,18 +1,25 @@
 import { auth } from "@/auth";
 
 import { supabaseAdmin } from "@/lib/db";
+import { logger } from "@/lib/logger";
+import { applyAPIMiddleware } from "@/lib/api-middleware";
 
 export async function DELETE(req: Request) {
-  const authResult = await auth();
+  // SECURITY: Apply middleware (auth + rate limiting)
+  const request = new Request(req);
+  const middleware = await applyAPIMiddleware(request, {
+    requireAuth: true,
+    rateLimit: {
+      endpoint: "/api/user",
+      useUserBasedLimit: true,
+    },
+  });
 
-  if (!authResult) {
-    return new Response("Not authenticated", { status: 401 });
+  if (!middleware.valid) {
+    return middleware.response;
   }
 
-  const currentUser = authResult.user;
-  if (!currentUser) {
-    return new Response("Invalid user", { status: 401 });
-  }
+  const currentUser = middleware.user!;
 
   try {
     const { error } = await supabaseAdmin
@@ -21,11 +28,11 @@ export async function DELETE(req: Request) {
       .eq("id", currentUser.id);
 
     if (error) {
-      console.error("Error deleting user:", error);
+      logger.error("Error deleting user:", error);
       return new Response(`Database error: ${error.message}`, { status: 500 });
     }
   } catch (error) {
-    console.error("Unexpected error deleting user:", error);
+    logger.error("Unexpected error deleting user:", error);
     return new Response("Internal server error", { status: 500 });
   }
 

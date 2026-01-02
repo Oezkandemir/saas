@@ -5,6 +5,8 @@ import { generateAndUploadPDF } from "@/lib/pdf/generator-vercel";
 import { generateInvoiceHTMLAsync } from "@/lib/pdf/templates";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
+import { applyAPIMiddleware } from "@/lib/api-middleware";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60; // 60 seconds - needed for PDF generation
@@ -18,10 +20,20 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const user = await getCurrentUser();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // SECURITY: Apply middleware (auth + rate limiting)
+    const middleware = await applyAPIMiddleware(request, {
+      requireAuth: true,
+      rateLimit: {
+        endpoint: "/api/documents/[id]/pdf",
+        useUserBasedLimit: true,
+      },
+    });
+
+    if (!middleware.valid) {
+      return middleware.response;
     }
+
+    const user = middleware.user!;
 
     const { id } = await params;
     const document = await getDocument(id);
@@ -47,12 +59,12 @@ export async function GET(
               return NextResponse.json({ pdfUrl: document.pdf_url });
             } else {
               // Invalid PDF (probably old HTML), regenerate it
-              console.warn("Invalid PDF detected, regenerating...");
+              logger.warn("Invalid PDF detected, regenerating");
             }
           }
         } catch (error) {
           // Error fetching PDF, regenerate it
-          console.warn("Error validating PDF, regenerating:", error);
+          logger.warn("Error validating PDF, regenerating", { error });
         }
       }
     }
@@ -73,33 +85,20 @@ export async function GET(
 
     return NextResponse.json({ pdfUrl });
   } catch (error) {
-    console.error("Error generating PDF:", error);
+    logger.error("Error generating PDF:", error);
     
     // Always provide detailed error in development, simplified in production
     let errorMessage = "Fehler beim Generieren des PDFs";
-    let errorDetails: any = null;
     
     if (error instanceof Error) {
       errorMessage = error.message;
-      errorDetails = {
-        message: error.message,
-        name: error.name,
-        stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
-      };
     } else if (typeof error === "string") {
       errorMessage = error;
-      errorDetails = { message: error };
     } else if (error && typeof error === "object") {
-      errorDetails = error;
       errorMessage = (error as any).message || 
                      (error as any).error || 
                      (error as any).toString?.() ||
                      "Unbekannter Fehler beim Generieren des PDFs";
-    }
-    
-    // Log full error details for debugging
-    if (process.env.NODE_ENV === "development") {
-      console.error("Full error details:", JSON.stringify(errorDetails, null, 2));
     }
     
     return NextResponse.json(
@@ -122,10 +121,20 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const user = await getCurrentUser();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // SECURITY: Apply middleware (auth + rate limiting)
+    const middleware = await applyAPIMiddleware(request, {
+      requireAuth: true,
+      rateLimit: {
+        endpoint: "/api/documents/[id]/pdf",
+        useUserBasedLimit: true,
+      },
+    });
+
+    if (!middleware.valid) {
+      return middleware.response;
     }
+
+    const user = middleware.user!;
 
     const { id } = await params;
     const document = await getDocument(id);
@@ -149,33 +158,20 @@ export async function POST(
 
     return NextResponse.json({ pdfUrl });
   } catch (error) {
-    console.error("Error regenerating PDF:", error);
+    logger.error("Error regenerating PDF:", error);
     
     // Always provide detailed error in development, simplified in production
     let errorMessage = "Fehler beim Regenerieren des PDFs";
-    let errorDetails: any = null;
     
     if (error instanceof Error) {
       errorMessage = error.message;
-      errorDetails = {
-        message: error.message,
-        name: error.name,
-        stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
-      };
     } else if (typeof error === "string") {
       errorMessage = error;
-      errorDetails = { message: error };
     } else if (error && typeof error === "object") {
-      errorDetails = error;
       errorMessage = (error as any).message || 
                      (error as any).error || 
                      (error as any).toString?.() ||
                      "Unbekannter Fehler beim Regenerieren des PDFs";
-    }
-    
-    // Log full error details for debugging
-    if (process.env.NODE_ENV === "development") {
-      console.error("Full error details:", JSON.stringify(errorDetails, null, 2));
     }
     
     return NextResponse.json(

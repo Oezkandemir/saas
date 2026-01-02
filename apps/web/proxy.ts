@@ -174,37 +174,42 @@ export default async function proxy(request: NextRequest) {
   }
 
   // Handle auth routes when already logged in
-  if (isAuthRoute && session) {
-    // Get role from database (with caching) for secure redirect
+  // OPTIMIZATION: Use cached role check to avoid blocking redirect
+  if (isAuthRoute && session && authUser) {
+    // Get role from cache first (fast path)
+    const now = Date.now();
+    const cached = userRoleCache.get(authUser.id);
     let userRole = "USER"; // Default to USER for security
-    if (authUser) {
-      const now = Date.now();
-      const cached = userRoleCache.get(authUser.id);
+    
+    if (cached && (now - cached.timestamp) < CACHE_TTL) {
+      userRole = cached.role;
+    } else {
+      // Only query database if cache miss (async, don't block)
+      // For redirect, use default USER and let AuthLayout handle admin redirect
+      // This prevents blocking the redirect with a DB query
+      userRole = "USER";
       
-      if (cached && (now - cached.timestamp) < CACHE_TTL) {
-        userRole = cached.role;
-      } else {
-        try {
-          const { data: userData, error } = await supabase
-            .from("users")
-            .select("role")
-            .eq("id", authUser.id)
-            .single();
-
+      // Update cache asynchronously (don't await)
+      supabase
+        .from("users")
+        .select("role")
+        .eq("id", authUser.id)
+        .single()
+        .then(({ data: userData, error }) => {
           if (!error && userData?.role) {
-            userRole = String(userData.role).trim();
-            userRoleCache.set(authUser.id, { role: userRole, timestamp: now });
+            const role = String(userData.role).trim();
+            userRoleCache.set(authUser.id, { role, timestamp: now });
           }
-        } catch (error) {
+        })
+        .catch((error) => {
           logger.error("Error checking user role in proxy", error);
-          // Default to USER for security if query fails
-        }
-      }
+        });
     }
 
+    // Check for redirectTo param first, then use default
     const redirectTo =
       request.nextUrl.searchParams.get("redirectTo") ||
-      (userRole === "ADMIN" ? "/admin" : "/dashboard");
+      "/dashboard"; // Always redirect to dashboard, let AuthLayout handle admin redirect
 
     return NextResponse.redirect(
       new URL(`/${locale}${redirectTo}`, request.url),
@@ -235,9 +240,14 @@ export default async function proxy(request: NextRequest) {
                        !request.nextUrl.hostname.includes("localhost") &&
                        !request.nextUrl.hostname.includes("127.0.0.1");
   
+  // SECURITY: CSP without unsafe-eval (removed for security)
+  // Note: unsafe-inline for scripts is required for Next.js hydration
+  // Consider implementing nonces in future for better security
   const cspDirectives = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
+    // Removed 'unsafe-eval' - major security improvement
+    // unsafe-inline kept for Next.js hydration scripts (can be improved with nonces)
+    "script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: https: blob:",

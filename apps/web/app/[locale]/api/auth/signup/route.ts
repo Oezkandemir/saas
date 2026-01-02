@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getSupabaseServer } from "@/lib/supabase-server";
+import { logger } from "@/lib/logger";
 
 // Validation schema for signup
 const signupSchema = z.object({
@@ -29,12 +30,12 @@ export async function POST(req: Request) {
     });
 
     if (error) {
-      console.error("Supabase signup error:", error);
+      logger.error("Supabase signup error:", error);
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
     if (data?.user) {
-      console.log("Supabase auth signup successful:", data.user?.id);
+      logger.info("Supabase auth signup successful", { userId: data.user?.id });
 
       return NextResponse.json({
         user: data.user,
@@ -43,13 +44,13 @@ export async function POST(req: Request) {
     }
 
     // Should not happen but check for it
-    console.error("No user data returned from Supabase auth signup");
+    logger.error("No user data returned from Supabase auth signup");
     return NextResponse.json(
       { error: "Failed to create user account" },
       { status: 500 },
     );
   } catch (error) {
-    console.error("Error during signup:", error);
+    logger.error("Error during signup:", error);
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.errors }, { status: 400 });
     }

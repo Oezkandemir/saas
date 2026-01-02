@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { CompanyProfile, deleteCompanyProfile, setDefaultProfile } from "@/actions/company-profiles-actions";
 import { CompanyProfileCard } from "./company-profile-card";
+import { logger } from "@/lib/logger";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,7 +42,7 @@ export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
       toast.success(`"${profile.profile_name}" als Standard festgelegt`);
       router.refresh();
     } catch (error: any) {
-      console.error("Error setting default:", error);
+      logger.error("Error setting default:", error);
       toast.error(error.message || "Fehler beim Festlegen als Standard");
     }
   };
@@ -56,7 +57,7 @@ export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
       setProfileToDelete(null);
       router.refresh();
     } catch (error: any) {
-      console.error("Error deleting profile:", error);
+      logger.error("Error deleting profile:", error);
       toast.error(error.message || "Fehler beim Löschen des Profils");
     } finally {
       setIsDeleting(false);

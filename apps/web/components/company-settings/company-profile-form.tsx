@@ -26,6 +26,7 @@ import {
   CompanyBankInfoStep,
   CompanyDocumentDefaultsStep,
 } from "./company-profile-form-steps";
+import { logger } from "@/lib/logger";
 
 const companyProfileSchema = z.object({
   profile_name: z.string().min(1, "Profilname ist erforderlich"),
@@ -161,7 +162,7 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
         router.refresh();
       }
     } catch (error: any) {
-      console.error("Error saving company profile:", error);
+      logger.error("Error saving company profile:", error);
       const errorMessage = error?.message || "Fehler beim Speichern des Profils";
       toast.error("Fehler beim Speichern", {
         description: errorMessage,

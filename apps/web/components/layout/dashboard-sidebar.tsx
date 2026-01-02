@@ -31,6 +31,7 @@ import { useSupabase } from "@/components/supabase-provider";
 import { LayoutDashboard, Mail, Sparkles } from "lucide-react";
 import { getUserPlan } from "@/actions/get-user-plan";
 import { UserRole } from "@/components/forms/user-role-form";
+import { logger } from "@/lib/logger";
 
 interface DashboardSidebarProps {
   links: SidebarNavItem[];
@@ -96,7 +97,7 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
           }
         }
       } catch (err) {
-        console.error("Error fetching user data:", err);
+        logger.error("Error fetching user data:", err);
         // On error, set to USER (don't trust metadata for security)
         // Admin items will be hidden since userRole won't be ADMIN
         setUserRole("USER");
@@ -444,7 +445,7 @@ function MobileSheetSidebarContent({ links, isFreePlan = true }: DashboardSideba
           }
         }
       } catch (err) {
-        console.error("Error fetching user data:", err);
+        logger.error("Error fetching user data:", err);
         // On error, set to USER (don't trust metadata for security)
         // Admin items will be hidden since userRole won't be ADMIN
         setUserRole("USER");

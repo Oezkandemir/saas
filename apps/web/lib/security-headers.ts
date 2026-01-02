@@ -16,10 +16,15 @@ export interface SecurityHeadersConfig {
 
 /**
  * Default Content Security Policy
+ * SECURITY: Removed unsafe-eval for better security
+ * Note: unsafe-inline for scripts is required for Next.js hydration
+ * Consider implementing nonces in future for better security
  */
 const defaultCSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
+  // Removed 'unsafe-eval' - major security improvement
+  // unsafe-inline kept for Next.js hydration scripts (can be improved with nonces)
+  "script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
   "img-src 'self' data: https: blob:",

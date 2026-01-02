@@ -6,6 +6,7 @@ import { Check, ChevronRight, ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { logger } from "@/lib/logger";
 
 export interface Step<T extends FieldValues> {
   id: string;
@@ -186,7 +187,7 @@ export function MultiStepForm<T extends FieldValues>({
       
       await onSubmit(form.getValues());
     } catch (error) {
-      console.error("Form submission error:", error);
+      logger.error("Form submission error:", error);
       // Don't close form on error - let user fix it
       const { toast } = await import("sonner");
       toast.error("Fehler beim Speichern", {

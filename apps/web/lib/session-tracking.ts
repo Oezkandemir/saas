@@ -115,3 +115,33 @@ export async function logFailedLogin(
   }
 }
 
+/**
+ * Update login history to mark 2FA as used
+ * @param sessionToken Session token from Supabase
+ */
+export async function updateLoginHistoryWith2FA(
+  sessionToken: string,
+): Promise<void> {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return;
+    }
+
+    // Update the most recent successful login history entry for this user
+    // to mark that 2FA was used
+    await supabase
+      .from("login_history")
+      .update({ two_factor_used: true })
+      .eq("user_id", user.id)
+      .eq("success", true)
+      .order("created_at", { ascending: false })
+      .limit(1);
+  } catch (error) {
+    logger.error("Error updating login history with 2FA", error);
+    // Don't throw - logging failures shouldn't break login flow
+  }
+}
+

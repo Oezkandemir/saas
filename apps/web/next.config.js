@@ -18,10 +18,14 @@ const nextConfig = {
   async headers() {
     const isProduction = process.env.NODE_ENV === 'production';
     
-    // CSP directives - only upgrade insecure requests in production
+    // SECURITY: CSP directives - removed unsafe-eval for security
+    // Note: unsafe-inline for scripts is required for Next.js hydration
+    // Consider implementing nonces in future for better security
     const cspDirectives = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
+      // Removed 'unsafe-eval' - major security improvement
+      // unsafe-inline kept for Next.js hydration scripts (can be improved with nonces)
+      "script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com data:",
       "img-src 'self' data: https: blob:",

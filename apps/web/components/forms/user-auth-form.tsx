@@ -20,6 +20,8 @@ import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/shared/icons";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSupabase } from "@/components/supabase-provider";
+import { checkTwoFactorEnabledByEmail } from "@/actions/two-factor-actions";
+import { TwoFactorLoginForm } from "./two-factor-login-form";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   type?: string;
@@ -52,9 +54,53 @@ export function UserAuthForm({
     resolver: zodResolver(formSchema),
   });
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [showTwoFactor, setShowTwoFactor] = React.useState<boolean>(false);
+  const [twoFactorUserId, setTwoFactorUserId] = React.useState<string | null>(null);
+  const [userEmail, setUserEmail] = React.useState<string>("");
+  const [storedPassword, setStoredPassword] = React.useState<string>(""); // Temporarily store password for 2FA flow
   const searchParams = useSearchParams();
   const { supabase } = useSupabase();
   const router = useRouter();
+
+  const completeLogin = async (session: any) => {
+    // CRITICAL: Do NOT update the role during login
+    // The role should always come from the database, not from auth metadata
+    // Updating the role here would reset admin roles to USER
+    // If metadata needs updating, do it without touching the role
+    // The role is managed by admins through the admin interface only
+
+    // Track login session asynchronously (non-blocking for faster login)
+    if (session) {
+      const { trackLoginSession } = await import("@/actions/auth-actions");
+      // Don't await - let it run in background for faster login
+      trackLoginSession(
+        session.access_token,
+        session.expires_at!,
+      ).catch((error) => {
+        // Silently fail - session tracking shouldn't block login
+        console.error("Failed to track login session:", error);
+      });
+    }
+
+    toast.success("Successfully signed in", {
+      description: "You are now logged in to your account.",
+    });
+
+    // Close modal after successful login
+    if (onSuccess) {
+      onSuccess();
+    }
+
+    // Determine redirect URL - check for redirectTo param or default to dashboard
+    const finalRedirect = 
+      redirectTo && redirectTo !== "/" && redirectTo !== "/login" 
+        ? redirectTo 
+        : "/dashboard";
+
+    // Use window.location for immediate redirect (faster than router.push)
+    // This prevents multiple redirects and loops
+    window.location.href = finalRedirect;
+  };
 
   async function onSubmit(data: FormData) {
     setIsLoading(true);
@@ -127,9 +173,13 @@ export function UserAuthForm({
           onSuccess();
         }
       } else {
+        // Check if user has 2FA enabled BEFORE signing in
+        const email = data.email.toLowerCase();
+        const twoFactorCheck = await checkTwoFactorEnabledByEmail(email);
+
         // Sign in with password
         const signInResult = await supabase.auth.signInWithPassword({
-          email: data.email.toLowerCase(),
+          email: email,
           password: data.password,
         });
 
@@ -137,37 +187,28 @@ export function UserAuthForm({
           throw signInResult.error;
         }
 
-        // CRITICAL: Do NOT update the role during login
-        // The role should always come from the database, not from auth metadata
-        // Updating the role here would reset admin roles to USER
-        // If metadata needs updating, do it without touching the role
-        // The role is managed by admins through the admin interface only
-
-        // Track login session
-        if (signInResult.data.session) {
-          const { trackLoginSession } = await import("@/actions/auth-actions");
-          await trackLoginSession(
-            signInResult.data.session.access_token,
-            signInResult.data.session.expires_at!,
-          );
+        if (twoFactorCheck.success && twoFactorCheck.enabled && twoFactorCheck.userId) {
+          // User has 2FA enabled - SECURITY: Delete session immediately
+          // User must verify 2FA before being logged in
+          await supabase.auth.signOut();
+          
+          // Store credentials temporarily for 2FA flow (in memory only)
+          setTwoFactorUserId(twoFactorCheck.userId);
+          setUserEmail(email);
+          setStoredPassword(data.password); // Store password temporarily for re-login after 2FA
+          setShowTwoFactor(true);
+          setIsLoading(false);
+          return; // Don't complete login yet - wait for 2FA verification
         }
 
-        toast.success("Successfully signed in", {
-          description: "You are now logged in to your account.",
-        });
-
-        // Close modal after successful login
-        if (onSuccess) {
-          onSuccess();
-        }
-
-        // Redirect to dashboard or the specified redirect URL after successful login
-        const finalRedirect = redirectTo && redirectTo !== "/" ? redirectTo : "/dashboard";
-        router.push(finalRedirect);
-        router.refresh();
+        // No 2FA or 2FA not enabled - proceed with normal login
+        await completeLogin(signInResult.data.session);
       }
     } catch (error) {
-      console.error("Authentication error:", error);
+      // Log error (client-side logging)
+      if (process.env.NODE_ENV === "development") {
+        console.error("Authentication error:", error);
+      }
       toast.error("Authentication failed", {
         description:
           error.message || "Please check your credentials and try again.",
@@ -177,6 +218,74 @@ export function UserAuthForm({
     }
   }
 
+
+  // Show 2FA form if 2FA is required
+  if (showTwoFactor && twoFactorUserId && storedPassword) {
+    return (
+      <div className={cn("grid gap-6", className)} {...props}>
+        <TwoFactorLoginForm
+          userId={twoFactorUserId}
+          email={userEmail}
+          onSuccess={async () => {
+            // 2FA verified successfully - now create session
+            setIsLoading(true);
+            try {
+              // Re-authenticate with password after 2FA verification
+              const signInResult = await supabase.auth.signInWithPassword({
+                email: userEmail,
+                password: storedPassword,
+              });
+
+              if (signInResult.error) {
+                throw signInResult.error;
+              }
+
+              // Update login history to mark 2FA as used
+              try {
+                const { updateLoginHistoryWith2FA } = await import("@/lib/session-tracking");
+                await updateLoginHistoryWith2FA(signInResult.data.session.access_token);
+              } catch (error) {
+                // Silently fail - logging shouldn't block login
+                console.error("Failed to update login history:", error);
+              }
+
+              // Clear stored password immediately after use
+              setStoredPassword("");
+              setShowTwoFactor(false);
+              setTwoFactorUserId(null);
+              setUserEmail("");
+
+              // Complete login with verified session
+              await completeLogin(signInResult.data.session);
+            } catch (error: any) {
+              toast.error("Login failed", {
+                description: error.message || "Please try signing in again.",
+              });
+              setStoredPassword("");
+              setShowTwoFactor(false);
+              setTwoFactorUserId(null);
+              setUserEmail("");
+              setIsLoading(false);
+            }
+          }}
+          onCancel={() => {
+            // Clear all state and ensure user is signed out
+            setStoredPassword("");
+            setShowTwoFactor(false);
+            setTwoFactorUserId(null);
+            setUserEmail("");
+            // Ensure user is signed out
+            supabase.auth.signOut().catch(() => {
+              // Ignore errors
+            });
+            toast.info("Login cancelled", {
+              description: "Please sign in again to continue.",
+            });
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
