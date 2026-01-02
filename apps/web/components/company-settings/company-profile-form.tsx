@@ -16,7 +16,7 @@ import {
 } from "@/actions/company-profiles-actions";
 import { Form } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
-import { Building2, Scale, Mail, Landmark, Tag } from "lucide-react";
+import { Building2, Scale, Mail, Landmark, Tag, FileText } from "lucide-react";
 import { MultiStepForm, Step } from "@/components/ui/multi-step-form";
 import {
   CompanyProfileSettingsStep,
@@ -24,6 +24,7 @@ import {
   CompanyLegalInfoStep,
   CompanyContactInfoStep,
   CompanyBankInfoStep,
+  CompanyDocumentDefaultsStep,
 } from "./company-profile-form-steps";
 
 const companyProfileSchema = z.object({
@@ -62,6 +63,11 @@ const companyProfileSchema = z.object({
   logo_url: z.string().url().optional().or(z.literal("")),
   primary_color: z.string().optional(),
   secondary_color: z.string().optional(),
+  
+  // Document defaults
+  default_tax_rate: z.number().min(0).max(100).optional(),
+  default_payment_days: z.number().min(0).optional(),
+  payment_on_receipt: z.boolean().optional(),
 });
 
 type CompanyProfileFormValues = z.infer<typeof companyProfileSchema>;
@@ -114,17 +120,23 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
       logo_url: profile?.logo_url || "",
       primary_color: profile?.primary_color || "#000000",
       secondary_color: profile?.secondary_color || "#666666",
+      
+      // Document defaults
+      default_tax_rate: profile?.default_tax_rate ?? 19,
+      default_payment_days: profile?.default_payment_days ?? 14,
+      payment_on_receipt: profile?.payment_on_receipt ?? false,
     },
   });
 
-  // Auto-save form data
+  // Auto-save form data to localStorage only (not to database)
+  // This is disabled for existing profiles to prevent accidental saves
   const storageKey = profile
     ? `company-profile-form-${profile.id}`
     : "company-profile-form-new";
   const { clearSavedData } = useAutoSave({
     form,
     storageKey,
-    enabled: !profile, // Only auto-save for new profiles
+    enabled: false, // Disable auto-save completely - only save when user clicks "Speichern"
     debounceMs: 2000,
   });
 
@@ -141,6 +153,7 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
         toast.success("Firmenprofil erfolgreich erstellt");
       }
 
+      // Only navigate/close on success
       if (onSuccess) {
         onSuccess();
       } else {
@@ -149,8 +162,13 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
       }
     } catch (error: any) {
       console.error("Error saving company profile:", error);
-      toast.error(error.message || "Fehler beim Speichern des Profils");
-      throw error; // Re-throw to prevent form from completing
+      const errorMessage = error?.message || "Fehler beim Speichern des Profils";
+      toast.error("Fehler beim Speichern", {
+        description: errorMessage,
+        duration: 5000,
+      });
+      // Re-throw to prevent form from completing/closing
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -160,15 +178,15 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
     {
       id: "settings",
       title: "Einstellungen",
-      description: "Profilname und Standard-Einstellungen",
+      description: "Profilname",
       icon: <Tag className="size-5" />,
       fields: ["profile_name", "is_default"],
       component: CompanyProfileSettingsStep,
     },
     {
       id: "basic",
-      title: "Basisinformationen",
-      description: "Grundlegende Firmendaten",
+      title: "Basis",
+      description: "Firmendaten",
       icon: <Building2 className="size-5" />,
       fields: [
         "company_name",
@@ -182,16 +200,16 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
     },
     {
       id: "legal",
-      title: "Rechtliche Informationen",
-      description: "Steuer- und Registrierungsdaten",
+      title: "Rechtliches",
+      description: "Steuerdaten",
       icon: <Scale className="size-5" />,
       fields: ["company_tax_id", "company_vat_id", "company_registration_number"],
       component: CompanyLegalInfoStep,
     },
     {
       id: "contact",
-      title: "Kontaktinformationen",
-      description: "Kontaktmöglichkeiten",
+      title: "Kontakt",
+      description: "Kontaktdaten",
       icon: <Mail className="size-5" />,
       fields: [
         "company_email",
@@ -205,11 +223,19 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
     },
     {
       id: "bank",
-      title: "Bankverbindung",
-      description: "Bankdaten für Rechnungen",
+      title: "Bank",
+      description: "Bankverbindung",
       icon: <Landmark className="size-5" />,
       fields: ["bank_name", "bank_account_holder", "iban", "bic"],
       component: CompanyBankInfoStep,
+    },
+    {
+      id: "defaults",
+      title: "Standards",
+      description: "Dokumente",
+      icon: <FileText className="size-5" />,
+      fields: ["default_tax_rate", "default_payment_days", "payment_on_receipt"],
+      component: CompanyDocumentDefaultsStep,
     },
   ];
 

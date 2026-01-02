@@ -7,9 +7,9 @@ import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Edit, FileText } from "lucide-react";
 import Link from "next/link";
 import { StatusBadge } from "@/components/shared/status-badge";
-import { DocumentStatusChanger } from "@/components/documents/document-status-changer";
 import { DocumentStatusTimeline } from "@/components/documents/document-status-timeline";
 import { PDFActionButtons } from "@/components/documents/document-pdf-components";
+import { DocumentDeleteButton } from "@/components/documents/document-delete-button";
 import { InvoiceFullPreview } from "@/components/documents/invoice-full-preview";
 import { getCompanyProfile, getDefaultCompanyProfile } from "@/actions/company-profiles-actions";
 
@@ -27,7 +27,8 @@ export default async function DocumentDetailPage({
   const document = await getDocument(id);
 
   if (!document) {
-    notFound();
+    // Redirect to documents list if document doesn't exist (e.g., after deletion)
+    redirect("/dashboard/documents");
   }
 
   // Get company profile - try document's profile first, then default
@@ -56,22 +57,22 @@ export default async function DocumentDetailPage({
       backHref="/dashboard/documents"
       actions={
         <>
-          <StatusBadge status={document.status as any} />
-          <DocumentStatusChanger
-            documentId={document.id}
-            currentStatus={document.status as any}
-            type={document.type}
-          />
+          <StatusBadge status={document.status as any} className="text-xs px-2 py-0.5" />
           <Link href={`/dashboard/documents/${document.id}/edit`}>
-            <Button variant="outline" className="gap-2">
-              <Edit className="h-4 w-4" />
-              Bearbeiten
+            <Button variant="outline" size="sm" className="gap-1.5 h-8">
+              <Edit className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Bearbeiten</span>
             </Button>
           </Link>
           <PDFActionButtons
             documentId={document.id}
             pdfUrl={document.pdf_url}
             customerEmail={document.customer?.email}
+            documentNumber={document.document_number}
+            documentType={document.type}
+          />
+          <DocumentDeleteButton
+            documentId={document.id}
             documentNumber={document.document_number}
             documentType={document.type}
           />
@@ -225,7 +226,9 @@ export default async function DocumentDetailPage({
 
           {/* Status Timeline */}
           <DocumentStatusTimeline
+            documentId={document.id}
             currentStatus={document.status as any}
+            type={document.type}
             createdAt={document.created_at}
             updatedAt={document.updated_at}
           />

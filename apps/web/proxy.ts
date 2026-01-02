@@ -176,7 +176,7 @@ export default async function proxy(request: NextRequest) {
   if (isAuthRoute && session) {
     const redirectTo =
       request.nextUrl.searchParams.get("redirectTo") ||
-      (session.user.user_metadata?.role === "ADMIN" ? "/admin" : "/");
+      (session.user.user_metadata?.role === "ADMIN" ? "/admin" : "/dashboard");
 
     return NextResponse.redirect(
       new URL(`/${locale}${redirectTo}`, request.url),

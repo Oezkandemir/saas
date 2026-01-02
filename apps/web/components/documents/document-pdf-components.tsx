@@ -8,6 +8,10 @@ const PDFDownloadButton = dynamic(() => import("@/components/documents/pdf-downl
   ssr: false,
 });
 
+const PDFPreviewButton = dynamic(() => import("@/components/documents/pdf-preview-button").then(mod => ({ default: mod.PDFPreviewButton })), {
+  ssr: false,
+});
+
 const DocumentEmailButton = dynamic(() => import("@/components/documents/document-email-button").then(mod => ({ default: mod.DocumentEmailButton })), {
   ssr: false,
 });
@@ -38,7 +42,13 @@ export function PDFActionButtons({
 }: PDFActionButtonsProps) {
   return (
     <>
-      <PDFDownloadButton documentId={documentId} pdfUrl={pdfUrl} />
+      <PDFPreviewButton
+        documentId={documentId}
+        pdfUrl={pdfUrl}
+        documentNumber={documentNumber}
+        size="sm"
+      />
+      <PDFDownloadButton documentId={documentId} pdfUrl={pdfUrl} size="sm" />
       {customerEmail && (
         <DocumentEmailButton
           documentId={documentId}

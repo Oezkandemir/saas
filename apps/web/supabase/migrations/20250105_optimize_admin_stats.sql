@@ -54,3 +54,4 @@ CREATE INDEX IF NOT EXISTS users_role_subscription_idx ON public.users(role, str
 COMMENT ON FUNCTION public.get_admin_stats IS 'Optimized function to get all admin dashboard statistics in a single query';
 
 
+

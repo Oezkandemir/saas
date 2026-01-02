@@ -45,6 +45,11 @@ export type CompanyProfile = {
   primary_color: string;
   secondary_color: string;
   
+  // Document defaults
+  default_tax_rate?: number | null;
+  default_payment_days?: number | null;
+  payment_on_receipt?: boolean | null;
+  
   created_at: string;
   updated_at: string;
 };
@@ -85,6 +90,11 @@ export type CompanyProfileInput = {
   logo_url?: string;
   primary_color?: string;
   secondary_color?: string;
+  
+  // Document defaults
+  default_tax_rate?: number;
+  default_payment_days?: number;
+  payment_on_receipt?: boolean;
 };
 
 /**
@@ -211,11 +221,25 @@ export async function createCompanyProfile(
       logo_url: input.logo_url?.trim() || null,
       primary_color: input.primary_color || "#000000",
       secondary_color: input.secondary_color || "#666666",
+      
+      // Document defaults
+      default_tax_rate: input.default_tax_rate ?? 19.00,
+      default_payment_days: input.default_payment_days ?? 14,
+      payment_on_receipt: input.payment_on_receipt ?? false,
     })
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error("Error creating company profile:", error);
+    throw new Error(
+      error.message || `Fehler beim Erstellen des Firmenprofils: ${error.code || "Unbekannter Fehler"}`
+    );
+  }
+  
+  if (!data) {
+    throw new Error("Firmenprofil konnte nicht erstellt werden");
+  }
   
   revalidatePath("/dashboard/settings/company");
   return data;
@@ -305,6 +329,24 @@ export async function updateCompanyProfile(
     updateData.primary_color = input.primary_color;
   if (input.secondary_color !== undefined) 
     updateData.secondary_color = input.secondary_color;
+  
+  // Document defaults
+  if (input.default_tax_rate !== undefined) 
+    updateData.default_tax_rate = input.default_tax_rate;
+  if (input.default_payment_days !== undefined) 
+    updateData.default_payment_days = input.default_payment_days;
+  if (input.payment_on_receipt !== undefined) 
+    updateData.payment_on_receipt = input.payment_on_receipt;
+
+  // Check if there's anything to update
+  if (Object.keys(updateData).length === 0) {
+    // No changes to update, just return the existing profile
+    const existingProfile = await getCompanyProfile(id);
+    if (!existingProfile) {
+      throw new Error("Firmenprofil nicht gefunden");
+    }
+    return existingProfile;
+  }
 
   const { data, error } = await supabase
     .from("company_profiles")
@@ -314,7 +356,16 @@ export async function updateCompanyProfile(
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error("Error updating company profile:", error);
+    throw new Error(
+      error.message || `Fehler beim Aktualisieren des Firmenprofils: ${error.code || "Unbekannter Fehler"}`
+    );
+  }
+  
+  if (!data) {
+    throw new Error("Firmenprofil konnte nicht aktualisiert werden");
+  }
   
   revalidatePath("/dashboard/settings/company");
   return data;

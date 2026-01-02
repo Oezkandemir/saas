@@ -52,6 +52,11 @@ export type Document = {
     id: string;
     name: string;
     email: string | null;
+    address_line1: string | null;
+    address_line2: string | null;
+    city: string | null;
+    postal_code: string | null;
+    country: string | null;
   } | null;
   items?: DocumentItem[];
 };
@@ -78,7 +83,7 @@ export async function getDocuments(
     .select(
       `
       *,
-      customer:customers(id, name, email)
+      customer:customers(id, name, email, address_line1, address_line2, city, postal_code, country)
     `,
     )
     .eq("user_id", user.id)
@@ -122,7 +127,7 @@ export async function getDocument(id: string): Promise<Document | null> {
     .select(
       `
       *,
-      customer:customers(id, name, email)
+      customer:customers(id, name, email, address_line1, address_line2, city, postal_code, country)
     `,
     )
     .eq("id", id)

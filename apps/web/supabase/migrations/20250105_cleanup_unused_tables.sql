@@ -139,3 +139,4 @@ DROP TABLE IF EXISTS user_push_tokens CASCADE;
 -- Total: 34 tables removed
 
 
+

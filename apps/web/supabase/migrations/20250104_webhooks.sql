@@ -112,3 +112,4 @@ COMMENT ON TABLE public.webhook_deliveries IS 'History of webhook delivery attem
 COMMENT ON COLUMN public.webhook_deliveries.retry_count IS 'Number of retry attempts for failed deliveries';
 
 
+

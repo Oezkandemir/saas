@@ -169,3 +169,4 @@ COMMENT ON COLUMN public.resource_permissions.permission_level IS 'Level of acce
 COMMENT ON COLUMN public.resource_permissions.granted_by IS 'User who granted this permission';
 
 
+

@@ -46,13 +46,26 @@ export function PDFDownloadButton({
         throw new Error("PDF URL not available");
       }
       
-      // Download the PDF
+      // Fetch PDF as blob for direct download
+      const pdfResponse = await fetch(pdfUrlToDownload);
+      if (!pdfResponse.ok) {
+        throw new Error("Fehler beim Laden des PDFs");
+      }
+      
+      const blob = await pdfResponse.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      
+      // Create download link
       const link = document.createElement("a");
-      link.href = pdfUrlToDownload;
+      link.href = objectUrl;
       link.download = `document-${documentId}.pdf`;
+      link.style.display = "none";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      
+      // Clean up object URL after a delay
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 100);
       
       toast.success("PDF erfolgreich heruntergeladen");
     } catch (error) {
@@ -77,17 +90,17 @@ export function PDFDownloadButton({
       size={size}
       onClick={handleDownload}
       disabled={loading}
-      className="gap-2"
+      className="gap-1.5 h-8"
     >
       {loading ? (
         <>
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Wird generiert...
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          <span className="hidden sm:inline">Wird generiert...</span>
         </>
       ) : (
         <>
-          <Download className="h-4 w-4" />
-          PDF
+          <Download className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Download</span>
         </>
       )}
     </Button>

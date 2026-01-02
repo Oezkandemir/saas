@@ -29,6 +29,7 @@ import {
   LayoutDashboard,
   Settings,
   Home,
+  Building2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
@@ -391,6 +392,17 @@ export function UserAccountNav() {
                     >
                       <UserIcon className="size-4" />
                       <span>Profile</span>
+                    </Link>
+                  </li>
+
+                  <li>
+                    <Link
+                      href="/dashboard/settings/company"
+                      onClick={closeDrawer}
+                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
+                    >
+                      <Building2 className="size-4" />
+                      <span>Meine Firma</span>
                     </Link>
                   </li>
 

@@ -74,14 +74,17 @@ export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
               onClick={() => setSelectedProfile(profile)}
             />
 
-            {/* Actions Dropdown */}
-            <div className="absolute top-4 right-4">
+            {/* Actions Dropdown - Positioniert mit professionellem Abstand zum Badge */}
+            <div className="absolute top-3 right-3 z-30">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-accent rounded-md shadow-sm hover:shadow-md"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
                   >
                     <MoreVertical className="h-4 w-4" />
                     <span className="sr-only">Aktionen öffnen</span>

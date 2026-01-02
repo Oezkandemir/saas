@@ -68,9 +68,9 @@ export function DocumentEmailButton({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2">
-          <Mail className="h-4 w-4" />
-          E-Mail senden
+        <Button variant="outline" size="sm" className="gap-1.5 h-8">
+          <Mail className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">E-Mail</span>
         </Button>
       </DialogTrigger>
       <DialogContent>

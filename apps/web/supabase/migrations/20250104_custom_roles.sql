@@ -150,3 +150,4 @@ COMMENT ON COLUMN public.roles.is_system_role IS 'System roles (ADMIN, USER) can
 COMMENT ON TABLE public.user_roles IS 'Many-to-Many relationship between users and roles';
 
 
+

@@ -457,21 +457,30 @@ export async function checkTwoFactorEnabledByEmail(
   try {
     console.log("Checking 2FA for email:", email);
     
-    // Use admin client to get user from auth.users
+    // Use admin client to get user from users table
     const { supabaseAdmin } = await import("@/lib/db-admin");
     
-    // Get user from auth.users
-    const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.getUserByEmail(email);
+    // Get user from users table (which has the same ID as auth.users)
+    const { data: user, error: userError } = await supabaseAdmin
+      .from("users")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle();
     
-    console.log("Auth user lookup result:", { authUser: authUser?.user?.id, error: authError });
+    console.log("User lookup result:", { userId: user?.id, error: userError });
     
-    if (authError || !authUser?.user) {
+    if (userError && userError.code !== "PGRST116") {
+      console.error("Error looking up user:", userError);
+      return { success: false, message: `Failed to lookup user: ${userError.message}` };
+    }
+    
+    if (!user) {
       // User not found - treat as no 2FA (new user)
       console.log("User not found, returning no 2FA");
       return { success: true, enabled: false, userId: null };
     }
     
-    const userId = authUser.user.id;
+    const userId = user.id;
     console.log("Found user ID:", userId);
     
     // Check 2FA status using admin client

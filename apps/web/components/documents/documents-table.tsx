@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Pencil, Trash2, FileDown, Copy, Search } from "lucide-react";
+import { MoreVertical, Pencil, Trash2, FileDown, Copy, Search, Check, X } from "lucide-react";
 import { deleteDocument, convertQuoteToInvoice, duplicateDocument } from "@/actions/documents-actions";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
@@ -32,15 +32,30 @@ interface DocumentsTableProps {
 export function DocumentsTable({ documents }: DocumentsTableProps) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [convertingId, setConvertingId] = useState<string | null>(null);
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Möchten Sie dieses Dokument wirklich löschen?")) return;
+  const handleDeleteClick = (id: string, e?: React.MouseEvent) => {
+    e?.stopPropagation(); // Prevent row click
+    if (confirmDeleteId === id) {
+      // Second click - confirm delete
+      handleDelete(id);
+    } else {
+      // First click - show confirmation (change icon to checkmark)
+      setConfirmDeleteId(id);
+      // Reset confirmation after 3 seconds if not clicked again
+      setTimeout(() => {
+        setConfirmDeleteId((prev) => (prev === id ? null : prev));
+      }, 3000);
+    }
+  };
 
+  const handleDelete = async (id: string) => {
     setDeletingId(id);
+    setConfirmDeleteId(null);
     try {
       await deleteDocument(id);
       toast.success("Dokument gelöscht");
@@ -137,12 +152,21 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
             <TableHead>Fälligkeitsdatum</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Betrag</TableHead>
-            <TableHead className="w-[70px]"></TableHead>
+            <TableHead className="w-[50px]"></TableHead>
+            <TableHead className="w-[50px]"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {filteredDocuments.map((doc) => (
-            <TableRow key={doc.id}>
+            <TableRow 
+              key={doc.id}
+              onClick={() => {
+                // Reset delete confirmation when clicking on row
+                if (confirmDeleteId && confirmDeleteId !== doc.id) {
+                  setConfirmDeleteId(null);
+                }
+              }}
+            >
               <TableCell className="font-medium">
                 <Link
                   href={`/dashboard/documents/${doc.id}`}
@@ -173,14 +197,49 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
                 })}
               </TableCell>
               <TableCell>
+                {confirmDeleteId === doc.id ? (
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => handleDelete(doc.id)}
+                      disabled={deletingId === doc.id}
+                    >
+                      <Check className="h-3.5 w-3.5 text-destructive" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => setConfirmDeleteId(null)}
+                      disabled={deletingId === doc.id}
+                    >
+                      <X className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => handleDeleteClick(doc.id)}
+                    disabled={deletingId === doc.id || convertingId === doc.id || duplicatingId === doc.id}
+                  >
+                    <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
+                  </Button>
+                )}
+              </TableCell>
+              <TableCell>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="h-7 w-7"
                       disabled={deletingId === doc.id || convertingId === doc.id || duplicatingId === doc.id}
                     >
-                      <MoreVertical className="h-4 w-4" />
+                      <MoreVertical className="h-3.5 w-3.5" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
@@ -212,13 +271,6 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
                         Als Rechnung erstellen
                       </DropdownMenuItem>
                     )}
-                    <DropdownMenuItem
-                      onClick={() => handleDelete(doc.id)}
-                      className="text-destructive"
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Löschen
-                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>

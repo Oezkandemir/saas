@@ -56,11 +56,11 @@ export async function generatePDFFromDocument(
   const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const helveticaBoldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-  // Constants for consistent layout
-  const MARGIN_LEFT = 40;
-  const MARGIN_RIGHT = width - 40;
-  const MARGIN_TOP = height - 40;
-  const MARGIN_BOTTOM = 40;
+  // Constants for consistent layout - mehr Platz nach oben und in die Breite
+  const MARGIN_LEFT = 30;
+  const MARGIN_RIGHT = width - 30;
+  const MARGIN_TOP = height - 30;
+  const MARGIN_BOTTOM = 30;
   
 
   // Track current page and Y position
@@ -69,7 +69,9 @@ export async function generatePDFFromDocument(
 
   // Helper function to check if we need a new page and create one if needed
   const ensurePageSpace = (requiredHeight: number): void => {
-    if (y - requiredHeight < MARGIN_BOTTOM + 120) {
+    // Reserve space for footer (50px) plus some margin
+    const minSpaceNeeded = MARGIN_BOTTOM + 50 + requiredHeight + 10;
+    if (y < minSpaceNeeded) {
       currentPage = pdfDoc.addPage([595.28, 841.89]);
       y = MARGIN_TOP;
     }
@@ -193,39 +195,55 @@ export async function generatePDFFromDocument(
   
   const sectionTopY = y;
   
-  // Customer info (left side)
+  // Customer info (left side) - vollständige Adresse ohne Strich
   if (document.customer) {
-    addTextToPage(
-      `${companyInfo.name} · ${companyInfo.address} · ${companyInfo.postalCode} ${companyInfo.city}`,
-      MARGIN_LEFT,
-      y,
-      {
-        size: 8,
-        color: rgb(0.61, 0.64, 0.69), // #9ca3af
-      }
-    );
-    y -= 15;
-
-    // Left border for customer box
-    const customerBoxHeight = 30;
-    currentPage.drawLine({
-      start: { x: MARGIN_LEFT, y: y + 5 },
-      end: { x: MARGIN_LEFT, y: y - customerBoxHeight + 5 },
-      thickness: 4,
-      color: rgb(0.067, 0.094, 0.153),
-    });
-
-    addTextToPage(document.customer.name, MARGIN_LEFT + 8, y, {
+    // Customer name
+    addTextToPage(document.customer.name, MARGIN_LEFT, y, {
       size: 10,
       font: helveticaBoldFont,
     });
-    if (document.customer.email) {
-      y -= 12;
-      addTextToPage(document.customer.email, MARGIN_LEFT + 8, y, {
+    y -= 12;
+    
+    // Address line 1
+    if (document.customer.address_line1) {
+      addTextToPage(document.customer.address_line1, MARGIN_LEFT, y, {
         size: 10,
         color: rgb(0.42, 0.45, 0.51),
       });
+      y -= 12;
     }
+    
+    // Address line 2
+    if (document.customer.address_line2) {
+      addTextToPage(document.customer.address_line2, MARGIN_LEFT, y, {
+        size: 10,
+        color: rgb(0.42, 0.45, 0.51),
+      });
+      y -= 12;
+    }
+    
+    // Postal code and city
+    if (document.customer.postal_code || document.customer.city) {
+      const postalCity = [document.customer.postal_code, document.customer.city]
+        .filter(Boolean)
+        .join(" ");
+      addTextToPage(postalCity, MARGIN_LEFT, y, {
+        size: 10,
+        color: rgb(0.42, 0.45, 0.51),
+      });
+      y -= 12;
+    }
+    
+    // Country
+    if (document.customer.country) {
+      addTextToPage(document.customer.country, MARGIN_LEFT, y, {
+        size: 10,
+        color: rgb(0.42, 0.45, 0.51),
+      });
+      y -= 12;
+    }
+    
+    y -= 5; // Small spacing after customer box
   }
 
   // Document title and info (right side) - align with customer section
@@ -264,18 +282,18 @@ export async function generatePDFFromDocument(
   }
 
   // Continue with main content - use the lower Y position
-  y = Math.min(sectionTopY - (document.customer ? 50 : 0), y - 10);
+  y = Math.min(sectionTopY - (document.customer ? 45 : 0), y - 10);
 
   // ============================================
   // GREETING SECTION
   // ============================================
   
-  y -= 20;
+  y -= 15;
   addTextToPage("Sehr geehrte Damen und Herren,", MARGIN_LEFT, y, {
     size: 10,
     color: rgb(0.22, 0.25, 0.31), // #374151
   });
-  y -= 20;
+  y -= 15;
   addTextToPage(
     isInvoice
       ? "hiermit stellen wir Ihnen folgende Leistungen in Rechnung:"
@@ -287,7 +305,7 @@ export async function generatePDFFromDocument(
       color: rgb(0.22, 0.25, 0.31),
     }
   );
-  y -= 30;
+  y -= 20;
 
   // ============================================
   // ITEMS TABLE
@@ -298,12 +316,12 @@ export async function generatePDFFromDocument(
     const itemHeight = 25;
     let tableY = tableTopY;
 
-    // Column positions - optimized spacing with better distribution
+    // Column positions - mehr Platz in die Breite
     const colPos = MARGIN_LEFT + 5; // Position (narrow, 35px)
-    const colDesc = MARGIN_LEFT + 50; // Description (wide, starts at 50px)
-    const colQty = width - 200; // Quantity (right-aligned, 80px width)
-    const colUnitPrice = width - 120; // Unit price (right-aligned, 80px width)
-    const colTotal = MARGIN_RIGHT; // Total (right-aligned, 80px width)
+    const colDesc = MARGIN_LEFT + 45; // Description (wide, starts at 45px)
+    const colQty = width - 180; // Quantity (right-aligned, mehr Platz)
+    const colUnitPrice = width - 110; // Unit price (right-aligned, mehr Platz)
+    const colTotal = MARGIN_RIGHT; // Total (right-aligned)
 
     // Ensure we have space for header + at least one row
     ensurePageSpace(itemHeight * 2 + 20);
@@ -450,9 +468,9 @@ export async function generatePDFFromDocument(
   // ============================================
   
   // Ensure we have space for totals section
-  ensurePageSpace(100);
+  ensurePageSpace(80);
   
-  y -= 20;
+  y -= 15;
   const totalsStartX = width - 300; // Better positioning
   const totalsEndX = MARGIN_RIGHT;
   
@@ -465,7 +483,7 @@ export async function generatePDFFromDocument(
     font: helveticaBoldFont,
     align: "right",
   });
-  y -= 15;
+  y -= 12;
   
   addTextToPage(`zzgl. MwSt. (${document.tax_rate}%):`, totalsStartX, y, {
     size: 10,
@@ -476,7 +494,7 @@ export async function generatePDFFromDocument(
     font: helveticaBoldFont,
     align: "right",
   });
-  y -= 15;
+  y -= 12;
   
   // Divider line
   currentPage.drawLine({
@@ -485,10 +503,10 @@ export async function generatePDFFromDocument(
     thickness: 1,
     color: rgb(0.82, 0.84, 0.86),
   });
-  y -= 10;
+  y -= 8;
 
   // Total box
-  const totalBoxHeight = 30;
+  const totalBoxHeight = 25;
   const totalBoxY = y - totalBoxHeight;
   currentPage.drawRectangle({
     x: totalsStartX - 10,
@@ -506,17 +524,17 @@ export async function generatePDFFromDocument(
     borderWidth: 2,
   });
   
-  addTextToPage("Gesamtbetrag (Brutto):", totalsStartX, y - 8, {
+  addTextToPage("Gesamtbetrag (Brutto):", totalsStartX, y - 6, {
     size: 11,
     font: helveticaBoldFont,
   });
-  addTextToPage(formatCurrency(document.total), totalsEndX, y - 6, {
+  addTextToPage(formatCurrency(document.total), totalsEndX, y - 5, {
     size: 13,
     font: helveticaBoldFont,
     align: "right",
   });
 
-  y = totalBoxY - 30;
+  y = totalBoxY - 20;
 
   // ============================================
   // PAYMENT INFO (only for invoices)
@@ -524,9 +542,9 @@ export async function generatePDFFromDocument(
   
   if (isInvoice) {
     // Ensure we have space for payment box
-    ensurePageSpace(100);
+    ensurePageSpace(70);
     
-    const paymentBoxHeight = 80;
+    const paymentBoxHeight = 60;
     const paymentBoxY = y - paymentBoxHeight;
     
     // Payment box background
@@ -556,44 +574,36 @@ export async function generatePDFFromDocument(
       color: rgb(0.067, 0.094, 0.153),
     });
 
-    addTextToPage("Zahlungsinformationen", MARGIN_LEFT + 20, y - 16, {
+    addTextToPage("Zahlungsinformationen", MARGIN_LEFT + 20, y - 12, {
       size: 10,
       font: helveticaBoldFont,
     });
-    addTextToPage("Zahlungsziel:", MARGIN_LEFT + 20, y - 36, {
-      size: 10,
+    addTextToPage("Zahlungsziel:", MARGIN_LEFT + 20, y - 28, {
+      size: 9,
       color: rgb(0.42, 0.45, 0.51),
     });
     addTextToPage(
       document.due_date ? formatDate(document.due_date) : "Bei Erhalt",
       MARGIN_LEFT + 20,
-      y - 48,
+      y - 38,
       {
-        size: 10,
+        size: 9,
         font: helveticaBoldFont,
       }
     );
-    addTextToPage("Zahlungsweise:", 300, y - 36, {
-      size: 10,
+    addTextToPage("Zahlungsweise:", 300, y - 28, {
+      size: 9,
       color: rgb(0.42, 0.45, 0.51),
     });
-    addTextToPage("Überweisung", 300, y - 48, {
-      size: 10,
+    addTextToPage("Überweisung", 300, y - 38, {
+      size: 9,
       font: helveticaBoldFont,
-    });
-
-    // Divider line
-    currentPage.drawLine({
-      start: { x: MARGIN_LEFT + 20, y: y - 60 },
-      end: { x: MARGIN_RIGHT - 20, y: y - 60 },
-      thickness: 1,
-      color: rgb(0.82, 0.84, 0.86),
     });
 
     addTextToPage(
       "Bitte überweisen Sie den Betrag unter Angabe der Rechnungsnummer auf unser Konto.",
       MARGIN_LEFT + 20,
-      y - 72,
+      y - 50,
       {
         size: 8,
         color: rgb(0.42, 0.45, 0.51),
@@ -609,7 +619,7 @@ export async function generatePDFFromDocument(
   // ============================================
   
   // Ensure we have space for closing section
-  ensurePageSpace(60);
+  ensurePageSpace(50);
   
   addTextToPage(
     isInvoice
@@ -622,33 +632,34 @@ export async function generatePDFFromDocument(
       color: rgb(0.22, 0.25, 0.31),
     }
   );
-  y -= 20;
+  y -= 15;
   addTextToPage("Mit freundlichen Grüßen", MARGIN_LEFT, y, {
     size: 10,
     color: rgb(0.22, 0.25, 0.31),
   });
-  y -= 20;
+  y -= 15;
   addTextToPage(companyInfo.name || "", MARGIN_LEFT, y, {
     size: 10,
     font: helveticaBoldFont,
   });
+  y -= 10;
 
   // ============================================
   // FOOTER SECTION
   // ============================================
   
-  // Calculate footer position dynamically - ensure it doesn't overlap with content
-  // Footer needs about 120px of space
-  const footerHeight = 120;
-  const footerY = Math.max(MARGIN_BOTTOM + footerHeight, y - 30);
+  // Footer always at bottom - needs about 50px of space
+  const footerHeight = 50;
+  const footerY = MARGIN_BOTTOM + footerHeight;
   
-  // If footer would overlap, move to next page
-  if (y - footerHeight < MARGIN_BOTTOM + footerHeight) {
+  // Check if content would overlap with footer
+  if (y < footerY + 20) {
+    // Not enough space, create new page
     currentPage = pdfDoc.addPage([595.28, 841.89]);
     y = MARGIN_TOP;
-    const newFooterY = MARGIN_BOTTOM + footerHeight;
     
-    // Footer line
+    // Footer line at bottom
+    const newFooterY = MARGIN_BOTTOM + footerHeight;
     currentPage.drawLine({
       start: { x: MARGIN_LEFT, y: newFooterY },
       end: { x: MARGIN_RIGHT, y: newFooterY },
@@ -656,132 +667,65 @@ export async function generatePDFFromDocument(
       color: rgb(0.067, 0.094, 0.153),
     });
     
-    let footerYPos = newFooterY - 20;
-
-    // Contact column (left)
-    addTextToPage("Kontakt", MARGIN_LEFT, footerYPos, {
-      size: 8,
-      font: helveticaBoldFont,
-      color: rgb(0.067, 0.094, 0.153),
-    });
-    footerYPos -= 10;
-    addTextToPage(companyInfo.name || "", MARGIN_LEFT, footerYPos, {
-      size: 8,
-      font: helveticaBoldFont,
-      color: rgb(0.067, 0.094, 0.153),
-    });
-    footerYPos -= 10;
-    addTextToPage(companyInfo.address || "", MARGIN_LEFT, footerYPos, {
-      size: 8,
-      color: rgb(0.42, 0.45, 0.51),
-    });
-    footerYPos -= 10;
-    addTextToPage(`${companyInfo.postalCode || ""} ${companyInfo.city || ""}`, MARGIN_LEFT, footerYPos, {
-      size: 8,
-      color: rgb(0.42, 0.45, 0.51),
-    });
-    footerYPos -= 10;
-    addTextToPage(companyInfo.country || "", MARGIN_LEFT, footerYPos, {
-      size: 8,
-      color: rgb(0.42, 0.45, 0.51),
-    });
-    footerYPos -= 10;
-    addTextToPage(`Tel: ${companyInfo.phone || ""}`, MARGIN_LEFT, footerYPos, {
-      size: 8,
-      color: rgb(0.42, 0.45, 0.51),
-    });
-    footerYPos -= 10;
-    addTextToPage(`E-Mail: ${companyInfo.email || ""}`, MARGIN_LEFT, footerYPos, {
-      size: 8,
-      color: rgb(0.42, 0.45, 0.51),
-    });
-    if (companyInfo.website) {
-      footerYPos -= 10;
-      addTextToPage(`Web: ${companyInfo.website}`, MARGIN_LEFT, footerYPos, {
-        size: 8,
-        color: rgb(0.42, 0.45, 0.51),
-      });
-    }
-
-    // Bank column (middle)
-    footerYPos = newFooterY - 20;
-    addTextToPage("Bankverbindung", 200, footerYPos, {
-      size: 8,
-      font: helveticaBoldFont,
-      color: rgb(0.067, 0.094, 0.153),
-    });
-    footerYPos -= 10;
+    // Footer content - alles zentriert untereinander
+    let footerYPos = newFooterY - 12;
+    const footerCenterX = (MARGIN_LEFT + MARGIN_RIGHT) / 2;
+    
+    // Bankname
     if (companyInfo.bankName) {
-      addTextToPage(companyInfo.bankName, 200, footerYPos, {
+      addTextToPage(companyInfo.bankName, footerCenterX, footerYPos, {
         size: 8,
         font: helveticaBoldFont,
-        color: rgb(0.067, 0.094, 0.153),
+        color: rgb(0.42, 0.45, 0.51),
+        align: "center",
       });
       footerYPos -= 10;
     }
+    
+    // IBAN
     if (companyInfo.iban) {
-      addTextToPage(`IBAN: ${companyInfo.iban}`, 200, footerYPos, {
+      addTextToPage(`IBAN: ${companyInfo.iban}`, footerCenterX, footerYPos, {
         size: 8,
         color: rgb(0.42, 0.45, 0.51),
+        align: "center",
       });
       footerYPos -= 10;
     }
+    
+    // BIC/SWIFT
     if (companyInfo.bic) {
-      addTextToPage(`BIC: ${companyInfo.bic}`, 200, footerYPos, {
+      addTextToPage(`BIC/SWIFT: ${companyInfo.bic}`, footerCenterX, footerYPos, {
         size: 8,
         color: rgb(0.42, 0.45, 0.51),
+        align: "center",
       });
+      footerYPos -= 10;
     }
-
-    // Legal column (right)
-    footerYPos = newFooterY - 20;
-    addTextToPage("Rechtliches", 380, footerYPos, {
-      size: 8,
-      font: helveticaBoldFont,
-      color: rgb(0.067, 0.094, 0.153),
-    });
-    footerYPos -= 10;
+    
+    // USt-IdNr.
     if (companyInfo.taxId) {
-      addTextToPage(`USt-IdNr.: ${companyInfo.taxId}`, 380, footerYPos, {
+      addTextToPage(`USt-IdNr.: ${companyInfo.taxId}`, footerCenterX, footerYPos, {
         size: 8,
-        font: helveticaBoldFont,
-        color: rgb(0.067, 0.094, 0.153),
+        color: rgb(0.42, 0.45, 0.51),
+        align: "center",
       });
+      footerYPos -= 12;
     }
 
-    // Footer note line
-    const footerNoteY = 10;
-    currentPage.drawLine({
-      start: { x: MARGIN_LEFT, y: footerNoteY },
-      end: { x: MARGIN_RIGHT, y: footerNoteY },
-      thickness: 1,
-      color: rgb(0.82, 0.84, 0.86),
-    });
-
-    // Footer notes
+    // Footer note direkt darunter, zentriert
     addTextToPage(
-      "Alle Preise verstehen sich in Euro. Es gelten unsere Allgemeinen Geschäftsbedingungen.",
-      MARGIN_LEFT,
-      footerNoteY - 15,
+      "Alle Preise in Euro. AGB gelten. Elektronisch erstellt, ohne Unterschrift gültig.",
+      footerCenterX,
+      footerYPos,
       {
-        size: 8,
+        size: 7,
         color: rgb(0.61, 0.64, 0.69), // #9ca3af
         maxWidth: MARGIN_RIGHT - MARGIN_LEFT,
         align: "center",
       }
     );
-    addTextToPage(
-      "Dieses Dokument wurde elektronisch erstellt und ist ohne Unterschrift gültig.",
-      MARGIN_LEFT,
-      footerNoteY - 27,
-      {
-        size: 8,
-        color: rgb(0.61, 0.64, 0.69),
-        maxWidth: MARGIN_RIGHT - MARGIN_LEFT,
-        align: "center",
-      }
-    );
   } else {
+    // Footer fits on current page - always position at bottom (footerY is already calculated)
     // Footer line
     currentPage.drawLine({
       start: { x: MARGIN_LEFT, y: footerY },
@@ -790,127 +734,59 @@ export async function generatePDFFromDocument(
       color: rgb(0.067, 0.094, 0.153),
     });
     
-    let footerYPos = footerY - 20;
-
-    // Contact column (left)
-    addTextToPage("Kontakt", MARGIN_LEFT, footerYPos, {
-      size: 8,
-      font: helveticaBoldFont,
-      color: rgb(0.067, 0.094, 0.153),
-    });
-    footerYPos -= 10;
-    addTextToPage(companyInfo.name || "", MARGIN_LEFT, footerYPos, {
-      size: 8,
-      font: helveticaBoldFont,
-      color: rgb(0.067, 0.094, 0.153),
-    });
-    footerYPos -= 10;
-    addTextToPage(companyInfo.address || "", MARGIN_LEFT, footerYPos, {
-      size: 8,
-      color: rgb(0.42, 0.45, 0.51),
-    });
-    footerYPos -= 10;
-    addTextToPage(`${companyInfo.postalCode || ""} ${companyInfo.city || ""}`, MARGIN_LEFT, footerYPos, {
-      size: 8,
-      color: rgb(0.42, 0.45, 0.51),
-    });
-    footerYPos -= 10;
-    addTextToPage(companyInfo.country || "", MARGIN_LEFT, footerYPos, {
-      size: 8,
-      color: rgb(0.42, 0.45, 0.51),
-    });
-    footerYPos -= 10;
-    addTextToPage(`Tel: ${companyInfo.phone || ""}`, MARGIN_LEFT, footerYPos, {
-      size: 8,
-      color: rgb(0.42, 0.45, 0.51),
-    });
-    footerYPos -= 10;
-    addTextToPage(`E-Mail: ${companyInfo.email || ""}`, MARGIN_LEFT, footerYPos, {
-      size: 8,
-      color: rgb(0.42, 0.45, 0.51),
-    });
-    if (companyInfo.website) {
-      footerYPos -= 10;
-      addTextToPage(`Web: ${companyInfo.website}`, MARGIN_LEFT, footerYPos, {
-        size: 8,
-        color: rgb(0.42, 0.45, 0.51),
-      });
-    }
-
-    // Bank column (middle)
-    footerYPos = footerY - 20;
-    addTextToPage("Bankverbindung", 200, footerYPos, {
-      size: 8,
-      font: helveticaBoldFont,
-      color: rgb(0.067, 0.094, 0.153),
-    });
-    footerYPos -= 10;
+    // Footer content - alles zentriert untereinander
+    let footerYPos = footerY - 12;
+    const footerCenterX = (MARGIN_LEFT + MARGIN_RIGHT) / 2;
+    
+    // Bankname
     if (companyInfo.bankName) {
-      addTextToPage(companyInfo.bankName, 200, footerYPos, {
+      addTextToPage(companyInfo.bankName, footerCenterX, footerYPos, {
         size: 8,
         font: helveticaBoldFont,
-        color: rgb(0.067, 0.094, 0.153),
-      });
-      footerYPos -= 10;
-    }
-    if (companyInfo.iban) {
-      addTextToPage(`IBAN: ${companyInfo.iban}`, 200, footerYPos, {
-        size: 8,
         color: rgb(0.42, 0.45, 0.51),
-      });
-      footerYPos -= 10;
-    }
-    if (companyInfo.bic) {
-      addTextToPage(`BIC: ${companyInfo.bic}`, 200, footerYPos, {
-        size: 8,
-        color: rgb(0.42, 0.45, 0.51),
-      });
-    }
-
-    // Legal column (right)
-    footerYPos = footerY - 20;
-    addTextToPage("Rechtliches", 380, footerYPos, {
-      size: 8,
-      font: helveticaBoldFont,
-      color: rgb(0.067, 0.094, 0.153),
-    });
-    footerYPos -= 10;
-    if (companyInfo.taxId) {
-      addTextToPage(`USt-IdNr.: ${companyInfo.taxId}`, 380, footerYPos, {
-        size: 8,
-        font: helveticaBoldFont,
-        color: rgb(0.067, 0.094, 0.153),
-      });
-    }
-
-    // Footer note line
-    const footerNoteY = 10;
-    currentPage.drawLine({
-      start: { x: MARGIN_LEFT, y: footerNoteY },
-      end: { x: MARGIN_RIGHT, y: footerNoteY },
-      thickness: 1,
-      color: rgb(0.82, 0.84, 0.86),
-    });
-
-    // Footer notes
-    addTextToPage(
-      "Alle Preise verstehen sich in Euro. Es gelten unsere Allgemeinen Geschäftsbedingungen.",
-      MARGIN_LEFT,
-      footerNoteY - 15,
-      {
-        size: 8,
-        color: rgb(0.61, 0.64, 0.69), // #9ca3af
-        maxWidth: MARGIN_RIGHT - MARGIN_LEFT,
         align: "center",
-      }
-    );
-    addTextToPage(
-      "Dieses Dokument wurde elektronisch erstellt und ist ohne Unterschrift gültig.",
-      MARGIN_LEFT,
-      footerNoteY - 27,
-      {
+      });
+      footerYPos -= 10;
+    }
+    
+    // IBAN
+    if (companyInfo.iban) {
+      addTextToPage(`IBAN: ${companyInfo.iban}`, footerCenterX, footerYPos, {
         size: 8,
-        color: rgb(0.61, 0.64, 0.69),
+        color: rgb(0.42, 0.45, 0.51),
+        align: "center",
+      });
+      footerYPos -= 10;
+    }
+    
+    // BIC/SWIFT
+    if (companyInfo.bic) {
+      addTextToPage(`BIC/SWIFT: ${companyInfo.bic}`, footerCenterX, footerYPos, {
+        size: 8,
+        color: rgb(0.42, 0.45, 0.51),
+        align: "center",
+      });
+      footerYPos -= 10;
+    }
+    
+    // USt-IdNr.
+    if (companyInfo.taxId) {
+      addTextToPage(`USt-IdNr.: ${companyInfo.taxId}`, footerCenterX, footerYPos, {
+        size: 8,
+        color: rgb(0.42, 0.45, 0.51),
+        align: "center",
+      });
+      footerYPos -= 12;
+    }
+
+    // Footer note direkt darunter, zentriert
+    addTextToPage(
+      "Alle Preise in Euro. AGB gelten. Elektronisch erstellt, ohne Unterschrift gültig.",
+      footerCenterX,
+      footerYPos,
+      {
+        size: 7,
+        color: rgb(0.61, 0.64, 0.69), // #9ca3af
         maxWidth: MARGIN_RIGHT - MARGIN_LEFT,
         align: "center",
       }
