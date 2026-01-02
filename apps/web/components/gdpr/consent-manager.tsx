@@ -33,31 +33,27 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-const CONSENT_DESCRIPTIONS: Record<ConsentType, { title: string; description: string }> = {
-  necessary: {
-    title: "Notwendige Cookies",
-    description:
-      "Diese Cookies sind für die Grundfunktionen der Website erforderlich und können nicht deaktiviert werden.",
-  },
-  functional: {
-    title: "Funktionale Cookies",
-    description:
-      "Diese Cookies ermöglichen erweiterte Funktionen und Personalisierung der Website.",
-  },
-  analytics: {
-    title: "Analytics Cookies",
-    description:
-      "Diese Cookies helfen uns zu verstehen, wie Besucher mit unserer Website interagieren.",
-  },
-  marketing: {
-    title: "Marketing Cookies",
-    description:
-      "Diese Cookies werden verwendet, um relevante Werbung anzuzeigen und Marketingkampagnen zu verfolgen.",
-  },
-};
-
 export function ConsentManager() {
   const t = useTranslations("GDPR");
+  
+  const CONSENT_DESCRIPTIONS: Record<ConsentType, { title: string; description: string }> = {
+    necessary: {
+      title: t("consent.necessary.title"),
+      description: t("consent.necessary.description"),
+    },
+    functional: {
+      title: t("consent.functional.title"),
+      description: t("consent.functional.description"),
+    },
+    analytics: {
+      title: t("consent.analytics.title"),
+      description: t("consent.analytics.description"),
+    },
+    marketing: {
+      title: t("consent.marketing.title"),
+      description: t("consent.marketing.description"),
+    },
+  };
   const { toast } = useToast();
   const [consents, setConsents] = useState<ConsentRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -90,22 +86,24 @@ export function ConsentManager() {
       const result = await updateConsent(consentType, granted, "settings");
       if (result.success) {
         toast({
-          title: "Einwilligung aktualisiert",
-          description: `Einwilligung für ${CONSENT_DESCRIPTIONS[consentType].title} wurde ${granted ? "erteilt" : "widerrufen"}`,
+          title: t("consent.updateSuccess"),
+          description: granted 
+            ? t("consent.granted", { type: CONSENT_DESCRIPTIONS[consentType].title })
+            : t("consent.revoked", { type: CONSENT_DESCRIPTIONS[consentType].title }),
         });
         loadConsents();
       } else {
         toast({
           variant: "destructive",
-          title: "Fehler",
+          title: t("consent.error"),
           description: result.message,
         });
       }
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Fehler",
-        description: "Ein Fehler ist aufgetreten",
+        title: t("consent.error"),
+        description: t("consent.errorDescription"),
       });
     } finally {
       setUpdating(null);
@@ -134,8 +132,8 @@ export function ConsentManager() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Einwilligungsverwaltung</CardTitle>
-          <CardDescription>Laden...</CardDescription>
+          <CardTitle>{t("consent.title")}</CardTitle>
+          <CardDescription>{t("consent.loading")}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -147,10 +145,10 @@ export function ConsentManager() {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Shield className="size-5 text-primary" />
-            <CardTitle>Einwilligungsverwaltung</CardTitle>
+            <CardTitle>{t("consent.title")}</CardTitle>
           </div>
           <CardDescription>
-            Verwalten Sie Ihre Einwilligungen für verschiedene Datentypen
+            {t("consent.description")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -184,7 +182,7 @@ export function ConsentManager() {
                       onClick={() => handleViewHistory(consentType)}
                     >
                       <History className="mr-1 size-3" />
-                      Historie anzeigen
+                      {t("consent.viewHistory")}
                     </Button>
                   )}
                 </div>
@@ -213,16 +211,16 @@ export function ConsentManager() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Historie: {selectedConsentType && CONSENT_DESCRIPTIONS[selectedConsentType].title}
+              {t("consent.historyTitle")}: {selectedConsentType && CONSENT_DESCRIPTIONS[selectedConsentType].title}
             </DialogTitle>
             <DialogDescription>
-              Übersicht über alle Änderungen dieser Einwilligung
+              {t("consent.historyDescription")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {consentHistory.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-4">
-                Keine Historie verfügbar
+                {t("consent.noHistory")}
               </p>
             ) : (
               consentHistory.map((record) => (
@@ -237,7 +235,7 @@ export function ConsentManager() {
                       <XCircle className="size-4 text-red-500" />
                     )}
                     <span className="text-sm font-medium">
-                      {record.granted ? "Erteilt" : "Widerrufen"}
+                      {record.granted ? t("consent.grantedStatus") : t("consent.revokedStatus")}
                     </span>
                   </div>
                   <div className="text-xs text-muted-foreground">

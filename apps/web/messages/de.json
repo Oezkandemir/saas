@@ -65,7 +65,51 @@
     "manage": "Verwalten",
     "basicPlan": "Basisplan",
     "emptyTitle": "Noch keine Inhalte",
-    "emptyDescription": "Sie haben noch keine Inhalte erstellt. Klicken Sie auf die Schaltfläche unten, um zu beginnen."
+    "emptyDescription": "Sie haben noch keine Inhalte erstellt. Klicken Sie auf die Schaltfläche unten, um zu beginnen.",
+    "welcome": "Willkommen zurück, {name}",
+    "stats": {
+      "customers": "Kunden",
+      "customersDescription": "Gesamt Kunden",
+      "openQuotes": "Offene Angebote",
+      "openQuotesDescription": "Entwurf & Gesendet",
+      "unpaidInvoices": "Unbezahlte Rechnungen",
+      "unpaidInvoicesDescription": "Ausstehend",
+      "paidInvoices": "Bezahlte Rechnungen",
+      "paidInvoicesDescription": "Erfolgreich",
+      "qrCodes": "QR-Codes",
+      "qrCodesDescription": "Aktive Codes",
+      "totalDocuments": "Gesamt Dokumente",
+      "totalDocumentsDescription": "Alle Dokumente"
+    },
+    "revenue": {
+      "totalRevenue": "Gesamtumsatz",
+      "totalRevenueDescription": "Aus bezahlten Rechnungen",
+      "pendingRevenue": "Ausstehender Umsatz",
+      "pendingRevenueDescription": "Aus unbezahlten Rechnungen"
+    },
+    "recent": {
+      "documents": "Letzte Dokumente",
+      "documentsDescription": "Die 5 neuesten Dokumente",
+      "customers": "Neueste Kunden",
+      "customersDescription": "Die 5 neuesten Kunden",
+      "all": "Alle",
+      "noDocuments": "Noch keine Dokumente",
+      "noCustomers": "Noch keine Kunden",
+      "create": "Erstellen"
+    },
+    "overview": {
+      "title": "Dokumente Übersicht",
+      "description": "Übersicht nach Typ und Status",
+      "type": "Typ",
+      "status": "Status",
+      "count": "Anzahl",
+      "totalAmount": "Gesamtbetrag",
+      "quotes": "Angebote",
+      "invoices": "Rechnungen",
+      "open": "Offen",
+      "unpaid": "Unbezahlt",
+      "paid": "Bezahlt"
+    }
   },
   "Billing": {
     "title": "Abrechnung – Cenety",
@@ -74,7 +118,10 @@
     "text": "Verwalten Sie Ihre Abrechnung und Ihren Abonnementplan.",
     "demoAlert": "Dies ist eine Demo-App.",
     "demoDescription": "Cenety App ist eine Demo-App, die eine Stripe-Testumgebung verwendet. Eine Liste der Testkartennummern finden Sie in der",
-    "stripeDocs": "Stripe-Dokumentation"
+    "stripeDocs": "Stripe-Dokumentation",
+    "billingCycle": "Abrechnungszyklus",
+    "monthly": "Monatlich",
+    "yearly": "Jährlich"
   },
   "Settings": {
     "title": "Einstellungen – Cenety",
@@ -120,6 +167,56 @@
         "deletingToast": "Konto wird gelöscht...",
         "successToast": "Konto erfolgreich gelöscht!"
       }
+    },
+    "companySettings": {
+      "title": "Firmeneinstellungen",
+      "description": "Verwalten Sie Ihre Firmeninformationen für Rechnungen und Dokumente",
+      "profiles": "Firmenprofile",
+      "profilesDescription": "Verwalten Sie Firmeninformationen für alle Ihre Dokumente",
+      "centralizedData": "Zentralisierte Firmendaten für Rechnungen, Angebote und mehr",
+      "manageProfiles": "Profile verwalten"
+    },
+    "subscription": {
+      "title": "Abonnementplan",
+      "description": "Ihr aktueller Abonnementplan",
+      "currentPlan": "Aktueller Plan",
+      "currentPlanDescription": "Verwalten Sie Ihr Abonnement und Ihre Abrechnung",
+      "monthly": "Monatlich",
+      "yearly": "Jährlich",
+      "manageBilling": "Abrechnung verwalten"
+    },
+    "features": {
+      "title": "Features & Limits",
+      "description": "Detaillierte Übersicht über Ihre verfügbaren Features und aktuellen Limits"
+    },
+    "preferences": {
+      "title": "Einstellungen",
+      "description": "Passen Sie Ihre Anwendungseinstellungen an",
+      "applicationPreferences": "Anwendungseinstellungen",
+      "applicationPreferencesDescription": "Theme, Sprache, Benachrichtigungen und Formateinstellungen",
+      "customizeDescription": "Passen Sie Theme, Sprache, Datums-/Zeitformate und Benachrichtigungseinstellungen an",
+      "managePreferences": "Einstellungen verwalten"
+    },
+    "security": {
+      "title": "Sicherheit",
+      "description": "Verwalten Sie Ihre Sicherheitseinstellungen",
+      "settingsTitle": "Sicherheitseinstellungen",
+      "settingsDescription": "2FA, Sessions und Login-Historie verwalten",
+      "detailedDescription": "Zwei-Faktor-Authentifizierung, aktive Sessions und Login-Historie",
+      "manageSecurity": "Sicherheit verwalten"
+    },
+    "privacy": {
+      "title": "Datenschutz & DSGVO",
+      "description": "Verwalten Sie Ihre Datenschutz-Einstellungen und Einwilligungen",
+      "gdprDescription": "Verwalten Sie Ihre Daten gemäß DSGVO",
+      "settingsTitle": "Datenschutz-Einstellungen",
+      "settingsDescription": "Einwilligungen und Datenexport verwalten",
+      "manageDescription": "Verwalten Sie Ihre Einwilligungen und exportieren Sie Ihre Daten",
+      "managePrivacy": "Datenschutz verwalten"
+    },
+    "dangerZone": {
+      "title": "Gefahrenzone",
+      "description": "Unwiderrufliche Aktionen"
     }
   },
   "Blog": {
@@ -693,7 +790,11 @@
     "noMessagesAdmin": "Noch keine Nachrichten in diesem Ticket.",
     "ticketFrom": "Ticket ab",
     "noEmail": "Keine E-Mail",
-    "notProvided": "Nicht vorgesehen"
+    "notProvided": "Nicht vorgesehen",
+    "createTicket": {
+      "title": "Support-Ticket erstellen - Expertenhilfe erhalten | Professioneller Support",
+      "description": "Reichen Sie ein Support-Ticket ein und erhalten Sie Hilfe von unserem Expertenteam. Schnelle Antwortzeiten, detailliertes Tracking und Prioritäts-Support für Ihre Geschäftsanforderungen. Verfügbar 24/7."
+    }
   },
   "Banned": {
     "heading": "Konto gesperrt",
@@ -1265,5 +1366,837 @@
       "question": "Kann ich meine Daten exportieren?",
       "answer": "Ja, Sie können alle Ihre Daten jederzeit exportieren. Wir bieten Export-Funktionen für Kunden, Dokumente und alle anderen Daten in verschiedenen Formaten (CSV, PDF, JSON)."
     }
+  },
+  "Preferences": {
+    "languageRegion": {
+      "title": "Sprache & Region",
+      "description": "Konfigurieren Sie Sprache und regionale Einstellungen",
+      "language": "Sprache",
+      "locale": "Locale",
+      "timezone": "Zeitzone",
+      "languages": {
+        "english": "Englisch",
+        "german": "Deutsch",
+        "french": "Französisch",
+        "spanish": "Spanisch"
+      }
+    },
+    "theme": {
+      "title": "Theme-Einstellungen",
+      "description": "Wählen Sie Ihr bevorzugtes Theme",
+      "themeLabel": "Theme",
+      "system": "System",
+      "light": "Hell",
+      "dark": "Dunkel"
+    },
+    "dateTime": {
+      "title": "Datum & Zeit Format",
+      "description": "Passen Sie an, wie Datum und Zeit angezeigt werden",
+      "dateFormat": "Datumsformat",
+      "timeFormat": "Zeitformat",
+      "hour24": "24 Stunden",
+      "hour12": "12 Stunden (AM/PM)"
+    },
+    "payment": {
+      "title": "Zahlungsformat",
+      "description": "Konfigurieren Sie Währungs- und Zahlenformatierung",
+      "currency": "Währung",
+      "numberFormat": "Zahlenformat",
+      "european": "Europäisch (1.234,56)",
+      "american": "Amerikanisch (1,234.56)"
+    },
+    "emailDigest": {
+      "title": "E-Mail-Zusammenfassung",
+      "description": "Konfigurieren Sie, wie oft Sie E-Mail-Zusammenfassungen erhalten",
+      "frequency": "Häufigkeit der E-Mail-Zusammenfassung",
+      "never": "Nie",
+      "daily": "Täglich",
+      "weekly": "Wöchentlich",
+      "monthly": "Monatlich"
+    },
+    "notifications": {
+      "title": "Benachrichtigungseinstellungen",
+      "description": "Feinabstimmung Ihrer Benachrichtigungseinstellungen nach Kanal und Typ",
+      "channels": {
+        "email": "E-Mail",
+        "push": "Push",
+        "in_app": "In-App"
+      },
+      "types": {
+        "system": "System",
+        "billing": "Abrechnung",
+        "security": "Sicherheit",
+        "support": "Support",
+        "marketing": "Marketing",
+        "newsletter": "Newsletter"
+      }
+    },
+    "saveButton": "Einstellungen speichern",
+    "saveSuccess": "Einstellungen erfolgreich aktualisiert",
+    "saveError": "Fehler beim Aktualisieren der Einstellungen"
+  },
+  "Company": {
+    "fields": {
+      "companyName": "Firmenname",
+      "companyNamePlaceholder": "Musterfirma GmbH",
+      "companyNameDescription": "Der offizielle Name Ihres Unternehmens",
+      "address": "Straße & Hausnummer",
+      "addressPlaceholder": "Musterstraße 123",
+      "addressLine2": "Adresszusatz",
+      "addressLine2Placeholder": "Gebäude A, 3. OG",
+      "addressLine2Description": "Optional: Gebäude, Etage, Abteilung, etc.",
+      "postalCode": "PLZ",
+      "postalCodePlaceholder": "12345",
+      "city": "Stadt",
+      "cityPlaceholder": "Musterstadt",
+      "country": "Land",
+      "countryPlaceholder": "Land auswählen",
+      "countries": {
+        "germany": "Deutschland",
+        "austria": "Österreich",
+        "switzerland": "Schweiz",
+        "usa": "USA",
+        "unitedKingdom": "Vereinigtes Königreich",
+        "france": "Frankreich",
+        "italy": "Italien",
+        "spain": "Spanien",
+        "netherlands": "Niederlande",
+        "belgium": "Belgien"
+      }
+    }
+  },
+  "Billing": {
+    "title": "Abrechnung – Cenety",
+    "description": "Verwalten Sie Ihre Abrechnung und Ihren Abonnementplan.",
+    "heading": "Abrechnung",
+    "text": "Verwalten Sie Ihre Abrechnung und Ihren Abonnementplan.",
+    "demoAlert": "Dies ist eine Demo-App.",
+    "demoDescription": "Cenety App ist eine Demo-App, die eine Stripe-Testumgebung verwendet. Eine Liste der Testkartennummern finden Sie in der",
+    "stripeDocs": "Stripe-Dokumentation",
+    "billingCycle": "Abrechnungszyklus",
+    "monthly": "Monatlich",
+    "yearly": "Jährlich"
+  },
+  "GDPR": {
+    "consent": {
+      "title": "Einwilligungsverwaltung",
+      "description": "Verwalten Sie Ihre Einwilligungen für verschiedene Datentypen",
+      "loading": "Laden...",
+      "necessary": {
+        "title": "Notwendige Cookies",
+        "description": "Diese Cookies sind für die Grundfunktionen der Website erforderlich und können nicht deaktiviert werden."
+      },
+      "functional": {
+        "title": "Funktionale Cookies",
+        "description": "Diese Cookies ermöglichen erweiterte Funktionen und Personalisierung der Website."
+      },
+      "analytics": {
+        "title": "Analytics Cookies",
+        "description": "Diese Cookies helfen uns zu verstehen, wie Besucher mit unserer Website interagieren."
+      },
+      "marketing": {
+        "title": "Marketing Cookies",
+        "description": "Diese Cookies werden verwendet, um relevante Werbung anzuzeigen und Marketingkampagnen zu verfolgen."
+      },
+      "viewHistory": "Historie anzeigen",
+      "historyTitle": "Historie",
+      "historyDescription": "Übersicht über alle Änderungen dieser Einwilligung",
+      "noHistory": "Keine Historie verfügbar",
+      "grantedStatus": "Erteilt",
+      "revokedStatus": "Widerrufen",
+      "updateSuccess": "Einwilligung aktualisiert",
+      "granted": "Einwilligung für {type} wurde erteilt",
+      "revoked": "Einwilligung für {type} wurde widerrufen",
+      "error": "Fehler",
+      "errorDescription": "Ein Fehler ist aufgetreten"
+    },
+    "dataExport": {
+      "title": "Datenexport",
+      "description": "Laden Sie alle Ihre gespeicherten Daten herunter (DSGVO Art. 15 - Recht auf Auskunft)",
+      "intro": "Sie haben das Recht, eine Kopie aller Ihrer personenbezogenen Daten zu erhalten. Der Export umfasst:",
+      "includes": {
+        "profile": "Ihr Benutzerprofil und Kontoinformationen",
+        "customers": "Alle Kundendaten",
+        "documents": "Alle Dokumente (Angebote, Rechnungen)",
+        "qrCodes": "QR-Codes und Scan-Statistiken",
+        "consents": "Cookie-Einwilligungen",
+        "notifications": "Benachrichtigungen"
+      },
+      "exporting": "Exportiere...",
+      "exportJSON": "Als JSON exportieren",
+      "exportCSV": "Als CSV exportieren",
+      "note": "Hinweis:",
+      "noteText": "Der Export wird sofort erstellt und enthält alle aktuellen Daten. Die Dateien werden nicht auf unseren Servern gespeichert.",
+      "toast": {
+        "exportFailed": "Export fehlgeschlagen",
+        "exportSuccess": "Export erfolgreich",
+        "exportSuccessJSON": "Ihre Daten wurden als JSON-Datei heruntergeladen.",
+        "exportSuccessCSV": "Ihre Daten wurden als CSV-Dateien heruntergeladen.",
+        "error": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+      }
+    },
+    "accountDeletion": {
+      "title": "Account löschen",
+      "description": "Löschen Sie Ihren Account und alle zugehörigen Daten (DSGVO Art. 17 - Recht auf Vergessenwerden)",
+      "warning": {
+        "title": "Wichtige Hinweise zur Account-Löschung:",
+        "points": {
+          "irreversible": "Diese Aktion kann nicht rückgängig gemacht werden",
+          "dataLost": "Alle Ihre Daten werden unwiderruflich gelöscht",
+          "contentLost": "Kunden, Dokumente, QR-Codes und Scan-Statistiken gehen verloren",
+          "exception": "Ausnahme: Bezahlte Rechnungen müssen aus rechtlichen Gründen 10 Jahre aufbewahrt werden. In diesem Fall wird Ihr Account anonymisiert statt gelöscht."
+        }
+      },
+      "whatHappens": {
+        "title": "Was passiert bei der Löschung?",
+        "points": {
+          "accountDeactivated": "Ihr Benutzerkonto wird sofort deaktiviert",
+          "dataDeleted": "Alle personenbezogenen Daten werden gelöscht",
+          "loggedOut": "Sie werden automatisch abgemeldet",
+          "auditLog": "Ein Audit-Log-Eintrag wird für Compliance-Zwecke erstellt"
+        }
+      },
+      "button": "Account unwiderruflich löschen",
+      "confirm": {
+        "title": "Account wirklich löschen?",
+        "description": "Diese Aktion kann nicht rückgängig gemacht werden. Alle Ihre Daten werden permanent gelöscht.",
+        "inputLabel": "Geben Sie DELETE ein, um zu bestätigen:",
+        "inputPlaceholder": "DELETE",
+        "note": "Hinweis: Falls Sie bezahlte Rechnungen haben, die jünger als 10 Jahre sind, wird Ihr Account anonymisiert statt gelöscht (gesetzliche Aufbewahrungspflicht).",
+        "cancel": "Abbrechen",
+        "delete": "Account löschen",
+        "deleting": "Lösche..."
+      },
+      "toast": {
+        "confirmationFailed": "Bestätigung fehlgeschlagen",
+        "confirmationMessage": "Bitte geben Sie DELETE ein, um fortzufahren.",
+        "deletionFailed": "Löschung fehlgeschlagen",
+        "accountAnonymized": "Account anonymisiert",
+        "accountDeleted": "Account gelöscht",
+        "error": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+      }
+    }
+  },
+  "Documents": {
+    "invoice": "RECHNUNG",
+    "quote": "ANGEBOT",
+    "greeting": "Sehr geehrte Damen und Herren,",
+    "invoiceIntro": "hiermit stellen wir Ihnen folgende Leistungen in Rechnung:",
+    "quoteIntro": "hiermit unterbreiten wir Ihnen folgendes Angebot:",
+    "position": "Pos.",
+    "description": "Beschreibung",
+    "quantity": "Menge",
+    "unitPrice": "Einzelpreis",
+    "total": "Gesamt",
+    "subtotal": "Zwischensumme (Netto):",
+    "taxIncluded": "zzgl. MwSt. ({rate}%):",
+    "totalAmount": "Gesamtbetrag (Brutto):",
+    "paymentTerms": "Zahlungsziel:",
+    "paymentMethod": "Zahlungsweise:",
+    "paymentMethodValue": "Überweisung",
+    "paymentInstruction": "Bitte überweisen Sie den Betrag unter Angabe der Rechnungsnummer auf unser Konto.",
+    "dueDate": "Fällig am:",
+    "invoiceNumber": "Rechnungsnr.:",
+    "date": "Datum:",
+    "onReceipt": "Bei Erhalt",
+    "invoiceClosing": "Wir bedanken uns für Ihren Auftrag und das entgegengebrachte Vertrauen.",
+    "quoteClosing": "Wir freuen uns auf Ihre Auftragserteilung und stehen für Rückfragen gerne zur Verfügung.",
+    "closing": "Mit freundlichen Grüßen",
+    "footer": {
+      "allPrices": "Alle Preise verstehen sich in Euro. Es gelten unsere Allgemeinen Geschäftsbedingungen.",
+      "electronic": "Dieses Dokument wurde elektronisch erstellt und ist ohne Unterschrift gültig."
+    },
+    "email": {
+      "invoiceSubject": "Rechnung {number}",
+      "quoteSubject": "Angebot {number}",
+      "invoiceBody": "Sehr geehrte Damen und Herren,\n\nanbei erhalten Sie die Rechnung {number}.\n\nBei Fragen stehen wir Ihnen gerne zur Verfügung.\n\nMit freundlichen Grüßen\n{name}",
+      "quoteBody": "Sehr geehrte Damen und Herren,\n\nanbei erhalten Sie unser Angebot {number}.\n\nWir freuen uns auf Ihre Rückmeldung.\n\nMit freundlichen Grüßen\n{name}"
+    },
+    "page": {
+      "title": "Dokumente",
+      "description": "Verwalten Sie Ihre Angebote und Rechnungen. Erstellen Sie professionelle Dokumente in Minuten.",
+      "newQuote": "Angebot",
+      "newInvoice": "Rechnung",
+      "stats": {
+        "total": "Gesamt Dokumente",
+        "totalDescription": "{quotes} Angebote, {invoices} Rechnungen",
+        "openQuotes": "Offene Angebote",
+        "openQuotesDescription": "{draft} Entwurf, {sent} Gesendet",
+        "paidInvoices": "Bezahlte Rechnungen",
+        "paidInvoicesDescription": "{rate}% Erfolgsrate",
+        "unpaidInvoices": "Unbezahlte Rechnungen",
+        "unpaidInvoicesDescription": "{action}",
+        "actionRequired": "Aktion erforderlich",
+        "allDone": "Alles erledigt"
+      }
+    },
+    "tabs": {
+      "all": "Alle",
+      "quotes": "Angebote ({count})",
+      "invoices": "Rechnungen ({count})",
+      "empty": {
+        "title": "Keine Dokumente gefunden",
+        "description": "Erstellen Sie Ihr erstes Dokument, um zu beginnen.",
+        "createQuote": "Angebot erstellen",
+        "createInvoice": "Rechnung erstellen"
+      }
+    },
+    "table": {
+      "searchPlaceholder": "Nach Dokumentnummer oder Kunde suchen...",
+      "statusFilter": {
+        "all": "Alle Status",
+        "draft": "Entwurf",
+        "sent": "Gesendet",
+        "accepted": "Angenommen",
+        "declined": "Abgelehnt",
+        "paid": "Bezahlt",
+        "overdue": "Überfällig"
+      },
+      "noResults": "Keine Dokumente gefunden, die den Filterkriterien entsprechen.",
+      "noDocuments": "Keine Dokumente vorhanden.",
+      "columns": {
+        "number": "Nummer",
+        "type": "Typ",
+        "customer": "Kunde",
+        "date": "Datum",
+        "dueDate": "Fälligkeitsdatum",
+        "status": "Status",
+        "amount": "Betrag"
+      },
+      "types": {
+        "quote": "Angebot",
+        "invoice": "Rechnung"
+      },
+      "actions": {
+        "view": "Anzeigen",
+        "edit": "Bearbeiten",
+        "duplicate": "Kopieren",
+        "convertToInvoice": "Als Rechnung erstellen"
+      },
+      "toast": {
+        "deleted": "Dokument gelöscht",
+        "deleteError": "Fehler beim Löschen des Dokuments",
+        "duplicated": "Dokument kopiert",
+        "duplicateError": "Fehler beim Kopieren",
+        "converted": "Angebot in Rechnung umgewandelt",
+        "convertError": "Fehler beim Umwandeln"
+      }
+    },
+    "detail": {
+      "description": {
+        "quote": "Angebot",
+        "invoice": "Rechnung"
+      },
+      "edit": "Bearbeiten",
+      "sections": {
+        "documentDetails": "Dokumentendetails",
+        "items": "Artikel",
+        "notes": "Notizen",
+        "summary": "Zusammenfassung"
+      },
+      "fields": {
+        "date": "Datum",
+        "dueDate": "Fälligkeitsdatum",
+        "customer": "Kunde",
+        "subtotal": "Zwischensumme",
+        "tax": "MwSt. ({rate}%)",
+        "total": "Gesamt"
+      },
+      "noItems": "Keine Artikel vorhanden"
+    },
+    "statusTimeline": {
+      "title": "Status-Verlauf",
+      "current": "(Aktuell)",
+      "changeStatus": "Status ändern",
+      "noHistory": "Kein Status-Verlauf verfügbar",
+      "toast": {
+        "statusChanged": "Status geändert zu \"{status}\"",
+        "changeError": "Fehler beim Ändern des Status"
+      },
+      "labels": {
+        "draft": "Entwurf",
+        "sent": "Gesendet",
+        "accepted": "Angenommen",
+        "declined": "Abgelehnt",
+        "paid": "Bezahlt",
+        "overdue": "Überfällig"
+      }
+    },
+    "pdfDownload": {
+      "button": "Download",
+      "generating": "Wird generiert...",
+      "success": "PDF erfolgreich heruntergeladen",
+      "errors": {
+        "loadError": "Fehler beim Laden des PDFs",
+        "generateError": "Fehler beim Generieren des PDFs"
+      }
+    },
+    "pdfPreview": {
+      "button": "Vorschau",
+      "title": "PDF-Vorschau: {number}",
+      "description": "Vorschau des generierten PDF-Dokuments",
+      "fullscreenDescription": "Vollbildansicht des PDFs",
+      "loading": "PDF wird geladen...",
+      "generating": "PDF wird generiert...",
+      "retry": "Erneut versuchen",
+      "close": "Schließen",
+      "iframeTitle": "PDF Preview",
+      "noPdfAvailable": "Kein PDF verfügbar",
+      "clickToLoad": "Klicken Sie auf den Button, um die PDF-Vorschau zu laden",
+      "showPreview": "PDF-Vorschau anzeigen",
+      "generatePdf": "PDF generieren",
+      "installationInstructions": "Installationsanweisung:",
+      "errors": {
+        "loadError": "Fehler beim Laden des PDFs",
+        "generateError": "Fehler beim Generieren des PDFs",
+        "unknownError": "Unbekannter Fehler beim Generieren des PDFs",
+        "noUrlReturned": "PDF URL wurde nicht zurückgegeben"
+      }
+    },
+    "preview": {
+      "fullscreenButton": "Rechnung vollständig anzeigen",
+      "fullscreenTitle": "Vollständige Rechnungsansicht",
+      "notes": "Hinweise:"
+    },
+    "template": {
+      "dueDate": "Fälligkeitsdatum",
+      "invoiceAddress": "Rechnungsadresse:",
+      "quoteFor": "Angebot für:",
+      "paymentInfo": "Zahlungsinformationen:",
+      "bank": "Bank",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "website": "Website",
+      "vatId": "USt-IdNr.",
+      "managingDirector": "Geschäftsführer"
+    },
+    "templates": {
+      "default": "Standard",
+      "noCompanyData": "Keine Firmendaten",
+      "deleteTitle": "Template löschen?",
+      "deleteDescription": "Möchten Sie das Template \"{name}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "cancel": "Abbrechen",
+      "delete": "Löschen",
+      "deleteError": "Fehler beim Löschen des Templates"
+    },
+    "delete": {
+      "button": "Löschen",
+      "deleting": "Wird gelöscht...",
+      "title": "Dokument löschen?",
+      "description": {
+        "quote": "Möchten Sie das Angebot",
+        "invoice": "Möchten Sie die Rechnung"
+      },
+      "confirmText": "wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "cancel": "Abbrechen",
+      "confirm": "Löschen",
+      "toast": {
+        "success": {
+          "quote": "Angebot gelöscht",
+          "invoice": "Rechnung gelöscht"
+        },
+        "error": "Fehler beim Löschen des Dokuments"
+      }
+    },
+    "email": {
+      "button": "E-Mail",
+      "title": {
+        "quote": "Angebot per E-Mail senden",
+        "invoice": "Rechnung per E-Mail senden"
+      },
+      "description": {
+        "quote": "Das Angebot {number} wird als PDF-Anhang versendet.",
+        "invoice": "Die Rechnung {number} wird als PDF-Anhang versendet."
+      },
+      "fields": {
+        "email": "E-Mail-Adresse *",
+        "emailPlaceholder": "kunde@beispiel.de",
+        "subject": "Betreff",
+        "subjectPlaceholder": {
+          "quote": "Angebot {number}",
+          "invoice": "Rechnung {number}"
+        },
+        "message": "Nachricht",
+        "messagePlaceholder": "Optionale Nachricht..."
+      },
+      "cancel": "Abbrechen",
+      "send": "Senden",
+      "sending": "Wird gesendet...",
+      "toast": {
+        "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+        "success": "E-Mail erfolgreich gesendet",
+        "error": "Fehler beim Senden der E-Mail"
+      }
+    },
+    "customerSelector": {
+      "loading": "Lade...",
+      "selectCustomer": "Kunde auswählen",
+      "noCustomer": "Kein Kunde",
+      "createNew": "Neuen Kunden erstellen",
+      "dialog": {
+        "title": "Neuen Kunden erstellen",
+        "description": "Erstellen Sie schnell einen neuen Kunden. Weitere Details können später hinzugefügt werden.",
+        "fields": {
+          "name": "Name *",
+          "namePlaceholder": "Max Mustermann",
+          "email": "E-Mail",
+          "emailPlaceholder": "max@example.com",
+          "phone": "Telefon",
+          "phonePlaceholder": "+49 123 456789",
+          "company": "Unternehmen",
+          "companyPlaceholder": "Musterfirma GmbH"
+        },
+        "cancel": "Abbrechen",
+        "create": "Kunde erstellen",
+        "creating": "Erstelle...",
+        "toast": {
+          "loadError": "Fehler beim Laden der Kunden",
+          "success": "Kunde erfolgreich erstellt",
+          "successDescription": "{name} wurde hinzugefügt und ausgewählt.",
+          "error": "Fehler beim Erstellen des Kunden"
+        },
+        "validation": {
+          "nameRequired": "Name ist erforderlich",
+          "invalidEmail": "Ungültige E-Mail-Adresse"
+        }
+      }
+    },
+    "form": {
+      "toast": {
+        "updated": "Dokument aktualisiert",
+        "created": {
+          "quote": "Angebot erstellt",
+          "invoice": "Rechnung erstellt"
+        },
+        "saveError": "Fehler beim Speichern"
+      },
+      "title": {
+        "edit": {
+          "quote": "Angebot bearbeiten",
+          "invoice": "Rechnung bearbeiten"
+        },
+        "new": {
+          "quote": "Neues Angebot",
+          "invoice": "Neue Rechnung"
+        }
+      },
+      "description": {
+        "edit": "Aktualisieren Sie die Dokumentendaten",
+        "new": "Erstellen Sie ein neues Dokument"
+      },
+      "companyProfile": {
+        "label": "Firmenprofil",
+        "description": "Wählen Sie das Firmenprofil für dieses Dokument aus. Die Daten werden beim Generieren verwendet.",
+        "defaultSelected": "(Standard-Profil ausgewählt)"
+      },
+      "items": {
+        "label": "Artikel",
+        "addButton": "Artikel hinzufügen",
+        "fields": {
+          "description": "Beschreibung",
+          "quantity": "Menge",
+          "unitPrice": "Einzelpreis (€)",
+          "total": "Gesamt"
+        }
+      },
+      "summary": {
+        "label": "Zusammenfassung",
+        "subtotal": "Zwischensumme:",
+        "tax": "MwSt. ({rate}%):",
+        "total": "Gesamt:"
+      },
+      "notes": {
+        "label": "Notizen",
+        "placeholder": "Interne Notizen oder zusätzliche Informationen...",
+        "description": "Optionale Notizen, die nur intern sichtbar sind"
+      },
+      "cancel": "Abbrechen",
+      "saving": "Wird gespeichert...",
+      "creating": "Wird erstellt...",
+      "itemDescriptionPlaceholder": "Artikelbeschreibung",
+      "saveChanges": "Änderungen speichern",
+      "createDocument": "Dokument erstellen",
+      "validation": {
+        "dateRequired": "Datum ist erforderlich",
+        "descriptionRequired": "Beschreibung ist erforderlich",
+        "atLeastOneItem": "Mindestens ein Artikel ist erforderlich"
+      }
+    }
+  },
+  "Customers": {
+    "title": "Kunden",
+    "description": "Verwalten Sie Ihre Kunden und deren Informationen",
+    "newCustomer": "Neuer Kunde",
+    "new": "Neu",
+    "stats": {
+      "total": "Total",
+      "totalDescription": "Gesamt Kunden",
+      "qrCodes": "QR-Codes",
+      "qrCodesDescription": "Mit QR-Code",
+      "email": "E-Mail",
+      "emailDescription": "Mit E-Mail",
+      "phone": "Telefon",
+      "phoneDescription": "Mit Telefon",
+      "address": "Adresse",
+      "addressDescription": "Mit Adresse",
+      "b2b": "B2B",
+      "b2bDescription": "Unternehmen"
+    },
+    "empty": {
+      "title": "Noch keine Kunden",
+      "description": "Erstellen Sie Ihren ersten Kunden. Jeder Kunde erhält automatisch einen QR-Code.",
+      "createFirst": "Ersten Kunden erstellen"
+    },
+    "detail": {
+      "description": "Kundendetails und Informationen",
+      "edit": "Bearbeiten",
+      "tabs": {
+        "overview": "Übersicht",
+        "documents": "Dokumente ({count})",
+        "activity": "Aktivitäten"
+      },
+      "contactInfo": {
+        "title": "Kontaktinformationen",
+        "email": "E-Mail",
+        "phone": "Telefon",
+        "company": "Unternehmen"
+      },
+      "address": {
+        "title": "Adresse"
+      },
+      "additionalInfo": {
+        "title": "Weitere Informationen",
+        "taxId": "Steuernummer",
+        "notes": "Notizen"
+      },
+      "metadata": {
+        "title": "Informationen",
+        "createdAt": "Erstellt am",
+        "lastUpdated": "Zuletzt aktualisiert",
+        "qrCodeId": "QR-Code ID"
+      },
+      "documents": {
+        "title": "Dokumente ({count})",
+        "newQuote": "Angebot",
+        "newInvoice": "Rechnung",
+        "empty": {
+          "title": "Noch keine Dokumente für diesen Kunden.",
+          "createFirst": "Erstes Angebot erstellen"
+        },
+        "table": {
+          "number": "Nummer",
+          "type": "Typ",
+          "date": "Datum",
+          "status": "Status",
+          "amount": "Betrag",
+          "actions": "Aktionen",
+          "open": "Öffnen"
+        },
+        "types": {
+          "quote": "Angebot",
+          "invoice": "Rechnung"
+        }
+      }
+    },
+    "table": {
+      "name": "Name",
+      "contact": "Kontakt",
+      "company": "Unternehmen",
+      "qrCode": "QR-Code",
+      "created": "Erstellt",
+      "createdLabel": "Erstellt:",
+      "actions": "Aktionen",
+      "viewDetails": "Details anzeigen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "deleteConfirm": {
+        "title": "Kunde löschen?",
+        "description": "Möchten Sie diesen Kunden wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+      },
+      "deleteCancel": "Abbrechen",
+      "deleteAction": "Löschen",
+      "toast": {
+        "deleted": "Kunde gelöscht",
+        "deletedDescription": "Der Kunde wurde erfolgreich entfernt.",
+        "deleteError": "Fehler beim Löschen",
+        "deleteErrorDescription": "Der Kunde konnte nicht gelöscht werden."
+      }
+    },
+    "quickActions": {
+      "sendEmail": "E-Mail senden",
+      "copyEmail": "E-Mail kopieren",
+      "copied": "Kopiert",
+      "call": "Anrufen",
+      "newQuote": "Neues Angebot",
+      "newInvoice": "Neue Rechnung",
+      "toast": {
+        "noPhone": "Keine Telefonnummer vorhanden",
+        "emailCopied": "E-Mail-Adresse kopiert"
+      }
+    },
+    "customerStats": {
+      "documents": "Dokumente",
+      "documentsDescription": "{quotes} Angebote, {invoices} Rechnungen",
+      "revenue": "Umsatz",
+      "revenueDescription": "{count} bezahlte Rechnungen",
+      "pending": "Ausstehend",
+      "pendingDescription": "Offene Rechnungen",
+      "customerSince": "Kunde seit",
+      "days": "Tagen"
+    },
+    "activity": {
+      "title": "Aktivitäten",
+      "titleWithCount": "Aktivitäten ({count})",
+      "empty": "Noch keine Aktivitäten vorhanden",
+      "created": "Kunde erstellt",
+      "updated": "Kundendaten aktualisiert",
+      "documentCreated": "{type} {number} erstellt",
+      "status": "Status: {status}",
+      "types": {
+        "quote": "Angebot",
+        "invoice": "Rechnung"
+      }
+    },
+    "sendEmail": {
+      "title": "E-Mail an {name} senden",
+      "description": "E-Mail wird an {email} gesendet",
+      "subject": "Betreff",
+      "subjectPlaceholder": "Betreff der E-Mail",
+      "body": "Nachricht",
+      "bodyPlaceholder": "Ihre Nachricht an den Kunden...",
+      "cancel": "Abbrechen",
+      "send": "E-Mail senden",
+      "sending": "Wird gesendet...",
+      "toast": {
+        "noEmail": "Kunde hat keine E-Mail-Adresse",
+        "success": "E-Mail erfolgreich gesendet",
+        "error": "Fehler beim Senden der E-Mail"
+      },
+      "validation": {
+        "subjectRequired": "Betreff ist erforderlich",
+        "subjectMax": "Betreff zu lang",
+        "bodyRequired": "Nachricht ist erforderlich",
+        "bodyMax": "Nachricht zu lang"
+      }
+    },
+    "form": {
+      "nameRequired": "Name ist erforderlich",
+      "invalidEmail": "Ungültige E-Mail-Adresse",
+      "steps": {
+        "personal": {
+          "title": "Persönliche Daten",
+          "description": "Grundlegende Kontaktinformationen"
+        },
+        "address": {
+          "title": "Adresse",
+          "description": "Vollständige Adressdaten"
+        },
+        "additional": {
+          "title": "Weitere Infos",
+          "description": "Zusätzliche Informationen"
+        }
+      },
+      "saving": "Kunde wird aktualisiert...",
+      "creating": "Kunde wird erstellt...",
+      "updateSuccess": "Kunde erfolgreich aktualisiert",
+      "updateDescription": "Die Kundendaten wurden gespeichert.",
+      "createSuccess": "Kunde erfolgreich erstellt",
+      "createDescription": "Der Kunde wurde angelegt und ein QR-Code wurde generiert.",
+      "saveError": "Fehler beim Speichern",
+      "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+      "fields": {
+        "personalInfo": "Persönliche Informationen",
+        "name": "Name",
+        "namePlaceholder": "Max Mustermann",
+        "nameDescription": "Vollständiger Name des Kunden",
+        "email": "E-Mail",
+        "emailPlaceholder": "max@example.com",
+        "emailDescription": "E-Mail-Adresse für Kommunikation",
+        "phone": "Telefon",
+        "phonePlaceholder": "+49 123 456789",
+        "phoneDescription": "Telefonnummer mit Ländervorwahl",
+        "company": "Unternehmen",
+        "companyPlaceholder": "Musterfirma GmbH",
+        "companyDescription": "Firmenname (falls vorhanden)",
+        "address": "Adresse",
+        "street": "Straße und Hausnummer",
+        "streetPlaceholder": "Musterstraße 123",
+        "addressLine2": "Adresszusatz",
+        "addressLine2Placeholder": "Etage, Appartment, etc.",
+        "postalCode": "Postleitzahl",
+        "postalCodePlaceholder": "12345",
+        "city": "Stadt",
+        "cityPlaceholder": "Berlin",
+        "country": "Land",
+        "countryPlaceholder": "Land auswählen",
+        "taxId": "Steuernummer",
+        "taxIdPlaceholder": "DE123456789",
+        "taxIdDescription": "Steuernummer oder USt-IdNr.",
+        "notes": "Notizen",
+        "notesPlaceholder": "Zusätzliche Informationen, Besonderheiten, etc.",
+        "notesDescription": "Interne Notizen zu diesem Kunden",
+        "additionalInfo": "Weitere Informationen"
+      }
+    },
+    "countries": {
+      "germany": "Deutschland",
+      "austria": "Österreich",
+      "switzerland": "Schweiz",
+      "france": "Frankreich",
+      "italy": "Italien",
+      "spain": "Spanien",
+      "netherlands": "Niederlande",
+      "belgium": "Belgien",
+      "poland": "Polen",
+      "unitedKingdom": "Großbritannien",
+      "usa": "USA",
+      "canada": "Kanada"
+    }
+  },
+  "QRCodes": {
+    "title": "QR-Codes",
+    "description": "Verwalten Sie Ihre dynamischen QR-Codes",
+    "newQRCode": "Neuer QR-Code",
+    "new": "Neu",
+    "page": {
+      "new": "Neu",
+      "title": "QR-Codes",
+      "description": "Erstellen und verwalten Sie dynamische QR-Codes für Ihre Kunden und Dokumente.",
+      "newQRCode": "Neuer QR-Code",
+      "stats": {
+        "total": "Gesamt QR-Codes",
+        "totalDescription": "{standalone} Standalone, {customer} Kunden",
+        "customer": "Kunden QR-Codes",
+        "customerDescription": "Automatisch generiert",
+        "standalone": "Standalone QR-Codes",
+        "standaloneDescription": "Manuell erstellt"
+      },
+      "empty": {
+        "title": "Keine QR-Codes gefunden",
+        "description": "Erstellen Sie Ihren ersten QR-Code, um zu beginnen. QR-Codes werden auch automatisch für Ihre Kunden generiert.",
+        "create": "QR-Code erstellen"
+      },
+      "list": {
+        "title": "QR-Code Liste",
+        "description": "{count} {count, plural, one {QR-Code} other {QR-Codes}} insgesamt"
+      }
+    },
+    "table": {
+      "name": "Name",
+      "type": "Typ",
+      "code": "Code",
+      "target": "Ziel",
+      "scans": "Scans",
+      "status": "Status",
+      "created": "Erstellt",
+      "deleteConfirm": "Möchten Sie diesen QR-Code wirklich löschen?",
+      "deleted": "QR-Code gelöscht",
+      "deleteError": "Fehler beim Löschen des QR-Codes",
+      "linkCopied": "Link kopiert"
+    }
+  },
+  "CompanySettings": {
+    "title": "Firmeneinstellungen",
+    "description": "Verwalten Sie Ihre Firmenprofile"
   }
 }

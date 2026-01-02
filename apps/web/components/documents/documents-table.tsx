@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Document } from "@/actions/documents-actions";
 import {
   Table,
@@ -30,6 +31,8 @@ interface DocumentsTableProps {
 }
 
 export function DocumentsTable({ documents }: DocumentsTableProps) {
+  const t = useTranslations("Documents.table");
+  const tTypes = useTranslations("Documents.table.types");
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -58,10 +61,10 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
     setConfirmDeleteId(null);
     try {
       await deleteDocument(id);
-      toast.success("Dokument gelöscht");
+      toast.success(t("toast.deleted"));
       router.refresh();
     } catch (error) {
-      toast.error("Fehler beim Löschen des Dokuments");
+      toast.error(t("toast.deleteError"));
     } finally {
       setDeletingId(null);
     }
@@ -71,10 +74,10 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
     setConvertingId(id);
     try {
       await convertQuoteToInvoice(id);
-      toast.success("Angebot in Rechnung umgewandelt");
+      toast.success(t("toast.converted"));
       router.refresh();
     } catch (error) {
-      toast.error("Fehler beim Umwandeln");
+      toast.error(t("toast.convertError"));
     } finally {
       setConvertingId(null);
     }
@@ -84,10 +87,10 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
     setDuplicatingId(id);
     try {
       await duplicateDocument(id);
-      toast.success("Dokument kopiert");
+      toast.success(t("toast.duplicated"));
       router.refresh();
     } catch (error) {
-      toast.error("Fehler beim Kopieren");
+      toast.error(t("toast.duplicateError"));
     } finally {
       setDuplicatingId(null);
     }
@@ -113,7 +116,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Nach Dokumentnummer oder Kunde suchen..."
+            placeholder={t("searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -124,34 +127,34 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
-          <option value="all">Alle Status</option>
-          <option value="draft">Entwurf</option>
-          <option value="sent">Gesendet</option>
-          <option value="accepted">Angenommen</option>
-          <option value="declined">Abgelehnt</option>
-          <option value="paid">Bezahlt</option>
-          <option value="overdue">Überfällig</option>
+          <option value="all">{t("statusFilter.all")}</option>
+          <option value="draft">{t("statusFilter.draft")}</option>
+          <option value="sent">{t("statusFilter.sent")}</option>
+          <option value="accepted">{t("statusFilter.accepted")}</option>
+          <option value="declined">{t("statusFilter.declined")}</option>
+          <option value="paid">{t("statusFilter.paid")}</option>
+          <option value="overdue">{t("statusFilter.overdue")}</option>
         </select>
       </div>
 
       {filteredDocuments.length === 0 ? (
         <div className="text-center py-8 text-muted-foreground">
           {searchQuery || statusFilter !== "all"
-            ? "Keine Dokumente gefunden, die den Filterkriterien entsprechen."
-            : "Keine Dokumente vorhanden."}
+            ? t("noResults")
+            : t("noDocuments")}
         </div>
       ) : (
         <div className="rounded-md border overflow-x-auto">
           <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Nummer</TableHead>
-            <TableHead>Typ</TableHead>
-            <TableHead>Kunde</TableHead>
-            <TableHead>Datum</TableHead>
-            <TableHead>Fälligkeitsdatum</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Betrag</TableHead>
+            <TableHead>{t("columns.number")}</TableHead>
+            <TableHead>{t("columns.type")}</TableHead>
+            <TableHead>{t("columns.customer")}</TableHead>
+            <TableHead>{t("columns.date")}</TableHead>
+            <TableHead>{t("columns.dueDate")}</TableHead>
+            <TableHead>{t("columns.status")}</TableHead>
+            <TableHead className="text-right">{t("columns.amount")}</TableHead>
             <TableHead className="w-[50px]"></TableHead>
             <TableHead className="w-[50px]"></TableHead>
           </TableRow>
@@ -176,7 +179,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
                 </Link>
               </TableCell>
               <TableCell>
-                {doc.type === "quote" ? "Angebot" : "Rechnung"}
+                {doc.type === "quote" ? tTypes("quote") : tTypes("invoice")}
               </TableCell>
               <TableCell>{doc.customer?.name || "-"}</TableCell>
               <TableCell>
@@ -246,13 +249,13 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
                     <DropdownMenuItem asChild>
                       <Link href={`/dashboard/documents/${doc.id}`}>
                         <FileDown className="mr-2 h-4 w-4" />
-                        Anzeigen
+                        {t("actions.view")}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href={`/dashboard/documents/${doc.id}/edit`}>
                         <Pencil className="mr-2 h-4 w-4" />
-                        Bearbeiten
+                        {t("actions.edit")}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem
@@ -260,7 +263,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
                       disabled={duplicatingId === doc.id}
                     >
                       <Copy className="mr-2 h-4 w-4" />
-                      Kopieren
+                      {t("actions.duplicate")}
                     </DropdownMenuItem>
                     {doc.type === "quote" && (
                       <DropdownMenuItem
@@ -268,7 +271,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
                         disabled={convertingId === doc.id}
                       >
                         <FileDown className="mr-2 h-4 w-4" />
-                        Als Rechnung erstellen
+                        {t("actions.convertToInvoice")}
                       </DropdownMenuItem>
                     )}
                   </DropdownMenuContent>

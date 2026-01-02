@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getUserTickets } from "@/actions/support-ticket-actions";
 import { Plus, HelpCircle, Mail, MessageCircle, Phone, ArrowRight } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 
 import { siteConfig } from "@/config/site";
 import { getCurrentUser } from "@/lib/session";
@@ -20,6 +20,10 @@ import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { UserTicketAccordion } from "@/components/support/user-ticket-accordion";
 
 export async function generateMetadata() {
+  // CRITICAL FIX: Get locale and set it before translations
+  // This ensures correct language during client-side navigation
+  const locale = await getLocale();
+  setRequestLocale(locale);
   const t = await getTranslations("Support");
 
   return constructMetadata({
@@ -107,20 +111,11 @@ export default async function SupportPage() {
       )}
 
       <Tabs defaultValue="tickets" className="w-full">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <TabsList className="w-full sm:w-auto">
-            <TabsTrigger value="tickets" className="flex-1 sm:flex-none">My Tickets</TabsTrigger>
-            <TabsTrigger value="contact" className="flex-1 sm:flex-none">Contact</TabsTrigger>
-            <TabsTrigger value="faq" className="flex-1 sm:flex-none">FAQ</TabsTrigger>
-          </TabsList>
-
-          <Link href="/dashboard/support/new" className="w-full sm:w-auto">
-            <Button size="sm" className="w-full sm:w-auto gap-2">
-              <Plus className="size-4" />
-              New Ticket
-            </Button>
-          </Link>
-        </div>
+        <TabsList className="w-full sm:w-auto">
+          <TabsTrigger value="tickets" className="flex-1 sm:flex-none">My Tickets</TabsTrigger>
+          <TabsTrigger value="contact" className="flex-1 sm:flex-none">Contact</TabsTrigger>
+          <TabsTrigger value="faq" className="flex-1 sm:flex-none">FAQ</TabsTrigger>
+        </TabsList>
 
         <TabsContent value="tickets" className="py-4">
           <Card>

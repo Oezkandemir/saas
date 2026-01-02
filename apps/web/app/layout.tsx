@@ -1,7 +1,6 @@
-import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
+import { cookies } from "next/headers";
 
 import "@/styles/globals.css";
 
@@ -29,14 +28,29 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Default locale for root layout
-  const locale = routing.defaultLocale;
+  // CRITICAL FIX: Detect locale from cookie (set by next-intl middleware)
+  // This ensures correct language is loaded immediately, preventing flash
+  // Priority: Cookie → Default Locale
+  // The [locale] layout will override this with the correct locale from URL params
+  const cookieStore = await cookies();
+  const savedLocale = cookieStore.get("NEXT_LOCALE")?.value;
   
-  // Enable static rendering
-  setRequestLocale(locale);
+  // Use saved locale if valid, otherwise use default locale
+  const locale = (savedLocale && routing.locales.includes(savedLocale as any))
+    ? savedLocale
+    : routing.defaultLocale; // Default to "de" (German)
 
-  // Get messages for the default locale
-  const messages = await getMessages();
+  // Load messages for the detected locale to prevent flash
+  // The [locale] layout will provide the correct locale-specific messages immediately
+  let messages;
+  try {
+    const localeMessages = await import(`../messages/${locale}.json`);
+    messages = localeMessages.default;
+  } catch {
+    // Fallback to default locale messages (should never happen, but safety net)
+    const defaultMessages = await import(`../messages/${routing.defaultLocale}.json`);
+    messages = defaultMessages.default;
+  }
 
   return (
     <html lang={locale} suppressHydrationWarning data-scroll-behavior="smooth">
@@ -64,6 +78,7 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <ThemeSyncProvider>
+                {/* Load messages based on cookie to prevent flash - LocaleLayout will override if different */}
                 <NextIntlClientProvider messages={messages} locale={locale}>
                   <AvatarProvider>
                     <QueryClientProvider>

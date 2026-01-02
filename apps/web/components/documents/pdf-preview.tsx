@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import { Download, ZoomIn, ZoomOut, Loader2, Maximize2, FileText } from "lucide-react";
 import {
@@ -20,6 +21,7 @@ interface PDFPreviewProps {
 }
 
 export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefault = false, compact = false }: PDFPreviewProps) {
+  const t = useTranslations("Documents.pdfPreview");
   const [scale, setScale] = useState(100);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +57,7 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
       
       if (!response.ok) {
         // Extract error message from API response with better handling
-        let errorMessage = "Fehler beim Generieren des PDFs";
+        let errorMessage = t("errors.generateError");
         
         if (data) {
           if (typeof data === "string") {
@@ -77,7 +79,7 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
             try {
               errorMessage = JSON.stringify(data);
             } catch {
-              errorMessage = "Unbekannter Fehler beim Generieren des PDFs";
+              errorMessage = t("errors.unknownError");
             }
           }
         }
@@ -98,12 +100,12 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
       }
       
       if (!data || !data.pdfUrl) {
-        throw new Error("PDF URL wurde nicht zurückgegeben");
+        throw new Error(t("errors.noUrlReturned"));
       }
       
       setCurrentPdfUrl(data.pdfUrl);
     } catch (err) {
-      let errorMessage = "Fehler beim Laden des PDFs";
+      let errorMessage = t("errors.loadError");
       
       if (err instanceof Error) {
         errorMessage = err.message;
@@ -113,7 +115,7 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
         try {
           errorMessage = (err as any).message || (err as any).error || JSON.stringify(err);
         } catch {
-          errorMessage = "Unbekannter Fehler";
+          errorMessage = t("errors.unknownError");
         }
       }
       
@@ -169,12 +171,12 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
           {loading ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Lädt...
+              {t("loading")}
             </>
           ) : (
             <>
               <FileText className="h-4 w-4 mr-2" />
-              PDF-Vorschau
+              {t("button")}
             </>
           )}
         </Button>
@@ -184,22 +186,22 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
           <Dialog open={isFullscreen} onOpenChange={setIsFullscreen}>
             <DialogContent className="max-w-[95vw] h-[95vh] p-0">
               <DialogHeader className="sr-only">
-                <DialogTitle>PDF-Vorschau</DialogTitle>
-                <DialogDescription>Vollbildansicht des PDFs</DialogDescription>
+                <DialogTitle>{t("title", { number: "" })}</DialogTitle>
+                <DialogDescription>{t("fullscreenDescription")}</DialogDescription>
               </DialogHeader>
               {loading && !currentPdfUrl ? (
                 <div className="flex items-center justify-center h-full">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  <span className="ml-2 text-muted-foreground">PDF wird generiert...</span>
+                  <span className="ml-2 text-muted-foreground">{t("generating")}</span>
                 </div>
               ) : error ? (
                 <div className="flex flex-col items-center justify-center p-8 text-center space-y-4 h-full">
                   <div className="text-destructive">
-                    <p className="font-semibold mb-2">Fehler beim Generieren des PDFs</p>
+                    <p className="font-semibold mb-2">{t("errors.generateError")}</p>
                     <p className="text-sm">{error}</p>
                   </div>
                   <Button onClick={handleFetchPDF} variant="outline">
-                    Erneut versuchen
+                    {t("retry")}
                   </Button>
                 </div>
         ) : currentPdfUrl ? (
@@ -224,14 +226,14 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
       <div className="flex flex-col items-center justify-center p-8 text-center space-y-4 border-2 border-dashed border-muted rounded-lg">
         <FileText className="h-16 w-16 text-muted-foreground" />
         <div>
-          <p className="text-lg font-semibold mb-2">PDF-Vorschau</p>
+          <p className="text-lg font-semibold mb-2">{t("button")}</p>
           <p className="text-sm text-muted-foreground mb-4">
-            Klicken Sie auf den Button, um die PDF-Vorschau zu laden
+            {t("clickToLoad")}
           </p>
         </div>
         <Button onClick={() => setShowPdfPreview(true)} variant="default" size="lg">
           <FileText className="h-4 w-4 mr-2" />
-          PDF-Vorschau anzeigen
+          {t("showPreview")}
         </Button>
       </div>
     );
@@ -241,7 +243,7 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
     return (
       <div className="flex items-center justify-center p-8">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        <span className="ml-2 text-muted-foreground">PDF wird geladen...</span>
+        <span className="ml-2 text-muted-foreground">{t("loading")}</span>
       </div>
     );
   }
@@ -250,19 +252,19 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center space-y-4">
         <div className="text-destructive">
-          <p className="font-semibold mb-2">Fehler beim Generieren des PDFs</p>
+          <p className="font-semibold mb-2">{t("errors.generateError")}</p>
           <p className="text-sm">{error}</p>
         </div>
         {error.includes("Puppeteer is not installed") && (
           <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg max-w-md">
-            <p className="font-semibold mb-2">Installationsanweisung:</p>
+            <p className="font-semibold mb-2">{t("installationInstructions")}</p>
             <code className="block bg-background p-2 rounded mt-2">
               cd apps/web && pnpm install puppeteer
             </code>
           </div>
         )}
         <Button onClick={handleFetchPDF} variant="outline">
-          Erneut versuchen
+          {t("retry")}
         </Button>
       </div>
     );
@@ -271,9 +273,9 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
   if (!currentPdfUrl) {
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center">
-        <p className="text-muted-foreground mb-4">Kein PDF verfügbar</p>
+        <p className="text-muted-foreground mb-4">{t("noPdfAvailable")}</p>
         <Button onClick={handleFetchPDF} variant="outline">
-          PDF generieren
+          {t("generatePdf")}
         </Button>
       </div>
     );
@@ -327,13 +329,13 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
         {loading ? (
           <div className="flex items-center justify-center p-8">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            <span className="ml-2 text-muted-foreground">PDF wird geladen...</span>
+            <span className="ml-2 text-muted-foreground">{t("loading")}</span>
           </div>
         ) : (
           <iframe
             src={`${currentPdfUrl}#toolbar=1&navpanes=1&scrollbar=1&zoom=${scale}`}
             className="w-full h-full min-h-[600px] border-0 rounded shadow-lg"
-            title="PDF Preview"
+            title={t("iframeTitle")}
             onLoad={() => setLoading(false)}
             onLoadStart={() => setLoading(true)}
           />
@@ -376,7 +378,7 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
             Download
           </Button>
           <Button variant="outline" size="sm" onClick={() => setIsFullscreen(false)}>
-            Schließen
+            {t("close")}
           </Button>
         </div>
       </div>
@@ -397,8 +399,8 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
       <Dialog open={isFullscreen} onOpenChange={setIsFullscreen}>
         <DialogContent className="max-w-[95vw] h-[95vh] p-0">
           <DialogHeader className="sr-only">
-            <DialogTitle>PDF-Vorschau</DialogTitle>
-            <DialogDescription>Vollbildansicht des PDFs</DialogDescription>
+            <DialogTitle>{t("title", { number: "" })}</DialogTitle>
+            <DialogDescription>{t("fullscreenDescription")}</DialogDescription>
           </DialogHeader>
           {fullscreenContentDetailed}
         </DialogContent>

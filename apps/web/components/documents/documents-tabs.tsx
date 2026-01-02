@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DocumentsTable } from "@/components/documents/documents-table";
@@ -21,6 +22,7 @@ export function DocumentsTabs({
   quotes,
   invoices,
 }: DocumentsTabsProps) {
+  const t = useTranslations("Documents.tabs");
   const searchParams = useSearchParams();
   const typeParam = searchParams.get("type");
   const [activeTab, setActiveTab] = useState<DocumentType | "all">(
@@ -65,34 +67,34 @@ export function DocumentsTabs({
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
       <TabsList>
         <TabsTrigger value="all">
-          Alle
+          {t("all")}
         </TabsTrigger>
         <TabsTrigger value="quote">
-          Angebote ({quotes.length})
+          {t("quotes", { count: quotes.length })}
         </TabsTrigger>
         <TabsTrigger value="invoice">
-          Rechnungen ({invoices.length})
+          {t("invoices", { count: invoices.length })}
         </TabsTrigger>
       </TabsList>
       <TabsContent value={activeTab} className="mt-4">
         {documents.length === 0 ? (
           <EmptyPlaceholder>
             <EmptyPlaceholder.Icon name="post" />
-            <EmptyPlaceholder.Title>Keine Dokumente gefunden</EmptyPlaceholder.Title>
+            <EmptyPlaceholder.Title>{t("empty.title")}</EmptyPlaceholder.Title>
             <EmptyPlaceholder.Description>
-              Erstellen Sie Ihr erstes Dokument, um zu beginnen.
+              {t("empty.description")}
             </EmptyPlaceholder.Description>
             <div className="flex gap-2">
               <Link href="/dashboard/documents/new?type=quote">
                 <Button variant="outline">
                   <Plus className="mr-2 h-4 w-4" />
-                  Angebot erstellen
+                  {t("empty.createQuote")}
                 </Button>
               </Link>
               <Link href="/dashboard/documents/new?type=invoice">
                 <Button>
                   <Plus className="mr-2 h-4 w-4" />
-                  Rechnung erstellen
+                  {t("empty.createInvoice")}
                 </Button>
               </Link>
             </div>

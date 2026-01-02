@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { Activity, AlertTriangle } from "lucide-react";
+import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
@@ -9,6 +10,11 @@ import { SystemStatus } from "@/components/admin/system-status";
 import { SystemErrors } from "@/components/admin/system-errors";
 
 export async function generateMetadata() {
+  // CRITICAL FIX: Get locale and set it before translations
+  // This ensures correct language during client-side navigation
+  const locale = await getLocale();
+  setRequestLocale(locale);
+
   return constructMetadata({
     title: "System-Monitoring",
     description: "System-Status und Fehlerüberwachung",

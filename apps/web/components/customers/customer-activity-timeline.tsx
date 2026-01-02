@@ -1,9 +1,11 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { FileText, Mail, Phone, Edit, Plus, Calendar } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { de } from "date-fns/locale";
+import { de, enUS } from "date-fns/locale";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { Customer } from "@/actions/customers-actions";
 
@@ -31,18 +33,26 @@ export function CustomerActivityTimeline({
   customer,
   documents,
 }: CustomerActivityTimelineProps) {
+  const t = useTranslations("Customers.activity");
+  const tTypes = useTranslations("Customers.activity.types");
+  const locale = useLocale();
+  const dateLocale = locale === "de" ? de : enUS;
+
   const activities: Activity[] = [
     {
       id: "created",
       type: "created" as const,
-      title: "Kunde erstellt",
+      title: t("created"),
       date: customer.created_at,
     },
     ...documents.map((doc) => ({
       id: doc.id,
       type: "document" as const,
-      title: `${doc.type === "quote" ? "Angebot" : "Rechnung"} ${doc.document_number} erstellt`,
-      description: `Status: ${doc.status}`,
+      title: t("documentCreated", {
+        type: doc.type === "quote" ? tTypes("quote") : tTypes("invoice"),
+        number: doc.document_number,
+      }),
+      description: t("status", { status: doc.status }),
       date: doc.created_at,
       link: `/dashboard/documents/${doc.id}`,
     })),
@@ -51,7 +61,7 @@ export function CustomerActivityTimeline({
           {
             id: "updated",
             type: "edit" as const,
-            title: "Kundendaten aktualisiert",
+            title: t("updated"),
             date: customer.updated_at,
           },
         ]
@@ -98,12 +108,12 @@ export function CustomerActivityTimeline({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            Aktivitäten
+            {t("title")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground text-center py-4">
-            Noch keine Aktivitäten vorhanden
+            {t("empty")}
           </p>
         </CardContent>
       </Card>
@@ -115,7 +125,7 @@ export function CustomerActivityTimeline({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Calendar className="h-5 w-5" />
-          Aktivitäten ({activities.length})
+          {t("titleWithCount", { count: activities.length })}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -146,7 +156,7 @@ export function CustomerActivityTimeline({
                     <span className="text-xs text-muted-foreground whitespace-nowrap">
                       {formatDistanceToNow(new Date(activity.date), {
                         addSuffix: true,
-                        locale: de,
+                        locale: dateLocale,
                       })}
                     </span>
                   </div>

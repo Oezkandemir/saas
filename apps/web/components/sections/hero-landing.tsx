@@ -42,8 +42,8 @@ export default async function HeroLanding() {
         <Link
           href="https://twitter.com/miickasmt/status/1810465801649938857"
           className={cn(
-            buttonVariants({ variant: "outline", size: "sm", rounded: "full" }),
-            "px-4",
+            buttonVariants({ variant: "outline", size: "sm" }),
+            "px-4 rounded-full",
           )}
           target="_blank"
         >
@@ -75,8 +75,8 @@ export default async function HeroLanding() {
             href="/pricing"
             prefetch={true}
             className={cn(
-              buttonVariants({ size: "lg", rounded: "full" }),
-              "gap-2",
+              buttonVariants({ size: "lg" }),
+              "gap-2 rounded-full",
             )}
           >
             <span>{t("goPricing")}</span>
@@ -90,9 +90,8 @@ export default async function HeroLanding() {
               buttonVariants({
                 variant: "outline",
                 size: "lg",
-                rounded: "full",
               }),
-              "px-5",
+              "px-5 rounded-full",
             )}
           >
             <Icons.gitHub className="mr-2 size-4" />

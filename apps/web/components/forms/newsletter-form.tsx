@@ -103,8 +103,7 @@ export function NewsletterForm() {
         <Button
           type="submit"
           size="sm"
-          rounded="full"
-          className="px-4"
+          className="px-4 rounded-full"
           disabled={isLoading}
         >
           {isLoading ? (

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 import { Shield, Lock, Monitor, History } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/session";
@@ -11,6 +11,10 @@ import { ActiveSessions } from "@/components/security/active-sessions";
 import { LoginHistory } from "@/components/security/login-history";
 
 export async function generateMetadata() {
+  // CRITICAL FIX: Get locale and set it before translations
+  // This ensures correct language during client-side navigation
+  const locale = await getLocale();
+  setRequestLocale(locale);
   const t = await getTranslations("Settings");
 
   return constructMetadata({

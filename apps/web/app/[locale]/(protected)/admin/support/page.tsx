@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getAllTickets } from "@/actions/support-ticket-actions";
 import { AlertTriangle, CheckCircle, Clock, HelpCircle, MessageSquare } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
@@ -9,6 +9,10 @@ import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TicketAccordionTable } from "@/components/support/ticket-accordion-table";
 
 export async function generateMetadata() {
+  // CRITICAL FIX: Get locale and set it before translations
+  // This ensures correct language during client-side navigation
+  const locale = await getLocale();
+  setRequestLocale(locale);
   const t = await getTranslations("Admin.support");
 
   return {

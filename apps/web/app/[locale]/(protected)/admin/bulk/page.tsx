@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 import { Users, Mail, Download, Ban } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/session";
@@ -7,6 +7,10 @@ import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { BulkOperationsPanel } from "@/components/admin/bulk/bulk-operations-panel";
 
 export async function generateMetadata() {
+  // CRITICAL FIX: Get locale and set it before translations
+  // This ensures correct language during client-side navigation
+  const locale = await getLocale();
+  setRequestLocale(locale);
   const t = await getTranslations("Admin.bulk");
 
   return {

@@ -21,6 +21,7 @@ import { ModalContext } from "@/components/modals/providers";
 
 import { ModeToggle } from "./mode-toggle";
 import { UserAccountNav } from "./user-account-nav";
+import { MarketingCommandMenu } from "./marketing-command-menu";
 
 interface NavBarProps {
   scroll?: boolean;
@@ -85,6 +86,9 @@ export function NavBar({ scroll = false }: NavBarProps) {
         </div>
 
         <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
+          {/* Command Menu - Only show on marketing pages, not docs */}
+          {!documentation && <MarketingCommandMenu />}
+
           {/* Language Switcher - Now using drawer for all screen sizes */}
           <div className="flex items-center pr-1 sm:pr-2 md:pr-0">
             <LanguageDrawer />
@@ -129,10 +133,9 @@ export function NavBar({ scroll = false }: NavBarProps) {
             <>
               {/* Icon button for small screens */}
               <Button
-                className="flex md:hidden gap-2 px-3 py-2 text-sm touch-manipulation"
+                className="flex md:hidden gap-2 px-3 py-2 text-sm touch-manipulation rounded-full"
                 variant="default"
                 size="sm"
-                rounded="full"
                 onClick={() => setShowSignInModal(true)}
                 aria-label={t("signIn")}
               >
@@ -141,10 +144,9 @@ export function NavBar({ scroll = false }: NavBarProps) {
 
               {/* Text button for larger screens */}
               <Button
-                className="hidden gap-2 px-4 sm:px-5 text-sm md:flex touch-manipulation"
+                className="hidden gap-2 px-4 sm:px-5 text-sm md:flex touch-manipulation rounded-full"
                 variant="default"
                 size="sm"
-                rounded="full"
                 onClick={() => setShowSignInModal(true)}
               >
                 <span>{t("signIn")}</span>
@@ -152,10 +154,9 @@ export function NavBar({ scroll = false }: NavBarProps) {
               </Button>
 
               <Button
-                className="hidden gap-2 px-4 sm:px-5 text-sm md:flex touch-manipulation"
+                className="hidden gap-2 px-4 sm:px-5 text-sm md:flex touch-manipulation rounded-full"
                 variant="outline"
                 size="sm"
-                rounded="full"
                 onClick={() => setShowSignUpModal(true)}
               >
                 <span>{t("signUp")}</span>

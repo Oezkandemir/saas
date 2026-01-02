@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 import { getUserPreferences } from "@/actions/preferences-actions";
 import { PreferencesPanel } from "@/components/settings/preferences-panel";
 import { constructMetadata } from "@/lib/utils";
@@ -7,6 +7,10 @@ import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Settings } from "lucide-react";
 
 export async function generateMetadata() {
+  // CRITICAL FIX: Get locale and set it before translations
+  // This ensures correct language during client-side navigation
+  const locale = await getLocale();
+  setRequestLocale(locale);
   const t = await getTranslations("Settings");
 
   return constructMetadata({

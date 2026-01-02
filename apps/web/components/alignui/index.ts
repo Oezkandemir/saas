@@ -17,7 +17,9 @@
 // Actions
 export { Button } from './actions/button';
 // export { ButtonGroup } from './actions/button-group';
-// export { LinkButton } from './actions/link-button';
+export { LinkButton } from './actions/link-button';
+export { CompactButton } from './actions/compact-button';
+export { Kbd } from './actions/kbd';
 
 // Forms
 export { Input } from './forms/input';
@@ -33,7 +35,7 @@ export { Input } from './forms/input';
 // export { Dialog } from './overlays/dialog';
 // export { Popover } from './overlays/popover';
 // export { Dropdown } from './overlays/dropdown';
-// export { CommandMenu } from './overlays/command-menu';
+export { CommandMenu } from './overlays/command-menu';
 // export { Drawer } from './overlays/drawer';
 // export { Tooltip } from './overlays/tooltip';
 
@@ -57,7 +59,7 @@ export { Avatar, AvatarImage, AvatarFallback } from './data-display/avatar';
 // export { AvatarGroup } from './data-display/avatar-group';
 export { Badge, badgeVariants } from './data-display/badge';
 // export { StatusBadge } from './data-display/status-badge';
-// export { Tag } from './data-display/tag';
+export { Tag } from './data-display/tag';
 // export { Rating } from './data-display/rating';
 export {
   Card,

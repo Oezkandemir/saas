@@ -1,6 +1,7 @@
 "use client";
 
 import { Phone, Mail, MessageSquare, FileText, Calendar, Copy, Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import { Customer } from "@/actions/customers-actions";
 import { SendEmailDialog } from "./send-email-dialog";
@@ -13,13 +14,14 @@ interface CustomerQuickActionsProps {
 }
 
 export function CustomerQuickActions({ customer }: CustomerQuickActionsProps) {
+  const t = useTranslations("Customers.quickActions");
   const [copied, setCopied] = useState(false);
 
   const handleCall = () => {
     if (customer.phone) {
       window.location.href = `tel:${customer.phone}`;
     } else {
-      toast.error("Keine Telefonnummer vorhanden");
+      toast.error(t("toast.noPhone"));
     }
   };
 
@@ -27,7 +29,7 @@ export function CustomerQuickActions({ customer }: CustomerQuickActionsProps) {
     if (customer.email) {
       await navigator.clipboard.writeText(customer.email);
       setCopied(true);
-      toast.success("E-Mail-Adresse kopiert");
+      toast.success(t("toast.emailCopied"));
       setTimeout(() => setCopied(false), 2000);
     }
   };
@@ -41,7 +43,7 @@ export function CustomerQuickActions({ customer }: CustomerQuickActionsProps) {
             trigger={
               <Button variant="default" size="sm" className="gap-2">
                 <Mail className="h-4 w-4" />
-                E-Mail senden
+                {t("sendEmail")}
               </Button>
             }
           />
@@ -54,12 +56,12 @@ export function CustomerQuickActions({ customer }: CustomerQuickActionsProps) {
             {copied ? (
               <>
                 <Check className="h-4 w-4" />
-                Kopiert
+                {t("copied")}
               </>
             ) : (
               <>
                 <Copy className="h-4 w-4" />
-                E-Mail kopieren
+                {t("copyEmail")}
               </>
             )}
           </Button>
@@ -74,21 +76,21 @@ export function CustomerQuickActions({ customer }: CustomerQuickActionsProps) {
           className="gap-2"
         >
           <Phone className="h-4 w-4" />
-          Anrufen
+          {t("call")}
         </Button>
       )}
 
       <Link href={`/dashboard/documents/new?type=quote&customer_id=${customer.id}`}>
         <Button variant="outline" size="sm" className="gap-2">
           <FileText className="h-4 w-4" />
-          Neues Angebot
+          {t("newQuote")}
         </Button>
       </Link>
 
       <Link href={`/dashboard/documents/new?type=invoice&customer_id=${customer.id}`}>
         <Button variant="outline" size="sm" className="gap-2">
           <FileText className="h-4 w-4" />
-          Neue Rechnung
+          {t("newInvoice")}
         </Button>
       </Link>
     </div>

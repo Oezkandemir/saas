@@ -1,6 +1,7 @@
 "use client";
 
 import { UseFormReturn, useFormContext } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { CustomerInput } from "@/actions/customers-actions";
 import {
   FormField,
@@ -21,28 +22,30 @@ import {
 } from "@/components/ui/select";
 import { User, Mail, Phone, Building2, MapPin, FileText, Globe } from "lucide-react";
 
-const countries = [
-  { value: "DE", label: "Deutschland" },
-  { value: "AT", label: "Österreich" },
-  { value: "CH", label: "Schweiz" },
-  { value: "FR", label: "Frankreich" },
-  { value: "IT", label: "Italien" },
-  { value: "ES", label: "Spanien" },
-  { value: "NL", label: "Niederlande" },
-  { value: "BE", label: "Belgien" },
-  { value: "PL", label: "Polen" },
-  { value: "GB", label: "Großbritannien" },
-  { value: "US", label: "USA" },
-  { value: "CA", label: "Kanada" },
-];
-
 // Step 1: Personal Information
 export function CustomerPersonalInfoStep({
   form,
 }: {
   form: UseFormReturn<CustomerInput>;
 }) {
+  const t = useTranslations("Customers.form.fields");
+  const tCountries = useTranslations("Customers.countries");
   const { getFieldState, watch, formState } = useFormContext<CustomerInput>();
+
+  const countries = [
+    { value: "DE", label: tCountries("germany") },
+    { value: "AT", label: tCountries("austria") },
+    { value: "CH", label: tCountries("switzerland") },
+    { value: "FR", label: tCountries("france") },
+    { value: "IT", label: tCountries("italy") },
+    { value: "ES", label: tCountries("spain") },
+    { value: "NL", label: tCountries("netherlands") },
+    { value: "BE", label: tCountries("belgium") },
+    { value: "PL", label: tCountries("poland") },
+    { value: "GB", label: tCountries("unitedKingdom") },
+    { value: "US", label: tCountries("usa") },
+    { value: "CA", label: tCountries("canada") },
+  ];
 
   const getFieldStatus = (fieldName: keyof CustomerInput) => {
     const fieldState = getFieldState(fieldName, formState);
@@ -57,7 +60,7 @@ export function CustomerPersonalInfoStep({
     <div className="space-y-4">
       <div className="flex items-center gap-2 pb-2">
         <User className="h-5 w-5 text-muted-foreground" />
-        <h3 className="text-lg font-semibold">Persönliche Informationen</h3>
+        <h3 className="text-lg font-semibold">{t("personalInfo")}</h3>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <FormField
@@ -69,18 +72,18 @@ export function CustomerPersonalInfoStep({
               <FormItem>
                 <FormLabel className="text-base font-medium flex items-center gap-2">
                   <User className="h-4 w-4 text-primary" />
-                  Name *
+                  {t("name")} *
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="Max Mustermann"
+                    placeholder={t("namePlaceholder")}
                     className="h-11 text-base"
                     hasError={hasError}
                     hasSuccess={hasSuccess}
                   />
                 </FormControl>
-                <FormDescription>Vollständiger Name des Kunden</FormDescription>
+                <FormDescription>{t("nameDescription")}</FormDescription>
                 <FormMessage />
               </FormItem>
             );
@@ -93,17 +96,17 @@ export function CustomerPersonalInfoStep({
             <FormItem>
               <FormLabel className="text-base font-medium flex items-center gap-2">
                 <Mail className="h-4 w-4 text-primary" />
-                E-Mail
+                {t("email")}
               </FormLabel>
               <FormControl>
                 <Input
                   type="email"
                   {...field}
-                  placeholder="max@example.com"
+                  placeholder={t("emailPlaceholder")}
                   className="h-11 text-base"
                 />
               </FormControl>
-              <FormDescription>E-Mail-Adresse für Kommunikation</FormDescription>
+              <FormDescription>{t("emailDescription")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -115,17 +118,17 @@ export function CustomerPersonalInfoStep({
             <FormItem>
               <FormLabel className="text-base font-medium flex items-center gap-2">
                 <Phone className="h-4 w-4 text-primary" />
-                Telefon
+                {t("phone")}
               </FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="+49 123 456789"
+                  placeholder={t("phonePlaceholder")}
                   type="tel"
                   className="h-11 text-base"
                 />
               </FormControl>
-              <FormDescription>Telefonnummer mit Ländervorwahl</FormDescription>
+              <FormDescription>{t("phoneDescription")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -137,16 +140,16 @@ export function CustomerPersonalInfoStep({
             <FormItem>
               <FormLabel className="text-base font-medium flex items-center gap-2">
                 <Building2 className="h-4 w-4 text-primary" />
-                Unternehmen
+                {t("company")}
               </FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Musterfirma GmbH"
+                  placeholder={t("companyPlaceholder")}
                   className="h-11 text-base"
                 />
               </FormControl>
-              <FormDescription>Firmenname (falls vorhanden)</FormDescription>
+              <FormDescription>{t("companyDescription")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -162,11 +165,29 @@ export function CustomerAddressStep({
 }: {
   form: UseFormReturn<CustomerInput>;
 }) {
+  const t = useTranslations("Customers.form.fields");
+  const tCountries = useTranslations("Customers.countries");
+
+  const countries = [
+    { value: "DE", label: tCountries("germany") },
+    { value: "AT", label: tCountries("austria") },
+    { value: "CH", label: tCountries("switzerland") },
+    { value: "FR", label: tCountries("france") },
+    { value: "IT", label: tCountries("italy") },
+    { value: "ES", label: tCountries("spain") },
+    { value: "NL", label: tCountries("netherlands") },
+    { value: "BE", label: tCountries("belgium") },
+    { value: "PL", label: tCountries("poland") },
+    { value: "GB", label: tCountries("unitedKingdom") },
+    { value: "US", label: tCountries("usa") },
+    { value: "CA", label: tCountries("canada") },
+  ];
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 pb-2">
         <MapPin className="h-5 w-5 text-muted-foreground" />
-        <h3 className="text-lg font-semibold">Adresse</h3>
+        <h3 className="text-lg font-semibold">{t("address")}</h3>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <FormField
@@ -174,11 +195,11 @@ export function CustomerAddressStep({
           name="address_line1"
           render={({ field }) => (
             <FormItem className="md:col-span-2">
-              <FormLabel className="text-base font-medium">Straße und Hausnummer</FormLabel>
+              <FormLabel className="text-base font-medium">{t("street")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Musterstraße 123"
+                  placeholder={t("streetPlaceholder")}
                   className="h-11 text-base"
                 />
               </FormControl>
@@ -191,11 +212,11 @@ export function CustomerAddressStep({
           name="address_line2"
           render={({ field }) => (
             <FormItem className="md:col-span-2">
-              <FormLabel className="text-base font-medium">Adresszusatz</FormLabel>
+              <FormLabel className="text-base font-medium">{t("addressLine2")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Etage, Appartment, etc."
+                  placeholder={t("addressLine2Placeholder")}
                   className="h-11 text-base"
                 />
               </FormControl>
@@ -208,11 +229,11 @@ export function CustomerAddressStep({
           name="postal_code"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-base font-medium">Postleitzahl</FormLabel>
+              <FormLabel className="text-base font-medium">{t("postalCode")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="12345"
+                  placeholder={t("postalCodePlaceholder")}
                   className="h-11 text-base"
                 />
               </FormControl>
@@ -225,11 +246,11 @@ export function CustomerAddressStep({
           name="city"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-base font-medium">Stadt</FormLabel>
+              <FormLabel className="text-base font-medium">{t("city")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Berlin"
+                  placeholder={t("cityPlaceholder")}
                   className="h-11 text-base"
                 />
               </FormControl>
@@ -244,7 +265,7 @@ export function CustomerAddressStep({
             <FormItem>
               <FormLabel className="text-base font-medium flex items-center gap-2">
                 <Globe className="h-4 w-4" />
-                Land
+                {t("country")}
               </FormLabel>
               <Select
                 onValueChange={field.onChange}
@@ -252,7 +273,7 @@ export function CustomerAddressStep({
               >
                 <FormControl>
                   <SelectTrigger className="h-11 text-base">
-                    <SelectValue placeholder="Land auswählen" />
+                    <SelectValue placeholder={t("countryPlaceholder")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -278,11 +299,13 @@ export function CustomerAdditionalInfoStep({
 }: {
   form: UseFormReturn<CustomerInput>;
 }) {
+  const t = useTranslations("Customers.form.fields");
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 pb-2">
         <FileText className="h-5 w-5 text-muted-foreground" />
-        <h3 className="text-lg font-semibold">Weitere Informationen</h3>
+        <h3 className="text-lg font-semibold">{t("additionalInfo")}</h3>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <FormField
@@ -290,15 +313,15 @@ export function CustomerAdditionalInfoStep({
           name="tax_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-base font-medium">Steuernummer</FormLabel>
+              <FormLabel className="text-base font-medium">{t("taxId")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="DE123456789"
+                  placeholder={t("taxIdPlaceholder")}
                   className="h-11 text-base"
                 />
               </FormControl>
-              <FormDescription>Steuernummer oder USt-IdNr.</FormDescription>
+              <FormDescription>{t("taxIdDescription")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -309,16 +332,16 @@ export function CustomerAdditionalInfoStep({
         name="notes"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-base font-medium">Notizen</FormLabel>
+            <FormLabel className="text-base font-medium">{t("notes")}</FormLabel>
             <FormControl>
               <Textarea
                 {...field}
-                placeholder="Zusätzliche Informationen, Besonderheiten, etc."
+                placeholder={t("notesPlaceholder")}
                 rows={4}
                 className="text-base resize-none"
               />
             </FormControl>
-            <FormDescription>Interne Notizen zu diesem Kunden</FormDescription>
+            <FormDescription>{t("notesDescription")}</FormDescription>
             <FormMessage />
           </FormItem>
         )}

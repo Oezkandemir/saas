@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { QRCode } from "@/actions/qr-codes-actions";
 import {
@@ -37,6 +38,7 @@ const typeLabels: Record<string, string> = {
 };
 
 export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
+  const t = useTranslations("QRCodes.table");
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [scanCounts, setScanCounts] = useState<Record<string, number>>({});
@@ -58,15 +60,15 @@ export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
   }, [qrCodes]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Möchten Sie diesen QR-Code wirklich löschen?")) return;
+    if (!confirm(t("deleteConfirm"))) return;
 
     setDeletingId(id);
     try {
       await deleteQRCode(id);
-      toast.success("QR-Code gelöscht");
+      toast.success(t("deleted"));
       router.refresh();
     } catch (error) {
-      toast.error("Fehler beim Löschen des QR-Codes");
+      toast.error(t("deleteError"));
     } finally {
       setDeletingId(null);
     }
@@ -75,7 +77,7 @@ export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
   const handleCopyLink = (code: string) => {
     const url = `${window.location.origin}/q/${code}`;
     navigator.clipboard.writeText(url);
-    toast.success("Link kopiert");
+    toast.success(t("linkCopied"));
   };
 
   const handleDownload = (code: string) => {
@@ -88,13 +90,13 @@ export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Typ</TableHead>
-            <TableHead>Code</TableHead>
-            <TableHead>Ziel</TableHead>
-            <TableHead>Scans</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Erstellt</TableHead>
+            <TableHead>{t("name")}</TableHead>
+            <TableHead>{t("type")}</TableHead>
+            <TableHead>{t("code")}</TableHead>
+            <TableHead>{t("target")}</TableHead>
+            <TableHead>{t("scans")}</TableHead>
+            <TableHead>{t("status")}</TableHead>
+            <TableHead>{t("created")}</TableHead>
             <TableHead className="w-[70px]"></TableHead>
           </TableRow>
         </TableHeader>

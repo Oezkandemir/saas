@@ -30,7 +30,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { deleteUserAccount } from "@/actions/gdpr-actions";
 
 export function AccountDeletion() {
-  const t = useTranslations("GDPR");
+  const t = useTranslations("GDPR.accountDeletion");
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmation, setConfirmation] = useState("");
@@ -40,8 +40,8 @@ export function AccountDeletion() {
     if (confirmation !== "DELETE") {
       toast({
         variant: "destructive",
-        title: "Bestätigung fehlgeschlagen",
-        description: "Bitte geben Sie DELETE ein, um fortzufahren.",
+        title: t("toast.confirmationFailed"),
+        description: t("toast.confirmationMessage"),
       });
       return;
     }
@@ -53,14 +53,14 @@ export function AccountDeletion() {
       if (!result.success) {
         toast({
           variant: "destructive",
-          title: "Löschung fehlgeschlagen",
+          title: t("toast.deletionFailed"),
           description: result.message,
         });
         return;
       }
 
       toast({
-        title: result.anonymized ? "Account anonymisiert" : "Account gelöscht",
+        title: result.anonymized ? t("toast.accountAnonymized") : t("toast.accountDeleted"),
         description: result.message,
       });
 
@@ -68,8 +68,8 @@ export function AccountDeletion() {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Löschung fehlgeschlagen",
-        description: "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+        title: t("toast.deletionFailed"),
+        description: t("toast.error"),
       });
     } finally {
       setIsDeleting(false);
@@ -83,10 +83,10 @@ export function AccountDeletion() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-destructive">
           <Trash2 className="h-5 w-5" />
-          Account löschen
+          {t("title")}
         </CardTitle>
         <CardDescription>
-          Löschen Sie Ihren Account und alle zugehörigen Daten (DSGVO Art. 17 - Recht auf Vergessenwerden)
+          {t("description")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -95,28 +95,25 @@ export function AccountDeletion() {
             <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
             <div className="space-y-2">
               <p className="text-sm font-semibold text-yellow-900 dark:text-yellow-100">
-                Wichtige Hinweise zur Account-Löschung:
+                {t("warning.title")}
               </p>
               <ul className="list-disc space-y-1 pl-4 text-sm text-yellow-900 dark:text-yellow-100">
-                <li>Diese Aktion kann nicht rückgängig gemacht werden</li>
-                <li>Alle Ihre Daten werden unwiderruflich gelöscht</li>
-                <li>Kunden, Dokumente, QR-Codes und Scan-Statistiken gehen verloren</li>
-                <li>
-                  <strong>Ausnahme:</strong> Bezahlte Rechnungen müssen aus rechtlichen Gründen 10 Jahre aufbewahrt werden.
-                  In diesem Fall wird Ihr Account anonymisiert statt gelöscht.
-                </li>
+                <li>{t("warning.points.irreversible")}</li>
+                <li>{t("warning.points.dataLost")}</li>
+                <li>{t("warning.points.contentLost")}</li>
+                <li>{t("warning.points.exception")}</li>
               </ul>
             </div>
           </div>
         </div>
 
         <div className="space-y-2">
-          <p className="text-sm font-medium">Was passiert bei der Löschung?</p>
+          <p className="text-sm font-medium">{t("whatHappens.title")}</p>
           <ul className="list-disc space-y-1 pl-6 text-sm text-muted-foreground">
-            <li>Ihr Benutzerkonto wird sofort deaktiviert</li>
-            <li>Alle personenbezogenen Daten werden gelöscht</li>
-            <li>Sie werden automatisch abgemeldet</li>
-            <li>Ein Audit-Log-Eintrag wird für Compliance-Zwecke erstellt</li>
+            <li>{t("whatHappens.points.accountDeactivated")}</li>
+            <li>{t("whatHappens.points.dataDeleted")}</li>
+            <li>{t("whatHappens.points.loggedOut")}</li>
+            <li>{t("whatHappens.points.auditLog")}</li>
           </ul>
         </div>
       </CardContent>
@@ -125,41 +122,39 @@ export function AccountDeletion() {
           <AlertDialogTrigger asChild>
             <Button variant="destructive" className="w-full sm:w-auto">
               <Trash2 className="mr-2 h-4 w-4" />
-              Account unwiderruflich löschen
+              {t("button")}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
-                Account wirklich löschen?
+                {t("confirm.title")}
               </AlertDialogTitle>
               <AlertDialogDescription className="space-y-4">
                 <p>
-                  Diese Aktion kann nicht rückgängig gemacht werden. Alle Ihre Daten werden
-                  permanent gelöscht.
+                  {t("confirm.description")}
                 </p>
                 <div className="space-y-2">
                   <Label htmlFor="confirmation">
-                    Geben Sie <strong>DELETE</strong> ein, um zu bestätigen:
+                    {t("confirm.inputLabel")}
                   </Label>
                   <Input
                     id="confirmation"
                     value={confirmation}
                     onChange={(e) => setConfirmation(e.target.value)}
-                    placeholder="DELETE"
+                    placeholder={t("confirm.inputPlaceholder")}
                     className="font-mono"
                   />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Hinweis: Falls Sie bezahlte Rechnungen haben, die jünger als 10 Jahre sind,
-                  wird Ihr Account anonymisiert statt gelöscht (gesetzliche Aufbewahrungspflicht).
+                  {t("confirm.note")}
                 </p>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel onClick={() => setConfirmation("")}>
-                Abbrechen
+                {t("confirm.cancel")}
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDelete}
@@ -169,12 +164,12 @@ export function AccountDeletion() {
                 {isDeleting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Lösche...
+                    {t("confirm.deleting")}
                   </>
                 ) : (
                   <>
                     <Trash2 className="mr-2 h-4 w-4" />
-                    Account löschen
+                    {t("confirm.delete")}
                   </>
                 )}
               </AlertDialogAction>

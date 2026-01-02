@@ -1,5 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import { UserSubscriptionPlan } from "types";
 import { cn, formatDate } from "@/lib/utils";
@@ -16,17 +17,31 @@ import { CustomerPortalButton } from "@/components/forms/customer-portal-button"
 import { Icons } from "@/components/shared/icons";
 
 import { SyncSubscriptionButton } from "./sync-subscription-button";
+import { pricingData } from "@/config/subscriptions";
 
 // Direct link to test portal
 const STRIPE_TEST_PORTAL_URL =
   "https://billing.stripe.com/p/login/test_14kcMTbsj2hdbgQ288";
 const IS_TEST_MODE = process.env.NODE_ENV !== "production";
 
+// Default free plan as fallback
+const DEFAULT_FREE_PLAN: UserSubscriptionPlan = {
+  ...pricingData[0],
+  stripeCustomerId: null,
+  stripeSubscriptionId: null,
+  stripePriceId: null,
+  stripeCurrentPeriodEnd: 0,
+  isPaid: false,
+  interval: null,
+  isCanceled: false,
+};
+
 interface BillingInfoProps extends React.HTMLAttributes<HTMLFormElement> {
-  userSubscriptionPlan: UserSubscriptionPlan;
+  userSubscriptionPlan?: UserSubscriptionPlan;
 }
 
-export function BillingInfo({ userSubscriptionPlan }: BillingInfoProps) {
+export function BillingInfo({ userSubscriptionPlan = DEFAULT_FREE_PLAN }: BillingInfoProps) {
+  const t = useTranslations("Billing");
   const {
     title,
     description,
@@ -61,8 +76,8 @@ export function BillingInfo({ userSubscriptionPlan }: BillingInfoProps) {
                   <strong>Plan Type:</strong> {title}
                 </p>
                 <p>
-                  <strong>Billing Cycle:</strong>{" "}
-                  {interval === "month" ? "Monthly" : "Yearly"}
+                  <strong>{t("billingCycle")}:</strong>{" "}
+                  {interval === "month" ? t("monthly") : t("yearly")}
                 </p>
                 <p>
                   <strong>Price ID:</strong> {stripePriceId}

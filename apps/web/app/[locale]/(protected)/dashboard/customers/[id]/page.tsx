@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { getCustomer } from "@/actions/customers-actions";
 import { getDocuments, type Document } from "@/actions/documents-actions";
@@ -30,13 +31,18 @@ export default async function CustomerDetailPage({
   const customer = await getCustomer(id);
   if (!customer) redirect("/dashboard/customers");
 
+  const t = await getTranslations("Customers.detail");
+  const tDocuments = await getTranslations("Customers.detail.documents");
+  const tTable = await getTranslations("Customers.detail.documents.table");
+  const tTypes = await getTranslations("Customers.detail.documents.types");
+
   // Get documents for this customer
   const customerDocuments: Document[] = await getDocuments(undefined, id).catch(() => []);
 
   return (
     <UnifiedPageLayout
       title={customer.name}
-      description={customer.company || "Kundendetails und Informationen"}
+      description={customer.company || t("description")}
       icon={<User className="h-4 w-4 text-primary" />}
       showBackButton
       backHref="/dashboard/customers"
@@ -44,7 +50,7 @@ export default async function CustomerDetailPage({
         <Link href={`/dashboard/customers/${customer.id}/edit`}>
           <Button variant="outline" className="gap-2">
             <Edit className="h-4 w-4" />
-            Bearbeiten
+            {t("edit")}
           </Button>
         </Link>
       }
@@ -59,9 +65,9 @@ export default async function CustomerDetailPage({
       {/* Main Content with Tabs */}
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="grid w-full max-w-md grid-cols-3">
-          <TabsTrigger value="overview">Übersicht</TabsTrigger>
-          <TabsTrigger value="documents">Dokumente ({customerDocuments.length})</TabsTrigger>
-          <TabsTrigger value="activity">Aktivitäten</TabsTrigger>
+          <TabsTrigger value="overview">{t("tabs.overview")}</TabsTrigger>
+          <TabsTrigger value="documents">{t("tabs.documents", { count: customerDocuments.length })}</TabsTrigger>
+          <TabsTrigger value="activity">{t("tabs.activity")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
@@ -73,7 +79,7 @@ export default async function CustomerDetailPage({
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Mail className="h-4 w-4" />
-                Kontaktinformationen
+                {t("contactInfo.title")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -81,7 +87,7 @@ export default async function CustomerDetailPage({
                 <div className="flex items-start gap-3">
                   <Mail className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div className="flex-1">
-                    <p className="text-sm text-muted-foreground">E-Mail</p>
+                    <p className="text-sm text-muted-foreground">{t("contactInfo.email")}</p>
                     <a
                       href={`mailto:${customer.email}`}
                       className="text-base font-medium hover:underline"
@@ -95,7 +101,7 @@ export default async function CustomerDetailPage({
                 <div className="flex items-start gap-3">
                   <Phone className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div className="flex-1">
-                    <p className="text-sm text-muted-foreground">Telefon</p>
+                    <p className="text-sm text-muted-foreground">{t("contactInfo.phone")}</p>
                     <a
                       href={`tel:${customer.phone}`}
                       className="text-base font-medium hover:underline"
@@ -109,7 +115,7 @@ export default async function CustomerDetailPage({
                 <div className="flex items-start gap-3">
                   <Building2 className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div className="flex-1">
-                    <p className="text-sm text-muted-foreground">Unternehmen</p>
+                    <p className="text-sm text-muted-foreground">{t("contactInfo.company")}</p>
                     <p className="text-base font-medium">{customer.company}</p>
                   </div>
                 </div>
@@ -123,7 +129,7 @@ export default async function CustomerDetailPage({
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
-                  Adresse
+                  {t("address.title")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -163,14 +169,14 @@ export default async function CustomerDetailPage({
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <FileText className="h-4 w-4" />
-                  Weitere Informationen
+                  {t("additionalInfo.title")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {customer.tax_id && (
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">
-                      Steuernummer
+                      {t("additionalInfo.taxId")}
                     </p>
                     <p className="text-base font-medium font-mono">
                       {customer.tax_id}
@@ -180,7 +186,7 @@ export default async function CustomerDetailPage({
                 {customer.notes && (
                   <div>
                     <p className="text-sm text-muted-foreground mb-2">
-                      Notizen
+                      {t("additionalInfo.notes")}
                     </p>
                     <p className="text-base whitespace-pre-wrap">
                       {customer.notes}
@@ -203,13 +209,13 @@ export default async function CustomerDetailPage({
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    Informationen
+                    {t("metadata.title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">
-                      Erstellt am
+                      {t("metadata.createdAt")}
                     </p>
                     <p className="text-base font-medium">
                       {new Date(customer.created_at).toLocaleDateString("de-DE", {
@@ -222,7 +228,7 @@ export default async function CustomerDetailPage({
                   {customer.updated_at !== customer.created_at && (
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">
-                        Zuletzt aktualisiert
+                        {t("metadata.lastUpdated")}
                       </p>
                       <p className="text-base font-medium">
                         {new Date(customer.updated_at).toLocaleDateString("de-DE", {
@@ -236,7 +242,7 @@ export default async function CustomerDetailPage({
                   {customer.qr_code && (
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">
-                        QR-Code ID
+                        {t("metadata.qrCodeId")}
                       </p>
                       <Badge variant="secondary" className="font-mono">
                         {customer.qr_code}
@@ -255,19 +261,19 @@ export default async function CustomerDetailPage({
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <FileDown className="h-4 w-4" />
-                  Dokumente ({customerDocuments.length})
+                  {tDocuments("title", { count: customerDocuments.length })}
                 </CardTitle>
                 <div className="flex gap-2">
                   <Link href={`/dashboard/documents/new?type=quote&customer_id=${customer.id}`}>
                     <Button variant="outline" size="sm" className="gap-2">
                       <Plus className="h-4 w-4" />
-                      Angebot
+                      {tDocuments("newQuote")}
                     </Button>
                   </Link>
                   <Link href={`/dashboard/documents/new?type=invoice&customer_id=${customer.id}`}>
                     <Button variant="outline" size="sm" className="gap-2">
                       <Plus className="h-4 w-4" />
-                      Rechnung
+                      {tDocuments("newInvoice")}
                     </Button>
                   </Link>
                 </div>
@@ -277,11 +283,11 @@ export default async function CustomerDetailPage({
               {customerDocuments.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p className="mb-2">Noch keine Dokumente für diesen Kunden.</p>
+                  <p className="mb-2">{tDocuments("empty.title")}</p>
                   <Link href={`/dashboard/documents/new?type=quote&customer_id=${customer.id}`}>
                     <Button variant="outline" size="sm">
                       <Plus className="mr-2 h-4 w-4" />
-                      Erstes Angebot erstellen
+                      {tDocuments("empty.createFirst")}
                     </Button>
                   </Link>
                 </div>
@@ -290,12 +296,12 @@ export default async function CustomerDetailPage({
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-muted/30">
-                        <TableHead>Nummer</TableHead>
-                        <TableHead>Typ</TableHead>
-                        <TableHead>Datum</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Betrag</TableHead>
-                        <TableHead className="text-right">Aktionen</TableHead>
+                        <TableHead>{tTable("number")}</TableHead>
+                        <TableHead>{tTable("type")}</TableHead>
+                        <TableHead>{tTable("date")}</TableHead>
+                        <TableHead>{tTable("status")}</TableHead>
+                        <TableHead className="text-right">{tTable("amount")}</TableHead>
+                        <TableHead className="text-right">{tTable("actions")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -311,7 +317,7 @@ export default async function CustomerDetailPage({
                           </TableCell>
                           <TableCell>
                             <Badge variant={doc.type === "quote" ? "secondary" : "default"}>
-                              {doc.type === "quote" ? "Angebot" : "Rechnung"}
+                              {doc.type === "quote" ? tTypes("quote") : tTypes("invoice")}
                             </Badge>
                           </TableCell>
                           <TableCell>
@@ -329,7 +335,7 @@ export default async function CustomerDetailPage({
                           <TableCell className="text-right">
                             <Link href={`/dashboard/documents/${doc.id}`}>
                               <Button variant="ghost" size="sm">
-                                Öffnen
+                                {tTable("open")}
                               </Button>
                             </Link>
                           </TableCell>
@@ -353,13 +359,13 @@ export default async function CustomerDetailPage({
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    Informationen
+                    {t("metadata.title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">
-                      Erstellt am
+                      {t("metadata.createdAt")}
                     </p>
                     <p className="text-base font-medium">
                       {new Date(customer.created_at).toLocaleDateString("de-DE", {
@@ -372,7 +378,7 @@ export default async function CustomerDetailPage({
                   {customer.updated_at !== customer.created_at && (
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">
-                        Zuletzt aktualisiert
+                        {t("metadata.lastUpdated")}
                       </p>
                       <p className="text-base font-medium">
                         {new Date(customer.updated_at).toLocaleDateString("de-DE", {

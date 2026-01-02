@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { getQRCodes, type QRCode } from "@/actions/qr-codes-actions";
 import { getCustomers, type Customer } from "@/actions/customers-actions";
@@ -15,6 +16,7 @@ export const dynamic = "force-dynamic";
 export default async function QRCodesPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  const t = await getTranslations("QRCodes.page");
 
   const [qrCodes, customers]: [QRCode[], Customer[]] = await Promise.all([
     getQRCodes().catch(() => []),
@@ -26,36 +28,36 @@ export default async function QRCodesPage() {
 
   const stats = [
     {
-      title: "Gesamt QR-Codes",
+      title: t("stats.total"),
       value: qrCodes.length + customerQRCodes,
       icon: QrCode,
-      description: `${standaloneQRCodes} Standalone, ${customerQRCodes} Kunden`,
+      description: t("stats.totalDescription", { standalone: standaloneQRCodes, customer: customerQRCodes }),
     },
     {
-      title: "Kunden QR-Codes",
+      title: t("stats.customer"),
       value: customerQRCodes,
       icon: Scan,
-      description: "Automatisch generiert",
+      description: t("stats.customerDescription"),
     },
     {
-      title: "Standalone QR-Codes",
+      title: t("stats.standalone"),
       value: standaloneQRCodes,
       icon: LinkIcon,
-      description: "Manuell erstellt",
+      description: t("stats.standaloneDescription"),
     },
   ];
 
   return (
     <UnifiedPageLayout
-      title="QR-Codes"
-      description="Erstellen und verwalten Sie dynamische QR-Codes für Ihre Kunden und Dokumente."
+      title={t("title")}
+      description={t("description")}
       icon={<QrCode className="h-4 w-4 text-primary" />}
       actions={
         <Link href="/dashboard/qr-codes/new">
           <Button className="gap-2">
             <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">Neuer QR-Code</span>
-            <span className="sm:hidden">Neu</span>
+            <span className="hidden sm:inline">{t("newQRCode")}</span>
+            <span className="sm:hidden">{t("new")}</span>
           </Button>
         </Link>
       }
@@ -96,14 +98,14 @@ export default async function QRCodesPage() {
               <div className="flex size-16 items-center justify-center rounded-full bg-muted/50 border border-border mb-6">
                 <QrCode className="size-8 text-muted-foreground" />
               </div>
-              <EmptyPlaceholder.Title>Keine QR-Codes gefunden</EmptyPlaceholder.Title>
+              <EmptyPlaceholder.Title>{t("empty.title")}</EmptyPlaceholder.Title>
               <EmptyPlaceholder.Description>
-                Erstellen Sie Ihren ersten QR-Code, um zu beginnen. QR-Codes werden auch automatisch für Ihre Kunden generiert.
+                {t("empty.description")}
               </EmptyPlaceholder.Description>
               <Link href="/dashboard/qr-codes/new" className="mt-6">
                 <Button size="lg" className="gap-2">
                   <Plus className="h-5 w-5" />
-                  QR-Code erstellen
+                  {t("empty.create")}
                 </Button>
               </Link>
             </EmptyPlaceholder>
@@ -118,9 +120,9 @@ export default async function QRCodesPage() {
                   <QrCode className="size-4 text-muted-foreground" />
                 </div>
                 <div>
-                  <CardTitle>QR-Code Liste</CardTitle>
+                  <CardTitle>{t("list.title")}</CardTitle>
                   <CardDescription>
-                    {qrCodes.length} {qrCodes.length === 1 ? "QR-Code" : "QR-Codes"} insgesamt
+                    {t("list.description", { count: qrCodes.length })}
                   </CardDescription>
                 </div>
               </div>

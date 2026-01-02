@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -32,22 +33,7 @@ import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2, FileText, Calendar, ShoppingCart, Receipt, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-const documentSchema = z.object({
-  customer_id: z.string().optional(),
-  document_date: z.string().min(1, "Datum ist erforderlich"),
-  due_date: z.string().optional(),
-  tax_rate: z.number().min(0).max(100).default(19),
-  notes: z.string().optional(),
-  items: z
-    .array(
-      z.object({
-        description: z.string().min(1, "Beschreibung ist erforderlich"),
-        quantity: z.number().min(0.01),
-        unit_price: z.number().min(0),
-      }),
-    )
-    .min(1, "Mindestens ein Artikel ist erforderlich"),
-});
+// Schema will be created inside component to access translations
 
 interface DocumentFormProps {
   document?: Document;
@@ -56,10 +42,29 @@ interface DocumentFormProps {
 }
 
 export function DocumentForm({ document, type, defaultCustomerId }: DocumentFormProps) {
+  const t = useTranslations("Documents.form");
+  const tValidation = useTranslations("Documents.form.validation");
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<CompanyProfile | null>(null);
   const [selectedProfileId, setSelectedProfileId] = useState<string>("");
+
+  const documentSchema = z.object({
+    customer_id: z.string().optional(),
+    document_date: z.string().min(1, tValidation("dateRequired")),
+    due_date: z.string().optional(),
+    tax_rate: z.number().min(0).max(100).default(19),
+    notes: z.string().optional(),
+    items: z
+      .array(
+        z.object({
+          description: z.string().min(1, tValidation("descriptionRequired")),
+          quantity: z.number().min(0.01),
+          unit_price: z.number().min(0),
+        }),
+      )
+      .min(1, tValidation("atLeastOneItem")),
+  });
   
   // Calculate due date based on document date and payment days from profile
   const calculateDueDate = (docDate: string, paymentDays?: number | null): string => {
@@ -172,22 +177,20 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
     try {
       if (document) {
         await updateDocument(document.id, data);
-        toast.success("Dokument aktualisiert");
+        toast.success(t("toast.updated"));
         // Navigate immediately after update
         router.replace("/dashboard/documents");
         router.refresh();
       } else {
         await createDocument(type, data);
-        toast.success(
-          type === "quote" ? "Angebot erstellt" : "Rechnung erstellt",
-        );
+        toast.success(t(`toast.created.${type}`));
         // Navigate immediately after creation - use replace to prevent back navigation
         // Use window.location for immediate navigation to prevent double clicks
         window.location.href = "/dashboard/documents";
       }
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Fehler beim Speichern",
+        error instanceof Error ? error.message : t("toast.saveError"),
       );
       setIsLoading(false); // Only reset loading on error
     }
@@ -205,13 +208,13 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
             <div>
               <CardTitle className="text-xl">
                 {document
-                  ? `${type === "quote" ? "Angebot" : "Rechnung"} bearbeiten`
-                  : `Neues ${type === "quote" ? "Angebot" : "Rechnung"}`}
+                  ? t(`title.edit.${type}`)
+                  : t(`title.new.${type}`)}
               </CardTitle>
               <CardDescription className="mt-1">
                 {document
-                  ? "Aktualisieren Sie die Dokumentendaten"
-                  : "Erstellen Sie ein neues Dokument"}
+                  ? t("description.edit")
+                  : t("description.new")}
               </CardDescription>
             </div>
           </div>
@@ -231,7 +234,7 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
               <div className="space-y-3">
                 <div className="flex gap-2 items-center">
                   <Receipt className="w-4 h-4 text-muted-foreground" />
-                  <FormLabel className="text-base font-semibold">Firmenprofil</FormLabel>
+                  <FormLabel className="text-base font-semibold">{t("companyProfile.label")}</FormLabel>
                 </div>
                 <CompanyProfileSelector
                   value={selectedProfileId}
@@ -246,10 +249,10 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                   }}
                 />
                 <FormDescription>
-                  Wählen Sie das Firmenprofil für dieses Dokument aus. Die Daten werden beim Generieren verwendet.
+                  {t("companyProfile.description")}
                   {selectedProfile?.is_default && (
                     <span className="ml-1 font-medium text-green-600 dark:text-green-400">
-                      (Standard-Profil ausgewählt)
+                      {t("companyProfile.defaultSelected")}
                     </span>
                   )}
                 </FormDescription>
@@ -325,7 +328,7 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                 <div className="flex justify-between items-center">
                   <div className="flex gap-2 items-center">
                     <ShoppingCart className="w-4 h-4 text-muted-foreground" />
-                    <FormLabel className="text-base font-semibold">Artikel</FormLabel>
+                    <FormLabel className="text-base font-semibold">{t("items.label")}</FormLabel>
                   </div>
                   <Button
                     type="button"
@@ -336,7 +339,7 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                     }
                   >
                     <Plus className="mr-2 w-4 h-4" />
-                    Artikel hinzufügen
+                    {t("items.addButton")}
                   </Button>
                 </div>
                 <div className="space-y-3">
@@ -355,10 +358,10 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                                 render={({ field }) => (
                                   <FormItem className="md:col-span-1">
                                     <FormLabel className="text-xs text-muted-foreground">
-                                      Beschreibung
+                                      {t("items.fields.description")}
                                     </FormLabel>
                                     <FormControl>
-                                      <Input placeholder="Artikelbeschreibung" {...field} className="h-10" />
+                                      <Input placeholder={t("itemDescriptionPlaceholder")} {...field} className="h-10" />
                                     </FormControl>
                                     <FormMessage />
                                   </FormItem>
@@ -370,7 +373,7 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel className="text-xs text-muted-foreground">
-                                      Menge
+                                      {t("items.fields.quantity")}
                                     </FormLabel>
                                     <FormControl>
                                       <Input
@@ -394,7 +397,7 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel className="text-xs text-muted-foreground">
-                                      Einzelpreis (€)
+                                      {t("items.fields.unitPrice")}
                                     </FormLabel>
                                     <FormControl>
                                       <Input
@@ -422,7 +425,7 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                                   })}
                                 </div>
                                 <div className="text-xs text-muted-foreground">
-                                  Gesamt
+                                  {t("items.fields.total")}
                                 </div>
                               </div>
                               <Button
@@ -448,12 +451,12 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
 
               {/* Summary Section */}
               <div className="space-y-4">
-                <FormLabel className="text-base font-semibold">Zusammenfassung</FormLabel>
+                <FormLabel className="text-base font-semibold">{t("summary.label")}</FormLabel>
                 <Card className="bg-gradient-to-br border-2 from-muted/50 to-muted/30">
                   <CardContent className="p-6">
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Zwischensumme:</span>
+                        <span className="text-sm text-muted-foreground">{t("summary.subtotal")}</span>
                         <span className="text-base font-semibold">
                           {totals.subtotal.toLocaleString("de-DE", {
                             style: "currency",
@@ -463,7 +466,7 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">
-                          MwSt. ({totals.taxRate}%):
+                          {t("summary.tax", { rate: totals.taxRate })}
                         </span>
                         <span className="text-base font-semibold">
                           {totals.tax.toLocaleString("de-DE", {
@@ -474,7 +477,7 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                       </div>
                       <Separator />
                       <div className="flex justify-between items-center pt-1">
-                        <span className="text-lg font-bold">Gesamt:</span>
+                        <span className="text-lg font-bold">{t("summary.total")}</span>
                         <span className="text-2xl font-bold text-primary">
                           {totals.total.toLocaleString("de-DE", {
                             style: "currency",
@@ -491,7 +494,7 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
 
               {/* Notes Section */}
               <div className="space-y-3">
-                <FormLabel className="text-base font-semibold">Notizen</FormLabel>
+                <FormLabel className="text-base font-semibold">{t("notes.label")}</FormLabel>
                 <FormField
                   control={form.control}
                   name="notes"
@@ -502,12 +505,12 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                           {...field} 
                           value={field.value || ""} 
                           rows={4}
-                          placeholder="Interne Notizen oder zusätzliche Informationen..."
+                          placeholder={t("notes.placeholder")}
                           className="resize-none"
                         />
                       </FormControl>
                       <FormDescription>
-                        Optionale Notizen, die nur intern sichtbar sind
+                        {t("notes.description")}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -523,7 +526,7 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                   onClick={() => router.back()}
                   className="w-full sm:w-auto"
                 >
-                  Abbrechen
+                  {t("cancel")}
                 </Button>
                 <Button 
                   type="submit" 
@@ -541,12 +544,12 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 w-4 h-4 animate-spin" />
-                      {document ? "Wird gespeichert..." : "Wird erstellt..."}
+                      {document ? t("saving") : t("creating")}
                     </>
                   ) : (
                     <>
                       <FileText className="mr-2 w-4 h-4" />
-                      {document ? "Änderungen speichern" : "Dokument erstellen"}
+                      {document ? t("saveChanges") : t("createDocument")}
                     </>
                   )}
                 </Button>

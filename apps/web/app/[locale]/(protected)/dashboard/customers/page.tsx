@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { getCustomers, type Customer } from "@/actions/customers-actions";
 import { Button } from '@/components/alignui/actions/button';
@@ -16,59 +17,60 @@ export const revalidate = 60;
 export default async function CustomersPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  const t = await getTranslations("Customers");
 
   const customers: Customer[] = await getCustomers().catch(() => []);
 
   const stats = [
     {
-      title: "Total",
+      title: t("stats.total"),
       value: customers.length,
       icon: Users,
-      description: "Gesamt Kunden",
+      description: t("stats.totalDescription"),
     },
     {
-      title: "QR-Codes",
+      title: t("stats.qrCodes"),
       value: customers.filter((c) => c.qr_code).length,
       icon: QrCode,
-      description: "Mit QR-Code",
+      description: t("stats.qrCodesDescription"),
     },
     {
-      title: "E-Mail",
+      title: t("stats.email"),
       value: customers.filter((c) => c.email).length,
       icon: Mail,
-      description: "Mit E-Mail",
+      description: t("stats.emailDescription"),
     },
     {
-      title: "Telefon",
+      title: t("stats.phone"),
       value: customers.filter((c) => c.phone).length,
       icon: Phone,
-      description: "Mit Telefon",
+      description: t("stats.phoneDescription"),
     },
     {
-      title: "Adresse",
+      title: t("stats.address"),
       value: customers.filter((c) => c.address_line1 || c.city).length,
       icon: MapPin,
-      description: "Mit Adresse",
+      description: t("stats.addressDescription"),
     },
     {
-      title: "B2B",
+      title: t("stats.b2b"),
       value: customers.filter((c) => c.company).length,
       icon: Building2,
-      description: "Unternehmen",
+      description: t("stats.b2bDescription"),
     },
   ];
 
   return (
     <UnifiedPageLayout
-      title="Kunden"
-      description="Verwalten Sie Ihre Kunden und deren Informationen"
+      title={t("title")}
+      description={t("description")}
       icon={<Users className="h-4 w-4 text-primary" />}
       actions={
         <Link href="/dashboard/customers/new">
           <Button className="gap-1.5 text-xs sm:text-sm h-8 sm:h-9">
             <Plus className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Neuer Kunde</span>
-            <span className="sm:hidden">Neu</span>
+            <span className="hidden sm:inline">{t("newCustomer")}</span>
+            <span className="sm:hidden">{t("new")}</span>
           </Button>
         </Link>
       }
@@ -112,14 +114,14 @@ export default async function CustomersPage() {
               <div className="flex size-16 items-center justify-center rounded-full bg-muted/50 border border-border mb-4">
                 <Users className="size-8 text-muted-foreground" />
               </div>
-              <h3 className="text-base font-semibold mb-2">Noch keine Kunden</h3>
+              <h3 className="text-base font-semibold mb-2">{t("empty.title")}</h3>
               <p className="text-sm text-muted-foreground mb-6 text-center max-w-md">
-                Erstellen Sie Ihren ersten Kunden. Jeder Kunde erhält automatisch einen QR-Code.
+                {t("empty.description")}
               </p>
               <Link href="/dashboard/customers/new">
                 <Button className="gap-2">
                   <Plus className="size-4" />
-                  Ersten Kunden erstellen
+                  {t("empty.createFirst")}
                 </Button>
               </Link>
             </EmptyPlaceholder>

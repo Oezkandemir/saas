@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import * as z from "zod";
 import { Mail, Send, Loader2 } from "lucide-react";
 import {
@@ -22,12 +23,10 @@ import { sendCustomerEmail } from "@/actions/send-customer-email";
 import { toast } from "sonner";
 import { Customer } from "@/actions/customers-actions";
 
-const emailSchema = z.object({
-  subject: z.string().min(1, "Betreff ist erforderlich").max(200, "Betreff zu lang"),
-  body: z.string().min(1, "Nachricht ist erforderlich").max(5000, "Nachricht zu lang"),
-});
-
-type EmailFormValues = z.infer<typeof emailSchema>;
+type EmailFormValues = {
+  subject: string;
+  body: string;
+};
 
 interface SendEmailDialogProps {
   customer: Customer;
@@ -35,8 +34,15 @@ interface SendEmailDialogProps {
 }
 
 export function SendEmailDialog({ customer, trigger }: SendEmailDialogProps) {
+  const t = useTranslations("Customers.sendEmail");
+  const tValidation = useTranslations("Customers.sendEmail.validation");
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  const emailSchema = z.object({
+    subject: z.string().min(1, tValidation("subjectRequired")).max(200, tValidation("subjectMax")),
+    body: z.string().min(1, tValidation("bodyRequired")).max(5000, tValidation("bodyMax")),
+  });
 
   const {
     register,
@@ -53,7 +59,7 @@ export function SendEmailDialog({ customer, trigger }: SendEmailDialogProps) {
 
   const onSubmit = (data: EmailFormValues) => {
     if (!customer.email) {
-      toast.error("Kunde hat keine E-Mail-Adresse");
+      toast.error(t("toast.noEmail"));
       return;
     }
 
@@ -65,12 +71,12 @@ export function SendEmailDialog({ customer, trigger }: SendEmailDialogProps) {
           body: data.body,
         });
 
-        toast.success("E-Mail erfolgreich gesendet");
+        toast.success(t("toast.success"));
         reset();
         setOpen(false);
       } catch (error) {
         toast.error(
-          error instanceof Error ? error.message : "Fehler beim Senden der E-Mail"
+          error instanceof Error ? error.message : t("toast.error")
         );
       }
     });
@@ -86,7 +92,7 @@ export function SendEmailDialog({ customer, trigger }: SendEmailDialogProps) {
         {trigger || (
           <Button variant="outline" size="sm" className="gap-2">
             <Mail className="h-4 w-4" />
-            E-Mail senden
+            {t("send")}
           </Button>
         )}
       </DialogTrigger>
@@ -94,19 +100,19 @@ export function SendEmailDialog({ customer, trigger }: SendEmailDialogProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Mail className="h-5 w-5" />
-            E-Mail an {customer.name} senden
+            {t("title", { name: customer.name })}
           </DialogTitle>
           <DialogDescription>
-            E-Mail wird an <span className="font-medium">{customer.email}</span> gesendet
+            {t("description", { email: customer.email })}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="subject">Betreff</Label>
+            <Label htmlFor="subject">{t("subject")}</Label>
             <Input
               id="subject"
-              placeholder="Betreff der E-Mail"
+              placeholder={t("subjectPlaceholder")}
               {...register("subject")}
               disabled={isPending}
             />
@@ -116,10 +122,10 @@ export function SendEmailDialog({ customer, trigger }: SendEmailDialogProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="body">Nachricht</Label>
+            <Label htmlFor="body">{t("body")}</Label>
             <Textarea
               id="body"
-              placeholder="Ihre Nachricht an den Kunden..."
+              placeholder={t("bodyPlaceholder")}
               className="min-h-[200px]"
               {...register("body")}
               disabled={isPending}
@@ -136,18 +142,18 @@ export function SendEmailDialog({ customer, trigger }: SendEmailDialogProps) {
               onClick={() => setOpen(false)}
               disabled={isPending}
             >
-              Abbrechen
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={isPending} className="gap-2">
               {isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Wird gesendet...
+                  {t("sending")}
                 </>
               ) : (
                 <>
                   <Send className="h-4 w-4" />
-                  E-Mail senden
+                  {t("send")}
                 </>
               )}
             </Button>

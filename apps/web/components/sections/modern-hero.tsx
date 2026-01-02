@@ -54,8 +54,8 @@ export default async function ModernHero() {
               href="/pricing"
               prefetch={true}
               className={cn(
-                buttonVariants({ size: "lg", rounded: "full" }),
-                "group relative gap-2 px-6 py-5 text-sm font-semibold shadow-2xl transition-all hover:scale-105 hover:shadow-primary/25 sm:px-8 sm:py-6 sm:text-base",
+                buttonVariants({ size: "lg" }),
+                "group relative gap-2 px-6 py-5 text-sm font-semibold shadow-2xl transition-all hover:scale-105 hover:shadow-primary/25 sm:px-8 sm:py-6 sm:text-base rounded-full",
                 "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700",
               )}
             >
@@ -68,9 +68,8 @@ export default async function ModernHero() {
                 buttonVariants({
                   variant: "outline",
                   size: "lg",
-                  rounded: "full",
                 }),
-                "group gap-2 border-2 px-6 py-5 text-sm font-semibold backdrop-blur-sm transition-all hover:scale-105 hover:bg-background/80 sm:px-8 sm:py-6 sm:text-base",
+                "group gap-2 border-2 px-6 py-5 text-sm font-semibold backdrop-blur-sm transition-all hover:scale-105 hover:bg-background/80 sm:px-8 sm:py-6 sm:text-base rounded-full",
               )}
             >
               <Icons.play className="size-4 transition-transform group-hover:scale-110 sm:size-5" />

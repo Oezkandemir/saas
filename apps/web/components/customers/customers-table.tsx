@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Customer } from "@/actions/customers-actions";
 import {
   Table,
@@ -42,6 +43,7 @@ interface CustomersTableProps {
 }
 
 export function CustomersTable({ customers }: CustomersTableProps) {
+  const t = useTranslations("Customers.table");
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -58,13 +60,13 @@ export function CustomersTable({ customers }: CustomersTableProps) {
     setDeletingId(customerToDelete);
     try {
       await deleteCustomer(customerToDelete);
-      toast.success("Kunde gelöscht", {
-        description: "Der Kunde wurde erfolgreich entfernt.",
+      toast.success(t("toast.deleted"), {
+        description: t("toast.deletedDescription"),
       });
       router.refresh();
     } catch (error) {
-      toast.error("Fehler beim Löschen", {
-        description: "Der Kunde konnte nicht gelöscht werden.",
+      toast.error(t("toast.deleteError"), {
+        description: t("toast.deleteErrorDescription"),
       });
     } finally {
       setDeletingId(null);
@@ -125,13 +127,13 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                         <DropdownMenuItem asChild>
                           <Link href={`/dashboard/customers/${customer.id}`}>
                             <Eye className="mr-2 h-4 w-4" />
-                            Details anzeigen
+                            {t("viewDetails")}
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link href={`/dashboard/customers/${customer.id}/edit`}>
                             <Pencil className="mr-2 h-4 w-4" />
-                            Bearbeiten
+                            {t("edit")}
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -140,7 +142,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                           className="text-destructive focus:text-destructive"
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Löschen
+                          {t("delete")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -165,7 +167,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                   {/* Date */}
                   <div className="flex items-center justify-between pt-2 border-t">
                     <span className="text-xs text-muted-foreground">
-                      Erstellt: {new Date(customer.created_at).toLocaleDateString("de-DE", {
+                      {t("createdLabel")} {new Date(customer.created_at).toLocaleDateString("de-DE", {
                         year: "numeric",
                         month: "short",
                         day: "numeric",
@@ -186,12 +188,12 @@ export function CustomersTable({ customers }: CustomersTableProps) {
           <Table>
           <TableHeader>
             <TableRow className="bg-muted/30 border-subtle">
-              <TableHead>Name</TableHead>
-              <TableHead>Kontakt</TableHead>
-              <TableHead>Unternehmen</TableHead>
-              <TableHead>QR-Code</TableHead>
-              <TableHead>Erstellt</TableHead>
-              <TableHead className="w-[70px] text-right">Aktionen</TableHead>
+              <TableHead>{t("name")}</TableHead>
+              <TableHead>{t("contact")}</TableHead>
+              <TableHead>{t("company")}</TableHead>
+              <TableHead>{t("qrCode")}</TableHead>
+              <TableHead>{t("created")}</TableHead>
+              <TableHead className="w-[70px] text-right">{t("actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -274,13 +276,13 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                       <DropdownMenuItem asChild>
                         <Link href={`/dashboard/customers/${customer.id}`}>
                           <Eye className="mr-2 h-4 w-4" />
-                          Details anzeigen
+                          {t("viewDetails")}
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link href={`/dashboard/customers/${customer.id}/edit`}>
                           <Pencil className="mr-2 h-4 w-4" />
-                          Bearbeiten
+                          {t("edit")}
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
@@ -289,7 +291,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                         className="text-destructive focus:text-destructive"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Löschen
+                        {t("delete")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -304,18 +306,18 @@ export function CustomersTable({ customers }: CustomersTableProps) {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Kunde löschen?</AlertDialogTitle>
+            <AlertDialogTitle>{t("deleteConfirm.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Möchten Sie diesen Kunden wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.
+              {t("deleteConfirm.description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogCancel>{t("deleteCancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Löschen
+              {t("deleteAction")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

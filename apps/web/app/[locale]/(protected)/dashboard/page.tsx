@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { getCustomers, type Customer } from "@/actions/customers-actions";
 import { getDocuments, type Document } from "@/actions/documents-actions";
@@ -40,6 +41,8 @@ export const revalidate = 60;
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  const t = await getTranslations("Dashboard");
+  const tDocs = await getTranslations("Documents");
 
   const [customers, documents, qrCodes]: [Customer[], Document[], QRCode[]] = await Promise.all([
     getCustomers().catch(() => []),
@@ -65,53 +68,53 @@ export default async function DashboardPage() {
 
   const stats = [
     {
-      title: "Kunden",
+      title: t("stats.customers"),
       value: customers.length,
       icon: Users,
-      description: "Gesamt Kunden",
+      description: t("stats.customersDescription"),
       href: "/dashboard/customers",
     },
     {
-      title: "Offene Angebote",
+      title: t("stats.openQuotes"),
       value: openQuotes.length,
       icon: FileText,
-      description: "Entwurf & Gesendet",
+      description: t("stats.openQuotesDescription"),
       href: "/dashboard/documents?type=quote",
     },
     {
-      title: "Unbezahlte Rechnungen",
+      title: t("stats.unpaidInvoices"),
       value: unpaidInvoices.length,
       icon: XCircle,
-      description: "Ausstehend",
+      description: t("stats.unpaidInvoicesDescription"),
       href: "/dashboard/documents?type=invoice&status=unpaid",
     },
     {
-      title: "Bezahlte Rechnungen",
+      title: t("stats.paidInvoices"),
       value: paidInvoices.length,
       icon: CheckCircle2,
-      description: "Erfolgreich",
+      description: t("stats.paidInvoicesDescription"),
       href: "/dashboard/documents?type=invoice&status=paid",
     },
     {
-      title: "QR-Codes",
+      title: t("stats.qrCodes"),
       value: qrCodes.length,
       icon: QrCode,
-      description: "Aktive Codes",
+      description: t("stats.qrCodesDescription"),
       href: "/dashboard/qr-codes",
     },
     {
-      title: "Gesamt Dokumente",
+      title: t("stats.totalDocuments"),
       value: documents.length,
       icon: TrendingUp,
-      description: "Alle Dokumente",
+      description: t("stats.totalDocumentsDescription"),
       href: "/dashboard/documents",
     },
   ];
 
   return (
     <UnifiedPageLayout
-      title="Dashboard"
-      description={`Willkommen zurück, ${user.name || user.email}`}
+      title={t("heading")}
+      description={t("welcome", { name: user.name || user.email || "" })}
       icon={<LayoutDashboard className="h-4 w-4 text-primary" />}
       contentClassName="flex flex-col gap-4"
     >
@@ -148,14 +151,14 @@ export default async function DashboardPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground">Gesamtumsatz</p>
+                <p className="text-xs font-medium text-muted-foreground">{t("revenue.totalRevenue")}</p>
                 <p className="text-xl font-semibold">
-                  {new Intl.NumberFormat("de-DE", {
+                  {new Intl.NumberFormat(undefined, {
                     style: "currency",
                     currency: "EUR",
                   }).format(totalRevenue)}
                 </p>
-                <p className="text-xs text-muted-foreground">Aus bezahlten Rechnungen</p>
+                <p className="text-xs text-muted-foreground">{t("revenue.totalRevenueDescription")}</p>
               </div>
               <div className="flex size-10 items-center justify-center rounded-lg bg-muted/50 border border-border/40">
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -168,14 +171,14 @@ export default async function DashboardPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-xs font-medium text-muted-foreground">Ausstehender Umsatz</p>
+                <p className="text-xs font-medium text-muted-foreground">{t("revenue.pendingRevenue")}</p>
                 <p className="text-xl font-semibold">
-                  {new Intl.NumberFormat("de-DE", {
+                  {new Intl.NumberFormat(undefined, {
                     style: "currency",
                     currency: "EUR",
                   }).format(pendingRevenue)}
                 </p>
-                <p className="text-xs text-muted-foreground">Aus unbezahlten Rechnungen</p>
+                <p className="text-xs text-muted-foreground">{t("revenue.pendingRevenueDescription")}</p>
               </div>
               <div className="flex size-10 items-center justify-center rounded-lg bg-muted/50 border border-border/40">
                 <XCircle className="h-4 w-4 text-muted-foreground" />
@@ -192,12 +195,12 @@ export default async function DashboardPage() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-sm font-semibold">Letzte Dokumente</CardTitle>
-                <CardDescription className="text-xs">Die 5 neuesten Dokumente</CardDescription>
+                <CardTitle className="text-sm font-semibold">{t("recent.documents")}</CardTitle>
+                <CardDescription className="text-xs">{t("recent.documentsDescription")}</CardDescription>
               </div>
               <Link href="/dashboard/documents">
                 <Button variant="ghost" size="sm" className="h-7 text-xs">
-                  Alle
+                  {t("recent.all")}
                   <ArrowRight className="ml-1 h-3 w-3" />
                 </Button>
               </Link>
@@ -207,10 +210,10 @@ export default async function DashboardPage() {
             {recentDocuments.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-center">
                 <FileText className="h-8 w-8 text-muted-foreground mb-2" />
-                <p className="text-xs font-medium mb-1">Noch keine Dokumente</p>
+                <p className="text-xs font-medium mb-1">{t("recent.noDocuments")}</p>
                 <Link href="/dashboard/documents/new">
                   <Button size="sm" variant="outline" className="mt-2 h-7 text-xs">
-                    Erstellen
+                    {t("recent.create")}
                   </Button>
                 </Link>
               </div>
@@ -232,10 +235,10 @@ export default async function DashboardPage() {
                         </span>
                         <div className="flex items-center gap-1.5 mt-0.5">
                           <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">
-                            {doc.type === "quote" ? "Angebot" : "Rechnung"}
+                            {doc.type === "quote" ? tDocs("quote") : tDocs("invoice")}
                           </Badge>
                           <span className="text-[10px] text-muted-foreground">
-                            {new Date(doc.document_date).toLocaleDateString("de-DE", {
+                            {new Date(doc.document_date).toLocaleDateString(undefined, {
                               day: "2-digit",
                               month: "2-digit",
                             })}
@@ -245,7 +248,7 @@ export default async function DashboardPage() {
                     </div>
                     {doc.total && (
                       <span className="text-xs font-semibold ml-2 shrink-0">
-                        {new Intl.NumberFormat("de-DE", {
+                        {new Intl.NumberFormat(undefined, {
                           style: "currency",
                           currency: "EUR",
                           minimumFractionDigits: 0,
@@ -265,12 +268,12 @@ export default async function DashboardPage() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-sm font-semibold">Neueste Kunden</CardTitle>
-                <CardDescription className="text-xs">Die 5 neuesten Kunden</CardDescription>
+                <CardTitle className="text-sm font-semibold">{t("recent.customers")}</CardTitle>
+                <CardDescription className="text-xs">{t("recent.customersDescription")}</CardDescription>
               </div>
               <Link href="/dashboard/customers">
                 <Button variant="ghost" size="sm" className="h-7 text-xs">
-                  Alle
+                  {t("recent.all")}
                   <ArrowRight className="ml-1 h-3 w-3" />
                 </Button>
               </Link>
@@ -280,10 +283,10 @@ export default async function DashboardPage() {
             {recentCustomers.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-center">
                 <Users className="h-8 w-8 text-muted-foreground mb-2" />
-                <p className="text-xs font-medium mb-1">Noch keine Kunden</p>
+                <p className="text-xs font-medium mb-1">{t("recent.noCustomers")}</p>
                 <Link href="/dashboard/customers/new">
                   <Button size="sm" variant="outline" className="mt-2 h-7 text-xs">
-                    Erstellen
+                    {t("recent.create")}
                   </Button>
                 </Link>
               </div>
@@ -325,29 +328,29 @@ export default async function DashboardPage() {
       {documents.length > 0 && (
         <Card className="border-border/60 shadow-sm bg-card/50">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold">Dokumente Übersicht</CardTitle>
-            <CardDescription className="text-xs">Übersicht nach Typ und Status</CardDescription>
+            <CardTitle className="text-sm font-semibold">{t("overview.title")}</CardTitle>
+            <CardDescription className="text-xs">{t("overview.description")}</CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="rounded-md border border-border/40 overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/40">
-                    <TableHead className="h-9 text-xs font-medium">Typ</TableHead>
-                    <TableHead className="h-9 text-xs font-medium">Status</TableHead>
-                    <TableHead className="h-9 text-xs font-medium">Anzahl</TableHead>
-                    <TableHead className="h-9 text-xs font-medium text-right">Gesamtbetrag</TableHead>
+                    <TableHead className="h-9 text-xs font-medium">{t("overview.type")}</TableHead>
+                    <TableHead className="h-9 text-xs font-medium">{t("overview.status")}</TableHead>
+                    <TableHead className="h-9 text-xs font-medium">{t("overview.count")}</TableHead>
+                    <TableHead className="h-9 text-xs font-medium text-right">{t("overview.totalAmount")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   <TableRow className="border-border/40">
-                    <TableCell className="text-xs font-medium py-2.5">Angebote</TableCell>
+                    <TableCell className="text-xs font-medium py-2.5">{t("overview.quotes")}</TableCell>
                     <TableCell className="py-2.5">
-                      <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">Offen</Badge>
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">{t("overview.open")}</Badge>
                     </TableCell>
                     <TableCell className="text-xs py-2.5">{openQuotes.length}</TableCell>
                     <TableCell className="text-xs font-medium text-right py-2.5">
-                      {new Intl.NumberFormat("de-DE", {
+                      {new Intl.NumberFormat(undefined, {
                         style: "currency",
                         currency: "EUR",
                         minimumFractionDigits: 0,
@@ -358,13 +361,13 @@ export default async function DashboardPage() {
                     </TableCell>
                   </TableRow>
                   <TableRow className="border-border/40">
-                    <TableCell className="text-xs font-medium py-2.5">Rechnungen</TableCell>
+                    <TableCell className="text-xs font-medium py-2.5">{t("overview.invoices")}</TableCell>
                     <TableCell className="py-2.5">
-                      <Badge variant="destructive" className="text-[10px] px-1.5 py-0 h-4">Unbezahlt</Badge>
+                      <Badge variant="destructive" className="text-[10px] px-1.5 py-0 h-4">{t("overview.unpaid")}</Badge>
                     </TableCell>
                     <TableCell className="text-xs py-2.5">{unpaidInvoices.length}</TableCell>
                     <TableCell className="text-xs font-medium text-right py-2.5">
-                      {new Intl.NumberFormat("de-DE", {
+                      {new Intl.NumberFormat(undefined, {
                         style: "currency",
                         currency: "EUR",
                         minimumFractionDigits: 0,
@@ -373,13 +376,13 @@ export default async function DashboardPage() {
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell className="text-xs font-medium py-2.5">Rechnungen</TableCell>
+                    <TableCell className="text-xs font-medium py-2.5">{t("overview.invoices")}</TableCell>
                     <TableCell className="py-2.5">
-                      <Badge variant="default" className="text-[10px] px-1.5 py-0 h-4">Bezahlt</Badge>
+                      <Badge variant="default" className="text-[10px] px-1.5 py-0 h-4">{t("overview.paid")}</Badge>
                     </TableCell>
                     <TableCell className="text-xs py-2.5">{paidInvoices.length}</TableCell>
                     <TableCell className="text-xs font-medium text-right py-2.5">
-                      {new Intl.NumberFormat("de-DE", {
+                      {new Intl.NumberFormat(undefined, {
                         style: "currency",
                         currency: "EUR",
                         minimumFractionDigits: 0,

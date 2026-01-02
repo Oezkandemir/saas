@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { getTranslations, getLocale } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { getDocument } from "./documents-actions";
 import { resend } from "@/lib/email";
@@ -8,6 +10,7 @@ import { siteConfig } from "@/config/site";
 import { logger } from "@/lib/logger";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { generateAndUploadPDF } from "@/lib/pdf/generator-vercel";
+import { routing } from "@/i18n/routing";
 
 export interface SendDocumentEmailInput {
   documentId: string;
@@ -25,6 +28,15 @@ export async function sendDocumentEmail(
   try {
     const user = await getCurrentUser();
     if (!user) throw new Error("Unauthorized");
+
+    // Get locale from cookie or default
+    const cookieStore = await cookies();
+    const savedLocale = cookieStore.get("NEXT_LOCALE")?.value;
+    const locale = (savedLocale && routing.locales.includes(savedLocale as any))
+      ? savedLocale
+      : routing.defaultLocale;
+    
+    const t = await getTranslations({ locale, namespace: "Documents" });
 
     // Get document
     let document = await getDocument(input.documentId);
@@ -56,8 +68,8 @@ export async function sendDocumentEmail(
         logger.error("Error generating PDF for email:", error);
         throw new Error(
           error instanceof Error
-            ? `Fehler beim Generieren des PDFs: ${error.message}`
-            : "Fehler beim Generieren des PDFs"
+            ? `Error generating PDF: ${error.message}`
+            : "Error generating PDF"
         );
       }
     }
@@ -96,14 +108,16 @@ export async function sendDocumentEmail(
       }
     }
 
-    const documentType = document.type === "invoice" ? "Rechnung" : "Angebot";
+    const documentType = document.type === "invoice" ? t("invoice") : t("quote");
     const subject =
       input.subject ||
-      `${documentType} ${document.document_number} - ${siteConfig.name}`;
+      (document.type === "invoice" 
+        ? t("email.invoiceSubject", { number: document.document_number })
+        : t("email.quoteSubject", { number: document.document_number }));
 
     const defaultMessage = document.type === "invoice"
-      ? `Sehr geehrte Damen und Herren,\n\nanbei erhalten Sie die Rechnung ${document.document_number}.\n\nBei Fragen stehen wir Ihnen gerne zur Verfügung.\n\nMit freundlichen Grüßen\n${user.name || siteConfig.name}`
-      : `Sehr geehrte Damen und Herren,\n\nanbei erhalten Sie unser Angebot ${document.document_number}.\n\nWir freuen uns auf Ihre Rückmeldung.\n\nMit freundlichen Grüßen\n${user.name || siteConfig.name}`;
+      ? t("email.invoiceBody", { number: document.document_number, name: user.name || siteConfig.name })
+      : t("email.quoteBody", { number: document.document_number, name: user.name || siteConfig.name });
 
     const message = input.message || defaultMessage;
 
@@ -125,7 +139,7 @@ export async function sendDocumentEmail(
             <div style="white-space: pre-wrap; margin: 20px 0;">${message}</div>
             <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
             <p style="color: #6b7280; font-size: 14px; margin: 0;">
-              Mit freundlichen Grüßen,<br>
+              ${t("closing")},<br>
               ${user.name || siteConfig.name}
             </p>
           </div>
@@ -163,7 +177,7 @@ export async function sendDocumentEmail(
 
     if (error) {
       logger.error("Failed to send document email", error);
-      throw new Error(`E-Mail konnte nicht gesendet werden: ${error.message}`);
+      throw new Error(`Failed to send email: ${error.message}`);
     }
 
     // Log email sent in database (optional - create email_logs table if needed)
@@ -199,7 +213,7 @@ export async function sendDocumentEmail(
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Ein Fehler ist beim Senden der E-Mail aufgetreten.",
+        : "An error occurred while sending the email.",
     );
   }
 }

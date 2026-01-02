@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import { Eye, Loader2 } from "lucide-react";
 import {
@@ -29,6 +30,7 @@ export function PDFPreviewButton({
   variant = "outline",
   size = "sm",
 }: PDFPreviewButtonProps) {
+  const t = useTranslations("Documents.pdfPreview");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +80,7 @@ export function PDFPreviewButton({
       
       const data = await response.json();
       if (!data || !data.pdfUrl) {
-        throw new Error("PDF URL wurde nicht zurückgegeben");
+        throw new Error(t("errors.noUrlReturned"));
       }
       
       // Use proxy endpoint for iframe (handles CORS and CSP)
@@ -100,7 +102,7 @@ export function PDFPreviewButton({
       setDirectPdfUrl(data.pdfUrl);
       setCurrentPdfUrl(proxyUrl);
     } catch (err) {
-      let errorMessage = "Fehler beim Laden des PDFs";
+      let errorMessage = t("errors.loadError");
       if (err instanceof Error) {
         errorMessage = err.message;
       }
@@ -119,30 +121,30 @@ export function PDFPreviewButton({
         className="gap-1.5 h-8"
       >
         <Eye className="h-3.5 w-3.5" />
-        <span className="hidden sm:inline">Vorschau</span>
+        <span className="hidden sm:inline">{t("button")}</span>
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-6xl max-h-[90vh] p-0">
           <DialogHeader className="px-6 pt-6 pb-4 border-b">
-            <DialogTitle>PDF-Vorschau: {documentNumber}</DialogTitle>
+            <DialogTitle>{t("title", { number: documentNumber })}</DialogTitle>
             <DialogDescription>
-              Vorschau des generierten PDF-Dokuments
+              {t("description")}
             </DialogDescription>
           </DialogHeader>
           <div className="overflow-auto max-h-[calc(90vh-120px)] p-6 bg-muted/30">
             {loading && !currentPdfUrl ? (
               <div className="flex items-center justify-center h-[600px]">
                 <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-                <span className="ml-2 text-muted-foreground">PDF wird geladen...</span>
+                <span className="ml-2 text-muted-foreground">{t("loading")}</span>
               </div>
             ) : error ? (
               <div className="flex flex-col items-center justify-center h-[600px] text-center space-y-4">
                 <div className="text-destructive">
-                  <p className="mb-2 font-semibold">Fehler beim Laden des PDFs</p>
+                  <p className="mb-2 font-semibold">{t("errors.loadError")}</p>
                   <p className="text-sm">{error}</p>
                 </div>
                 <Button onClick={fetchPDFUrl} variant="outline">
-                  Erneut versuchen
+                  {t("retry")}
                 </Button>
               </div>
             ) : currentPdfUrl ? (
@@ -150,13 +152,13 @@ export function PDFPreviewButton({
                 <iframe
                   src={`${currentPdfUrl}#toolbar=1&navpanes=1&scrollbar=1`}
                   className="w-full h-[600px] border-0 rounded-lg"
-                  title="PDF Preview"
+                  title={t("iframeTitle")}
                   allow="fullscreen"
                 />
               </div>
             ) : (
               <div className="flex items-center justify-center h-[600px]">
-                <p className="text-muted-foreground">Kein PDF verfügbar</p>
+                <p className="text-muted-foreground">{t("noPdfAvailable")}</p>
               </div>
             )}
           </div>

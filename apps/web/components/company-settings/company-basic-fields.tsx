@@ -1,6 +1,7 @@
 "use client";
 
 import { Control } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import {
   FormControl,
   FormDescription,
@@ -23,20 +24,21 @@ interface CompanyBasicFieldsProps {
   control: Control<any>;
 }
 
-const countries = [
-  { code: "DE", name: "Deutschland" },
-  { code: "AT", name: "Österreich" },
-  { code: "CH", name: "Schweiz" },
-  { code: "US", name: "USA" },
-  { code: "GB", name: "United Kingdom" },
-  { code: "FR", name: "Frankreich" },
-  { code: "IT", name: "Italien" },
-  { code: "ES", name: "Spanien" },
-  { code: "NL", name: "Niederlande" },
-  { code: "BE", name: "Belgien" },
-];
-
 export function CompanyBasicFields({ control }: CompanyBasicFieldsProps) {
+  const t = useTranslations("Company.fields");
+  
+  const countries = [
+    { code: "DE", name: t("countries.germany") },
+    { code: "AT", name: t("countries.austria") },
+    { code: "CH", name: t("countries.switzerland") },
+    { code: "US", name: t("countries.usa") },
+    { code: "GB", name: t("countries.unitedKingdom") },
+    { code: "FR", name: t("countries.france") },
+    { code: "IT", name: t("countries.italy") },
+    { code: "ES", name: t("countries.spain") },
+    { code: "NL", name: t("countries.netherlands") },
+    { code: "BE", name: t("countries.belgium") },
+  ];
   return (
     <div className="space-y-6">
       {/* Company Name */}
@@ -47,16 +49,16 @@ export function CompanyBasicFields({ control }: CompanyBasicFieldsProps) {
           <FormItem>
             <FormLabel className="flex items-center gap-2">
               <Building2 className="h-4 w-4 text-primary" />
-              Firmenname *
+              {t("companyName")} *
             </FormLabel>
             <FormControl>
               <Input
-                placeholder="Musterfirma GmbH"
+                placeholder={t("companyNamePlaceholder")}
                 {...field}
               />
             </FormControl>
             <FormDescription>
-              Der offizielle Name Ihres Unternehmens
+              {t("companyNameDescription")}
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -71,11 +73,11 @@ export function CompanyBasicFields({ control }: CompanyBasicFieldsProps) {
           <FormItem>
             <FormLabel className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-primary" />
-              Straße & Hausnummer
+              {t("address")}
             </FormLabel>
             <FormControl>
               <Input
-                placeholder="Musterstraße 123"
+                placeholder={t("addressPlaceholder")}
                 {...field}
                 value={field.value || ""}
               />
@@ -91,16 +93,16 @@ export function CompanyBasicFields({ control }: CompanyBasicFieldsProps) {
         name="company_address_line2"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Adresszusatz</FormLabel>
+            <FormLabel>{t("addressLine2")}</FormLabel>
             <FormControl>
               <Input
-                placeholder="Gebäude A, 3. OG"
+                placeholder={t("addressLine2Placeholder")}
                 {...field}
                 value={field.value || ""}
               />
             </FormControl>
             <FormDescription>
-              Optional: Gebäude, Etage, Abteilung, etc.
+              {t("addressLine2Description")}
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -114,10 +116,10 @@ export function CompanyBasicFields({ control }: CompanyBasicFieldsProps) {
           name="company_postal_code"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>PLZ</FormLabel>
+              <FormLabel>{t("postalCode")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="12345"
+                  placeholder={t("postalCodePlaceholder")}
                   {...field}
                   value={field.value || ""}
                 />
@@ -132,10 +134,10 @@ export function CompanyBasicFields({ control }: CompanyBasicFieldsProps) {
           name="company_city"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Stadt</FormLabel>
+              <FormLabel>{t("city")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Musterstadt"
+                  placeholder={t("cityPlaceholder")}
                   {...field}
                   value={field.value || ""}
                 />
@@ -154,7 +156,7 @@ export function CompanyBasicFields({ control }: CompanyBasicFieldsProps) {
           <FormItem>
             <FormLabel className="flex items-center gap-2">
               <Map className="h-4 w-4 text-primary" />
-              Land
+              {t("country")}
             </FormLabel>
             <Select
               onValueChange={field.onChange}
@@ -162,7 +164,7 @@ export function CompanyBasicFields({ control }: CompanyBasicFieldsProps) {
             >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Land auswählen" />
+                  <SelectValue placeholder={t("countryPlaceholder")} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>

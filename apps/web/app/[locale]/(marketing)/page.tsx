@@ -24,6 +24,11 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const { locale } = resolvedParams;
+  
+  // CRITICAL FIX: Set locale before getting translations
+  // This ensures the correct language is used during client-side navigation
+  setRequestLocale(locale);
+  
   const t = await getTranslations("Index");
 
   return constructMetadata({

@@ -1,4 +1,5 @@
 import { redirect, notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { getDocument, type Document } from "@/actions/documents-actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
@@ -23,6 +24,7 @@ export default async function DocumentDetailPage({
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
+  const t = await getTranslations("Documents.detail");
   const { id } = await params;
   const document = await getDocument(id);
 
@@ -51,7 +53,7 @@ export default async function DocumentDetailPage({
   return (
     <UnifiedPageLayout
       title={document.document_number}
-      description={document.type === "quote" ? "Angebot" : "Rechnung"}
+      description={document.type === "quote" ? t("description.quote") : t("description.invoice")}
       icon={<FileText className="h-4 w-4 text-primary" />}
       showBackButton
       backHref="/dashboard/documents"
@@ -61,7 +63,7 @@ export default async function DocumentDetailPage({
           <Link href={`/dashboard/documents/${document.id}/edit`}>
             <Button variant="outline" size="sm" className="gap-1.5 h-8">
               <Edit className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Bearbeiten</span>
+              <span className="hidden sm:inline">{t("edit")}</span>
             </Button>
           </Link>
           <PDFActionButtons
@@ -93,18 +95,18 @@ export default async function DocumentDetailPage({
           {/* Document Details */}
           <Card>
             <CardHeader>
-              <CardTitle>Dokumentendetails</CardTitle>
+              <CardTitle>{t("sections.documentDetails")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-sm text-muted-foreground">Datum</p>
+                <p className="text-sm text-muted-foreground">{t("fields.date")}</p>
                 <p className="font-medium">
                   {new Date(document.document_date).toLocaleDateString("de-DE")}
                 </p>
               </div>
               {document.due_date && (
                 <div>
-                  <p className="text-sm text-muted-foreground">Fälligkeitsdatum</p>
+                  <p className="text-sm text-muted-foreground">{t("fields.dueDate")}</p>
                   <p className="font-medium">
                     {new Date(document.due_date).toLocaleDateString("de-DE")}
                   </p>
@@ -112,7 +114,7 @@ export default async function DocumentDetailPage({
               )}
               {document.customer && (
                 <div>
-                  <p className="text-sm text-muted-foreground">Kunde</p>
+                  <p className="text-sm text-muted-foreground">{t("fields.customer")}</p>
                   <Link
                     href={`/dashboard/customers/${document.customer.id}`}
                     className="font-medium hover:underline"
@@ -132,7 +134,7 @@ export default async function DocumentDetailPage({
           {/* Items */}
           <Card>
             <CardHeader>
-              <CardTitle>Artikel</CardTitle>
+              <CardTitle>{t("sections.items")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -164,7 +166,7 @@ export default async function DocumentDetailPage({
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">
-                    Keine Artikel vorhanden
+                    {t("noItems")}
                   </p>
                 )}
               </div>
@@ -175,7 +177,7 @@ export default async function DocumentDetailPage({
           {document.notes && (
             <Card>
               <CardHeader>
-                <CardTitle>Notizen</CardTitle>
+                <CardTitle>{t("sections.notes")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm whitespace-pre-wrap">{document.notes}</p>
@@ -189,11 +191,11 @@ export default async function DocumentDetailPage({
           {/* Summary Card */}
           <Card className="sticky top-4">
             <CardHeader>
-              <CardTitle>Zusammenfassung</CardTitle>
+              <CardTitle>{t("sections.summary")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between">
-                <p className="text-sm text-muted-foreground">Zwischensumme</p>
+                <p className="text-sm text-muted-foreground">{t("fields.subtotal")}</p>
                 <p className="font-medium">
                   {document.subtotal.toLocaleString("de-DE", {
                     style: "currency",
@@ -203,7 +205,7 @@ export default async function DocumentDetailPage({
               </div>
               <div className="flex justify-between">
                 <p className="text-sm text-muted-foreground">
-                  MwSt. ({document.tax_rate}%)
+                  {t("fields.tax", { rate: document.tax_rate })}
                 </p>
                 <p className="font-medium">
                   {document.tax_amount.toLocaleString("de-DE", {
@@ -213,7 +215,7 @@ export default async function DocumentDetailPage({
                 </p>
               </div>
               <div className="flex justify-between border-t pt-4">
-                <p className="text-lg font-semibold">Gesamt</p>
+                <p className="text-lg font-semibold">{t("fields.total")}</p>
                 <p className="text-lg font-semibold">
                   {document.total.toLocaleString("de-DE", {
                     style: "currency",

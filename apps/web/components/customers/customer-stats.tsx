@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { FileText, Euro, TrendingUp, Calendar } from "lucide-react";
 import { Customer } from "@/actions/customers-actions";
@@ -17,6 +18,7 @@ interface CustomerStatsProps {
 }
 
 export function CustomerStats({ customer, documents }: CustomerStatsProps) {
+  const t = useTranslations("Customers.customerStats");
   const stats = useMemo(() => {
     const totalDocuments = documents.length;
     const quotes = documents.filter((d) => d.type === "quote");
@@ -48,20 +50,20 @@ export function CustomerStats({ customer, documents }: CustomerStatsProps) {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card className="hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Dokumente</CardTitle>
+          <CardTitle className="text-sm font-medium">{t("documents")}</CardTitle>
           <FileText className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.totalDocuments}</div>
           <p className="text-xs text-muted-foreground">
-            {stats.quotes} Angebote, {stats.invoices} Rechnungen
+            {t("documentsDescription", { quotes: stats.quotes, invoices: stats.invoices })}
           </p>
         </CardContent>
       </Card>
 
       <Card className="hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Umsatz</CardTitle>
+          <CardTitle className="text-sm font-medium">{t("revenue")}</CardTitle>
           <Euro className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -72,14 +74,14 @@ export function CustomerStats({ customer, documents }: CustomerStatsProps) {
             })}
           </div>
           <p className="text-xs text-muted-foreground">
-            {stats.paidInvoices} bezahlte Rechnungen
+            {t("revenueDescription", { count: stats.paidInvoices })}
           </p>
         </CardContent>
       </Card>
 
       <Card className="hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Ausstehend</CardTitle>
+          <CardTitle className="text-sm font-medium">{t("pending")}</CardTitle>
           <TrendingUp className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -89,18 +91,18 @@ export function CustomerStats({ customer, documents }: CustomerStatsProps) {
               currency: "EUR",
             })}
           </div>
-          <p className="text-xs text-muted-foreground">Offene Rechnungen</p>
+          <p className="text-xs text-muted-foreground">{t("pendingDescription")}</p>
         </CardContent>
       </Card>
 
       <Card className="hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Kunde seit</CardTitle>
+          <CardTitle className="text-sm font-medium">{t("customerSince")}</CardTitle>
           <Calendar className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.daysSinceCreation}</div>
-          <p className="text-xs text-muted-foreground">Tagen</p>
+          <p className="text-xs text-muted-foreground">{t("days")}</p>
         </CardContent>
       </Card>
     </div>

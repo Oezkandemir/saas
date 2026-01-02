@@ -142,9 +142,8 @@ export default async function PostPage({ params }: PostPageProps) {
                 buttonVariants({
                   variant: "outline",
                   size: "sm",
-                  rounded: "lg",
                 }),
-                "h-8",
+                "h-8 rounded-lg",
               )}
             >
               {category.title}

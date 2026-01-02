@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTheme } from "next-themes";
+import { useTranslations } from "next-intl";
 import { updateUserPreferences, type ExtendedPreferences } from "@/actions/preferences-actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { Button } from '@/components/alignui/actions/button';
@@ -71,6 +72,7 @@ interface PreferencesPanelProps {
 }
 
 export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) {
+  const t = useTranslations("Preferences");
   const [isPending, startTransition] = useTransition();
   const { theme, setTheme } = useTheme();
   const { register, handleSubmit, watch, setValue, formState: { isDirty } } = useForm<PreferencesFormData>({
@@ -113,9 +115,9 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
       const result = await updateUserPreferences(formData);
 
       if (result.success) {
-        toast.success("Preferences updated successfully");
+        toast.success(t("saveSuccess"));
       } else {
-        toast.error(result.error || "Failed to update preferences");
+        toast.error(result.error || t("saveError"));
       }
     });
   };
@@ -146,13 +148,13 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
         <CardHeader>
           <div className="flex items-center gap-2">
             <Monitor className="size-4 text-muted-foreground" />
-            <CardTitle>Theme Preferences</CardTitle>
+            <CardTitle>{t("theme.title")}</CardTitle>
           </div>
-          <CardDescription>Choose your preferred theme</CardDescription>
+          <CardDescription>{t("theme.description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label htmlFor="theme_preference">Theme</Label>
+            <Label htmlFor="theme_preference">{t("theme.themeLabel")}</Label>
             <Select
               value={watchedPreferences.theme_preference}
               onValueChange={(value) => {
@@ -169,19 +171,19 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
                 <SelectItem value="system">
                   <div className="flex items-center gap-2">
                     <Monitor className="size-4" />
-                    System
+                    {t("theme.system")}
                   </div>
                 </SelectItem>
                 <SelectItem value="light">
                   <div className="flex items-center gap-2">
                     <Sun className="size-4" />
-                    Light
+                    {t("theme.light")}
                   </div>
                 </SelectItem>
                 <SelectItem value="dark">
                   <div className="flex items-center gap-2">
                     <Moon className="size-4" />
-                    Dark
+                    {t("theme.dark")}
                   </div>
                 </SelectItem>
               </SelectContent>
@@ -195,13 +197,13 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
         <CardHeader>
           <div className="flex items-center gap-2">
             <Globe className="size-4 text-muted-foreground" />
-            <CardTitle>Language & Region</CardTitle>
+            <CardTitle>{t("languageRegion.title")}</CardTitle>
           </div>
-          <CardDescription>Configure language and regional settings</CardDescription>
+          <CardDescription>{t("languageRegion.description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label htmlFor="language_preference">Language</Label>
+            <Label htmlFor="language_preference">{t("languageRegion.language")}</Label>
             <Select
               value={watchedPreferences.language_preference}
               onValueChange={(value) => setValue("language_preference", value)}
@@ -210,15 +212,15 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="de">Deutsch</SelectItem>
-                <SelectItem value="fr">Français</SelectItem>
-                <SelectItem value="es">Español</SelectItem>
+                <SelectItem value="en">{t("languageRegion.languages.english")}</SelectItem>
+                <SelectItem value="de">{t("languageRegion.languages.german")}</SelectItem>
+                <SelectItem value="fr">{t("languageRegion.languages.french")}</SelectItem>
+                <SelectItem value="es">{t("languageRegion.languages.spanish")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="flex items-center justify-between">
-            <Label htmlFor="locale">Locale</Label>
+            <Label htmlFor="locale">{t("languageRegion.locale")}</Label>
             <Select
               value={watchedPreferences.locale}
               onValueChange={(value) => setValue("locale", value)}
@@ -236,7 +238,7 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
             </Select>
           </div>
           <div className="flex items-center justify-between">
-            <Label htmlFor="timezone">Timezone</Label>
+            <Label htmlFor="timezone">{t("languageRegion.timezone")}</Label>
             <Select
               value={watchedPreferences.timezone}
               onValueChange={(value) => setValue("timezone", value)}
@@ -261,13 +263,13 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
         <CardHeader>
           <div className="flex items-center gap-2">
             <Calendar className="size-4 text-muted-foreground" />
-            <CardTitle>Date & Time Format</CardTitle>
+            <CardTitle>{t("dateTime.title")}</CardTitle>
           </div>
-          <CardDescription>Customize how dates and times are displayed</CardDescription>
+          <CardDescription>{t("dateTime.description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label htmlFor="date_format">Date Format</Label>
+            <Label htmlFor="date_format">{t("dateTime.dateFormat")}</Label>
             <Select
               value={watchedPreferences.date_format}
               onValueChange={(value) => setValue("date_format", value as any)}
@@ -284,7 +286,7 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
             </Select>
           </div>
           <div className="flex items-center justify-between">
-            <Label htmlFor="time_format">Time Format</Label>
+            <Label htmlFor="time_format">{t("dateTime.timeFormat")}</Label>
             <Select
               value={watchedPreferences.time_format}
               onValueChange={(value) => setValue("time_format", value as "12h" | "24h")}
@@ -293,8 +295,8 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="24h">24 Hour</SelectItem>
-                <SelectItem value="12h">12 Hour (AM/PM)</SelectItem>
+                <SelectItem value="24h">{t("dateTime.hour24")}</SelectItem>
+                <SelectItem value="12h">{t("dateTime.hour12")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -306,13 +308,13 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
         <CardHeader>
           <div className="flex items-center gap-2">
             <DollarSign className="size-4 text-muted-foreground" />
-            <CardTitle>Payment Format</CardTitle>
+            <CardTitle>{t("payment.title")}</CardTitle>
           </div>
-          <CardDescription>Configure currency and number formatting</CardDescription>
+          <CardDescription>{t("payment.description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label htmlFor="currency">Currency</Label>
+            <Label htmlFor="currency">{t("payment.currency")}</Label>
             <Select
               value={watchedPreferences.currency}
               onValueChange={(value) => setValue("currency", value)}
@@ -329,7 +331,7 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
             </Select>
           </div>
           <div className="flex items-center justify-between">
-            <Label htmlFor="number_format">Number Format</Label>
+            <Label htmlFor="number_format">{t("payment.numberFormat")}</Label>
             <Select
               value={watchedPreferences.number_format}
               onValueChange={(value) => setValue("number_format", value as "european" | "american")}
@@ -338,8 +340,8 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="european">European (1.234,56)</SelectItem>
-                <SelectItem value="american">American (1,234.56)</SelectItem>
+                <SelectItem value="european">{t("payment.european")}</SelectItem>
+                <SelectItem value="american">{t("payment.american")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -351,13 +353,13 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
         <CardHeader>
           <div className="flex items-center gap-2">
             <Mail className="size-4 text-muted-foreground" />
-            <CardTitle>Email Digest</CardTitle>
+            <CardTitle>{t("emailDigest.title")}</CardTitle>
           </div>
-          <CardDescription>Configure how often you receive email summaries</CardDescription>
+          <CardDescription>{t("emailDigest.description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label htmlFor="email_digest_frequency">Email Digest Frequency</Label>
+            <Label htmlFor="email_digest_frequency">{t("emailDigest.frequency")}</Label>
             <Select
               value={watchedPreferences.email_digest_frequency}
               onValueChange={(value) => setValue("email_digest_frequency", value as any)}
@@ -366,10 +368,10 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="never">Never</SelectItem>
-                <SelectItem value="daily">Daily</SelectItem>
-                <SelectItem value="weekly">Weekly</SelectItem>
-                <SelectItem value="monthly">Monthly</SelectItem>
+                <SelectItem value="never">{t("emailDigest.never")}</SelectItem>
+                <SelectItem value="daily">{t("emailDigest.daily")}</SelectItem>
+                <SelectItem value="weekly">{t("emailDigest.weekly")}</SelectItem>
+                <SelectItem value="monthly">{t("emailDigest.monthly")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -381,19 +383,19 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
         <CardHeader>
           <div className="flex items-center gap-2">
             <Bell className="size-4 text-muted-foreground" />
-            <CardTitle>Notification Preferences</CardTitle>
+            <CardTitle>{t("notifications.title")}</CardTitle>
           </div>
-          <CardDescription>Fine-tune your notification settings by channel and type</CardDescription>
+          <CardDescription>{t("notifications.description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {(["email", "push", "in_app"] as const).map((channel) => (
             <div key={channel} className="space-y-4">
-              <h4 className="text-sm font-semibold capitalize">{channel} Notifications</h4>
+              <h4 className="text-sm font-semibold capitalize">{t(`notifications.channels.${channel}`)}</h4>
               <div className="space-y-3 pl-4">
                 {(["system", "billing", "security", "support", "marketing", "newsletter"] as const).map((type) => (
                   <div key={type} className="flex items-center justify-between">
                     <Label htmlFor={`${channel}-${type}`} className="capitalize">
-                      {type}
+                      {t(`notifications.types.${type}`)}
                     </Label>
                     <Switch
                       checked={watchedPreferences.notification_preferences_granular[channel][type]}
@@ -414,7 +416,7 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
       <div className="flex justify-end">
         <Button type="submit" disabled={!isDirty || isPending}>
           {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
-          Save Preferences
+          {t("saveButton")}
         </Button>
       </div>
     </form>

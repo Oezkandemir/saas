@@ -16,7 +16,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { exportUserData, exportUserDataCSV } from "@/actions/gdpr-actions";
 
 export function DataExport() {
-  const t = useTranslations("GDPR");
+  const t = useTranslations("GDPR.dataExport");
   const { toast } = useToast();
   const [isExporting, setIsExporting] = useState(false);
 
@@ -28,8 +28,8 @@ export function DataExport() {
       if (!result.success || !result.data) {
         toast({
           variant: "destructive",
-          title: "Export fehlgeschlagen",
-          description: "message" in result ? result.message : "Ein Fehler ist aufgetreten",
+          title: t("toast.exportFailed"),
+          description: "message" in result ? result.message : t("toast.error"),
         });
         return;
       }
@@ -46,14 +46,14 @@ export function DataExport() {
       window.URL.revokeObjectURL(url);
 
       toast({
-        title: "Export erfolgreich",
-        description: "Ihre Daten wurden als JSON-Datei heruntergeladen.",
+        title: t("toast.exportSuccess"),
+        description: t("toast.exportSuccessJSON"),
       });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Export fehlgeschlagen",
-        description: "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+        title: t("toast.exportFailed"),
+        description: t("toast.error"),
       });
     } finally {
       setIsExporting(false);
@@ -68,8 +68,8 @@ export function DataExport() {
       if (!result.success || !result.data) {
         toast({
           variant: "destructive",
-          title: "Export fehlgeschlagen",
-          description: "message" in result ? result.message : "Ein Fehler ist aufgetreten",
+          title: t("toast.exportFailed"),
+          description: "message" in result ? result.message : t("toast.error"),
         });
         return;
       }
@@ -97,14 +97,14 @@ export function DataExport() {
       });
 
       toast({
-        title: "Export erfolgreich",
-        description: "Ihre Daten wurden als CSV-Dateien heruntergeladen.",
+        title: t("toast.exportSuccess"),
+        description: t("toast.exportSuccessCSV"),
       });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Export fehlgeschlagen",
-        description: "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+        title: t("toast.exportFailed"),
+        description: t("toast.error"),
       });
     } finally {
       setIsExporting(false);
@@ -116,25 +116,24 @@ export function DataExport() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Download className="h-5 w-5" />
-          Datenexport
+          {t("title")}
         </CardTitle>
         <CardDescription>
-          Laden Sie alle Ihre gespeicherten Daten herunter (DSGVO Art. 15 - Recht auf Auskunft)
+          {t("description")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">
-            Sie haben das Recht, eine Kopie aller Ihrer personenbezogenen Daten zu erhalten.
-            Der Export umfasst:
+            {t("intro")}
           </p>
           <ul className="list-disc space-y-1 pl-6 text-sm text-muted-foreground">
-            <li>Ihr Benutzerprofil und Kontoinformationen</li>
-            <li>Alle Kundendaten</li>
-            <li>Alle Dokumente (Angebote, Rechnungen)</li>
-            <li>QR-Codes und Scan-Statistiken</li>
-            <li>Cookie-Einwilligungen</li>
-            <li>Benachrichtigungen</li>
+            <li>{t("includes.profile")}</li>
+            <li>{t("includes.customers")}</li>
+            <li>{t("includes.documents")}</li>
+            <li>{t("includes.qrCodes")}</li>
+            <li>{t("includes.consents")}</li>
+            <li>{t("includes.notifications")}</li>
           </ul>
         </div>
 
@@ -148,12 +147,12 @@ export function DataExport() {
             {isExporting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Exportiere...
+                {t("exporting")}
               </>
             ) : (
               <>
                 <FileJson className="mr-2 h-4 w-4" />
-                Als JSON exportieren
+                {t("exportJSON")}
               </>
             )}
           </Button>
@@ -167,12 +166,12 @@ export function DataExport() {
             {isExporting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Exportiere...
+                {t("exporting")}
               </>
             ) : (
               <>
                 <FileSpreadsheet className="mr-2 h-4 w-4" />
-                Als CSV exportieren
+                {t("exportCSV")}
               </>
             )}
           </Button>
@@ -180,8 +179,7 @@ export function DataExport() {
 
         <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
           <p className="text-sm text-blue-900 dark:text-blue-100">
-            <strong>Hinweis:</strong> Der Export wird sofort erstellt und enthält alle aktuellen Daten.
-            Die Dateien werden nicht auf unseren Servern gespeichert.
+            <strong>{t("note")}</strong> {t("noteText")}
           </p>
         </div>
       </CardContent>

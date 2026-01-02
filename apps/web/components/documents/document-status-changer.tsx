@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import {
   DropdownMenu,
@@ -20,22 +21,23 @@ interface DocumentStatusChangerProps {
   type: "quote" | "invoice";
 }
 
-const statusOptions: Record<DocumentStatus, { label: string; availableFor: ("quote" | "invoice")[] }> = {
-  draft: { label: "Entwurf", availableFor: ["quote", "invoice"] },
-  sent: { label: "Gesendet", availableFor: ["quote", "invoice"] },
-  accepted: { label: "Angenommen", availableFor: ["quote"] },
-  declined: { label: "Abgelehnt", availableFor: ["quote"] },
-  paid: { label: "Bezahlt", availableFor: ["invoice"] },
-  overdue: { label: "Überfällig", availableFor: ["invoice"] },
-};
-
 export function DocumentStatusChanger({
   documentId,
   currentStatus,
   type,
 }: DocumentStatusChangerProps) {
+  const t = useTranslations("Documents.statusTimeline");
   const router = useRouter();
   const [isUpdating, setIsUpdating] = useState(false);
+
+  const statusOptions: Record<DocumentStatus, { availableFor: ("quote" | "invoice")[] }> = {
+    draft: { availableFor: ["quote", "invoice"] },
+    sent: { availableFor: ["quote", "invoice"] },
+    accepted: { availableFor: ["quote"] },
+    declined: { availableFor: ["quote"] },
+    paid: { availableFor: ["invoice"] },
+    overdue: { availableFor: ["invoice"] },
+  };
 
   const handleStatusChange = async (newStatus: DocumentStatus) => {
     if (newStatus === currentStatus) return;
@@ -43,10 +45,10 @@ export function DocumentStatusChanger({
     setIsUpdating(true);
     try {
       await updateDocument(documentId, { status: newStatus });
-      toast.success(`Status geändert zu "${statusOptions[newStatus].label}"`);
+      toast.success(t("toast.statusChanged", { status: t(`labels.${newStatus}`) }));
       router.refresh();
     } catch (error) {
-      toast.error("Fehler beim Ändern des Status");
+      toast.error(t("toast.changeError"));
     } finally {
       setIsUpdating(false);
     }
@@ -73,7 +75,7 @@ export function DocumentStatusChanger({
           >
             <StatusBadge status={status} />
             {status === currentStatus && (
-              <span className="ml-2 text-xs text-muted-foreground">(Aktuell)</span>
+              <span className="ml-2 text-xs text-muted-foreground">{t("current")}</span>
             )}
           </DropdownMenuItem>
         ))}

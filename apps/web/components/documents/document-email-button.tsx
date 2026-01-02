@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import { Mail, Loader2 } from "lucide-react";
 import {
@@ -32,6 +33,7 @@ export function DocumentEmailButton({
   documentNumber,
   documentType,
 }: DocumentEmailButtonProps) {
+  const t = useTranslations("Documents.email");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState(recipientEmail || "");
@@ -41,7 +43,7 @@ export function DocumentEmailButton({
 
   const handleSend = async () => {
     if (!email || !email.includes("@")) {
-      toast.error("Bitte geben Sie eine gültige E-Mail-Adresse ein");
+      toast.error(t("toast.invalidEmail"));
       return;
     }
 
@@ -53,12 +55,12 @@ export function DocumentEmailButton({
         subject: subject || undefined,
         message: message || undefined,
       });
-      toast.success("E-Mail erfolgreich gesendet");
+      toast.success(t("toast.success"));
       setOpen(false);
       router.refresh();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Fehler beim Senden der E-Mail",
+        error instanceof Error ? error.message : t("toast.error"),
       );
     } finally {
       setLoading(false);
@@ -70,66 +72,64 @@ export function DocumentEmailButton({
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-1.5 h-8">
           <Mail className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">E-Mail</span>
+          <span className="hidden sm:inline">{t("button")}</span>
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {documentType === "invoice" ? "Rechnung" : "Angebot"} per E-Mail
-            senden
+            {t(`title.${documentType}`)}
           </DialogTitle>
           <DialogDescription>
-            Die {documentType === "invoice" ? "Rechnung" : "Angebot"}{" "}
-            {documentNumber} wird als PDF-Anhang versendet.
+            {t(`description.${documentType}`, { number: documentNumber })}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="email">E-Mail-Adresse *</Label>
+            <Label htmlFor="email">{t("fields.email")}</Label>
             <Input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="kunde@beispiel.de"
+              placeholder={t("fields.emailPlaceholder")}
               required
             />
           </div>
           <div>
-            <Label htmlFor="subject">Betreff</Label>
+            <Label htmlFor="subject">{t("fields.subject")}</Label>
             <Input
               id="subject"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder={`${documentType === "invoice" ? "Rechnung" : "Angebot"} ${documentNumber}`}
+              placeholder={t(`fields.subjectPlaceholder.${documentType}`, { number: documentNumber })}
             />
           </div>
           <div>
-            <Label htmlFor="message">Nachricht</Label>
+            <Label htmlFor="message">{t("fields.message")}</Label>
             <Textarea
               id="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Optionale Nachricht..."
+              placeholder={t("fields.messagePlaceholder")}
               rows={5}
             />
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
-            Abbrechen
+            {t("cancel")}
           </Button>
           <Button onClick={handleSend} disabled={loading || !email}>
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Wird gesendet...
+                {t("sending")}
               </>
             ) : (
               <>
                 <Mail className="mr-2 h-4 w-4" />
-                Senden
+                {t("send")}
               </>
             )}
           </Button>

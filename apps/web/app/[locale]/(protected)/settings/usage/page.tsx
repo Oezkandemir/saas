@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 import { BarChart3, TrendingUp, AlertTriangle } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/session";
@@ -10,6 +10,10 @@ import { UsageDashboard } from "@/components/plan/usage-dashboard/usage-dashboar
 import { UsageWarnings } from "@/components/plan/usage-dashboard/usage-warnings";
 
 export async function generateMetadata() {
+  // CRITICAL FIX: Get locale and set it before translations
+  // This ensures correct language during client-side navigation
+  const locale = await getLocale();
+  setRequestLocale(locale);
   const t = await getTranslations("Settings.usage");
 
   return {

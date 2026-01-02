@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import * as z from "zod";
 import { CustomerInput, createCustomer, updateCustomer, Customer } from "@/actions/customers-actions";
 import { Form } from "@/components/ui/form";
@@ -19,42 +20,44 @@ import {
 } from "./customer-form-steps";
 import { useAutoSave } from "@/lib/hooks/use-auto-save";
 
-const customerSchema = z.object({
-  name: z.string().min(1, "Name ist erforderlich"),
-  email: z.string().email("Ungültige E-Mail-Adresse").optional().or(z.literal("")),
-  phone: z.string().optional(),
-  company: z.string().optional(),
-  address_line1: z.string().optional(),
-  address_line2: z.string().optional(),
-  city: z.string().optional(),
-  postal_code: z.string().optional(),
-  country: z.string().optional(),
-  tax_id: z.string().optional(),
-  notes: z.string().optional(),
-});
-
-const countries = [
-  { value: "DE", label: "Deutschland" },
-  { value: "AT", label: "Österreich" },
-  { value: "CH", label: "Schweiz" },
-  { value: "FR", label: "Frankreich" },
-  { value: "IT", label: "Italien" },
-  { value: "ES", label: "Spanien" },
-  { value: "NL", label: "Niederlande" },
-  { value: "BE", label: "Belgien" },
-  { value: "PL", label: "Polen" },
-  { value: "GB", label: "Großbritannien" },
-  { value: "US", label: "USA" },
-  { value: "CA", label: "Kanada" },
-];
-
 interface CustomerFormProps {
   customer?: Customer;
 }
 
 export function CustomerForm({ customer }: CustomerFormProps) {
   const router = useRouter();
+  const t = useTranslations("Customers.form");
+  const tCountries = useTranslations("Customers.countries");
   const [isLoading, setIsLoading] = useState(false);
+
+  const customerSchema = z.object({
+    name: z.string().min(1, t("nameRequired")),
+    email: z.string().email(t("invalidEmail")).optional().or(z.literal("")),
+    phone: z.string().optional(),
+    company: z.string().optional(),
+    address_line1: z.string().optional(),
+    address_line2: z.string().optional(),
+    city: z.string().optional(),
+    postal_code: z.string().optional(),
+    country: z.string().optional(),
+    tax_id: z.string().optional(),
+    notes: z.string().optional(),
+  });
+
+  const countries = [
+    { value: "DE", label: tCountries("germany") },
+    { value: "AT", label: tCountries("austria") },
+    { value: "CH", label: tCountries("switzerland") },
+    { value: "FR", label: tCountries("france") },
+    { value: "IT", label: tCountries("italy") },
+    { value: "ES", label: tCountries("spain") },
+    { value: "NL", label: tCountries("netherlands") },
+    { value: "BE", label: tCountries("belgium") },
+    { value: "PL", label: tCountries("poland") },
+    { value: "GB", label: tCountries("unitedKingdom") },
+    { value: "US", label: tCountries("usa") },
+    { value: "CA", label: tCountries("canada") },
+  ];
 
   // Normalize customer data: convert null values to empty strings for form inputs
   const normalizedCustomer = customer
@@ -107,8 +110,8 @@ export function CustomerForm({ customer }: CustomerFormProps) {
     try {
       if (customer) {
         await updateCustomer(customer.id, data);
-        toast.success("Kunde erfolgreich aktualisiert", {
-          description: "Die Kundendaten wurden gespeichert.",
+        toast.success(t("updateSuccess"), {
+          description: t("updateDescription"),
         });
         await new Promise((resolve) => setTimeout(resolve, 500));
         router.push("/dashboard/customers");
@@ -116,8 +119,8 @@ export function CustomerForm({ customer }: CustomerFormProps) {
       } else {
         const newCustomer = await createCustomer(data);
         clearSavedData(); // Clear auto-saved data on successful submit
-        toast.success("Kunde erfolgreich erstellt", {
-          description: "Der Kunde wurde angelegt und ein QR-Code wurde generiert.",
+        toast.success(t("createSuccess"), {
+          description: t("createDescription"),
         });
         await new Promise((resolve) => setTimeout(resolve, 500));
         router.push(`/dashboard/customers/${newCustomer.id}`);
@@ -126,9 +129,9 @@ export function CustomerForm({ customer }: CustomerFormProps) {
     } catch (error) {
       const errorMessage = error instanceof Error 
         ? error.message 
-        : "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.";
+        : t("unexpectedError");
       
-      toast.error("Fehler beim Speichern", {
+      toast.error(t("saveError"), {
         description: errorMessage,
         duration: 5000,
       });
@@ -145,24 +148,24 @@ export function CustomerForm({ customer }: CustomerFormProps) {
   const steps: Step<CustomerInput>[] = [
     {
       id: "personal",
-      title: "Persönliche Daten",
-      description: "Grundlegende Kontaktinformationen",
+      title: t("steps.personal.title"),
+      description: t("steps.personal.description"),
       icon: <User className="size-5" />,
       fields: ["name", "email", "phone", "company"],
       component: CustomerPersonalInfoStep,
     },
     {
       id: "address",
-      title: "Adresse",
-      description: "Vollständige Adressdaten",
+      title: t("steps.address.title"),
+      description: t("steps.address.description"),
       icon: <MapPin className="size-5" />,
       fields: ["address_line1", "address_line2", "city", "postal_code", "country"],
       component: CustomerAddressStep,
     },
     {
       id: "additional",
-      title: "Weitere Infos",
-      description: "Zusätzliche Informationen",
+      title: t("steps.additional.title"),
+      description: t("steps.additional.description"),
       icon: <FileText className="size-5" />,
       fields: ["tax_id", "notes"],
       component: CustomerAdditionalInfoStep,
@@ -173,7 +176,7 @@ export function CustomerForm({ customer }: CustomerFormProps) {
     <div className="space-y-4 sm:space-y-6 relative px-2 sm:px-0">
       <LoadingOverlay
         isLoading={isLoading}
-        text={customer ? "Kunde wird aktualisiert..." : "Kunde wird erstellt..."}
+        text={customer ? t("saving") : t("creating")}
         spinnerSize="lg"
       />
       <Card className="border shadow-md">

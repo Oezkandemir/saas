@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { getDocuments, type Document } from "@/actions/documents-actions";
 import { Button } from '@/components/alignui/actions/button';
@@ -18,6 +19,7 @@ export default async function DocumentsPage({
 }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  const t = await getTranslations("Documents.page");
 
   const allDocuments: Document[] = await getDocuments().catch(() => []);
   const quotes = allDocuments.filter((d) => d.type === "quote");
@@ -29,48 +31,48 @@ export default async function DocumentsPage({
 
   const stats = [
     {
-      title: "Gesamt Dokumente",
+      title: t("stats.total"),
       value: allDocuments.length,
       icon: FileText,
-      description: `${quotes.length} Angebote, ${invoices.length} Rechnungen`,
+      description: t("stats.totalDescription", { quotes: quotes.length, invoices: invoices.length }),
     },
     {
-      title: "Offene Angebote",
+      title: t("stats.openQuotes"),
       value: draftQuotes.length + sentQuotes.length,
       icon: FileText,
-      description: `${draftQuotes.length} Entwurf, ${sentQuotes.length} Gesendet`,
+      description: t("stats.openQuotesDescription", { draft: draftQuotes.length, sent: sentQuotes.length }),
     },
     {
-      title: "Bezahlte Rechnungen",
+      title: t("stats.paidInvoices"),
       value: paidInvoices.length,
       icon: FileCheck,
-      description: `${Math.round((paidInvoices.length / Math.max(invoices.length, 1)) * 100)}% Erfolgsrate`,
+      description: t("stats.paidInvoicesDescription", { rate: Math.round((paidInvoices.length / Math.max(invoices.length, 1)) * 100) }),
     },
     {
-      title: "Unbezahlte Rechnungen",
+      title: t("stats.unpaidInvoices"),
       value: unpaidInvoices.length,
       icon: FileX,
-      description: unpaidInvoices.length > 0 ? "Aktion erforderlich" : "Alles erledigt",
+      description: unpaidInvoices.length > 0 ? t("stats.actionRequired") : t("stats.allDone"),
     },
   ];
 
   return (
     <UnifiedPageLayout
-      title="Dokumente"
-      description="Verwalten Sie Ihre Angebote und Rechnungen. Erstellen Sie professionelle Dokumente in Minuten."
+      title={t("title")}
+      description={t("description")}
       icon={<FileText className="h-4 w-4 text-primary" />}
       actions={
         <>
           <Link href="/dashboard/documents/new?type=quote">
             <Button variant="outline" className="gap-2">
               <Plus className="h-4 w-4" />
-              Angebot
+              {t("newQuote")}
             </Button>
           </Link>
           <Link href="/dashboard/documents/new?type=invoice">
             <Button className="gap-2">
               <Plus className="h-4 w-4" />
-              Rechnung
+              {t("newInvoice")}
             </Button>
           </Link>
         </>

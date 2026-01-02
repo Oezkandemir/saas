@@ -54,8 +54,7 @@ export default async function Features({ locale = "en" }: FeaturesProps) {
                       <Button
                         variant="secondary"
                         size="sm"
-                        rounded="xl"
-                        className="px-4"
+                        className="px-4 rounded-xl"
                       >
                         <Link href="/" className="flex items-center gap-2">
                           <span>{t("visitSite")}</span>

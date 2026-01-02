@@ -38,8 +38,8 @@ export default async function ModernCTA({ locale = "en" }: ModernCTAProps) {
               href="/pricing"
               prefetch={true}
               className={cn(
-                buttonVariants({ size: "lg", rounded: "full" }),
-                "group relative gap-2 px-10 py-6 text-base font-semibold shadow-2xl transition-all hover:scale-105 hover:shadow-primary/25",
+                buttonVariants({ size: "lg" }),
+                "group relative gap-2 px-10 py-6 text-base font-semibold shadow-2xl transition-all hover:scale-105 hover:shadow-primary/25 rounded-full",
                 "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700",
               )}
             >
@@ -52,9 +52,8 @@ export default async function ModernCTA({ locale = "en" }: ModernCTAProps) {
                 buttonVariants({
                   variant: "outline",
                   size: "lg",
-                  rounded: "full",
                 }),
-                "group gap-2 border-2 px-10 py-6 text-base font-semibold backdrop-blur-sm transition-all hover:scale-105 hover:bg-background/80",
+                "group gap-2 border-2 px-10 py-6 text-base font-semibold backdrop-blur-sm transition-all hover:scale-105 hover:bg-background/80 rounded-full",
               )}
             >
               <span>{t("buttonSecondary")}</span>

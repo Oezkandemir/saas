@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 
 import { getCurrentUser } from "@/lib/session";
@@ -21,6 +21,10 @@ import { cn } from "@/lib/utils";
 import { UserSubscriptionPlan } from "@/types";
 
 export async function generateMetadata() {
+  // CRITICAL FIX: Get locale and set it before translations
+  // This ensures correct language during client-side navigation
+  const locale = await getLocale();
+  setRequestLocale(locale);
   const t = await getTranslations("Settings");
 
   return constructMetadata({
@@ -55,8 +59,8 @@ export default async function SettingsPage() {
         {/* Company Settings Section */}
         <div className="pt-3 sm:pt-4">
           <SectionColumns
-            title="Company Settings"
-            description="Manage your company information for invoices and documents"
+            title={t("companySettings.title")}
+            description={t("companySettings.description")}
           >
             <Card>
               <CardHeader className="p-3 sm:p-4">
@@ -65,9 +69,9 @@ export default async function SettingsPage() {
                     <Building2 className="size-3.5 sm:size-4 text-muted-foreground" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <CardTitle className="text-sm sm:text-base truncate">Company Profiles</CardTitle>
+                    <CardTitle className="text-sm sm:text-base truncate">{t("companySettings.profiles")}</CardTitle>
                     <CardDescription className="text-xs truncate">
-                      Manage company information for all your documents
+                      {t("companySettings.profilesDescription")}
                     </CardDescription>
                   </div>
                 </div>
@@ -75,10 +79,10 @@ export default async function SettingsPage() {
               <CardContent className="p-3 sm:p-4 pt-0">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
                   <div className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
-                    Centralized company data for invoices, quotes, and more
+                    {t("companySettings.centralizedData")}
                   </div>
                   <Link href="/dashboard/settings/company" className="group flex items-center gap-1 text-xs sm:text-sm text-primary hover:gap-2 transition-all touch-manipulation shrink-0">
-                    Manage Profiles
+                    {t("companySettings.manageProfiles")}
                     <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </div>
@@ -91,8 +95,8 @@ export default async function SettingsPage() {
         {subscriptionPlan && (
           <div className="pt-3 sm:pt-4">
             <SectionColumns
-              title="Subscription Plan"
-              description="Your current subscription plan"
+              title={t("subscription.title")}
+              description={t("subscription.description")}
             >
               <Card>
                 <CardHeader className="p-3 sm:p-4">
@@ -107,9 +111,9 @@ export default async function SettingsPage() {
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
-                      <CardTitle className="text-sm sm:text-base truncate">Current Plan</CardTitle>
+                      <CardTitle className="text-sm sm:text-base truncate">{t("subscription.currentPlan")}</CardTitle>
                       <CardDescription className="text-xs truncate">
-                        Manage your subscription and billing
+                        {t("subscription.currentPlanDescription")}
                       </CardDescription>
                     </div>
                   </div>
@@ -125,12 +129,12 @@ export default async function SettingsPage() {
                       </Badge>
                       {subscriptionPlan.isPaid && (
                         <span className="text-xs sm:text-sm text-muted-foreground">
-                          {subscriptionPlan.interval === "month" ? "Monthly" : subscriptionPlan.interval === "year" ? "Yearly" : ""}
+                          {subscriptionPlan.interval === "month" ? t("subscription.monthly") : subscriptionPlan.interval === "year" ? t("subscription.yearly") : ""}
                         </span>
                       )}
                     </div>
                     <Link href="/dashboard/billing" className="group flex items-center gap-1 text-sm text-primary hover:gap-2 transition-all touch-manipulation shrink-0">
-                      Manage Billing
+                      {t("subscription.manageBilling")}
                       <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
                     </Link>
                   </div>
@@ -144,8 +148,8 @@ export default async function SettingsPage() {
         {planFeatures && (
           <div className="pt-3 sm:pt-4">
             <SectionColumns
-              title="Features & Limits"
-              description="Detaillierte Übersicht über Ihre verfügbaren Features und aktuellen Limits"
+              title={t("features.title")}
+              description={t("features.description")}
             >
               <PlanFeaturesDisplay planInfo={planFeatures} />
             </SectionColumns>
@@ -191,8 +195,8 @@ export default async function SettingsPage() {
         {/* Preferences Section */}
         <div className="pt-4 sm:pt-6">
           <SectionColumns
-            title="Preferences"
-            description="Customize your application preferences"
+            title={t("preferences.title")}
+            description={t("preferences.description")}
           >
             <Card>
               <CardHeader className="p-3 sm:p-4">
@@ -201,9 +205,9 @@ export default async function SettingsPage() {
                     <Settings className="size-3.5 sm:size-4 text-muted-foreground" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <CardTitle className="text-sm sm:text-base truncate">Application Preferences</CardTitle>
+                    <CardTitle className="text-sm sm:text-base truncate">{t("preferences.applicationPreferences")}</CardTitle>
                     <CardDescription className="text-xs truncate">
-                      Theme, language, notifications, and format settings
+                      {t("preferences.applicationPreferencesDescription")}
                     </CardDescription>
                   </div>
                 </div>
@@ -211,10 +215,10 @@ export default async function SettingsPage() {
               <CardContent className="p-3 sm:p-4 pt-0">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
                   <div className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
-                    Customize theme, language, date/time formats, and notification preferences
+                    {t("preferences.customizeDescription")}
                   </div>
                   <Link href="/dashboard/settings/preferences" className="group flex items-center gap-1 text-xs sm:text-sm text-primary hover:gap-2 transition-all touch-manipulation shrink-0">
-                    Manage Preferences
+                    {t("preferences.managePreferences")}
                     <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </div>
@@ -226,8 +230,8 @@ export default async function SettingsPage() {
         {/* Security Settings Section */}
         <div className="pt-4 sm:pt-6">
           <SectionColumns
-            title="Sicherheit"
-            description="Verwalten Sie Ihre Sicherheitseinstellungen"
+            title={t("security.title")}
+            description={t("security.description")}
           >
             <Card>
               <CardHeader className="p-3 sm:p-4">
@@ -236,9 +240,9 @@ export default async function SettingsPage() {
                     <Shield className="size-3.5 sm:size-4 text-muted-foreground" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <CardTitle className="text-sm sm:text-base truncate">Sicherheitseinstellungen</CardTitle>
+                    <CardTitle className="text-sm sm:text-base truncate">{t("security.settingsTitle")}</CardTitle>
                     <CardDescription className="text-xs truncate">
-                      2FA, Sessions und Login-Historie verwalten
+                      {t("security.settingsDescription")}
                     </CardDescription>
                   </div>
                 </div>
@@ -246,10 +250,10 @@ export default async function SettingsPage() {
               <CardContent className="p-3 sm:p-4 pt-0">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
                   <div className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
-                    Zwei-Faktor-Authentifizierung, aktive Sessions und Login-Historie
+                    {t("security.detailedDescription")}
                   </div>
                   <Link href="/dashboard/settings/security" className="group flex items-center gap-1 text-xs sm:text-sm text-primary hover:gap-2 transition-all touch-manipulation shrink-0">
-                    Sicherheit verwalten
+                    {t("security.manageSecurity")}
                     <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </div>
@@ -261,8 +265,8 @@ export default async function SettingsPage() {
         {/* GDPR Data Export Section */}
         <div className="pt-4 sm:pt-6">
           <SectionColumns
-            title="Datenschutz & DSGVO"
-            description="Verwalten Sie Ihre Daten gemäß DSGVO"
+            title={t("privacy.title")}
+            description={t("privacy.gdprDescription")}
           >
             <Card>
               <CardHeader className="p-3 sm:p-4">
@@ -271,9 +275,9 @@ export default async function SettingsPage() {
                     <FileText className="size-3.5 sm:size-4 text-muted-foreground" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <CardTitle className="text-sm sm:text-base truncate">Datenschutz-Einstellungen</CardTitle>
+                    <CardTitle className="text-sm sm:text-base truncate">{t("privacy.settingsTitle")}</CardTitle>
                     <CardDescription className="text-xs truncate">
-                      Einwilligungen und Datenexport verwalten
+                      {t("privacy.settingsDescription")}
                     </CardDescription>
                   </div>
                 </div>
@@ -281,10 +285,10 @@ export default async function SettingsPage() {
               <CardContent className="p-3 sm:p-4 pt-0">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
                   <div className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
-                    Verwalten Sie Ihre Einwilligungen und exportieren Sie Ihre Daten
+                    {t("privacy.manageDescription")}
                   </div>
                   <Link href="/dashboard/settings/privacy" className="group flex items-center gap-1 text-xs sm:text-sm text-primary hover:gap-2 transition-all touch-manipulation shrink-0">
-                    Datenschutz verwalten
+                    {t("privacy.managePrivacy")}
                     <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </div>
@@ -296,8 +300,8 @@ export default async function SettingsPage() {
         {/* Account Deletion Section */}
         <div className="pt-4 sm:pt-6">
           <SectionColumns
-            title="Gefahrenzone"
-            description="Unwiderrufliche Aktionen"
+            title={t("dangerZone.title")}
+            description={t("dangerZone.description")}
           >
             <AccountDeletion />
           </SectionColumns>

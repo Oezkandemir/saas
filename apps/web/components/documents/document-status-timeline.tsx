@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { StatusBadge, DocumentStatus } from "@/components/shared/status-badge";
 import { Button } from '@/components/alignui/actions/button';
@@ -13,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Clock, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
-import { de } from "date-fns/locale";
+import { de, enUS } from "date-fns/locale";
 import { updateDocument } from "@/actions/documents-actions";
 import { toast } from "sonner";
 
@@ -27,24 +28,6 @@ interface DocumentStatusTimelineProps {
 
 const statusOrder: DocumentStatus[] = ["draft", "sent", "accepted", "declined", "paid", "overdue"];
 
-const statusLabels: Record<DocumentStatus, string> = {
-  draft: "Entwurf",
-  sent: "Gesendet",
-  accepted: "Angenommen",
-  declined: "Abgelehnt",
-  paid: "Bezahlt",
-  overdue: "Überfällig",
-};
-
-const statusOptions: Record<DocumentStatus, { label: string; availableFor: ("quote" | "invoice")[] }> = {
-  draft: { label: "Entwurf", availableFor: ["quote", "invoice"] },
-  sent: { label: "Gesendet", availableFor: ["quote", "invoice"] },
-  accepted: { label: "Angenommen", availableFor: ["quote"] },
-  declined: { label: "Abgelehnt", availableFor: ["quote"] },
-  paid: { label: "Bezahlt", availableFor: ["invoice"] },
-  overdue: { label: "Überfällig", availableFor: ["invoice"] },
-};
-
 export function DocumentStatusTimeline({
   documentId,
   currentStatus,
@@ -52,8 +35,29 @@ export function DocumentStatusTimeline({
   createdAt,
   updatedAt,
 }: DocumentStatusTimelineProps) {
+  const t = useTranslations("Documents.statusTimeline");
+  const locale = useLocale();
+  const dateLocale = locale === "de" ? de : enUS;
   const router = useRouter();
   const [isUpdating, setIsUpdating] = useState(false);
+
+  const statusLabels: Record<DocumentStatus, string> = {
+    draft: t("labels.draft"),
+    sent: t("labels.sent"),
+    accepted: t("labels.accepted"),
+    declined: t("labels.declined"),
+    paid: t("labels.paid"),
+    overdue: t("labels.overdue"),
+  };
+
+  const statusOptions: Record<DocumentStatus, { label: string; availableFor: ("quote" | "invoice")[] }> = {
+    draft: { label: t("labels.draft"), availableFor: ["quote", "invoice"] },
+    sent: { label: t("labels.sent"), availableFor: ["quote", "invoice"] },
+    accepted: { label: t("labels.accepted"), availableFor: ["quote"] },
+    declined: { label: t("labels.declined"), availableFor: ["quote"] },
+    paid: { label: t("labels.paid"), availableFor: ["invoice"] },
+    overdue: { label: t("labels.overdue"), availableFor: ["invoice"] },
+  };
   
   const currentIndex = statusOrder.indexOf(currentStatus);
   
@@ -71,10 +75,10 @@ export function DocumentStatusTimeline({
     setIsUpdating(true);
     try {
       await updateDocument(documentId, { status: newStatus });
-      toast.success(`Status geändert zu "${statusOptions[newStatus].label}"`);
+      toast.success(t("toast.statusChanged", { status: statusOptions[newStatus].label }));
       router.refresh();
     } catch (error) {
-      toast.error("Fehler beim Ändern des Status");
+      toast.error(t("toast.changeError"));
     } finally {
       setIsUpdating(false);
     }
@@ -85,7 +89,7 @@ export function DocumentStatusTimeline({
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
           <Clock className="h-4 w-4" />
-          Status-Verlauf
+          {t("title")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -118,15 +122,15 @@ export function DocumentStatusTimeline({
                     <div className="flex items-center gap-2 flex-wrap">
                       <StatusBadge status={status} />
                       {isCurrent && (
-                        <span className="text-xs text-muted-foreground font-medium">(Aktuell)</span>
+                        <span className="text-xs text-muted-foreground font-medium">{t("current")}</span>
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
                       {isCurrent && index === reachedStatuses.length - 1
-                        ? format(new Date(updatedAt), "d. MMMM yyyy, HH:mm", { locale: de })
+                        ? format(new Date(updatedAt), "d. MMMM yyyy, HH:mm", { locale: dateLocale })
                         : index === 0
-                        ? format(new Date(createdAt), "d. MMMM yyyy, HH:mm", { locale: de })
-                        : format(new Date(updatedAt), "d. MMMM yyyy, HH:mm", { locale: de })}
+                        ? format(new Date(createdAt), "d. MMMM yyyy, HH:mm", { locale: dateLocale })
+                        : format(new Date(updatedAt), "d. MMMM yyyy, HH:mm", { locale: dateLocale })}
                     </p>
                   </div>
                 </div>
@@ -134,7 +138,7 @@ export function DocumentStatusTimeline({
             })}
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">Kein Status-Verlauf verfügbar</p>
+          <p className="text-sm text-muted-foreground">{t("noHistory")}</p>
         )}
 
         {/* Status ändern - integriert */}
@@ -147,7 +151,7 @@ export function DocumentStatusTimeline({
                 className="w-full justify-between gap-2 h-9"
                 size="sm"
               >
-                <span className="text-sm">Status ändern</span>
+                <span className="text-sm">{t("changeStatus")}</span>
                 <ChevronDown className="h-3.5 w-3.5 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
@@ -161,7 +165,7 @@ export function DocumentStatusTimeline({
                 >
                   <StatusBadge status={status} />
                   {status === currentStatus && (
-                    <span className="ml-2 text-xs text-muted-foreground">(Aktuell)</span>
+                    <span className="ml-2 text-xs text-muted-foreground">{t("current")}</span>
                   )}
                 </DropdownMenuItem>
               ))}

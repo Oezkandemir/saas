@@ -11,6 +11,7 @@ import { ModeToggle } from "@/components/layout/mode-toggle";
 import { UserAccountNav } from "@/components/layout/user-account-nav";
 import { DashboardSidebar, MobileSheetSidebar } from "@/components/layout/dashboard-sidebar-wrapper";
 import { QuickActions } from "@/components/layout/quick-actions";
+import { SearchCommand } from "@/components/dashboard/search-command";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { UserRole } from "@/components/forms/user-role-form";
@@ -82,6 +83,7 @@ export default async function Dashboard({ children }: ProtectedLayoutProps) {
             <div className="w-full flex-1" />
 
             <div className="hidden md:flex items-center gap-2">
+              <SearchCommand links={filteredLinks} />
               <QuickActions />
             </div>
 

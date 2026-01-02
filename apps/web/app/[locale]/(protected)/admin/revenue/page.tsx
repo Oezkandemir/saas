@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getRevenueAnalytics } from "@/actions/revenue-analytics-actions";
 import { DollarSign, TrendingUp, Users, CreditCard } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
@@ -24,6 +24,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/alignui/data-display/badge';
 
 export async function generateMetadata() {
+  // CRITICAL FIX: Get locale and set it before translations
+  // This ensures correct language during client-side navigation
+  const locale = await getLocale();
+  setRequestLocale(locale);
   const t = await getTranslations("Admin.revenue");
 
   return {

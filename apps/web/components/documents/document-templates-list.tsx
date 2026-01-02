@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import { Badge } from '@/components/alignui/data-display/badge';
 import { Edit, Trash2, Eye } from "lucide-react";
@@ -20,6 +21,7 @@ import {
 import { deleteDocumentTemplate } from "@/actions/document-templates-actions";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface DocumentTemplatesListProps {
   templates: DocumentTemplate[];
@@ -30,6 +32,7 @@ export function DocumentTemplatesList({
   templates,
   type,
 }: DocumentTemplatesListProps) {
+  const t = useTranslations("Documents.templates");
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -40,7 +43,7 @@ export function DocumentTemplatesList({
       router.refresh();
     } catch (error) {
       console.error("Error deleting template:", error);
-      alert("Fehler beim Löschen des Templates");
+      toast.error(t("deleteError"));
     } finally {
       setDeletingId(null);
     }
@@ -57,11 +60,11 @@ export function DocumentTemplatesList({
             <div className="flex items-center gap-2">
               <span className="font-medium">{template.name}</span>
               {template.is_default && (
-                <Badge variant="default">Standard</Badge>
+                <Badge variant="default">{t("default")}</Badge>
               )}
             </div>
             <div className="text-sm text-muted-foreground mt-1">
-              {template.company_name || "Keine Firmendaten"}
+              {template.company_name || t("noCompanyData")}
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -87,19 +90,18 @@ export function DocumentTemplatesList({
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Template löschen?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Möchten Sie das Template "{template.name}" wirklich löschen?
-                    Diese Aktion kann nicht rückgängig gemacht werden.
+                    {t("deleteDescription", { name: template.name })}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                  <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => handleDelete(template.id)}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
-                    Löschen
+                    {t("delete")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

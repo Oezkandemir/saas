@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { Mail } from "lucide-react";
+import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
@@ -11,6 +12,11 @@ import {
 } from "@/actions/admin-email-actions";
 
 export async function generateMetadata() {
+  // CRITICAL FIX: Get locale and set it before translations
+  // This ensures correct language during client-side navigation
+  const locale = await getLocale();
+  setRequestLocale(locale);
+
   return constructMetadata({
     title: "E-Mail-Templates",
     description: "Verwalten und testen Sie E-Mail-Templates",

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Document } from "@/actions/documents-actions";
 import { CompanyProfile } from "@/actions/company-profiles-actions";
 
@@ -13,8 +14,9 @@ interface InvoiceFullPreviewProps {
  * Wird im Fullscreen-Dialog angezeigt
  */
 export function InvoiceFullPreview({ document, companyProfile }: InvoiceFullPreviewProps) {
+  const t = useTranslations("Documents");
   const isInvoice = document.type === "invoice";
-  const documentTitle = isInvoice ? "RECHNUNG" : "ANGEBOT";
+  const documentTitle = isInvoice ? t("invoice") : t("quote");
 
   // Use company profile data or fallback to defaults
   const companyName = companyProfile?.company_name || "Ihr Unternehmen";
@@ -50,10 +52,10 @@ export function InvoiceFullPreview({ document, companyProfile }: InvoiceFullPrev
           
           {/* Kontaktinformationen - rechts */}
           <div className="text-right text-sm">
-            {companyPhone && <p className="text-gray-600">Tel: {companyPhone}</p>}
-            {companyEmail && <p className="text-gray-600">E-Mail: {companyEmail}</p>}
-            {companyWebsite && <p className="text-gray-600">Web: {companyWebsite}</p>}
-            {companyVatId && <p className="text-gray-600 mt-2">USt-IdNr.: {companyVatId}</p>}
+            {companyPhone && <p className="text-gray-600">{t("template.phone")}: {companyPhone}</p>}
+            {companyEmail && <p className="text-gray-600">{t("template.email")}: {companyEmail}</p>}
+            {companyWebsite && <p className="text-gray-600">{t("template.website")}: {companyWebsite}</p>}
+            {companyVatId && <p className="text-gray-600 mt-2">{t("template.vatId")}: {companyVatId}</p>}
           </div>
         </div>
       </div>
@@ -79,13 +81,13 @@ export function InvoiceFullPreview({ document, companyProfile }: InvoiceFullPrev
           <h2 className="text-3xl font-bold text-gray-900 mb-3">{documentTitle}</h2>
           <div className="text-sm space-y-1">
             <div className="flex justify-between gap-8">
-              <span className="text-gray-600">Rechnungsnr.:</span>
+              <span className="text-gray-600">{t("invoiceNumber")}</span>
               <span className="font-semibold text-gray-900">{document.document_number}</span>
             </div>
             <div className="flex justify-between gap-8">
-              <span className="text-gray-600">Datum:</span>
+              <span className="text-gray-600">{t("date")}</span>
               <span className="font-semibold text-gray-900">
-                {new Date(document.document_date).toLocaleDateString("de-DE", {
+                {new Date(document.document_date).toLocaleDateString(undefined, {
                   year: "numeric",
                   month: "long",
                   day: "numeric"
@@ -94,9 +96,9 @@ export function InvoiceFullPreview({ document, companyProfile }: InvoiceFullPrev
             </div>
             {document.due_date && isInvoice && (
               <div className="flex justify-between gap-8 pt-2 border-t">
-                <span className="text-gray-600">Fällig am:</span>
+                <span className="text-gray-600">{t("dueDate")}</span>
                 <span className="font-bold text-gray-900">
-                  {new Date(document.due_date).toLocaleDateString("de-DE", {
+                  {new Date(document.due_date).toLocaleDateString(undefined, {
                     year: "numeric",
                     month: "long",
                     day: "numeric"
@@ -112,8 +114,8 @@ export function InvoiceFullPreview({ document, companyProfile }: InvoiceFullPrev
       <div className="mb-6">
         <p className="text-sm text-gray-700 whitespace-pre-line">
           {isInvoice 
-            ? `Sehr geehrte Damen und Herren,\n\nhiermit stellen wir Ihnen folgende Leistungen in Rechnung:`
-            : `Sehr geehrte Damen und Herren,\n\nhiermit unterbreiten wir Ihnen folgendes Angebot:`
+            ? `${t("greeting")}\n\n${t("invoiceIntro")}`
+            : `${t("greeting")}\n\n${t("quoteIntro")}`
           }
         </p>
       </div>
@@ -124,11 +126,11 @@ export function InvoiceFullPreview({ document, companyProfile }: InvoiceFullPrev
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-gray-100 border-y-2 border-gray-900">
-                <th className="text-left p-3 font-bold text-sm">Pos.</th>
-                <th className="text-left p-3 font-bold text-sm">Beschreibung</th>
-                <th className="text-right p-3 font-bold text-sm">Menge</th>
-                <th className="text-right p-3 font-bold text-sm">Einzelpreis</th>
-                <th className="text-right p-3 font-bold text-sm">Gesamt</th>
+                <th className="text-left p-3 font-bold text-sm">{t("position")}</th>
+                <th className="text-left p-3 font-bold text-sm">{t("description")}</th>
+                <th className="text-right p-3 font-bold text-sm">{t("quantity")}</th>
+                <th className="text-right p-3 font-bold text-sm">{t("unitPrice")}</th>
+                <th className="text-right p-3 font-bold text-sm">{t("total")}</th>
               </tr>
             </thead>
             <tbody>
@@ -138,13 +140,13 @@ export function InvoiceFullPreview({ document, companyProfile }: InvoiceFullPrev
                   <td className="p-3 text-sm text-gray-900">{item.description}</td>
                   <td className="text-right p-3 text-sm text-gray-900">{item.quantity}</td>
                   <td className="text-right p-3 text-sm text-gray-900">
-                    {item.unit_price.toLocaleString("de-DE", {
+                    {item.unit_price.toLocaleString(undefined, {
                       style: "currency",
                       currency: "EUR",
                     })}
                   </td>
                   <td className="text-right p-3 text-sm font-semibold text-gray-900">
-                    {(item.quantity * item.unit_price).toLocaleString("de-DE", {
+                    {(item.quantity * item.unit_price).toLocaleString(undefined, {
                       style: "currency",
                       currency: "EUR",
                     })}
@@ -161,27 +163,27 @@ export function InvoiceFullPreview({ document, companyProfile }: InvoiceFullPrev
         <div className="w-96">
           <div className="space-y-2">
             <div className="flex justify-between py-2 border-b border-gray-300">
-              <span className="text-sm text-gray-700">Zwischensumme (Netto):</span>
+              <span className="text-sm text-gray-700">{t("subtotal")}</span>
               <span className="text-sm font-semibold text-gray-900">
-                {document.subtotal.toLocaleString("de-DE", {
+                {document.subtotal.toLocaleString(undefined, {
                   style: "currency",
                   currency: "EUR",
                 })}
               </span>
             </div>
             <div className="flex justify-between py-2 border-b border-gray-300">
-              <span className="text-sm text-gray-700">zzgl. MwSt. ({document.tax_rate}%):</span>
+              <span className="text-sm text-gray-700">{t("taxIncluded", { rate: document.tax_rate })}</span>
               <span className="text-sm font-semibold text-gray-900">
-                {document.tax_amount.toLocaleString("de-DE", {
+                {document.tax_amount.toLocaleString(undefined, {
                   style: "currency",
                   currency: "EUR",
                 })}
               </span>
             </div>
             <div className="flex justify-between py-3 bg-gray-100 px-4 border-2 border-gray-900">
-              <span className="text-base font-bold text-gray-900">Gesamtbetrag (Brutto):</span>
+              <span className="text-base font-bold text-gray-900">{t("totalAmount")}</span>
               <span className="text-lg font-bold text-gray-900">
-                {document.total.toLocaleString("de-DE", {
+                {document.total.toLocaleString(undefined, {
                   style: "currency",
                   currency: "EUR",
                 })}
@@ -195,10 +197,10 @@ export function InvoiceFullPreview({ document, companyProfile }: InvoiceFullPrev
       {isInvoice && (
         <div className="mb-6 p-3 bg-gray-50 border-l-4 border-gray-900">
           <p className="text-xs text-gray-700">
-            <span className="font-semibold">Zahlungsziel:</span> {document.due_date 
-              ? new Date(document.due_date).toLocaleDateString("de-DE")
-              : "Bei Erhalt"
-            } | <span className="font-semibold">Zahlungsweise:</span> Überweisung | Bitte überweisen Sie den Betrag unter Angabe der Rechnungsnummer auf unser Konto.
+            <span className="font-semibold">{t("paymentTerms")}</span> {document.due_date 
+              ? new Date(document.due_date).toLocaleDateString(undefined)
+              : t("onReceipt")
+            } | <span className="font-semibold">{t("paymentMethod")}</span> {t("paymentMethodValue")} | {t("paymentInstruction")}
           </p>
         </div>
       )}
@@ -211,11 +213,11 @@ export function InvoiceFullPreview({ document, companyProfile }: InvoiceFullPrev
       <div className="mb-6 text-sm text-gray-700">
         <p>
           {isInvoice 
-            ? "Wir bedanken uns für Ihren Auftrag und das entgegengebrachte Vertrauen."
-            : "Wir freuen uns auf Ihre Auftragserteilung und stehen für Rückfragen gerne zur Verfügung."
+            ? t("invoiceClosing")
+            : t("quoteClosing")
           }
         </p>
-        <p className="mt-2">Mit freundlichen Grüßen</p>
+        <p className="mt-2">{t("closing")}</p>
         <p className="mt-3 font-semibold">{companyName}</p>
       </div>
 
@@ -229,18 +231,17 @@ export function InvoiceFullPreview({ document, companyProfile }: InvoiceFullPrev
             {companyCountry && ` · ${companyCountry}`}
           </p>
           <p className="leading-relaxed">
-            {companyPhone && `Tel: ${companyPhone}`}
-            {companyEmail && ` · E-Mail: ${companyEmail}`}
-            {companyWebsite && ` · Web: ${companyWebsite}`}
+            {companyPhone && `${t("template.phone")}: ${companyPhone}`}
+            {companyEmail && ` · ${t("template.email")}: ${companyEmail}`}
+            {companyWebsite && ` · ${t("template.website")}: ${companyWebsite}`}
             {iban && ` · IBAN: ${iban}`}
             {bic && ` · BIC: ${bic}`}
-            {companyVatId && ` · USt-IdNr.: ${companyVatId}`}
-            {contactPerson && ` · Geschäftsführer: ${contactPerson}`}
+            {companyVatId && ` · ${t("template.vatId")}: ${companyVatId}`}
+            {contactPerson && ` · ${t("template.managingDirector")}: ${contactPerson}`}
             {companyRegistrationNumber && ` · HRB ${companyRegistrationNumber}`}
           </p>
           <p className="text-center text-gray-500 pt-1 border-t border-gray-300 mt-1">
-            Alle Preise verstehen sich in Euro. Es gelten unsere Allgemeinen Geschäftsbedingungen. 
-            Dieses Dokument wurde elektronisch erstellt und ist ohne Unterschrift gültig.
+            {t("footer.allPrices")} {t("footer.electronic")}
           </p>
         </div>
       </div>

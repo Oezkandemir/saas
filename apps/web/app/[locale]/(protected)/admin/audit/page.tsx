@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 import { Shield, Filter } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/session";
@@ -9,6 +9,10 @@ import { AuditLogTable } from "@/components/admin/audit/audit-log-table";
 import { AuditLogFilters } from "@/components/admin/audit/audit-log-filters";
 
 export async function generateMetadata() {
+  // CRITICAL FIX: Get locale and set it before translations
+  // This ensures correct language during client-side navigation
+  const locale = await getLocale();
+  setRequestLocale(locale);
   const t = await getTranslations("Admin.audit");
 
   return {

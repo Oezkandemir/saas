@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { getCustomers, Customer, createCustomer, CustomerInput } from "@/actions/customers-actions";
 import {
   Select,
@@ -33,13 +34,6 @@ import * as z from "zod";
 import { Plus, UserPlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-const quickCustomerSchema = z.object({
-  name: z.string().min(1, "Name ist erforderlich"),
-  email: z.string().email("Ungültige E-Mail-Adresse").optional().or(z.literal("")),
-  phone: z.string().optional(),
-  company: z.string().optional(),
-});
-
 interface CustomerSelectorProps {
   value?: string;
   onValueChange: (value: string) => void;
@@ -47,10 +41,20 @@ interface CustomerSelectorProps {
 }
 
 export function CustomerSelector({ value, onValueChange, disabled }: CustomerSelectorProps) {
+  const t = useTranslations("Documents.customerSelector");
+  const tDialog = useTranslations("Documents.customerSelector.dialog");
+  const tValidation = useTranslations("Documents.customerSelector.dialog.validation");
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+
+  const quickCustomerSchema = z.object({
+    name: z.string().min(1, tValidation("nameRequired")),
+    email: z.string().email(tValidation("invalidEmail")).optional().or(z.literal("")),
+    phone: z.string().optional(),
+    company: z.string().optional(),
+  });
 
   useEffect(() => {
     loadCustomers();
@@ -62,7 +66,7 @@ export function CustomerSelector({ value, onValueChange, disabled }: CustomerSel
       const data = await getCustomers();
       setCustomers(data);
     } catch (error) {
-      toast.error("Fehler beim Laden der Kunden");
+      toast.error(tDialog("toast.loadError"));
     } finally {
       setIsLoading(false);
     }
@@ -86,12 +90,12 @@ export function CustomerSelector({ value, onValueChange, disabled }: CustomerSel
       onValueChange(newCustomer.id);
       setIsDialogOpen(false);
       form.reset();
-      toast.success("Kunde erfolgreich erstellt", {
-        description: `${newCustomer.name} wurde hinzugefügt und ausgewählt.`,
+      toast.success(tDialog("toast.success"), {
+        description: tDialog("toast.successDescription", { name: newCustomer.name }),
       });
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Fehler beim Erstellen des Kunden"
+        error instanceof Error ? error.message : tDialog("toast.error")
       );
     } finally {
       setIsCreating(false);
@@ -114,7 +118,7 @@ export function CustomerSelector({ value, onValueChange, disabled }: CustomerSel
         disabled={disabled || isLoading}
       >
         <SelectTrigger className="h-11">
-          <SelectValue placeholder={isLoading ? "Lade..." : selectedCustomer ? selectedCustomer.name : "Kunde auswählen"}>
+          <SelectValue placeholder={isLoading ? t("loading") : selectedCustomer ? selectedCustomer.name : t("selectCustomer")}>
             {selectedCustomer ? (
               <div className="flex items-center gap-2">
                 <span className="font-medium">{selectedCustomer.name}</span>
@@ -123,17 +127,17 @@ export function CustomerSelector({ value, onValueChange, disabled }: CustomerSel
                 )}
               </div>
             ) : (
-              "Kunde auswählen"
+              t("selectCustomer")
             )}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="none">Kein Kunde</SelectItem>
+          <SelectItem value="none">{t("noCustomer")}</SelectItem>
           {customers.length === 0 && !isLoading && (
             <SelectItem value="create-new" className="text-primary font-medium">
               <div className="flex items-center gap-2">
                 <UserPlus className="h-4 w-4" />
-                Neuen Kunden erstellen
+                {t("createNew")}
               </div>
             </SelectItem>
           )}
@@ -152,7 +156,7 @@ export function CustomerSelector({ value, onValueChange, disabled }: CustomerSel
               <SelectItem value="create-new" className="text-primary font-medium">
                 <div className="flex items-center gap-2">
                   <Plus className="h-4 w-4" />
-                  Neuen Kunden erstellen
+                  {t("createNew")}
                 </div>
               </SelectItem>
             </div>
@@ -165,10 +169,10 @@ export function CustomerSelector({ value, onValueChange, disabled }: CustomerSel
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <UserPlus className="h-5 w-5 text-primary" />
-              Neuen Kunden erstellen
+              {tDialog("title")}
             </DialogTitle>
             <DialogDescription>
-              Erstellen Sie schnell einen neuen Kunden. Weitere Details können später hinzugefügt werden.
+              {tDialog("description")}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -178,9 +182,9 @@ export function CustomerSelector({ value, onValueChange, disabled }: CustomerSel
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name *</FormLabel>
+                    <FormLabel>{tDialog("fields.name")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Max Mustermann" {...field} />
+                      <Input placeholder={tDialog("fields.namePlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -192,9 +196,9 @@ export function CustomerSelector({ value, onValueChange, disabled }: CustomerSel
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>E-Mail</FormLabel>
+                      <FormLabel>{tDialog("fields.email")}</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="max@example.com" {...field} />
+                        <Input type="email" placeholder={tDialog("fields.emailPlaceholder")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -205,9 +209,9 @@ export function CustomerSelector({ value, onValueChange, disabled }: CustomerSel
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Telefon</FormLabel>
+                      <FormLabel>{tDialog("fields.phone")}</FormLabel>
                       <FormControl>
-                        <Input type="tel" placeholder="+49 123 456789" {...field} />
+                        <Input type="tel" placeholder={tDialog("fields.phonePlaceholder")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -219,9 +223,9 @@ export function CustomerSelector({ value, onValueChange, disabled }: CustomerSel
                 name="company"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Unternehmen</FormLabel>
+                    <FormLabel>{tDialog("fields.company")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Musterfirma GmbH" {...field} />
+                      <Input placeholder={tDialog("fields.companyPlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -237,18 +241,18 @@ export function CustomerSelector({ value, onValueChange, disabled }: CustomerSel
                   }}
                   disabled={isCreating}
                 >
-                  Abbrechen
+                  {tDialog("cancel")}
                 </Button>
                 <Button type="submit" disabled={isCreating}>
                   {isCreating ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Erstelle...
+                      {tDialog("creating")}
                     </>
                   ) : (
                     <>
                       <Plus className="mr-2 h-4 w-4" />
-                      Kunde erstellen
+                      {tDialog("create")}
                     </>
                   )}
                 </Button>

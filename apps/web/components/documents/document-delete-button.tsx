@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import {
   AlertDialog,
@@ -29,6 +30,7 @@ export function DocumentDeleteButton({
   documentNumber,
   documentType,
 }: DocumentDeleteButtonProps) {
+  const t = useTranslations("Documents.delete");
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const [open, setOpen] = useState(false);
@@ -38,11 +40,11 @@ export function DocumentDeleteButton({
     setOpen(false); // Close dialog immediately
     try {
       await deleteDocument(documentId);
-      toast.success(`${documentType === "invoice" ? "Rechnung" : "Angebot"} gelöscht`);
+      toast.success(t(`toast.success.${documentType}`));
       // Navigate to documents list immediately (replace to avoid back button issues)
       router.replace("/dashboard/documents");
     } catch (error) {
-      toast.error("Fehler beim Löschen des Dokuments");
+      toast.error(t("toast.error"));
       setIsDeleting(false);
       setOpen(false);
     }
@@ -57,16 +59,14 @@ export function DocumentDeleteButton({
           className="gap-1.5 h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
         >
           <Trash2 className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">Löschen</span>
+          <span className="hidden sm:inline">{t("button")}</span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="bg-background border-border">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-foreground">Dokument löschen?</AlertDialogTitle>
+          <AlertDialogTitle className="text-foreground">{t("title")}</AlertDialogTitle>
           <AlertDialogDescription className="text-muted-foreground">
-            Möchten Sie {documentType === "invoice" ? "die Rechnung" : "das Angebot"}{" "}
-            <strong className="text-foreground">{documentNumber}</strong> wirklich löschen? Diese Aktion kann nicht
-            rückgängig gemacht werden.
+            {t(`description.${documentType}`)} <strong className="text-foreground">{documentNumber}</strong> {t("confirmText")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="gap-2 sm:flex-row sm:justify-end">
@@ -76,7 +76,7 @@ export function DocumentDeleteButton({
               disabled={isDeleting}
               className="min-w-[100px]"
             >
-              Abbrechen
+              {t("cancel")}
             </Button>
           </AlertDialogCancel>
           <AlertDialogAction asChild>
@@ -86,7 +86,7 @@ export function DocumentDeleteButton({
               disabled={isDeleting}
               className="min-w-[100px]"
             >
-              {isDeleting ? "Wird gelöscht..." : "Löschen"}
+              {isDeleting ? t("deleting") : t("confirm")}
             </Button>
           </AlertDialogAction>
         </AlertDialogFooter>

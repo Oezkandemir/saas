@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 import { Shield, FileText } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/session";
@@ -11,9 +11,15 @@ import { DataExport } from "@/components/gdpr/data-export";
 import { CookieSettingsButton } from "@/components/gdpr/cookie-settings-button";
 
 export async function generateMetadata() {
+  // CRITICAL FIX: Get locale and set it before translations
+  // This ensures correct language during client-side navigation
+  const locale = await getLocale();
+  setRequestLocale(locale);
+  const t = await getTranslations("Settings");
+
   return constructMetadata({
-    title: "Datenschutz-Einstellungen",
-    description: "Verwalten Sie Ihre Datenschutz-Einstellungen und Einwilligungen",
+    title: t("privacy.title") || "Datenschutz-Einstellungen",
+    description: t("privacy.description") || "Verwalten Sie Ihre Datenschutz-Einstellungen und Einwilligungen",
   });
 }
 

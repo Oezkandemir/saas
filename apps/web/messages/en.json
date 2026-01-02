@@ -65,7 +65,51 @@
     "manage": "Manage",
     "basicPlan": "Basic Plan",
     "emptyTitle": "No content yet",
-    "emptyDescription": "You haven't created any content yet. Click the button below to get started."
+    "emptyDescription": "You haven't created any content yet. Click the button below to get started.",
+    "welcome": "Welcome back, {name}",
+    "stats": {
+      "customers": "Customers",
+      "customersDescription": "Total Customers",
+      "openQuotes": "Open Quotes",
+      "openQuotesDescription": "Draft & Sent",
+      "unpaidInvoices": "Unpaid Invoices",
+      "unpaidInvoicesDescription": "Pending",
+      "paidInvoices": "Paid Invoices",
+      "paidInvoicesDescription": "Successful",
+      "qrCodes": "QR Codes",
+      "qrCodesDescription": "Active Codes",
+      "totalDocuments": "Total Documents",
+      "totalDocumentsDescription": "All Documents"
+    },
+    "revenue": {
+      "totalRevenue": "Total Revenue",
+      "totalRevenueDescription": "From paid invoices",
+      "pendingRevenue": "Pending Revenue",
+      "pendingRevenueDescription": "From unpaid invoices"
+    },
+    "recent": {
+      "documents": "Recent Documents",
+      "documentsDescription": "The 5 newest documents",
+      "customers": "Latest Customers",
+      "customersDescription": "The 5 newest customers",
+      "all": "All",
+      "noDocuments": "No documents yet",
+      "noCustomers": "No customers yet",
+      "create": "Create"
+    },
+    "overview": {
+      "title": "Documents Overview",
+      "description": "Overview by type and status",
+      "type": "Type",
+      "status": "Status",
+      "count": "Count",
+      "totalAmount": "Total Amount",
+      "quotes": "Quotes",
+      "invoices": "Invoices",
+      "open": "Open",
+      "unpaid": "Unpaid",
+      "paid": "Paid"
+    }
   },
   "Billing": {
     "title": "Billing – Cenety",
@@ -74,7 +118,10 @@
     "text": "Manage billing and your subscription plan.",
     "demoAlert": "This is a demo app.",
     "demoDescription": "Cenety app is a demo app using a Stripe test environment. You can find a list of test card numbers on the",
-    "stripeDocs": "Stripe docs"
+    "stripeDocs": "Stripe docs",
+    "billingCycle": "Billing Cycle",
+    "monthly": "Monthly",
+    "yearly": "Yearly"
   },
   "Settings": {
     "title": "Settings – Cenety",
@@ -120,6 +167,56 @@
         "deletingToast": "Deleting account...",
         "successToast": "Account deleted successfully!"
       }
+    },
+    "companySettings": {
+      "title": "Company Settings",
+      "description": "Manage your company information for invoices and documents",
+      "profiles": "Company Profiles",
+      "profilesDescription": "Manage company information for all your documents",
+      "centralizedData": "Centralized company data for invoices, quotes, and more",
+      "manageProfiles": "Manage Profiles"
+    },
+    "subscription": {
+      "title": "Subscription Plan",
+      "description": "Your current subscription plan",
+      "currentPlan": "Current Plan",
+      "currentPlanDescription": "Manage your subscription and billing",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "manageBilling": "Manage Billing"
+    },
+    "features": {
+      "title": "Features & Limits",
+      "description": "Detailed overview of your available features and current limits"
+    },
+    "preferences": {
+      "title": "Preferences",
+      "description": "Customize your application preferences",
+      "applicationPreferences": "Application Preferences",
+      "applicationPreferencesDescription": "Theme, language, notifications, and format settings",
+      "customizeDescription": "Customize theme, language, date/time formats, and notification preferences",
+      "managePreferences": "Manage Preferences"
+    },
+    "security": {
+      "title": "Security",
+      "description": "Manage your security settings",
+      "settingsTitle": "Security Settings",
+      "settingsDescription": "Manage 2FA, sessions, and login history",
+      "detailedDescription": "Two-factor authentication, active sessions, and login history",
+      "manageSecurity": "Manage Security"
+    },
+    "privacy": {
+      "title": "Privacy & GDPR",
+      "description": "Manage your privacy settings and consents",
+      "gdprDescription": "Manage your data according to GDPR",
+      "settingsTitle": "Privacy Settings",
+      "settingsDescription": "Manage consents and data export",
+      "manageDescription": "Manage your consents and export your data",
+      "managePrivacy": "Manage Privacy"
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description": "Irreversible actions"
     }
   },
   "Blog": {
@@ -1265,5 +1362,946 @@
       "question": "Can I export my data?",
       "answer": "Yes, you can export all your data at any time. We offer export functions for customers, documents, and all other data in various formats (CSV, PDF, JSON)."
     }
+  },
+  "Preferences": {
+    "languageRegion": {
+      "title": "Language & Region",
+      "description": "Configure language and regional settings",
+      "language": "Language",
+      "locale": "Locale",
+      "timezone": "Timezone",
+      "languages": {
+        "english": "English",
+        "german": "Deutsch",
+        "french": "Français",
+        "spanish": "Español"
+      }
+    },
+    "theme": {
+      "title": "Theme Preferences",
+      "description": "Choose your preferred theme",
+      "themeLabel": "Theme",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "dateTime": {
+      "title": "Date & Time Format",
+      "description": "Customize how dates and times are displayed",
+      "dateFormat": "Date Format",
+      "timeFormat": "Time Format",
+      "hour24": "24 Hour",
+      "hour12": "12 Hour (AM/PM)"
+    },
+    "payment": {
+      "title": "Payment Format",
+      "description": "Configure currency and number formatting",
+      "currency": "Currency",
+      "numberFormat": "Number Format",
+      "european": "European (1.234,56)",
+      "american": "American (1,234.56)"
+    },
+    "emailDigest": {
+      "title": "Email Digest",
+      "description": "Configure how often you receive email summaries",
+      "frequency": "Email Digest Frequency",
+      "never": "Never",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "description": "Fine-tune your notification settings by channel and type",
+      "channels": {
+        "email": "Email",
+        "push": "Push",
+        "in_app": "In-App"
+      },
+      "types": {
+        "system": "System",
+        "billing": "Billing",
+        "security": "Security",
+        "support": "Support",
+        "marketing": "Marketing",
+        "newsletter": "Newsletter"
+      }
+    },
+    "saveButton": "Save Preferences",
+    "saveSuccess": "Preferences updated successfully",
+    "saveError": "Failed to update preferences"
+  },
+  "Company": {
+    "fields": {
+      "companyName": "Company Name",
+      "companyNamePlaceholder": "Example Company GmbH",
+      "companyNameDescription": "The official name of your company",
+      "address": "Street & House Number",
+      "addressPlaceholder": "Example Street 123",
+      "addressLine2": "Address Line 2",
+      "addressLine2Placeholder": "Building A, 3rd Floor",
+      "addressLine2Description": "Optional: Building, floor, department, etc.",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "12345",
+      "city": "City",
+      "cityPlaceholder": "Example City",
+      "country": "Country",
+      "countryPlaceholder": "Select country",
+      "countries": {
+        "germany": "Germany",
+        "austria": "Austria",
+        "switzerland": "Switzerland",
+        "usa": "USA",
+        "unitedKingdom": "United Kingdom",
+        "france": "France",
+        "italy": "Italy",
+        "spain": "Spain",
+        "netherlands": "Netherlands",
+        "belgium": "Belgium"
+      }
+    }
+  },
+  "GDPR": {
+    "consent": {
+      "title": "Consent Management",
+      "description": "Manage your consents for different data types",
+      "loading": "Loading...",
+      "necessary": {
+        "title": "Necessary Cookies",
+        "description": "These cookies are required for the basic functions of the website and cannot be disabled."
+      },
+      "functional": {
+        "title": "Functional Cookies",
+        "description": "These cookies enable advanced features and personalization of the website."
+      },
+      "analytics": {
+        "title": "Analytics Cookies",
+        "description": "These cookies help us understand how visitors interact with our website."
+      },
+      "marketing": {
+        "title": "Marketing Cookies",
+        "description": "These cookies are used to display relevant advertising and track marketing campaigns."
+      },
+      "viewHistory": "View History",
+      "historyTitle": "History",
+      "historyDescription": "Overview of all changes to this consent",
+      "noHistory": "No history available",
+      "grantedStatus": "Granted",
+      "revokedStatus": "Revoked",
+      "updateSuccess": "Consent updated",
+      "granted": "Consent for {type} has been granted",
+      "revoked": "Consent for {type} has been revoked",
+      "error": "Error",
+      "errorDescription": "An error occurred"
+    },
+    "dataExport": {
+      "title": "Data Export",
+      "description": "Download all your stored data (GDPR Art. 15 - Right of access)",
+      "intro": "You have the right to receive a copy of all your personal data. The export includes:",
+      "includes": {
+        "profile": "Your user profile and account information",
+        "customers": "All customer data",
+        "documents": "All documents (quotes, invoices)",
+        "qrCodes": "QR codes and scan statistics",
+        "consents": "Cookie consents",
+        "notifications": "Notifications"
+      },
+      "exporting": "Exporting...",
+      "exportJSON": "Export as JSON",
+      "exportCSV": "Export as CSV",
+      "note": "Note:",
+      "noteText": "The export is created immediately and contains all current data. The files are not stored on our servers.",
+      "toast": {
+        "exportFailed": "Export failed",
+        "exportSuccess": "Export successful",
+        "exportSuccessJSON": "Your data has been downloaded as a JSON file.",
+        "exportSuccessCSV": "Your data has been downloaded as CSV files.",
+        "error": "An error occurred. Please try again."
+      }
+    },
+    "accountDeletion": {
+      "title": "Delete Account",
+      "description": "Delete your account and all associated data (GDPR Art. 17 - Right to be forgotten)",
+      "warning": {
+        "title": "Important notes on account deletion:",
+        "points": {
+          "irreversible": "This action cannot be undone",
+          "dataLost": "All your data will be permanently deleted",
+          "contentLost": "Customers, documents, QR codes and scan statistics will be lost",
+          "exception": "Exception: Paid invoices must be kept for 10 years for legal reasons. In this case, your account will be anonymized instead of deleted."
+        }
+      },
+      "whatHappens": {
+        "title": "What happens when deleting?",
+        "points": {
+          "accountDeactivated": "Your user account will be immediately deactivated",
+          "dataDeleted": "All personal data will be deleted",
+          "loggedOut": "You will be automatically logged out",
+          "auditLog": "An audit log entry will be created for compliance purposes"
+        }
+      },
+      "button": "Permanently delete account",
+      "confirm": {
+        "title": "Really delete account?",
+        "description": "This action cannot be undone. All your data will be permanently deleted.",
+        "inputLabel": "Enter DELETE to confirm:",
+        "inputPlaceholder": "DELETE",
+        "note": "Note: If you have paid invoices that are less than 10 years old, your account will be anonymized instead of deleted (legal retention requirement).",
+        "cancel": "Cancel",
+        "delete": "Delete account",
+        "deleting": "Deleting..."
+      },
+      "toast": {
+        "confirmationFailed": "Confirmation failed",
+        "confirmationMessage": "Please enter DELETE to continue.",
+        "deletionFailed": "Deletion failed",
+        "accountAnonymized": "Account anonymized",
+        "accountDeleted": "Account deleted",
+        "error": "An error occurred. Please try again."
+      }
+    }
+  },
+  "Support": {
+    "title": "Support – Cenety",
+    "description": "Get help and support for your Cenety account.",
+    "heading": "Support",
+    "text": "Get help and support for your Cenety account.",
+    "contactUs": "Contact Us",
+    "contactDescription": "Fill out the form below to get in touch with our support team.",
+    "formFields": {
+      "name": "Name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
+      "messagePlaceholder": "How can we help you?",
+      "sendMessage": "Send Message"
+    },
+    "ticket": {
+      "backToSupport": "Back to Support",
+      "viewAndRespond": "View and respond to your support ticket.",
+      "ticketDetails": "Ticket Details",
+      "created": "Created",
+      "status": "Status",
+      "priority": "Priority",
+      "description": "Description",
+      "conversation": "Conversation",
+      "noMessages": "No messages yet. Start the conversation below.",
+      "ticketClosed": "This ticket is closed and cannot receive new messages.",
+      "open": "Open",
+      "inProgress": "In Progress",
+      "resolved": "Resolved",
+      "closed": "Closed",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent",
+      "reply": "Reply",
+      "yourMessage": "Your Message",
+      "sendReply": "Send Reply",
+      "backToTickets": "Back to Tickets",
+      "lastUpdate": "Last Update",
+      "noMessagesAdmin": "No messages in this ticket yet.",
+      "ticketFrom": "Ticket from",
+      "user": "User",
+      "noEmail": "No Email"
+    },
+    "supportChannels": {
+      "title": "Support Channels",
+      "description": "Choose the most convenient way to reach our support team.",
+      "email": {
+        "title": "Email Support"
+      },
+      "chat": {
+        "title": "Live Chat",
+        "availability": "Available from 9 AM to 5 PM CET"
+      },
+      "phone": {
+        "title": "Phone Support",
+        "number": "+1 (555) 123-4567",
+        "restriction": "Only for Premium and Enterprise packages"
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "description": "Quick answers to commonly asked questions",
+      "categories": {
+        "billing": "Billing",
+        "account": "Account",
+        "features": "Features"
+      },
+      "questions": {
+        "billing": {
+          "upgrade": {
+            "question": "How can I upgrade my plan?",
+            "answer": "You can upgrade your plan in the Billing section of your dashboard."
+          },
+          "cancel": {
+            "question": "Can I cancel my subscription?",
+            "answer": "Yes, you can cancel your subscription at any time in your account settings."
+          }
+        },
+        "account": {
+          "resetPassword": {
+            "question": "How do I reset my password?",
+            "answer": "You can reset your password by clicking \"Forgot password?\" on the login page."
+          },
+          "updateProfile": {
+            "question": "How do I update my profile?",
+            "answer": "You can update your profile information in the Settings section."
+          }
+        },
+        "features": {
+          "included": {
+            "question": "What features are included in my plan?",
+            "answer": "You can see all features included in your plan on the pricing page."
+          },
+          "api": {
+            "question": "How do I use the API?",
+            "answer": "You can find the API documentation in our developer documentation section."
+          }
+        }
+      }
+    },
+    "backToTickets": "Back to Tickets",
+    "lastUpdate": "Last Update",
+    "noMessagesAdmin": "No messages in this ticket yet.",
+    "ticketFrom": "Ticket from",
+    "noEmail": "No Email",
+    "notProvided": "Not Provided",
+    "createTicket": {
+      "title": "Create Support Ticket - Get Expert Help | Professional Support",
+      "description": "Submit a support ticket and get help from our expert team. Fast response times, detailed tracking, and priority support for your business needs. Available 24/7."
+    }
+  },
+  "Documents": {
+    "invoice": "INVOICE",
+    "quote": "QUOTE",
+    "greeting": "Dear Sir or Madam,",
+    "invoiceIntro": "We hereby invoice you for the following services:",
+    "quoteIntro": "We hereby submit the following quote:",
+    "position": "Pos.",
+    "description": "Description",
+    "quantity": "Quantity",
+    "unitPrice": "Unit Price",
+    "total": "Total",
+    "subtotal": "Subtotal (Net):",
+    "taxIncluded": "plus VAT ({rate}%):",
+    "totalAmount": "Total Amount (Gross):",
+    "paymentTerms": "Payment Terms:",
+    "paymentMethod": "Payment Method:",
+    "paymentMethodValue": "Bank Transfer",
+    "paymentInstruction": "Please transfer the amount stating the invoice number to our account.",
+    "dueDate": "Due Date:",
+    "invoiceNumber": "Invoice No.:",
+    "date": "Date:",
+    "onReceipt": "On Receipt",
+    "invoiceClosing": "We thank you for your order and the trust you have placed in us.",
+    "quoteClosing": "We look forward to your order and are happy to answer any questions.",
+    "closing": "Best regards",
+    "footer": {
+      "allPrices": "All prices are in Euro. Our General Terms and Conditions apply.",
+      "electronic": "This document was created electronically and is valid without signature."
+    },
+    "email": {
+      "invoiceSubject": "Invoice {number}",
+      "quoteSubject": "Quote {number}",
+      "invoiceBody": "Dear Sir or Madam,\n\nPlease find attached invoice {number}.\n\nIf you have any questions, please do not hesitate to contact us.\n\nBest regards\n{name}",
+      "quoteBody": "Dear Sir or Madam,\n\nPlease find attached our quote {number}.\n\nWe look forward to your feedback.\n\nBest regards\n{name}"
+    },
+    "page": {
+      "title": "Documents",
+      "description": "Manage your quotes and invoices. Create professional documents in minutes.",
+      "newQuote": "Quote",
+      "newInvoice": "Invoice",
+      "stats": {
+        "total": "Total Documents",
+        "totalDescription": "{quotes} quotes, {invoices} invoices",
+        "openQuotes": "Open Quotes",
+        "openQuotesDescription": "{draft} Draft, {sent} Sent",
+        "paidInvoices": "Paid Invoices",
+        "paidInvoicesDescription": "{rate}% success rate",
+        "unpaidInvoices": "Unpaid Invoices",
+        "unpaidInvoicesDescription": "{action}",
+        "actionRequired": "Action required",
+        "allDone": "All done"
+      }
+    },
+    "tabs": {
+      "all": "All",
+      "quotes": "Quotes ({count})",
+      "invoices": "Invoices ({count})",
+      "empty": {
+        "title": "No documents found",
+        "description": "Create your first document to get started.",
+        "createQuote": "Create Quote",
+        "createInvoice": "Create Invoice"
+      }
+    },
+    "table": {
+      "searchPlaceholder": "Search by document number or customer...",
+      "statusFilter": {
+        "all": "All Status",
+        "draft": "Draft",
+        "sent": "Sent",
+        "accepted": "Accepted",
+        "declined": "Declined",
+        "paid": "Paid",
+        "overdue": "Overdue"
+      },
+      "noResults": "No documents found matching the filter criteria.",
+      "noDocuments": "No documents available.",
+      "columns": {
+        "number": "Number",
+        "type": "Type",
+        "customer": "Customer",
+        "date": "Date",
+        "dueDate": "Due Date",
+        "status": "Status",
+        "amount": "Amount"
+      },
+      "types": {
+        "quote": "Quote",
+        "invoice": "Invoice"
+      },
+      "actions": {
+        "view": "View",
+        "edit": "Edit",
+        "duplicate": "Duplicate",
+        "convertToInvoice": "Create as Invoice"
+      },
+      "toast": {
+        "deleted": "Document deleted",
+        "deleteError": "Error deleting document",
+        "duplicated": "Document duplicated",
+        "duplicateError": "Error duplicating",
+        "converted": "Quote converted to invoice",
+        "convertError": "Error converting"
+      }
+    },
+    "detail": {
+      "description": {
+        "quote": "Quote",
+        "invoice": "Invoice"
+      },
+      "edit": "Edit",
+      "sections": {
+        "documentDetails": "Document Details",
+        "items": "Items",
+        "notes": "Notes",
+        "summary": "Summary"
+      },
+      "fields": {
+        "date": "Date",
+        "dueDate": "Due Date",
+        "customer": "Customer",
+        "subtotal": "Subtotal",
+        "tax": "VAT ({rate}%)",
+        "total": "Total"
+      },
+      "noItems": "No items available"
+    },
+    "statusTimeline": {
+      "title": "Status History",
+      "current": "(Current)",
+      "changeStatus": "Change Status",
+      "noHistory": "No status history available",
+      "toast": {
+        "statusChanged": "Status changed to \"{status}\"",
+        "changeError": "Error changing status"
+      },
+      "labels": {
+        "draft": "Draft",
+        "sent": "Sent",
+        "accepted": "Accepted",
+        "declined": "Declined",
+        "paid": "Paid",
+        "overdue": "Overdue"
+      }
+    },
+    "pdfDownload": {
+      "button": "Download",
+      "generating": "Generating...",
+      "success": "PDF downloaded successfully",
+      "errors": {
+        "loadError": "Error loading PDF",
+        "generateError": "Error generating PDF"
+      }
+    },
+    "pdfPreview": {
+      "button": "Preview",
+      "title": "PDF Preview: {number}",
+      "description": "Preview of the generated PDF document",
+      "fullscreenDescription": "Fullscreen view of the PDF",
+      "loading": "Loading PDF...",
+      "generating": "Generating PDF...",
+      "retry": "Try again",
+      "close": "Close",
+      "iframeTitle": "PDF Preview",
+      "noPdfAvailable": "No PDF available",
+      "clickToLoad": "Click the button to load the PDF preview",
+      "showPreview": "Show PDF Preview",
+      "generatePdf": "Generate PDF",
+      "installationInstructions": "Installation Instructions:",
+      "errors": {
+        "loadError": "Error loading PDF",
+        "generateError": "Error generating PDF",
+        "unknownError": "Unknown error generating PDF",
+        "noUrlReturned": "PDF URL was not returned"
+      }
+    },
+    "preview": {
+      "fullscreenButton": "Show full invoice",
+      "fullscreenTitle": "Full Invoice View",
+      "notes": "Notes:"
+    },
+    "template": {
+      "dueDate": "Due Date",
+      "invoiceAddress": "Invoice Address:",
+      "quoteFor": "Quote for:",
+      "paymentInfo": "Payment Information:",
+      "bank": "Bank",
+      "email": "Email",
+      "phone": "Phone",
+      "website": "Website",
+      "vatId": "VAT ID",
+      "managingDirector": "Managing Director"
+    },
+    "templates": {
+      "default": "Default",
+      "noCompanyData": "No company data",
+      "deleteTitle": "Delete template?",
+      "deleteDescription": "Are you sure you want to delete the template \"{name}\"? This action cannot be undone.",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleteError": "Error deleting template"
+    },
+    "delete": {
+      "button": "Delete",
+      "deleting": "Deleting...",
+      "title": "Delete document?",
+      "description": {
+        "quote": "Are you sure you want to delete the quote",
+        "invoice": "Are you sure you want to delete the invoice"
+      },
+      "confirmText": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "toast": {
+        "success": {
+          "quote": "Quote deleted",
+          "invoice": "Invoice deleted"
+        },
+        "error": "Error deleting document"
+      }
+    },
+    "email": {
+      "button": "Email",
+      "title": {
+        "quote": "Send quote via email",
+        "invoice": "Send invoice via email"
+      },
+      "description": {
+        "quote": "The quote {number} will be sent as a PDF attachment.",
+        "invoice": "The invoice {number} will be sent as a PDF attachment."
+      },
+      "fields": {
+        "email": "Email address *",
+        "emailPlaceholder": "customer@example.com",
+        "subject": "Subject",
+        "subjectPlaceholder": {
+          "quote": "Quote {number}",
+          "invoice": "Invoice {number}"
+        },
+        "message": "Message",
+        "messagePlaceholder": "Optional message..."
+      },
+      "cancel": "Cancel",
+      "send": "Send",
+      "sending": "Sending...",
+      "toast": {
+        "invalidEmail": "Please enter a valid email address",
+        "success": "Email sent successfully",
+        "error": "Error sending email"
+      }
+    },
+    "customerSelector": {
+      "loading": "Loading...",
+      "selectCustomer": "Select customer",
+      "noCustomer": "No customer",
+      "createNew": "Create new customer",
+      "dialog": {
+        "title": "Create new customer",
+        "description": "Quickly create a new customer. Additional details can be added later.",
+        "fields": {
+          "name": "Name *",
+          "namePlaceholder": "John Doe",
+          "email": "Email",
+          "emailPlaceholder": "john@example.com",
+          "phone": "Phone",
+          "phonePlaceholder": "+1 234 567890",
+          "company": "Company",
+          "companyPlaceholder": "Example Company Inc."
+        },
+        "cancel": "Cancel",
+        "create": "Create customer",
+        "creating": "Creating...",
+        "toast": {
+          "loadError": "Error loading customers",
+          "success": "Customer created successfully",
+          "successDescription": "{name} has been added and selected.",
+          "error": "Error creating customer"
+        },
+        "validation": {
+          "nameRequired": "Name is required",
+          "invalidEmail": "Invalid email address"
+        }
+      }
+    },
+    "form": {
+      "toast": {
+        "updated": "Document updated",
+        "created": {
+          "quote": "Quote created",
+          "invoice": "Invoice created"
+        },
+        "saveError": "Error saving"
+      },
+      "title": {
+        "edit": {
+          "quote": "Edit quote",
+          "invoice": "Edit invoice"
+        },
+        "new": {
+          "quote": "New quote",
+          "invoice": "New invoice"
+        }
+      },
+      "description": {
+        "edit": "Update document data",
+        "new": "Create a new document"
+      },
+      "companyProfile": {
+        "label": "Company Profile",
+        "description": "Select the company profile for this document. The data will be used when generating.",
+        "defaultSelected": "(Default profile selected)"
+      },
+      "items": {
+        "label": "Items",
+        "addButton": "Add item",
+        "fields": {
+          "description": "Description",
+          "quantity": "Quantity",
+          "unitPrice": "Unit Price (€)",
+          "total": "Total"
+        }
+      },
+      "summary": {
+        "label": "Summary",
+        "subtotal": "Subtotal:",
+        "tax": "VAT ({rate}%):",
+        "total": "Total:"
+      },
+      "notes": {
+        "label": "Notes",
+        "placeholder": "Internal notes or additional information...",
+        "description": "Optional notes that are only visible internally"
+      },
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "creating": "Creating...",
+      "itemDescriptionPlaceholder": "Item description",
+      "saveChanges": "Save changes",
+      "createDocument": "Create document",
+      "validation": {
+        "dateRequired": "Date is required",
+        "descriptionRequired": "Description is required",
+        "atLeastOneItem": "At least one item is required"
+      }
+    },
+    "pdfDownload": {
+      "button": "Download",
+      "generating": "Generating...",
+      "success": "PDF downloaded successfully",
+      "errors": {
+        "loadError": "Error loading PDF",
+        "generateError": "Error generating PDF"
+      }
+    }
+  },
+  "Customers": {
+    "title": "Customers",
+    "description": "Manage your customers and their information",
+    "newCustomer": "New Customer",
+    "new": "New",
+    "stats": {
+      "total": "Total",
+      "totalDescription": "Total Customers",
+      "qrCodes": "QR Codes",
+      "qrCodesDescription": "With QR Code",
+      "email": "Email",
+      "emailDescription": "With Email",
+      "phone": "Phone",
+      "phoneDescription": "With Phone",
+      "address": "Address",
+      "addressDescription": "With Address",
+      "b2b": "B2B",
+      "b2bDescription": "Companies"
+    },
+    "empty": {
+      "title": "No customers yet",
+      "description": "Create your first customer. Each customer automatically receives a QR code.",
+      "createFirst": "Create First Customer"
+    },
+    "detail": {
+      "description": "Customer details and information",
+      "edit": "Edit",
+      "tabs": {
+        "overview": "Overview",
+        "documents": "Documents ({count})",
+        "activity": "Activity"
+      },
+      "contactInfo": {
+        "title": "Contact Information",
+        "email": "Email",
+        "phone": "Phone",
+        "company": "Company"
+      },
+      "address": {
+        "title": "Address"
+      },
+      "additionalInfo": {
+        "title": "Additional Information",
+        "taxId": "Tax ID",
+        "notes": "Notes"
+      },
+      "metadata": {
+        "title": "Information",
+        "createdAt": "Created on",
+        "lastUpdated": "Last updated",
+        "qrCodeId": "QR Code ID"
+      },
+      "documents": {
+        "title": "Documents ({count})",
+        "newQuote": "Quote",
+        "newInvoice": "Invoice",
+        "empty": {
+          "title": "No documents yet for this customer.",
+          "createFirst": "Create first quote"
+        },
+        "table": {
+          "number": "Number",
+          "type": "Type",
+          "date": "Date",
+          "status": "Status",
+          "amount": "Amount",
+          "actions": "Actions",
+          "open": "Open"
+        },
+        "types": {
+          "quote": "Quote",
+          "invoice": "Invoice"
+        }
+      }
+    },
+    "table": {
+      "name": "Name",
+      "contact": "Contact",
+      "company": "Company",
+      "qrCode": "QR Code",
+      "created": "Created",
+      "createdLabel": "Created:",
+      "actions": "Actions",
+      "viewDetails": "View Details",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": {
+        "title": "Delete customer?",
+        "description": "Are you sure you want to delete this customer? This action cannot be undone."
+      },
+      "deleteCancel": "Cancel",
+      "deleteAction": "Delete",
+      "toast": {
+        "deleted": "Customer deleted",
+        "deletedDescription": "The customer has been successfully removed.",
+        "deleteError": "Error deleting",
+        "deleteErrorDescription": "The customer could not be deleted."
+      }
+    },
+    "quickActions": {
+      "sendEmail": "Send Email",
+      "copyEmail": "Copy Email",
+      "copied": "Copied",
+      "call": "Call",
+      "newQuote": "New Quote",
+      "newInvoice": "New Invoice",
+      "toast": {
+        "noPhone": "No phone number available",
+        "emailCopied": "Email address copied"
+      }
+    },
+    "customerStats": {
+      "documents": "Documents",
+      "documentsDescription": "{quotes} quotes, {invoices} invoices",
+      "revenue": "Revenue",
+      "revenueDescription": "{count} paid invoices",
+      "pending": "Pending",
+      "pendingDescription": "Open invoices",
+      "customerSince": "Customer since",
+      "days": "days"
+    },
+    "activity": {
+      "title": "Activity",
+      "titleWithCount": "Activity ({count})",
+      "empty": "No activities yet",
+      "created": "Customer created",
+      "updated": "Customer data updated",
+      "documentCreated": "{type} {number} created",
+      "status": "Status: {status}",
+      "types": {
+        "quote": "Quote",
+        "invoice": "Invoice"
+      }
+    },
+    "sendEmail": {
+      "title": "Send email to {name}",
+      "description": "Email will be sent to {email}",
+      "subject": "Subject",
+      "subjectPlaceholder": "Email subject",
+      "body": "Message",
+      "bodyPlaceholder": "Your message to the customer...",
+      "cancel": "Cancel",
+      "send": "Send Email",
+      "sending": "Sending...",
+      "toast": {
+        "noEmail": "Customer has no email address",
+        "success": "Email sent successfully",
+        "error": "Error sending email"
+      },
+      "validation": {
+        "subjectRequired": "Subject is required",
+        "subjectMax": "Subject too long",
+        "bodyRequired": "Message is required",
+        "bodyMax": "Message too long"
+      }
+    },
+    "form": {
+      "nameRequired": "Name is required",
+      "invalidEmail": "Invalid email address",
+      "steps": {
+        "personal": {
+          "title": "Personal Data",
+          "description": "Basic contact information"
+        },
+        "address": {
+          "title": "Address",
+          "description": "Complete address data"
+        },
+        "additional": {
+          "title": "Additional Info",
+          "description": "Additional information"
+        }
+      },
+      "saving": "Saving customer...",
+      "creating": "Creating customer...",
+      "updateSuccess": "Customer successfully updated",
+      "updateDescription": "Customer data has been saved.",
+      "createSuccess": "Customer successfully created",
+      "createDescription": "The customer has been created and a QR code has been generated.",
+      "saveError": "Error saving",
+      "unexpectedError": "An unexpected error occurred. Please try again.",
+      "fields": {
+        "personalInfo": "Personal Information",
+        "name": "Name",
+        "namePlaceholder": "John Doe",
+        "nameDescription": "Full name of the customer",
+        "email": "Email",
+        "emailPlaceholder": "john@example.com",
+        "emailDescription": "Email address for communication",
+        "phone": "Phone",
+        "phonePlaceholder": "+1 234 567890",
+        "phoneDescription": "Phone number with country code",
+        "company": "Company",
+        "companyPlaceholder": "Example Company Inc.",
+        "companyDescription": "Company name (if applicable)",
+        "address": "Address",
+        "street": "Street and House Number",
+        "streetPlaceholder": "123 Main Street",
+        "addressLine2": "Address Line 2",
+        "addressLine2Placeholder": "Floor, Apartment, etc.",
+        "postalCode": "Postal Code",
+        "postalCodePlaceholder": "12345",
+        "city": "City",
+        "cityPlaceholder": "Berlin",
+        "country": "Country",
+        "countryPlaceholder": "Select country",
+        "taxId": "Tax ID",
+        "taxIdPlaceholder": "DE123456789",
+        "taxIdDescription": "Tax ID or VAT ID",
+        "notes": "Notes",
+        "notesPlaceholder": "Additional information, special notes, etc.",
+        "notesDescription": "Internal notes about this customer",
+        "additionalInfo": "Additional Information"
+      }
+    },
+    "countries": {
+      "germany": "Germany",
+      "austria": "Austria",
+      "switzerland": "Switzerland",
+      "france": "France",
+      "italy": "Italy",
+      "spain": "Spain",
+      "netherlands": "Netherlands",
+      "belgium": "Belgium",
+      "poland": "Poland",
+      "unitedKingdom": "United Kingdom",
+      "usa": "USA",
+      "canada": "Canada"
+    }
+  },
+  "QRCodes": {
+    "title": "QR Codes",
+    "description": "Manage your dynamic QR codes",
+    "newQRCode": "New QR Code",
+    "new": "New",
+    "page": {
+      "new": "New",
+      "title": "QR Codes",
+      "description": "Create and manage dynamic QR codes for your customers and documents.",
+      "newQRCode": "New QR Code",
+      "stats": {
+        "total": "Total QR Codes",
+        "totalDescription": "{standalone} Standalone, {customer} Customers",
+        "customer": "Customer QR Codes",
+        "customerDescription": "Automatically generated",
+        "standalone": "Standalone QR Codes",
+        "standaloneDescription": "Manually created"
+      },
+      "empty": {
+        "title": "No QR codes found",
+        "description": "Create your first QR code to get started. QR codes are also automatically generated for your customers.",
+        "create": "Create QR Code"
+      },
+      "list": {
+        "title": "QR Code List",
+        "description": "{count} {count, plural, one {QR code} other {QR codes}} total"
+      }
+    },
+    "table": {
+      "name": "Name",
+      "type": "Type",
+      "code": "Code",
+      "target": "Target",
+      "scans": "Scans",
+      "status": "Status",
+      "created": "Created",
+      "deleteConfirm": "Are you sure you want to delete this QR code?",
+      "deleted": "QR code deleted",
+      "deleteError": "Error deleting QR code",
+      "linkCopied": "Link copied"
+    }
+  },
+  "CompanySettings": {
+    "title": "Company Settings",
+    "description": "Manage your company profiles"
   }
 }

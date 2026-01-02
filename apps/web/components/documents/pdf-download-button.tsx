@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import { Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -25,6 +26,7 @@ export function PDFDownloadButton({
   size = "default",
   previewElementRef,
 }: PDFDownloadButtonProps) {
+  const t = useTranslations("Documents.pdfDownload");
   const [loading, setLoading] = useState(false);
 
   const handleDownload = async () => {
@@ -49,7 +51,7 @@ export function PDFDownloadButton({
       // Fetch PDF as blob for direct download
       const pdfResponse = await fetch(pdfUrlToDownload);
       if (!pdfResponse.ok) {
-        throw new Error("Fehler beim Laden des PDFs");
+        throw new Error(t("errors.loadError"));
       }
       
       const blob = await pdfResponse.blob();
@@ -67,11 +69,11 @@ export function PDFDownloadButton({
       // Clean up object URL after a delay
       setTimeout(() => URL.revokeObjectURL(objectUrl), 100);
       
-      toast.success("PDF erfolgreich heruntergeladen");
+      toast.success(t("success"));
     } catch (error) {
       logger.error("Error generating PDF", error);
       
-      let errorMessage = "Fehler beim Generieren des PDFs";
+      let errorMessage = t("errors.generateError");
       if (error instanceof Error) {
         errorMessage = error.message;
       } else if (typeof error === "string") {
@@ -95,12 +97,12 @@ export function PDFDownloadButton({
       {loading ? (
         <>
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          <span className="hidden sm:inline">Wird generiert...</span>
+          <span className="hidden sm:inline">{t("generating")}</span>
         </>
       ) : (
         <>
           <Download className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">Download</span>
+          <span className="hidden sm:inline">{t("button")}</span>
         </>
       )}
     </Button>
