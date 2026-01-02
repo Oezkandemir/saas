@@ -6,8 +6,7 @@ import { getCurrentUser } from "@/lib/session";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { siteConfig } from "@/config/site";
 import { sidebarLinks } from "@/config/dashboard";
-import LanguageDrawer from "@/components/language-drawer";
-import { ModeToggle } from "@/components/layout/mode-toggle";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { UserAccountNav } from "@/components/layout/user-account-nav";
 import { DashboardSidebar, MobileSheetSidebar } from "@/components/layout/dashboard-sidebar-wrapper";
 import { QuickActions } from "@/components/layout/quick-actions";
@@ -87,10 +86,7 @@ export default async function Dashboard({ children }: ProtectedLayoutProps) {
               <QuickActions />
             </div>
 
-            <LanguageDrawer />
-            <div className="hidden md:block">
-              <ModeToggle />
-            </div>
+            <LanguageSwitcher />
             <UserAccountNav />
           </div>
         </header>

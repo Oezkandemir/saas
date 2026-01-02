@@ -13,7 +13,6 @@ import { DocsSidebarNav } from "@/components/docs/sidebar-nav";
 import { Icons } from "@/components/shared/icons";
 import { useSupabase } from "@/components/supabase-provider";
 
-import { ModeToggle } from "./mode-toggle";
 
 export function NavMobile() {
   const { session, supabase } = useSupabase();
@@ -166,7 +165,6 @@ export function NavMobile() {
             <Icons.gitHub className="size-6" />
             <span className="sr-only">GitHub</span>
           </Link>
-          <ModeToggle />
         </div>
       </nav>
     </>

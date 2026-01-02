@@ -6,7 +6,8 @@ import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-const Select = SelectPrimitive.Root;
+const SelectRoot = SelectPrimitive.Root;
+const Select = SelectRoot; // Alias for backward compatibility
 
 const SelectGroup = SelectPrimitive.Group;
 
@@ -14,12 +15,17 @@ const SelectValue = SelectPrimitive.Value;
 
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> & {
+    variant?: "default" | "compact";
+  }
+>(({ className, children, variant = "default", ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+      "flex items-center justify-between rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+      variant === "compact" 
+        ? "h-8 px-2.5 py-1.5" 
+        : "h-10 w-full px-3 py-2",
       className,
     )}
     {...props}
@@ -31,6 +37,20 @@ const SelectTrigger = React.forwardRef<
   </SelectPrimitive.Trigger>
 ));
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
+
+// TriggerIcon component for custom icons
+const SelectTriggerIcon = React.forwardRef<
+  HTMLSpanElement,
+  React.HTMLAttributes<HTMLSpanElement> & {
+    as?: React.ElementType;
+  }
+>(({ className, as: Component, ...props }, ref) => {
+  if (Component) {
+    return <Component ref={ref} className={cn("size-4", className)} {...props} />;
+  }
+  return <span ref={ref} className={cn("size-4", className)} {...props} />;
+});
+SelectTriggerIcon.displayName = "SelectTriggerIcon";
 
 const SelectScrollUpButton = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.ScrollUpButton>,
@@ -69,8 +89,10 @@ SelectScrollDownButton.displayName =
 
 const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = "popper", ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content> & {
+    align?: "start" | "center" | "end";
+  }
+>(({ className, children, position = "popper", align, ...props }, ref) => (
   <SelectPrimitive.Portal>
     <SelectPrimitive.Content
       ref={ref}
@@ -78,6 +100,7 @@ const SelectContent = React.forwardRef<
         "relative z-50 max-h-96 min-w-32 overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         position === "popper" &&
           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+        align === "center" && "items-center",
         className,
       )}
       position={position}
@@ -134,6 +157,23 @@ const SelectItem = React.forwardRef<
 ));
 SelectItem.displayName = SelectPrimitive.Item.displayName;
 
+// ItemIcon component for custom icons in items
+const SelectItemIcon = React.forwardRef<
+  HTMLSpanElement,
+  React.HTMLAttributes<HTMLSpanElement> & {
+    as?: React.ElementType;
+    style?: React.CSSProperties;
+  }
+>(({ className, as: Component, style, ...props }, ref) => {
+  const baseClasses = "size-4 shrink-0 rounded-sm bg-cover bg-center bg-no-repeat";
+  
+  if (Component) {
+    return <Component ref={ref} className={cn(baseClasses, className)} style={style} {...props} />;
+  }
+  return <span ref={ref} className={cn(baseClasses, className)} style={style} {...props} />;
+});
+SelectItemIcon.displayName = "SelectItemIcon";
+
 const SelectSeparator = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>
@@ -146,15 +186,53 @@ const SelectSeparator = React.forwardRef<
 ));
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
 
+// Namespace object for `import * as Select` pattern
+const SelectNamespace = {
+  Root: SelectRoot,
+  Group: SelectGroup,
+  Value: SelectValue,
+  Trigger: SelectTrigger,
+  TriggerIcon: SelectTriggerIcon,
+  Content: SelectContent,
+  Label: SelectLabel,
+  Item: SelectItem,
+  ItemIcon: SelectItemIcon,
+  Separator: SelectSeparator,
+  ScrollUpButton: SelectScrollUpButton,
+  ScrollDownButton: SelectScrollDownButton,
+};
+
+// Export namespace properties as named exports for `import * as Select` to work
+export const Root = SelectRoot;
+export const Group = SelectGroup;
+export const Value = SelectValue;
+export const Trigger = SelectTrigger;
+export const TriggerIcon = SelectTriggerIcon;
+export const Content = SelectContent;
+export const Label = SelectLabel;
+export const Item = SelectItem;
+export const ItemIcon = SelectItemIcon;
+export const Separator = SelectSeparator;
+export const ScrollUpButton = SelectScrollUpButton;
+export const ScrollDownButton = SelectScrollDownButton;
+
+// Default export as namespace
+export default SelectNamespace;
+
+// Named exports for individual imports (backward compatibility)
 export {
   Select,
+  SelectRoot,
   SelectGroup,
   SelectValue,
   SelectTrigger,
+  SelectTriggerIcon,
   SelectContent,
   SelectLabel,
   SelectItem,
+  SelectItemIcon,
   SelectSeparator,
   SelectScrollUpButton,
   SelectScrollDownButton,
+  SelectNamespace,
 };

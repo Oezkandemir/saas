@@ -13,13 +13,12 @@ import { useScroll } from "@/hooks/use-scroll";
 import { Button } from '@/components/alignui/actions/button';
 import { Skeleton } from "@/components/ui/skeleton";
 import { DocsSearch } from "@/components/docs/search";
-import LanguageDrawer from "@/components/language-drawer";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { useSupabase } from "@/components/supabase-provider";
 import { ModalContext } from "@/components/modals/providers";
 
-import { ModeToggle } from "./mode-toggle";
 import { UserAccountNav } from "./user-account-nav";
 import { MarketingCommandMenu } from "./marketing-command-menu";
 
@@ -89,13 +88,10 @@ export function NavBar({ scroll = false }: NavBarProps) {
           {/* Command Menu - Only show on marketing pages, not docs */}
           {!documentation && <MarketingCommandMenu />}
 
-          {/* Language Switcher - Now using drawer for all screen sizes */}
+          {/* Language Switcher */}
           <div className="flex items-center pr-1 sm:pr-2 md:pr-0">
-            <LanguageDrawer />
+            <LanguageSwitcher />
           </div>
-
-          {/* Theme Toggle - Always visible */}
-          <ModeToggle />
 
           {/* right header for docs */}
           {documentation ? (
