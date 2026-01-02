@@ -141,18 +141,47 @@ export async function toggleUserAdminStatus(
     // Determine the new role
     const newRole = currentRole === "ADMIN" ? "USER" : "ADMIN";
 
-    // Update the user's role
-    const { error } = await supabaseAdmin
+    // Get current user metadata from Auth
+    const { data: authUserData, error: authFetchError } =
+      await supabaseAdmin.auth.admin.getUserById(validatedUserId);
+
+    if (authFetchError) {
+      logger.error("Error fetching auth user:", authFetchError);
+      return {
+        success: false,
+        error: `Failed to fetch user auth data: ${authFetchError.message}`,
+      };
+    }
+
+    // Update the user's role in database
+    const { error: dbError } = await supabaseAdmin
       .from("users")
       .update({ role: newRole })
       .eq("id", validatedUserId);
 
-    if (error) {
-      logger.error("Error updating user role:", error);
+    if (dbError) {
+      logger.error("Error updating user role in database:", dbError);
       return {
         success: false,
-        error: `Failed to update user role: ${error.message}`,
+        error: `Failed to update user role: ${dbError.message}`,
       };
+    }
+
+    // IMPORTANT: Also update Auth metadata to keep it in sync
+    // This prevents the role from being reset when syncUserWithDatabase runs
+    const currentMetadata = authUserData?.user?.user_metadata || {};
+    const { error: authUpdateError } =
+      await supabaseAdmin.auth.admin.updateUserById(validatedUserId, {
+        user_metadata: {
+          ...currentMetadata,
+          role: newRole,
+        },
+      });
+
+    if (authUpdateError) {
+      logger.error("Error updating auth metadata:", authUpdateError);
+      // Don't fail the whole operation, but log the error
+      // The database update was successful, so we continue
     }
 
     // Revalidate the admin users page

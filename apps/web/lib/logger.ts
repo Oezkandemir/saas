@@ -71,22 +71,29 @@ class Logger {
         return;
       }
 
+      // Skip logging if error is about cookies() in cached functions
+      // This prevents errors when logging from within unstable_cache
+      const errorMessage = error?.message || String(error || '');
+      if (errorMessage.includes('cookies()') && errorMessage.includes('unstable_cache')) {
+        return;
+      }
+
       // Only import on server side
       const { logSystemError } = await import('./system-monitoring');
       
       // Determine component from error or default to 'api'
       let component: 'database' | 'api' | 'auth' | 'email' | 'storage' | 'payment' = 'api';
       if (error) {
-        const errorMessage = error.message || String(error);
-        if (errorMessage.includes('database') || errorMessage.includes('supabase') || errorMessage.includes('postgres')) {
+        const errMsg = error.message || String(error);
+        if (errMsg.includes('database') || errMsg.includes('supabase') || errMsg.includes('postgres')) {
           component = 'database';
-        } else if (errorMessage.includes('auth') || errorMessage.includes('login') || errorMessage.includes('session')) {
+        } else if (errMsg.includes('auth') || errMsg.includes('login') || errMsg.includes('session')) {
           component = 'auth';
-        } else if (errorMessage.includes('email') || errorMessage.includes('resend')) {
+        } else if (errMsg.includes('email') || errMsg.includes('resend')) {
           component = 'email';
-        } else if (errorMessage.includes('storage') || errorMessage.includes('s3')) {
+        } else if (errMsg.includes('storage') || errMsg.includes('s3')) {
           component = 'storage';
-        } else if (errorMessage.includes('stripe') || errorMessage.includes('payment')) {
+        } else if (errMsg.includes('stripe') || errMsg.includes('payment')) {
           component = 'payment';
         }
       }
@@ -94,8 +101,8 @@ class Logger {
       // Determine error type
       let errorType: 'critical' | 'warning' | 'info' = 'warning';
       if (error) {
-        const errorMessage = error.message || String(error);
-        if (errorMessage.includes('critical') || errorMessage.includes('fatal') || errorMessage.includes('down')) {
+        const errMsg = error.message || String(error);
+        if (errMsg.includes('critical') || errMsg.includes('fatal') || errMsg.includes('down')) {
           errorType = 'critical';
         }
       }
@@ -110,9 +117,15 @@ class Logger {
     } catch (err) {
       // Silently fail - don't break logging
       // This prevents infinite loops if logging itself fails
-      // Don't log RLS errors to prevent loops
-      if (process.env.NODE_ENV === 'development' && err && typeof err === 'object' && 'code' in err && err.code !== '42501') {
-        console.error('Failed to log to system monitoring:', err);
+      // Don't log RLS errors or cookies() errors to prevent loops
+      const errMessage = err && typeof err === 'object' && 'message' in err ? String(err.message) : String(err || '');
+      const errCode = err && typeof err === 'object' && 'code' in err ? err.code : null;
+      
+      if (errCode !== '42501' && !errMessage.includes('cookies()') && !errMessage.includes('unstable_cache')) {
+        // Only log in development to avoid noise
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to log to system monitoring:', err);
+        }
       }
     }
   }

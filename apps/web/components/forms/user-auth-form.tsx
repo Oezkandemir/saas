@@ -137,15 +137,11 @@ export function UserAuthForm({
           throw signInResult.error;
         }
 
-        // If user metadata is missing, update it
-        if (signInResult.data.user.user_metadata?.name) {
-          await supabase.auth.updateUser({
-            data: {
-              name: data.email.split("@")[0],
-              role: "USER",
-            },
-          });
-        }
+        // CRITICAL: Do NOT update the role during login
+        // The role should always come from the database, not from auth metadata
+        // Updating the role here would reset admin roles to USER
+        // If metadata needs updating, do it without touching the role
+        // The role is managed by admins through the admin interface only
 
         // Track login session
         if (signInResult.data.session) {

@@ -46,12 +46,6 @@ export const sidebarLinks: SidebarNavItem[] = [
         icon: "help",
         title: "Support",
       },
-      {
-        href: "/admin",
-        icon: "laptop",
-        title: "Admin Panel",
-        authorizeOnly: UserRole.ADMIN,
-      },
     ],
   },
 ];

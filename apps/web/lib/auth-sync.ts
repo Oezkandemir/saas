@@ -26,8 +26,10 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
       .single();
 
     // If we found the user, return success
+    // IMPORTANT: Do NOT update the role - preserve the existing database role
+    // This prevents admin roles from being reset to USER
     if (existingUser) {
-      logger.debug(`User ${user.id} already exists in database`);
+      logger.debug(`User ${user.id} already exists in database with role ${existingUser.role}`);
       return existingUser;
     }
 
@@ -134,6 +136,34 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
       if (insertError) {
         logger.error("Error creating user record:", insertError);
 
+        // If the error is due to ID conflict (user already exists), fetch the existing user
+        // This can happen in race conditions where multiple requests try to create the same user
+        if (
+          insertError.code === "23505" &&
+          (insertError.details?.includes("id") || insertError.message?.includes("users_pkey"))
+        ) {
+          logger.info(
+            `User ${user.id} already exists (race condition), fetching existing user`,
+          );
+
+          // Fetch the existing user to preserve their role
+          const { data: existingUser, error: fetchError } = await supabaseAdmin
+            .from("users")
+            .select("*")
+            .eq("id", user.id)
+            .single();
+
+          if (fetchError) {
+            logger.error("Error fetching existing user after conflict:", fetchError);
+            return null;
+          }
+
+          logger.info(
+            `Retrieved existing user ${user.id} with role ${existingUser?.role}`,
+          );
+          return existingUser;
+        }
+
         // If the error is due to email uniqueness, try without email
         if (
           insertError.code === "23505" &&
@@ -154,6 +184,25 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
               .single();
 
           if (insertNoEmailError) {
+            // If this also fails due to ID conflict, fetch existing user
+            if (
+              insertNoEmailError.code === "23505" &&
+              (insertNoEmailError.details?.includes("id") || insertNoEmailError.message?.includes("users_pkey"))
+            ) {
+              const { data: existingUser } = await supabaseAdmin
+                .from("users")
+                .select("*")
+                .eq("id", user.id)
+                .single();
+              
+              if (existingUser) {
+                logger.info(
+                  `Retrieved existing user ${user.id} after email conflict`,
+                );
+                return existingUser;
+              }
+            }
+            
             logger.error(
               "Error creating user without email:",
               insertNoEmailError,
@@ -192,6 +241,25 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
           .single();
 
         if (minimalError) {
+          // If error is due to ID conflict, fetch existing user to preserve role
+          if (
+            minimalError.code === "23505" &&
+            (minimalError.details?.includes("id") || minimalError.message?.includes("users_pkey"))
+          ) {
+            logger.info(
+              `User ${user.id} already exists, fetching to preserve role`,
+            );
+            const { data: existingUser } = await supabaseAdmin
+              .from("users")
+              .select("*")
+              .eq("id", user.id)
+              .single();
+            
+            if (existingUser) {
+              return existingUser;
+            }
+          }
+          
           logger.error("Error with minimal user insert:", minimalError);
           return null;
         }

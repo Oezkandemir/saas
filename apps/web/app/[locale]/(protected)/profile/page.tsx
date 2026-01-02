@@ -5,12 +5,16 @@ import { formatDistance } from "date-fns";
 import {
   BadgeCheck,
   Bell,
+  Building2,
   CreditCard,
   HelpCircle,
   Mail,
+  MapPin,
+  Phone,
   Settings,
   Shield,
   User,
+  Globe,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
@@ -27,10 +31,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { UserTicketAccordion } from "@/components/support/user-ticket-accordion";
-import { FollowStats } from "@/components/follow-stats";
-import { getFollowStatus } from "@/actions/follow-actions";
+import { getDefaultCompanyProfile, getCompanyProfiles } from "@/actions/company-profiles-actions";
+import { Badge } from "@/components/ui/badge";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export async function generateMetadata() {
   const t = await getTranslations("Profile");
@@ -65,8 +75,12 @@ export default async function ProfilePage() {
     console.error("Error fetching user data:", error);
   }
 
-  // Get follow status and stats for current user
-  const followStatus = await getFollowStatus(user.id);
+  // Get company profile - try default first, then get first available profile
+  let companyProfile = await getDefaultCompanyProfile().catch(() => null);
+  if (!companyProfile) {
+    const allProfiles = await getCompanyProfiles().catch(() => []);
+    companyProfile = allProfiles.length > 0 ? allProfiles[0] : null;
+  }
 
   const hasSubscription = !!userData?.stripe_subscription_id;
   const subscriptionStatus = hasSubscription ? "active" : null; // Simplified since we don't have the status field
@@ -79,153 +93,269 @@ export default async function ProfilePage() {
   const emailVerified = user.email_confirmed_at != null;
 
   return (
-    <>
-      <DashboardHeaderWithLanguageSwitcher
-        heading={t("heading")}
-        text={t("updateProfile")}
-      />
-
-      <div className="grid gap-6 md:grid-cols-3">
-        {/* Left sidebar with user info */}
-        <Card className="md:col-span-1">
-          <CardHeader className="flex flex-row gap-4 items-center pb-2">
-            <Avatar className="size-16">
-              <AvatarImage
-                src={user.avatar_url || ""}
-                alt={user.name || "User"}
-              />
-              <AvatarFallback>
-                {user.name?.[0] || user.email?.[0] || "U"}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <CardTitle>{user.name || t("personalInfo.title")}</CardTitle>
-              <CardDescription className="flex items-center">
+    <UnifiedPageLayout
+      title={t("heading")}
+      description={t("updateProfile")}
+      icon={<User className="h-4 w-4 text-primary" />}
+      contentClassName="space-y-6"
+    >
+      {/* Hero Profile Section - Modern Big Tech Style */}
+      <Card className="border-2 bg-gradient-to-br from-background via-background to-muted/20 overflow-hidden">
+        <div className="relative">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
+          
+          <CardContent className="relative p-6 sm:p-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-end gap-6">
+              {/* Avatar - Perfect Circle, Not Stretched */}
+              <div className="relative flex-shrink-0">
+                <Avatar className="size-24 sm:size-32 border-4 border-background shadow-lg ring-2 ring-primary/20">
+                  <AvatarImage
+                    src={user.avatar_url || ""}
+                    alt={user.name || "User"}
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary text-2xl sm:text-3xl font-semibold">
+                    {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
                 {user.role === "ADMIN" && (
-                  <Shield className="mr-1 text-blue-500 size-3" />
+                  <div className="absolute -bottom-1 -right-1 flex items-center justify-center size-8 sm:size-10 rounded-full bg-blue-500 border-4 border-background shadow-lg">
+                    <Shield className="size-4 sm:size-5 text-white" />
+                  </div>
                 )}
-                {user.email}
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">
-                {t("accountInfo")}
-              </p>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">{t("memberSince")}</span>
-                <span className="text-sm font-medium">
-                  {user.created_at
-                    ? formatDistance(new Date(user.created_at), new Date(), {
-                        addSuffix: true,
-                      })
-                    : "N/A"}
-                </span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">{t("lastLogin")}</span>
-                <span className="text-sm font-medium">
-                  {user.last_sign_in_at
-                    ? formatDistance(
-                        new Date(user.last_sign_in_at),
-                        new Date(),
-                        { addSuffix: true },
-                      )
-                    : "N/A"}
-                </span>
-              </div>
-              {subscriptionStatus && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">{t("subscription")}</span>
-                  <span
-                    className={`flex items-center text-sm font-medium ${subscriptionStatus === "active" ? "text-green-500" : "text-yellow-500"}`}
-                  >
-                    <BadgeCheck className="mr-1 size-3" />
-                    {subscriptionStatus === "active"
-                      ? t("active")
-                      : t("inactive")}
-                  </span>
-                </div>
-              )}
-              {subscriptionEndsAt && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">{t("renews")}</span>
-                  <span className="text-sm font-medium">
-                    {formatDistance(subscriptionEndsAt, new Date(), {
-                      addSuffix: true,
-                    })}
-                  </span>
-                </div>
-              )}
-            </div>
 
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">
-                {t("quickLinks")}
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                <Link href="/dashboard/billing">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="justify-start w-full"
-                  >
-                    <CreditCard className="mr-2 size-4" />
-                    {t("billing")}
-                  </Button>
-                </Link>
-                <Link href="/dashboard/settings">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="justify-start w-full"
-                  >
-                    <Settings className="mr-2 size-4" />
-                    {t("settings")}
-                  </Button>
-                </Link>
-                <Link href="/dashboard/support">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="justify-start w-full"
-                  >
-                    <HelpCircle className="mr-2 size-4" />
-                    {t("support")}
-                  </Button>
-                </Link>
-                <Link href="/dashboard/notifications">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="justify-start w-full"
-                  >
-                    <Bell className="mr-2 size-4" />
-                    {t("notifications.title")}
-                  </Button>
-                </Link>
-              </div>
-            </div>
+              {/* User Info */}
+              <div className="flex-1 min-w-0 pb-2">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+                  <div className="min-w-0">
+                    <h1 className="text-2xl sm:text-3xl font-bold mb-1 truncate">
+                      {user.name || t("personalInfo.title")}
+                    </h1>
+                    <p className="text-muted-foreground text-sm sm:text-base break-all">
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
 
-            {/* Follow Stats */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">
-                Social
-              </p>
-              <FollowStats
-                userId={user.id}
-                followerCount={followStatus.followerCount}
-                followingCount={followStatus.followingCount}
-                className="justify-start"
-                size="sm"
-              />
+                {/* Stats Row */}
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center size-8 rounded-lg bg-muted/50 border border-border">
+                      <User className="size-4 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">{t("memberSince")}</p>
+                      <p className="text-sm font-medium">
+                        {user.created_at
+                          ? formatDistance(new Date(user.created_at), new Date(), {
+                              addSuffix: true,
+                            })
+                          : "N/A"}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {subscriptionStatus && (
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-center size-8 rounded-lg bg-green-500/10 border border-green-500/20">
+                        <BadgeCheck className="size-4 text-green-600 dark:text-green-400" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">{t("subscription")}</p>
+                        <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                          {subscriptionStatus === "active" ? t("active") : t("inactive")}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </CardContent>
-        </Card>
+        </div>
+      </Card>
 
-        {/* Main content with tabs */}
-        <div className="md:col-span-2">
+      {/* Company Profile Section - Accordion */}
+      <Card>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="company-profile" className="border-none">
+            <AccordionTrigger className="px-6 py-4 hover:no-underline">
+              <div className="flex items-center justify-between w-full pr-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center size-10 rounded-lg bg-primary/10 border border-primary/20">
+                    <Building2 className="size-5 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <div className="flex items-center gap-2">
+                      <CardTitle className="text-lg font-semibold">
+                        {companyProfile ? companyProfile.company_name : "Firmenprofil"}
+                      </CardTitle>
+                      {companyProfile?.is_default && (
+                        <Badge variant="default" className="bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/30 text-xs">
+                          Standard
+                        </Badge>
+                      )}
+                    </div>
+                    <CardDescription className="text-sm mt-0.5">
+                      {companyProfile ? "Standard-Profil für Dokumente und Rechnungen" : "Kein Firmenprofil vorhanden"}
+                    </CardDescription>
+                  </div>
+                </div>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="px-6 pb-6">
+              {companyProfile ? (
+                <div className="space-y-4 pt-2">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {companyProfile.profile_name && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Profilname</p>
+                        <p className="text-sm">{companyProfile.profile_name}</p>
+                      </div>
+                    )}
+                    {companyProfile.company_address && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+                          <MapPin className="size-3" />
+                          Adresse
+                        </p>
+                        <p className="text-sm">
+                          {companyProfile.company_address}
+                          {companyProfile.company_address_line2 && `, ${companyProfile.company_address_line2}`}
+                          {companyProfile.company_postal_code && companyProfile.company_city && (
+                            <><br />{companyProfile.company_postal_code} {companyProfile.company_city}</>
+                          )}
+                          {companyProfile.company_country && (
+                            <><br />{companyProfile.company_country}</>
+                          )}
+                        </p>
+                      </div>
+                    )}
+                    {companyProfile.company_email && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+                          <Mail className="size-3" />
+                          E-Mail
+                        </p>
+                        <a href={`mailto:${companyProfile.company_email}`} className="text-sm text-primary hover:underline">
+                          {companyProfile.company_email}
+                        </a>
+                      </div>
+                    )}
+                    {(companyProfile.company_phone || companyProfile.company_mobile) && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+                          <Phone className="size-3" />
+                          Telefon
+                        </p>
+                        <p className="text-sm">
+                          {companyProfile.company_phone || companyProfile.company_mobile}
+                        </p>
+                      </div>
+                    )}
+                    {companyProfile.company_website && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+                          <Globe className="size-3" />
+                          Website
+                        </p>
+                        <a 
+                          href={companyProfile.company_website.startsWith('http') ? companyProfile.company_website : `https://${companyProfile.company_website}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline"
+                        >
+                          {companyProfile.company_website}
+                        </a>
+                      </div>
+                    )}
+                    {(companyProfile.company_vat_id || companyProfile.company_tax_id) && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Steuernummer / USt-IdNr.</p>
+                        <p className="text-sm">
+                          {companyProfile.company_vat_id && `USt-IdNr.: ${companyProfile.company_vat_id}`}
+                          {companyProfile.company_vat_id && companyProfile.company_tax_id && " / "}
+                          {companyProfile.company_tax_id && `Steuernummer: ${companyProfile.company_tax_id}`}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="pt-2 border-t">
+                    <Link href="/dashboard/settings/company">
+                      <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                        Firmenprofile verwalten
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <Building2 className="mx-auto mb-4 size-12 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold mb-2">Kein Firmenprofil vorhanden</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Erstellen Sie ein Firmenprofil, um Ihre Firmendaten für Dokumente und Rechnungen zu verwalten.
+                  </p>
+                  <Link href="/dashboard/settings/company/new">
+                    <Button className="gap-2">
+                      <Building2 className="size-4" />
+                      Erstes Firmenprofil erstellen
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </Card>
+
+      {/* Quick Actions Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <Link href="/dashboard/billing">
+          <Card className="hover:border-primary/50 transition-all cursor-pointer group h-full">
+            <CardContent className="p-4 flex flex-col items-center gap-2 text-center">
+              <div className="flex items-center justify-center size-10 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                <CreditCard className="size-5 text-primary" />
+              </div>
+              <span className="text-sm font-medium">{t("billing")}</span>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/dashboard/settings">
+          <Card className="hover:border-primary/50 transition-all cursor-pointer group h-full">
+            <CardContent className="p-4 flex flex-col items-center gap-2 text-center">
+              <div className="flex items-center justify-center size-10 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                <Settings className="size-5 text-primary" />
+              </div>
+              <span className="text-sm font-medium">{t("settings")}</span>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/dashboard/support">
+          <Card className="hover:border-primary/50 transition-all cursor-pointer group h-full">
+            <CardContent className="p-4 flex flex-col items-center gap-2 text-center">
+              <div className="flex items-center justify-center size-10 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                <HelpCircle className="size-5 text-primary" />
+              </div>
+              <span className="text-sm font-medium">{t("support")}</span>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/profile/notifications">
+          <Card className="hover:border-primary/50 transition-all cursor-pointer group h-full">
+            <CardContent className="p-4 flex flex-col items-center gap-2 text-center">
+              <div className="flex items-center justify-center size-10 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                <Bell className="size-5 text-primary" />
+              </div>
+              <span className="text-sm font-medium">{t("notifications.title")}</span>
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
+
+      {/* Main content with tabs */}
+      <div>
           <Tabs defaultValue="overview" className="w-full">
             <TabsList className="grid grid-cols-4 w-full">
               <TabsTrigger value="overview">
@@ -429,8 +559,7 @@ export default async function ProfilePage() {
               </Card>
             </TabsContent>
           </Tabs>
-        </div>
       </div>
-    </>
+    </UnifiedPageLayout>
   );
 }

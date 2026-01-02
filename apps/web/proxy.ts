@@ -14,8 +14,9 @@ const intlMiddleware = createIntlMiddleware({
   localeDetection: true, // Enable automatic locale detection
 });
 
-// Cache for user status to avoid repeated DB calls
+// Cache for user status and role to avoid repeated DB calls
 const userStatusCache = new Map<string, { status: string; timestamp: number }>();
+const userRoleCache = new Map<string, { role: string; timestamp: number }>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 // Static file patterns for better performance
@@ -174,9 +175,36 @@ export default async function proxy(request: NextRequest) {
 
   // Handle auth routes when already logged in
   if (isAuthRoute && session) {
+    // Get role from database (with caching) for secure redirect
+    let userRole = "USER"; // Default to USER for security
+    if (authUser) {
+      const now = Date.now();
+      const cached = userRoleCache.get(authUser.id);
+      
+      if (cached && (now - cached.timestamp) < CACHE_TTL) {
+        userRole = cached.role;
+      } else {
+        try {
+          const { data: userData, error } = await supabase
+            .from("users")
+            .select("role")
+            .eq("id", authUser.id)
+            .single();
+
+          if (!error && userData?.role) {
+            userRole = String(userData.role).trim();
+            userRoleCache.set(authUser.id, { role: userRole, timestamp: now });
+          }
+        } catch (error) {
+          logger.error("Error checking user role in proxy", error);
+          // Default to USER for security if query fails
+        }
+      }
+    }
+
     const redirectTo =
       request.nextUrl.searchParams.get("redirectTo") ||
-      (session.user.user_metadata?.role === "ADMIN" ? "/admin" : "/dashboard");
+      (userRole === "ADMIN" ? "/admin" : "/dashboard");
 
     return NextResponse.redirect(
       new URL(`/${locale}${redirectTo}`, request.url),

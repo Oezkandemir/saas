@@ -16,8 +16,9 @@ import { useSupabase } from "@/components/supabase-provider";
 import { ModeToggle } from "./mode-toggle";
 
 export function NavMobile() {
-  const { session } = useSupabase();
+  const { session, supabase } = useSupabase();
   const [open, setOpen] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const selectedLayout = useSelectedLayoutSegment();
   const documentation = selectedLayout === "docs";
 
@@ -27,6 +28,35 @@ export function NavMobile() {
 
   const links =
     (selectedLayout && configMap[selectedLayout]) || marketingConfig.mainNav;
+
+  // Fetch user role from database (not from metadata for security)
+  useEffect(() => {
+    async function fetchUserRole() {
+      try {
+        if (session?.user?.id) {
+          const { data, error } = await supabase
+            .from("users")
+            .select("role")
+            .eq("id", session.user.id)
+            .single();
+
+          if (!error && data) {
+            // Use database role, not metadata
+            const role = String(data.role || "USER").trim();
+            setUserRole(role);
+          } else {
+            // If database query fails, don't trust metadata - set to USER
+            setUserRole("USER");
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching user role:", err);
+        setUserRole("USER");
+      }
+    }
+
+    fetchUserRole();
+  }, [session, supabase]);
 
   // prevent body scroll when modal is open
   useEffect(() => {
@@ -76,7 +106,9 @@ export function NavMobile() {
 
           {session ? (
             <>
-              {session.user.user_metadata?.role === "ADMIN" ? (
+              {/* CRITICAL: Check role from database, not from user_metadata */}
+              {/* user_metadata can be outdated or manipulated, database is source of truth */}
+              {userRole === "ADMIN" ? (
                 <li className="py-3">
                   <Link
                     href="/admin"

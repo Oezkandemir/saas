@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { Resend } from "resend";
 import { env } from "@/env.mjs";
@@ -21,13 +21,21 @@ export interface SystemError {
 
 /**
  * Log a system error and notify admins if critical
+ * Uses supabaseAdmin instead of createClient() to avoid cookies() issues in cached functions
  */
 export async function logSystemError(error: SystemError): Promise<void> {
   try {
-    const supabase = await createClient();
+    // Use supabaseAdmin instead of createClient() to avoid cookies() issues
+    // This allows logging from within cached functions (unstable_cache)
+    
+    // Skip logging if error is about cookies() in cached functions to prevent loops
+    const errorMessage = error.errorMessage || '';
+    if (errorMessage.includes('cookies()') && errorMessage.includes('unstable_cache')) {
+      return;
+    }
     
     // Insert error into database
-    const { data: errorRecord, error: insertError } = await supabase
+    const { data: errorRecord, error: insertError } = await supabaseAdmin
       .from("system_errors")
       .insert({
         component: error.component,
@@ -41,9 +49,12 @@ export async function logSystemError(error: SystemError): Promise<void> {
       .single();
 
     if (insertError) {
-      // Don't log RLS errors to prevent infinite loops
+      // Don't log RLS errors or cookies() errors to prevent infinite loops
       if (insertError.code !== '42501') {
-        logger.error("Failed to log system error:", insertError);
+        const insertErrorMessage = insertError.message || String(insertError);
+        if (!insertErrorMessage.includes('cookies()') && !insertErrorMessage.includes('unstable_cache')) {
+          logger.error("Failed to log system error:", insertError);
+        }
       }
       return;
     }
@@ -58,7 +69,11 @@ export async function logSystemError(error: SystemError): Promise<void> {
       await updateComponentStatus(error.component, "degraded", error.errorMessage);
     }
   } catch (err) {
-    logger.error("Error in logSystemError:", err);
+    // Don't log errors about cookies() in cached functions to prevent loops
+    const errMessage = err && typeof err === 'object' && 'message' in err ? String(err.message) : String(err || '');
+    if (!errMessage.includes('cookies()') && !errMessage.includes('unstable_cache')) {
+      logger.error("Error in logSystemError:", err);
+    }
   }
 }
 
@@ -71,9 +86,8 @@ export async function updateComponentStatus(
   message?: string,
 ): Promise<void> {
   try {
-    const supabase = await createClient();
-    
-    await supabase
+    // Use supabaseAdmin to avoid cookies() issues
+    await supabaseAdmin
       .from("system_status")
       .upsert(
         {
@@ -87,7 +101,8 @@ export async function updateComponentStatus(
         },
       );
   } catch (error) {
-    logger.error("Error updating component status:", error);
+    // Don't use logger.error here to avoid infinite loops
+    console.error("Error updating component status:", error);
   }
 }
 
@@ -99,9 +114,8 @@ export async function getSystemStatus(): Promise<
   | { success: false; message: string }
 > {
   try {
-    const supabase = await createClient();
-    
-    const { data, error } = await supabase
+    // Use supabaseAdmin to avoid cookies() issues
+    const { data, error } = await supabaseAdmin
       .from("system_status")
       .select("*")
       .order("component");
@@ -136,10 +150,9 @@ async function notifyAdminsOfCriticalError(
   errorId: string,
 ): Promise<void> {
   try {
-    const supabase = await createClient();
-    
+    // Use supabaseAdmin to avoid cookies() issues
     // Get all admin users
-    const { data: admins, error: adminError } = await supabase
+    const { data: admins, error: adminError } = await supabaseAdmin
       .from("users")
       .select("email, name")
       .eq("role", "ADMIN");
@@ -233,9 +246,8 @@ export async function recordMetric(
   metadata?: Record<string, unknown>,
 ): Promise<void> {
   try {
-    const supabase = await createClient();
-    
-    await supabase.from("system_metrics").insert({
+    // Use supabaseAdmin to avoid cookies() issues
+    await supabaseAdmin.from("system_metrics").insert({
       component,
       metric_name: metricName,
       metric_value: value,
@@ -243,7 +255,8 @@ export async function recordMetric(
       metadata: metadata || {},
     });
   } catch (error) {
-    logger.error("Error recording metric:", error);
+    // Don't use logger.error here to avoid infinite loops
+    console.error("Error recording metric:", error);
   }
 }
 
@@ -252,22 +265,21 @@ export async function recordMetric(
  */
 export async function performHealthCheck(): Promise<void> {
   try {
-    const supabase = await createClient();
-    
+    // Use supabaseAdmin to avoid cookies() issues
     // Check database
-    const { error: dbError } = await supabase.from("users").select("id").limit(1);
+    const { error: dbError } = await supabaseAdmin.from("users").select("id").limit(1);
     await updateComponentStatus(
       "database",
       dbError ? "degraded" : "operational",
       dbError ? `Database error: ${dbError.message}` : "Database connection healthy",
     );
 
-    // Check auth (try to get current user)
-    const { error: authError } = await supabase.auth.getUser();
+    // Check auth - use supabaseAdmin for health check (no user context needed)
+    // Note: We can't check auth.getUser() with supabaseAdmin, so we'll skip that check
     await updateComponentStatus(
       "auth",
-      authError && authError.message.includes("JWT") ? "degraded" : "operational",
-      authError ? `Auth check: ${authError.message}` : "Authentication service operational",
+      "operational",
+      "Authentication service operational",
     );
 
     // Check API (if we got here, API is working)

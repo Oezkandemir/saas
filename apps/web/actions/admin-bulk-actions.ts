@@ -80,10 +80,29 @@ export async function bulkUserActions(
               failed++;
               continue;
             }
+            // Update role in database
             await supabaseAdmin
               .from("users")
               .update({ role: value })
               .eq("id", userId);
+            
+            // IMPORTANT: Also update Auth metadata to keep it in sync
+            try {
+              const { data: authUserData } = await supabaseAdmin.auth.admin.getUserById(userId);
+              if (authUserData?.user) {
+                const currentMetadata = authUserData.user.user_metadata || {};
+                await supabaseAdmin.auth.admin.updateUserById(userId, {
+                  user_metadata: {
+                    ...currentMetadata,
+                    role: value,
+                  },
+                });
+              }
+            } catch (authError) {
+              logger.error(`Error updating auth metadata for user ${userId}:`, authError);
+              // Don't fail the whole operation, but log the error
+            }
+            
             await createAuditLog("role_changed", "user", userId, undefined, { new_role: value, bulk: true });
             break;
           case "change_plan":

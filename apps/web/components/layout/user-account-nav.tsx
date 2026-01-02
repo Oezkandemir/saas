@@ -246,7 +246,13 @@ export function UserAccountNav() {
 
           if (!error && data) {
             setDbUserName(data.name);
-            setDbUserRole(data.role);
+            // CRITICAL: Always use database role, normalize it
+            const role = String(data.role || "USER").trim();
+            setDbUserRole(role);
+          } else {
+            // If database query fails, don't trust metadata - set to USER for security
+            // Admin links will be hidden until database role is loaded
+            setDbUserRole("USER");
           }
 
           // Fetch subscription plan
@@ -260,6 +266,8 @@ export function UserAccountNav() {
         }
       } catch (err) {
         console.error("Error fetching user data:", err);
+        // On error, set to USER (don't trust metadata for security)
+        setDbUserRole("USER");
       }
     }
 
@@ -273,8 +281,10 @@ export function UserAccountNav() {
     user?.email?.split("@")[0] ||
     t("defaultUser");
   
-  // Prioritize database role, then fall back to metadata
-  const userRole = dbUserRole || user?.user_metadata?.role || "USER";
+  // CRITICAL: Only use database role for admin checks, never trust metadata
+  // If dbUserRole is null (still loading), default to USER to hide admin links
+  // This prevents showing admin links based on potentially outdated metadata
+  const userRole = dbUserRole || "USER";
   
   // Get user email
   const userEmail = user?.email || "";

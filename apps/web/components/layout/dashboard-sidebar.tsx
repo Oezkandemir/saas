@@ -30,6 +30,7 @@ import { Separator } from "@/components/ui/separator";
 import { useSupabase } from "@/components/supabase-provider";
 import { LayoutDashboard, Mail, Sparkles } from "lucide-react";
 import { getUserPlan } from "@/actions/get-user-plan";
+import { UserRole } from "@/components/forms/user-role-form";
 
 interface DashboardSidebarProps {
   links: SidebarNavItem[];
@@ -42,6 +43,7 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [userPlan, setUserPlan] = useState<{ title: string; isPaid: boolean } | null>(null);
   const [isNewUser, setIsNewUser] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const t = useTranslations("DashboardSidebar");
   const { unreadCount } = useNotifications();
   const { session, supabase } = useSupabase();
@@ -50,11 +52,40 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
   // Check if we're on dashboard page
   const isDashboardPage = path === "/dashboard" || path.startsWith("/dashboard/");
 
-  // Fetch user plan and check if user is new
+  // Fetch user plan, role, and check if user is new
   useEffect(() => {
     async function fetchUserData() {
       try {
         if (session?.user?.id) {
+          // Fetch user role from database
+          const { data: userData, error } = await supabase
+            .from("users")
+            .select("role, created_at")
+            .eq("id", session.user.id)
+            .single();
+
+          if (!error && userData) {
+            // Set role from database (prefer database role over metadata)
+            // For admin checks, we only trust the database role
+            // Normalize role to ensure it's a clean string for comparison
+            const role = String(userData.role || "USER").trim();
+            setUserRole(role);
+
+            // Check if user is new (created within last 30 days)
+            if (userData.created_at) {
+              const createdDate = new Date(userData.created_at);
+              const daysSinceCreation = Math.floor(
+                (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+              );
+              // Consider user "new" if created within last 30 days
+              setIsNewUser(daysSinceCreation <= 30);
+            }
+          } else {
+            // If database query fails, set to USER (don't trust metadata for security)
+            // Admin items will be hidden since userRole won't be ADMIN
+            setUserRole("USER");
+          }
+
           // Fetch subscription plan
           const plan = await getUserPlan();
           if (plan) {
@@ -63,25 +94,12 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
               isPaid: plan.isPaid,
             });
           }
-
-          // Check if user is new (created within last 30 days)
-          const { data: userData } = await supabase
-            .from("users")
-            .select("created_at")
-            .eq("id", session.user.id)
-            .single();
-
-          if (userData?.created_at) {
-            const createdDate = new Date(userData.created_at);
-            const daysSinceCreation = Math.floor(
-              (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
-            );
-            // Consider user "new" if created within last 30 days
-            setIsNewUser(daysSinceCreation <= 30);
-          }
         }
       } catch (err) {
         console.error("Error fetching user data:", err);
+        // On error, set to USER (don't trust metadata for security)
+        // Admin items will be hidden since userRole won't be ADMIN
+        setUserRole("USER");
       }
     }
 
@@ -162,6 +180,29 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
                       <div className="h-4" />
                     )}
                     {section.items.map((item) => {
+                      // Check authorization - don't show item if user doesn't have required role
+                      // Use the same simple logic as UserAccountNav menu: userRole === "ADMIN"
+                      if (item.authorizeOnly) {
+                        // For admin-only items, ONLY use database role (never metadata)
+                        // This prevents showing admin panel to non-admin users
+                        if (item.authorizeOnly === UserRole.ADMIN || String(item.authorizeOnly) === "ADMIN") {
+                          // Only show if we have loaded the role from database AND it's exactly "ADMIN"
+                          // Use the same simple check as UserAccountNav: userRole === "ADMIN"
+                          // Also check if userRole is null or undefined (not loaded yet) - hide in that case
+                          if (!userRole || String(userRole).trim() !== "ADMIN") {
+                            return null; // Don't render admin items for non-admins or while loading
+                          }
+                        } else {
+                          // For other authorized items, ONLY use database role for security
+                          // Never trust metadata - if userRole is not loaded yet, default to USER
+                          const currentUserRole = (userRole || "USER").toUpperCase().trim();
+                          const requiredRole = String(item.authorizeOnly).toUpperCase().trim();
+                          if (currentUserRole !== requiredRole) {
+                            return null; // Don't render this item
+                          }
+                        }
+                      }
+
                       const Icon = Icons[item.icon || "arrowRight"] || Icons.arrowRight;
                       const translatedTitle = t(
                         `items.${item.title.toLowerCase().replace(/\s+/g, "_")}`,
@@ -354,15 +395,45 @@ function MobileSheetSidebarContent({ links, isFreePlan = true }: DashboardSideba
   const [open, setOpen] = useState(false);
   const [userPlan, setUserPlan] = useState<{ title: string; isPaid: boolean } | null>(null);
   const [isNewUser, setIsNewUser] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const t = useTranslations("DashboardSidebar");
   const { unreadCount } = useNotifications();
   const { session, supabase } = useSupabase();
 
-  // Fetch user plan and check if user is new
+  // Fetch user plan, role, and check if user is new
   useEffect(() => {
     async function fetchUserData() {
       try {
         if (session?.user?.id) {
+          // Fetch user role from database
+          const { data: userData, error } = await supabase
+            .from("users")
+            .select("role, created_at")
+            .eq("id", session.user.id)
+            .single();
+
+          if (!error && userData) {
+            // Set role from database (prefer database role over metadata)
+            // For admin checks, we only trust the database role
+            // Normalize role to ensure it's a clean string for comparison
+            const role = String(userData.role || "USER").trim();
+            setUserRole(role);
+
+            // Check if user is new (created within last 30 days)
+            if (userData.created_at) {
+              const createdDate = new Date(userData.created_at);
+              const daysSinceCreation = Math.floor(
+                (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+              );
+              // Consider user "new" if created within last 30 days
+              setIsNewUser(daysSinceCreation <= 30);
+            }
+          } else {
+            // If database query fails, set to USER (don't trust metadata for security)
+            // Admin items will be hidden since userRole won't be ADMIN
+            setUserRole("USER");
+          }
+
           // Fetch subscription plan
           const plan = await getUserPlan();
           if (plan) {
@@ -371,25 +442,12 @@ function MobileSheetSidebarContent({ links, isFreePlan = true }: DashboardSideba
               isPaid: plan.isPaid,
             });
           }
-
-          // Check if user is new (created within last 30 days)
-          const { data: userData } = await supabase
-            .from("users")
-            .select("created_at")
-            .eq("id", session.user.id)
-            .single();
-
-          if (userData?.created_at) {
-            const createdDate = new Date(userData.created_at);
-            const daysSinceCreation = Math.floor(
-              (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
-            );
-            // Consider user "new" if created within last 30 days
-            setIsNewUser(daysSinceCreation <= 30);
-          }
         }
       } catch (err) {
         console.error("Error fetching user data:", err);
+        // On error, set to USER (don't trust metadata for security)
+        // Admin items will be hidden since userRole won't be ADMIN
+        setUserRole("USER");
       }
     }
 
@@ -437,6 +495,29 @@ function MobileSheetSidebarContent({ links, isFreePlan = true }: DashboardSideba
                     </p>
 
                     {section.items.map((item) => {
+                      // Check authorization - don't show item if user doesn't have required role
+                      // Use the same simple logic as UserAccountNav menu: userRole === "ADMIN"
+                      if (item.authorizeOnly) {
+                        // For admin-only items, ONLY use database role (never metadata)
+                        // This prevents showing admin panel to non-admin users
+                        if (item.authorizeOnly === UserRole.ADMIN || String(item.authorizeOnly) === "ADMIN") {
+                          // Only show if we have loaded the role from database AND it's exactly "ADMIN"
+                          // Use the same simple check as UserAccountNav: userRole === "ADMIN"
+                          // Also check if userRole is null or undefined (not loaded yet) - hide in that case
+                          if (!userRole || String(userRole).trim() !== "ADMIN") {
+                            return null; // Don't render admin items for non-admins or while loading
+                          }
+                        } else {
+                          // For other authorized items, ONLY use database role for security
+                          // Never trust metadata - if userRole is not loaded yet, default to USER
+                          const currentUserRole = (userRole || "USER").toUpperCase().trim();
+                          const requiredRole = String(item.authorizeOnly).toUpperCase().trim();
+                          if (currentUserRole !== requiredRole) {
+                            return null; // Don't render this item
+                          }
+                        }
+                      }
+
                       const Icon = Icons[item.icon || "arrowRight"] || Icons.arrowRight;
                       const translatedTitle = t(
                         `items.${item.title.toLowerCase().replace(/\s+/g, "_")}`,

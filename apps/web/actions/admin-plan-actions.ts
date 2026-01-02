@@ -59,6 +59,19 @@ export interface PlanMigration {
   metadata: Record<string, any>;
 }
 
+export interface PlanUser {
+  user_id: string;
+  user_email: string;
+  user_name: string | null;
+  user_role: string;
+  stripe_price_id: string | null;
+  stripe_subscription_id: string | null;
+  stripe_current_period_end: string | null;
+  plan_id: string | null;
+  plan_title: string | null;
+  plan_key: string | null;
+}
+
 /**
  * Get all plans
  */
@@ -292,6 +305,72 @@ export async function getPlanMigrations(
     return { success: true, data: data || [] };
   } catch (error) {
     logger.error("Error in getPlanMigrations:", error);
+    return { success: false, error: "An unexpected error occurred" };
+  }
+}
+
+/**
+ * Get users by plan
+ */
+export async function getUsersByPlan(): Promise<{
+  success: boolean;
+  data?: PlanUser[];
+  error?: string;
+}> {
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser || currentUser.role !== "ADMIN") {
+      return { success: false, error: "Unauthorized: Admin access required" };
+    }
+
+    // First get all users with subscriptions
+    const { data: usersData, error: usersError } = await supabaseAdmin
+      .from("users")
+      .select("id, email, name, role, stripe_price_id, stripe_subscription_id, stripe_current_period_end")
+      .not("stripe_subscription_id", "is", null)
+      .order("created_at", { ascending: false });
+
+    if (usersError) {
+      logger.error("Error fetching users:", usersError);
+      return { success: false, error: usersError.message };
+    }
+
+    // Then get all plans
+    const { data: plansData, error: plansError } = await supabaseAdmin
+      .from("plans")
+      .select("id, title, plan_key, stripe_price_id_monthly, stripe_price_id_yearly");
+
+    if (plansError) {
+      logger.error("Error fetching plans:", plansError);
+      return { success: false, error: plansError.message };
+    }
+
+    // Match users to plans
+    const users: PlanUser[] = (usersData || []).map((user) => {
+      // Find matching plan by stripe_price_id
+      const matchingPlan = (plansData || []).find(
+        (plan) =>
+          user.stripe_price_id === plan.stripe_price_id_monthly ||
+          user.stripe_price_id === plan.stripe_price_id_yearly
+      );
+
+      return {
+        user_id: user.id,
+        user_email: user.email,
+        user_name: user.name,
+        user_role: user.role,
+        stripe_price_id: user.stripe_price_id,
+        stripe_subscription_id: user.stripe_subscription_id,
+        stripe_current_period_end: user.stripe_current_period_end,
+        plan_id: matchingPlan?.id || null,
+        plan_title: matchingPlan?.title || null,
+        plan_key: matchingPlan?.plan_key || null,
+      };
+    });
+
+    return { success: true, data: users };
+  } catch (error) {
+    logger.error("Error in getUsersByPlan:", error);
     return { success: false, error: "An unexpected error occurred" };
   }
 }

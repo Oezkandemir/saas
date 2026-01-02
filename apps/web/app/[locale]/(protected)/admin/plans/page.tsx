@@ -8,6 +8,7 @@ import {
   getAllPlans,
   getPlanStatistics,
   getPlanMigrations,
+  getUsersByPlan,
 } from "@/actions/admin-plan-actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { PlanStatisticsTable } from "@/components/admin/plans/plan-statistics-table";
 import { PlansOverview } from "@/components/admin/plans/plans-overview";
 import { PlanMigrationsTable } from "@/components/admin/plans/plan-migrations-table";
+import { PlanUsersTable } from "@/components/admin/plans/plan-users-table";
 
 export async function generateMetadata() {
   const t = await getTranslations("Admin.plans");
@@ -47,15 +49,17 @@ export default async function AdminPlansPage(props: Props) {
   }
 
   // Fetch data
-  const [plansResult, statsResult, migrationsResult] = await Promise.all([
+  const [plansResult, statsResult, migrationsResult, usersResult] = await Promise.all([
     getAllPlans(),
     getPlanStatistics(),
     getPlanMigrations(50),
+    getUsersByPlan(),
   ]);
 
   const plans = plansResult.success ? plansResult.data || [] : [];
   const statistics = statsResult.success ? statsResult.data || [] : [];
   const migrations = migrationsResult.success ? migrationsResult.data || [] : [];
+  const planUsers = usersResult.success ? usersResult.data || [] : [];
 
   // Calculate totals
   const totalMRR = statistics.reduce((sum, stat) => sum + Number(stat.mrr || 0), 0);
@@ -162,6 +166,22 @@ export default async function AdminPlansPage(props: Props) {
         </CardHeader>
         <CardContent>
           <PlanStatisticsTable statistics={statistics} />
+        </CardContent>
+      </Card>
+
+      {/* Users by Plan */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex gap-2 items-center text-sm">
+            <Users className="size-4 text-primary" />
+            User nach Plan
+          </CardTitle>
+          <CardDescription className="text-xs">
+            Übersicht aller User mit aktiven Subscriptions, gruppiert nach Plan
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <PlanUsersTable users={planUsers} />
         </CardContent>
       </Card>
 

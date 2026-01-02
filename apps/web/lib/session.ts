@@ -24,6 +24,19 @@ async function _getCurrentUserInternal() {
     // Ensure the user exists in the database table
     await syncUserWithDatabase(user);
 
+    // IMPORTANT: Get role from database, not metadata
+    // This ensures admin checks use the database role, not metadata
+    const { data: dbUserRole, error: roleError } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+    
+    // If database query fails, log error but don't fail the whole request
+    if (roleError) {
+      console.error("Error fetching user role from database:", roleError);
+    }
+
     // Auch Benutzerdaten aus der Datenbank abrufen für zusätzliche Felder wie avatar_url
     const { data: dbUser } = await supabase
       .from("user_profiles")
@@ -40,7 +53,10 @@ async function _getCurrentUserInternal() {
         user.user_metadata?.name ||
         user.email?.split("@")[0] ||
         null,
-      role: user.user_metadata?.role || "USER", // Default to USER role if not set
+      // IMPORTANT: Use role from database, not metadata
+      // This prevents showing admin features to non-admin users
+      // If database query failed or role is null, default to USER for security
+      role: (dbUserRole?.role as string) || "USER",
       email: user.email,
       // Zusätzliche Informationen aus der Datenbank
       avatar_url: dbUser?.avatar_url || user.user_metadata?.avatar_url || null,

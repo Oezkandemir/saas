@@ -51,13 +51,24 @@ export default async function Dashboard({ children }: ProtectedLayoutProps) {
   }
 
   // Filter sidebar links based on user role
+  // Only show items that the user is authorized to see
+  // IMPORTANT: Use exact same logic as UserAccountNav - simple string comparison
   const filteredLinks = sidebarLinks.map((section) => ({
     ...section,
     items: section.items.filter((item) => {
+      // If item requires authorization, check user role
       if (item.authorizeOnly) {
+        // For admin items, use exact same check as UserAccountNav: user.role === "ADMIN"
+        if (item.authorizeOnly === UserRole.ADMIN) {
+          // Only show admin items if user role is exactly "ADMIN"
+          return user.role === "ADMIN";
+        }
+        // For other authorized items, compare roles
         const userRole = (user.role as string)?.toUpperCase() || "USER";
-        return item.authorizeOnly === (userRole as UserRole);
+        const requiredRole = String(item.authorizeOnly).toUpperCase();
+        return userRole === requiredRole;
       }
+      // Show all items that don't require authorization
       return true;
     }),
   }));

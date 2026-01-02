@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 import { getSession } from "@/lib/session";
+import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { userRoleSchema } from "@/lib/validations/user";
 import { UserRole } from "@/components/forms/user-role-form";
@@ -17,9 +18,18 @@ export type FormData = {
 export async function updateUserRole(userId: string, data: FormData) {
   try {
     const session = await getSession();
+    const currentUser = await getCurrentUser();
 
-    if (!session?.user || session?.user.id !== userId) {
-      throw new Error("Unauthorized");
+    // SECURITY: Only admins can change roles
+    // Users cannot change their own role, even to downgrade themselves
+    if (!currentUser || currentUser.role !== "ADMIN") {
+      logger.warn(`Unauthorized role change attempt by user ${session?.user?.id}`);
+      throw new Error("Unauthorized: Admin access required to change roles");
+    }
+
+    // Additional check: Ensure the session user is an admin
+    if (!session?.user) {
+      throw new Error("Unauthorized: No session");
     }
 
     const { role } = userRoleSchema.parse(data);

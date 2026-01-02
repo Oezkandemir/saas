@@ -417,7 +417,7 @@ export function UserActions({
                   <X className="size-4" />
                 </Button>
               </div>
-              <DrawerDescription className="mt-4">
+              <div className="mt-4">
                 <div className={userInfoContainerClasses}>
                   <UserAvatar className="size-12" user={user} />
                   <div>
@@ -427,12 +427,12 @@ export function UserActions({
                     </p>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <DrawerDescription className="mt-4">
                   {user.role === "ADMIN"
                     ? `This will remove admin privileges from ${user.email}.`
                     : `This will grant admin privileges to ${user.email}, giving them full access to the admin panel.`}
-                </p>
-              </DrawerDescription>
+                </DrawerDescription>
+              </div>
             </DrawerHeader>
             <DrawerFooter>
               <div className={buttonContainerClasses}>
@@ -475,7 +475,7 @@ export function UserActions({
                   <X className="size-4" />
                 </Button>
               </div>
-              <DrawerDescription className="mt-4">
+              <div className="mt-4">
                 <div className={userInfoContainerClasses}>
                   <UserAvatar className="size-12" user={user} />
                   <div>
@@ -485,12 +485,12 @@ export function UserActions({
                     </p>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <DrawerDescription className="mt-4">
                   {user.status === "banned"
                     ? `This will unban ${user.email} and restore their access to the application.`
                     : `This will ban ${user.email} and prevent them from accessing the application.`}
-                </p>
-              </DrawerDescription>
+                </DrawerDescription>
+              </div>
             </DrawerHeader>
             <DrawerFooter>
               <div className={buttonContainerClasses}>
@@ -533,7 +533,7 @@ export function UserActions({
                   <X className="size-4" />
                 </Button>
               </div>
-              <DrawerDescription className="mt-4">
+              <div className="mt-4">
                 <div className={userInfoContainerClasses}>
                   <UserAvatar className="size-12" user={user} />
                   <div>
@@ -543,12 +543,12 @@ export function UserActions({
                     </p>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <DrawerDescription className="mt-4">
                   This will permanently delete the user account for{" "}
                   <span className="font-medium">{user.email}</span>. This action
                   cannot be undone.
-                </p>
-              </DrawerDescription>
+                </DrawerDescription>
+              </div>
             </DrawerHeader>
             <DrawerFooter>
               <div className={buttonContainerClasses}>
