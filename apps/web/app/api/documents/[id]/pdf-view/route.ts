@@ -65,13 +65,13 @@ export async function GET(
       process.env.NEXT_PUBLIC_APP_URL,
       // Add other allowed origins from env if needed
       ...(process.env.ALLOWED_ORIGINS?.split(",") || []),
-    ].filter(Boolean);
+    ].filter(Boolean) as string[];
 
     // SECURITY: Only allow same-origin or explicitly allowed origins
     const isAllowedOrigin =
       !origin ||
       origin === request.nextUrl.origin ||
-      allowedOrigins.some((allowed) => origin.startsWith(allowed));
+      (origin && allowedOrigins.some((allowed) => origin.startsWith(allowed)));
 
     // Return PDF with proper headers for iframe embedding
     return new NextResponse(pdfBuffer, {

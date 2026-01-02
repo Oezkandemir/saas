@@ -190,11 +190,13 @@ export default async function proxy(request: NextRequest) {
       userRole = "USER";
       
       // Update cache asynchronously (don't await)
-      supabase
-        .from("users")
-        .select("role")
-        .eq("id", authUser.id)
-        .single()
+      Promise.resolve(
+        supabase
+          .from("users")
+          .select("role")
+          .eq("id", authUser.id)
+          .single()
+      )
         .then(({ data: userData, error }) => {
           if (!error && userData?.role) {
             const role = String(userData.role).trim();

@@ -1,13 +1,13 @@
+import { NextRequest } from "next/server";
 import { auth } from "@/auth";
 
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { applyAPIMiddleware } from "@/lib/api-middleware";
 
-export async function DELETE(req: Request) {
+export async function DELETE(req: NextRequest) {
   // SECURITY: Apply middleware (auth + rate limiting)
-  const request = new Request(req);
-  const middleware = await applyAPIMiddleware(request, {
+  const middleware = await applyAPIMiddleware(req, {
     requireAuth: true,
     rateLimit: {
       endpoint: "/api/user",
