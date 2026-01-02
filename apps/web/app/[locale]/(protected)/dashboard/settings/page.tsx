@@ -13,7 +13,6 @@ import { AccountDeletion } from "@/components/gdpr/account-deletion";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { UserAvatarForm } from "@/components/forms/user-avatar-form";
 import { UserNameForm } from "@/components/forms/user-name-form";
-import { UserRoleForm } from "@/components/forms/user-role-form";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -160,9 +159,6 @@ export default async function SettingsPage() {
         </div>
         <div className="pt-4 sm:pt-6">
           <UserNameForm user={{ id: user.id, name: user.name || "" }} />
-        </div>
-        <div className="pt-4 sm:pt-6">
-          <UserRoleForm user={{ id: user.id, role: user.role || "USER" }} />
         </div>
 
         <div className="pt-4 sm:pt-6">

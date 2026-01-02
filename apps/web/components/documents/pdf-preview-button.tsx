@@ -19,6 +19,9 @@ interface PDFPreviewButtonProps {
   size?: "default" | "sm" | "lg" | "icon";
 }
 
+// Cache key for PDF URLs in sessionStorage
+const getCacheKey = (documentId: string) => `pdf-url-${documentId}`;
+
 export function PDFPreviewButton({
   documentId,
   pdfUrl,
@@ -32,11 +35,34 @@ export function PDFPreviewButton({
   const [currentPdfUrl, setCurrentPdfUrl] = useState<string | null>(pdfUrl || null);
   const [directPdfUrl, setDirectPdfUrl] = useState<string | null>(null);
 
+  // Load cached PDF URL on mount
   useEffect(() => {
-    if (open && !directPdfUrl) {
+    if (typeof window !== "undefined") {
+      const cachedUrl = sessionStorage.getItem(getCacheKey(documentId));
+      if (cachedUrl) {
+        try {
+          const cachedData = JSON.parse(cachedUrl);
+          // Cache is valid for 1 hour
+          if (Date.now() - cachedData.timestamp < 3600000) {
+            setDirectPdfUrl(cachedData.pdfUrl);
+            setCurrentPdfUrl(cachedData.proxyUrl);
+          } else {
+            // Remove expired cache
+            sessionStorage.removeItem(getCacheKey(documentId));
+          }
+        } catch {
+          // Invalid cache, remove it
+          sessionStorage.removeItem(getCacheKey(documentId));
+        }
+      }
+    }
+  }, [documentId]);
+
+  useEffect(() => {
+    if (open && !directPdfUrl && !currentPdfUrl) {
       fetchPDFUrl();
     }
-  }, [open, directPdfUrl]);
+  }, [open, directPdfUrl, currentPdfUrl]);
 
   const fetchPDFUrl = async () => {
     setLoading(true);
@@ -56,7 +82,21 @@ export function PDFPreviewButton({
       }
       
       // Use proxy endpoint for iframe (handles CORS and CSP)
-      const proxyUrl = `/api/documents/${documentId}/pdf-view`;
+      // Use absolute URL to avoid locale issues
+      const proxyUrl = `${window.location.origin}/api/documents/${documentId}/pdf-view`;
+      
+      // Cache the PDF URL in sessionStorage
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(
+          getCacheKey(documentId),
+          JSON.stringify({
+            pdfUrl: data.pdfUrl,
+            proxyUrl,
+            timestamp: Date.now(),
+          })
+        );
+      }
+      
       setDirectPdfUrl(data.pdfUrl);
       setCurrentPdfUrl(proxyUrl);
     } catch (err) {

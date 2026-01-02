@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -17,10 +17,12 @@ export function UserSearch() {
   
   // State
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [users, setUsers] = useState<UserSearchResult[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserSearchResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalUsers: 0, totalAdmins: 0, recentJoins: 0 });
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load all users and stats on mount
   useEffect(() => {
@@ -47,19 +49,36 @@ export function UserSearch() {
     loadUsers();
   }, []);
 
-  // Filter users based on search query
+  // Debounce search query (300ms delay)
   useEffect(() => {
-    if (searchQuery.trim() === '') {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [searchQuery]);
+
+  // Filter users based on debounced search query
+  useEffect(() => {
+    if (debouncedSearchQuery.trim() === '') {
       setFilteredUsers(users);
     } else {
-      const query = searchQuery.toLowerCase();
+      const query = debouncedSearchQuery.toLowerCase();
       const filtered = users.filter(user => 
         user.name?.toLowerCase().includes(query) ||
         user.email?.toLowerCase().includes(query)
       );
       setFilteredUsers(filtered);
     }
-  }, [searchQuery, users]);
+  }, [debouncedSearchQuery, users]);
 
   // Navigate to user profile
   const navigateToProfile = (userId: string) => {

@@ -55,7 +55,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
         large={documentation}
       >
         <div className="flex gap-4 sm:gap-6 md:gap-10 items-center min-w-0 flex-1">
-          <Link href="/" className="flex items-center space-x-1.5 shrink-0">
+          <Link href="/" prefetch={true} className="flex items-center space-x-1.5 shrink-0">
             <Icons.logo className="h-6 w-6 sm:h-7 sm:w-7" />
             <span className="font-urban text-base sm:text-lg md:text-xl font-bold">
               {meta("shortName")}
@@ -68,6 +68,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
                 <Link
                   key={index}
                   href={item.disabled ? "#" : item.href}
+                  prefetch={!item.disabled}
                   className={cn(
                     "flex items-center text-base font-medium transition-colors hover:text-foreground/80 lg:text-sm",
                     item.href.startsWith(`/${selectedLayout}`)
@@ -115,6 +116,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
             <div className="flex items-center gap-1 sm:gap-2 pr-0 md:pr-0">
               <Link
                 href="/dashboard"
+                prefetch={true}
                 className={cn(
                   "hidden items-center rounded-full border border-input bg-background px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground md:flex touch-manipulation",
                 )}

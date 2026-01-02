@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { type Session } from "@supabase/supabase-js";
 
 import { getSupabaseServer } from "@/lib/supabase-server";
@@ -6,7 +7,8 @@ import "server-only";
 
 import { syncUserWithDatabase } from "./auth-sync";
 
-export async function getCurrentUser() {
+// Internal function that performs the actual user fetch
+async function _getCurrentUserInternal() {
   try {
     const supabase = await getSupabaseServer();
 
@@ -49,6 +51,11 @@ export async function getCurrentUser() {
     return null;
   }
 }
+
+// Cached version using React cache() for request-level deduplication
+// This ensures that multiple calls to getCurrentUser within the same request
+// will only execute the database query once
+export const getCurrentUser = cache(_getCurrentUserInternal);
 
 export async function getSession(): Promise<Session | null> {
   try {

@@ -53,7 +53,7 @@ export function ModernPageHeader({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-3 py-2.5 sm:py-3 bg-background",
+        "flex items-center justify-between gap-3 bg-background",
         sticky && isScrolled && "shadow-sm backdrop-blur-sm bg-background/95",
         className
       )}

@@ -73,10 +73,11 @@ export function BlurImage({
         )}
         placeholder={placeholder || (blurDataURL ? "blur" : "empty")}
         blurDataURL={blurDataURL}
-        onLoadingComplete={() => setLoading(false)}
+        onLoad={() => setLoading(false)}
         onError={handleError}
         priority={priority}
-        sizes={sizes}
+        loading={priority ? undefined : "lazy"}
+        sizes={sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
         {...props}
       />
     </div>

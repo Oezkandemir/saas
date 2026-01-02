@@ -376,6 +376,7 @@ export function UserAccountNav() {
                   <li>
                     <Link
                       href="/dashboard"
+                      prefetch={true}
                       onClick={closeDrawer}
                       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium bg-primary/10 text-primary hover:bg-primary/20 active:bg-primary/30 transition-colors"
                     >
@@ -387,6 +388,7 @@ export function UserAccountNav() {
                   <li>
                     <Link
                       href="/profile"
+                      prefetch={true}
                       onClick={closeDrawer}
                       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
                     >
@@ -398,6 +400,7 @@ export function UserAccountNav() {
                   <li>
                     <Link
                       href="/dashboard/settings/company"
+                      prefetch={true}
                       onClick={closeDrawer}
                       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
                     >
@@ -409,6 +412,7 @@ export function UserAccountNav() {
                   <li>
                     <Link
                       href="/dashboard/settings"
+                      prefetch={true}
                       onClick={closeDrawer}
                       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
                     >
@@ -421,6 +425,7 @@ export function UserAccountNav() {
                     <li>
                       <Link
                         href="/admin"
+                        prefetch={true}
                         onClick={closeDrawer}
                         className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 active:bg-amber-500/30 transition-colors"
                       >
@@ -436,6 +441,7 @@ export function UserAccountNav() {
                   <li>
                     <Link
                       href="/"
+                      prefetch={true}
                       onClick={closeDrawer}
                       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
                     >
@@ -447,6 +453,7 @@ export function UserAccountNav() {
                   <li>
                     <Link
                       href="/blog"
+                      prefetch={true}
                       onClick={closeDrawer}
                       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
                     >
@@ -458,6 +465,7 @@ export function UserAccountNav() {
                   <li>
                     <Link
                       href="/pricing"
+                      prefetch={true}
                       onClick={closeDrawer}
                       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
                     >
@@ -469,6 +477,7 @@ export function UserAccountNav() {
                   <li>
                     <Link
                       href="/docs"
+                      prefetch={true}
                       onClick={closeDrawer}
                       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
                     >

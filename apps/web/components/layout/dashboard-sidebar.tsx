@@ -182,6 +182,7 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
                               <Link
                                 key={`link-${item.title}`}
                                 href={item.disabled ? "#" : item.href}
+                                prefetch={!item.disabled}
                                 className={cn(
                                   "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted transition-colors",
                                   path === item.href
@@ -216,6 +217,7 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
                                   <Link
                                     key={`link-tooltip-${item.title}`}
                                     href={item.disabled ? "#" : item.href}
+                                    prefetch={!item.disabled}
                                     className={cn(
                                       "flex items-center gap-3 rounded-md py-2 text-sm font-medium hover:bg-muted transition-colors",
                                       path === item.href
@@ -264,6 +266,7 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
                     {isSidebarExpanded ? (
                       <Link
                         href="/pricing"
+                        prefetch={true}
                         className="group relative overflow-hidden rounded-lg border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-3 transition-all hover:border-primary/40 hover:shadow-md"
                       >
                         <div className="flex items-start gap-2">
@@ -283,6 +286,7 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
                         <TooltipTrigger asChild>
                           <Link
                             href="/pricing"
+                            prefetch={true}
                             className="flex items-center justify-center rounded-lg border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-2 transition-all hover:border-primary/40 hover:shadow-md"
                           >
                             <Sparkles className="size-4 text-primary" />
@@ -455,6 +459,7 @@ function MobileSheetSidebarContent({ links, isFreePlan = true }: DashboardSideba
                                 if (!item.disabled) setOpen(false);
                               }}
                               href={item.disabled ? "#" : item.href}
+                              prefetch={!item.disabled}
                               className={cn(
                                 "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted",
                                 path === item.href

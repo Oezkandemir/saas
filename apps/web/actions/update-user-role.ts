@@ -8,6 +8,7 @@ import { getSupabaseServer } from "@/lib/supabase-server";
 import { userRoleSchema } from "@/lib/validations/user";
 import { UserRole } from "@/components/forms/user-role-form";
 import { logger } from "@/lib/logger";
+import { supabaseAdmin } from "@/lib/db-admin";
 
 export type FormData = {
   role: UserRole;
@@ -37,6 +38,18 @@ export async function updateUserRole(userId: string, data: FormData) {
         role,
       },
     });
+
+    // IMPORTANT: Also update the users table to keep it in sync
+    // This prevents the role from being reset when syncUserWithDatabase runs
+    const { error: dbError } = await supabaseAdmin
+      .from("users")
+      .update({ role: role as any })
+      .eq("id", userId);
+
+    if (dbError) {
+      logger.error("Error updating role in users table:", dbError);
+      // Don't fail the whole operation, but log the error
+    }
 
     // Force revalidation of all relevant paths
     revalidatePath("/dashboard/settings");

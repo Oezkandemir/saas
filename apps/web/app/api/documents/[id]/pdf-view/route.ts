@@ -30,11 +30,25 @@ export async function GET(
     }
 
     // Fetch PDF from storage
-    const pdfResponse = await fetch(document.pdf_url);
+    let pdfResponse;
+    try {
+      pdfResponse = await fetch(document.pdf_url, {
+        headers: {
+          "Accept": "application/pdf",
+        },
+      });
+    } catch (fetchError) {
+      console.error("Error fetching PDF from storage:", fetchError);
+      return NextResponse.json(
+        { error: "Failed to fetch PDF from storage" },
+        { status: 500 },
+      );
+    }
     
     if (!pdfResponse.ok) {
+      console.error("PDF fetch failed:", pdfResponse.status, pdfResponse.statusText);
       return NextResponse.json(
-        { error: "Failed to fetch PDF" },
+        { error: `Failed to fetch PDF: ${pdfResponse.status} ${pdfResponse.statusText}` },
         { status: pdfResponse.status },
       );
     }
@@ -43,6 +57,7 @@ export async function GET(
 
     // Return PDF with proper headers for iframe embedding
     return new NextResponse(pdfBuffer, {
+      status: 200,
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `inline; filename="${document.document_number}.pdf"`,
@@ -50,6 +65,9 @@ export async function GET(
         "X-Content-Type-Options": "nosniff",
         // Allow iframe embedding
         "X-Frame-Options": "SAMEORIGIN",
+        // CORS headers for iframe
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET",
       },
     });
   } catch (error) {

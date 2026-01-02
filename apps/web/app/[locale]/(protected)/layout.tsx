@@ -95,7 +95,7 @@ export default async function Dashboard({ children }: ProtectedLayoutProps) {
         </header>
 
         {/* 2FA Security Banner */}
-        <div className="border-b">
+        <div>
           <MaxWidthWrapper className="px-4 xl:px-8 py-2">
             <TwoFactorSecurityBanner />
           </MaxWidthWrapper>

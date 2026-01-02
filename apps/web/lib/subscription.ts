@@ -1,5 +1,7 @@
 // @ts-nocheck
 // TODO: Fix this when we turn strict mode on.
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { UserSubscriptionPlan } from "types";
 import { pricingData } from "@/config/subscriptions";
 import { supabaseAdmin } from "@/lib/db";
@@ -18,7 +20,8 @@ const DEFAULT_FREE_PLAN: UserSubscriptionPlan = {
   isCanceled: false,
 };
 
-export async function getUserSubscriptionPlan(
+// Internal function that performs the actual database query
+async function _getUserSubscriptionPlanInternal(
   userId: string,
   userEmail?: string,
 ): Promise<UserSubscriptionPlan> {
@@ -189,3 +192,19 @@ export async function getUserSubscriptionPlan(
     return DEFAULT_FREE_PLAN;
   }
 }
+
+// Cached version using React cache() for request-level deduplication
+// This ensures that multiple calls to getUserSubscriptionPlan within the same request
+// will only execute the database query once
+export const getUserSubscriptionPlan = cache(
+  unstable_cache(
+    async (userId: string, userEmail?: string): Promise<UserSubscriptionPlan> => {
+      return _getUserSubscriptionPlanInternal(userId, userEmail);
+    },
+    ["user-subscription-plan"],
+    {
+      revalidate: 300, // Cache for 5 minutes (300 seconds)
+      tags: ["subscription-plan"],
+    }
+  )
+);

@@ -30,7 +30,9 @@ import {
   TrendingUp,
   ArrowRight,
   DollarSign,
+  LayoutDashboard,
 } from "lucide-react";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 // ISR: Revalidate every 60 seconds for fresh data
 export const revalidate = 60;
@@ -107,15 +109,12 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-4 p-4 sm:p-6">
-      {/* Header */}
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          Willkommen zurück, {user.name || user.email}
-        </p>
-      </div>
-
+    <UnifiedPageLayout
+      title="Dashboard"
+      description={`Willkommen zurück, ${user.name || user.email}`}
+      icon={<LayoutDashboard className="h-4 w-4 text-primary" />}
+      contentClassName="flex flex-col gap-4"
+    >
       {/* Statistics Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {stats.map((stat) => {
@@ -394,6 +393,6 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       )}
-    </div>
+    </UnifiedPageLayout>
   );
 }

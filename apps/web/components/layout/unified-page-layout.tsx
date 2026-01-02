@@ -45,9 +45,9 @@ export function UnifiedPageLayout({
 
   return (
     <div className={cn("flex flex-col h-full", className)}>
-      {/* Page Header - Directly below main header, no sticky, no breadcrumbs */}
+      {/* Page Header - Directly below main header, border-bottom for separation, symmetric padding */}
       <div className="bg-background border-b border-border">
-        <div className="px-4 xl:px-8">
+        <div className="px-4 xl:px-8 pt-[5px] pb-[5px]">
           <ModernPageHeader
             title={title}
             description={description}
