@@ -11,6 +11,7 @@ import {
 import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { DialogDescription } from "@/components/ui/dialog";
 import { UserAuthForm } from "@/components/forms/user-auth-form";
 import { Icons } from "@/components/shared/icons";
 import { useSupabase } from "@/components/supabase-provider";
@@ -38,9 +39,9 @@ function SignInModal({
             <Icons.logo className="size-10" />
           </a>
           <h3 className="font-urban text-2xl font-bold">Sign In</h3>
-          <p className="text-sm text-gray-500">
+          <DialogDescription className="text-sm text-gray-500">
             Use your email and password to sign in to your account
-          </p>
+          </DialogDescription>
         </div>
 
         <div className="flex flex-col space-y-4 bg-secondary/50 px-4 py-8 md:px-16">

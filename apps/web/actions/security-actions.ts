@@ -240,6 +240,57 @@ export async function revokeAllOtherSessions(): Promise<{
 }
 
 /**
+ * Clear all sessions including current one (signs out user)
+ * Useful for testing 2FA flow
+ * @returns Success status
+ */
+export async function clearAllSessions(): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return { success: false, message: "User not authenticated" };
+    }
+
+    // Delete all sessions including current
+    const { error: deleteError } = await supabase
+      .from("login_sessions")
+      .delete()
+      .eq("user_id", user.id);
+
+    if (deleteError) {
+      return { success: false, message: "Failed to clear sessions" };
+    }
+
+    // Sign out from Supabase auth
+    await supabase.auth.signOut();
+
+    // Log to audit
+    await supabase.from("audit_logs").insert({
+      user_id: user.id,
+      action: "ALL_SESSIONS_CLEARED",
+      details: { timestamp: new Date().toISOString() },
+    });
+
+    revalidatePath("/dashboard/settings/security");
+    return { success: true, message: "All sessions cleared successfully" };
+  } catch (error) {
+    console.error("Error clearing all sessions:", error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to clear sessions",
+    };
+  }
+}
+
+/**
  * Get login history for current user
  * @param limit Number of entries to return
  * @returns Array of login history entries

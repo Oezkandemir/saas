@@ -138,3 +138,4 @@ DROP TABLE IF EXISTS user_push_tokens CASCADE;
 -- - Push notifications (2 tables)
 -- Total: 34 tables removed
 
+

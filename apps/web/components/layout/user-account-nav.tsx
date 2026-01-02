@@ -222,11 +222,13 @@ export function UserAccountNav() {
     try {
       await supabase.auth.signOut();
       toast.success(t("signOutSuccess"));
-      router.push("/");
-      router.refresh();
+      // Use window.location for reliable redirect after sign out
+      window.location.href = "/";
     } catch (error) {
       console.error("Error signing out:", error);
       toast.error(t("signOutError"));
+      // Still redirect even if there's an error
+      window.location.href = "/";
     }
   };
 

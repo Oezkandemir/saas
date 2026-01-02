@@ -67,3 +67,4 @@ export function PlanStatisticsTable({ statistics }: PlanStatisticsTableProps) {
   );
 }
 
+

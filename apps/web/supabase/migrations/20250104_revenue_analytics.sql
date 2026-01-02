@@ -215,3 +215,4 @@ COMMENT ON FUNCTION public.get_revenue_by_period IS 'Get revenue statistics grou
 COMMENT ON FUNCTION public.get_revenue_by_plan IS 'Get revenue statistics grouped by subscription plan';
 COMMENT ON FUNCTION public.get_subscription_metrics IS 'Get overall subscription metrics and KPIs';
 
+

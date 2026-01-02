@@ -26,10 +26,18 @@ export function useNotifications(): UseNotificationsResult {
         if (result.success && result.data) {
           return result.data.length;
         } else {
+          // If user is not authenticated, return 0 instead of throwing error
+          if (result.error === "User not authenticated") {
+            return 0;
+          }
           throw new Error(result.error || "Failed to fetch notifications");
         }
       } catch (err) {
         logger.error("Error fetching notifications", err);
+        // Return 0 instead of throwing for unauthenticated users
+        if (err instanceof Error && err.message.includes("not authenticated")) {
+          return 0;
+        }
         throw new Error("An unexpected error occurred");
       }
     },
@@ -38,6 +46,7 @@ export function useNotifications(): UseNotificationsResult {
     retry: 1,
     refetchOnWindowFocus: false, // Don't refetch on window focus for notifications
     refetchInterval: 60 * 1000, // Refetch every minute for real-time updates
+    enabled: true, // Only run if we have a user session (handled by the action)
   });
 
   return {

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Monitor, MapPin, Calendar, Trash2, AlertTriangle } from "lucide-react";
+import { Monitor, MapPin, Calendar, Trash2, AlertTriangle, LogOut } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
 
@@ -19,6 +20,7 @@ import {
   getActiveSessions,
   revokeSession,
   revokeAllOtherSessions,
+  clearAllSessions,
   type ActiveSession,
 } from "@/actions/security-actions";
 import { Badge } from "@/components/ui/badge";
@@ -37,6 +39,7 @@ import {
 export function ActiveSessions() {
   const t = useTranslations("Security");
   const { toast } = useToast();
+  const router = useRouter();
   const [sessions, setSessions] = useState<ActiveSession[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -118,6 +121,35 @@ export function ActiveSessions() {
     }
   };
 
+  const handleClearAllSessions = async () => {
+    try {
+      const result = await clearAllSessions();
+      if (result.success) {
+        toast({
+          title: "Alle Sessions gelöscht",
+          description: "Sie werden jetzt abgemeldet. Bitte melden Sie sich erneut an, um das 2FA-System zu testen.",
+        });
+        // Redirect to login page after a short delay
+        setTimeout(() => {
+          router.push("/login");
+          router.refresh();
+        }, 1500);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Fehler",
+          description: result.message,
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Fehler",
+        description: "Sessions konnten nicht gelöscht werden",
+      });
+    }
+  };
+
   const getDeviceInfo = (session: ActiveSession) => {
     if (session.deviceInfo) {
       // Try to extract browser/OS info from user agent
@@ -159,37 +191,66 @@ export function ActiveSessions() {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
             <CardTitle>Aktive Sessions</CardTitle>
             <CardDescription>
               Verwalten Sie Ihre aktiven Login-Sessions
             </CardDescription>
           </div>
-          {otherSessions.length > 0 && (
+          <div className="flex items-center gap-2">
+            {otherSessions.length > 0 && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    Alle anderen beenden
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Alle Sessions beenden?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Dies beendet alle anderen aktiven Sessions außer der aktuellen.
+                      Sie müssen sich auf diesen Geräten erneut anmelden.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleRevokeAll}>
+                      Alle beenden
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="outline" size="sm">
-                  Alle beenden
+                <Button variant="destructive" size="sm" className="gap-2">
+                  <LogOut className="size-4" />
+                  Alle löschen & Abmelden
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Alle Sessions beenden?</AlertDialogTitle>
+                  <AlertDialogTitle className="flex items-center gap-2">
+                    <AlertTriangle className="size-5 text-destructive" />
+                    Alle Sessions löschen?
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Dies beendet alle anderen aktiven Sessions außer der aktuellen.
-                    Sie müssen sich auf diesen Geräten erneut anmelden.
+                    Dies löscht ALLE Sessions inklusive der aktuellen. Sie werden
+                    abgemeldet und müssen sich erneut anmelden. Dies ist nützlich zum
+                    Testen des 2FA-Systems.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleRevokeAll}>
-                    Alle beenden
+                  <AlertDialogAction onClick={handleClearAllSessions} className="bg-destructive hover:bg-destructive/90">
+                    Alle löschen & Abmelden
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-          )}
+          </div>
         </div>
       </CardHeader>
       <CardContent>

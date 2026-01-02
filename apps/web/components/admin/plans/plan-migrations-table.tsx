@@ -86,3 +86,4 @@ export function PlanMigrationsTable({ migrations }: PlanMigrationsTableProps) {
   );
 }
 
+

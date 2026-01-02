@@ -442,3 +442,132 @@ export async function regenerateBackupCodes(): Promise<
   }
 }
 
+/**
+ * Check if a user has 2FA enabled by email
+ * Used during sign-in flow before authentication
+ * @param email User email
+ * @returns 2FA status and user ID if found
+ */
+export async function checkTwoFactorEnabledByEmail(
+  email: string,
+): Promise<
+  | { success: true; enabled: boolean; userId: string | null }
+  | { success: false; message: string }
+> {
+  try {
+    console.log("Checking 2FA for email:", email);
+    
+    // Use admin client to get user from auth.users
+    const { supabaseAdmin } = await import("@/lib/db-admin");
+    
+    // Get user from auth.users
+    const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.getUserByEmail(email);
+    
+    console.log("Auth user lookup result:", { authUser: authUser?.user?.id, error: authError });
+    
+    if (authError || !authUser?.user) {
+      // User not found - treat as no 2FA (new user)
+      console.log("User not found, returning no 2FA");
+      return { success: true, enabled: false, userId: null };
+    }
+    
+    const userId = authUser.user.id;
+    console.log("Found user ID:", userId);
+    
+    // Check 2FA status using admin client
+    const { data, error } = await supabaseAdmin
+      .from("two_factor_auth")
+      .select("enabled")
+      .eq("user_id", userId)
+      .maybeSingle();
+    
+    console.log("2FA data lookup result:", { data, error });
+    
+    if (error && error.code !== "PGRST116") {
+      console.error("Error checking 2FA status:", error);
+      return { success: false, message: `Failed to check 2FA status: ${error.message}` };
+    }
+    
+    const isEnabled = data?.enabled ?? false;
+    console.log("2FA enabled status:", isEnabled);
+    
+    return {
+      success: true,
+      enabled: isEnabled,
+      userId,
+    };
+  } catch (error) {
+    console.error("Error checking 2FA by email:", error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to check 2FA status",
+    };
+  }
+}
+
+/**
+ * Verify 2FA code during sign-in
+ * @param userId User ID
+ * @param code 6-digit TOTP code or backup code
+ * @returns Success status
+ */
+export async function verifyTwoFactorCodeForSignIn(
+  userId: string,
+  code: string,
+): Promise<{ success: boolean; message: string }> {
+  try {
+    // Use admin client to access 2FA data
+    const { supabaseAdmin } = await import("@/lib/db-admin");
+    
+    // Get 2FA data
+    const { data: twoFactorData, error: fetchError } = await supabaseAdmin
+      .from("two_factor_auth")
+      .select("secret, backup_codes, enabled")
+      .eq("user_id", userId)
+      .single();
+    
+    if (fetchError || !twoFactorData) {
+      return { success: false, message: "2FA not configured for this user" };
+    }
+    
+    if (!twoFactorData.enabled) {
+      return { success: false, message: "2FA is not enabled for this user" };
+    }
+    
+    // Check if it's a backup code
+    const backupCodes = twoFactorData.backup_codes || [];
+    const isBackupCode = backupCodes.includes(code.toUpperCase());
+    
+    if (isBackupCode) {
+      // Remove used backup code
+      const updatedBackupCodes = backupCodes.filter((c) => c !== code.toUpperCase());
+      const { error: updateError } = await supabaseAdmin
+        .from("two_factor_auth")
+        .update({ backup_codes: updatedBackupCodes })
+        .eq("user_id", userId);
+      
+      if (updateError) {
+        console.error("Error updating backup codes:", updateError);
+        // Still allow login, but log the error
+      }
+      
+      return { success: true, message: "Backup code verified" };
+    }
+    
+    // Verify TOTP code
+    const isValid = verifyTOTP(code, twoFactorData.secret);
+    
+    if (!isValid) {
+      return { success: false, message: "Invalid verification code" };
+    }
+    
+    return { success: true, message: "Code verified successfully" };
+  } catch (error) {
+    console.error("Error verifying 2FA code for sign-in:", error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to verify code",
+    };
+  }
+}
+

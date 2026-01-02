@@ -61,3 +61,4 @@ COMMENT ON FUNCTION public.get_user_stats_aggregated IS 'Optimized function to g
 COMMENT ON FUNCTION public.get_user_growth_by_month IS 'Get user growth statistics grouped by month';
 COMMENT ON FUNCTION public.get_ticket_stats_aggregated IS 'Get aggregated ticket statistics by status';
 
+

@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { Menu, X } from "lucide-react";
@@ -10,7 +10,6 @@ import { marketingConfig } from "@/config/marketing";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { DocsSidebarNav } from "@/components/docs/sidebar-nav";
-import { ModalContext } from "@/components/modals/providers";
 import { Icons } from "@/components/shared/icons";
 import { useSupabase } from "@/components/supabase-provider";
 
@@ -28,8 +27,6 @@ export function NavMobile() {
 
   const links =
     (selectedLayout && configMap[selectedLayout]) || marketingConfig.mainNav;
-
-  const { setShowSignInModal, setShowSignUpModal } = useContext(ModalContext);
 
   // prevent body scroll when modal is open
   useEffect(() => {
@@ -104,27 +101,23 @@ export function NavMobile() {
           ) : (
             <>
               <li className="py-3">
-                <button
-                  onClick={() => {
-                    setOpen(false);
-                    setShowSignInModal(true);
-                  }}
+                <Link
+                  href="/login"
+                  onClick={() => setOpen(false)}
                   className="flex w-full font-medium capitalize"
                 >
                   Login
-                </button>
+                </Link>
               </li>
 
               <li className="py-3">
-                <button
-                  onClick={() => {
-                    setOpen(false);
-                    setShowSignUpModal(true);
-                  }}
+                <Link
+                  href="/register"
+                  onClick={() => setOpen(false)}
                   className="flex w-full font-medium capitalize"
                 >
                   Sign up
-                </button>
+                </Link>
               </li>
             </>
           )}

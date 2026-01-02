@@ -14,10 +14,10 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DocsSearch } from "@/components/docs/search";
 import LanguageDrawer from "@/components/language-drawer";
-import { ModalContext } from "@/components/modals/providers";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { useSupabase } from "@/components/supabase-provider";
+import { ModalContext } from "@/components/modals/providers";
 
 import { ModeToggle } from "./mode-toggle";
 import { UserAccountNav } from "./user-account-nav";
@@ -145,8 +145,6 @@ export function NavBar({ scroll = false }: NavBarProps) {
               >
                 <span>{t("signUp")}</span>
               </Button>
-
-
             </>
           )}
         </div>

@@ -40,9 +40,12 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
-        <link rel="manifest" href="/site.webmanifest" />
+        {/* Only load manifest in production to avoid SSL errors in development */}
+        {process.env.NODE_ENV === "production" && (
+          <link rel="manifest" href="/site.webmanifest" />
+        )}
       </head>
       <body
         className={cn(

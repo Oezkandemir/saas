@@ -138,7 +138,7 @@ export function UserAuthForm({
         }
 
         // If user metadata is missing, update it
-        if (!signInResult.data.user.user_metadata?.name) {
+        if (signInResult.data.user.user_metadata?.name) {
           await supabase.auth.updateUser({
             data: {
               name: data.email.split("@")[0],
@@ -165,12 +165,9 @@ export function UserAuthForm({
           onSuccess();
         }
 
-        // Redirect to home or the specified redirect URL after successful login
-        if (redirectTo) {
-          router.push(redirectTo);
-        } else {
-          router.push("/");
-        }
+        // Redirect to dashboard or the specified redirect URL after successful login
+        const finalRedirect = redirectTo && redirectTo !== "/" ? redirectTo : "/dashboard";
+        router.push(finalRedirect);
         router.refresh();
       }
     } catch (error) {
@@ -183,6 +180,7 @@ export function UserAuthForm({
       setIsLoading(false);
     }
   }
+
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>

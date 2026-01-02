@@ -15,6 +15,7 @@ import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { UserRole } from "@/components/forms/user-role-form";
 import { ScrollToTop } from "@/components/layout/scroll-to-top";
+import { TwoFactorSecurityBanner } from "@/components/security/two-factor-security-banner";
 
 export const dynamic = "force-dynamic";
 
@@ -92,6 +93,13 @@ export default async function Dashboard({ children }: ProtectedLayoutProps) {
             <UserAccountNav />
           </div>
         </header>
+
+        {/* 2FA Security Banner */}
+        <div className="border-b">
+          <MaxWidthWrapper className="px-4 xl:px-8 py-2">
+            <TwoFactorSecurityBanner />
+          </MaxWidthWrapper>
+        </div>
 
         <main className="flex-1 overflow-y-auto">
           <MaxWidthWrapper className="flex h-full max-w-7xl flex-col px-0">

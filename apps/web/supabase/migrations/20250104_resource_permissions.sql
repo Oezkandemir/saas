@@ -168,3 +168,4 @@ COMMENT ON COLUMN public.resource_permissions.resource_id IS 'UUID of the resour
 COMMENT ON COLUMN public.resource_permissions.permission_level IS 'Level of access (read, write, delete)';
 COMMENT ON COLUMN public.resource_permissions.granted_by IS 'User who granted this permission';
 
+

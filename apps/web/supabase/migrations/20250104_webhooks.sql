@@ -111,3 +111,4 @@ COMMENT ON COLUMN public.webhooks.secret IS 'Secret key for webhook signature ve
 COMMENT ON TABLE public.webhook_deliveries IS 'History of webhook delivery attempts';
 COMMENT ON COLUMN public.webhook_deliveries.retry_count IS 'Number of retry attempts for failed deliveries';
 
+

@@ -149,3 +149,4 @@ COMMENT ON COLUMN public.roles.permissions IS 'JSON object with permission keys 
 COMMENT ON COLUMN public.roles.is_system_role IS 'System roles (ADMIN, USER) cannot be deleted or modified';
 COMMENT ON TABLE public.user_roles IS 'Many-to-Many relationship between users and roles';
 
+

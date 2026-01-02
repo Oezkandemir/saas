@@ -13,8 +13,12 @@ export default async function AuthLayout({ children }: AuthLayoutProps) {
 
   if (user) {
     if (user.role === "ADMIN") redirect("/admin");
-    redirect("/");
+    redirect("/dashboard");
   }
 
-  return <div className="min-h-screen">{children}</div>;
+  return (
+    <div className="min-h-screen" style={{ scrollBehavior: "auto" }}>
+      {children}
+    </div>
+  );
 }
