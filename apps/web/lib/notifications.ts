@@ -91,13 +91,23 @@ export async function createNotification(
     });
 
     if (error) {
-      logger.error("Error creating notification", error);
+      const errorObj = error instanceof Error 
+        ? error 
+        : error.message 
+          ? new Error(error.message) 
+          : new Error(String(error));
+      logger.error("Error creating notification", errorObj);
       return null;
     }
 
     return data;
   } catch (error) {
-    logger.error("Failed to create notification", error);
+    const errorObj = error instanceof Error 
+      ? error 
+      : error && typeof error === 'object' && 'message' in error
+        ? new Error(String(error.message))
+        : new Error(String(error || 'Unknown error'));
+    logger.error("Failed to create notification", errorObj);
     return null;
   }
 }
@@ -124,10 +134,16 @@ export async function createDocumentNotification(
       if (error.code === '42883' || error.code === 'P0001') {
         logger.warn("Document notification function not available", { 
           code: error.code,
-          message: error.message 
+          message: error.message || String(error)
         });
       } else {
-        logger.error("Error creating document notification", error);
+        // Extract error details properly
+        const errorDetails = error instanceof Error 
+          ? error 
+          : error.message 
+            ? new Error(error.message) 
+            : new Error(String(error));
+        logger.error("Error creating document notification", errorDetails);
       }
       return null;
     }
@@ -137,6 +153,9 @@ export async function createDocumentNotification(
     // Only log unexpected errors, not expected failures
     if (error instanceof Error && !error.message.includes('RPC')) {
       logger.error("Failed to create document notification", error);
+    } else if (error && typeof error === 'object' && 'message' in error && !String(error.message).includes('RPC')) {
+      const errorObj = error instanceof Error ? error : new Error(String(error.message || error));
+      logger.error("Failed to create document notification", errorObj);
     }
     return null;
   }
@@ -163,10 +182,15 @@ export async function createCustomerNotification(
       if (error.code === '42883' || error.code === 'P0001') {
         logger.warn("Customer notification function not available", { 
           code: error.code,
-          message: error.message 
+          message: error.message || String(error)
         });
       } else {
-        logger.error("Error creating customer notification", error);
+        const errorDetails = error instanceof Error 
+          ? error 
+          : error.message 
+            ? new Error(error.message) 
+            : new Error(String(error));
+        logger.error("Error creating customer notification", errorDetails);
       }
       return null;
     }
@@ -176,6 +200,9 @@ export async function createCustomerNotification(
     // Only log unexpected errors, not expected failures
     if (error instanceof Error && !error.message.includes('RPC')) {
       logger.error("Failed to create customer notification", error);
+    } else if (error && typeof error === 'object' && 'message' in error && !String(error.message).includes('RPC')) {
+      const errorObj = error instanceof Error ? error : new Error(String(error.message || error));
+      logger.error("Failed to create customer notification", errorObj);
     }
     return null;
   }
@@ -200,13 +227,23 @@ export async function createSubscriptionNotification(
     );
 
     if (error) {
-      logger.error("Error creating subscription notification", error);
+      const errorObj = error instanceof Error 
+        ? error 
+        : error.message 
+          ? new Error(error.message) 
+          : new Error(String(error));
+      logger.error("Error creating subscription notification", errorObj);
       return null;
     }
 
     return data;
   } catch (error) {
-    logger.error("Failed to create subscription notification", error);
+    const errorObj = error instanceof Error 
+      ? error 
+      : error && typeof error === 'object' && 'message' in error
+        ? new Error(String(error.message))
+        : new Error(String(error || 'Unknown error'));
+    logger.error("Failed to create subscription notification", errorObj);
     return null;
   }
 }
@@ -226,13 +263,23 @@ export async function createSecurityNotification(
     });
 
     if (error) {
-      logger.error("Error creating security notification", error);
+      const errorObj = error instanceof Error 
+        ? error 
+        : error.message 
+          ? new Error(error.message) 
+          : new Error(String(error));
+      logger.error("Error creating security notification", errorObj);
       return null;
     }
 
     return data;
   } catch (error) {
-    logger.error("Failed to create security notification", error);
+    const errorObj = error instanceof Error 
+      ? error 
+      : error && typeof error === 'object' && 'message' in error
+        ? new Error(String(error.message))
+        : new Error(String(error || 'Unknown error'));
+    logger.error("Failed to create security notification", errorObj);
     return null;
   }
 }
@@ -250,13 +297,23 @@ export async function createWelcomeNotification(
     });
 
     if (error) {
-      logger.error("Error creating welcome notification", error);
+      const errorObj = error instanceof Error 
+        ? error 
+        : error.message 
+          ? new Error(error.message) 
+          : new Error(String(error));
+      logger.error("Error creating welcome notification", errorObj);
       return null;
     }
 
     return data;
   } catch (error) {
-    logger.error("Failed to create welcome notification", error);
+    const errorObj = error instanceof Error 
+      ? error 
+      : error && typeof error === 'object' && 'message' in error
+        ? new Error(String(error.message))
+        : new Error(String(error || 'Unknown error'));
+    logger.error("Failed to create welcome notification", errorObj);
     return null;
   }
 }

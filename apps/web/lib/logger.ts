@@ -59,6 +59,96 @@ class Logger {
     }
   }
 
+  /**
+   * Safely serialize error objects to string
+   */
+  private serializeError(error: any): string {
+    if (!error) return '';
+    
+    // If it's already a string, return it
+    if (typeof error === 'string') {
+      return error;
+    }
+    
+    // If it's an Error instance, extract message and stack
+    if (error instanceof Error) {
+      return error.message || error.toString();
+    }
+    
+    // If it has a message property, use it
+    if (error.message) {
+      return String(error.message);
+    }
+    
+    // If it has a code and message, format it nicely
+    if (error.code && error.message) {
+      return `[${error.code}] ${error.message}`;
+    }
+    
+    // Try to stringify the object, but handle circular references
+    try {
+      const serialized = JSON.stringify(error, Object.getOwnPropertyNames(error));
+      if (serialized && serialized !== '{}' && !serialized.includes('[object Object]')) {
+        return serialized;
+      }
+    } catch {
+      // If JSON.stringify fails (circular reference), try toString
+    }
+    
+    // Fallback to toString if available
+    if (error.toString && error.toString() !== '[object Object]') {
+      return error.toString();
+    }
+    
+    // Last resort: return a descriptive string
+    return `Error: ${error.constructor?.name || 'Unknown'}`;
+  }
+
+  /**
+   * Safely extract error stack trace
+   */
+  private extractErrorStack(error: any): string | undefined {
+    if (!error) return undefined;
+    
+    if (error instanceof Error && error.stack) {
+      return error.stack;
+    }
+    
+    if (error.stack) {
+      return String(error.stack);
+    }
+    
+    return undefined;
+  }
+
+  /**
+   * Safely extract error context for logging
+   */
+  private extractErrorContext(error: any): Record<string, unknown> | undefined {
+    if (!error) return undefined;
+    
+    try {
+      const context: Record<string, unknown> = {};
+      
+      // Extract common error properties
+      if (error.code) context.code = error.code;
+      if (error.name) context.name = error.name;
+      if (error.message) context.message = error.message;
+      if (error.details) context.details = error.details;
+      if (error.hint) context.hint = error.hint;
+      
+      // If it's a Supabase error, extract additional info
+      if (error.code && (error.message || error.details)) {
+        context.error = this.serializeError(error);
+      }
+      
+      return Object.keys(context).length > 0 ? context : undefined;
+    } catch {
+      // If extraction fails, return minimal context
+      return { error: this.serializeError(error) };
+    }
+  }
+
   private async logToSystemMonitoring(message: string, error?: any) {
     try {
       // Skip logging if this is an RLS error to prevent infinite loops
@@ -73,7 +163,7 @@ class Logger {
 
       // Skip logging if error is about cookies() in cached functions
       // This prevents errors when logging from within unstable_cache
-      const errorMessage = error?.message || String(error || '');
+      const errorMessage = this.serializeError(error);
       if (errorMessage.includes('cookies()') && errorMessage.includes('unstable_cache')) {
         return;
       }
@@ -84,7 +174,7 @@ class Logger {
       // Determine component from error or default to 'api'
       let component: 'database' | 'api' | 'auth' | 'email' | 'storage' | 'payment' = 'api';
       if (error) {
-        const errMsg = error.message || String(error);
+        const errMsg = this.serializeError(error);
         if (errMsg.includes('database') || errMsg.includes('supabase') || errMsg.includes('postgres')) {
           component = 'database';
         } else if (errMsg.includes('auth') || errMsg.includes('login') || errMsg.includes('session')) {
@@ -101,7 +191,7 @@ class Logger {
       // Determine error type
       let errorType: 'critical' | 'warning' | 'info' = 'warning';
       if (error) {
-        const errMsg = error.message || String(error);
+        const errMsg = this.serializeError(error);
         if (errMsg.includes('critical') || errMsg.includes('fatal') || errMsg.includes('down')) {
           errorType = 'critical';
         }
@@ -111,14 +201,14 @@ class Logger {
         component,
         errorType,
         errorMessage: message,
-        errorStack: error?.stack || (error ? String(error) : undefined),
-        context: error ? { error: String(error) } : undefined,
+        errorStack: this.extractErrorStack(error),
+        context: this.extractErrorContext(error),
       });
     } catch (err) {
       // Silently fail - don't break logging
       // This prevents infinite loops if logging itself fails
       // Don't log RLS errors or cookies() errors to prevent loops
-      const errMessage = err && typeof err === 'object' && 'message' in err ? String(err.message) : String(err || '');
+      const errMessage = this.serializeError(err);
       const errCode = err && typeof err === 'object' && 'code' in err ? err.code : null;
       
       if (errCode !== '42501' && !errMessage.includes('cookies()') && !errMessage.includes('unstable_cache')) {
