@@ -165,11 +165,19 @@ export async function generateAndUploadPDF(
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     const errorStack = error instanceof Error ? error.stack : undefined;
-    console.error("Error generating and uploading PDF:", {
-      message: errorMessage,
-      stack: errorStack,
-      documentId: document.id,
-    });
+    // Only log as warning if it's a known/expected error
+    if (errorMessage.includes("Failed to load Puppeteer") || 
+        errorMessage.includes("Puppeteer not available")) {
+      console.warn("PDF generation skipped (Puppeteer not available)", {
+        documentId: document.id
+      });
+    } else {
+      console.error("Error generating and uploading PDF:", {
+        message: errorMessage,
+        stack: errorStack,
+        documentId: document.id,
+      });
+    }
     throw new Error(`PDF-Generierung fehlgeschlagen: ${errorMessage}`);
   }
 }
@@ -196,9 +204,7 @@ export async function generatePDFInBackground(
     console.log(`PDF generated successfully for document ${document.id}`);
   } catch (error) {
     // Log error but don't throw - we don't want to break document creation/update
-    console.error(`Failed to generate PDF in background for document ${document.id}:`, error);
-    
-    // Try to extract error message
+    // Extract error message
     let errorMessage = "Unknown error";
     if (error instanceof Error) {
       errorMessage = error.message;
@@ -209,7 +215,13 @@ export async function generatePDFInBackground(
       errorMessage = err.message || err.error || String(error);
     }
     
-    console.error(`PDF generation error details: ${errorMessage}`);
+    // Only log as warning for background PDF generation failures (non-critical)
+    if (errorMessage.includes("Failed to load Puppeteer") || 
+        errorMessage.includes("Puppeteer not available")) {
+      console.debug(`Background PDF generation skipped (Puppeteer not available) for document ${document.id}`);
+    } else {
+      console.warn(`Background PDF generation failed for document ${document.id}:`, errorMessage);
+    }
     // Don't throw - let the document creation/update succeed even if PDF generation fails
   }
 }

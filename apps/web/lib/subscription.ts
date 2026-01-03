@@ -162,8 +162,20 @@ async function _getUserSubscriptionPlanInternal(
           user.stripeSubscriptionId,
         );
         isCanceled = stripePlan.cancel_at_period_end;
-      } catch (stripeError) {
-        logger.error("Error retrieving Stripe subscription", stripeError);
+      } catch (stripeError: any) {
+        // Only log as warning if it's a recoverable error (e.g., subscription not found)
+        // Don't log as error for expected cases like deleted subscriptions
+        if (stripeError?.type === 'StripeInvalidRequestError' && 
+            (stripeError?.code === 'resource_missing' || stripeError?.statusCode === 404)) {
+          logger.debug("Stripe subscription not found (may be deleted)", {
+            subscriptionId: user.stripeSubscriptionId
+          });
+        } else {
+          logger.warn("Error retrieving Stripe subscription", {
+            code: stripeError?.code,
+            message: stripeError?.message
+          });
+        }
         // Continue with default values if Stripe call fails
       }
     }

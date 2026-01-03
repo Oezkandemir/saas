@@ -346,6 +346,75 @@ export async function performHealthCheck(): Promise<{
 }
 
 /**
+ * Delete the oldest N system errors
+ * @param limit Number of errors to delete (default: 50)
+ */
+export async function deleteOldestErrors(
+  limit: number = 50,
+): Promise<{ success: boolean; message: string; count?: number }> {
+  try {
+    const supabase = await createClient();
+    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, message: "Not authenticated" };
+    }
+
+    // Check if user is admin
+    const { data: userData } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (userData?.role !== "ADMIN") {
+      return { success: false, message: "Unauthorized: Admin access required" };
+    }
+
+    // Get the IDs of the oldest errors
+    const { data: oldestErrors, error: selectError } = await supabase
+      .from("system_errors")
+      .select("id")
+      .order("created_at", { ascending: true })
+      .limit(limit);
+
+    if (selectError) {
+      return { success: false, message: "Failed to fetch errors" };
+    }
+
+    if (!oldestErrors || oldestErrors.length === 0) {
+      return { success: true, message: "No errors found to delete", count: 0 };
+    }
+
+    const ids = oldestErrors.map((e) => e.id);
+
+    // Delete the errors
+    const { error: deleteError } = await supabase
+      .from("system_errors")
+      .delete()
+      .in("id", ids);
+
+    if (deleteError) {
+      return { success: false, message: "Failed to delete errors" };
+    }
+
+    return {
+      success: true,
+      message: `Successfully deleted ${ids.length} error(s)`,
+      count: ids.length,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to delete errors",
+    };
+  }
+}
+
+/**
  * Delete old resolved errors
  * @param daysOld Number of days old errors should be before deletion
  */

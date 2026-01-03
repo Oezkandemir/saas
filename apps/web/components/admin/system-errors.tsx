@@ -21,7 +21,7 @@ import {
 } from "@/actions/system-monitoring-actions";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  AlertDialog,
+  AlertDialogRoot,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
@@ -30,7 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/components/alignui/overlays/alert-dialog";
 
 export function SystemErrors() {
   const { toast } = useToast();
@@ -227,7 +227,7 @@ export function SystemErrors() {
                   </p>
                 </div>
                 {!error.resolved && (
-                  <AlertDialog>
+                  <AlertDialogRoot>
                     <AlertDialogTrigger asChild>
                       <Button
                         variant="outline"
@@ -261,7 +261,7 @@ export function SystemErrors() {
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
-                  </AlertDialog>
+                  </AlertDialogRoot>
                 )}
               </div>
             ))}

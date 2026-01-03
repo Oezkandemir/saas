@@ -225,7 +225,16 @@ export async function generatePDFFromHTML(
       }
     }
     const { logger } = await import("@/lib/logger");
-    logger.error("Failed to load Puppeteer:", errorMessage);
+    // Only log as warning if Puppeteer is not installed (expected in some environments)
+    if (errorMessage.includes("Cannot find package") || 
+        errorMessage.includes("Cannot find module") ||
+        errorMessage.includes("MODULE_NOT_FOUND")) {
+      logger.warn("Puppeteer not available (may be expected in some environments)", {
+        message: errorMessage
+      });
+    } else {
+      logger.error("Failed to load Puppeteer:", errorMessage);
+    }
     throw new Error(`Failed to load Puppeteer: ${errorMessage}`);
   }
   
@@ -357,7 +366,16 @@ export async function generateAndUploadPDF(
     return pdfUrl;
   } catch (error) {
     const { logger } = await import("@/lib/logger");
-    logger.error("Error generating and uploading PDF:", error);
+    // Only log as warning if it's a known/expected error (e.g., Puppeteer not available)
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (errorMessage.includes("Failed to load Puppeteer") || 
+        errorMessage.includes("Puppeteer not available")) {
+      logger.warn("PDF generation skipped (Puppeteer not available)", {
+        documentId: document.id
+      });
+    } else {
+      logger.error("Error generating and uploading PDF:", error);
+    }
     throw error;
   }
 }
@@ -386,9 +404,7 @@ export async function generatePDFInBackground(
   } catch (error) {
     // Log error but don't throw - we don't want to break document creation/update
     const { logger } = await import("@/lib/logger");
-    logger.error(`Failed to generate PDF in background for document ${document.id}:`, error);
-    
-    // Try to extract error message
+    // Extract error message with detailed handling
     let errorMessage = "Unknown error";
     if (error instanceof Error) {
       errorMessage = error.message;
@@ -397,6 +413,18 @@ export async function generatePDFInBackground(
     } else if (error && typeof error === "object") {
       const err = error as any;
       errorMessage = err.message || err.error || String(error);
+    }
+    
+    // Only log as warning for background PDF generation failures (non-critical)
+    if (errorMessage.includes("Failed to load Puppeteer") || 
+        errorMessage.includes("Puppeteer not available")) {
+      logger.debug("Background PDF generation skipped (Puppeteer not available)", {
+        documentId: document.id
+      });
+    } else {
+      logger.warn(`Background PDF generation failed for document ${document.id}`, {
+        error: errorMessage
+      });
     }
     
     console.error(`PDF generation error details: ${errorMessage}`);

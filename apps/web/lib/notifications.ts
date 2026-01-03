@@ -119,13 +119,25 @@ export async function createDocumentNotification(
     });
 
     if (error) {
-      logger.error("Error creating document notification", error);
+      // Only log as warning if it's a non-critical error (e.g., RPC function doesn't exist)
+      // Don't log as error if it's just a missing function or permission issue
+      if (error.code === '42883' || error.code === 'P0001') {
+        logger.warn("Document notification function not available", { 
+          code: error.code,
+          message: error.message 
+        });
+      } else {
+        logger.error("Error creating document notification", error);
+      }
       return null;
     }
 
     return data;
   } catch (error) {
-    logger.error("Failed to create document notification", error);
+    // Only log unexpected errors, not expected failures
+    if (error instanceof Error && !error.message.includes('RPC')) {
+      logger.error("Failed to create document notification", error);
+    }
     return null;
   }
 }
@@ -146,13 +158,25 @@ export async function createCustomerNotification(
     });
 
     if (error) {
-      logger.error("Error creating customer notification", error);
+      // Only log as warning if it's a non-critical error (e.g., RPC function doesn't exist)
+      // Don't log as error if it's just a missing function or permission issue
+      if (error.code === '42883' || error.code === 'P0001') {
+        logger.warn("Customer notification function not available", { 
+          code: error.code,
+          message: error.message 
+        });
+      } else {
+        logger.error("Error creating customer notification", error);
+      }
       return null;
     }
 
     return data;
   } catch (error) {
-    logger.error("Failed to create customer notification", error);
+    // Only log unexpected errors, not expected failures
+    if (error instanceof Error && !error.message.includes('RPC')) {
+      logger.error("Failed to create customer notification", error);
+    }
     return null;
   }
 }
