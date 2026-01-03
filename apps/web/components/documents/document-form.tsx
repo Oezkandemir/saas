@@ -18,18 +18,18 @@ import { CompanyProfileSelector } from "@/components/company-settings/company-pr
 import { CustomerSelector } from "@/components/documents/customer-selector";
 import { Button } from '@/components/alignui/actions/button';
 import {
-  Form,
+  FormRoot as Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
   FormDescription,
-} from "@/components/ui/form";
+} from "@/components/alignui/forms/form";
 import { Input } from '@/components/alignui/forms/input';
-import { Textarea } from "@/components/ui/textarea";
+import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { Separator } from "@/components/ui/separator";
+import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
 import { Plus, Trash2, FileText, Calendar, ShoppingCart, Receipt, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 

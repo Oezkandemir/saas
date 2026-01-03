@@ -23,7 +23,7 @@ import {
   clearAllSessions,
   type ActiveSession,
 } from "@/actions/security-actions";
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import {
   AlertDialog,
   AlertDialogAction,

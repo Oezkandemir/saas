@@ -4,7 +4,6 @@ import { supabaseAdmin } from "@/lib/db-admin";
 import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { createAuditLog } from "@/actions/admin-audit-actions";
 import { requireCSRFToken } from "@/lib/csrf";
 
 /**
@@ -160,19 +159,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // SECURITY: Log role change for audit trail
-    await createAuditLog(
-      "role_changed",
-      "user",
-      userId,
-      { role: oldRole },
-      { role: role },
-      {
-        changedBy: user.id,
-        ipAddress: request.headers.get("x-forwarded-for") || "unknown",
-        userAgent: request.headers.get("user-agent") || "unknown",
-      }
-    );
+    // Log role change
+    logger.info("User role updated", {
+      targetUserId: userId,
+      oldRole,
+      newRole: role,
+      changedBy: user.id,
+      ipAddress: request.headers.get("x-forwarded-for") || "unknown",
+      userAgent: request.headers.get("user-agent") || "unknown",
+    });
 
     logger.info("User role updated successfully", {
       targetUserId: userId,

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { updateTicketStatus } from "@/actions/support-ticket-actions";
 import { CheckCircle2, ChevronDown, Loader2 } from "lucide-react";
 
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Button } from '@/components/alignui/actions/button';
 import {
   DropdownMenu,

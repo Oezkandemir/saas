@@ -69,7 +69,7 @@ export function UnifiedPageLayout({
         </div>
       )}
 
-      {/* Content - Natural flow with proper padding */}
+      {/* Content - Konsistente Padding, reduzierte Gaps */}
       <div className={cn("flex-1 overflow-y-auto px-4 xl:px-8 py-4 sm:py-6", contentClassName)}>
         {children}
       </div>

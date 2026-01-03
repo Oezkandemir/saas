@@ -4,13 +4,11 @@ import { POST } from "@/app/api/admin/update-user-role/route";
 import { getCurrentUser } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { requireCSRFToken } from "@/lib/csrf";
-import { createAuditLog } from "@/actions/admin-audit-actions";
 
 // Mock dependencies
 vi.mock("@/lib/session");
 vi.mock("@/lib/rate-limit");
 vi.mock("@/lib/csrf");
-vi.mock("@/actions/admin-audit-actions");
 vi.mock("@/lib/db-admin", () => ({
   supabaseAdmin: {
     from: vi.fn(() => ({
@@ -175,7 +173,6 @@ describe("Admin Route - Update User Role", () => {
       resetAt: new Date(Date.now() + 60000),
       blocked: false,
     });
-    vi.mocked(createAuditLog).mockResolvedValue({ success: true });
 
     const request = new NextRequest("http://localhost/api/admin/update-user-role", {
       method: "POST",

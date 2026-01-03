@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import type { PlanStatistics } from "@/actions/admin-plan-actions";
 
 interface PlanStatisticsTableProps {
@@ -19,51 +19,58 @@ export function PlanStatisticsTable({ statistics }: PlanStatisticsTableProps) {
   if (statistics.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground text-sm">
-        No plan statistics available
+        Keine Plan-Statistiken verfügbar
       </div>
     );
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Plan</TableHead>
-            <TableHead className="text-right">Users</TableHead>
-            <TableHead className="text-right">MRR</TableHead>
-            <TableHead className="text-right">ARR</TableHead>
-            <TableHead className="text-right">Total Revenue</TableHead>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Plan</TableHead>
+          <TableHead className="text-right">Abonnenten</TableHead>
+          <TableHead className="text-right">MRR</TableHead>
+          <TableHead className="text-right">ARR</TableHead>
+          <TableHead className="text-right">Gesamt Umsatz</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {statistics.map((stat) => (
+          <TableRow key={stat.plan_id}>
+            <TableCell className="font-medium">
+              <div className="flex flex-col">
+                <span>{stat.plan_title}</span>
+                <span className="text-xs text-muted-foreground">
+                  {stat.plan_key}
+                </span>
+              </div>
+            </TableCell>
+            <TableCell className="text-right">
+              {stat.user_count}
+            </TableCell>
+            <TableCell className="text-right font-semibold">
+              €{Number(stat.mrr || 0).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </TableCell>
+            <TableCell className="text-right font-semibold">
+              €{Number(stat.arr || 0).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </TableCell>
+            <TableCell className="text-right font-semibold">
+              €{Number(stat.total_revenue || 0).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </TableCell>
           </TableRow>
-        </TableHeader>
-        <TableBody>
-          {statistics.map((stat) => (
-            <TableRow key={stat.plan_id}>
-              <TableCell>
-                <div className="flex flex-col">
-                  <span className="font-medium">{stat.plan_title}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {stat.plan_key}
-                  </span>
-                </div>
-              </TableCell>
-              <TableCell className="text-right">
-                <Badge variant="secondary">{stat.user_count}</Badge>
-              </TableCell>
-              <TableCell className="text-right font-medium">
-                €{Number(stat.mrr || 0).toFixed(2)}
-              </TableCell>
-              <TableCell className="text-right font-medium">
-                €{Number(stat.arr || 0).toFixed(2)}
-              </TableCell>
-              <TableCell className="text-right font-medium">
-                €{Number(stat.total_revenue || 0).toFixed(2)}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+        ))}
+      </TableBody>
+    </Table>
   );
 }
 

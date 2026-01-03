@@ -7,18 +7,18 @@ import { useTranslations } from "next-intl";
 import * as z from "zod";
 import { Mail, Send, Loader2 } from "lucide-react";
 import {
-  Dialog,
+  DialogRoot as Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/alignui/overlays/dialog";
 import { Button } from '@/components/alignui/actions/button';
 import { Input } from '@/components/alignui/forms/input';
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
+import { LabelRoot as Label } from "@/components/alignui/forms/label";
 import { sendCustomerEmail } from "@/actions/send-customer-email";
 import { toast } from "sonner";
 import { Customer } from "@/actions/customers-actions";

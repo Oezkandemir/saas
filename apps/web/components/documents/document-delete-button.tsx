@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import {
-  AlertDialog,
+  AlertDialogRoot as AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
@@ -14,7 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/components/alignui/overlays/alert-dialog";
 import { Trash2 } from "lucide-react";
 import { deleteDocument } from "@/actions/documents-actions";
 import { toast } from "sonner";

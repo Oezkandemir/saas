@@ -34,7 +34,7 @@ export function SyncSubscriptionButton() {
 
   return (
     <Button
-      variant="default"
+      variant="primary"
       size="sm"
       onClick={handleSync}
       disabled={isLoading}

@@ -11,7 +11,7 @@ import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { useScroll } from "@/hooks/use-scroll";
 import { Button } from '@/components/alignui/actions/button';
-import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonRoot as Skeleton } from "@/components/alignui/data-display/skeleton";
 import { DocsSearch } from "@/components/docs/search";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Icons } from "@/components/shared/icons";
@@ -130,7 +130,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
               {/* Icon button for small screens */}
               <Button
                 className="flex md:hidden gap-2 px-3 py-2 text-sm touch-manipulation rounded-full"
-                variant="default"
+                variant="primary"
                 size="sm"
                 onClick={() => setShowSignInModal(true)}
                 aria-label={t("signIn")}
@@ -141,7 +141,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
               {/* Text button for larger screens */}
               <Button
                 className="hidden gap-2 px-4 sm:px-5 text-sm md:flex touch-manipulation rounded-full"
-                variant="default"
+                variant="primary"
                 size="sm"
                 onClick={() => setShowSignInModal(true)}
               >

@@ -41,7 +41,7 @@ export function CustomerQuickActions({ customer }: CustomerQuickActionsProps) {
           <SendEmailDialog
             customer={customer}
             trigger={
-              <Button variant="default" size="sm" className="gap-2">
+              <Button variant="primary" size="sm" className="gap-2">
                 <Mail className="h-4 w-4" />
                 {t("sendEmail")}
               </Button>

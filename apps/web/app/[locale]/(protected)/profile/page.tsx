@@ -34,7 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { UserTicketAccordion } from "@/components/support/user-ticket-accordion";
 import { getDefaultCompanyProfile, getCompanyProfiles } from "@/actions/company-profiles-actions";
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import {
   Accordion,
   AccordionContent,

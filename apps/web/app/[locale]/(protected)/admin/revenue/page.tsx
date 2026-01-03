@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getRevenueAnalytics } from "@/actions/revenue-analytics-actions";
-import { DollarSign, TrendingUp, Users, CreditCard } from "lucide-react";
+import { DollarSign } from "lucide-react";
 import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
@@ -21,7 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -92,87 +92,56 @@ export default async function AdminRevenuePage(props: Props) {
       title={t("title")}
       description={t("description")}
       icon={<DollarSign className="h-4 w-4 text-primary" />}
-      contentClassName="space-y-4"
+      contentClassName="space-y-6"
     >
-      {/* Metrics Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("totalMRR")}</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {metrics.total_mrr.toLocaleString(locale, {
-                style: "currency",
-                currency: "EUR",
-              })}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Monatliches wiederkehrendes Einkommen
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("subscriptionMetrics")}
-            </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{metrics.active_subscribers}</div>
-            <p className="text-xs text-muted-foreground">
-              Aktive Abonnenten
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("churnRate")}</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {(metrics.churn_rate * 100).toFixed(2)}%
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Kündigungsrate
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("avgRevenuePerUser")}
-            </CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {metrics.avg_revenue_per_user.toLocaleString(locale, {
-                style: "currency",
-                currency: "EUR",
-              })}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Durchschnitt pro Benutzer
-            </p>
-          </CardContent>
-        </Card>
+      {/* Primary Metric */}
+      <div className="border-b pb-6">
+        <div className="flex items-baseline gap-2">
+          <div className="text-5xl font-semibold tracking-tight">
+            {metrics.total_mrr.toLocaleString(locale, {
+              style: "currency",
+              currency: "EUR",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}
+          </div>
+          <div className="text-sm text-muted-foreground">Monatliches wiederkehrendes Einkommen</div>
+        </div>
       </div>
 
-      <Tabs defaultValue="period" className="space-y-4">
+      {/* Secondary KPIs - Max 3 */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <div>
+          <div className="text-sm text-muted-foreground mb-1">Aktive Abonnenten</div>
+          <div className="text-2xl font-semibold">{metrics.active_subscribers}</div>
+        </div>
+        <div>
+          <div className="text-sm text-muted-foreground mb-1">Ø Revenue pro User</div>
+          <div className="text-2xl font-semibold">
+            {metrics.avg_revenue_per_user.toLocaleString(locale, {
+              style: "currency",
+              currency: "EUR",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}
+          </div>
+        </div>
+        <div>
+          <div className="text-sm text-muted-foreground mb-1">Churn Rate</div>
+          <div className="text-2xl font-semibold">
+            {(metrics.churn_rate * 100).toFixed(1)}%
+          </div>
+        </div>
+      </div>
+
+      <Tabs defaultValue="period" className="space-y-6">
         <TabsList>
           <TabsTrigger value="period">{t("revenueByPeriod")}</TabsTrigger>
           <TabsTrigger value="plan">{t("revenueByPlan")}</TabsTrigger>
         </TabsList>
 
         {/* Revenue by Period Tab */}
-        <TabsContent value="period" className="space-y-4">
+        <TabsContent value="period" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>{t("revenueByPeriod")}</CardTitle>
@@ -195,8 +164,10 @@ export default async function AdminRevenuePage(props: Props) {
                     {revenueByPeriod.map((period, index) => (
                       <TableRow key={index}>
                         <TableCell className="font-medium">
-                          {new Date(period.period_start).toLocaleDateString(locale)} -{" "}
-                          {new Date(period.period_end).toLocaleDateString(locale)}
+                          {new Date(period.period_start).toLocaleDateString(locale, {
+                            month: "short",
+                            year: "numeric",
+                          })}
                         </TableCell>
                         <TableCell className="text-right font-semibold">
                           {period.total_revenue.toLocaleString(locale, {
@@ -207,7 +178,7 @@ export default async function AdminRevenuePage(props: Props) {
                         <TableCell className="text-right">
                           {period.subscriber_count}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right text-muted-foreground">
                           {period.avg_revenue_per_subscriber.toLocaleString(locale, {
                             style: "currency",
                             currency: "EUR",
@@ -227,7 +198,7 @@ export default async function AdminRevenuePage(props: Props) {
         </TabsContent>
 
         {/* Revenue by Plan Tab */}
-        <TabsContent value="plan" className="space-y-4">
+        <TabsContent value="plan" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>{t("revenueByPlan")}</CardTitle>
@@ -270,7 +241,7 @@ export default async function AdminRevenuePage(props: Props) {
                               currency: "EUR",
                             })}
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="text-right text-muted-foreground">
                             {plan.avg_revenue_per_subscriber.toLocaleString(locale, {
                               style: "currency",
                               currency: "EUR",
@@ -289,45 +260,6 @@ export default async function AdminRevenuePage(props: Props) {
           </Card>
         </TabsContent>
       </Tabs>
-
-      {/* Additional Metrics */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Gesamt Abonnenten</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{metrics.total_subscribers}</div>
-            <p className="text-xs text-muted-foreground">
-              Alle Zeit
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Aktive Abonnenten</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{metrics.active_subscribers}</div>
-            <p className="text-xs text-muted-foreground">
-              Aktuell aktiv
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Gekündigte Abonnenten</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{metrics.cancelled_subscribers}</div>
-            <p className="text-xs text-muted-foreground">
-              Kündigungen
-            </p>
-          </CardContent>
-        </Card>
-      </div>
     </UnifiedPageLayout>
   );
 }

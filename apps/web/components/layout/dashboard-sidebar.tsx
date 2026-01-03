@@ -10,9 +10,9 @@ import { useTranslations } from "next-intl";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { useNotifications } from "@/hooks/use-notifications";
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Button } from '@/components/alignui/actions/button';
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollAreaRoot as ScrollArea } from "@/components/alignui/data-display/scroll-area";
 import {
   Sheet,
   SheetContent,
@@ -26,7 +26,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Icons } from "@/components/shared/icons";
-import { Separator } from "@/components/ui/separator";
+import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
 import { useSupabase } from "@/components/supabase-provider";
 import { LayoutDashboard, Mail, Sparkles } from "lucide-react";
 import { getUserPlan } from "@/actions/get-user-plan";
@@ -226,12 +226,15 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
                                 href={item.disabled ? "#" : item.href}
                                 prefetch={!item.disabled}
                                 className={cn(
-                                  "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted transition-colors",
+                                  // Base Styles - Kompakte Spacing, klare Active States
+                                  "flex items-center gap-3 rounded-md p-2 text-sm font-medium transition-colors",
+                                  // Active State - Klar sichtbar
                                   path === item.href
-                                    ? "bg-muted"
-                                    : "text-muted-foreground hover:text-accent-foreground",
+                                    ? "bg-primary/10 text-primary font-semibold border border-primary/20"
+                                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+                                  // Disabled State
                                   item.disabled &&
-                                    "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
+                                    "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-muted-foreground",
                                 )}
                               >
                                 <Icon className="size-5 min-w-5 shrink-0" />
@@ -261,13 +264,15 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
                                     href={item.disabled ? "#" : item.href}
                                     prefetch={!item.disabled}
                                     className={cn(
-                                      "flex items-center gap-3 rounded-md py-2 text-sm font-medium hover:bg-muted transition-colors",
+                                      // Base Styles für Collapsed Sidebar
+                                      "flex items-center gap-3 rounded-md py-2 text-sm font-medium transition-colors relative",
+                                      // Active State - Klar sichtbar
                                       path === item.href
-                                        ? "bg-muted"
-                                        : "text-muted-foreground hover:text-accent-foreground",
+                                        ? "bg-primary/10 text-primary"
+                                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+                                      // Disabled State
                                       item.disabled &&
-                                        "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
-                                      "relative", // Add relative positioning for badge
+                                        "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-muted-foreground",
                                     )}
                                   >
                                     <span className="flex size-full items-center justify-center">

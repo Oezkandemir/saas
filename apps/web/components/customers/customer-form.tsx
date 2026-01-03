@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import * as z from "zod";
 import { CustomerInput, createCustomer, updateCustomer, Customer } from "@/actions/customers-actions";
-import { Form } from "@/components/ui/form";
+import { FormRoot as Form } from "@/components/alignui/forms/form";
 import { toast } from "sonner";
 import { Card, CardContent } from '@/components/alignui/data-display/card';
 import { LoadingOverlay } from "@/components/ui/loading-overlay";

@@ -1,50 +1,75 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { QRCode } from "@/actions/qr-codes-actions";
+import * as React from 'react';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
+  RiArrowDownSFill,
+  RiArrowUpSFill,
+  RiExpandUpDownFill,
+  RiMore2Line,
+} from '@remixicon/react';
+import {
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type ColumnDef,
+  type SortingState,
+} from '@tanstack/react-table';
+import { MoreVertical, Pencil, Trash2, Copy, Download, Eye } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { QRCode } from '@/actions/qr-codes-actions';
+import { deleteQRCode, getQRCodeScanCount } from '@/actions/qr-codes-actions';
+import { ButtonRoot } from '@/components/alignui/actions/button';
+import { BadgeRoot } from '@/components/alignui/data-display/badge';
+import {
+  TableRoot,
   TableHeader,
+  TableBody,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from '@/components/alignui/actions/button';
-import { Badge } from '@/components/alignui/data-display/badge';
+  TableRowDivider,
+  TableHead,
+  TableCell,
+} from '@/components/alignui/data-display/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreVertical, Pencil, Trash2, Copy, Download, Eye } from "lucide-react";
-import { deleteQRCode, getQRCodeScanCount } from "@/actions/qr-codes-actions";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+} from '@/components/ui/dropdown-menu';
 
 interface QRCodesTableProps {
   qrCodes: QRCode[];
 }
 
 const typeLabels: Record<string, string> = {
-  url: "URL",
-  pdf: "PDF",
-  text: "Text",
-  whatsapp: "WhatsApp",
-  maps: "Google Maps",
+  url: 'URL',
+  pdf: 'PDF',
+  text: 'Text',
+  whatsapp: 'WhatsApp',
+  maps: 'Google Maps',
+};
+
+const getSortingIcon = (state: 'asc' | 'desc' | false) => {
+  if (state === 'asc')
+    return <RiArrowUpSFill className='size-5 text-text-sub-600' />;
+  if (state === 'desc')
+    return <RiArrowDownSFill className='size-5 text-text-sub-600' />;
+  return <RiExpandUpDownFill className='size-5 text-text-sub-600' />;
 };
 
 export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
-  const t = useTranslations("QRCodes.table");
+  const t = useTranslations('QRCodes.table');
   const router = useRouter();
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [scanCounts, setScanCounts] = useState<Record<string, number>>({});
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [deletingId, setDeletingId] = React.useState<string | null>(null);
+  const [scanCounts, setScanCounts] = React.useState<Record<string, number>>({});
 
   // Load scan counts for all QR codes
-  useEffect(() => {
+  React.useEffect(() => {
     const loadScanCounts = async () => {
       const counts: Record<string, number> = {};
       for (const qrCode of qrCodes) {
@@ -60,15 +85,15 @@ export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
   }, [qrCodes]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm(t("deleteConfirm"))) return;
+    if (!confirm(t('deleteConfirm'))) return;
 
     setDeletingId(id);
     try {
       await deleteQRCode(id);
-      toast.success(t("deleted"));
+      toast.success(t('deleted'));
       router.refresh();
     } catch (error) {
-      toast.error(t("deleteError"));
+      toast.error(t('deleteError'));
     } finally {
       setDeletingId(null);
     }
@@ -77,108 +102,254 @@ export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
   const handleCopyLink = (code: string) => {
     const url = `${window.location.origin}/q/${code}`;
     navigator.clipboard.writeText(url);
-    toast.success(t("linkCopied"));
+    toast.success(t('linkCopied'));
   };
 
   const handleDownload = (code: string) => {
     // TODO: Implement QR code image download
-    toast.info("QR-Code Download wird implementiert");
+    toast.info('QR-Code Download wird implementiert');
   };
 
+  const columns: ColumnDef<QRCode>[] = [
+    {
+      id: 'name',
+      accessorKey: 'name',
+      header: ({ column }) => (
+        <div className='flex items-center gap-0.5'>
+          {t('name')}
+          <button
+            type='button'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            {getSortingIcon(column.getIsSorted())}
+          </button>
+        </div>
+      ),
+      cell: ({ row }) => (
+        <Link
+          href={`/dashboard/qr-codes/${row.original.id}`}
+          className='font-medium text-label-sm text-text-strong-950 hover:underline'
+        >
+          {row.original.name}
+        </Link>
+      ),
+    },
+    {
+      id: 'type',
+      accessorKey: 'type',
+      header: ({ column }) => (
+        <div className='flex items-center gap-0.5'>
+          {t('type')}
+          <button
+            type='button'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            {getSortingIcon(column.getIsSorted())}
+          </button>
+        </div>
+      ),
+      cell: ({ row }) => (
+        <span className='text-label-sm text-text-strong-950'>
+          {typeLabels[row.original.type] || row.original.type}
+        </span>
+      ),
+    },
+    {
+      id: 'code',
+      accessorKey: 'code',
+      header: ({ column }) => (
+        <div className='flex items-center gap-0.5'>
+          {t('code')}
+          <button
+            type='button'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            {getSortingIcon(column.getIsSorted())}
+          </button>
+        </div>
+      ),
+      cell: ({ row }) => (
+        <code className='text-xs bg-muted px-2 py-1 rounded text-text-strong-950'>
+          {row.original.code}
+        </code>
+      ),
+    },
+    {
+      id: 'target',
+      accessorKey: 'destination',
+      header: ({ column }) => (
+        <div className='flex items-center gap-0.5'>
+          {t('target')}
+          <button
+            type='button'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            {getSortingIcon(column.getIsSorted())}
+          </button>
+        </div>
+      ),
+      cell: ({ row }) => (
+        <span className='max-w-[200px] truncate text-label-sm text-text-strong-950'>
+          {row.original.destination}
+        </span>
+      ),
+    },
+    {
+      id: 'scans',
+      accessorKey: 'scans',
+      header: ({ column }) => (
+        <div className='flex items-center gap-0.5'>
+          {t('scans')}
+          <button
+            type='button'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            {getSortingIcon(column.getIsSorted())}
+          </button>
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className='flex items-center gap-1'>
+          <Eye className='h-4 w-4 text-muted-foreground' />
+          <span className='text-sm font-medium text-text-strong-950'>
+            {scanCounts[row.original.id] ?? '...'}
+          </span>
+        </div>
+      ),
+    },
+    {
+      id: 'status',
+      accessorKey: 'is_active',
+      header: ({ column }) => (
+        <div className='flex items-center gap-0.5'>
+          {t('status')}
+          <button
+            type='button'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            {getSortingIcon(column.getIsSorted())}
+          </button>
+        </div>
+      ),
+      cell: ({ row }) => (
+        <BadgeRoot variant={row.original.is_active ? 'default' : 'secondary'}>
+          {row.original.is_active ? 'Aktiv' : 'Inaktiv'}
+        </BadgeRoot>
+      ),
+    },
+    {
+      id: 'created',
+      accessorKey: 'created_at',
+      header: ({ column }) => (
+        <div className='flex items-center gap-0.5'>
+          {t('created')}
+          <button
+            type='button'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            {getSortingIcon(column.getIsSorted())}
+          </button>
+        </div>
+      ),
+      cell: ({ row }) => (
+        <span className='text-label-sm text-text-strong-950'>
+          {new Date(row.original.created_at).toLocaleDateString('de-DE')}
+        </span>
+      ),
+    },
+    {
+      id: 'actions',
+      enableHiding: false,
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <ButtonRoot
+              variant='ghost'
+              size='sm'
+              disabled={deletingId === row.original.id}
+            >
+              <RiMore2Line className='size-4' />
+            </ButtonRoot>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end'>
+            <DropdownMenuItem onClick={() => handleCopyLink(row.original.code)}>
+              <Copy className='mr-2 h-4 w-4' />
+              Link kopieren
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload(row.original.code)}>
+              <Download className='mr-2 h-4 w-4' />
+              QR-Code herunterladen
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/dashboard/qr-codes/${row.original.id}/edit`}>
+                <Pencil className='mr-2 h-4 w-4' />
+                Bearbeiten
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => handleDelete(row.original.id)}
+              className='text-destructive'
+            >
+              <Trash2 className='mr-2 h-4 w-4' />
+              Löschen
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
+  const table = useReactTable({
+    data: qrCodes,
+    columns,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
+  });
+
   return (
-    <div className="rounded-md border overflow-x-auto">
-      <Table>
+    <div className='w-full'>
+      <TableRoot>
         <TableHeader>
-          <TableRow>
-            <TableHead>{t("name")}</TableHead>
-            <TableHead>{t("type")}</TableHead>
-            <TableHead>{t("code")}</TableHead>
-            <TableHead>{t("target")}</TableHead>
-            <TableHead>{t("scans")}</TableHead>
-            <TableHead>{t("status")}</TableHead>
-            <TableHead>{t("created")}</TableHead>
-            <TableHead className="w-[70px]"></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {qrCodes.map((qrCode) => (
-            <TableRow key={qrCode.id}>
-              <TableCell className="font-medium">
-                <Link
-                  href={`/dashboard/qr-codes/${qrCode.id}`}
-                  className="hover:underline"
-                >
-                  {qrCode.name}
-                </Link>
-              </TableCell>
-              <TableCell>{typeLabels[qrCode.type] || qrCode.type}</TableCell>
-              <TableCell>
-                <code className="text-xs bg-muted px-2 py-1 rounded">
-                  {qrCode.code}
-                </code>
-              </TableCell>
-              <TableCell className="max-w-[200px] truncate">
-                {qrCode.destination}
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-1">
-                  <Eye className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">
-                    {scanCounts[qrCode.id] ?? "..."}
-                  </span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <Badge variant={qrCode.is_active ? "default" : "secondary"}>
-                  {qrCode.is_active ? "Aktiv" : "Inaktiv"}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                {new Date(qrCode.created_at).toLocaleDateString("de-DE")}
-              </TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      disabled={deletingId === qrCode.id}
-                    >
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => handleCopyLink(qrCode.code)}
-                    >
-                      <Copy className="mr-2 h-4 w-4" />
-                      Link kopieren
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleDownload(qrCode.code)}>
-                      <Download className="mr-2 h-4 w-4" />
-                      QR-Code herunterladen
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/dashboard/qr-codes/${qrCode.id}/edit`}>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Bearbeiten
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => handleDelete(qrCode.id)}
-                      className="text-destructive"
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Löschen
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                );
+              })}
             </TableRow>
           ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length > 0 &&
+            table.getRowModel().rows.map((row, i, arr) => (
+              <React.Fragment key={row.id}>
+                <TableRow data-state={row.getIsSelected() && 'selected'}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+                {i < arr.length - 1 && <TableRowDivider />}
+              </React.Fragment>
+            ))}
         </TableBody>
-      </Table>
+      </TableRoot>
     </div>
   );
 }
-

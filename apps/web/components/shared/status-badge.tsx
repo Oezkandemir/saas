@@ -1,4 +1,4 @@
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { cn } from "@/lib/utils";
 
 export type DocumentStatus =

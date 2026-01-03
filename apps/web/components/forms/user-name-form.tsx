@@ -12,8 +12,7 @@ import { toast } from "sonner";
 import { userNameSchema } from "@/lib/validations/user";
 import { Button } from '@/components/alignui/actions/button';
 import { Input } from '@/components/alignui/forms/input';
-import { Label } from "@/components/ui/label";
-import { SectionColumns } from "@/components/dashboard/section-columns";
+import { LabelRoot as Label } from "@/components/alignui/forms/label";
 import { Icons } from "@/components/shared/icons";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSupabase } from "@/components/supabase-provider";
@@ -65,44 +64,40 @@ export function UserNameForm({ user }: UserNameFormProps) {
 
   return (
     <form onSubmit={onSubmit}>
-      <SectionColumns title={t("title")} description={t("description")}>
-        <div className="flex w-full items-center gap-2">
-          <Label className="sr-only" htmlFor="name">
-            {t("label")}
-          </Label>
-          <Input
-            id="name"
-            className="flex-1"
-            size={32}
-            {...register("name")}
-            onChange={(e) => checkUpdate(e.target.value)}
-            placeholder={t("label")}
-          />
-          <Button
-            type="submit"
-            variant={updated ? "default" : "outline"}
-            disabled={isPending || !updated}
-            className="w-[67px] shrink-0 px-0 sm:w-[130px]"
-          >
-            {isPending ? (
-              <LoadingSpinner size="sm" variant="primary" />
-            ) : (
-              <p>
-                Save
-                <span className="hidden sm:inline-flex">&nbsp;Changes</span>
-              </p>
-            )}
-          </Button>
-        </div>
-        <div className="flex flex-col justify-between p-1">
-          {errors?.name && (
-            <p className="pb-0.5 text-[13px] text-red-600">
-              {errors.name.message}
-            </p>
+      <div className="flex items-center gap-2">
+        <Label className="sr-only" htmlFor="name">
+          {t("label")}
+        </Label>
+        <Input
+          id="name"
+          className="flex-1"
+          size={32}
+          {...register("name")}
+          onChange={(e) => checkUpdate(e.target.value)}
+          placeholder={t("label")}
+        />
+        <Button
+          type="submit"
+          variant={updated ? "primary" : "outline"}
+          size="sm"
+          className="h-8 text-xs shrink-0"
+          disabled={isPending || !updated}
+        >
+          {isPending ? (
+            <LoadingSpinner size="sm" variant="primary" />
+          ) : (
+            "Save"
           )}
-          <p className="text-[13px] text-muted-foreground">{t("maxChars")}</p>
-        </div>
-      </SectionColumns>
+        </Button>
+      </div>
+      <div className="mt-1">
+        {errors?.name && (
+          <p className="text-xs text-red-600">
+            {errors.name.message}
+          </p>
+        )}
+        <p className="text-xs text-muted-foreground">{t("maxChars")}</p>
+      </div>
     </form>
   );
 }

@@ -5,12 +5,12 @@ import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import { Download, ZoomIn, ZoomOut, Loader2, Maximize2, FileText } from "lucide-react";
 import {
-  Dialog,
+  DialogRoot as Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/alignui/overlays/dialog";
 
 interface PDFPreviewProps {
   documentId: string;
@@ -231,7 +231,7 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
             {t("clickToLoad")}
           </p>
         </div>
-        <Button onClick={() => setShowPdfPreview(true)} variant="default" size="lg">
+        <Button onClick={() => setShowPdfPreview(true)} variant="primary" size="lg">
           <FileText className="h-4 w-4 mr-2" />
           {t("showPreview")}
         </Button>

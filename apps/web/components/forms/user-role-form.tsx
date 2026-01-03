@@ -11,7 +11,7 @@ import { z } from "zod";
 
 import { userRoleSchema } from "@/lib/validations/user";
 import { Button } from '@/components/alignui/actions/button';
-import { Form, FormField } from "@/components/ui/form";
+import { FormRoot as Form, FormField } from "@/components/alignui/forms/form";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { Icons } from "@/components/shared/icons";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -109,7 +109,7 @@ export function UserRoleForm({ user }: UserNameFormProps) {
             />
             <Button
               type="submit"
-              variant={updated ? "default" : "outline"}
+              variant={updated ? "primary" : "outline"}
               disabled={isPending || !updated}
               className="w-[67px] shrink-0 px-0 sm:w-[130px]"
             >

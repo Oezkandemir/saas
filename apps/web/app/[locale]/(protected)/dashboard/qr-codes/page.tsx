@@ -4,12 +4,11 @@ import { getCurrentUser } from "@/lib/session";
 import { getQRCodes, type QRCode } from "@/actions/qr-codes-actions";
 import { getCustomers, type Customer } from "@/actions/customers-actions";
 import { Button } from '@/components/alignui/actions/button';
-import { Plus, QrCode, Scan, Link as LinkIcon } from "lucide-react";
+import { Plus, QrCode } from "lucide-react";
 import Link from "next/link";
 import { QRCodesTable } from "@/components/qr-codes/qr-codes-table";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 
 export const dynamic = "force-dynamic";
 
@@ -24,114 +23,50 @@ export default async function QRCodesPage() {
   ]);
 
   const customerQRCodes = customers.filter((c) => c.qr_code).length;
-  const standaloneQRCodes = qrCodes.length;
+  const totalQRCodes = qrCodes.length + customerQRCodes;
 
-  const stats = [
-    {
-      title: t("stats.total"),
-      value: qrCodes.length + customerQRCodes,
-      icon: QrCode,
-      description: t("stats.totalDescription", { standalone: standaloneQRCodes, customer: customerQRCodes }),
-    },
-    {
-      title: t("stats.customer"),
-      value: customerQRCodes,
-      icon: Scan,
-      description: t("stats.customerDescription"),
-    },
-    {
-      title: t("stats.standalone"),
-      value: standaloneQRCodes,
-      icon: LinkIcon,
-      description: t("stats.standaloneDescription"),
-    },
-  ];
+  // Contextual description with QR code counts
+  const description = totalQRCodes > 0 
+    ? `${totalQRCodes} ${t("stats.total").toLowerCase()} • ${qrCodes.length} Standalone • ${customerQRCodes} Kunden`
+    : t("description");
 
   return (
     <UnifiedPageLayout
       title={t("title")}
-      description={t("description")}
+      description={description}
       icon={<QrCode className="h-4 w-4 text-primary" />}
       actions={
         <Link href="/dashboard/qr-codes/new">
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
+          <Button className="gap-1.5 text-xs sm:text-sm h-8 sm:h-9">
+            <Plus className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">{t("newQRCode")}</span>
             <span className="sm:hidden">{t("new")}</span>
           </Button>
         </Link>
       }
-      contentClassName="space-y-6"
+      contentClassName=""
     >
-      {/* Statistics */}
-      {qrCodes.length > 0 || customerQRCodes > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-3">
-          {stats.map((stat) => {
-            const Icon = stat.icon;
-            return (
-              <Card key={stat.title} hover>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    {stat.title}
-                  </CardTitle>
-                  <div className="flex size-9 items-center justify-center rounded-md bg-muted/50 border border-border">
-                    <Icon className="size-4 text-muted-foreground" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-semibold mb-1">{stat.value}</div>
-                  <CardDescription className="text-xs">
-                    {stat.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      ) : null}
-
-      {/* QR Codes Table */}
+      {/* QR Codes Table - Visual Center */}
       {qrCodes.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <EmptyPlaceholder>
-              <div className="flex size-16 items-center justify-center rounded-full bg-muted/50 border border-border mb-6">
-                <QrCode className="size-8 text-muted-foreground" />
-              </div>
-              <EmptyPlaceholder.Title>{t("empty.title")}</EmptyPlaceholder.Title>
-              <EmptyPlaceholder.Description>
-                {t("empty.description")}
-              </EmptyPlaceholder.Description>
-              <Link href="/dashboard/qr-codes/new" className="mt-6">
-                <Button size="lg" className="gap-2">
-                  <Plus className="h-5 w-5" />
-                  {t("empty.create")}
-                </Button>
-              </Link>
-            </EmptyPlaceholder>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex size-9 items-center justify-center rounded-md bg-muted/50 border border-border">
-                  <QrCode className="size-4 text-muted-foreground" />
-                </div>
-                <div>
-                  <CardTitle>{t("list.title")}</CardTitle>
-                  <CardDescription>
-                    {t("list.description", { count: qrCodes.length })}
-                  </CardDescription>
-                </div>
-              </div>
+        <div className="flex flex-col items-center justify-center py-16">
+          <EmptyPlaceholder>
+            <div className="flex size-12 items-center justify-center rounded-full bg-muted/50 border border-border mb-3">
+              <QrCode className="size-6 text-muted-foreground" />
             </div>
-          </CardHeader>
-          <CardContent>
-            <QRCodesTable qrCodes={qrCodes} />
-          </CardContent>
-        </Card>
+            <EmptyPlaceholder.Title>{t("empty.title")}</EmptyPlaceholder.Title>
+            <EmptyPlaceholder.Description>
+              {t("empty.description")}
+            </EmptyPlaceholder.Description>
+            <Link href="/dashboard/qr-codes/new" className="mt-6">
+              <Button size="sm" className="gap-2">
+                <Plus className="h-4 w-4" />
+                {t("empty.create")}
+              </Button>
+            </Link>
+          </EmptyPlaceholder>
+        </div>
+      ) : (
+        <QRCodesTable qrCodes={qrCodes} />
       )}
     </UnifiedPageLayout>
   );

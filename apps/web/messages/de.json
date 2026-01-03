@@ -400,7 +400,8 @@
       "title": "Admin-Panel – Cenety",
       "description": "Verwalten Sie Ihre Anwendungseinstellungen und Benutzer.",
       "heading": "Admin-Panel",
-      "subheading": "Verwalten Sie Ihre Anwendungseinstellungen, Benutzer und Support-Tickets"
+      "subheading": "Verwalten Sie Ihre Anwendungseinstellungen, Benutzer und Support-Tickets",
+      "viewAll": "Alle anzeigen"
     },
     "configuration": {
       "title": "Konfiguration",
@@ -526,8 +527,13 @@
         "view": "Ansehen",
         "update": "Aktualisieren",
         "close": "Schließen",
-        "delete": "Löschen"
+        "delete": "Löschen",
+        "cancel": "Abbrechen",
+        "deleting": "Löschen...",
+        "deleteConfirmTitle": "Ticket löschen",
+        "deleteConfirmDescription": "Sind Sie sicher, dass Sie dieses Ticket löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
       },
+      "ticketDeleted": "Ticket erfolgreich gelöscht",
       "noTickets": "Keine Tickets gefunden",
       "ticketDetails": "Ticketdetails",
       "replyToTicket": "Auf Ticket antworten",
@@ -681,7 +687,15 @@
       "my_profile": "Mein Profil",
       "users": "Benutzer",
       "notifications": "Benachrichtigungen",
-      "teams": "Teams"
+      "teams": "Teams",
+      "analytics": "Analysen",
+      "revenue": "Umsatz",
+      "plans": "Pläne",
+      "roles": "Rollen",
+      "webhooks": "Webhooks",
+      "emails": "E-Mails",
+      "firmenprofile": "Firmenprofile",
+      "system": "System"
     }
   },
   "Support": {

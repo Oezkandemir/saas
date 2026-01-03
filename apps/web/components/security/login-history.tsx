@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/alignui/data-display/card';
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { getLoginHistory, type LoginHistoryEntry } from "@/actions/security-actions";
 
 export function LoginHistory() {

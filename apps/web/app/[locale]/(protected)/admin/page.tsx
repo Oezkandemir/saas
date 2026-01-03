@@ -1,38 +1,28 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import {
-  AlertTriangle,
-  BarChart4,
-  CheckCircle,
-  Clock,
-  CreditCard,
-  MessageSquare,
-  Settings,
-  ShieldCheck,
-  Users,
-  Shield,
-  Activity,
-  Webhook,
-  UserCog,
-  TrendingUp,
-  DollarSign,
-  Mail,
-  FileText,
-  Layers,
-} from "lucide-react";
+import Link from "next/link";
 import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
+import {
+  Shield,
+  Users,
+  ShieldCheck,
+  CreditCard,
+  AlertTriangle,
+  ArrowRight,
+} from "lucide-react";
 
 import { getCurrentUser } from "@/lib/session";
 import { getAdminStats } from "@/actions/admin-stats-actions";
+import { getAllUsers } from "@/actions/admin-user-actions";
 import { Button } from '@/components/alignui/actions/button';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/alignui/data-display/card';
-import { ConfigureStripePortalButton } from "@/components/admin/configure-stripe-button";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 // ISR: Revalidate every 60 seconds for fresh admin data
@@ -69,16 +59,6 @@ export default async function AdminPanelPage(props: Props) {
   const tUsers = await getTranslations("Admin.users");
   const tSupport = await getTranslations("Admin.support");
   const tStats = await getTranslations("Admin.stats");
-  const tConfig = await getTranslations("Admin.configuration");
-  const tSystem = await getTranslations("Admin.system");
-  const tWebhooks = await getTranslations("Admin.webhooks");
-  const tRoles = await getTranslations("Admin.roles");
-  const tUsageStats = await getTranslations("Admin.usageStats");
-  const tRevenue = await getTranslations("Admin.revenue");
-  const tEmails = await getTranslations("Admin.emails");
-  const tPlans = await getTranslations("Admin.plans");
-  const tAudit = await getTranslations("Admin.audit");
-  const tBulk = await getTranslations("Admin.bulk");
 
   if (!user?.email) {
     redirect("/login");
@@ -91,8 +71,11 @@ export default async function AdminPanelPage(props: Props) {
     redirect("/dashboard");
   }
 
-  // Fetch optimized admin statistics using SQL function
-  const statsResult = await getAdminStats();
+  // Fetch optimized admin statistics and recent users
+  const [statsResult, usersResult] = await Promise.all([
+    getAdminStats(),
+    getAllUsers(),
+  ]);
 
   // Default values in case of errors
   const statsData = statsResult.success && statsResult.data
@@ -107,42 +90,27 @@ export default async function AdminPanelPage(props: Props) {
         resolvedTickets: 0,
       };
 
-  const stats = [
-    {
-      title: tStats("userStats"),
-      value: statsData.totalUsers,
-      icon: Users,
-      description: tUsers("allRegistered"),
-    },
+  // Get recent users (last 5)
+  const recentUsers = usersResult.success && usersResult.data
+    ? usersResult.data.slice(0, 5)
+    : [];
+
+  // Maximal 3 KPIs: Admin Users, Subscribers, Open Tickets
+  const kpis = [
     {
       title: tUsers("adminUsers"),
       value: statsData.adminUsers,
-      icon: ShieldCheck,
-      description: tUsers("withAdminPrivileges"),
+      href: `/${locale}/admin/users?role=ADMIN`,
     },
     {
       title: tUsers("subscribers"),
       value: statsData.subscribedUsers,
-      icon: CreditCard,
-      description: tUsers("activePaid"),
+      href: `/${locale}/admin/users?subscription=active`,
     },
     {
       title: tSupport("openTickets"),
       value: statsData.openTickets,
-      icon: AlertTriangle,
-      description: tSupport("awaitingResponse"),
-    },
-    {
-      title: tSupport("statuses.inProgress"),
-      value: statsData.inProgressTickets,
-      icon: Clock,
-      description: tSupport("inProgressDescription"),
-    },
-    {
-      title: tSupport("statuses.resolved"),
-      value: statsData.resolvedTickets,
-      icon: CheckCircle,
-      description: tSupport("successfullyClosed"),
+      href: `/${locale}/admin/support?status=open`,
     },
   ];
 
@@ -150,318 +118,94 @@ export default async function AdminPanelPage(props: Props) {
     <UnifiedPageLayout
       title={tPanel("heading")}
       description={tPanel("subheading")}
-      icon={<Shield className="w-4 h-4 text-primary" />}
-      contentClassName="space-y-6"
+      icon={<Shield className="h-4 w-4 text-primary" />}
+      contentClassName=""
     >
-      {/* Statistics */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.title} hover>
-              <CardHeader className="flex flex-row justify-between items-center pb-3 space-y-0">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {stat.title}
-                </CardTitle>
-                <div className="flex justify-center items-center rounded-md border size-9 bg-muted/50 border-border">
-                  <Icon className="size-4 text-muted-foreground" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="mb-1 text-2xl font-semibold">{stat.value}</div>
-                <CardDescription className="text-xs">
-                  {stat.description}
-                </CardDescription>
-              </CardContent>
-            </Card>
-          );
-        })}
+      {/* 1. Primary Metric - Single Focus */}
+      <div className="mb-8">
+        <p className="text-xs text-muted-foreground mb-2">{tStats("userStats")}</p>
+        <p className="text-4xl font-semibold tracking-tight">
+          {statsData.totalUsers.toLocaleString()}
+        </p>
       </div>
-        {/* Main Admin Modules */}
-        <div className="grid gap-4 md:grid-cols-2">
-          <Link href={`/${locale}/admin/users`} className="group">
-            <Card className="h-full hover interactive">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex gap-2 items-center text-sm">
-                  <Users className="size-4 text-primary" />
-                  {tUsers("management")}
-                </CardTitle>
-                <CardDescription className="text-xs">{tUsers("description")}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-3 text-xs text-muted-foreground">
-                  {tStats("userManagementDesc")}
-                </p>
-                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  {tUsers("manageUsers")}
-                  <Users className="size-3.5" />
-                </Button>
-              </CardContent>
-            </Card>
-          </Link>
 
-          <Link href={`/${locale}/admin/support`} className="group">
-            <Card className="h-full hover interactive">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex gap-2 items-center text-sm">
-                  <MessageSquare className="size-4 text-primary" />
-                  {tSupport("tickets")}
-                </CardTitle>
-                <CardDescription className="text-xs">{tSupport("description")}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-3 text-xs text-muted-foreground">
-                  {tStats("supportTicketsDesc")}
-                </p>
-                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  {tSupport("manageTickets")}
-                  <MessageSquare className="size-3.5" />
-                </Button>
-              </CardContent>
-            </Card>
+      {/* 2. Maximum 3 KPIs - Minimal, Grouped */}
+      <div className="flex gap-8 mb-10 pb-8 border-b border-border">
+        {kpis.map((kpi) => (
+          <Link key={kpi.title} href={kpi.href} className="group">
+            <p className="text-xs text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
+              {kpi.title}
+            </p>
+            <p className="text-lg font-semibold">{kpi.value}</p>
           </Link>
+        ))}
+      </div>
 
-          <Link href={`/${locale}/admin/analytics`} className="group">
-            <Card className="h-full hover interactive">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex gap-2 items-center text-sm">
-                  <BarChart4 className="size-4 text-primary" />
-                  {tStats("analyticsDashboard")}
-                </CardTitle>
-                <CardDescription className="text-xs">{tStats("trackMetrics")}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-3 text-xs text-muted-foreground">
-                  {tStats("analyticsDashboard")} - {tStats("trackMetrics")}
-                </p>
-                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  {tStats("viewAnalytics")}
-                  <BarChart4 className="size-3.5" />
-                </Button>
-              </CardContent>
-            </Card>
+      {/* 3. Data Table - Visual Focus */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold">{tUsers("heading")}</h2>
+          <Link href={`/${locale}/admin/users`}>
+            <Button variant="ghost" size="sm" className="h-7 text-xs -mr-2">
+              {tPanel("viewAll")}
+              <ArrowRight className="ml-1 h-3 w-3" />
+            </Button>
           </Link>
-
-          <Link href={`/${locale}/admin/system`} className="group">
-            <Card className="h-full hover interactive">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex gap-2 items-center text-sm">
-                  <Activity className="size-4 text-primary" />
-                  {tSystem("title")}
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  {tSystem("description")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-3 text-xs text-muted-foreground">
-                  {tSystem("monitoringDescription")}
-                </p>
-                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  {tSystem("viewSystem")}
-                  <Activity className="size-3.5" />
-                </Button>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href={`/${locale}/admin/webhooks`} className="group">
-            <Card className="h-full hover interactive">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex gap-2 items-center text-sm">
-                  <Webhook className="size-4 text-primary" />
-                  {tWebhooks("title")}
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  {tWebhooks("description")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-3 text-xs text-muted-foreground">
-                  {tWebhooks("manageDescription")}
-                </p>
-                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  {tWebhooks("manageWebhooks")}
-                  <Webhook className="size-3.5" />
-                </Button>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href={`/${locale}/admin/roles`} className="group">
-            <Card className="h-full hover interactive">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex gap-2 items-center text-sm">
-                  <UserCog className="size-4 text-primary" />
-                  {tRoles("title")}
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  {tRoles("description")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-3 text-xs text-muted-foreground">
-                  {tRoles("manageDescription")}
-                </p>
-                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  {tRoles("manageRoles")}
-                  <UserCog className="size-3.5" />
-                </Button>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href={`/${locale}/admin/usage-stats`} className="group">
-            <Card className="h-full hover interactive">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex gap-2 items-center text-sm">
-                  <TrendingUp className="size-4 text-primary" />
-                  {tUsageStats("title")}
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  {tUsageStats("description")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-3 text-xs text-muted-foreground">
-                  {tUsageStats("manageDescription")}
-                </p>
-                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  {tUsageStats("viewStats")}
-                  <TrendingUp className="size-3.5" />
-                </Button>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href={`/${locale}/admin/revenue`} className="group">
-            <Card className="h-full hover interactive">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex gap-2 items-center text-sm">
-                  <DollarSign className="size-4 text-primary" />
-                  {tRevenue("title")}
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  {tRevenue("description")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-3 text-xs text-muted-foreground">
-                  {tRevenue("analyzeDescription")}
-                </p>
-                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  {tRevenue("viewRevenue")}
-                  <DollarSign className="size-3.5" />
-                </Button>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href={`/${locale}/admin/emails`} className="group">
-            <Card className="h-full hover interactive">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex gap-2 items-center text-sm">
-                  <Mail className="size-4 text-primary" />
-                  {tEmails("title")}
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  {tEmails("description")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-3 text-xs text-muted-foreground">
-                  {tEmails("manageDescription")}
-                </p>
-                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  {tEmails("manageTemplates")}
-                  <Mail className="size-3.5" />
-                </Button>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href={`/${locale}/admin/plans`} className="group">
-            <Card className="h-full hover interactive">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex gap-2 items-center text-sm">
-                  <CreditCard className="size-4 text-primary" />
-                  {t("plans.title")}
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  {t("plans.description")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-3 text-xs text-muted-foreground">
-                  {t("plans.subheading")}
-                </p>
-                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  {t("plans.title")}
-                  <CreditCard className="size-3.5" />
-                </Button>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href={`/${locale}/admin/audit`} className="group">
-            <Card className="h-full hover interactive">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex gap-2 items-center text-sm">
-                  <FileText className="size-4 text-primary" />
-                  {tAudit("title")}
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  {tAudit("description")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-3 text-xs text-muted-foreground">
-                  {tAudit("subheading")}
-                </p>
-                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  {tAudit("title")}
-                  <FileText className="size-3.5" />
-                </Button>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href={`/${locale}/admin/bulk`} className="group">
-            <Card className="h-full hover interactive">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex gap-2 items-center text-sm">
-                  <Layers className="size-4 text-primary" />
-                  {tBulk("title")}
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  {tBulk("description")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-3 text-xs text-muted-foreground">
-                  {tBulk("subheading")}
-                </p>
-                <Button size="sm" className="gap-2 w-full h-8 text-xs sm:w-auto">
-                  {tBulk("title")}
-                  <Layers className="size-3.5" />
-                </Button>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Card className="h-full hover">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex gap-2 items-center text-sm">
-                <Settings className="size-4 text-primary" />
-                Stripe {tConfig("title")}
-              </CardTitle>
-              <CardDescription className="text-xs">{tConfig("description")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ConfigureStripePortalButton />
-            </CardContent>
-          </Card>
         </div>
+
+        {recentUsers.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <Users className="h-6 w-6 text-muted-foreground mb-3" />
+            <p className="text-sm text-muted-foreground mb-4">{tUsers("noUsers")}</p>
+            <Link href={`/${locale}/admin/users`}>
+              <Button size="sm" variant="outline" className="h-8 text-xs">
+                {tUsers("manageUsers")}
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow className="border-b border-border">
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground">Name</TableHead>
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground">Email</TableHead>
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground">Role</TableHead>
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground text-right">Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {recentUsers.map((user) => (
+                <TableRow key={user.id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                  <TableCell className="py-3">
+                    <Link
+                      href={`/${locale}/admin/users`}
+                      className="text-sm font-medium hover:text-primary transition-colors"
+                    >
+                      {user.name || user.email || "N/A"}
+                    </Link>
+                  </TableCell>
+                  <TableCell className="py-3 text-xs text-muted-foreground">
+                    {user.email || "N/A"}
+                  </TableCell>
+                  <TableCell className="py-3">
+                    <Badge variant="outline" className="text-xs font-normal">
+                      {user.role === "ADMIN" ? tUsers("table.admin") : tUsers("table.user")}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="py-3 text-right">
+                    <Badge 
+                      variant={user.status === "banned" ? "destructive" : "default"} 
+                      className="text-xs font-normal"
+                    >
+                      {user.status === "banned" ? tUsers("table.banned") : tUsers("table.active")}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </div>
     </UnifiedPageLayout>
   );
 }

@@ -5,17 +5,17 @@ import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import { Mail, Loader2 } from "lucide-react";
 import {
-  Dialog,
+  DialogRoot as Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/alignui/overlays/dialog";
 import { Input } from '@/components/alignui/forms/input';
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { LabelRoot as Label } from "@/components/alignui/forms/label";
+import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
 import { sendDocumentEmail } from "@/actions/documents-email-actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";

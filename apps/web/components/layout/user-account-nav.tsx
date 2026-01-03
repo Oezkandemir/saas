@@ -1,10 +1,7 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { getUserNotifications } from "@/actions/user-profile-actions";
-import { getUserPlan } from "@/actions/get-user-plan";
 import {
   Link as I18nLink,
 } from "@/i18n/routing";
@@ -12,42 +9,27 @@ import { useQuery } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
 import {
   Bell,
-  BookOpen,
-  FileText,
-  Lock,
   LogOut,
-  Mail,
-  Shield,
-  User as UserIcon,
-  Crown,
-  Sparkles,
-  Plus,
-  QrCode,
-  Users,
-  Sun,
-  Moon,
   LayoutDashboard,
-  Settings,
-  Home,
+  User as UserIcon,
   Building2,
+  Settings,
+  Lock,
+  Home,
+  FileText,
+  Crown,
+  BookOpen,
 } from "lucide-react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { Drawer } from "vaul";
-import { DrawerDescription } from "@/components/ui/drawer";
+import { DrawerDescription } from "@/components/alignui/overlays/drawer";
 import { cn } from "@/lib/utils";
 import { useNotifications } from "@/hooks/use-notifications";
-import { ModalContext } from "@/components/modals/providers";
-import { Icons } from "@/components/shared/icons";
-
 import { getNotificationIcon } from "@/components/shared/notifications-popover";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { useSupabase } from "@/components/supabase-provider";
-import { Badge } from '@/components/alignui/data-display/badge';
-import { Separator } from "@/components/ui/separator";
-
-import { ModeToggle } from "./mode-toggle";
 
 // Language Drawer Component
 // Notification Drawer Component
@@ -202,22 +184,15 @@ function NotificationDrawer() {
 export function UserAccountNav() {
   const { session, supabase } = useSupabase();
   const user = session?.user;
-  const router = useRouter();
   const t = useTranslations("UserNav");
-  const quickActionsT = useTranslations("QuickActions");
-  const { theme, setTheme } = useTheme();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dbUserName, setDbUserName] = useState<string | null>(null);
   const [dbUserRole, setDbUserRole] = useState<string | null>(null);
-  const [userPlan, setUserPlan] = useState<{ title: string; isPaid: boolean } | null>(null);
 
   const closeDrawer = () => {
     setDrawerOpen(false);
   };
-
-
-  const { setShowSignInModal, setShowSignUpModal } = useContext(ModalContext);
 
   const handleSignOut = async () => {
     try {
@@ -233,7 +208,7 @@ export function UserAccountNav() {
     }
   };
 
-  // Fetch user name, role, and plan from database when component mounts
+  // Fetch user name and role from database when component mounts
   useEffect(() => {
     async function fetchUserData() {
       try {
@@ -246,27 +221,14 @@ export function UserAccountNav() {
 
           if (!error && data) {
             setDbUserName(data.name);
-            // CRITICAL: Always use database role, normalize it
             const role = String(data.role || "USER").trim();
             setDbUserRole(role);
           } else {
-            // If database query fails, don't trust metadata - set to USER for security
-            // Admin links will be hidden until database role is loaded
             setDbUserRole("USER");
-          }
-
-          // Fetch subscription plan
-          const plan = await getUserPlan();
-          if (plan) {
-            setUserPlan({
-              title: plan.title,
-              isPaid: plan.isPaid,
-            });
           }
         }
       } catch (err) {
         console.error("Error fetching user data:", err);
-        // On error, set to USER (don't trust metadata for security)
         setDbUserRole("USER");
       }
     }
@@ -274,20 +236,14 @@ export function UserAccountNav() {
     fetchUserData();
   }, [user, supabase]);
 
+  const userRole = dbUserRole || "USER";
+
   // Ensure we always have a display name, prioritizing the database value, then falling back to metadata and email
   const displayName =
     dbUserName ||
     user?.user_metadata?.name ||
     user?.email?.split("@")[0] ||
     t("defaultUser");
-  
-  // CRITICAL: Only use database role for admin checks, never trust metadata
-  // If dbUserRole is null (still loading), default to USER to hide admin links
-  // This prevents showing admin links based on potentially outdated metadata
-  const userRole = dbUserRole || "USER";
-  
-  // Get user email
-  const userEmail = user?.email || "";
 
   if (!user)
     return (
@@ -344,191 +300,129 @@ export function UserAccountNav() {
                 Manage your account settings and preferences
               </DrawerDescription>
 
-              {/* Compact User Info */}
-              <div className="px-4 pb-3">
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
+              {/* User Context - Compact */}
+              <div className="px-4 pt-2 pb-3">
+                <div className="flex items-center gap-2">
                   <UserAvatar
                     user={{
                       name: displayName,
                       image: user.user_metadata?.image || null,
                       avatar_url: user.user_metadata?.avatar_url || null,
                     }}
-                    className="border size-12 shrink-0"
+                    className="border size-10 shrink-0"
                   />
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold truncate">{displayName}</h3>
-                    {userEmail && (
-                      <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
-                    )}
-                    <div className="flex items-center gap-2 mt-1">
-                      {userPlan && (
-                        <Badge
-                          variant={userPlan.isPaid ? "default" : "secondary"}
-                          className="text-xs h-5 px-2"
-                        >
-                          {userPlan.title}
-                        </Badge>
-                      )}
-                      {userRole === "ADMIN" && (
-                        <Badge variant="outline" className="text-xs h-5 px-2">
-                          Admin
-                        </Badge>
-                      )}
-                    </div>
+                    <h3 className="text-sm font-medium truncate">{displayName}</h3>
                   </div>
                 </div>
               </div>
 
-              {/* Compact Navigation Menu */}
-              <div className="overflow-y-auto max-h-[calc(85vh-140px)] px-4 pb-6">
-                <ul role="list" className="space-y-1">
-                  {/* Primary Actions */}
-                  <li>
-                    <Link
-                      href="/dashboard"
-                      prefetch={true}
-                      onClick={closeDrawer}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium bg-primary/10 text-primary hover:bg-primary/20 active:bg-primary/30 transition-colors"
-                    >
-                      <LayoutDashboard className="size-4" />
-                      <span>Dashboard</span>
-                    </Link>
-                  </li>
+              {/* Navigation Links - Simple Design */}
+              <div className="px-4 pb-6 space-y-1">
+                <Link
+                  href="/dashboard"
+                  prefetch={true}
+                  onClick={closeDrawer}
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors rounded-lg"
+                >
+                  <LayoutDashboard className="size-4" />
+                  <span>Dashboard</span>
+                </Link>
 
-                  <li>
-                    <Link
-                      href="/profile"
-                      prefetch={true}
-                      onClick={closeDrawer}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
-                    >
-                      <UserIcon className="size-4" />
-                      <span>Profile</span>
-                    </Link>
-                  </li>
+                <Link
+                  href="/profile"
+                  prefetch={true}
+                  onClick={closeDrawer}
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors rounded-lg"
+                >
+                  <UserIcon className="size-4" />
+                  <span>Profile</span>
+                </Link>
 
-                  <li>
-                    <Link
-                      href="/dashboard/settings/company"
-                      prefetch={true}
-                      onClick={closeDrawer}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
-                    >
-                      <Building2 className="size-4" />
-                      <span>Meine Firma</span>
-                    </Link>
-                  </li>
+                <Link
+                  href="/dashboard/settings/company"
+                  prefetch={true}
+                  onClick={closeDrawer}
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors rounded-lg"
+                >
+                  <Building2 className="size-4" />
+                  <span>Meine Firma</span>
+                </Link>
 
-                  <li>
-                    <Link
-                      href="/dashboard/settings"
-                      prefetch={true}
-                      onClick={closeDrawer}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
-                    >
-                      <Settings className="size-4" />
-                      <span>Settings</span>
-                    </Link>
-                  </li>
+                <Link
+                  href="/dashboard/settings"
+                  prefetch={true}
+                  onClick={closeDrawer}
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors rounded-lg"
+                >
+                  <Settings className="size-4" />
+                  <span>Settings</span>
+                </Link>
 
-                  {userRole === "ADMIN" && (
-                    <li>
-                      <Link
-                        href="/admin"
-                        prefetch={true}
-                        onClick={closeDrawer}
-                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 active:bg-amber-500/30 transition-colors"
-                      >
-                        <Lock className="size-4" />
-                        <span>Admin Panel</span>
-                      </Link>
-                    </li>
-                  )}
+                {userRole === "ADMIN" && (
+                  <Link
+                    href="/admin"
+                    prefetch={true}
+                    onClick={closeDrawer}
+                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors rounded-lg"
+                  >
+                    <Lock className="size-4" />
+                    <span>Admin Panel</span>
+                  </Link>
+                )}
 
-                  <Separator className="my-3" />
+                <Link
+                  href="/"
+                  prefetch={true}
+                  onClick={closeDrawer}
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors rounded-lg"
+                >
+                  <Home className="size-4" />
+                  <span>Home</span>
+                </Link>
 
-                  {/* Secondary Links */}
-                  <li>
-                    <Link
-                      href="/"
-                      prefetch={true}
-                      onClick={closeDrawer}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
-                    >
-                      <Home className="size-4" />
-                      <span>Home</span>
-                    </Link>
-                  </li>
+                <Link
+                  href="/blog"
+                  prefetch={true}
+                  onClick={closeDrawer}
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors rounded-lg"
+                >
+                  <FileText className="size-4" />
+                  <span>Blog</span>
+                </Link>
 
-                  <li>
-                    <Link
-                      href="/blog"
-                      prefetch={true}
-                      onClick={closeDrawer}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
-                    >
-                      <FileText className="size-4" />
-                      <span>Blog</span>
-                    </Link>
-                  </li>
+                <Link
+                  href="/pricing"
+                  prefetch={true}
+                  onClick={closeDrawer}
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors rounded-lg"
+                >
+                  <Crown className="size-4" />
+                  <span>Pricing</span>
+                </Link>
 
-                  <li>
-                    <Link
-                      href="/pricing"
-                      prefetch={true}
-                      onClick={closeDrawer}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
-                    >
-                      <Crown className="size-4" />
-                      <span>Pricing</span>
-                    </Link>
-                  </li>
+                <Link
+                  href="/docs"
+                  prefetch={true}
+                  onClick={closeDrawer}
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors rounded-lg"
+                >
+                  <BookOpen className="size-4" />
+                  <span>Documentation</span>
+                </Link>
 
-                  <li>
-                    <Link
-                      href="/docs"
-                      prefetch={true}
-                      onClick={closeDrawer}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
-                    >
-                      <BookOpen className="size-4" />
-                      <span>Documentation</span>
-                    </Link>
-                  </li>
-
-                  {/* Theme Toggle - Compact */}
-                  <li className="md:hidden pt-2">
-                    <button
-                      onClick={() => {
-                        setTheme(theme === "dark" ? "light" : "dark");
-                      }}
-                      className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted/80 active:bg-muted transition-colors"
-                    >
-                      {theme === "dark" ? (
-                        <Sun className="size-4" />
-                      ) : (
-                        <Moon className="size-4" />
-                      )}
-                      <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
-                    </button>
-                  </li>
-
-                  <Separator className="my-3" />
-
-                  <li>
-                    <button
-                      onClick={(event) => {
-                        event.preventDefault();
-                        handleSignOut();
-                        closeDrawer();
-                      }}
-                      className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 active:bg-destructive/20 transition-colors"
-                    >
-                      <LogOut className="size-4" />
-                      <span>Logout</span>
-                    </button>
-                  </li>
-                </ul>
+                {/* Destructive Action */}
+                <button
+                  onClick={(event) => {
+                    event.preventDefault();
+                    closeDrawer();
+                    handleSignOut();
+                  }}
+                  className="flex w-full items-center gap-3 px-3 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 active:bg-destructive/20 transition-colors rounded-lg"
+                >
+                  <LogOut className="size-4" />
+                  <span>Logout</span>
+                </button>
               </div>
             </Drawer.Content>
             <Drawer.Overlay />

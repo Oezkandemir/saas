@@ -400,7 +400,8 @@
       "title": "Admin Panel – Cenety",
       "description": "Manage your application settings and users.",
       "heading": "Admin Panel",
-      "subheading": "Manage your application settings, users, and support tickets"
+      "subheading": "Manage your application settings, users, and support tickets",
+      "viewAll": "View All"
     },
     "configuration": {
       "title": "Configuration",
@@ -526,8 +527,13 @@
         "view": "View",
         "update": "Update",
         "close": "Close",
-        "delete": "Delete"
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "deleting": "Deleting...",
+        "deleteConfirmTitle": "Delete Ticket",
+        "deleteConfirmDescription": "Are you sure you want to delete this ticket? This action cannot be undone."
       },
+      "ticketDeleted": "Ticket deleted successfully",
       "noTickets": "No tickets found",
       "ticketDetails": "Ticket Details",
       "replyToTicket": "Reply to Ticket",
@@ -681,7 +687,15 @@
       "my_profile": "My Profile",
       "users": "Users",
       "notifications": "Notifications",
-      "teams": "Teams"
+      "teams": "Teams",
+      "analytics": "Analytics",
+      "revenue": "Revenue",
+      "plans": "Plans",
+      "roles": "Roles",
+      "webhooks": "Webhooks",
+      "emails": "Emails",
+      "firmenprofile": "Company Profiles",
+      "system": "System"
     }
   },
   "Support": {

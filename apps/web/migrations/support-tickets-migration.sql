@@ -119,6 +119,18 @@ BEFORE UPDATE ON public.support_tickets
 FOR EACH ROW
 EXECUTE FUNCTION public.handle_updated_at();
 
+-- Allow admins to delete tickets
+CREATE POLICY "Admins can delete support tickets"
+  ON public.support_tickets
+  FOR DELETE
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.users
+      WHERE id = auth.uid() AND role = 'ADMIN'
+    )
+  );
+
 -- Add indexes for better performance
 CREATE INDEX IF NOT EXISTS support_tickets_user_id_idx ON public.support_tickets(user_id);
 CREATE INDEX IF NOT EXISTS support_tickets_status_idx ON public.support_tickets(status);

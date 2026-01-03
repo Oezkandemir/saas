@@ -86,7 +86,7 @@ export function BillingFormButton({
 
   return (
     <Button
-      variant={isCurrentPlan ? "default" : "outline"}
+      variant={isCurrentPlan ? "primary" : "outline"}
       className="w-full"
       disabled={isPending || !selectedPriceId}
       onClick={handleStripeAction}

@@ -6,9 +6,18 @@ import { twMerge } from "tailwind-merge";
 import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
 
+/**
+ * AlignUI - cn Utility
+ * Merges Tailwind classes with proper conflict resolution
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+// Re-export AlignUI utilities for convenience
+export { tv } from "./tv";
+export { recursiveCloneChildren } from "./recursive-clone-children";
+export { createPolymorphicComponent, type PolymorphicComponent } from "./polymorphic";
 
 export function constructMetadata({
   title = siteConfig.name,

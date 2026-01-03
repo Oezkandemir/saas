@@ -11,8 +11,7 @@ import { RefreshSubscriptionButton } from "@/components/pricing/refresh-subscrip
 import { AutoSyncSubscription } from "@/components/pricing/auto-sync-subscription";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Icons } from "@/components/shared/icons";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { CreditCard, Sparkles } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import { pricingData } from "@/config/subscriptions";
 import { UserSubscriptionPlan } from "types";
 
@@ -87,54 +86,39 @@ export default async function BillingPage() {
   return (
     <UnifiedPageLayout
       title={t("heading")}
-      description={t("text")}
+      description={userSubscriptionPlan.isPaid 
+        ? `${userSubscriptionPlan.title} • ${userSubscriptionPlan.interval === "month" ? t("monthly") : t("yearly")}`
+        : t("text")}
       icon={<CreditCard className="h-4 w-4 text-primary" />}
+      actions={<RefreshSubscriptionButton />}
       contentClassName="space-y-6"
     >
       <Suspense fallback={null}>
         <AutoSyncSubscription />
       </Suspense>
 
-      {/* Demo Alert */}
-      <Alert className="border border-border bg-yellow-500/10 !pl-14">
-        <Icons.warning className="text-yellow-600 dark:text-yellow-400" />
-        <AlertTitle className="text-yellow-900 dark:text-yellow-100">{t("demoAlert")}</AlertTitle>
-        <AlertDescription className="text-balance text-yellow-800 dark:text-yellow-200">
-          {t("demoDescription")}{" "}
-          <a
-            href="https://stripe.com/docs/testing#cards"
-            target="_blank"
-            rel="noreferrer"
-            className="font-medium underline underline-offset-8 hover:text-yellow-600 dark:hover:text-yellow-300 transition-colors"
-          >
-            {t("stripeDocs")}
-          </a>
-          .
-        </AlertDescription>
-      </Alert>
+      {/* Demo Alert - Only in development */}
+      {process.env.NODE_ENV !== "production" && (
+        <Alert className="border border-border/20 bg-yellow-500/5 !pl-12">
+          <Icons.warning className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+          <AlertTitle className="text-sm font-medium text-yellow-900 dark:text-yellow-100">{t("demoAlert")}</AlertTitle>
+          <AlertDescription className="text-xs text-yellow-800 dark:text-yellow-200 mt-1">
+            {t("demoDescription")}{" "}
+            <a
+              href="https://stripe.com/docs/testing#cards"
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium underline underline-offset-2 hover:text-yellow-600 dark:hover:text-yellow-300 transition-colors"
+            >
+              {t("stripeDocs")}
+            </a>
+            .
+          </AlertDescription>
+        </Alert>
+      )}
 
-      {/* Subscription Details */}
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-md bg-muted/50 border border-border">
-                <Sparkles className="size-4 text-muted-foreground" />
-              </div>
-              <div>
-                <CardTitle className="text-lg">Subscription Details</CardTitle>
-                <CardDescription>
-                  Verwalten Sie Ihr Abonnement und Rechnungsdetails
-                </CardDescription>
-              </div>
-            </div>
-            <RefreshSubscriptionButton />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <BillingInfo userSubscriptionPlan={userSubscriptionPlan} />
-        </CardContent>
-      </Card>
+      {/* Subscription Details - Visual Center */}
+      <BillingInfo userSubscriptionPlan={userSubscriptionPlan} />
     </UnifiedPageLayout>
   );
 }

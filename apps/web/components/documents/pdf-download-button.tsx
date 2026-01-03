@@ -10,7 +10,7 @@ import { logger } from "@/lib/logger";
 interface PDFDownloadButtonProps {
   documentId: string;
   pdfUrl?: string | null;
-  variant?: "default" | "outline" | "ghost" | "link" | "destructive" | "secondary";
+  variant?: "primary" | "secondary" | "ghost" | "destructive" | "outline";
   size?: "default" | "sm" | "lg" | "icon";
   /**
    * Optional: Pass a ref to the element to convert to PDF

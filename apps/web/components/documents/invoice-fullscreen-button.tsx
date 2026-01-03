@@ -5,11 +5,11 @@ import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import { Maximize2 } from "lucide-react";
 import {
-  Dialog,
+  DialogRoot as Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/alignui/overlays/dialog";
 import { InvoiceFullPreview } from "./invoice-full-preview";
 import { Document } from "@/actions/documents-actions";
 

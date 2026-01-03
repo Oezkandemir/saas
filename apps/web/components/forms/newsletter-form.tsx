@@ -10,13 +10,13 @@ import { z } from "zod";
 
 import { Button } from '@/components/alignui/actions/button';
 import {
-  Form,
+  FormRoot as Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/components/alignui/forms/form";
 import { Input } from '@/components/alignui/forms/input';
 import { useNotificationsContext } from "@/components/context/notifications-context";
 import { Icons } from "@/components/shared/icons";

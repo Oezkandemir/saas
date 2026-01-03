@@ -6,14 +6,6 @@ import { Trash2, AlertTriangle, Loader2 } from "lucide-react";
 
 import { Button } from '@/components/alignui/actions/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/alignui/data-display/card';
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -28,6 +20,7 @@ import { Input } from '@/components/alignui/forms/input';
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { deleteUserAccount } from "@/actions/gdpr-actions";
+import { cn } from "@/lib/utils";
 
 export function AccountDeletion() {
   const t = useTranslations("GDPR.accountDeletion");
@@ -79,105 +72,85 @@ export function AccountDeletion() {
   };
 
   return (
-    <Card className="border-destructive">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-destructive">
-          <Trash2 className="h-5 w-5" />
-          {t("title")}
-        </CardTitle>
-        <CardDescription>
-          {t("description")}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
-          <div className="flex gap-3">
-            <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
-            <div className="space-y-2">
-              <p className="text-sm font-semibold text-yellow-900 dark:text-yellow-100">
-                {t("warning.title")}
-              </p>
-              <ul className="list-disc space-y-1 pl-4 text-sm text-yellow-900 dark:text-yellow-100">
-                <li>{t("warning.points.irreversible")}</li>
-                <li>{t("warning.points.dataLost")}</li>
-                <li>{t("warning.points.contentLost")}</li>
-                <li>{t("warning.points.exception")}</li>
-              </ul>
-            </div>
+    <div className="space-y-3">
+      <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/20">
+        <div className="flex gap-2">
+          <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-xs font-medium text-yellow-900 dark:text-yellow-100 mb-1">
+              {t("warning.title")}
+            </p>
+            <p className="text-xs text-yellow-900 dark:text-yellow-100">
+              {t("warning.points.irreversible")}
+            </p>
           </div>
         </div>
+      </div>
 
-        <div className="space-y-2">
-          <p className="text-sm font-medium">{t("whatHappens.title")}</p>
-          <ul className="list-disc space-y-1 pl-6 text-sm text-muted-foreground">
-            <li>{t("whatHappens.points.accountDeactivated")}</li>
-            <li>{t("whatHappens.points.dataDeleted")}</li>
-            <li>{t("whatHappens.points.loggedOut")}</li>
-            <li>{t("whatHappens.points.auditLog")}</li>
-          </ul>
-        </div>
-      </CardContent>
-      <CardFooter>
-        <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-          <AlertDialogTrigger asChild>
-            <Button variant="destructive" className="w-full sm:w-auto">
-              <Trash2 className="mr-2 h-4 w-4" />
-              {t("button")}
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-destructive" />
-                {t("confirm.title")}
-              </AlertDialogTitle>
-              <AlertDialogDescription className="space-y-4">
-                <p>
-                  {t("confirm.description")}
-                </p>
-                <div className="space-y-2">
-                  <Label htmlFor="confirmation">
-                    {t("confirm.inputLabel")}
-                  </Label>
-                  <Input
-                    id="confirmation"
-                    value={confirmation}
-                    onChange={(e) => setConfirmation(e.target.value)}
-                    placeholder={t("confirm.inputPlaceholder")}
-                    className="font-mono"
-                  />
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {t("confirm.note")}
-                </p>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setConfirmation("")}>
-                {t("confirm.cancel")}
-              </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDelete}
-                disabled={confirmation !== "DELETE" || isDeleting}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                {isDeleting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t("confirm.deleting")}
-                  </>
-                ) : (
-                  <>
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    {t("confirm.delete")}
-                  </>
-                )}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </CardFooter>
-    </Card>
+      <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" size="sm" className="h-8 text-xs">
+            <Trash2 className="mr-2 h-3.5 w-3.5" />
+            {t("button")}
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              {t("confirm.title")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("confirm.description")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="confirmation">
+                {t("confirm.inputLabel")}
+              </Label>
+              <Input
+                id="confirmation"
+                value={confirmation}
+                onChange={(e) => setConfirmation(e.target.value)}
+                placeholder={t("confirm.inputPlaceholder")}
+                className="font-mono"
+              />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {t("confirm.note")}
+            </p>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              onClick={() => setConfirmation("")}
+            >
+              {t("confirm.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={confirmation !== "DELETE" || isDeleting}
+              className={cn(
+                "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+                "disabled:opacity-50 disabled:cursor-not-allowed"
+              )}
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("confirm.deleting")}
+                </>
+              ) : (
+                <>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  {t("confirm.delete")}
+                </>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 }
 

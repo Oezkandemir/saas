@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from '@/components/alignui/data-display/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
 import { getFollowers } from "@/actions/follow-actions";
 import { FollowButton } from "@/components/follow-button";

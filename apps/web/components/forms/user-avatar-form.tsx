@@ -13,7 +13,6 @@ import { toast } from "sonner";
 import { userAvatarSchema } from "@/lib/validations/user";
 import { Button } from '@/components/alignui/actions/button';
 import { useAvatar } from "@/components/context/avatar-context";
-import { SectionColumns } from "@/components/dashboard/section-columns";
 import { Icons } from "@/components/shared/icons";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
@@ -104,77 +103,79 @@ export function UserAvatarForm({ user }: UserAvatarFormProps) {
 
   return (
     <form>
-      <SectionColumns title={t("title")} description={t("description")}>
-        <div className="flex flex-col items-center gap-4 sm:flex-row">
-          <div className="relative size-24 overflow-hidden rounded-full border border-border">
-            {previewUrl ? (
-              <Image
-                src={previewUrl}
-                alt={t("label")}
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <div className="flex size-full items-center justify-center bg-muted">
-                <Icons.user className="size-12 text-muted-foreground" />
-              </div>
-            )}
-            {isPending && (
-              <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-                <LoadingSpinner size="lg" variant="primary" />
-              </div>
-            )}
-          </div>
+      <div className="flex items-center gap-4">
+        <div className="relative size-16 overflow-hidden rounded-full border border-border shrink-0">
+          {previewUrl ? (
+            <Image
+              src={previewUrl}
+              alt={t("label")}
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <div className="flex size-full items-center justify-center bg-muted">
+              <Icons.user className="size-8 text-muted-foreground" />
+            </div>
+          )}
+          {isPending && (
+            <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+              <LoadingSpinner size="sm" variant="primary" />
+            </div>
+          )}
+        </div>
 
-          <div className="flex flex-col gap-2">
-            <div className="flex gap-2">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {t("title")}
+            </Button>
+
+            {showSaveButton && (
               <Button
                 type="button"
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
+                size="sm"
+                className="h-8 text-xs"
+                onClick={handleAvatarUpload}
+                disabled={isPending}
               >
-                Select Image
+                {isPending ? (
+                  <>
+                    <LoadingSpinner size="sm" variant="primary" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  "Save"
+                )}
               </Button>
-
-              {showSaveButton && (
-                <Button
-                  type="button"
-                  onClick={handleAvatarUpload}
-                  disabled={isPending}
-                >
-                  {isPending ? (
-                    <>
-                      <LoadingSpinner size="sm" variant="primary" />
-                      <span>Saving...</span>
-                    </>
-                  ) : (
-                    "Save Avatar"
-                  )}
-                </Button>
-              )}
-            </div>
-
-            <input
-              type="file"
-              id="avatar"
-              accept="image/jpeg, image/png, image/gif, image/webp"
-              className="hidden"
-              onChange={handleFileChange}
-              ref={setRefs}
-              {...rest}
-            />
-
-            {errors?.avatar && (
-              <p className="text-sm text-red-600">
-                {String(errors.avatar.message || "Invalid file")}
-              </p>
             )}
-            <p className="text-xs text-muted-foreground">
-              {t("recommendation")}
-            </p>
           </div>
+
+          <input
+            type="file"
+            id="avatar"
+            accept="image/jpeg, image/png, image/gif, image/webp"
+            className="hidden"
+            onChange={handleFileChange}
+            ref={setRefs}
+            {...rest}
+          />
+
+          {errors?.avatar && (
+            <p className="text-xs text-red-600 mt-1">
+              {String(errors.avatar.message || "Invalid file")}
+            </p>
+          )}
+          <p className="text-xs text-muted-foreground mt-1">
+            {t("recommendation")}
+          </p>
         </div>
-      </SectionColumns>
+      </div>
     </form>
   );
 }

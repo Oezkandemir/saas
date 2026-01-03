@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/alignui/data-display/card';
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Input } from '@/components/alignui/forms/input';
 import { Label } from "@/components/ui/label";
 import {

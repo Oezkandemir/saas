@@ -14,13 +14,13 @@ import {
 } from "@/components/ui/table";
 import { Button } from '@/components/alignui/actions/button';
 import {
-  DropdownMenu,
+  DropdownMenuRoot as DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from '@/components/alignui/data-display/badge';
+} from "@/components/alignui/overlays/dropdown-menu";
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Card, CardContent } from '@/components/alignui/data-display/card';
 import { MoreVertical, Pencil, Trash2, Eye, QrCode, Mail, Phone, Building2, ChevronRight } from "lucide-react";
 import { deleteCustomer } from "@/actions/customers-actions";
@@ -28,7 +28,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
-  AlertDialog,
+  AlertDialogRoot as AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
@@ -36,7 +36,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/components/alignui/overlays/alert-dialog";
 
 interface CustomersTableProps {
   customers: Customer[];
@@ -183,7 +183,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
       </div>
 
       {/* Desktop Table View - Hidden on mobile */}
-      <div className="hidden md:block rounded-lg border border-subtle shadow-subtle overflow-hidden bg-card">
+      <div className="hidden md:block border border-border rounded-lg overflow-hidden bg-card">
         <div className="overflow-x-auto">
           <Table>
           <TableHeader>

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from '@/components/alignui/data-display
 import { Input } from '@/components/alignui/forms/input';
 import { Button } from '@/components/alignui/actions/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Users, Crown, Search } from 'lucide-react';
 import { FollowButton } from '@/components/follow-button';

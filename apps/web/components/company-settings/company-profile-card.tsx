@@ -1,7 +1,7 @@
 "use client";
 
 import { CompanyProfile } from "@/actions/company-profiles-actions";
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Card, CardContent, CardHeader } from '@/components/alignui/data-display/card';
 import { Building2, CheckCircle2, MapPin, Mail, Phone, Scale, Landmark, Percent, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";

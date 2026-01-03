@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Separator } from "@/components/ui/separator";
 
 export const metadata: Metadata = constructMetadata({

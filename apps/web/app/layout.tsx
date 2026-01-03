@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 
 import "@/styles/globals.css";
 
-import { fontGeist, fontHeading, fontSans, fontUrban } from "@/assets/fonts";
+import { fontGeist, fontHeading, fontSans, fontUrban, fontInter } from "@/assets/fonts";
 import { ThemeProvider } from "next-themes";
 
 import { cn, constructMetadata } from "@/lib/utils";
@@ -63,6 +63,7 @@ export default async function RootLayout({
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
+          fontInter.variable,
           fontSans.variable,
           fontUrban.variable,
           fontHeading.variable,

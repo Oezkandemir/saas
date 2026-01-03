@@ -1,17 +1,10 @@
 import { redirect } from "next/navigation";
 import { getAllUsers } from "@/actions/admin-user-actions";
 import { formatDistance } from "date-fns";
-import {
-  BanIcon,
-  CreditCardIcon,
-  ShieldCheckIcon,
-  UsersIcon,
-  Users,
-} from "lucide-react";
+import { Users } from "lucide-react";
 import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { columns } from "@/components/admin/users/columns";
 import { DataTableWrapper } from "@/components/admin/users/data-table-wrapper";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
@@ -75,7 +68,6 @@ export default async function AdminUsersPage(props: Props) {
   // Calculate stats
   const totalUsers = users.length;
   const adminUsers = users.filter((user) => user.role === "ADMIN").length;
-  const bannedUsers = users.filter((user) => user.status === "banned").length;
   const subscribedUsers = users.filter(
     (user) => user.stripe_subscription_id,
   ).length;
@@ -109,76 +101,39 @@ export default async function AdminUsersPage(props: Props) {
       title={tUsers("pageTitle")}
       description={tUsers("pageDescription")}
       icon={<Users className="h-4 w-4 text-primary" />}
-      contentClassName="space-y-4"
+      contentClassName="space-y-6"
     >
-      {/* User Stats Section */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="hover:shadow-md transition-all">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+      {/* Primary Metric + Secondary KPIs */}
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
+        {/* Primary Metric */}
+        <div className="flex-1">
+          <div className="space-y-1">
+            <div className="text-4xl font-semibold tracking-tight">{totalUsers}</div>
+            <div className="text-sm text-muted-foreground">
               {tUsers("totalUsers")}
-            </CardTitle>
-            <UsersIcon className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalUsers}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {tUsers("allRegistered")}
-            </p>
-          </CardContent>
-        </Card>
+            </div>
+          </div>
+        </div>
 
-        <Card className="hover:shadow-md transition-all">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {tUsers("adminUsers")}
-            </CardTitle>
-            <ShieldCheckIcon className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{adminUsers}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {tUsers("withAdminPrivileges")}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-all">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {tUsers("bannedUsers")}
-            </CardTitle>
-            <BanIcon className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{bannedUsers}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {tUsers("currentlySuspended")}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-all">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+        {/* Secondary KPIs */}
+        <div className="flex gap-6 sm:gap-8">
+          <div className="space-y-1">
+            <div className="text-2xl font-medium">{subscribedUsers}</div>
+            <div className="text-xs text-muted-foreground">
               {tUsers("subscribers")}
-            </CardTitle>
-            <CreditCardIcon className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{subscribedUsers}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {tUsers("activePaid")}
-            </p>
-          </CardContent>
-        </Card>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-2xl font-medium">{adminUsers}</div>
+            <div className="text-xs text-muted-foreground">
+              {tUsers("adminUsers")}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <Card className="hover:shadow-md transition-all">
-        <CardContent className="pt-6">
-          <DataTableWrapper columns={columns} data={formattedUsers} />
-        </CardContent>
-      </Card>
+      {/* Data Table - Visual Focus */}
+      <DataTableWrapper columns={columns} data={formattedUsers} />
     </UnifiedPageLayout>
   );
 }

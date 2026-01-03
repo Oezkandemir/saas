@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { Button } from '@/components/alignui/actions/button';
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { CreditCard, Edit, CheckCircle, XCircle } from "lucide-react";
 import type { Plan } from "@/actions/admin-plan-actions";
 

@@ -423,3 +423,51 @@ export async function updateTicketStatus(
     };
   }
 }
+
+// Delete ticket (admin only)
+export async function deleteTicket(
+  ticketId: string,
+): Promise<ActionResult<void>> {
+  const user = await getCurrentUser();
+
+  if (!user?.email) {
+    return {
+      success: false,
+      error: "User not authenticated",
+    };
+  }
+
+  if (user.role !== "ADMIN") {
+    return {
+      success: false,
+      error: "Not authorized to delete tickets",
+    };
+  }
+
+  const supabase = await createClient();
+
+  try {
+    // Delete ticket (messages will be deleted automatically via CASCADE)
+    const { error } = await supabase
+      .from("support_tickets")
+      .delete()
+      .eq("id", ticketId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    revalidatePath("/admin/support");
+    revalidatePath("/dashboard/support");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    logger.error("Error deleting ticket:", error);
+    return {
+      success: false,
+      error: "Failed to delete ticket",
+    };
+  }
+}

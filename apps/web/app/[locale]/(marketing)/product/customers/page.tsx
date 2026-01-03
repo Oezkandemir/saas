@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import {
   Card,
   CardContent,

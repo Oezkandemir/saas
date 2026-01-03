@@ -1,6 +1,25 @@
 // Use local fonts only to avoid Google Fonts fetch issues during build
 import localFont from "next/font/local";
 
+// Inter font for AlignUI (primary sans-serif)
+export const fontInter = localFont({
+  src: [
+    {
+      path: "./Inter-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./Inter-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-inter",
+  display: "swap",
+  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+});
+
 // System font fallback for sans-serif (replaces Inter from Google)
 export const fontSans = localFont({
   src: [

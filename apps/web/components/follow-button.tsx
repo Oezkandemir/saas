@@ -11,7 +11,7 @@ interface FollowButtonProps {
   userId: string;
   isFollowing: boolean;
   className?: string;
-  variant?: 'default' | 'outline' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'destructive' | 'outline';
   size?: 'sm' | 'default' | 'lg';
   onFollowChange?: (isFollowing: boolean) => void;
 }
@@ -23,7 +23,7 @@ export function FollowButton({
   userId,
   isFollowing: initialIsFollowing,
   className,
-  variant = 'default',
+  variant = 'primary',
   size = 'default',
   onFollowChange,
 }: FollowButtonProps) {

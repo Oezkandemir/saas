@@ -51,7 +51,7 @@ function DefaultErrorFallback({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-2 sm:flex-row">
-            <Button onClick={resetError} className="flex-1" variant="default">
+            <Button onClick={resetError} className="flex-1" variant="primary">
               <RefreshCw className="mr-2 size-4" />
               Try Again
             </Button>

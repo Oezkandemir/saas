@@ -49,7 +49,7 @@ export function CustomerPortalButton({
   };
 
   return (
-    <Button variant="default" disabled={isPending} onClick={handleOpenPortal}>
+    <Button variant="primary" disabled={isPending} onClick={handleOpenPortal}>
       {isPending ? (
         <>
           <LoadingSpinner size="sm" variant="primary" />

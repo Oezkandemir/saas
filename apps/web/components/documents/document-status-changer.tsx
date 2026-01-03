@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import {
-  DropdownMenu,
+  DropdownMenuRoot as DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/alignui/overlays/dropdown-menu";
 import { StatusBadge, DocumentStatus } from "@/components/shared/status-badge";
 import { updateDocument } from "@/actions/documents-actions";
 import { toast } from "sonner";

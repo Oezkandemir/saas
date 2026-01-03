@@ -7,11 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/d
 import { StatusBadge, DocumentStatus } from "@/components/shared/status-badge";
 import { Button } from '@/components/alignui/actions/button';
 import {
-  DropdownMenu,
+  DropdownMenuRoot as DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/alignui/overlays/dropdown-menu";
 import { Clock, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";

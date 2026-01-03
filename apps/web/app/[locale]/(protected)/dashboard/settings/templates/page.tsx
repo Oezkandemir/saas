@@ -6,7 +6,7 @@ import { FileText, Plus } from "lucide-react";
 import Link from "next/link";
 import { Button } from '@/components/alignui/actions/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { DocumentTemplatesList } from "@/components/documents/document-templates-list";
 
 export const dynamic = "force-dynamic";

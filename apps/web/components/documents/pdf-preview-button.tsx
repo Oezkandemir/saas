@@ -5,18 +5,18 @@ import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import { Eye, Loader2 } from "lucide-react";
 import {
-  Dialog,
+  DialogRoot as Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/alignui/overlays/dialog";
 
 interface PDFPreviewButtonProps {
   documentId: string;
   pdfUrl?: string | null;
   documentNumber: string;
-  variant?: "default" | "outline" | "ghost" | "link" | "destructive" | "secondary";
+  variant?: "primary" | "secondary" | "ghost" | "destructive" | "outline";
   size?: "default" | "sm" | "lg" | "icon";
 }
 

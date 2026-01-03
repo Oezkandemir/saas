@@ -13,7 +13,7 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
-import { ChevronRight, Filter, Search } from "lucide-react";
+import { Filter, Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -22,9 +22,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Button } from '@/components/alignui/actions/button';
-import { Card, CardContent } from '@/components/alignui/data-display/card';
 import { Input } from '@/components/alignui/forms/input';
 import {
   Select,
@@ -119,7 +118,6 @@ export function DataTable<TData, TValue>({
     .getFilteredRowModel()
     .rows.map((row) => row.original) as unknown as User[];
 
-  const gridContainerClasses = "grid grid-cols-2 gap-3 pt-2 sm:grid-cols-4";
 
   return (
     <div className="space-y-4">
@@ -182,12 +180,11 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
 
-      {/* Accordion Card View for All Screen Sizes */}
+      {/* Accordion Table View */}
       <div>
         <Accordion
           type="single"
           collapsible
-          className="space-y-2"
           value={openItem}
           onValueChange={setOpenItem}
         >
@@ -196,12 +193,12 @@ export function DataTable<TData, TValue>({
               <AccordionItem
                 key={user.id}
                 value={user.id}
-                className="overflow-hidden rounded-md border"
+                className="border-b border-border"
               >
                 <div
                   className={cn(
-                    "flex cursor-pointer items-center justify-between px-4 py-1 transition-colors hover:bg-muted/50",
-                    openItem === user.id && "bg-muted/30",
+                    "flex cursor-pointer items-center justify-between px-0 py-3",
+                    openItem === user.id && "border-b border-border pb-3",
                   )}
                   onClick={(e) => {
                     // Only toggle if not clicking on an action button
@@ -210,108 +207,92 @@ export function DataTable<TData, TValue>({
                     }
                   }}
                 >
-                  <div className="flex flex-1 items-center space-x-3">
+                  <div className="flex flex-1 items-center gap-3">
                     <UserAvatar
                       user={{
                         name: user.name,
                         avatar_url: user.avatar_url,
                       }}
                       forceAvatarUrl={user.avatar_url}
-                      className="size-8"
+                      className="size-7"
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-left text-sm font-medium">
+                      <p className="truncate text-sm font-medium">
                         {user.name}
                       </p>
-                      <p className="truncate text-left text-xs text-muted-foreground">
-                        {user.email}
-                      </p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <p className="truncate text-xs text-muted-foreground">
+                          {user.email}
+                        </p>
+                        <span className="text-muted-foreground">·</span>
+                        <p className="text-xs text-muted-foreground">
+                          {user.createdAt}
+                        </p>
+                      </div>
                     </div>
-                    <Badge
-                      variant={
-                        user.role === "ADMIN" ? "destructive" : "outline"
-                      }
-                    >
-                      {user.role}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="hidden md:block">
-                      <UserActions
-                        user={user}
-                        compact={true}
-                        isExpanded={openItem === user.id}
-                      />
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant={
+                          user.role === "ADMIN" ? "destructive" : "outline"
+                        }
+                      >
+                        {user.role}
+                      </Badge>
+                      <div className="hidden md:block">
+                        <UserActions
+                          user={user}
+                          compact={true}
+                          isExpanded={openItem === user.id}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
                 <AccordionContent
                   forceMount
                   className={cn(
-                    "overflow-hidden px-4 py-2 pt-0 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
+                    "overflow-hidden pt-3 pb-4 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
                     openItem !== user.id && "h-0 p-0",
                   )}
                 >
                   {openItem === user.id && (
                     <>
-                      <div className={gridContainerClasses}>
-                        <div>
-                          <p className="text-xs font-medium text-muted-foreground">
-                            Role
-                          </p>
-                          <Badge
-                            variant={
-                              user.role === "ADMIN" ? "destructive" : "outline"
-                            }
-                            className="mt-1"
-                          >
-                            {user.role}
-                          </Badge>
+                      <div className="space-y-4">
+                        <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Status:</span>{" "}
+                            <Badge
+                              variant={
+                                user.status === "banned"
+                                  ? "destructive"
+                                  : "default"
+                              }
+                              className="ml-1"
+                            >
+                              {user.status.charAt(0).toUpperCase() +
+                                user.status.slice(1)}
+                            </Badge>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Subscription:</span>{" "}
+                            <Badge
+                              variant={
+                                user.hasSubscription ? "default" : "outline"
+                              }
+                              className="ml-1"
+                            >
+                              {user.hasSubscription ? "Active" : "None"}
+                            </Badge>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Last Sign In:</span>{" "}
+                            <span className="text-foreground">{user.lastSignIn}</span>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-xs font-medium text-muted-foreground">
-                            Status
-                          </p>
-                          <Badge
-                            variant={
-                              user.status === "banned"
-                                ? "destructive"
-                                : "default"
-                            }
-                            className="mt-1"
-                          >
-                            {user.status.charAt(0).toUpperCase() +
-                              user.status.slice(1)}
-                          </Badge>
+
+                        <div className="pt-2 border-t md:hidden">
+                          <UserActions user={user} inline={true} />
                         </div>
-                        <div>
-                          <p className="text-xs font-medium text-muted-foreground">
-                            Subscription
-                          </p>
-                          <Badge
-                            variant={
-                              user.hasSubscription ? "default" : "outline"
-                            }
-                            className="mt-1"
-                          >
-                            {user.hasSubscription ? "Active" : "None"}
-                          </Badge>
-                        </div>
-                        <div>
-                          <p className="text-xs font-medium text-muted-foreground">
-                            Joined
-                          </p>
-                          <p className="mt-1 text-sm">{user.createdAt}</p>
-                        </div>
-                        <div className="col-span-2 sm:col-span-4">
-                          <p className="mb-2 text-xs font-medium text-muted-foreground">
-                            Last Sign In
-                          </p>
-                          <p className="text-sm">{user.lastSignIn}</p>
-                        </div>
-                      </div>
-                      <div className="mt-4 border-t pt-4 md:hidden">
-                        <UserActions user={user} inline={true} />
                       </div>
                     </>
                   )}
@@ -319,21 +300,19 @@ export function DataTable<TData, TValue>({
               </AccordionItem>
             ))
           ) : (
-            <Card>
-              <CardContent className="p-6 text-center text-muted-foreground">
-                No users found.
-              </CardContent>
-            </Card>
+            <div className="py-12 text-center text-sm text-muted-foreground">
+              No users found.
+            </div>
           )}
         </Accordion>
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
-          {table.getFilteredRowModel().rows.length} users total.
+      <div className="flex items-center justify-between pt-2">
+        <div className="text-xs text-muted-foreground">
+          {table.getFilteredRowModel().rows.length} {table.getFilteredRowModel().rows.length === 1 ? "user" : "users"}
         </div>
-        <div className="flex space-x-2">
+        <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"

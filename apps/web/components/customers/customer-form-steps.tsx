@@ -10,16 +10,16 @@ import {
   FormControl,
   FormDescription,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/components/alignui/forms/form";
 import { Input } from '@/components/alignui/forms/input';
-import { Textarea } from "@/components/ui/textarea";
+import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
 import {
-  Select,
+  SelectRoot as Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/alignui/forms/select";
 import { User, Mail, Phone, Building2, MapPin, FileText, Globe } from "lucide-react";
 
 // Step 1: Personal Information

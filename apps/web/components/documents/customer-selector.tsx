@@ -4,29 +4,29 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { getCustomers, Customer, createCustomer, CustomerInput } from "@/actions/customers-actions";
 import {
-  Select,
+  SelectRoot as Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/alignui/forms/select";
 import { Button } from '@/components/alignui/actions/button';
 import {
-  Dialog,
+  DialogRoot as Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/alignui/overlays/dialog";
 import {
-  Form,
+  FormRoot as Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/components/alignui/forms/form";
 import { Input } from '@/components/alignui/forms/input';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

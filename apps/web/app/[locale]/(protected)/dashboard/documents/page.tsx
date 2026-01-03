@@ -3,11 +3,18 @@ import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { getDocuments, type Document } from "@/actions/documents-actions";
 import { Button } from '@/components/alignui/actions/button';
-import { Plus, FileText, FileCheck, FileX } from "lucide-react";
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Plus, FileText } from "lucide-react";
 import Link from "next/link";
-import { DocumentsTabs } from "@/components/documents/documents-tabs";
 import { PlanLimitWarning } from "@/components/plan-limit-warning";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export const dynamic = "force-dynamic";
@@ -20,41 +27,22 @@ export default async function DocumentsPage({
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   const t = await getTranslations("Documents.page");
+  const tDocs = await getTranslations("Documents");
+
+  const resolvedParams = await searchParams;
+  const typeFilter = resolvedParams.type;
 
   const allDocuments: Document[] = await getDocuments().catch(() => []);
-  const quotes = allDocuments.filter((d) => d.type === "quote");
-  const invoices = allDocuments.filter((d) => d.type === "invoice");
-  const draftQuotes = quotes.filter((d) => d.status === "draft");
-  const sentQuotes = quotes.filter((d) => d.status === "sent");
-  const paidInvoices = invoices.filter((d) => d.status === "paid");
-  const unpaidInvoices = invoices.filter((d) => d.status !== "paid");
+  
+  // Filter documents based on type parameter
+  const documents = typeFilter 
+    ? allDocuments.filter((d) => d.type === typeFilter)
+    : allDocuments;
 
-  const stats = [
-    {
-      title: t("stats.total"),
-      value: allDocuments.length,
-      icon: FileText,
-      description: t("stats.totalDescription", { quotes: quotes.length, invoices: invoices.length }),
-    },
-    {
-      title: t("stats.openQuotes"),
-      value: draftQuotes.length + sentQuotes.length,
-      icon: FileText,
-      description: t("stats.openQuotesDescription", { draft: draftQuotes.length, sent: sentQuotes.length }),
-    },
-    {
-      title: t("stats.paidInvoices"),
-      value: paidInvoices.length,
-      icon: FileCheck,
-      description: t("stats.paidInvoicesDescription", { rate: Math.round((paidInvoices.length / Math.max(invoices.length, 1)) * 100) }),
-    },
-    {
-      title: t("stats.unpaidInvoices"),
-      value: unpaidInvoices.length,
-      icon: FileX,
-      description: unpaidInvoices.length > 0 ? t("stats.actionRequired") : t("stats.allDone"),
-    },
-  ];
+  // Sort by date (newest first)
+  const sortedDocuments = documents.sort((a, b) => 
+    new Date(b.document_date).getTime() - new Date(a.document_date).getTime()
+  );
 
   return (
     <UnifiedPageLayout
@@ -64,61 +52,100 @@ export default async function DocumentsPage({
       actions={
         <>
           <Link href="/dashboard/documents/new?type=quote">
-            <Button variant="outline" className="gap-2">
-              <Plus className="h-4 w-4" />
-              {t("newQuote")}
+            <Button variant="outline" className="gap-1.5 text-xs sm:text-sm h-8 sm:h-9">
+              <Plus className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{t("newQuote")}</span>
+              <span className="sm:hidden">Angebot</span>
             </Button>
           </Link>
           <Link href="/dashboard/documents/new?type=invoice">
-            <Button className="gap-2">
-              <Plus className="h-4 w-4" />
-              {t("newInvoice")}
+            <Button className="gap-1.5 text-xs sm:text-sm h-8 sm:h-9">
+              <Plus className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{t("newInvoice")}</span>
+              <span className="sm:hidden">Rechnung</span>
             </Button>
           </Link>
         </>
       }
-      contentClassName="space-y-6"
+      contentClassName=""
     >
       {/* Plan Limit Warning */}
       <PlanLimitWarning userId={user.id} limitType="documents" />
 
-      {/* Statistics */}
-      {allDocuments.length > 0 && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {stats.map((stat) => {
-            const Icon = stat.icon;
-            return (
-              <Card key={stat.title} hover>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    {stat.title}
-                  </CardTitle>
-                  <div className="flex size-9 items-center justify-center rounded-md bg-muted/50 border border-border">
-                    <Icon className="size-4 text-muted-foreground" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-semibold mb-1">{stat.value}</div>
-                  <CardDescription className="text-xs">
-                    {stat.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Documents Tabs */}
-      <Card>
-        <CardContent className="p-0">
-          <DocumentsTabs
-            allDocuments={allDocuments}
-            quotes={quotes}
-            invoices={invoices}
-          />
-        </CardContent>
-      </Card>
+      {/* Data Table - Visual Focus, genau wie Dashboard */}
+      <div>
+        {sortedDocuments.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center border border-border rounded-lg">
+            <FileText className="h-8 w-8 text-muted-foreground mb-2" />
+            <p className="text-sm font-medium mb-1">{t("empty.title")}</p>
+            <div className="flex gap-2 mt-3">
+              <Link href="/dashboard/documents/new?type=quote">
+                <Button size="sm" variant="outline" className="h-8 text-xs">
+                  {t("newQuote")}
+                </Button>
+              </Link>
+              <Link href="/dashboard/documents/new?type=invoice">
+                <Button size="sm" className="h-8 text-xs">
+                  {t("newInvoice")}
+                </Button>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="border border-border rounded-lg overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="h-10 text-xs font-medium">Document</TableHead>
+                  <TableHead className="h-10 text-xs font-medium">Type</TableHead>
+                  <TableHead className="h-10 text-xs font-medium">Customer</TableHead>
+                  <TableHead className="h-10 text-xs font-medium">Date</TableHead>
+                  <TableHead className="h-10 text-xs font-medium text-right">Amount</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sortedDocuments.map((doc) => (
+                  <TableRow key={doc.id} className="hover:bg-muted/30">
+                    <TableCell className="py-2.5">
+                      <Link
+                        href={`/dashboard/documents/${doc.id}`}
+                        className="text-sm font-medium hover:text-primary transition-colors"
+                      >
+                        {doc.document_number}
+                      </Link>
+                    </TableCell>
+                    <TableCell className="py-2.5">
+                      <Badge variant="outline" className="text-xs">
+                        {doc.type === "quote" ? tDocs("quote") : tDocs("invoice")}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-2.5 text-sm text-muted-foreground">
+                      {doc.customer?.name || "-"}
+                    </TableCell>
+                    <TableCell className="py-2.5 text-xs text-muted-foreground">
+                      {new Date(doc.document_date).toLocaleDateString(undefined, {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </TableCell>
+                    <TableCell className="py-2.5 text-right text-sm font-medium">
+                      {doc.total
+                        ? new Intl.NumberFormat(undefined, {
+                            style: "currency",
+                            currency: "EUR",
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                          }).format(doc.total)
+                        : "-"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </div>
     </UnifiedPageLayout>
   );
 }

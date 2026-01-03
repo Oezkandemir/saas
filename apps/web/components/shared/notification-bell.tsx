@@ -16,7 +16,7 @@ import {
 import { NotificationsPopover } from "@/components/shared/notifications-popover";
 
 interface NotificationBellProps {
-  variant?: "default" | "ghost" | "outline";
+  variant?: "primary" | "secondary" | "ghost" | "destructive" | "outline";
   size?: "default" | "sm" | "lg" | "icon";
   showTooltip?: boolean;
   className?: string;

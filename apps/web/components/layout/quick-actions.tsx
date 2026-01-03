@@ -7,13 +7,13 @@ import { Plus, FileText, QrCode, Users } from "lucide-react";
 
 import { Button } from '@/components/alignui/actions/button';
 import {
-  DropdownMenu,
+  DropdownMenuRoot as DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/alignui/overlays/dropdown-menu";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 
 export function QuickActions() {

@@ -31,7 +31,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { BillingFormButton } from "@/components/forms/billing-form-button";
 import { ModalContext } from "@/components/modals/providers";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 
 interface PricingCardsProps {
   userId?: string;
@@ -239,7 +239,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
               )
             ) : (
               <Button
-                variant={isPro || isEnterprise ? "default" : "outline"}
+                variant={isPro || isEnterprise ? "primary" : "outline"}
                 size="lg"
                 className="w-full group/btn"
                 onClick={() => setShowSignInModal(true)}

@@ -29,7 +29,7 @@ import { useTranslations } from "next-intl";
 import { getCurrentUser } from "@/lib/session";
 import { cn } from "@/lib/utils";
 import { useNotifications } from "@/hooks/use-notifications";
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Button } from '@/components/alignui/actions/button';
 import {
   Popover,

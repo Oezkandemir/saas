@@ -891,3 +891,85 @@
 5. Cleanup durchführen
 
 **Current Status:** 🚧 **IN PROGRESS** - Phase 1 abgeschlossen, bereit für Komponenten-Migration
+
+## [2026-01-03] UI/UX Master Prompts Dokumentation ✅
+
+**Umfassende Sammlung professioneller UI/UX-Prompts für moderne SaaS-Entwicklung**
+
+### **Erstellte Dokumentation:** ✅
+
+#### **1. Master UI/UX Prompt** ✅
+- Ultimativer Basis-Prompt für alle UI/UX-Arbeiten
+- Design-Prinzipien (User First, Minimalismus, Form folgt Funktion)
+- UX-Regeln (kognitive Last reduzieren, visuelle Führung)
+- UI-Regeln (Grid-System, Typografie, Farben, Buttons)
+- Komponenten-Design Guidelines
+- Layout & Spacing Best Practices
+- SaaS-spezifische Best Practices
+- Qualitätskontrolle-Checkliste
+
+#### **2. Figma Design Prompt** ✅
+- Spezialisiert für Figma Design-Arbeit
+- Design-System Setup (Farben, Typografie, Spacing, Shadows)
+- Komponenten-Struktur (Atomic Design, Variants, Auto-Layout)
+- Layout-Regeln (Grid System, Container Widths, Spacing)
+- Visual Design Guidelines (Hierarchy, Icons, Borders)
+- Responsive Design (Breakpoints, Mobile-First, Touch Targets)
+- SaaS-spezifische Screens (Dashboard, Tables, Forms, Modals)
+- Export & Handoff Guidelines
+
+#### **3. Tailwind/React Implementation Prompt** ✅
+- Für Code-Implementierung in React/TypeScript
+- Code-Struktur & Naming Conventions
+- Tailwind CSS Best Practices (Design Tokens, Spacing, Responsive, Dark Mode)
+- React Best Practices (Component Structure, TypeScript, Performance)
+- Komponenten-Patterns (Button, Card, Form Input)
+- Layout-Patterns (Dashboard Grid, Page Layout, Responsive Container)
+- SaaS-spezifische Komponenten (Data Table, Modal/Dialog)
+- Performance-Optimierungen (Code Splitting, Image Optimization, Memoization)
+- Utility Functions (cn Helper, Format Helpers)
+
+#### **4. UI Audit Prompt** ✅
+- Für systematische Analyse bestehender Screens
+- 8 Analyse-Kategorien:
+  - Visuelle Hierarchie
+  - Spacing & Layout
+  - Typografie
+  - Farben
+  - Interaktion & Navigation
+  - Komponenten-Konsistenz
+  - Mobile Responsiveness
+  - Accessibility
+- Audit-Report Format (Executive Summary, Detaillierte Findings, Priorisierte Action Items, Quick Wins)
+- Benchmark-Vergleich (Stripe, Linear, Notion, Vercel)
+- Audit-Checkliste
+
+#### **5. UI/UX Prompts Index** ✅
+- Übersicht über alle verfügbaren Prompts
+- Verwendungsempfehlungen für jeden Prompt
+- Workflow-Empfehlungen (Design Phase, Development Phase, QA)
+- Quick Start Guide
+- Design-Prinzipien Kurzfassung
+- Benchmark-Referenzen
+
+### **Features:**
+- ✅ **1:1 kopierbar** - Alle Prompts können direkt verwendet werden
+- ✅ **Vielseitig einsetzbar** - Cursor, Figma AI, ChatGPT, Dev-Agenten
+- ✅ **Professionell** - FAANG-Level Design-Standards
+- ✅ **Umsetzbar** - Konkrete, praktische Empfehlungen
+- ✅ **Vollständig** - Von Design bis Implementation abgedeckt
+
+### **Verwendung:**
+- **Cursor / AI-Designer**: Master Prompt als Context für UI-Generierung
+- **Figma AI**: Figma Prompt für Design-System-Erstellung
+- **Code-Generierung**: Tailwind/React Prompt für sauberen Code
+- **Design-Reviews**: UI Audit Prompt für systematische Analyse
+
+### **Dokumentation:**
+- Master Prompt: `docs/UI_UX_MASTER_PROMPT.md`
+- Figma Prompt: `docs/UI_UX_FIGMA_PROMPT.md`
+- Tailwind/React Prompt: `docs/UI_UX_TAILWIND_REACT_PROMPT.md`
+- UI Audit Prompt: `docs/UI_UX_AUDIT_PROMPT.md`
+- Index & Übersicht: `docs/UI_UX_PROMPTS_INDEX.md`
+
+**Current Status:** ✅ **COMPLETED** - Alle UI/UX Master Prompts erstellt und dokumentiert

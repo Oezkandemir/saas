@@ -82,7 +82,7 @@ export function TwoFactorSecurityBanner() {
         <Button
           asChild
           size="sm"
-          variant="default"
+          variant="primary"
           className="bg-yellow-600 hover:bg-yellow-700 dark:bg-yellow-500 dark:hover:bg-yellow-600"
         >
           <Link href="/dashboard/settings/security" onClick={handleDismiss}>

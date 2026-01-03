@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Edit, Trash2, Eye } from "lucide-react";
 import type { DocumentTemplate } from "@/actions/document-templates-actions";
 import type { DocumentType } from "@/actions/documents-actions";
 import {
-  AlertDialog,
+  AlertDialogRoot as AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/components/alignui/overlays/alert-dialog";
 import { deleteDocumentTemplate } from "@/actions/document-templates-actions";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

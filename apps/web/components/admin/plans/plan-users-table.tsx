@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Avatar, AvatarFallback } from '@/components/alignui/data-display/avatar';
 import type { PlanUser } from "@/actions/admin-plan-actions";
 import { format } from "date-fns";

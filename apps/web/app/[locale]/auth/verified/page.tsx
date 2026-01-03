@@ -49,7 +49,7 @@ export default function VerifiedPage() {
 
         <div className="grid gap-2">
           <Button
-            className={buttonVariants({ variant: "default" })}
+            variant="primary"
             onClick={() => router.push(`/${locale}/login`)}
           >
             Jetzt anmelden

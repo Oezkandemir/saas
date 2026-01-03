@@ -6,7 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
 import { ArrowUpDown, ExternalLink } from "lucide-react";
 
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Button } from '@/components/alignui/actions/button';
 
 // Helper function to get status badge color

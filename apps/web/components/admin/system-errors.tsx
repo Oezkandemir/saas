@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/alignui/data-display/card';
-import { Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Button } from '@/components/alignui/actions/button';
 import {
   getRecentErrors,

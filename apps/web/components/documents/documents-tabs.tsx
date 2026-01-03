@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsRoot as Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/alignui/layout/tabs";
 import { DocumentsTable } from "@/components/documents/documents-table";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
 import { Button } from '@/components/alignui/actions/button';
@@ -76,29 +76,31 @@ export function DocumentsTabs({
           {t("invoices", { count: invoices.length })}
         </TabsTrigger>
       </TabsList>
-      <TabsContent value={activeTab} className="mt-4">
+      <TabsContent value={activeTab} className="mt-6">
         {documents.length === 0 ? (
-          <EmptyPlaceholder>
-            <EmptyPlaceholder.Icon name="post" />
-            <EmptyPlaceholder.Title>{t("empty.title")}</EmptyPlaceholder.Title>
-            <EmptyPlaceholder.Description>
-              {t("empty.description")}
-            </EmptyPlaceholder.Description>
-            <div className="flex gap-2">
-              <Link href="/dashboard/documents/new?type=quote">
-                <Button variant="outline">
-                  <Plus className="mr-2 h-4 w-4" />
-                  {t("empty.createQuote")}
-                </Button>
-              </Link>
-              <Link href="/dashboard/documents/new?type=invoice">
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  {t("empty.createInvoice")}
-                </Button>
-              </Link>
-            </div>
-          </EmptyPlaceholder>
+          <div className="flex flex-col items-center justify-center py-16">
+            <EmptyPlaceholder>
+              <EmptyPlaceholder.Icon name="post" />
+              <EmptyPlaceholder.Title>{t("empty.title")}</EmptyPlaceholder.Title>
+              <EmptyPlaceholder.Description>
+                {t("empty.description")}
+              </EmptyPlaceholder.Description>
+              <div className="flex gap-2 mt-4">
+                <Link href="/dashboard/documents/new?type=quote">
+                  <Button variant="outline" size="sm">
+                    <Plus className="mr-2 h-4 w-4" />
+                    {t("empty.createQuote")}
+                  </Button>
+                </Link>
+                <Link href="/dashboard/documents/new?type=invoice">
+                  <Button size="sm">
+                    <Plus className="mr-2 h-4 w-4" />
+                    {t("empty.createInvoice")}
+                  </Button>
+                </Link>
+              </div>
+            </EmptyPlaceholder>
+          </div>
         ) : (
           <DocumentsTable documents={documents} />
         )}

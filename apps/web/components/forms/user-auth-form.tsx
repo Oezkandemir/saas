@@ -16,7 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { buttonVariants } from '@/components/alignui/actions/button';
 import { Input } from '@/components/alignui/forms/input';
-import { Label } from "@/components/ui/label";
+import { LabelRoot as Label } from "@/components/alignui/forms/label";
 import { Icons } from "@/components/shared/icons";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSupabase } from "@/components/supabase-provider";
