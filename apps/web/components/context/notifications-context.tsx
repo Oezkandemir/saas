@@ -1,6 +1,8 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSupabase } from "@/components/supabase-provider";
 
 type NotificationsContextType = {
   refetchAll: () => Promise<void>;
@@ -22,9 +24,22 @@ export function NotificationsProvider({
   children,
 }: NotificationsProviderProps) {
   const [, setForceUpdate] = useState(0);
+  const queryClient = useQueryClient();
+  const { session } = useSupabase();
+  const userId = session?.user?.id;
 
   const clearCache = () => {
     try {
+      // Invalidate all notification-related queries
+      if (userId) {
+        queryClient.invalidateQueries({
+          queryKey: ["notifications"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["notifications", "unread", userId],
+        });
+      }
+      
       // Dispatch a custom event to invalidate caches
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent("notifications-changed"));
@@ -36,13 +51,40 @@ export function NotificationsProvider({
 
   const refetchAll = async () => {
     try {
-      // Force a re-render and clear cache
-      setForceUpdate((prev) => prev + 1);
+      // Invalidate React Query cache first
       clearCache();
+      
+      // Force a re-render
+      setForceUpdate((prev) => prev + 1);
+      
+      // Refetch all notification queries
+      if (userId) {
+        await queryClient.refetchQueries({
+          queryKey: ["notifications"],
+        });
+      }
     } catch (error) {
       console.warn("Error refetching notifications:", error);
     }
   };
+
+  // Listen for DELETE events from Supabase Realtime to update cache
+  useEffect(() => {
+    if (!userId) return;
+
+    // Listen for custom events dispatched when notifications are deleted
+    const handleNotificationsChanged = () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notifications", "unread", userId],
+      });
+    };
+
+    window.addEventListener("notifications-changed", handleNotificationsChanged);
+
+    return () => {
+      window.removeEventListener("notifications-changed", handleNotificationsChanged);
+    };
+  }, [userId, queryClient]);
 
   return (
     <NotificationsContext.Provider value={{ refetchAll, clearCache }}>

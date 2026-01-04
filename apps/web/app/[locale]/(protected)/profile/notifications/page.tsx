@@ -7,19 +7,17 @@ import { constructMetadata } from "@/lib/utils";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/alignui/data-display/card';
-import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { ClearAllNotificationsButton } from "@/components/profile/clear-all-notifications-button";
 import { MarkAllAsReadButton } from "@/components/profile/mark-all-as-read-button";
 import { NotificationsList } from "@/components/profile/notifications-list";
 import { ResponsiveNotificationsTabs } from "@/components/profile/responsive-notifications-tabs";
+import { Bell, CheckCircle2, Circle, Inbox } from "lucide-react";
 
 export async function generateMetadata() {
-  // CRITICAL FIX: Get locale and set it before translations
-  // This ensures correct language during client-side navigation
   const locale = await getLocale();
   setRequestLocale(locale);
   const t = await getTranslations("Profile");
@@ -39,14 +37,16 @@ export default async function NotificationsPage() {
     redirect("/login");
   }
 
-  // Fetch all notifications
-  const allNotificationsResult = await getUserNotifications(false);
+  // Fetch notifications in parallel with reasonable limits for better performance
+  const [allNotificationsResult, unreadNotificationsResult] = await Promise.all([
+    getUserNotifications(false, 100),
+    getUserNotifications(true, 100),
+  ]);
+
   const allNotifications = allNotificationsResult.success
     ? allNotificationsResult.data || []
     : [];
 
-  // Fetch only unread notifications
-  const unreadNotificationsResult = await getUserNotifications(true);
   const unreadNotifications = unreadNotificationsResult.success
     ? unreadNotificationsResult.data || []
     : [];
@@ -82,73 +82,87 @@ export default async function NotificationsPage() {
       notification.type === "TEAM" || notification.type === "team",
   );
 
-  const followNotifications = allNotifications.filter(
+  const customerNotifications = allNotifications.filter(
     (notification) =>
-      notification.type === "FOLLOW" || notification.type === "follow",
+      notification.type === "CUSTOMER" || notification.type === "customer",
+  );
+
+  const documentNotifications = allNotifications.filter(
+    (notification) =>
+      notification.type === "DOCUMENT" || notification.type === "document",
+  );
+
+  const invoiceNotifications = allNotifications.filter(
+    (notification) =>
+      notification.type === "INVOICE" || notification.type === "invoice",
   );
 
   return (
-    <>
-      <DashboardHeaderWithLanguageSwitcher
-        heading="Notifications"
-        text="View and manage your notifications"
-        actions={
-          totalCount > 0 ? (
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              {unreadCount > 0 && <MarkAllAsReadButton />}
-              <ClearAllNotificationsButton />
-            </div>
-          ) : undefined
-        }
-      />
-
-      <div className="space-y-4 sm:space-y-6">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-3">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">
-                All Notifications
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xl sm:text-2xl font-bold">{totalCount}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Unread</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xl sm:text-2xl font-bold">{unreadCount}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Read</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xl sm:text-2xl font-bold">{readCount}</div>
-            </CardContent>
-          </Card>
+    <UnifiedPageLayout
+      title="Benachrichtigungen"
+      description="Verwalten Sie alle Ihre Benachrichtigungen"
+      icon={<Bell className="h-4 w-4 text-primary" />}
+      actions={
+        totalCount > 0 ? (
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            {unreadCount > 0 && <MarkAllAsReadButton />}
+            <ClearAllNotificationsButton />
+          </div>
+        ) : undefined
+      }
+      contentClassName=""
+    >
+      <div className="space-y-6">
+        {/* Stats - Matching Dashboard Design: Simple Links */}
+        <div className="flex gap-8 mb-6 pb-6 border-b border-border">
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">
+              Gesamt
+            </p>
+            <p className="text-lg font-semibold">{totalCount}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">
+              Ungelesen
+            </p>
+            <p className="text-lg font-semibold">{unreadCount}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">
+              Gelesen
+            </p>
+            <p className="text-lg font-semibold">{readCount}</p>
+          </div>
         </div>
 
-        {/* Notifications Tabs - Responsive */}
-        <ResponsiveNotificationsTabs
-          totalCount={totalCount}
-          unreadCount={unreadCount}
-          welcomeCount={welcomeNotifications.length}
-          systemCount={systemNotifications.length}
-          teamCount={teamNotifications.length}
-          followCount={followNotifications.length}
-          allContent={<NotificationsList notifications={allNotifications} />}
-          unreadContent={<NotificationsList notifications={unreadNotifications} />}
-          welcomeContent={<NotificationsList notifications={welcomeNotifications} />}
-          systemContent={<NotificationsList notifications={systemNotifications} />}
-          teamContent={<NotificationsList notifications={teamNotifications} />}
-          followContent={<NotificationsList notifications={followNotifications} />}
-        />
+        {/* Notifications Content */}
+        {totalCount === 0 ? (
+          <Card className="border-2 border-dashed">
+            <CardContent className="flex flex-col items-center justify-center py-16">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted mb-4">
+                <Bell className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="mb-2 text-lg font-semibold">Keine Benachrichtigungen</h3>
+              <p className="text-center text-sm text-muted-foreground max-w-md">
+                Sie haben derzeit keine Benachrichtigungen. Neue Benachrichtigungen werden hier angezeigt, sobald sie eintreffen.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <ResponsiveNotificationsTabs
+            totalCount={totalCount}
+            unreadCount={unreadCount}
+            welcomeCount={welcomeNotifications.length}
+            systemCount={systemNotifications.length}
+            teamCount={teamNotifications.length}
+            allContent={<NotificationsList notifications={allNotifications} />}
+            unreadContent={<NotificationsList notifications={unreadNotifications} />}
+            welcomeContent={<NotificationsList notifications={welcomeNotifications} />}
+            systemContent={<NotificationsList notifications={systemNotifications} />}
+            teamContent={<NotificationsList notifications={teamNotifications} />}
+          />
+        )}
       </div>
-    </>
+    </UnifiedPageLayout>
   );
 }

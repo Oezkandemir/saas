@@ -1,12 +1,13 @@
 import "server-only";
 
 import { MagicLinkEmail } from "@/emails/magic-link-email";
+import { BookingConfirmationEmail } from "@/emails/booking-confirmation-email";
 import { Resend } from "resend";
 
 import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
 
-import { getServerUserByEmail } from "./db-admin";
+import { getServerUserByEmail, getServerUserById } from "./db-admin";
 import { getSupabaseClient } from "./supabase";
 import { logger } from "./logger";
 
@@ -189,5 +190,155 @@ export const sendWelcomeEmail = async ({
   } catch (error) {
     logger.error("Failed to send welcome email", error);
     throw new Error("Failed to send welcome email.");
+  }
+};
+
+/**
+ * Send booking confirmation email to customer
+ */
+export const sendBookingConfirmationEmail = async ({
+  inviteeEmail,
+  inviteeName,
+  eventTitle,
+  eventDescription,
+  startAt,
+  endAt,
+  durationMinutes,
+  locationType,
+  locationValue,
+  hostUserId,
+  priceAmount,
+  priceCurrency,
+  numberOfParticipants,
+  participantNames,
+  inviteeNotes,
+  cancelToken,
+  rescheduleToken,
+  eventSlug,
+}: {
+  inviteeEmail: string;
+  inviteeName: string;
+  eventTitle: string;
+  eventDescription?: string | null;
+  startAt: string;
+  endAt: string;
+  durationMinutes: number;
+  locationType?: "google_meet" | "zoom" | "custom_link" | "phone" | "in_person" | null;
+  locationValue?: string | null;
+  hostUserId: string;
+  priceAmount?: number | null;
+  priceCurrency?: string | null;
+  numberOfParticipants: number;
+  participantNames?: string[] | null;
+  inviteeNotes?: string | null;
+  cancelToken: string;
+  rescheduleToken?: string | null;
+  eventSlug: string;
+}) => {
+  try {
+    logger.info("sendBookingConfirmationEmail called", { inviteeEmail, eventTitle });
+    
+    // Check if Resend is configured
+    if (!env.RESEND_API_KEY) {
+      logger.error("RESEND_API_KEY is not configured, cannot send booking confirmation email");
+      return { success: false, error: "Email service not configured" };
+    }
+
+    // Get host user information
+    const hostUser = await getServerUserById(hostUserId);
+    const hostName = hostUser?.name || null;
+    const hostEmail = hostUser?.email || null;
+
+    // Build booking URL
+    const bookingUrl = `${env.NEXT_PUBLIC_APP_URL}/book/${hostUserId}/${eventSlug}`;
+
+    // Use the same logic as other working emails (send-customer-email.ts, documents-email-actions.ts)
+    // In development, send to delivered@resend.dev for testing, but also log the actual recipient
+    const recipientEmail = process.env.NODE_ENV === "development" 
+      ? "delivered@resend.dev" 
+      : inviteeEmail;
+
+    const fromEmail = env.EMAIL_FROM || "hello@cenety.com";
+    
+    logger.info(`Sending booking confirmation email to ${inviteeEmail} (actual recipient: ${recipientEmail})`, {
+      inviteeEmail,
+      recipientEmail,
+      fromEmail,
+      hasResendKey: !!env.RESEND_API_KEY,
+      hostUserId,
+      eventTitle,
+      eventSlug,
+    });
+
+    // Send email via Resend - same pattern as other working emails
+    const { data, error } = await resend.emails.send({
+      from: `${siteConfig.name} <${fromEmail}>`,
+      to: recipientEmail,
+      reply_to: hostEmail || fromEmail,
+      subject: `Buchungsbestätigung: ${eventTitle}`,
+      react: BookingConfirmationEmail({
+        inviteeName,
+        eventTitle,
+        eventDescription,
+        startAt,
+        endAt,
+        durationMinutes,
+        locationType,
+        locationValue,
+        hostName,
+        hostEmail,
+        priceAmount,
+        priceCurrency,
+        numberOfParticipants,
+        participantNames,
+        inviteeNotes,
+        cancelToken,
+        bookingUrl,
+        rescheduleToken,
+      }),
+      headers: {
+        "X-Entity-Ref-ID": new Date().getTime().toString(),
+      },
+    });
+
+    if (error) {
+      logger.error("Failed to send booking confirmation email via Resend", {
+        error: error.message,
+        errorDetails: JSON.stringify(error),
+        inviteeEmail,
+        recipientEmail,
+        fromEmail,
+        hasResendKey: !!env.RESEND_API_KEY,
+      });
+      return { success: false, error: error.message || "Unknown error" };
+    }
+
+    if (!data || !data.id) {
+      logger.error("Resend returned no data or message ID", {
+        inviteeEmail,
+        recipientEmail,
+        response: data,
+      });
+      return { success: false, error: "No message ID returned from Resend" };
+    }
+
+    logger.info(`Booking confirmation email sent successfully`, {
+      inviteeEmail,
+      recipientEmail,
+      messageId: data.id,
+      fromEmail,
+    });
+    
+    return { success: true, messageId: data.id };
+  } catch (error) {
+    logger.error("Exception in sendBookingConfirmationEmail", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      inviteeEmail,
+    });
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Failed to send booking confirmation email" 
+    };
   }
 };

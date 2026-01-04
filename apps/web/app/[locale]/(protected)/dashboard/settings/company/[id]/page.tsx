@@ -1,13 +1,14 @@
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
-import { getCompanyProfile } from "@/actions/company-profiles-actions";
+import { getCompanyProfile, type CompanyProfileWithMembership } from "@/actions/company-profiles-actions";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Button } from '@/components/alignui/actions/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Separator } from "@/components/ui/separator";
 import { CopyButton } from "@/components/company-settings/copy-button";
+import { CompanyProfileTeamManagement } from "@/components/company-settings/company-profile-team-management";
 import {
   Building2,
   MapPin,
@@ -25,6 +26,7 @@ import {
   Percent,
   Calendar,
   ExternalLink,
+  UserPlus,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -89,12 +91,14 @@ export default async function ViewCompanyProfilePage({
       showBackButton
       backHref="/dashboard/settings/company"
       actions={
-        <Link href={`/dashboard/settings/company/${profile.id}/edit`}>
-          <Button size="sm" className="gap-2">
-            <Edit className="h-4 w-4" />
-            Bearbeiten
-          </Button>
-        </Link>
+        profile.is_owner !== false ? (
+          <Link href={`/dashboard/settings/company/${profile.id}/edit`}>
+            <Button size="sm" className="gap-2">
+              <Edit className="h-4 w-4" />
+              Bearbeiten
+            </Button>
+          </Link>
+        ) : undefined
       }
       contentClassName="space-y-6"
     >
@@ -110,15 +114,29 @@ export default async function ViewCompanyProfilePage({
                 <h1 className="text-2xl font-bold mb-1">{profile.profile_name}</h1>
                 <p className="text-muted-foreground mb-3">{profile.company_name}</p>
                 <div className="flex flex-wrap items-center gap-2">
-                  {profile.is_default && (
+                  {profile.is_default && profile.is_owner !== false && (
                     <Badge className="bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/30">
                       <CheckCircle2 className="h-3 w-3 mr-1" />
                       Standard-Profil
                     </Badge>
                   )}
+                  {profile.is_owner === false && (
+                    <Badge className="bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30">
+                      <UserPlus className="h-3 w-3 mr-1" />
+                      Eingeladen
+                    </Badge>
+                  )}
                   <Badge variant="outline">
                     {profile.profile_type === "personal" ? "Persönlich" : "Team"}
                   </Badge>
+                  {profile.is_owner === false && profile.membership_role && (
+                    <Badge variant="outline" className="border-blue-500/30 text-blue-600 dark:text-blue-400">
+                      {profile.membership_role === "admin" ? "Administrator" :
+                       profile.membership_role === "editor" ? "Bearbeiter" :
+                       profile.membership_role === "viewer" ? "Betrachter" :
+                       profile.membership_role}
+                    </Badge>
+                  )}
                 </div>
               </div>
             </div>
@@ -331,6 +349,14 @@ export default async function ViewCompanyProfilePage({
             </div>
           </CardContent>
         </Card>
+
+        {/* Team Management - Only show for owners */}
+        {profile.is_owner !== false && (
+          <CompanyProfileTeamManagement
+            companyProfileId={profile.id}
+            isOwner={true}
+          />
+        )}
       </div>
     </UnifiedPageLayout>
   );

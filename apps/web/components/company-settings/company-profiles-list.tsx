@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { CompanyProfile, deleteCompanyProfile, setDefaultProfile } from "@/actions/company-profiles-actions";
+import { CompanyProfileWithMembership, deleteCompanyProfile, setDefaultProfile } from "@/actions/company-profiles-actions";
 import { CompanyProfileCard } from "./company-profile-card";
 import { logger } from "@/lib/logger";
 import {
@@ -27,16 +27,20 @@ import {
 import { MoreVertical, Edit, Trash2, Star, Eye } from "lucide-react";
 
 interface CompanyProfilesListProps {
-  profiles: CompanyProfile[];
+  profiles: CompanyProfileWithMembership[];
 }
 
 export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
-  const [selectedProfile, setSelectedProfile] = useState<CompanyProfile | null>(null);
-  const [profileToDelete, setProfileToDelete] = useState<CompanyProfile | null>(null);
+  const [selectedProfile, setSelectedProfile] = useState<CompanyProfileWithMembership | null>(null);
+  const [profileToDelete, setProfileToDelete] = useState<CompanyProfileWithMembership | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
-  const handleSetDefault = async (profile: CompanyProfile) => {
+  const handleSetDefault = async (profile: CompanyProfileWithMembership) => {
+    if (!profile.is_owner) {
+      toast.error("Nur der Inhaber kann ein Profil als Standard festlegen");
+      return;
+    }
     try {
       await setDefaultProfile(profile.id);
       toast.success(`"${profile.profile_name}" als Standard festgelegt`);
@@ -49,6 +53,12 @@ export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
 
   const handleDelete = async () => {
     if (!profileToDelete) return;
+
+    if (!profileToDelete.is_owner) {
+      toast.error("Nur der Inhaber kann ein Profil löschen");
+      setProfileToDelete(null);
+      return;
+    }
 
     setIsDeleting(true);
     try {
@@ -64,68 +74,76 @@ export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
     }
   };
 
+  const renderProfileCard = (profile: CompanyProfileWithMembership) => (
+    <div key={profile.id} className="relative group">
+      <CompanyProfileCard
+        profile={profile}
+        isSelected={selectedProfile?.id === profile.id}
+        onClick={() => router.push(`/dashboard/settings/company/${profile.id}`)}
+      />
+
+      {/* Actions Dropdown */}
+      <div className="absolute top-3 right-3 z-30">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-accent rounded-md shadow-sm hover:shadow-md"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              <MoreVertical className="h-4 w-4" />
+              <span className="sr-only">Aktionen öffnen</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() => router.push(`/dashboard/settings/company/${profile.id}`)}
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              Anzeigen
+            </DropdownMenuItem>
+            {profile.is_owner && (
+              <DropdownMenuItem
+                onClick={() => router.push(`/dashboard/settings/company/${profile.id}/edit`)}
+              >
+                <Edit className="mr-2 h-4 w-4" />
+                Bearbeiten
+              </DropdownMenuItem>
+            )}
+            {profile.is_owner && !profile.is_default && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => handleSetDefault(profile)}>
+                  <Star className="mr-2 h-4 w-4" />
+                  Als Standard festlegen
+                </DropdownMenuItem>
+              </>
+            )}
+            {profile.is_owner && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setProfileToDelete(profile)}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Löschen
+                </DropdownMenuItem>
+              </>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {profiles.map((profile) => (
-          <div key={profile.id} className="relative group">
-            <CompanyProfileCard
-              profile={profile}
-              isSelected={selectedProfile?.id === profile.id}
-              onClick={() => setSelectedProfile(profile)}
-            />
-
-            {/* Actions Dropdown - Positioniert mit professionellem Abstand zum Badge */}
-            <div className="absolute top-3 right-3 z-30">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-accent rounded-md shadow-sm hover:shadow-md"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    <MoreVertical className="h-4 w-4" />
-                    <span className="sr-only">Aktionen öffnen</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => router.push(`/dashboard/settings/company/${profile.id}`)}
-                  >
-                    <Eye className="mr-2 h-4 w-4" />
-                    Anzeigen
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => router.push(`/dashboard/settings/company/${profile.id}/edit`)}
-                  >
-                    <Edit className="mr-2 h-4 w-4" />
-                    Bearbeiten
-                  </DropdownMenuItem>
-                  {!profile.is_default && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => handleSetDefault(profile)}>
-                        <Star className="mr-2 h-4 w-4" />
-                        Als Standard festlegen
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => setProfileToDelete(profile)}
-                    className="text-destructive focus:text-destructive"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Löschen
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        ))}
+        {profiles.map(renderProfileCard)}
       </div>
 
       {/* Delete Confirmation Dialog */}

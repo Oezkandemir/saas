@@ -8,15 +8,24 @@ import {
   UserNotification,
 } from "@/actions/user-profile-actions";
 import { formatDistance } from "date-fns";
+import { de } from "date-fns/locale";
 import {
-  AlertCircle,
-  Bell,
+  Plus,
+  Edit,
+  Trash2,
   CheckCircle2,
   Clock,
   CreditCard,
   Gift,
   Info,
   Users,
+  FileText,
+  UserPlus,
+  UserMinus,
+  Bell,
+  X,
+  ArrowRight,
+  Sparkles,
 } from "lucide-react";
 
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
@@ -24,12 +33,10 @@ import { Button } from '@/components/alignui/actions/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
-  CardHeader,
-  CardTitle,
 } from '@/components/alignui/data-display/card';
 import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 import { DeleteNotificationButton } from "./delete-notification-button";
 
@@ -37,60 +44,129 @@ interface NotificationsListProps {
   notifications: UserNotification[];
 }
 
+// Get action icon based on metadata action
+const getActionIcon = (action?: string, type?: string) => {
+  if (action) {
+    switch (action.toLowerCase()) {
+      case "created":
+        return <Plus className="h-3.5 w-3.5" />;
+      case "updated":
+        return <Edit className="h-3.5 w-3.5" />;
+      case "deleted":
+        return <Trash2 className="h-3.5 w-3.5" />;
+      case "sent":
+        return <ArrowRight className="h-3.5 w-3.5" />;
+      case "paid":
+        return <CheckCircle2 className="h-3.5 w-3.5" />;
+      case "overdue":
+        return <Clock className="h-3.5 w-3.5" />;
+      default:
+        return <Sparkles className="h-3.5 w-3.5" />;
+    }
+  }
+
+  // Fallback to type-based icons
+  const normalizedType = type?.toUpperCase() || "";
+  switch (normalizedType) {
+    case "SYSTEM":
+      return <Info className="h-3.5 w-3.5" />;
+    case "BILLING":
+      return <CreditCard className="h-3.5 w-3.5" />;
+    case "SUPPORT":
+      return <Info className="h-3.5 w-3.5" />;
+    case "SUCCESS":
+      return <CheckCircle2 className="h-3.5 w-3.5" />;
+    case "WELCOME":
+      return <Gift className="h-3.5 w-3.5" />;
+    case "TEAM":
+      return <Users className="h-3.5 w-3.5" />;
+    case "CUSTOMER":
+      return <Users className="h-3.5 w-3.5" />;
+    case "DOCUMENT":
+      return <FileText className="h-3.5 w-3.5" />;
+    case "INVOICE":
+      return <FileText className="h-3.5 w-3.5" />;
+    default:
+      return <Bell className="h-3.5 w-3.5" />;
+  }
+};
+
+// Get action color based on action type
+const getActionColor = (action?: string) => {
+  if (!action) return "text-muted-foreground";
+  
+  switch (action.toLowerCase()) {
+    case "created":
+      return "text-green-600 dark:text-green-400";
+    case "updated":
+      return "text-blue-600 dark:text-blue-400";
+    case "deleted":
+      return "text-red-600 dark:text-red-400";
+    case "sent":
+      return "text-purple-600 dark:text-purple-400";
+    case "paid":
+      return "text-green-600 dark:text-green-400";
+    case "overdue":
+      return "text-orange-600 dark:text-orange-400";
+    default:
+      return "text-muted-foreground";
+  }
+};
+
+// Get action label in German
+const getActionLabel = (action?: string) => {
+  if (!action) return "";
+  
+  switch (action.toLowerCase()) {
+    case "created":
+      return "erstellt";
+    case "updated":
+      return "aktualisiert";
+    case "deleted":
+      return "gelöscht";
+    case "sent":
+      return "gesendet";
+    case "paid":
+      return "bezahlt";
+    case "overdue":
+      return "überfällig";
+    default:
+      return action;
+  }
+};
+
+// Get type label in German
+const getTypeLabel = (type: string) => {
+  const normalizedType = type.toUpperCase();
+  switch (normalizedType) {
+    case "CUSTOMER":
+      return "Kunde";
+    case "DOCUMENT":
+      return "Dokument";
+    case "INVOICE":
+      return "Rechnung";
+    case "SYSTEM":
+      return "System";
+    case "BILLING":
+      return "Abrechnung";
+    case "SUPPORT":
+      return "Support";
+    case "SUCCESS":
+      return "Erfolg";
+    case "WELCOME":
+      return "Willkommen";
+    case "TEAM":
+      return "Team";
+    default:
+      return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
+  }
+};
+
 export function NotificationsList({ notifications }: NotificationsListProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  // Get icon based on notification type
-  const getNotificationIcon = (type: string) => {
-    // Normalize type - handle both enum and string versions
-    const normalizedType = type.toUpperCase();
-
-    switch (normalizedType) {
-      case "SYSTEM":
-        return <Info className="size-5 text-blue-500" />;
-      case "BILLING":
-        return <CreditCard className="size-5 text-purple-500" />;
-      case "SUPPORT":
-        return <AlertCircle className="size-5 text-yellow-500" />;
-      case "SUCCESS":
-        return <CheckCircle2 className="size-5 text-green-500" />;
-      case "WELCOME":
-        return <Gift className="size-5 text-pink-500" />;
-      case "TEAM":
-        return <Users className="size-5 text-indigo-500" />;
-      case "FOLLOW":
-        return <Users className="size-5 text-blue-600" />;
-      default:
-        return <Bell className="size-5 text-gray-500" />;
-    }
-  };
-
-  // Get badge color class based on notification type
-  const getBadgeColorClass = (type: string) => {
-    // Normalize type - handle both enum and string versions
-    const normalizedType = type.toUpperCase();
-
-    switch (normalizedType) {
-      case "SYSTEM":
-        return "bg-blue-500 hover:bg-blue-600";
-      case "BILLING":
-        return "bg-purple-500 hover:bg-purple-600";
-      case "WELCOME":
-        return "bg-pink-500 hover:bg-pink-600";
-      case "TEAM":
-        return "bg-indigo-500 hover:bg-indigo-600";
-      case "SUCCESS":
-        return "bg-green-500 hover:bg-green-600";
-      case "FOLLOW":
-        return "bg-blue-600 hover:bg-blue-700";
-      default:
-        return "bg-slate-500 hover:bg-slate-600";
-    }
-  };
-
-  // Handle marking notification as read
   const handleMarkAsRead = async (notificationId: string) => {
     try {
       setLoadingId(notificationId);
@@ -104,8 +180,8 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
     } catch (error) {
       console.error("Error marking notification as read:", error);
       toast({
-        title: "Error",
-        description: "Failed to mark notification as read",
+        title: "Fehler",
+        description: "Benachrichtigung konnte nicht als gelesen markiert werden",
         variant: "destructive",
       });
     } finally {
@@ -114,113 +190,163 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {notifications.length > 0 ? (
-        notifications.map((notification) => (
-          <Card
-            key={notification.id}
-            className={notification.read ? "bg-muted/30" : ""}
-          >
-            <CardHeader className="flex flex-row items-start gap-2 space-y-0 pb-2">
-              <div className="mt-1 shrink-0">
-                {getNotificationIcon(notification.type)}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <CardTitle className="text-base break-words">
-                    {notification.title}
-                  </CardTitle>
-                  <div className="flex items-center gap-2 shrink-0">
-                    {!notification.read && (
-                      <Badge variant="default" className="bg-blue-500 text-xs">
-                        New
-                      </Badge>
+        notifications.map((notification) => {
+          const metadata = notification.metadata || {};
+          const action = metadata.action as string | undefined;
+          const customerName = metadata.customer_name as string | undefined;
+          const documentNumber = metadata.document_number as string | undefined;
+          const documentType = metadata.document_type as string | undefined;
+
+          return (
+            <Card
+              key={notification.id}
+              className={cn(
+                "group transition-all duration-200 hover:shadow-md",
+                notification.read 
+                  ? "bg-muted/20 border-muted" 
+                  : "bg-background border-border shadow-sm"
+              )}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  {/* Action Icon */}
+                  <div className={cn(
+                    "mt-0.5 shrink-0 rounded-md p-1.5",
+                    getActionColor(action),
+                    !notification.read && "bg-muted/50"
+                  )}>
+                    {getActionIcon(action, notification.type)}
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0 space-y-2">
+                    {/* Header */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className={cn(
+                            "text-sm font-medium leading-tight",
+                            !notification.read && "font-semibold"
+                          )}>
+                            {notification.title}
+                          </h3>
+                          {!notification.read && (
+                            <Badge 
+                              variant="default" 
+                              className="h-4 px-1.5 text-[10px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
+                            >
+                              Neu
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                          {notification.content}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Metadata Info */}
+                    {(action || customerName || documentNumber) && (
+                      <div className="flex flex-wrap items-center gap-2 text-xs">
+                        {action && (
+                          <div className="flex items-center gap-1 text-muted-foreground">
+                            <span className="font-medium">Aktion:</span>
+                            <span className={getActionColor(action)}>
+                              {getActionLabel(action)}
+                            </span>
+                          </div>
+                        )}
+                        {customerName && (
+                          <div className="flex items-center gap-1 text-muted-foreground">
+                            <span className="font-medium">Kunde:</span>
+                            <span className="font-medium">{customerName}</span>
+                          </div>
+                        )}
+                        {documentNumber && (
+                          <div className="flex items-center gap-1 text-muted-foreground">
+                            <span className="font-medium">Dokument:</span>
+                            <span className="font-medium">{documentNumber}</span>
+                            {documentType && (
+                              <span className="text-muted-foreground/70">
+                                ({documentType})
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     )}
-                    <Badge
-                      variant="secondary"
-                      className={`${getBadgeColorClass(notification.type)} text-xs`}
-                    >
-                      {notification.type.charAt(0).toUpperCase() +
-                        notification.type.slice(1).toLowerCase()}
-                    </Badge>
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-between gap-2 pt-1 border-t border-border/50">
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {formatDistance(
+                            new Date(notification.created_at),
+                            new Date(),
+                            { addSuffix: true, locale: de }
+                          )}
+                        </span>
+                        <Badge 
+                          variant="secondary" 
+                          className="h-4 px-1.5 text-[10px] font-normal bg-muted/50"
+                        >
+                          {getTypeLabel(notification.type)}
+                        </Badge>
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        {notification.action_url && (
+                          <Link href={notification.action_url}>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-7 px-2 text-xs"
+                            >
+                              Öffnen
+                              <ArrowRight className="ml-1 h-3 w-3" />
+                            </Button>
+                          </Link>
+                        )}
+                        {!notification.read && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleMarkAsRead(notification.id)}
+                            disabled={loadingId === notification.id}
+                            className="h-7 px-2 text-xs"
+                            title="Als gelesen markieren"
+                          >
+                            {loadingId === notification.id ? (
+                              <Clock className="h-3 w-3 animate-spin" />
+                            ) : (
+                              <CheckCircle2 className="h-3 w-3" />
+                            )}
+                          </Button>
+                        )}
+                        <DeleteNotificationButton 
+                          notificationId={notification.id} 
+                          isUnread={!notification.read}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <CardDescription className="mt-1 text-xs sm:text-sm">
-                  {formatDistance(
-                    new Date(notification.created_at),
-                    new Date(),
-                    { addSuffix: true },
-                  )}
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm break-words">{notification.content}</p>
-
-              {notification.metadata &&
-                Object.keys(notification.metadata).length > 0 && (
-                  <div className="mt-2 rounded-md bg-muted p-2 text-xs overflow-x-auto">
-                    {Object.entries(notification.metadata).map(
-                      ([key, value]) => (
-                        <div
-                          key={key}
-                          className="flex flex-col gap-1 py-1 sm:flex-row sm:items-start sm:justify-between"
-                        >
-                          <span className="font-medium capitalize">
-                            {key.replace(/_/g, " ")}:
-                          </span>
-                          <span className="sm:ml-2 sm:text-right break-words">
-                            {typeof value === "boolean"
-                              ? value
-                                ? "Yes"
-                                : "No"
-                              : String(value)}
-                          </span>
-                        </div>
-                      ),
-                    )}
-                  </div>
-                )}
-            </CardContent>
-            <CardFooter className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                {notification.action_url && (
-                  <Link href={notification.action_url} className="flex-1 sm:flex-initial">
-                    <Button variant="outline" size="sm" className="w-full sm:w-auto">
-                      View Details
-                    </Button>
-                  </Link>
-                )}
-                <DeleteNotificationButton notificationId={notification.id} />
-              </div>
-
-              {!notification.read && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleMarkAsRead(notification.id)}
-                  disabled={loadingId === notification.id}
-                  className="w-full sm:w-auto"
-                >
-                  {loadingId === notification.id ? (
-                    <Clock className="mr-2 size-4 animate-spin" />
-                  ) : (
-                    <CheckCircle2 className="mr-2 size-4" />
-                  )}
-                  <span className="hidden sm:inline">Mark as Read</span>
-                  <span className="sm:hidden">Mark Read</span>
-                </Button>
-              )}
-            </CardFooter>
-          </Card>
-        ))
+              </CardContent>
+            </Card>
+          );
+        })
       ) : (
-        <Card>
-          <CardContent className="p-6 text-center">
-            <Bell className="mx-auto mb-4 size-12 text-muted-foreground" />
-            <h3 className="mb-2 text-xl font-semibold">No notifications</h3>
-            <p className="text-muted-foreground">
-              You don&apos;t have any notifications at the moment.
+        <Card className="border-2 border-dashed">
+          <CardContent className="flex flex-col items-center justify-center py-16">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted mb-4">
+              <Bell className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <h3 className="mb-2 text-lg font-semibold">Keine Benachrichtigungen</h3>
+            <p className="text-center text-sm text-muted-foreground max-w-md">
+              Sie haben derzeit keine Benachrichtigungen. Neue Benachrichtigungen werden hier angezeigt, sobald sie eintreffen.
             </p>
           </CardContent>
         </Card>

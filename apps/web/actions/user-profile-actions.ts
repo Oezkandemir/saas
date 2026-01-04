@@ -262,6 +262,7 @@ export async function updateUserProfile(
 // Get user notifications
 export async function getUserNotifications(
   onlyUnread: boolean = false,
+  limit?: number,
 ): Promise<ActionResult<UserNotification[]>> {
   const user = await getCurrentUser();
 
@@ -285,6 +286,11 @@ export async function getUserNotifications(
       query = query.eq("read", false);
     }
 
+    // Add limit if specified (default: 100 for better performance)
+    const queryLimit = limit !== undefined ? limit : 100;
+    query = query.limit(queryLimit);
+
+    // Execute query directly without timeout (let database handle it)
     const { data, error } = await query;
 
     if (error) {
@@ -293,13 +299,13 @@ export async function getUserNotifications(
 
     return {
       success: true,
-      data: data as UserNotification[],
+      data: (data || []) as UserNotification[],
     };
   } catch (error) {
     logger.error("Error fetching user notifications", error);
     return {
       success: false,
-      error: "Failed to fetch notifications",
+      error: error instanceof Error ? error.message : "Failed to fetch notifications",
     };
   }
 }

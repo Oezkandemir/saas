@@ -49,10 +49,14 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       console.warn("Failed to subscribe to realtime notifications:", error);
     }
 
-    // Cleanup: unsubscribe when component unmounts
+    // Cleanup: remove channel when component unmounts
     return () => {
       if (channel) {
-        channel.unsubscribe();
+        try {
+          supabase.removeChannel(channel);
+        } catch (error) {
+          // Ignore cleanup errors
+        }
       }
     };
   }, [supabase]);

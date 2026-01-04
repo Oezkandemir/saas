@@ -65,8 +65,6 @@ export function getNotificationIcon(type: string) {
       return <Bell className="size-4 text-pink-500" />;
     case "TEAM":
       return <Bell className="size-4 text-indigo-500" />;
-    case "FOLLOW":
-      return <Users className="size-4 text-blue-600" />;
     default:
       return <Bell className="size-4 text-gray-500" />;
   }

@@ -9,6 +9,7 @@ import { logger } from "@/lib/logger";
 export type Customer = {
   id: string;
   user_id: string;
+  company_profile_id: string | null;
   name: string;
   email: string | null;
   phone: string | null;
@@ -37,9 +38,10 @@ export type CustomerInput = {
   country?: string;
   tax_id?: string;
   notes?: string;
+  company_profile_id?: string;
 };
 
-export async function getCustomers(): Promise<Customer[]> {
+export async function getCustomers(companyProfileId?: string): Promise<Customer[]> {
   try {
     const user = await getCurrentUser();
     if (!user) {
@@ -59,6 +61,39 @@ export async function getCustomers(): Promise<Customer[]> {
       return [];
     }
 
+    // If company profile is provided, check if user owns it
+    if (companyProfileId) {
+      // Get the company profile to check ownership
+      const { data: profile, error: profileError } = await supabase
+        .from("company_profiles")
+        .select("user_id")
+        .eq("id", companyProfileId)
+        .eq("user_id", user.id) // Must be owned by current user
+        .single();
+
+      if (profileError || !profile) {
+        logger.error("Error fetching company profile or no permission", { profileError, companyProfileId });
+        return [];
+      }
+
+      // Build query: filter by company_profile_id and user_id
+      // Show customers with this profile_id OR customers without profile_id (for backward compatibility)
+      const { data, error } = await supabase
+        .from("customers")
+        .select("*")
+        .eq("user_id", user.id)
+        .or(`company_profile_id.eq.${companyProfileId},company_profile_id.is.null`)
+        .order("created_at", { ascending: false });
+      
+      if (error) {
+        logger.error("Error fetching customers for profile", { error, companyProfileId });
+        return [];
+      }
+
+      return (data || []) as Customer[];
+    }
+
+    // If no company profile provided, show all customers for the user
     const { data, error } = await supabase
       .from("customers")
       .select("*")
@@ -232,6 +267,7 @@ export async function createCustomer(input: CustomerInput): Promise<Customer> {
       .from("customers")
       .insert({
         user_id: user.id,
+        company_profile_id: input.company_profile_id || null,
         name: input.name.trim(),
         email: input.email?.trim() || null,
         phone: input.phone?.trim() || null,
@@ -423,12 +459,13 @@ export async function deleteCustomer(id: string): Promise<void> {
     }
 
     // Create notification for customer deletion
+    // Note: customerId is set to null since the customer no longer exists
     if (customer) {
       try {
         const { createCustomerNotification } = await import("@/lib/notifications");
         await createCustomerNotification({
           userId: user.id,
-          customerId: id,
+          customerId: null, // Customer no longer exists after deletion
           action: "deleted",
           customerName: customer.name,
         });

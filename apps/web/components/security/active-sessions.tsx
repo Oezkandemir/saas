@@ -263,33 +263,35 @@ export function ActiveSessions() {
             {sessions.map((session) => (
               <div
                 key={session.id}
-                className="flex items-start justify-between gap-4 rounded-lg border p-4"
+                className="flex items-start justify-between gap-4 rounded-lg border p-4 break-words overflow-wrap-anywhere"
               >
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Monitor className="size-4 text-muted-foreground" />
-                    <span className="font-medium">{getDeviceInfo(session)}</span>
+                <div className="flex-1 min-w-0 space-y-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Monitor className="size-4 text-muted-foreground shrink-0" />
+                    <span className="font-medium break-words">{getDeviceInfo(session)}</span>
                     {session.isCurrent && (
-                      <Badge variant="default" className="text-xs">
+                      <Badge variant="default" className="text-xs shrink-0">
                         Aktuell
                       </Badge>
                     )}
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+                    <div className="flex items-center gap-1 shrink-0">
                       <MapPin className="size-3" />
-                      {getLocationInfo(session)}
+                      <span className="break-words">{getLocationInfo(session)}</span>
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 shrink-0">
                       <Calendar className="size-3" />
-                      {formatDistanceToNow(new Date(session.lastActivity), {
-                        addSuffix: true,
-                        locale: de,
-                      })}
+                      <span className="break-words">
+                        {formatDistanceToNow(new Date(session.lastActivity), {
+                          addSuffix: true,
+                          locale: de,
+                        })}
+                      </span>
                     </div>
                   </div>
                   {session.userAgent && (
-                    <p className="text-xs text-muted-foreground truncate">
+                    <p className="text-xs text-muted-foreground break-words overflow-wrap-anywhere max-w-full">
                       {session.userAgent}
                     </p>
                   )}

@@ -1,13 +1,13 @@
 "use client";
 
-import { CompanyProfile } from "@/actions/company-profiles-actions";
+import { CompanyProfileWithMembership } from "@/actions/company-profiles-actions";
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Card, CardContent, CardHeader } from '@/components/alignui/data-display/card';
-import { Building2, CheckCircle2, MapPin, Mail, Phone, Scale, Landmark, Percent, Calendar } from "lucide-react";
+import { Building2, CheckCircle2, MapPin, Mail, Phone, Scale, Landmark, Percent, Calendar, UserPlus, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface CompanyProfileCardProps {
-  profile: CompanyProfile;
+  profile: CompanyProfileWithMembership;
   isSelected?: boolean;
   onClick?: () => void;
 }
@@ -39,12 +39,21 @@ export function CompanyProfileCard({
                 <p className="text-sm text-muted-foreground truncate font-medium">
                   {profile.company_name}
                 </p>
-                {profile.is_default && (
+                {/* Only show "Standard" badge for owned profiles that are default */}
+                {profile.is_default && profile.is_owner && (
                   <Badge className="h-5 px-1.5 text-[10px] font-semibold bg-green-500/10 dark:bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30 dark:border-green-500/40 flex-shrink-0">
                     <CheckCircle2 className="h-2.5 w-2.5 mr-0.5" />
                     Standard
                   </Badge>
                 )}
+                {/* Show "Verwaltet" badge for owned profiles that are not default */}
+                {profile.is_owner && !profile.is_default && (
+                  <Badge className="h-5 px-1.5 text-[10px] font-semibold bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary border-primary/30 dark:border-primary/40 flex-shrink-0">
+                    <Shield className="h-2.5 w-2.5 mr-0.5" />
+                    Verwaltet
+                  </Badge>
+                )}
+                {/* Show "Eingeladen" badge for profiles where user is a member */}
               </div>
             </div>
           </div>
@@ -127,14 +136,16 @@ export function CompanyProfileCard({
           </div>
         )}
 
-        {/* Profile Type Badge */}
+        {/* Profile Type Badge and Membership Info */}
         <div className="pt-2 flex items-center justify-between">
-          <Badge 
-            variant="outline" 
-            className="text-xs border-border bg-background text-foreground"
-          >
-            {profile.profile_type === "personal" ? "Persönlich" : "Team"}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge 
+              variant="outline" 
+              className="text-xs border-border bg-background text-foreground"
+            >
+              {profile.profile_type === "personal" ? "Persönlich" : "Team"}
+            </Badge>
+          </div>
         </div>
       </CardContent>
     </Card>

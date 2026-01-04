@@ -261,7 +261,7 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
                                 {/* Add notification badge */}
                                 {showNotificationBadge && (
                                   <Badge
-                                    className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full bg-red-500 text-white"
+                                    className="ml-auto flex min-w-[20px] shrink-0 items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-xs font-bold text-white"
                                     variant="outline"
                                   >
                                     {unreadCount > 99 ? "99+" : unreadCount}
@@ -290,7 +290,7 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
                                     <span className="flex size-full items-center justify-center">
                                       <Icon className="size-5 min-w-5 shrink-0" />
                                       {showNotificationBadge && (
-                                        <span className="absolute -right-2 -top-2 flex size-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                                        <span className="absolute -right-1 -top-1 flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
                                           {unreadCount > 9 ? "9+" : unreadCount}
                                         </span>
                                       )}
@@ -592,7 +592,7 @@ function MobileSheetSidebarContent({ links, isFreePlan = true }: DashboardSideba
                               {/* Add notification badge */}
                               {showNotificationBadge && (
                                 <Badge
-                                  className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full bg-red-500 text-white"
+                                  className="ml-auto flex min-w-[20px] shrink-0 items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-xs font-bold text-white"
                                   variant="outline"
                                 >
                                   {unreadCount > 99 ? "99+" : unreadCount}

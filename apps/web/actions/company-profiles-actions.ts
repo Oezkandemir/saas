@@ -6,6 +6,12 @@ import { getCurrentUser } from "@/lib/session";
 
 export type ProfileType = "personal" | "team";
 
+export type CompanyProfileWithMembership = CompanyProfile & {
+  is_owner: boolean;
+  membership_role?: string | null;
+  membership_joined_at?: string | null;
+};
+
 export type CompanyProfile = {
   id: string;
   user_id: string;
@@ -97,47 +103,74 @@ export type CompanyProfileInput = {
   payment_on_receipt?: boolean;
 };
 
+export type CompanyProfileWithMembership = CompanyProfile & {
+  is_owner: boolean;
+  membership_role?: string | null;
+  membership_joined_at?: string | null;
+};
+
 /**
- * Get all company profiles for the current user
+ * Get all company profiles for the current user (owned only)
  */
-export async function getCompanyProfiles(): Promise<CompanyProfile[]> {
+export async function getCompanyProfiles(): Promise<CompanyProfileWithMembership[]> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
   const supabase = await getSupabaseServer();
-  const { data, error } = await supabase
+  
+  // Get owned profiles only
+  const { data: ownedProfiles, error: ownedError } = await supabase
     .from("company_profiles")
     .select("*")
     .eq("user_id", user.id)
     .order("is_default", { ascending: false })
     .order("created_at", { ascending: false });
 
-  if (error) throw error;
-  return data || [];
+  if (ownedError) throw ownedError;
+
+  // Map to CompanyProfileWithMembership format
+  const profiles = (ownedProfiles || []).map((profile) => ({
+    ...profile,
+    is_owner: true as const,
+    membership_role: null,
+    membership_joined_at: null,
+  }));
+
+  return profiles;
 }
 
 /**
- * Get a single company profile by ID
+ * Get a single company profile by ID (owned or member)
  */
 export async function getCompanyProfile(
   id: string,
-): Promise<CompanyProfile | null> {
+): Promise<CompanyProfileWithMembership | null> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
   const supabase = await getSupabaseServer();
-  const { data, error } = await supabase
+  
+  // Check if user owns the profile
+  const { data: ownedProfile, error: ownedError } = await supabase
     .from("company_profiles")
     .select("*")
     .eq("id", id)
     .eq("user_id", user.id)
     .single();
 
-  if (error) {
-    if (error.code === "PGRST116") return null;
-    throw error;
+  if (profileError) {
+    if (profileError.code === "PGRST116") return null;
+    throw profileError;
   }
-  return data;
+
+  if (!ownedProfile) return null;
+
+  return {
+    ...ownedProfile,
+    is_owner: true,
+    membership_role: null,
+    membership_joined_at: null,
+  };
 }
 
 /**
@@ -257,8 +290,19 @@ export async function updateCompanyProfile(
 
   const supabase = await getSupabaseServer();
 
-  // If setting as default, unset other defaults
-  if (input.is_default) {
+  // Check if user owns the profile or is an admin member
+  const profile = await getCompanyProfile(id);
+  if (!profile) {
+    throw new Error("Firmenprofil nicht gefunden");
+  }
+  
+  // Only owners can set default
+  if (input.is_default && !profile.is_owner) {
+    throw new Error("Nur der Inhaber kann ein Profil als Standard festlegen");
+  }
+
+  // If setting as default, unset other defaults (only for owned profiles)
+  if (input.is_default && profile.is_owner) {
     await supabase
       .from("company_profiles")
       .update({ is_default: false })
@@ -348,11 +392,11 @@ export async function updateCompanyProfile(
     return existingProfile;
   }
 
+  // Update the profile - RLS policy will handle authorization
   const { data, error } = await supabase
     .from("company_profiles")
     .update(updateData)
     .eq("id", id)
-    .eq("user_id", user.id)
     .select()
     .single();
 

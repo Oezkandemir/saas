@@ -8,20 +8,21 @@ import {
   Building2,
   CreditCard,
   HelpCircle,
-  Mail,
-  MapPin,
-  Phone,
   Settings,
   Shield,
   User,
-  Globe,
+  ArrowRight,
+  ExternalLink,
+  CheckCircle2,
+  Clock,
+  Calendar,
 } from "lucide-react";
 import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
-import { constructMetadata } from "@/lib/utils";
+import { constructMetadata, formatDate } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
 import { Button } from '@/components/alignui/actions/button';
 import {
@@ -34,14 +35,18 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { UserTicketAccordion } from "@/components/support/user-ticket-accordion";
-import { getDefaultCompanyProfile, getCompanyProfiles } from "@/actions/company-profiles-actions";
+import { getDefaultCompanyProfile } from "@/actions/company-profiles-actions";
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { BillingInfo } from "@/components/pricing/billing-info";
+import { PolarPortalButton } from "@/components/pricing/polar-portal-button";
+import { PolarPortalButtonWithSubscription } from "@/components/pricing/polar-portal-button-subscription";
+import { PolarPortalButtonFallback } from "@/components/pricing/polar-portal-button-fallback";
+import { UserAvatarForm } from "@/components/forms/user-avatar-form";
+import { UserNameForm } from "@/components/forms/user-name-form";
+import { getUserPreferences } from "@/actions/preferences-actions";
+import { pricingData } from "@/config/subscriptions";
+import { UserSubscriptionPlan } from "types";
+import { cn } from "@/lib/utils";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -80,21 +85,39 @@ export default async function ProfilePage() {
     console.error("Error fetching user data:", error);
   }
 
-  // Get company profile - try default first, then get first available profile
-  let companyProfile = await getDefaultCompanyProfile().catch(() => null);
-  if (!companyProfile) {
-    const allProfiles = await getCompanyProfiles().catch(() => []);
-    companyProfile = allProfiles.length > 0 ? allProfiles[0] : null;
-  }
+  // Get company profile - only default profile
+  const companyProfile = await getDefaultCompanyProfile().catch(() => null);
 
-  // Get user subscription plan to show plan name
-  let userSubscriptionPlan;
+  // Get user subscription plan
+  const defaultFreePlan: UserSubscriptionPlan = {
+    ...pricingData[0],
+    stripeCustomerId: null,
+    stripeSubscriptionId: null,
+    stripePriceId: null,
+    stripeCurrentPeriodEnd: 0,
+    polarCustomerId: null,
+    polarSubscriptionId: null,
+    polarProductId: null,
+    polarCurrentPeriodEnd: 0,
+    polarCurrentPeriodStart: 0,
+    polarSubscriptionStart: 0,
+    isPaid: false,
+    interval: null,
+    isCanceled: false,
+  };
+
+  let userSubscriptionPlan: UserSubscriptionPlan;
   try {
-    userSubscriptionPlan = await getUserSubscriptionPlan(user.id, user.email);
+    const plan = await getUserSubscriptionPlan(user.id, user.email);
+    userSubscriptionPlan = plan || defaultFreePlan;
   } catch (error) {
     console.error("Error fetching subscription plan:", error);
-    userSubscriptionPlan = null;
+    userSubscriptionPlan = defaultFreePlan;
   }
+
+  // Get user preferences
+  const preferencesResult = await getUserPreferences();
+  const preferences = preferencesResult.success ? preferencesResult.data : null;
 
   // Check subscription status - Polar only (Stripe is deprecated)
   const paymentProvider = userData?.payment_provider || "polar";
@@ -185,189 +208,33 @@ export default async function ProfilePage() {
                       </div>
                     </div>
                   )}
+
+                  {companyProfile && (
+                    <Link href={`/dashboard/settings/company/${companyProfile.id}`} className="flex items-center gap-2 group hover:opacity-80 transition-opacity">
+                      <div className="flex items-center justify-center size-8 rounded-lg bg-primary/10 border border-primary/20">
+                        <Building2 className="size-4 text-primary" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-xs text-muted-foreground">Firma</p>
+                          {companyProfile.is_default && (
+                            <Badge variant="default" className="bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/30 text-[10px] px-1.5 py-0 h-4">
+                              Standard
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm font-medium truncate max-w-[150px] group-hover:text-primary transition-colors">
+                          {companyProfile.company_name}
+                        </p>
+                      </div>
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
           </CardContent>
         </div>
       </Card>
-
-      {/* Company Profile Section - Accordion */}
-      <Card>
-        <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value="company-profile" className="border-none">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <div className="flex items-center justify-between w-full pr-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center size-10 rounded-lg bg-primary/10 border border-primary/20">
-                    <Building2 className="size-5 text-primary" />
-                  </div>
-                  <div className="text-left">
-                    <div className="flex items-center gap-2">
-                      <CardTitle className="text-lg font-semibold">
-                        {companyProfile ? companyProfile.company_name : "Firmenprofil"}
-                      </CardTitle>
-                      {companyProfile?.is_default && (
-                        <Badge variant="default" className="bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/30 text-xs">
-                          Standard
-                        </Badge>
-                      )}
-                    </div>
-                    <CardDescription className="text-sm mt-0.5">
-                      {companyProfile ? "Standard-Profil für Dokumente und Rechnungen" : "Kein Firmenprofil vorhanden"}
-                    </CardDescription>
-                  </div>
-                </div>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
-              {companyProfile ? (
-                <div className="space-y-4 pt-2">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {companyProfile.profile_name && (
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">Profilname</p>
-                        <p className="text-sm">{companyProfile.profile_name}</p>
-                      </div>
-                    )}
-                    {companyProfile.company_address && (
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                          <MapPin className="size-3" />
-                          Adresse
-                        </p>
-                        <p className="text-sm">
-                          {companyProfile.company_address}
-                          {companyProfile.company_address_line2 && `, ${companyProfile.company_address_line2}`}
-                          {companyProfile.company_postal_code && companyProfile.company_city && (
-                            <><br />{companyProfile.company_postal_code} {companyProfile.company_city}</>
-                          )}
-                          {companyProfile.company_country && (
-                            <><br />{companyProfile.company_country}</>
-                          )}
-                        </p>
-                      </div>
-                    )}
-                    {companyProfile.company_email && (
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                          <Mail className="size-3" />
-                          E-Mail
-                        </p>
-                        <a href={`mailto:${companyProfile.company_email}`} className="text-sm text-primary hover:underline">
-                          {companyProfile.company_email}
-                        </a>
-                      </div>
-                    )}
-                    {(companyProfile.company_phone || companyProfile.company_mobile) && (
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                          <Phone className="size-3" />
-                          Telefon
-                        </p>
-                        <p className="text-sm">
-                          {companyProfile.company_phone || companyProfile.company_mobile}
-                        </p>
-                      </div>
-                    )}
-                    {companyProfile.company_website && (
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                          <Globe className="size-3" />
-                          Website
-                        </p>
-                        <a 
-                          href={companyProfile.company_website.startsWith('http') ? companyProfile.company_website : `https://${companyProfile.company_website}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline"
-                        >
-                          {companyProfile.company_website}
-                        </a>
-                      </div>
-                    )}
-                    {(companyProfile.company_vat_id || companyProfile.company_tax_id) && (
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">Steuernummer / USt-IdNr.</p>
-                        <p className="text-sm">
-                          {companyProfile.company_vat_id && `USt-IdNr.: ${companyProfile.company_vat_id}`}
-                          {companyProfile.company_vat_id && companyProfile.company_tax_id && " / "}
-                          {companyProfile.company_tax_id && `Steuernummer: ${companyProfile.company_tax_id}`}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                  <div className="pt-2 border-t">
-                    <Link href="/dashboard/settings/company">
-                      <Button variant="outline" size="sm" className="w-full sm:w-auto">
-                        Firmenprofile verwalten
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <Building2 className="mx-auto mb-4 size-12 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold mb-2">Kein Firmenprofil vorhanden</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Erstellen Sie ein Firmenprofil, um Ihre Firmendaten für Dokumente und Rechnungen zu verwalten.
-                  </p>
-                  <Link href="/dashboard/settings/company/new">
-                    <Button className="gap-2">
-                      <Building2 className="size-4" />
-                      Erstes Firmenprofil erstellen
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </Card>
-
-      {/* Quick Actions Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Link href="/dashboard/billing">
-          <Card className="hover:border-primary/50 transition-all cursor-pointer group h-full">
-            <CardContent className="p-4 flex flex-col items-center gap-2 text-center">
-              <div className="flex items-center justify-center size-10 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                <CreditCard className="size-5 text-primary" />
-              </div>
-              <span className="text-sm font-medium">{t("billing")}</span>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/dashboard/settings">
-          <Card className="hover:border-primary/50 transition-all cursor-pointer group h-full">
-            <CardContent className="p-4 flex flex-col items-center gap-2 text-center">
-              <div className="flex items-center justify-center size-10 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                <Settings className="size-5 text-primary" />
-              </div>
-              <span className="text-sm font-medium">{t("settings")}</span>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/dashboard/support">
-          <Card className="hover:border-primary/50 transition-all cursor-pointer group h-full">
-            <CardContent className="p-4 flex flex-col items-center gap-2 text-center">
-              <div className="flex items-center justify-center size-10 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                <HelpCircle className="size-5 text-primary" />
-              </div>
-              <span className="text-sm font-medium">{t("support")}</span>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/profile/notifications">
-          <Card className="hover:border-primary/50 transition-all cursor-pointer group h-full">
-            <CardContent className="p-4 flex flex-col items-center gap-2 text-center">
-              <div className="flex items-center justify-center size-10 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                <Bell className="size-5 text-primary" />
-              </div>
-              <span className="text-sm font-medium">{t("notifications.title")}</span>
-            </CardContent>
-          </Card>
-        </Link>
-      </div>
 
       {/* Main content with tabs */}
       <div>
@@ -539,40 +406,134 @@ export default async function ProfilePage() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="billing" className="mt-4">
+            <TabsContent value="billing" className="mt-4 space-y-4">
+              {/* Current Subscription */}
               <Card>
                 <CardHeader>
                   <CardTitle>{t("billingInfo")}</CardTitle>
                   <CardDescription>{t("manageSubscription")}</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="p-6 text-center rounded-lg border">
-                    <p className="mb-4 text-muted-foreground">
-                      {t("viewManageSubscription")}
-                    </p>
-                    <Link href="/dashboard/billing">
-                      <Button>{t("goToBilling")}</Button>
+                <CardContent className="space-y-4">
+                  <BillingInfo userSubscriptionPlan={userSubscriptionPlan} userEmail={user.email} />
+                  
+                  {/* Micro Actions */}
+                  <div className="pt-4 border-t space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Abrechnung verwalten</span>
+                      {userSubscriptionPlan.polarCustomerId ? (
+                        <PolarPortalButton 
+                          customerId={userSubscriptionPlan.polarCustomerId}
+                          variant="outline"
+                          className="h-8 text-xs"
+                        />
+                      ) : userSubscriptionPlan.polarSubscriptionId ? (
+                        <PolarPortalButtonWithSubscription 
+                          subscriptionId={userSubscriptionPlan.polarSubscriptionId}
+                          variant="outline"
+                          className="h-8 text-xs"
+                        />
+                      ) : (
+                        <PolarPortalButtonFallback 
+                          variant="outline"
+                          className="h-8 text-xs"
+                        />
+                      )}
+                    </div>
+                    <Link href="/dashboard/billing" className="flex items-center justify-between text-sm group hover:text-primary transition-colors">
+                      <span className="text-muted-foreground">Vollständige Abrechnungsübersicht</span>
+                      <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
                     </Link>
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
 
-            <TabsContent value="settings" className="mt-4">
+            <TabsContent value="settings" className="mt-4 space-y-4">
+              {/* Profile Settings */}
               <Card>
                 <CardHeader>
-                  <CardTitle>{t("accountSettings")}</CardTitle>
-                  <CardDescription>{t("updateSettings")}</CardDescription>
+                  <CardTitle>Profil</CardTitle>
+                  <CardDescription>Verwalten Sie Ihre Profilinformationen</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="p-6 text-center rounded-lg border">
-                    <p className="mb-4 text-muted-foreground">
-                      {t("manageAccountSettings")}
-                    </p>
-                    <Link href="/dashboard/settings">
-                      <Button>{t("goToSettings")}</Button>
-                    </Link>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Profilbild</label>
+                      <UserAvatarForm
+                        user={{ id: user.id, avatar_url: user.avatar_url }}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Name</label>
+                      <UserNameForm user={{ id: user.id, name: user.name || "" }} />
+                    </div>
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Preferences */}
+              {preferences && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Einstellungen</CardTitle>
+                    <CardDescription>Anpassen Sie Ihre Präferenzen</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Design</p>
+                        <p className="text-sm capitalize">{preferences.theme_preference || "System"}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Sprache</p>
+                        <p className="text-sm">{preferences.language_preference || "Deutsch"}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Währung</p>
+                        <p className="text-sm">{preferences.currency || "EUR"}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Datumsformat</p>
+                        <p className="text-sm">{preferences.date_format || "DD.MM.YYYY"}</p>
+                      </div>
+                    </div>
+                    <div className="pt-4 border-t">
+                      <Link href="/dashboard/settings/preferences" className="flex items-center justify-between text-sm group hover:text-primary transition-colors">
+                        <span className="text-muted-foreground">Alle Einstellungen verwalten</span>
+                        <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Quick Links */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Weitere Einstellungen</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-0 divide-y divide-border">
+                  <Link href="/dashboard/settings/company" className="flex items-center justify-between py-3 group hover:text-primary transition-colors">
+                    <div>
+                      <h3 className="text-sm font-medium">Firmenprofile</h3>
+                      <p className="text-xs text-muted-foreground mt-0.5">Firmendaten verwalten</p>
+                    </div>
+                    <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
+                  </Link>
+                  <Link href="/dashboard/settings/security" className="flex items-center justify-between py-3 group hover:text-primary transition-colors">
+                    <div>
+                      <h3 className="text-sm font-medium">Sicherheit</h3>
+                      <p className="text-xs text-muted-foreground mt-0.5">Passwort und 2FA</p>
+                    </div>
+                    <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
+                  </Link>
+                  <Link href="/dashboard/settings/privacy" className="flex items-center justify-between py-3 group hover:text-primary transition-colors">
+                    <div>
+                      <h3 className="text-sm font-medium">Datenschutz</h3>
+                      <p className="text-xs text-muted-foreground mt-0.5">GDPR & Datenschutz</p>
+                    </div>
+                    <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
+                  </Link>
                 </CardContent>
               </Card>
             </TabsContent>

@@ -132,7 +132,7 @@ export function NewCustomerDrawer({
 
       <Drawer.Content
         side="right"
-        className="mx-2 my-2 shadow-custom-md"
+        className="mr-2 shadow-custom-md"
       >
         <div className="flex flex-col h-full bg-bg-white-0">
           <Drawer.Header className="bg-bg-white-0">

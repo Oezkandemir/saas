@@ -26,6 +26,11 @@ export const sidebarLinks: SidebarNavItem[] = [
         title: "QR Codes",
       },
       {
+        href: "/dashboard/scheduling",
+        icon: "calendar",
+        title: "Scheduling",
+      },
+      {
         href: "/dashboard/templates",
         icon: "fileText",
         title: "Templates",
@@ -45,6 +50,11 @@ export const sidebarLinks: SidebarNavItem[] = [
         href: "/dashboard/support",
         icon: "help",
         title: "Support",
+      },
+      {
+        href: "/profile/notifications",
+        icon: "bell",
+        title: "Notifications",
       },
     ],
   },

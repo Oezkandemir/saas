@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { getCurrentUser } from "@/lib/session";
 import { enforcePlanLimit } from "@/lib/plan-limits";
+import { hasCompanyProfilePermission } from "@/actions/company-profile-team-actions";
 
 export type DocumentType = "quote" | "invoice";
 export type DocumentStatus =
@@ -68,16 +69,20 @@ export type DocumentInput = {
   tax_rate?: number;
   notes?: string;
   items: DocumentItemInput[];
+  company_profile_id?: string;
 };
 
 export async function getDocuments(
   type?: DocumentType,
   customerId?: string,
+  companyProfileId?: string,
 ): Promise<Document[]> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
   const supabase = await getSupabaseServer();
+  
+  // If company profile is provided, check if user is owner or member
   let query = supabase
     .from("documents")
     .select(
@@ -85,9 +90,31 @@ export async function getDocuments(
       *,
       customer:customers(id, name, email, address_line1, address_line2, city, postal_code, country)
     `,
-    )
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
+    );
+
+  if (companyProfileId) {
+    // Get the company profile to check ownership
+    const { data: profile, error: profileError } = await supabase
+      .from("company_profiles")
+      .select("user_id")
+      .eq("id", companyProfileId)
+      .eq("user_id", user.id) // Must be owned by current user
+      .single();
+
+    if (profileError || !profile) {
+      throw new Error("Firmenprofil nicht gefunden oder keine Berechtigung");
+    }
+
+    // Filter by company_profile_id and user_id
+    query = query
+      .eq("user_id", user.id)
+      .eq("company_profile_id", companyProfileId);
+  } else {
+    // If no company profile specified, show only user's own documents
+    query = query.eq("user_id", user.id);
+  }
+
+  query = query.order("created_at", { ascending: false });
 
   if (type) {
     query = query.eq("type", type);
@@ -117,11 +144,57 @@ export async function getDocuments(
   return documentsWithItems;
 }
 
+/**
+ * Check if user has permission to access a document
+ */
+async function checkDocumentPermission(
+  documentId: string,
+  userId: string,
+  permission: "view" | "edit_documents" | "delete_documents",
+): Promise<boolean> {
+  const supabase = await getSupabaseServer();
+  
+  // Get document with company_profile_id
+  const { data: document, error } = await supabase
+    .from("documents")
+    .select("user_id, company_profile_id")
+    .eq("id", documentId)
+    .single();
+
+  if (error || !document) {
+    return false;
+  }
+
+  // If user owns the document, they have full access
+  if (document.user_id === userId) {
+    return true;
+  }
+
+  // If document has a company_profile_id, check team permissions
+  if (document.company_profile_id) {
+    return await hasCompanyProfilePermission(
+      document.company_profile_id,
+      permission === "view" ? "view" : permission,
+    );
+  }
+
+  // No company profile, only owner can access
+  return false;
+}
+
 export async function getDocument(id: string): Promise<Document | null> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
+  // Check permission
+  const hasAccess = await checkDocumentPermission(id, user.id, "view");
+  if (!hasAccess) {
+    throw new Error("Keine Berechtigung für dieses Dokument");
+  }
+
   const supabase = await getSupabaseServer();
+  
+  // Get document - check if user is owner OR member of company profile
   const { data, error } = await supabase
     .from("documents")
     .select(
@@ -131,12 +204,16 @@ export async function getDocument(id: string): Promise<Document | null> {
     `,
     )
     .eq("id", id)
-    .eq("user_id", user.id)
     .single();
 
   if (error) {
     if (error.code === "PGRST116") return null;
     throw error;
+  }
+
+  // Additional check: user must be owner
+  if (data.user_id !== user.id) {
+    throw new Error("Keine Berechtigung für dieses Dokument");
   }
 
   // Fetch items
@@ -156,6 +233,23 @@ export async function createDocument(
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
+  const supabase = await getSupabaseServer();
+
+  // Validate company profile ownership if provided
+  if (input.company_profile_id) {
+    // Get the company profile to check ownership
+    const { data: profile, error: profileError } = await supabase
+      .from("company_profiles")
+      .select("user_id")
+      .eq("id", input.company_profile_id)
+      .eq("user_id", user.id) // Must be owned by current user
+      .single();
+
+    if (profileError || !profile) {
+      throw new Error("Firmenprofil nicht gefunden oder keine Berechtigung");
+    }
+  }
+
   // Check plan limits before creating document
   await enforcePlanLimit(user.id, "documents");
 
@@ -163,8 +257,6 @@ export async function createDocument(
   if (!input.items || input.items.length === 0) {
     throw new Error("At least one item is required");
   }
-
-  const supabase = await getSupabaseServer();
 
   // Get next document number
   const { data: docNumberData, error: docNumberError } = await supabase.rpc(
@@ -179,11 +271,12 @@ export async function createDocument(
 
   const document_number = docNumberData || (type === "quote" ? "A1001" : "R1001");
 
-  // Create document
+  // Create document with current user's ID
   const { data: document, error: docError } = await supabase
     .from("documents")
     .insert({
-      user_id: user.id,
+      user_id: user.id, // Always use current user's ID
+      company_profile_id: input.company_profile_id || null,
       customer_id: input.customer_id || null,
       document_number,
       type,
@@ -225,11 +318,11 @@ export async function createDocument(
   const completeDoc = await getDocument(document.id);
   if (!completeDoc) throw new Error("Failed to fetch created document");
 
-  // Create notification for document creation
+  // Create notification for document creation (use document owner's ID)
   try {
     const { createDocumentNotification } = await import("@/lib/notifications");
     await createDocumentNotification({
-      userId: user.id,
+      userId: documentOwnerId, // Notify the document owner
       documentId: document.id,
       action: "created",
       documentType: type === "quote" ? "Quote" : "Invoice",
@@ -275,16 +368,23 @@ export async function createDocument(
 
 export async function updateDocument(
   id: string,
-  input: Partial<DocumentInput> & { status?: DocumentStatus },
+  input: Partial<DocumentInput> & { status?: DocumentStatus; company_profile_id?: string },
 ): Promise<Document> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
+
+  // Check permission
+  const hasAccess = await checkDocumentPermission(id, user.id, "edit_documents");
+  if (!hasAccess) {
+    throw new Error("Keine Berechtigung zum Bearbeiten dieses Dokuments");
+  }
 
   const supabase = await getSupabaseServer();
 
   // Update document fields
   const updateData: any = {};
   if (input.customer_id !== undefined) updateData.customer_id = input.customer_id;
+  if (input.company_profile_id !== undefined) updateData.company_profile_id = input.company_profile_id;
   if (input.document_date) updateData.document_date = input.document_date;
   if (input.due_date !== undefined) updateData.due_date = input.due_date;
   if (input.tax_rate !== undefined) updateData.tax_rate = input.tax_rate;
@@ -292,11 +392,34 @@ export async function updateDocument(
   if (input.status) updateData.status = input.status;
 
   if (Object.keys(updateData).length > 0) {
-    const { error: updateError } = await supabase
+    // Get document to check ownership or team membership
+    const { data: doc } = await supabase
+      .from("documents")
+      .select("user_id, company_profile_id")
+      .eq("id", id)
+      .single();
+
+    if (!doc) {
+      throw new Error("Dokument nicht gefunden");
+    }
+
+    // Build query - owner can always update, team members need permission
+    let updateQuery = supabase
       .from("documents")
       .update(updateData)
-      .eq("id", id)
-      .eq("user_id", user.id);
+      .eq("id", id);
+
+    if (doc.user_id === user.id) {
+      // Owner
+      updateQuery = updateQuery.eq("user_id", user.id);
+    } else if (doc.company_profile_id) {
+      // Team member - permission already checked above
+      // Just update without user_id filter
+    } else {
+      throw new Error("Keine Berechtigung zum Bearbeiten dieses Dokuments");
+    }
+
+    const { error: updateError } = await updateQuery;
 
     if (updateError) throw updateError;
   }
@@ -469,21 +592,39 @@ export async function deleteDocument(id: string): Promise<void> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
+  // Check permission
+  const hasAccess = await checkDocumentPermission(id, user.id, "delete_documents");
+  if (!hasAccess) {
+    throw new Error("Keine Berechtigung zum Löschen dieses Dokuments");
+  }
+
   const supabase = await getSupabaseServer();
   
   // Get document info before deleting for notification
   const { data: document } = await supabase
     .from("documents")
-    .select("document_number, type")
+    .select("document_number, type, user_id, company_profile_id")
     .eq("id", id)
-    .eq("user_id", user.id)
     .single();
 
-  const { error } = await supabase
-    .from("documents")
-    .delete()
-    .eq("id", id)
-    .eq("user_id", user.id);
+  if (!document) {
+    throw new Error("Dokument nicht gefunden");
+  }
+
+  // Build delete query - owner can always delete, team members need permission
+  let deleteQuery = supabase.from("documents").delete().eq("id", id);
+
+  if (document.user_id === user.id) {
+    // Owner
+    deleteQuery = deleteQuery.eq("user_id", user.id);
+  } else if (document.company_profile_id) {
+    // Team member - permission already checked above
+    // Just delete without user_id filter
+  } else {
+    throw new Error("Keine Berechtigung zum Löschen dieses Dokuments");
+  }
+
+  const { error } = await deleteQuery;
 
   if (error) throw error;
 

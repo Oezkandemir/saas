@@ -419,3 +419,4 @@ Für jede Komponente:
 
 
 
+

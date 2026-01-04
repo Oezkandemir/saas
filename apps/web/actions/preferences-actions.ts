@@ -38,6 +38,11 @@ const extendedPreferencesSchema = z.object({
       marketing: z.boolean().optional(),
       support: z.boolean().optional(),
       newsletter: z.boolean().optional(),
+      customer: z.boolean().optional(),
+      document: z.boolean().optional(),
+      subscription: z.boolean().optional(),
+      invoice: z.boolean().optional(),
+      payment: z.boolean().optional(),
     }).optional(),
     push: z.object({
       system: z.boolean().optional(),
@@ -46,6 +51,11 @@ const extendedPreferencesSchema = z.object({
       marketing: z.boolean().optional(),
       support: z.boolean().optional(),
       newsletter: z.boolean().optional(),
+      customer: z.boolean().optional(),
+      document: z.boolean().optional(),
+      subscription: z.boolean().optional(),
+      invoice: z.boolean().optional(),
+      payment: z.boolean().optional(),
     }).optional(),
     in_app: z.object({
       system: z.boolean().optional(),
@@ -54,6 +64,11 @@ const extendedPreferencesSchema = z.object({
       marketing: z.boolean().optional(),
       support: z.boolean().optional(),
       newsletter: z.boolean().optional(),
+      customer: z.boolean().optional(),
+      document: z.boolean().optional(),
+      subscription: z.boolean().optional(),
+      invoice: z.boolean().optional(),
+      payment: z.boolean().optional(),
     }).optional(),
   }).optional(),
 });
@@ -76,6 +91,11 @@ export type ExtendedPreferences = {
       marketing: boolean;
       support: boolean;
       newsletter: boolean;
+      customer: boolean;
+      document: boolean;
+      subscription: boolean;
+      invoice: boolean;
+      payment: boolean;
     };
     push: {
       system: boolean;
@@ -84,6 +104,11 @@ export type ExtendedPreferences = {
       marketing: boolean;
       support: boolean;
       newsletter: boolean;
+      customer: boolean;
+      document: boolean;
+      subscription: boolean;
+      invoice: boolean;
+      payment: boolean;
     };
     in_app: {
       system: boolean;
@@ -92,6 +117,11 @@ export type ExtendedPreferences = {
       marketing: boolean;
       support: boolean;
       newsletter: boolean;
+      customer: boolean;
+      document: boolean;
+      subscription: boolean;
+      invoice: boolean;
+      payment: boolean;
     };
   };
 };
@@ -147,6 +177,11 @@ export async function getUserPreferences(): Promise<ActionResult<ExtendedPrefere
           marketing: false,
           support: true,
           newsletter: false,
+          customer: true,
+          document: true,
+          subscription: true,
+          invoice: true,
+          payment: true,
         },
         push: {
           system: true,
@@ -155,6 +190,11 @@ export async function getUserPreferences(): Promise<ActionResult<ExtendedPrefere
           marketing: false,
           support: true,
           newsletter: false,
+          customer: true,
+          document: true,
+          subscription: true,
+          invoice: true,
+          payment: true,
         },
         in_app: {
           system: true,
@@ -163,6 +203,11 @@ export async function getUserPreferences(): Promise<ActionResult<ExtendedPrefere
           marketing: false,
           support: true,
           newsletter: false,
+          customer: true,
+          document: true,
+          subscription: true,
+          invoice: true,
+          payment: true,
         },
       },
     };

@@ -16,13 +16,11 @@ interface ResponsiveNotificationsTabsProps {
   welcomeCount: number;
   systemCount: number;
   teamCount: number;
-  followCount: number;
   allContent: React.ReactNode;
   unreadContent: React.ReactNode;
   welcomeContent: React.ReactNode;
   systemContent: React.ReactNode;
   teamContent: React.ReactNode;
-  followContent: React.ReactNode;
 }
 
 export function ResponsiveNotificationsTabs({
@@ -31,13 +29,11 @@ export function ResponsiveNotificationsTabs({
   welcomeCount,
   systemCount,
   teamCount,
-  followCount,
   allContent,
   unreadContent,
   welcomeContent,
   systemContent,
   teamContent,
-  followContent,
 }: ResponsiveNotificationsTabsProps) {
   const [activeTab, setActiveTab] = useState("all");
 
@@ -53,7 +49,6 @@ export function ResponsiveNotificationsTabs({
               {activeTab === "welcome" && `Welcome (${welcomeCount})`}
               {activeTab === "system" && `System (${systemCount})`}
               {activeTab === "team" && `Team (${teamCount})`}
-              {activeTab === "follow" && `Follow (${followCount})`}
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -62,7 +57,6 @@ export function ResponsiveNotificationsTabs({
             <SelectItem value="welcome">Welcome ({welcomeCount})</SelectItem>
             <SelectItem value="system">System ({systemCount})</SelectItem>
             <SelectItem value="team">Team ({teamCount})</SelectItem>
-            <SelectItem value="follow">Follow ({followCount})</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -75,7 +69,6 @@ export function ResponsiveNotificationsTabs({
           <TabsTrigger value="welcome" className="text-xs md:text-sm">Welcome ({welcomeCount})</TabsTrigger>
           <TabsTrigger value="system" className="text-xs md:text-sm">System ({systemCount})</TabsTrigger>
           <TabsTrigger value="team" className="text-xs md:text-sm">Team ({teamCount})</TabsTrigger>
-          <TabsTrigger value="follow" className="text-xs md:text-sm">Follow ({followCount})</TabsTrigger>
         </TabsList>
       </div>
 
@@ -84,7 +77,6 @@ export function ResponsiveNotificationsTabs({
       <TabsContent value="welcome">{welcomeContent}</TabsContent>
       <TabsContent value="system">{systemContent}</TabsContent>
       <TabsContent value="team">{teamContent}</TabsContent>
-      <TabsContent value="follow">{followContent}</TabsContent>
     </Tabs>
   );
 }

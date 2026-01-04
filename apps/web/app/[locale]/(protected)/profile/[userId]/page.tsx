@@ -21,9 +21,6 @@ import {
   CardTitle,
 } from '@/components/alignui/data-display/card';
 import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
-import { FollowButton } from "@/components/follow-button";
-import { FollowStats } from "@/components/follow-stats";
-import { getFollowStatus } from "@/actions/follow-actions";
 
 interface UserProfilePageProps {
   params: Promise<{
@@ -79,9 +76,6 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
     notFound();
   }
 
-  // Get follow status and stats
-  const followStatus = await getFollowStatus(userId);
-
   return (
     <>
       <DashboardHeaderWithLanguageSwitcher
@@ -114,21 +108,6 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
           </CardHeader>
           
           <CardContent className="space-y-4">
-            {/* Follow Button */}
-            <FollowButton
-              userId={userId}
-              isFollowing={followStatus.isFollowing}
-              className="w-full"
-            />
-
-            {/* Follow Stats */}
-            <FollowStats
-              userId={userId}
-              followerCount={followStatus.followerCount}
-              followingCount={followStatus.followingCount}
-              className="justify-center"
-            />
-
             {/* User Info */}
             <div className="space-y-1">
               <p className="text-sm font-medium text-muted-foreground">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CompanyProfile, getCompanyProfiles } from "@/actions/company-profiles-actions";
+import { CompanyProfileWithMembership, getCompanyProfiles } from "@/actions/company-profiles-actions";
 import {
   Select,
   SelectContent,
@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Building2, CheckCircle2 } from "lucide-react";
+import { Building2, CheckCircle2, UserPlus, Shield } from "lucide-react";
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Button } from '@/components/alignui/actions/button';
 import Link from "next/link";
@@ -17,7 +17,7 @@ import Link from "next/link";
 interface CompanyProfileSelectorProps {
   value?: string;
   onValueChange?: (profileId: string) => void;
-  onProfileSelect?: (profile: CompanyProfile | null) => void;
+  onProfileSelect?: (profile: CompanyProfileWithMembership | null) => void;
 }
 
 export function CompanyProfileSelector({
@@ -25,7 +25,7 @@ export function CompanyProfileSelector({
   onValueChange,
   onProfileSelect,
 }: CompanyProfileSelectorProps) {
-  const [profiles, setProfiles] = useState<CompanyProfile[]>([]);
+  const [profiles, setProfiles] = useState<CompanyProfileWithMembership[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -110,15 +110,26 @@ export function CompanyProfileSelector({
             <div className="flex items-center gap-2 w-full">
               <Building2 className="h-4 w-4 flex-shrink-0" />
               <span className="flex-1 truncate">{profile.profile_name}</span>
-              {profile.is_default && (
-                <Badge
-                  variant="outline"
-                  className="ml-2 flex-shrink-0 text-xs bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800"
-                >
-                  <CheckCircle2 className="h-3 w-3 mr-1" />
-                  Standard
-                </Badge>
-              )}
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                {profile.is_default && (
+                  <Badge
+                    variant="outline"
+                    className="text-xs bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800"
+                  >
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    Standard
+                  </Badge>
+                )}
+                {!profile.is_default && (
+                  <Badge
+                    variant="outline"
+                    className="text-xs bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary border-primary/30 dark:border-primary/40"
+                  >
+                    <Shield className="h-3 w-3 mr-1" />
+                    Verwaltet
+                  </Badge>
+                )}
+              </div>
             </div>
           </SelectItem>
         ))}

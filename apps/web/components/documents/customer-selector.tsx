@@ -38,9 +38,10 @@ interface CustomerSelectorProps {
   value?: string;
   onValueChange: (value: string) => void;
   disabled?: boolean;
+  companyProfileId?: string;
 }
 
-export function CustomerSelector({ value, onValueChange, disabled }: CustomerSelectorProps) {
+export function CustomerSelector({ value, onValueChange, disabled, companyProfileId }: CustomerSelectorProps) {
   const t = useTranslations("Documents.customerSelector");
   const tDialog = useTranslations("Documents.customerSelector.dialog");
   const tValidation = useTranslations("Documents.customerSelector.dialog.validation");
@@ -58,13 +59,18 @@ export function CustomerSelector({ value, onValueChange, disabled }: CustomerSel
 
   useEffect(() => {
     loadCustomers();
-  }, []);
+  }, [companyProfileId]);
 
   const loadCustomers = async () => {
     try {
       setIsLoading(true);
-      const data = await getCustomers();
+      const data = await getCustomers(companyProfileId);
       setCustomers(data);
+      
+      // If a customer is selected but not in the new list, clear selection
+      if (value && !data.find(c => c.id === value)) {
+        onValueChange("");
+      }
     } catch (error) {
       toast.error(tDialog("toast.loadError"));
     } finally {
@@ -85,7 +91,11 @@ export function CustomerSelector({ value, onValueChange, disabled }: CustomerSel
   const handleCreateCustomer = async (data: CustomerInput) => {
     setIsCreating(true);
     try {
-      const newCustomer = await createCustomer(data);
+      const customerData: CustomerInput = {
+        ...data,
+        company_profile_id: companyProfileId,
+      };
+      const newCustomer = await createCustomer(customerData);
       await loadCustomers(); // Reload customers list
       onValueChange(newCustomer.id);
       setIsDialogOpen(false);

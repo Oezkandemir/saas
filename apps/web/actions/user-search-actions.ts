@@ -19,7 +19,6 @@ export type UserSearchResult = {
   avatar_url: string | null;
   role: string;
   created_at: string;
-  isFollowing?: boolean;
 };
 
 export type SearchResults = {
@@ -82,29 +81,8 @@ export async function searchUsers(
       };
     }
 
-    // Get follow status for each user if we have results
-    let usersWithFollowStatus: UserSearchResult[] = users || [];
-    
-    if (users && users.length > 0) {
-      const userIds = users.map(user => user.id);
-      
-      // Get follow relationships for current user
-      const { data: followData } = await supabase
-        .from('user_follows')
-        .select('following_id')
-        .eq('follower_id', currentUser.id)
-        .in('following_id', userIds);
-
-      const followingIds = new Set(followData?.map(f => f.following_id) || []);
-
-      usersWithFollowStatus = users.map(user => ({
-        ...user,
-        isFollowing: followingIds.has(user.id),
-      }));
-    }
-
     return {
-      users: usersWithFollowStatus,
+      users: users || [],
       totalCount: count || 0,
       hasMore: (count || 0) > offset + limit,
     };
@@ -119,7 +97,7 @@ export async function searchUsers(
 }
 
 /**
- * Get suggested users to follow (users with most followers)
+ * Get suggested users (recent users)
  */
 export async function getSuggestedUsers(limit = 10): Promise<UserSearchResult[]> {
   try {
@@ -130,7 +108,7 @@ export async function getSuggestedUsers(limit = 10): Promise<UserSearchResult[]>
 
     const supabase = await createClient();
 
-    // Get users with follower counts, excluding current user and users already followed
+    // Get recent users, excluding current user
     const { data: users, error } = await supabase
       .from('users')
       .select(`
@@ -141,6 +119,8 @@ export async function getSuggestedUsers(limit = 10): Promise<UserSearchResult[]>
         role,
         created_at
       `)
+      .neq('id', currentUser.id)
+      .order('created_at', { ascending: false })
       .limit(limit);
 
     if (error) {
@@ -148,43 +128,7 @@ export async function getSuggestedUsers(limit = 10): Promise<UserSearchResult[]>
       return [];
     }
 
-    if (!users || users.length === 0) {
-      return [];
-    }
-
-    // Get users current user is NOT following
-    const { data: followingData } = await supabase
-      .from('user_follows')
-      .select('following_id')
-      .eq('follower_id', currentUser.id);
-
-    const followingIds = new Set(followingData?.map(f => f.following_id) || []);
-
-    // Filter out users already being followed and add follower counts
-    const suggestedUsers = await Promise.all(
-      users
-        .filter(user => !followingIds.has(user.id))
-        .slice(0, limit)
-        .map(async (user) => {
-          // Get follower count for each user
-          const { data: followerCount } = await supabase
-            .rpc('get_follower_count', { user_id: user.id });
-
-          return {
-            ...user,
-            isFollowing: false,
-            followerCount: followerCount || 0,
-          };
-        })
-    );
-
-    // Sort by follower count (descending) and creation date
-    return suggestedUsers.sort((a, b) => {
-      if (a.followerCount !== b.followerCount) {
-        return b.followerCount - a.followerCount;
-      }
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-    });
+    return users || [];
   } catch (error) {
     logger.error('Get suggested users error', error);
     return [];

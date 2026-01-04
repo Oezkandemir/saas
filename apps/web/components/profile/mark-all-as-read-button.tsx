@@ -2,18 +2,22 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { markAllNotificationsAsRead } from "@/actions/user-profile-actions";
 import { Check, Loader2 } from "lucide-react";
 
 import { Button } from '@/components/alignui/actions/button';
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useNotificationsContext } from "@/components/context/notifications-context";
+import { useSupabase } from "@/components/supabase-provider";
 
 export function MarkAllAsReadButton() {
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { refetchAll } = useNotificationsContext();
+  const { session } = useSupabase();
+  const userId = session?.user?.id;
 
   const handleMarkAllAsRead = async () => {
     setLoading(true);
@@ -24,10 +28,16 @@ export function MarkAllAsReadButton() {
         throw new Error(result.error);
       }
 
-      toast({
-        title: "Success",
-        description: "All notifications marked as read",
-        variant: "default",
+      // Optimistically set count to 0
+      if (userId) {
+        queryClient.setQueryData<number>(
+          ["notifications", "unread", userId],
+          0
+        );
+      }
+
+      toast.success("Alle Benachrichtigungen als gelesen markiert", {
+        description: "Alle ungelesenen Benachrichtigungen wurden aktualisiert",
       });
 
       // Trigger global notification updates
@@ -35,10 +45,18 @@ export function MarkAllAsReadButton() {
       router.refresh();
     } catch (error) {
       console.error("Error marking all as read:", error);
-      toast({
-        title: "Error",
-        description: "Failed to mark notifications as read",
-        variant: "destructive",
+      
+      // Revert optimistic update on error
+      if (userId) {
+        queryClient.invalidateQueries({
+          queryKey: ["notifications", "unread", userId],
+        });
+      }
+      
+      toast.error("Fehler", {
+        description: error instanceof Error 
+          ? error.message 
+          : "Benachrichtigungen konnten nicht als gelesen markiert werden",
       });
     } finally {
       setLoading(false);

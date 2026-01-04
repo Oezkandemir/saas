@@ -49,9 +49,12 @@ export function useRealtimePageViews({
   useEffect(() => {
     if (!normalizedSlug) return;
 
+    // Create unique channel name per slug to avoid conflicts
+    const channelName = `page_views_changes:${normalizedSlug}`;
+    
     // Subscribe to changes on the page_views table
-    const subscription = supabaseClient
-      .channel("page_views_changes")
+    const channel = supabaseClient
+      .channel(channelName)
       .on(
         "postgres_changes",
         {
@@ -69,9 +72,13 @@ export function useRealtimePageViews({
       )
       .subscribe();
 
-    // Clean up subscription on unmount
+    // Clean up subscription on unmount or when slug changes
     return () => {
-      subscription.unsubscribe();
+      if (channel) {
+        supabaseClient.removeChannel(channel).catch(() => {
+          // Ignore cleanup errors
+        });
+      }
     };
   }, [normalizedSlug]);
 

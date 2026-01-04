@@ -93,44 +93,46 @@ export function LoginHistory() {
             {history.map((entry) => (
               <div
                 key={entry.id}
-                className="flex items-start gap-4 rounded-lg border p-3"
+                className="flex items-start gap-4 rounded-lg border p-3 break-words overflow-wrap-anywhere"
               >
-                <div className="mt-0.5">
+                <div className="mt-0.5 shrink-0">
                   {entry.success ? (
                     <CheckCircle2 className="size-5 text-green-500" />
                   ) : (
                     <XCircle className="size-5 text-destructive" />
                   )}
                 </div>
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-medium break-words">
                       {entry.success ? "Erfolgreicher Login" : "Fehlgeschlagener Login"}
                     </span>
                     {entry.twoFactorUsed && (
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-xs shrink-0">
                         <Shield className="mr-1 size-3" />
                         2FA
                       </Badge>
                     )}
                   </div>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 shrink-0">
                       <MapPin className="size-3" />
-                      {getLocationInfo(entry)}
+                      <span className="break-words">{getLocationInfo(entry)}</span>
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 shrink-0">
                       <Calendar className="size-3" />
-                      {format(new Date(entry.createdAt), "PPp", { locale: de })}
+                      <span className="break-words">
+                        {format(new Date(entry.createdAt), "PPp", { locale: de })}
+                      </span>
                     </div>
                     {entry.userAgent && (
-                      <span className="text-xs truncate max-w-xs">
+                      <span className="text-xs break-words overflow-wrap-anywhere max-w-xs">
                         {getDeviceInfo(entry)}
                       </span>
                     )}
                   </div>
                   {!entry.success && entry.failureReason && (
-                    <p className="text-xs text-destructive">
+                    <p className="text-xs text-destructive break-words overflow-wrap-anywhere">
                       Grund: {entry.failureReason}
                     </p>
                   )}

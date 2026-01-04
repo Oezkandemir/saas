@@ -6,6 +6,8 @@ import { getDocuments, type Document } from "@/actions/documents-actions";
 import { Button } from '@/components/alignui/actions/button';
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { EditCustomerDrawer } from "@/components/customers/edit-customer-drawer";
+import { DeleteCustomerButton } from "@/components/customers/delete-customer-button";
 import Link from "next/link";
 import { Edit, Mail, Phone, Building2, MapPin, FileText, Plus, User, ArrowRight } from "lucide-react";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -41,12 +43,23 @@ export default async function CustomerDetailPage({
       showBackButton
       backHref="/dashboard/customers"
       actions={
-        <Link href={`/dashboard/customers/${customer.id}/edit`}>
-          <Button variant="outline" className="gap-2">
-            <Edit className="h-4 w-4" />
-            {t("edit")}
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <EditCustomerDrawer
+            customer={customer}
+            trigger={
+              <Button variant="outline" className="gap-2">
+                <Edit className="h-4 w-4" />
+                {t("edit")}
+              </Button>
+            }
+          />
+          <DeleteCustomerButton
+            customerId={customer.id}
+            customerName={customer.name}
+            variant="destructive"
+            size="default"
+          />
+        </div>
       }
       contentClassName=""
     >

@@ -65,6 +65,11 @@ export const adminSidebarLinks: SidebarNavItem[] = [
         icon: "activity",
         title: "System",
       },
+      {
+        href: "/profile/notifications",
+        icon: "bell",
+        title: "Notifications",
+      },
     ],
   },
 ];

@@ -8,7 +8,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-d
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Users, Crown, Search } from 'lucide-react';
-import { FollowButton } from '@/components/follow-button';
 import { searchUsers, getUserStats, type UserSearchResult } from '@/actions/user-search-actions';
 import { useRouter } from 'next/navigation';
 
@@ -83,16 +82,6 @@ export function UserSearch() {
   // Navigate to user profile
   const navigateToProfile = (userId: string) => {
     router.push(`/profile/${userId}`);
-  };
-
-  // Handle follow state change
-  const handleFollowChange = (userId: string, isFollowing: boolean) => {
-    setUsers(prev => prev.map(user => 
-      user.id === userId ? { ...user, isFollowing } : user
-    ));
-    setFilteredUsers(prev => prev.map(user => 
-      user.id === userId ? { ...user, isFollowing } : user
-    ));
   };
 
   return (
@@ -177,11 +166,10 @@ export function UserSearch() {
           ) : filteredUsers.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredUsers.map((user) => (
-                <UserCard 
+                <UserCard
                   key={user.id} 
                   user={user} 
                   onProfileClick={navigateToProfile}
-                  onFollowChange={handleFollowChange}
                 />
               ))}
             </div>
@@ -201,12 +189,10 @@ export function UserSearch() {
 
 function UserCard({ 
   user,
-  onProfileClick,
-  onFollowChange
+  onProfileClick
 }: { 
   user: UserSearchResult;
   onProfileClick: (userId: string) => void;
-  onFollowChange: (userId: string, isFollowing: boolean) => void;
 }) {
   // Helper function to get role badge variant and color
   const getRoleBadge = (role: string) => {
@@ -273,16 +259,6 @@ function UserCard({
               Joined {new Date(user.created_at).toLocaleDateString()}
             </p>
           </div>
-        </div>
-        
-        <div className="mt-3">
-          <FollowButton 
-            userId={user.id} 
-            isFollowing={user.isFollowing || false}
-            size="sm"
-            variant="outline"
-            onFollowChange={(isFollowing) => onFollowChange(user.id, isFollowing)}
-          />
         </div>
       </CardContent>
     </Card>

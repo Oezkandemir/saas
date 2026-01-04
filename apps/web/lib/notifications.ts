@@ -15,7 +15,6 @@ export type NotificationType =
   | "SUCCESS"
   | "TEAM"
   | "NEWSLETTER"
-  | "FOLLOW"
   | "DOCUMENT"
   | "CUSTOMER"
   | "INVOICE"
@@ -42,7 +41,7 @@ export interface DocumentNotificationParams {
 
 export interface CustomerNotificationParams {
   userId: string;
-  customerId: string;
+  customerId: string | null; // Can be null for deleted customers
   action: "created" | "updated" | "deleted";
   customerName: string;
 }
@@ -71,6 +70,15 @@ export interface SecurityNotificationParams {
     | "2fa_enabled"
     | "2fa_disabled";
   details?: string;
+}
+
+export interface TeamInvitationNotificationParams {
+  userId: string;
+  companyProfileId: string;
+  companyProfileName: string;
+  inviterName: string;
+  inviterEmail: string;
+  role: string;
 }
 
 /**
@@ -332,6 +340,48 @@ export async function createWelcomeNotification(
         ? new Error(String(error.message))
         : new Error(String(error || 'Unknown error'));
     logger.error("Failed to create welcome notification", errorObj);
+    return null;
+  }
+}
+
+/**
+ * Create a team invitation notification
+ */
+export async function createTeamInvitationNotification(
+  params: TeamInvitationNotificationParams
+): Promise<string | null> {
+  try {
+    const roleLabels: Record<string, string> = {
+      owner: "Inhaber",
+      admin: "Administrator",
+      editor: "Bearbeiter",
+      viewer: "Betrachter",
+    };
+
+    const roleLabel = roleLabels[params.role] || params.role;
+
+    return createNotification({
+      userId: params.userId,
+      title: "Sie wurden zu einem Firmenprofil eingeladen",
+      content: `${params.inviterName} hat Sie als ${roleLabel} zum Firmenprofil "${params.companyProfileName}" eingeladen. Sie können jetzt mit diesem Profil arbeiten.`,
+      type: "TEAM",
+      actionUrl: `/dashboard/settings/company/${params.companyProfileId}`,
+      metadata: {
+        company_profile_id: params.companyProfileId,
+        company_profile_name: params.companyProfileName,
+        inviter_name: params.inviterName,
+        inviter_email: params.inviterEmail,
+        role: params.role,
+        invitation_type: "company_profile",
+      },
+    });
+  } catch (error) {
+    const errorObj = error instanceof Error 
+      ? error 
+      : error && typeof error === 'object' && 'message' in error
+        ? new Error(String(error.message))
+        : new Error(String(error || 'Unknown error'));
+    logger.error("Failed to create team invitation notification", errorObj);
     return null;
   }
 }

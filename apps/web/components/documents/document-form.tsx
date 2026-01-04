@@ -175,14 +175,19 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
     
     setIsLoading(true);
     try {
+      const documentData: DocumentInput = {
+        ...data,
+        company_profile_id: selectedProfileId,
+      };
+      
       if (document) {
-        await updateDocument(document.id, data);
+        await updateDocument(document.id, documentData);
         toast.success(t("toast.updated"));
         // Navigate immediately after update
         router.replace("/dashboard/documents");
         router.refresh();
       } else {
-        await createDocument(type, data);
+        await createDocument(type, documentData);
         toast.success(t(`toast.created.${type}`));
         // Navigate immediately after creation - use replace to prevent back navigation
         // Use window.location for immediate navigation to prevent double clicks
@@ -271,6 +276,7 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                         <CustomerSelector
                           value={field.value}
                           onValueChange={field.onChange}
+                          companyProfileId={selectedProfileId}
                         />
                       </FormControl>
                       <FormMessage />

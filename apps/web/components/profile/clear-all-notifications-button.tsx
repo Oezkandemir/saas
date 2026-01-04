@@ -2,25 +2,44 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { deleteAllNotifications } from "@/actions/user-profile-actions";
 import { Loader2, Trash2 } from "lucide-react";
 
 import { Button } from '@/components/alignui/actions/button';
 import { useToast } from "@/components/ui/use-toast";
 import { useNotificationsContext } from "@/components/context/notifications-context";
+import { useSupabase } from "@/components/supabase-provider";
 
 export function ClearAllNotificationsButton() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
   const { refetchAll } = useNotificationsContext();
+  const queryClient = useQueryClient();
+  const { session } = useSupabase();
+  const userId = session?.user?.id;
 
   const handleClearAllNotifications = async () => {
     setLoading(true);
     try {
+      // Optimistically set count to 0 immediately
+      if (userId) {
+        queryClient.setQueryData<number>(
+          ["notifications", "unread", userId],
+          0
+        );
+      }
+
       const result = await deleteAllNotifications();
 
       if (!result.success) {
+        // Revert optimistic update on error
+        if (userId) {
+          queryClient.invalidateQueries({
+            queryKey: ["notifications", "unread", userId],
+          });
+        }
         throw new Error(result.error || "Failed to clear notifications");
       }
 

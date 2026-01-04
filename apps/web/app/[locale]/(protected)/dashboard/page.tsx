@@ -19,6 +19,7 @@ import {
   FileText,
   ArrowRight,
   LayoutDashboard,
+  Calendar,
 } from "lucide-react";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
@@ -102,6 +103,32 @@ export default async function DashboardPage() {
             <p className="text-lg font-semibold">{kpi.value}</p>
           </Link>
         ))}
+      </div>
+
+      {/* Quick Actions / Feature Cards */}
+      <div className="mb-10 pb-8 border-b border-border">
+        <h2 className="text-sm font-semibold mb-4">{t("quickActions.title") || "Quick Actions"}</h2>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <Link
+            href="/dashboard/scheduling"
+            className="group border rounded-lg p-4 hover:bg-muted/50 transition-colors"
+          >
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors">
+                <Calendar className="h-4 w-4 text-blue-500" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold mb-1 group-hover:text-primary transition-colors">
+                  {t("quickActions.scheduling") || "Scheduling"}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {t("quickActions.schedulingDescription") || "Manage event types and bookings"}
+                </p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+            </div>
+          </Link>
+        </div>
       </div>
 
       {/* 3. Data Table - Visual Focus */}
