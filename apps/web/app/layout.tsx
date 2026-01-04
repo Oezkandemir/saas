@@ -4,25 +4,32 @@ import { cookies } from "next/headers";
 
 import "@/styles/globals.css";
 
-import { fontGeist, fontHeading, fontSans, fontUrban, fontInter } from "@/assets/fonts";
+// ⚡ PERFORMANCE: Only load critical fonts - reduced from 5 to 2 fonts
+import { fontSans, fontHeading } from "@/assets/fonts";
 import { ThemeProvider } from "next-themes";
 
 import { cn, constructMetadata } from "@/lib/utils";
-import { Toaster } from "@/components/ui/sonner";
 import { AvatarProvider } from "@/components/context/avatar-context";
 import { NotificationsProvider } from "@/components/context/notifications-context";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { QueryClientProvider } from "@/components/providers/query-client-provider";
 import { DynamicProviders } from "@/components/providers/dynamic-providers";
 import { SupabaseProvider } from "@/components/supabase-provider";
-import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ThemeSyncProvider } from "@/components/providers/theme-sync-provider";
-import { PerformanceTracker } from "@/components/performance-tracker";
-import { AutoRefreshSubscription } from "@/components/pricing/auto-refresh-subscription";
+import { DeferredComponents } from "@/components/providers/deferred-components";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = constructMetadata();
+
+// Mobile-optimized viewport settings for fullscreen experience
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: "cover", // For iOS notch support
+};
 
 export default async function RootLayout({
   children,
@@ -56,6 +63,27 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
+        {/* Resource hints for performance - preconnect to external domains */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://*.supabase.co" />
+        
+        {/* Preload critical fonts - Inter für optimale Lesbarkeit */}
+        <link
+          rel="preload"
+          href="/assets/fonts/Inter-Regular.ttf"
+          as="font"
+          type="font/ttf"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/assets/fonts/Inter-Bold.ttf"
+          as="font"
+          type="font/ttf"
+          crossOrigin="anonymous"
+        />
+        
         {/* Only load manifest in production to avoid SSL errors in development */}
         {process.env.NODE_ENV === "production" && (
           <link rel="manifest" href="/site.webmanifest" />
@@ -64,11 +92,8 @@ export default async function RootLayout({
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
-          fontInter.variable,
           fontSans.variable,
-          fontUrban.variable,
           fontHeading.variable,
-          fontGeist.variable,
         )}
       >
         <ErrorBoundary>
@@ -88,10 +113,7 @@ export default async function RootLayout({
                         <DynamicProviders>
                           {children}
                         </DynamicProviders>
-                        <AutoRefreshSubscription />
-                        <Toaster richColors closeButton />
-                        <TailwindIndicator />
-                        <PerformanceTracker />
+                        <DeferredComponents />
                       </NotificationsProvider>
                     </QueryClientProvider>
                   </AvatarProvider>

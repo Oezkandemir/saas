@@ -139,26 +139,51 @@ const nextConfig = {
       };
     }
 
-    // ⚡ Production optimizations
+    // ⚡ Production optimizations - Enhanced chunk splitting for better performance
     if (!dev && !isServer) {
-      // Split chunks for better caching
+      // Split chunks for better caching and reduced initial bundle size
       config.optimization = {
         ...config.optimization,
         moduleIds: 'deterministic',
         runtimeChunk: 'single',
         splitChunks: {
           chunks: 'all',
+          maxInitialRequests: 25,
+          minSize: 20000,
           cacheGroups: {
             default: false,
             vendors: false,
-            // Vendor chunk
+            // Framework chunk (React, Next.js)
+            framework: {
+              name: 'framework',
+              chunks: 'all',
+              test: /[\\/]node_modules[\\/](react|react-dom|scheduler|next)[\\/]/,
+              priority: 40,
+              enforce: true,
+            },
+            // Vendor chunk (other node_modules)
             vendor: {
               name: 'vendor',
               chunks: 'all',
-              test: /node_modules/,
+              test: /[\\/]node_modules[\\/]/,
               priority: 20,
+              minChunks: 1,
             },
-            // Common chunk
+            // UI libraries chunk (Radix UI, Lucide)
+            ui: {
+              test: /[\\/]node_modules[\\/](@radix-ui|lucide-react)[\\/]/,
+              name: 'ui',
+              priority: 30,
+              chunks: 'all',
+            },
+            // Supabase chunk
+            supabase: {
+              test: /[\\/]node_modules[\\/](@supabase)[\\/]/,
+              name: 'supabase',
+              priority: 25,
+              chunks: 'all',
+            },
+            // Common chunk (shared code)
             common: {
               name: 'common',
               minChunks: 2,
@@ -166,12 +191,6 @@ const nextConfig = {
               priority: 10,
               reuseExistingChunk: true,
               enforce: true,
-            },
-            // UI libraries
-            ui: {
-              test: /[\\/]node_modules[\\/](@radix-ui|lucide-react)[\\/]/,
-              name: 'ui',
-              priority: 30,
             },
           },
         },

@@ -64,9 +64,9 @@
     --opacity-muted: 0.5;    /* Für disabled States */
     --opacity-strong: 0.9;   /* Für Hover States */
     
-    /* Typography System - Maximal 2 Fonts */
-    --font-sans: var(--font-inter), var(--font-sans), system-ui, -apple-system, sans-serif;
-    --font-heading: var(--font-heading), var(--font-inter), system-ui, -apple-system, sans-serif;
+    /* Typography System - Inter für optimale Lesbarkeit */
+    --font-sans: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-heading: var(--font-heading), var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     
     /* Font Weights - Konsistent */
     --font-weight-normal: 400;
@@ -163,16 +163,40 @@
 
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
     font-family: var(--font-sans);
-    /* Better font rendering on mobile */
+    /* Optimiertes Font-Rendering für beste Lesbarkeit */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* Font-Features für bessere Lesbarkeit */
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    font-kerning: normal;
+    /* Verhindert kursive Schrift */
+    font-style: normal;
+    font-variant: normal;
     /* Prevent text size adjustment on mobile */
     -webkit-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     text-size-adjust: 100%;
+  }
+  
+  /* Sicherstellen, dass keine kursive Schrift verwendet wird (außer für <em> und <i>) */
+  body, p, span, div, h1, h2, h3, h4, h5, h6, a, button, input, textarea, select, label {
+    font-style: normal;
+  }
+  
+  /* Erlaube kursive Schrift nur für semantische Elemente */
+  em, i {
+    font-style: italic;
+  }
+  
+  /* Headings verwenden Inter Bold */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: -0.02em; /* Leicht kompakter für Headings */
   }
   
   /* AlignUI Typography Scale */

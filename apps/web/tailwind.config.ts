@@ -134,15 +134,15 @@ const config = {
         "20": "20px", // AlignUI rounded-20
       },
       fontFamily: {
-        // Maximal 2 Font Families: Heading + Body
-        // Body Font (Primary)
-        sans: ["var(--font-inter)", "var(--font-sans)", ...fontFamily.sans],
-        // Heading Font (Secondary - falls vorhanden, sonst Body)
-        heading: ["var(--font-heading)", "var(--font-inter)", ...fontFamily.sans],
+        // Inter - Moderne, hochgradig lesbare Schrift für alle Texte
+        // Body Font (Primary) - Inter Regular
+        sans: ["var(--font-sans)", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+        // Heading Font - Inter Bold für Konsistenz
+        heading: ["var(--font-heading)", "var(--font-sans)", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
         // Legacy Support (werden schrittweise entfernt)
-        inter: ["var(--font-inter)", ...fontFamily.sans],
-        urban: ["var(--font-urban)", "var(--font-inter)", ...fontFamily.sans],
-        geist: ["var(--font-geist)", "var(--font-inter)", ...fontFamily.sans],
+        inter: ["var(--font-sans)", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+        urban: ["var(--font-sans)", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+        geist: ["var(--font-sans)", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {

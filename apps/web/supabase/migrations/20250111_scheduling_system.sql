@@ -411,3 +411,4 @@ CREATE TRIGGER create_booking_canceled_event
   EXECUTE FUNCTION create_booking_canceled_event();
 
 
+

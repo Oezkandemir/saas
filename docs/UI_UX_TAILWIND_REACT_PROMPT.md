@@ -420,3 +420,4 @@ Für jede Komponente:
 
 
 
+

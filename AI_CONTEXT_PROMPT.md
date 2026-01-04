@@ -280,3 +280,4 @@ Wenn du als AI-Assistent arbeitest, stelle sicher:
 **Verwendung:** Kopiere den Basis-Prompt oder eine erweiterte Variante zu Beginn einer neuen Konversation, um vollständigen Kontext zu geben.
 
 
+
