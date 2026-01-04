@@ -14,14 +14,26 @@ export default async function SchedulingPage() {
   if (!user) redirect("/login");
   const t = await getTranslations("Scheduling");
 
-  const [eventTypesResult, bookingsResult, statsResult] = await Promise.all([
-    getEventTypes().catch(() => ({ success: false, error: "Failed to load" })),
-    listBookings({ status: "scheduled" }).catch(() => ({ success: false, error: "Failed to load" })),
-    getBookingStatistics().catch(() => ({ success: false, error: "Failed to load" })),
-  ]);
+  const eventTypesResult = await getEventTypes().catch(() => ({ 
+    success: false as const, 
+    error: "Failed to load" as const,
+    data: undefined as undefined
+  }));
+  
+  const bookingsResult = await listBookings({ status: "scheduled" }).catch(() => ({ 
+    success: false as const, 
+    error: "Failed to load" as const,
+    data: undefined as undefined
+  }));
+  
+  const statsResult = await getBookingStatistics().catch(() => ({ 
+    success: false as const, 
+    error: "Failed to load" as const,
+    data: undefined as undefined
+  }));
 
-  const eventTypes = eventTypesResult.success ? eventTypesResult.data || [] : [];
-  const bookings = bookingsResult.success ? bookingsResult.data || [] : [];
+  const eventTypes = eventTypesResult.success ? (eventTypesResult.data ?? []) : [];
+  const bookings = bookingsResult.success ? (bookingsResult.data ?? []) : [];
   const stats = statsResult.success ? statsResult.data : null;
 
   return (

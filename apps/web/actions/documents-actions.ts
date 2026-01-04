@@ -322,7 +322,7 @@ export async function createDocument(
   try {
     const { createDocumentNotification } = await import("@/lib/notifications");
     await createDocumentNotification({
-      userId: documentOwnerId, // Notify the document owner
+      userId: user.id, // Notify the document owner (current user)
       documentId: document.id,
       action: "created",
       documentType: type === "quote" ? "Quote" : "Invoice",

@@ -22,7 +22,7 @@ import {
 interface DeleteCustomerButtonProps {
   customerId: string;
   customerName: string;
-  variant?: "default" | "destructive" | "outline" | "ghost";
+  variant?: "primary" | "secondary" | "neutral" | "destructive" | "outline" | "ghost";
   size?: "default" | "sm" | "lg" | "icon";
 }
 

@@ -6,12 +6,6 @@ import { getCurrentUser } from "@/lib/session";
 
 export type ProfileType = "personal" | "team";
 
-export type CompanyProfileWithMembership = CompanyProfile & {
-  is_owner: boolean;
-  membership_role?: string | null;
-  membership_joined_at?: string | null;
-};
-
 export type CompanyProfile = {
   id: string;
   user_id: string;
@@ -158,9 +152,9 @@ export async function getCompanyProfile(
     .eq("user_id", user.id)
     .single();
 
-  if (profileError) {
-    if (profileError.code === "PGRST116") return null;
-    throw profileError;
+  if (ownedError) {
+    if (ownedError.code === "PGRST116") return null;
+    throw ownedError;
   }
 
   if (!ownedProfile) return null;

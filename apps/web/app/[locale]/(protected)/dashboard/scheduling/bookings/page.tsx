@@ -24,13 +24,20 @@ export default async function BookingsPage({
     event_type_id: params.event_type_id,
   };
 
-  const [bookingsResult, eventTypesResult] = await Promise.all([
-    listBookings(filters).catch(() => ({ success: false, error: "Failed to load" })),
-    getEventTypes().catch(() => ({ success: false, error: "Failed to load" })),
-  ]);
+  const bookingsResult = await listBookings(filters).catch(() => ({ 
+    success: false as const, 
+    error: "Failed to load" as const,
+    data: undefined as undefined
+  }));
+  
+  const eventTypesResult = await getEventTypes().catch(() => ({ 
+    success: false as const, 
+    error: "Failed to load" as const,
+    data: undefined as undefined
+  }));
 
-  const bookings = bookingsResult.success ? bookingsResult.data || [] : [];
-  const eventTypes = eventTypesResult.success ? eventTypesResult.data || [] : [];
+  const bookings = bookingsResult.success ? (bookingsResult.data ?? []) : [];
+  const eventTypes = eventTypesResult.success ? (eventTypesResult.data ?? []) : [];
 
   return (
     <UnifiedPageLayout

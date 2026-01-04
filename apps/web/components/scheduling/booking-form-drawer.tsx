@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, type Control, type FieldArrayPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { createBooking, type AvailableSlot } from "@/actions/scheduling/bookings-actions";
@@ -38,7 +38,7 @@ const bookingSchema = z.object({
   invitee_notes: z.string().max(1000).optional(),
   start_at: z.string().datetime(),
   number_of_participants: z.number().int().min(1).default(1),
-  participant_names: z.array(z.string().min(1, "Name is required").max(200)).optional(),
+  participant_names: z.array(z.string().min(1, "Name is required").max(200)).default([]),
 });
 
 type BookingFormValues = z.infer<typeof bookingSchema>;
@@ -79,8 +79,8 @@ export function BookingFormDrawer({
   });
 
   const { fields, replace } = useFieldArray({
-    control: form.control,
-    name: "participant_names",
+    control: form.control as Control<BookingFormValues>,
+    name: "participant_names" as FieldArrayPath<BookingFormValues>,
   });
 
   // Watch number_of_participants to sync participant_names array

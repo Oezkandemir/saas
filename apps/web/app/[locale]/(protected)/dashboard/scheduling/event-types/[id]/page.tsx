@@ -67,8 +67,12 @@ export default async function EventTypeDetailPage({
   const eventType = eventTypeResult.data;
   
   // Get bookings for this event type
-  const bookingsResult = await listBookings({ event_type_id: id }).catch(() => ({ success: false, error: "Failed to load" }));
-  const bookings = bookingsResult.success ? bookingsResult.data || [] : [];
+  const bookingsResult = await listBookings({ event_type_id: id }).catch(() => ({ 
+    success: false as const, 
+    error: "Failed to load" as const,
+    data: undefined as undefined
+  }));
+  const bookings = bookingsResult.success ? (bookingsResult.data ?? []) : [];
   
   const scheduledBookings = bookings.filter((b) => b.status === "scheduled");
   const canceledBookings = bookings.filter((b) => b.status === "canceled");
@@ -409,7 +413,7 @@ export default async function EventTypeDetailPage({
           {/* Time Slots */}
           <TimeSlotsManager 
             eventTypeId={eventType.id} 
-            defaultMaxParticipants={eventType.max_participants || 12}
+            defaultMaxParticipants={12}
           />
         </TabsContent>
 

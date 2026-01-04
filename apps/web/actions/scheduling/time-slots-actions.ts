@@ -302,7 +302,7 @@ export async function getTimeSlots(
       .from("event_type_time_slots")
       .select("*")
       .eq("event_type_id", eventTypeId)
-      .order("day_of_week", { ascending: true, nullsLast: true })
+      .order("day_of_week", { ascending: true, nullsFirst: false })
       .order("start_time", { ascending: true });
 
     if (error) {

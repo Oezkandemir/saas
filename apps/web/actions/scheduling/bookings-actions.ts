@@ -331,6 +331,7 @@ function calculateSlotsFromTimeSlots(params: {
     start_at: string;
     end_at: string;
     time_slot_id?: string | null;
+    number_of_participants?: number | null;
   }>;
 }): AvailableSlot[] {
   const {

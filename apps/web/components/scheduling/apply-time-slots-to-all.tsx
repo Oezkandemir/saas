@@ -104,7 +104,7 @@ export function ApplyTimeSlotsToAll({ sourceEventTypeId }: ApplyTimeSlotsToAllPr
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button
-              variant="default"
+              variant="primary"
               onClick={handleOpenDialog}
               className="w-full"
             >

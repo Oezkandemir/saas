@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { cancelBookingByToken, getBookingByToken } from "@/actions/scheduling/bookings-actions";
 import { Button } from "@/components/alignui/actions/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/alignui/data-display/card";
-import { Alert, AlertDescription } from "@/components/alignui/feedback/alert";
+import { AlertRoot as Alert, AlertDescription } from "@/components/alignui/feedback/alert";
 import { Loader2, CheckCircle2, XCircle, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
