@@ -67,6 +67,9 @@ export interface PlanUser {
   stripe_price_id: string | null;
   stripe_subscription_id: string | null;
   stripe_current_period_end: string | null;
+  polar_product_id: string | null;
+  polar_subscription_id: string | null;
+  polar_current_period_end: string | null;
   plan_id: string | null;
   plan_title: string | null;
   plan_key: string | null;
@@ -323,11 +326,11 @@ export async function getUsersByPlan(): Promise<{
       return { success: false, error: "Unauthorized: Admin access required" };
     }
 
-    // First get all users with subscriptions
+    // First get all users with Polar subscriptions
     const { data: usersData, error: usersError } = await supabaseAdmin
       .from("users")
-      .select("id, email, name, role, stripe_price_id, stripe_subscription_id, stripe_current_period_end")
-      .not("stripe_subscription_id", "is", null)
+      .select("id, email, name, role, polar_product_id, polar_subscription_id, polar_current_period_end, stripe_subscription_id, stripe_price_id, stripe_current_period_end")
+      .or("polar_subscription_id.not.is.null,stripe_subscription_id.not.is.null")
       .order("created_at", { ascending: false });
 
     if (usersError) {
@@ -338,7 +341,7 @@ export async function getUsersByPlan(): Promise<{
     // Then get all plans
     const { data: plansData, error: plansError } = await supabaseAdmin
       .from("plans")
-      .select("id, title, plan_key, stripe_price_id_monthly, stripe_price_id_yearly");
+      .select("id, title, plan_key, polar_product_id_monthly, polar_product_id_yearly, stripe_price_id_monthly, stripe_price_id_yearly");
 
     if (plansError) {
       logger.error("Error fetching plans:", plansError);
@@ -347,11 +350,17 @@ export async function getUsersByPlan(): Promise<{
 
     // Match users to plans
     const users: PlanUser[] = (usersData || []).map((user) => {
-      // Find matching plan by stripe_price_id
+      // Find matching plan by polar_product_id (preferred) or stripe_price_id (fallback)
       const matchingPlan = (plansData || []).find(
         (plan) =>
-          user.stripe_price_id === plan.stripe_price_id_monthly ||
-          user.stripe_price_id === plan.stripe_price_id_yearly
+          (user.polar_product_id && (
+            user.polar_product_id === plan.polar_product_id_monthly ||
+            user.polar_product_id === plan.polar_product_id_yearly
+          )) ||
+          (user.stripe_price_id && (
+            user.stripe_price_id === plan.stripe_price_id_monthly ||
+            user.stripe_price_id === plan.stripe_price_id_yearly
+          ))
       );
 
       return {
@@ -362,6 +371,9 @@ export async function getUsersByPlan(): Promise<{
         stripe_price_id: user.stripe_price_id,
         stripe_subscription_id: user.stripe_subscription_id,
         stripe_current_period_end: user.stripe_current_period_end,
+        polar_product_id: user.polar_product_id,
+        polar_subscription_id: user.polar_subscription_id,
+        polar_current_period_end: user.polar_current_period_end,
         plan_id: matchingPlan?.id || null,
         plan_title: matchingPlan?.title || null,
         plan_key: matchingPlan?.plan_key || null,

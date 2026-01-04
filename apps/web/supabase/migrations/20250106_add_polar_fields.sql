@@ -106,3 +106,4 @@ CREATE INDEX IF NOT EXISTS subscriptions_polar_subscription_id_idx ON public.sub
 CREATE INDEX IF NOT EXISTS subscriptions_payment_provider_idx ON public.subscriptions(payment_provider);
 
 
+

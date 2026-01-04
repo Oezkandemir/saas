@@ -95,7 +95,11 @@ export function PlanUsersTable({ users }: PlanUsersTableProps) {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-xs font-mono">
-                    {user.stripe_price_id ? (
+                    {user.polar_product_id ? (
+                      <span className="text-muted-foreground">
+                        {user.polar_product_id.slice(0, 20)}...
+                      </span>
+                    ) : user.stripe_price_id ? (
                       <span className="text-muted-foreground">
                         {user.stripe_price_id}
                       </span>
@@ -104,7 +108,11 @@ export function PlanUsersTable({ users }: PlanUsersTableProps) {
                     )}
                   </TableCell>
                   <TableCell className="text-xs font-mono">
-                    {user.stripe_subscription_id ? (
+                    {user.polar_subscription_id ? (
+                      <span className="text-muted-foreground">
+                        {user.polar_subscription_id.slice(0, 20)}...
+                      </span>
+                    ) : user.stripe_subscription_id ? (
                       <span className="text-muted-foreground">
                         {user.stripe_subscription_id.slice(0, 20)}...
                       </span>
@@ -113,7 +121,13 @@ export function PlanUsersTable({ users }: PlanUsersTableProps) {
                     )}
                   </TableCell>
                   <TableCell className="text-sm">
-                    {user.stripe_current_period_end ? (
+                    {user.polar_current_period_end ? (
+                      format(
+                        new Date(user.polar_current_period_end),
+                        "dd.MM.yyyy",
+                        { locale: de }
+                      )
+                    ) : user.stripe_current_period_end ? (
                       format(
                         new Date(user.stripe_current_period_end),
                         "dd.MM.yyyy",
