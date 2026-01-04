@@ -6,6 +6,7 @@ import crypto from "crypto";
 
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
 import { sendBookingConfirmationEmail } from "@/lib/email";
 
@@ -813,8 +814,9 @@ export async function createBooking(
       };
     }
 
-    // Create booking
-    const { data, error } = await supabase
+    // Create booking using admin client to bypass RLS
+    // We've already validated the event type exists and is active above
+    const { data, error } = await supabaseAdmin
       .from("bookings")
       .insert({
         event_type_id: validatedData.event_type_id,
