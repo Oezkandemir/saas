@@ -252,29 +252,85 @@ export const sendBookingConfirmationEmail = async ({
     // Build booking URL
     const bookingUrl = `${env.NEXT_PUBLIC_APP_URL}/book/${hostUserId}/${eventSlug}`;
 
-    // Use the same logic as other working emails (send-customer-email.ts, documents-email-actions.ts)
-    // In development, send to delivered@resend.dev for testing, but also log the actual recipient
-    const recipientEmail = process.env.NODE_ENV === "development" 
+    // Determine recipient email
+    // In development, we can optionally send to delivered@resend.dev for testing
+    // But for booking confirmations, we should send to the actual recipient
+    // Set FORCE_DEV_EMAIL=true in .env if you want to use delivered@resend.dev in development
+    const recipientEmail = (process.env.NODE_ENV === "development" && process.env.FORCE_DEV_EMAIL === "true")
       ? "delivered@resend.dev" 
       : inviteeEmail;
 
     const fromEmail = env.EMAIL_FROM || "hello@cenety.com";
     
+    // Ensure fromEmail is valid - must be a valid email format
+    let validFromEmail = "hello@cenety.com";
+    if (fromEmail && typeof fromEmail === "string" && fromEmail.includes("@")) {
+      // Extract email from format like "Name <email@example.com>" or just "email@example.com"
+      const emailMatch = fromEmail.match(/<?([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,})>?/);
+      if (emailMatch && emailMatch[1]) {
+        validFromEmail = emailMatch[1];
+      } else if (fromEmail.includes("@") && !fromEmail.includes("<")) {
+        validFromEmail = fromEmail.trim();
+      }
+    }
+    
+    // Sanitize site name for email (remove any invalid characters, ensure it's not empty)
+    let sanitizedName = (siteConfig.name || "Cenety")
+      .replace(/[<>"']/g, "") // Remove <, >, ", '
+      .replace(/\s+/g, " ") // Normalize whitespace
+      .trim();
+    
+    // If name is empty after sanitization, use default
+    if (!sanitizedName || sanitizedName.length === 0) {
+      sanitizedName = "Cenety";
+    }
+    
+    // Build from field - use format: "Name <email@example.com>"
+    const fromField = `${sanitizedName} <${validFromEmail}>`;
+    
+    // Validate from field format before sending
+    // Resend accepts: "email@example.com" or "Name <email@example.com>"
+    const fromFieldRegex = /^[^<>"]+ <[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,}>$/;
+    const emailOnlyRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,}$/;
+    
+    // Determine which format to use
+    let finalFromField: string;
+    if (fromFieldRegex.test(fromField)) {
+      finalFromField = fromField;
+    } else if (emailOnlyRegex.test(validFromEmail)) {
+      // Fallback to email only if name format is invalid
+      logger.warn("Invalid from field format, using email only", {
+        fromField,
+        sanitizedName,
+        validFromEmail,
+      });
+      finalFromField = validFromEmail;
+    } else {
+      // Last resort fallback
+      logger.error("Invalid email format, using default", {
+        fromField,
+        validFromEmail,
+      });
+      finalFromField = "hello@cenety.com";
+    }
+    
     logger.info(`Sending booking confirmation email to ${inviteeEmail} (actual recipient: ${recipientEmail})`, {
       inviteeEmail,
       recipientEmail,
-      fromEmail,
+      fromEmail: validFromEmail,
+      fromField: finalFromField,
+      sanitizedName,
       hasResendKey: !!env.RESEND_API_KEY,
       hostUserId,
       eventTitle,
       eventSlug,
     });
 
-    // Send email via Resend - same pattern as other working emails
+    // Send email via Resend - use validated from field
     const { data, error } = await resend.emails.send({
-      from: `${siteConfig.name} <${fromEmail}>`,
+      from: finalFromField,
       to: recipientEmail,
-      reply_to: hostEmail || fromEmail,
+      reply_to: hostEmail || validFromEmail,
       subject: `Buchungsbestätigung: ${eventTitle}`,
       react: BookingConfirmationEmail({
         inviteeName,
@@ -307,7 +363,8 @@ export const sendBookingConfirmationEmail = async ({
         errorDetails: JSON.stringify(error),
         inviteeEmail,
         recipientEmail,
-        fromEmail,
+        fromEmail: validFromEmail,
+        fromField: finalFromField,
         hasResendKey: !!env.RESEND_API_KEY,
       });
       return { success: false, error: error.message || "Unknown error" };
@@ -326,7 +383,8 @@ export const sendBookingConfirmationEmail = async ({
       inviteeEmail,
       recipientEmail,
       messageId: data.id,
-      fromEmail,
+      fromEmail: validFromEmail,
+      fromField: finalFromField,
     });
     
     return { success: true, messageId: data.id };

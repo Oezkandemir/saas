@@ -644,3 +644,41 @@ export async function getPublicEventType(
   }
 }
 
+/**
+ * Get all public active event types (for courses page)
+ * No authentication required - uses RLS policy
+ */
+export async function getAllPublicEventTypes(): Promise<ActionResult<Array<EventType & { owner: { name: string | null; email: string | null } }>>> {
+  try {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("event_types")
+      .select(`
+        *,
+        owner:users!event_types_owner_user_id_fkey(id, name, email)
+      `)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      logger.error("Error fetching public event types", error);
+      return {
+        success: false,
+        error: error.message || "Failed to fetch event types",
+      };
+    }
+
+    return {
+      success: true,
+      data: (data || []) as Array<EventType & { owner: { name: string | null; email: string | null } }>,
+    };
+  } catch (error) {
+    logger.error("Error fetching public event types", error);
+    return {
+      success: false,
+      error: "Failed to fetch event types",
+    };
+  }
+}
+

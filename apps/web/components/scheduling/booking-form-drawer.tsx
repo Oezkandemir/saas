@@ -152,10 +152,25 @@ export function BookingFormDrawer({
         return;
       }
 
+      // Check if email was sent
+      const bookingData = result.data as any;
+      const emailSent = bookingData?.emailSent !== false; // Default to true if not specified
+      const emailError = bookingData?.emailError;
+
       // Show success toast
-      toast.success(t("bookingSuccess") || "Booking confirmed!", {
-        description: t("bookingSuccessDescription") || "Your booking has been confirmed. Check your email for details.",
-      });
+      if (emailSent) {
+        toast.success(t("bookingSuccess") || "Booking confirmed!", {
+          description: t("bookingSuccessDescription") || "Your booking has been confirmed. Check your email for details.",
+        });
+      } else {
+        // Booking succeeded but email failed
+        toast.success(t("bookingSuccess") || "Booking confirmed!", {
+          description: t("bookingSuccessDescription") || "Your booking has been confirmed.",
+        });
+        toast.warning("E-Mail konnte nicht gesendet werden", {
+          description: emailError || "Die Buchung wurde erfolgreich erstellt, aber die Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte kontaktieren Sie uns direkt.",
+        });
+      }
 
       // Close drawer
       onOpenChange(false);

@@ -707,7 +707,7 @@ function getTimezoneOffset(timezone: string): number {
  */
 export async function createBooking(
   input: z.infer<typeof createBookingSchema>
-): Promise<ActionResult<Booking>> {
+): Promise<ActionResult<Booking & { emailSent?: boolean; emailError?: string }>> {
   try {
     const validatedData = createBookingSchema.parse(input);
     const supabase = await createClient();
@@ -851,11 +851,16 @@ export async function createBooking(
     const booking = data as Booking;
 
     // Send booking confirmation email to customer
+    let emailSent = false;
+    let emailError: string | undefined = undefined;
+    
     try {
       logger.info("Attempting to send booking confirmation email", {
         bookingId: booking.id,
         inviteeEmail: validatedData.invitee_email,
         eventTitle: eventType.title,
+        hasResendKey: !!process.env.RESEND_API_KEY,
+        nodeEnv: process.env.NODE_ENV,
       });
 
       const emailResult = await sendBookingConfirmationEmail({
@@ -880,24 +885,34 @@ export async function createBooking(
       });
 
       if (emailResult.success) {
+        emailSent = true;
         logger.info("Booking confirmation email sent successfully", {
           bookingId: booking.id,
           inviteeEmail: validatedData.invitee_email,
           messageId: emailResult.messageId,
         });
       } else {
+        emailSent = false;
+        emailError = emailResult.error;
         logger.error("Failed to send booking confirmation email", {
           bookingId: booking.id,
           inviteeEmail: validatedData.invitee_email,
           error: emailResult.error,
+          hasResendKey: !!process.env.RESEND_API_KEY,
+          nodeEnv: process.env.NODE_ENV,
+          emailFrom: process.env.EMAIL_FROM,
         });
-        // Don't fail the booking creation if email fails
+        // Log warning but don't fail the booking creation if email fails
+        // The booking is still valid even if email fails
       }
     } catch (emailError) {
+      emailSent = false;
+      emailError = emailError instanceof Error ? emailError.message : "Unknown error";
       logger.error("Exception while sending booking confirmation email", {
         bookingId: booking.id,
         inviteeEmail: validatedData.invitee_email,
         error: emailError,
+        stack: emailError instanceof Error ? emailError.stack : undefined,
       });
       // Don't fail the booking creation if email fails
     }
@@ -907,7 +922,11 @@ export async function createBooking(
 
     return {
       success: true,
-      data: booking,
+      data: {
+        ...booking,
+        emailSent,
+        emailError,
+      },
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
