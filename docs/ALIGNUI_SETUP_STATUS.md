@@ -56,3 +56,9 @@ Wir können entweder:
 - **Option A**: Auf Tailwind CSS v4 upgraden (empfohlen)
 - **Option B**: AlignUI Styles für Tailwind CSS v3 anpassen
 
+
+
+
+
+
+

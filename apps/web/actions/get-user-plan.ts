@@ -3,6 +3,7 @@
 import { getCurrentUser } from "@/lib/session";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { UserSubscriptionPlan } from "@/types";
+import { logger } from "@/lib/logger";
 
 export async function getUserPlan(): Promise<UserSubscriptionPlan | null> {
   try {
@@ -12,13 +13,25 @@ export async function getUserPlan(): Promise<UserSubscriptionPlan | null> {
       return null;
     }
 
-    const subscriptionPlan = await getUserSubscriptionPlan(user.id, user.email);
-    return subscriptionPlan;
+    try {
+      const subscriptionPlan = await getUserSubscriptionPlan(user.id, user.email);
+      return subscriptionPlan;
+    } catch (subscriptionError) {
+      // Log subscription-specific errors but don't fail completely
+      logger.warn("Error fetching subscription plan:", subscriptionError);
+      return null;
+    }
   } catch (error) {
-    console.error("Error fetching user plan:", error);
+    // Log session/user fetch errors
+    logger.warn("Error fetching user for plan:", error);
     return null;
   }
 }
+
+
+
+
+
 
 
 

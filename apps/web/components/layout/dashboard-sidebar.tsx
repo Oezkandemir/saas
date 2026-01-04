@@ -56,51 +56,63 @@ function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarP
   // Fetch user plan, role, and check if user is new
   useEffect(() => {
     async function fetchUserData() {
+      if (!session?.user?.id) {
+        return;
+      }
+
       try {
-        if (session?.user?.id) {
-          // Fetch user role from database
-          const { data: userData, error } = await supabase
-            .from("users")
-            .select("role, created_at")
-            .eq("id", session.user.id)
-            .single();
+        // Fetch user role from database
+        const { data: userData, error: userError } = await supabase
+          .from("users")
+          .select("role, created_at")
+          .eq("id", session.user.id)
+          .single();
 
-          if (!error && userData) {
-            // Set role from database (prefer database role over metadata)
-            // For admin checks, we only trust the database role
-            // Normalize role to ensure it's a clean string for comparison
-            const role = String(userData.role || "USER").trim();
-            setUserRole(role);
+        if (userError) {
+          // Log the error but don't throw - gracefully degrade
+          logger.warn("Error fetching user role from database:", {
+            error: userError,
+            userId: session.user.id,
+          });
+          setUserRole("USER");
+        } else if (userData) {
+          // Set role from database (prefer database role over metadata)
+          // For admin checks, we only trust the database role
+          // Normalize role to ensure it's a clean string for comparison
+          const role = String(userData.role || "USER").trim();
+          setUserRole(role);
 
-            // Check if user is new (created within last 30 days)
-            if (userData.created_at) {
-              const createdDate = new Date(userData.created_at);
-              const daysSinceCreation = Math.floor(
-                (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
-              );
-              // Consider user "new" if created within last 30 days
-              setIsNewUser(daysSinceCreation <= 30);
-            }
-          } else {
-            // If database query fails, set to USER (don't trust metadata for security)
-            // Admin items will be hidden since userRole won't be ADMIN
-            setUserRole("USER");
+          // Check if user is new (created within last 30 days)
+          if (userData.created_at) {
+            const createdDate = new Date(userData.created_at);
+            const daysSinceCreation = Math.floor(
+              (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+            );
+            // Consider user "new" if created within last 30 days
+            setIsNewUser(daysSinceCreation <= 30);
           }
-
-          // Fetch subscription plan
-          const plan = await getUserPlan();
-          if (plan) {
-            setUserPlan({
-              title: plan.title,
-              isPaid: plan.isPaid,
-            });
-          }
+        } else {
+          // No user data found, set to USER
+          setUserRole("USER");
         }
       } catch (err) {
-        logger.error("Error fetching user data:", err);
+        logger.error("Error fetching user role:", err);
         // On error, set to USER (don't trust metadata for security)
-        // Admin items will be hidden since userRole won't be ADMIN
         setUserRole("USER");
+      }
+
+      // Fetch subscription plan separately - don't let errors here affect role setting
+      try {
+        const plan = await getUserPlan();
+        if (plan) {
+          setUserPlan({
+            title: plan.title,
+            isPaid: plan.isPaid,
+          });
+        }
+      } catch (err) {
+        // Log but don't throw - subscription plan is not critical for sidebar
+        logger.warn("Error fetching user plan:", err);
       }
     }
 
@@ -409,51 +421,63 @@ function MobileSheetSidebarContent({ links, isFreePlan = true }: DashboardSideba
   // Fetch user plan, role, and check if user is new
   useEffect(() => {
     async function fetchUserData() {
+      if (!session?.user?.id) {
+        return;
+      }
+
       try {
-        if (session?.user?.id) {
-          // Fetch user role from database
-          const { data: userData, error } = await supabase
-            .from("users")
-            .select("role, created_at")
-            .eq("id", session.user.id)
-            .single();
+        // Fetch user role from database
+        const { data: userData, error: userError } = await supabase
+          .from("users")
+          .select("role, created_at")
+          .eq("id", session.user.id)
+          .single();
 
-          if (!error && userData) {
-            // Set role from database (prefer database role over metadata)
-            // For admin checks, we only trust the database role
-            // Normalize role to ensure it's a clean string for comparison
-            const role = String(userData.role || "USER").trim();
-            setUserRole(role);
+        if (userError) {
+          // Log the error but don't throw - gracefully degrade
+          logger.warn("Error fetching user role from database:", {
+            error: userError,
+            userId: session.user.id,
+          });
+          setUserRole("USER");
+        } else if (userData) {
+          // Set role from database (prefer database role over metadata)
+          // For admin checks, we only trust the database role
+          // Normalize role to ensure it's a clean string for comparison
+          const role = String(userData.role || "USER").trim();
+          setUserRole(role);
 
-            // Check if user is new (created within last 30 days)
-            if (userData.created_at) {
-              const createdDate = new Date(userData.created_at);
-              const daysSinceCreation = Math.floor(
-                (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
-              );
-              // Consider user "new" if created within last 30 days
-              setIsNewUser(daysSinceCreation <= 30);
-            }
-          } else {
-            // If database query fails, set to USER (don't trust metadata for security)
-            // Admin items will be hidden since userRole won't be ADMIN
-            setUserRole("USER");
+          // Check if user is new (created within last 30 days)
+          if (userData.created_at) {
+            const createdDate = new Date(userData.created_at);
+            const daysSinceCreation = Math.floor(
+              (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+            );
+            // Consider user "new" if created within last 30 days
+            setIsNewUser(daysSinceCreation <= 30);
           }
-
-          // Fetch subscription plan
-          const plan = await getUserPlan();
-          if (plan) {
-            setUserPlan({
-              title: plan.title,
-              isPaid: plan.isPaid,
-            });
-          }
+        } else {
+          // No user data found, set to USER
+          setUserRole("USER");
         }
       } catch (err) {
-        logger.error("Error fetching user data:", err);
+        logger.error("Error fetching user role:", err);
         // On error, set to USER (don't trust metadata for security)
-        // Admin items will be hidden since userRole won't be ADMIN
         setUserRole("USER");
+      }
+
+      // Fetch subscription plan separately - don't let errors here affect role setting
+      try {
+        const plan = await getUserPlan();
+        if (plan) {
+          setUserPlan({
+            title: plan.title,
+            isPaid: plan.isPaid,
+          });
+        }
+      } catch (err) {
+        // Log but don't throw - subscription plan is not critical for sidebar
+        logger.warn("Error fetching user plan:", err);
       }
     }
 

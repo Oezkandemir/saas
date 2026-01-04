@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { getCustomers, type Customer } from "@/actions/customers-actions";
-import { Button } from '@/components/alignui/actions/button';
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import {
   Table,
@@ -12,10 +11,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Users, Mail, Phone, Building2 } from "lucide-react";
+import { Users, Mail, Phone, Building2 } from "lucide-react";
 import Link from "next/link";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { PlanLimitWarning } from "@/components/plan-limit-warning";
+import { NewCustomerDrawerWrapper } from "@/components/customers/new-customer-drawer-wrapper";
+import { NewCustomerDrawerEmptyState } from "@/components/customers/new-customer-drawer-empty-state";
 
 // ISR: Revalidate every 60 seconds for fresh customer data
 export const revalidate = 60;
@@ -32,15 +33,7 @@ export default async function CustomersPage() {
       title={t("title")}
       description={t("description")}
       icon={<Users className="h-4 w-4 text-primary" />}
-      actions={
-        <Link href="/dashboard/customers/new">
-          <Button className="gap-1.5 text-xs sm:text-sm h-8 sm:h-9">
-            <Plus className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">{t("newCustomer")}</span>
-            <span className="sm:hidden">{t("new")}</span>
-          </Button>
-        </Link>
-      }
+      actions={<NewCustomerDrawerWrapper />}
       contentClassName=""
     >
       {/* Plan Limit Warning */}
@@ -52,11 +45,7 @@ export default async function CustomersPage() {
           <div className="flex flex-col items-center justify-center py-12 text-center border border-border rounded-lg">
             <Users className="h-8 w-8 text-muted-foreground mb-2" />
             <p className="text-sm font-medium mb-1">{t("empty.title")}</p>
-            <Link href="/dashboard/customers/new">
-              <Button size="sm" variant="outline" className="mt-3 h-8 text-xs">
-                {t("empty.createFirst")}
-              </Button>
-            </Link>
+            <NewCustomerDrawerEmptyState />
           </div>
         ) : (
           <div className="border border-border rounded-lg overflow-hidden">

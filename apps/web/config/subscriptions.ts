@@ -55,6 +55,10 @@ export const pricingData: SubscriptionPlan[] = [
         ? env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID 
         : null,
     },
+    polarIds: {
+      monthly: "77c6e131-56bc-46cf-8c5b-d8e6814a356b", // Sandbox Pro Monthly
+      yearly: "8bc98233-3a2c-46e5-ae90-c71ac7b4e22f", // Sandbox Pro Yearly
+    },
   },
   {
     title: "Enterprise",
@@ -86,6 +90,10 @@ export const pricingData: SubscriptionPlan[] = [
       yearly: (env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID && env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID.startsWith("price_")) 
         ? env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID 
         : null,
+    },
+    polarIds: {
+      monthly: "2a37d4e2-e513-4c3b-b463-9c79372a0e4f", // Sandbox Enterprise Monthly
+      yearly: "d05fc952-3c93-43cf-a8ac-9c2fea507e6c", // Sandbox Enterprise Yearly
     },
   },
 ];

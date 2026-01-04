@@ -42,9 +42,23 @@ export type CustomerInput = {
 export async function getCustomers(): Promise<Customer[]> {
   try {
     const user = await getCurrentUser();
-    if (!user) throw new Error("Unauthorized");
+    if (!user) {
+      logger.error("Error fetching customers: Unauthorized - no user found");
+      return [];
+    }
 
     const supabase = await getSupabaseServer();
+    
+    // Verify authentication before querying
+    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+    if (authError || !authUser) {
+      logger.error("Error fetching customers: Authentication failed", {
+        authError: authError?.message || "No auth user",
+        userId: user.id,
+      });
+      return [];
+    }
+
     const { data, error } = await supabase
       .from("customers")
       .select("*")
@@ -52,14 +66,78 @@ export async function getCustomers(): Promise<Customer[]> {
       .order("created_at", { ascending: false });
 
     if (error) {
-      logger.error("Error fetching customers", error);
+      // Log detailed error information - ensure all fields are properly serialized
+      const errorInfo: Record<string, any> = {
+        userId: user.id,
+        authUserId: authUser.id,
+        errorType: 'SupabaseQueryError',
+        timestamp: new Date().toISOString(),
+      };
+      
+      // Always include error object properties, even if they're undefined
+      errorInfo.message = error.message || '(no message)';
+      errorInfo.code = error.code || '(no code)';
+      errorInfo.details = error.details || null;
+      errorInfo.hint = error.hint || null;
+      
+      // Check if error object has any enumerable properties
+      const errorKeys = Object.keys(error);
+      errorInfo.errorKeys = errorKeys.length > 0 ? errorKeys : ['(empty object)'];
+      
+      // Log the detailed error info
+      logger.error("Error fetching customers", errorInfo);
+      
+      // Also log raw error for debugging
+      try {
+        console.error("Raw Supabase error object:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+      } catch (e) {
+        console.error("Raw Supabase error object (stringified):", String(error));
+        console.error("Error object type:", typeof error);
+        console.error("Error object constructor:", error?.constructor?.name);
+      }
+      
       // Return empty array instead of throwing to prevent UI breakage
       return [];
     }
     
     return data || [];
   } catch (error) {
-    logger.error("Error in getCustomers", error);
+    // Log detailed error information with proper serialization
+    const errorDetails: Record<string, any> = {
+      errorType: 'Exception',
+      timestamp: new Date().toISOString(),
+    };
+    
+    if (error instanceof Error) {
+      errorDetails.message = error.message || '(no message)';
+      errorDetails.name = error.name || '(no name)';
+      if (error.stack) errorDetails.stack = error.stack;
+      errorDetails.errorType = 'Error';
+    } else if (error && typeof error === 'object') {
+      // Try to extract properties from error object
+      const errorKeys = Object.keys(error);
+      errorDetails.errorKeys = errorKeys.length > 0 ? errorKeys : ['(empty object)'];
+      errorDetails.error = String(error);
+      errorDetails.errorType = typeof error;
+      
+      // Try to get common error properties
+      if ('message' in error) errorDetails.message = String((error as any).message);
+      if ('code' in error) errorDetails.code = String((error as any).code);
+    } else {
+      errorDetails.error = String(error);
+      errorDetails.errorType = typeof error;
+    }
+    
+    // Also log the raw error
+    logger.error("Error in getCustomers", errorDetails);
+    
+    try {
+      console.error("Raw caught error:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+    } catch {
+      console.error("Raw caught error (stringified):", String(error));
+      console.error("Error type:", typeof error);
+    }
+    
     // Return empty array on any error to prevent UI breakage
     return [];
   }

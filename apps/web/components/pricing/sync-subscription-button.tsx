@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { syncUserSubscriptionFromStripe } from "@/actions/sync-user-subscription";
+import { fixPolarSubscription } from "@/actions/fix-polar-subscription";
 import { toast } from "sonner";
 
 import { Button } from '@/components/alignui/actions/button';
@@ -16,7 +16,7 @@ export function SyncSubscriptionButton() {
   const handleSync = async () => {
     setIsLoading(true);
     try {
-      const result = await syncUserSubscriptionFromStripe();
+      const result = await fixPolarSubscription();
 
       if (result.success) {
         toast.success("Subscription synced successfully!");

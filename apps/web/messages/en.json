@@ -121,7 +121,11 @@
     "stripeDocs": "Stripe docs",
     "billingCycle": "Billing Cycle",
     "monthly": "Monthly",
-    "yearly": "Yearly"
+    "yearly": "Yearly",
+    "manageSubscription": "Manage Subscription",
+    "manageSubscriptionDescription": "Update or cancel your subscription",
+    "openingPortal": "Opening Portal...",
+    "syncToManage": "Please sync your subscription to manage it"
   },
   "Settings": {
     "title": "Settings – Cenety",
@@ -994,6 +998,8 @@
     "yes": "Yes",
     "currentPlan": "Current Plan",
     "premiumPlan": "Premium Plan",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
     "inactive": "Inaktiv",
     "alerts": "Benachrichtigungen",
     "no": "Nein",
@@ -1727,6 +1733,9 @@
       "description": "Manage your quotes and invoices. Create professional documents in minutes.",
       "newQuote": "Quote",
       "newInvoice": "Invoice",
+      "empty": {
+        "title": "No documents found"
+      },
       "stats": {
         "total": "Total Documents",
         "totalDescription": "{quotes} quotes, {invoices} invoices",

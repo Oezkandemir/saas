@@ -43,6 +43,10 @@ export default async function BillingPage() {
     stripeSubscriptionId: null,
     stripePriceId: null,
     stripeCurrentPeriodEnd: 0,
+    polarCustomerId: null,
+    polarSubscriptionId: null,
+    polarProductId: null,
+    polarCurrentPeriodEnd: 0,
     isPaid: false,
     interval: null,
     isCanceled: false,
@@ -97,28 +101,9 @@ export default async function BillingPage() {
         <AutoSyncSubscription />
       </Suspense>
 
-      {/* Demo Alert - Only in development */}
-      {process.env.NODE_ENV !== "production" && (
-        <Alert className="border border-border/20 bg-yellow-500/5 !pl-12">
-          <Icons.warning className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-          <AlertTitle className="text-sm font-medium text-yellow-900 dark:text-yellow-100">{t("demoAlert")}</AlertTitle>
-          <AlertDescription className="text-xs text-yellow-800 dark:text-yellow-200 mt-1">
-            {t("demoDescription")}{" "}
-            <a
-              href="https://stripe.com/docs/testing#cards"
-              target="_blank"
-              rel="noreferrer"
-              className="font-medium underline underline-offset-2 hover:text-yellow-600 dark:hover:text-yellow-300 transition-colors"
-            >
-              {t("stripeDocs")}
-            </a>
-            .
-          </AlertDescription>
-        </Alert>
-      )}
 
       {/* Subscription Details - Visual Center */}
-      <BillingInfo userSubscriptionPlan={userSubscriptionPlan} />
+      <BillingInfo userSubscriptionPlan={userSubscriptionPlan} userEmail={user.email} />
     </UnifiedPageLayout>
   );
 }

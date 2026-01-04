@@ -55,13 +55,6 @@ export const getSupabaseServer = async () => {
   try {
     const cookieStore = await cookies();
     const client = createSupabaseServerClient(cookieStore);
-    
-    // Test connection with a simple query
-    const { error: testError } = await client.from("customers").select("id").limit(1);
-    if (testError && testError.code !== "PGRST116") {
-      console.warn("Supabase connection test warning:", testError.message);
-    }
-    
     return client;
   } catch (error) {
     console.error("Error getting Supabase server instance:", error);

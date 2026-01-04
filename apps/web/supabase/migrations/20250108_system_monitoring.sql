@@ -205,3 +205,9 @@ COMMENT ON COLUMN public.system_errors.error_type IS 'Severity level: critical, 
 COMMENT ON COLUMN public.system_errors.resolved IS 'Whether the error has been resolved';
 COMMENT ON COLUMN public.system_status.status IS 'Current status: operational, degraded, down, or maintenance';
 
+
+
+
+
+
+

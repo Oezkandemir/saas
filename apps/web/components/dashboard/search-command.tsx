@@ -20,7 +20,6 @@ import {
 import { SidebarNavItem } from "@/types";
 
 import { cn } from "@/lib/utils";
-import { Button } from '@/components/alignui/actions/button';
 import { CommandMenu } from '@/components/alignui/overlays/command-menu';
 import { CompactButton } from '@/components/alignui/actions/compact-button';
 import { Kbd } from '@/components/alignui/actions/kbd';
@@ -84,36 +83,7 @@ function SearchCommandContent({ links, t }: { links: SidebarNavItem[]; t: (key: 
 
   return (
     <>
-      {/* Mobile: Only show search icon */}
-      <Button
-        variant="outline"
-        size="icon"
-        className="sm:hidden"
-        onClick={() => setOpen(true)}
-        aria-label={t("label")}
-        type="button"
-      >
-        <RiSearch2Line className="size-4" />
-      </Button>
-
-      {/* Desktop: Show full search bar */}
-      <Button
-        variant="outline"
-        className={cn(
-          "relative h-9 w-full justify-start rounded-md bg-muted/50 text-sm font-normal text-muted-foreground shadow-none pr-12 hidden sm:flex md:w-72",
-        )}
-        onClick={() => setOpen(true)}
-        type="button"
-      >
-        <RiSearch2Line className="mr-2 size-4" />
-        <span className="inline-flex">
-          {t("placeholder")}
-        </span>
-        <Kbd.Root className="pointer-events-none absolute right-2 top-1.5">
-          <span className="text-xs">⌘</span>K
-        </Kbd.Root>
-      </Button>
-
+      {/* Command Menu Dialog - Only accessible via Command+K, no visible button */}
       <CommandMenu.Dialog open={open} onOpenChange={setOpen}>
         <CommandMenu.Content>
           <CommandMenu.Command>
@@ -245,32 +215,7 @@ function SearchCommandFallback({ links }: { links: SidebarNavItem[] }) {
 
   return (
     <>
-      <Button
-        variant="outline"
-        size="icon"
-        className="sm:hidden"
-        onClick={() => setOpen(true)}
-        aria-label={fallbackTranslations.label}
-        type="button"
-      >
-        <RiSearch2Line className="size-4" />
-      </Button>
-      <Button
-        variant="outline"
-        className={cn(
-          "relative h-9 w-full justify-start rounded-md bg-muted/50 text-sm font-normal text-muted-foreground shadow-none pr-12 hidden sm:flex md:w-72",
-        )}
-        onClick={() => setOpen(true)}
-        type="button"
-      >
-        <RiSearch2Line className="mr-2 size-4" />
-        <span className="inline-flex">
-          {fallbackTranslations.placeholder}
-        </span>
-        <Kbd.Root className="pointer-events-none absolute right-2 top-1.5">
-          <span className="text-xs">⌘</span>K
-        </Kbd.Root>
-      </Button>
+      {/* Command Menu Dialog - Only accessible via Command+K, no visible button */}
       <CommandMenu.Dialog open={open} onOpenChange={setOpen}>
         <CommandMenu.Content>
           <CommandMenu.Command>

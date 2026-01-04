@@ -20,6 +20,7 @@ import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
+import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { constructMetadata } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
 import { Button } from '@/components/alignui/actions/button';
@@ -86,12 +87,22 @@ export default async function ProfilePage() {
     companyProfile = allProfiles.length > 0 ? allProfiles[0] : null;
   }
 
-  const hasSubscription = !!userData?.stripe_subscription_id;
-  const subscriptionStatus = hasSubscription ? "active" : null; // Simplified since we don't have the status field
-  const subscriptionEndsAt =
-    hasSubscription && userData?.stripe_current_period_end
-      ? new Date(userData.stripe_current_period_end)
-      : null;
+  // Get user subscription plan to show plan name
+  let userSubscriptionPlan;
+  try {
+    userSubscriptionPlan = await getUserSubscriptionPlan(user.id, user.email);
+  } catch (error) {
+    console.error("Error fetching subscription plan:", error);
+    userSubscriptionPlan = null;
+  }
+
+  // Check subscription status - Polar only (Stripe is deprecated)
+  const paymentProvider = userData?.payment_provider || "polar";
+  const hasSubscription = userSubscriptionPlan?.isPaid || false;
+  const subscriptionStatus = hasSubscription ? "active" : null;
+  const subscriptionEndsAt = hasSubscription && userSubscriptionPlan?.polarCurrentPeriodEnd
+    ? new Date(userSubscriptionPlan.polarCurrentPeriodEnd)
+    : null;
 
   // Get email verification status from Supabase user metadata
   const emailVerified = user.email_confirmed_at != null;
@@ -161,7 +172,7 @@ export default async function ProfilePage() {
                     </div>
                   </div>
                   
-                  {subscriptionStatus && (
+                  {subscriptionStatus && userSubscriptionPlan && (
                     <div className="flex items-center gap-2">
                       <div className="flex items-center justify-center size-8 rounded-lg bg-green-500/10 border border-green-500/20">
                         <BadgeCheck className="size-4 text-green-600 dark:text-green-400" />
@@ -169,7 +180,7 @@ export default async function ProfilePage() {
                       <div>
                         <p className="text-xs text-muted-foreground">{t("subscription")}</p>
                         <p className="text-sm font-medium text-green-600 dark:text-green-400">
-                          {subscriptionStatus === "active" ? t("active") : t("inactive")}
+                          {userSubscriptionPlan.title}
                         </p>
                       </div>
                     </div>
@@ -427,15 +438,18 @@ export default async function ProfilePage() {
                     <h3 className="text-lg font-semibold">
                       {t("subscription")}
                     </h3>
-                    {hasSubscription ? (
+                    {hasSubscription && userSubscriptionPlan ? (
                       <div className="p-4 rounded-lg border">
                         <div className="flex justify-between items-center">
                           <div>
                             <p className="font-medium">{t("currentPlan")}</p>
                             <p className="text-sm text-muted-foreground">
-                              {userData.stripe_price_id
-                                ? t("premiumPlan")
-                                : t("basicPlan")}
+                              {userSubscriptionPlan.title}
+                              {userSubscriptionPlan.interval && (
+                                <span className="ml-2 text-xs">
+                                  ({userSubscriptionPlan.interval === "month" ? t("monthly") : t("yearly")})
+                                </span>
+                              )}
                             </p>
                           </div>
                           <Link href="/dashboard/billing">

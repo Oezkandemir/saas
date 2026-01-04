@@ -481,3 +481,82 @@ export async function deleteOldResolvedErrors(
   }
 }
 
+/**
+ * Delete all system errors
+ * WARNING: This will permanently delete all errors from the database
+ */
+export async function deleteAllErrors(): Promise<{ success: boolean; message: string; count?: number }> {
+  try {
+    const supabase = await createClient();
+    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, message: "Not authenticated" };
+    }
+
+    // Check if user is admin
+    const { data: userData } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (userData?.role !== "ADMIN") {
+      return { success: false, message: "Unauthorized: Admin access required" };
+    }
+
+    // Count errors before deletion
+    const { count, error: countError } = await supabase
+      .from("system_errors")
+      .select("*", { count: "exact", head: true });
+
+    if (countError) {
+      return { success: false, message: "Failed to count errors" };
+    }
+
+    // Delete all errors - use a condition that matches all rows
+    // Since we can't use .delete() without a filter in Supabase, we'll delete by selecting all IDs first
+    const { data: allErrors, error: selectError } = await supabase
+      .from("system_errors")
+      .select("id");
+
+    if (selectError) {
+      return { success: false, message: "Failed to fetch errors for deletion" };
+    }
+
+    if (!allErrors || allErrors.length === 0) {
+      return { success: true, message: "No errors found to delete", count: 0 };
+    }
+
+    const ids = allErrors.map((e) => e.id);
+    const batchSize = 1000; // Delete in batches to avoid hitting limits
+
+    // Delete errors in batches
+    for (let i = 0; i < ids.length; i += batchSize) {
+      const batch = ids.slice(i, i + batchSize);
+      const { error: deleteError } = await supabase
+        .from("system_errors")
+        .delete()
+        .in("id", batch);
+
+      if (deleteError) {
+        return { success: false, message: `Failed to delete errors: ${deleteError.message}` };
+      }
+    }
+
+    return {
+      success: true,
+      message: `Successfully deleted all ${count || ids.length} error(s)`,
+      count: count || ids.length,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to delete errors",
+    };
+  }
+}
+

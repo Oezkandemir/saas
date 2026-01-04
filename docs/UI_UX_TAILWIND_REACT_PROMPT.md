@@ -412,3 +412,9 @@ Für jede Komponente:
 - [Master UI/UX Prompt](./UI_UX_MASTER_PROMPT.md)
 - [Figma Design Prompt](./UI_UX_FIGMA_PROMPT.md)
 
+
+
+
+
+
+

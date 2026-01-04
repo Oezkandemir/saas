@@ -40,7 +40,7 @@ interface PricingCardsProps {
 
 export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
   const isYearlyDefault =
-    !subscriptionPlan?.stripeCustomerId || subscriptionPlan.interval === "year"
+    !subscriptionPlan?.polarCustomerId || subscriptionPlan.interval === "year"
       ? true
       : false;
   const [isYearly, setIsYearly] = useState<boolean>(!!isYearlyDefault);

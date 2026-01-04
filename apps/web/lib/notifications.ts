@@ -91,11 +91,14 @@ export async function createNotification(
     });
 
     if (error) {
-      const errorObj = error instanceof Error 
-        ? error 
-        : error.message 
-          ? new Error(error.message) 
-          : new Error(String(error));
+      let errorObj: Error;
+      if (error instanceof Error) {
+        errorObj = error;
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorObj = new Error(String((error as { message: unknown }).message));
+      } else {
+        errorObj = new Error(String(error));
+      }
       logger.error("Error creating notification", errorObj);
       return null;
     }
@@ -138,11 +141,14 @@ export async function createDocumentNotification(
         });
       } else {
         // Extract error details properly
-        const errorDetails = error instanceof Error 
-          ? error 
-          : error.message 
-            ? new Error(error.message) 
-            : new Error(String(error));
+        let errorDetails: Error;
+        if (error instanceof Error) {
+          errorDetails = error;
+        } else if (typeof error === 'object' && error !== null && 'message' in error) {
+          errorDetails = new Error(String((error as { message: unknown }).message));
+        } else {
+          errorDetails = new Error(String(error));
+        }
         logger.error("Error creating document notification", errorDetails);
       }
       return null;
@@ -185,11 +191,14 @@ export async function createCustomerNotification(
           message: error.message || String(error)
         });
       } else {
-        const errorDetails = error instanceof Error 
-          ? error 
-          : error.message 
-            ? new Error(error.message) 
-            : new Error(String(error));
+        let errorDetails: Error;
+        if (error instanceof Error) {
+          errorDetails = error;
+        } else if (typeof error === 'object' && error !== null && 'message' in error) {
+          errorDetails = new Error(String((error as { message: unknown }).message));
+        } else {
+          errorDetails = new Error(String(error));
+        }
         logger.error("Error creating customer notification", errorDetails);
       }
       return null;
@@ -227,11 +236,14 @@ export async function createSubscriptionNotification(
     );
 
     if (error) {
-      const errorObj = error instanceof Error 
-        ? error 
-        : error.message 
-          ? new Error(error.message) 
-          : new Error(String(error));
+      let errorObj: Error;
+      if (error instanceof Error) {
+        errorObj = error;
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorObj = new Error(String((error as { message: unknown }).message));
+      } else {
+        errorObj = new Error(String(error));
+      }
       logger.error("Error creating subscription notification", errorObj);
       return null;
     }
@@ -263,11 +275,14 @@ export async function createSecurityNotification(
     });
 
     if (error) {
-      const errorObj = error instanceof Error 
-        ? error 
-        : error.message 
-          ? new Error(error.message) 
-          : new Error(String(error));
+      let errorObj: Error;
+      if (error instanceof Error) {
+        errorObj = error;
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorObj = new Error(String((error as { message: unknown }).message));
+      } else {
+        errorObj = new Error(String(error));
+      }
       logger.error("Error creating security notification", errorObj);
       return null;
     }
@@ -297,11 +312,14 @@ export async function createWelcomeNotification(
     });
 
     if (error) {
-      const errorObj = error instanceof Error 
-        ? error 
-        : error.message 
-          ? new Error(error.message) 
-          : new Error(String(error));
+      let errorObj: Error;
+      if (error instanceof Error) {
+        errorObj = error;
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorObj = new Error(String((error as { message: unknown }).message));
+      } else {
+        errorObj = new Error(String(error));
+      }
       logger.error("Error creating welcome notification", errorObj);
       return null;
     }

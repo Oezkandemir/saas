@@ -335,3 +335,9 @@ Nach dem Audit:
 - [Figma Design Prompt](./UI_UX_FIGMA_PROMPT.md)
 - [Tailwind/React Implementation](./UI_UX_TAILWIND_REACT_PROMPT.md)
 
+
+
+
+
+
+

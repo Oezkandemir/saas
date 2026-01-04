@@ -22,11 +22,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           type={type}
           className={cn(
-            // Base Styles - Konsistente Höhe (h-10 = 40px), klare Focus States
-            "flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm",
-            "ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium",
-            "placeholder:text-muted-foreground",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            // Base Styles - AlignUI Pro Styles
+            "flex h-10 w-full rounded-md border bg-bg-white-0 px-3 py-2 text-sm text-text-strong-950",
+            "ring-offset-bg-white-0 file:border-0 file:bg-transparent file:text-sm file:font-medium",
+            "placeholder:text-text-sub-500",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stroke-soft-400 focus-visible:ring-offset-2",
             "disabled:cursor-not-allowed disabled:opacity-50",
             // Error State - Deutlich sichtbar
             hasError
@@ -34,8 +34,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               // Success State
               : hasSuccess
               ? "border-green-500 focus-visible:ring-green-500 pr-10"
-              // Default State - Subtile Borders
-              : "border-border/20 focus-visible:border-border focus-visible:ring-primary/20",
+              // Default State - AlignUI Pro Borders
+              : "border-stroke-soft-200 focus-visible:border-stroke-soft-400 focus-visible:ring-stroke-soft-400",
             className
           )}
           ref={ref}

@@ -20,7 +20,6 @@ import { useSupabase } from "@/components/supabase-provider";
 import { ModalContext } from "@/components/modals/providers";
 
 import { UserAccountNav } from "./user-account-nav";
-import { MarketingCommandMenu } from "./marketing-command-menu";
 
 interface NavBarProps {
   scroll?: boolean;
@@ -85,9 +84,6 @@ export function NavBar({ scroll = false }: NavBarProps) {
         </div>
 
         <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
-          {/* Command Menu - Only show on marketing pages, not docs */}
-          {!documentation && <MarketingCommandMenu />}
-
           {/* Language Switcher */}
           <div className="flex items-center pr-1 sm:pr-2 md:pr-0">
             <LanguageSwitcher />

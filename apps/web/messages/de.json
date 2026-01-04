@@ -121,7 +121,11 @@
     "stripeDocs": "Stripe-Dokumentation",
     "billingCycle": "Abrechnungszyklus",
     "monthly": "Monatlich",
-    "yearly": "Jährlich"
+    "yearly": "Jährlich",
+    "manageSubscription": "Abonnement verwalten",
+    "manageSubscriptionDescription": "Aktualisieren oder kündigen Sie Ihr Abonnement",
+    "openingPortal": "Portal wird geöffnet...",
+    "syncToManage": "Bitte synchronisieren Sie Ihr Abonnement, um es zu verwalten"
   },
   "Settings": {
     "title": "Einstellungen – Cenety",
@@ -998,6 +1002,8 @@
     "yes": "Ja",
     "currentPlan": "Aktueller Plan",
     "premiumPlan": "Premium-Plan",
+    "monthly": "Monatlich",
+    "yearly": "Jährlich",
     "inactive": "Inaktiv",
     "alerts": "Benachrichtigungen",
     "no": "Nein",
@@ -1489,7 +1495,9 @@
     "stripeDocs": "Stripe-Dokumentation",
     "billingCycle": "Abrechnungszyklus",
     "monthly": "Monatlich",
-    "yearly": "Jährlich"
+    "yearly": "Jährlich",
+    "manageSubscription": "Abonnement verwalten",
+    "manageSubscriptionDescription": "Aktualisieren oder kündigen Sie Ihr Abonnement"
   },
   "GDPR": {
     "consent": {
@@ -1631,6 +1639,9 @@
       "description": "Verwalten Sie Ihre Angebote und Rechnungen. Erstellen Sie professionelle Dokumente in Minuten.",
       "newQuote": "Angebot",
       "newInvoice": "Rechnung",
+      "empty": {
+        "title": "Keine Dokumente gefunden"
+      },
       "stats": {
         "total": "Gesamt Dokumente",
         "totalDescription": "{quotes} Angebote, {invoices} Rechnungen",

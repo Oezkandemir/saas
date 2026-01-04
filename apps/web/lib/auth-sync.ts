@@ -2,7 +2,6 @@ import { User } from "@supabase/supabase-js";
 
 import { env } from "@/env.mjs";
 import { supabaseAdmin } from "@/lib/db-admin";
-import { stripe } from "@/lib/stripe";
 import { logger } from "@/lib/logger";
 
 /**
@@ -80,29 +79,9 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
       }
     }
 
-    // Create a Stripe customer for the new user if Stripe is configured
+    // Stripe is deprecated - we use Polar.sh now
+    // No Stripe customer creation needed
     let stripeCustomerId: string | null = null;
-    if (env.STRIPE_API_KEY && env.STRIPE_API_KEY.length > 0) {
-      try {
-        const customer = await stripe.customers.create({
-          email: user.email,
-          name: user.user_metadata?.name || user.email.split("@")[0],
-          metadata: {
-            userId: user.id,
-          },
-        });
-        stripeCustomerId = customer.id;
-        logger.info(
-          `Created Stripe customer ${stripeCustomerId} for user ${user.id}`,
-        );
-      } catch (stripeError) {
-        logger.error(
-          `Error creating Stripe customer for user ${user.id}:`,
-          stripeError,
-        );
-        // Continue without Stripe customer ID
-      }
-    }
 
     // Try direct insert without email if it's causing conflicts
     logger.info(`Creating new user record for ${user.id}`);
@@ -121,6 +100,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
       stripe_subscription_id: null,
       stripe_price_id: null,
       stripe_current_period_end: null,
+      payment_provider: "polar", // Default to Polar (Stripe is deprecated)
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };

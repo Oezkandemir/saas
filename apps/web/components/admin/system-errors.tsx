@@ -13,10 +13,12 @@ import {
   CardTitle,
 } from '@/components/alignui/data-display/card';
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Button } from '@/components/alignui/actions/button';
+import { Button, buttonVariants } from '@/components/alignui/actions/button';
+import { cn } from '@/lib/utils';
 import {
   getRecentErrors,
   resolveError,
+  deleteAllErrors,
   type SystemErrorRecord,
 } from "@/actions/system-monitoring-actions";
 import { useToast } from "@/components/ui/use-toast";
@@ -37,6 +39,7 @@ export function SystemErrors() {
   const [errors, setErrors] = useState<SystemErrorRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [resolvingId, setResolvingId] = useState<string | null>(null);
+  const [isDeletingAll, setIsDeletingAll] = useState(false);
 
   useEffect(() => {
     loadErrors();
@@ -94,6 +97,34 @@ export function SystemErrors() {
     }
   };
 
+  const handleDeleteAll = async () => {
+    setIsDeletingAll(true);
+    try {
+      const result = await deleteAllErrors();
+      if (result.success) {
+        toast({
+          title: "Erfolg",
+          description: result.message,
+        });
+        loadErrors();
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Fehler",
+          description: result.message,
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Fehler",
+        description: "Fehler konnten nicht gelöscht werden",
+      });
+    } finally {
+      setIsDeletingAll(false);
+    }
+  };
+
   const getErrorIcon = (errorType: string) => {
     switch (errorType) {
       case "critical":
@@ -145,10 +176,52 @@ export function SystemErrors() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>System-Fehler</CardTitle>
-        <CardDescription>
-          Übersicht über Systemfehler und Ausnahmen
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>System-Fehler</CardTitle>
+            <CardDescription>
+              Übersicht über Systemfehler und Ausnahmen
+            </CardDescription>
+          </div>
+          {errors.length > 0 && (
+            <AlertDialogRoot>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  disabled={isDeletingAll}
+                >
+                  {isDeletingAll ? (
+                    <>
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                      Löschen...
+                    </>
+                  ) : (
+                    "Alle löschen"
+                  )}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Alle Systemfehler löschen?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Diese Aktion löscht alle Systemfehler permanent aus der Datenbank. 
+                    Diese Aktion kann nicht rückgängig gemacht werden.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDeleteAll}
+                    className={cn(buttonVariants({ variant: "destructive" }))}
+                  >
+                    Alle löschen
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogRoot>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Summary */}

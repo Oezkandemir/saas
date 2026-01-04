@@ -6,7 +6,6 @@ import { adminSidebarLinks } from "@/config/admin";
 import { sidebarLinks } from "@/config/dashboard";
 import { DashboardSidebar, MobileSheetSidebar } from "./dashboard-sidebar-wrapper";
 import { SearchCommand } from "@/components/dashboard/search-command";
-import { QuickActions } from "./quick-actions";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { UserAccountNav } from "./user-account-nav";
 import Link from "next/link";
@@ -77,10 +76,8 @@ export function SidebarLinksProvider({
 
             <div className="w-full flex-1" />
 
-            <div className="hidden md:flex items-center gap-2">
-              <SearchCommand links={filteredLinks} />
-              <QuickActions />
-            </div>
+            {/* Command Menu - Hidden but accessible via Command+K */}
+            <SearchCommand links={filteredLinks} />
 
             <LanguageSwitcher />
             <UserAccountNav />

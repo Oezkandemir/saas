@@ -18,6 +18,11 @@ export const env = createEnv({
     STRIPE_API_KEY: z.string().optional().default(""),
     STRIPE_WEBHOOK_SECRET: z.string().optional().default(""),
     
+    // Polar.sh
+    POLAR_ACCESS_TOKEN: z.string().optional().default(""),
+    // Use sandbox environment for testing (default: false for production)
+    POLAR_USE_SANDBOX: z.string().optional().default("false"),
+    
     // Supabase config
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
     SUPABASE_JWT_SECRET: z.string().min(1),
@@ -30,6 +35,11 @@ export const env = createEnv({
     NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID: z.string().optional().default(""),
     NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID: z.string().optional().default(""),
     NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID: z.string().optional().default(""),
+    
+    // Polar.sh
+    POLAR_SUCCESS_URL: z.string().url().optional(),
+    // Payment provider selection: "stripe" | "polar" | "both" (default: "stripe")
+    NEXT_PUBLIC_PAYMENT_PROVIDER: z.enum(["stripe", "polar", "both"]).optional().default("stripe"),
     
     // Supabase config
     NEXT_PUBLIC_SUPABASE_URL: z.string().min(1),
@@ -59,6 +69,12 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID,
     NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID:
       process.env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID,
+    
+    // Polar.sh
+    POLAR_ACCESS_TOKEN: process.env.POLAR_ACCESS_TOKEN,
+    POLAR_SUCCESS_URL: process.env.POLAR_SUCCESS_URL,
+    POLAR_USE_SANDBOX: process.env.POLAR_USE_SANDBOX || "false",
+    NEXT_PUBLIC_PAYMENT_PROVIDER: process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || "stripe",
     
     // Supabase
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,

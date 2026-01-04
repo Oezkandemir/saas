@@ -131,6 +131,7 @@ const config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        "20": "20px", // AlignUI rounded-20
       },
       fontFamily: {
         // Maximal 2 Font Families: Heading + Body
@@ -346,6 +347,10 @@ const config = {
         },
         '.shadow-regular-lg': {
           'box-shadow': 'var(--shadow-regular-lg)',
+        },
+        // Alias for shadow-custom-md (used in Drawer)
+        '.shadow-custom-md': {
+          'box-shadow': 'var(--shadow-regular-md)',
         },
       });
     },

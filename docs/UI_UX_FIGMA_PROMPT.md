@@ -199,3 +199,9 @@ Erstelle für jeden Screen:
 - [Master UI/UX Prompt](./UI_UX_MASTER_PROMPT.md)
 - [Tailwind/React Implementation](./UI_UX_TAILWIND_REACT_PROMPT.md)
 
+
+
+
+
+
+

@@ -18,6 +18,7 @@ import { SupabaseProvider } from "@/components/supabase-provider";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ThemeSyncProvider } from "@/components/providers/theme-sync-provider";
 import { PerformanceTracker } from "@/components/performance-tracker";
+import { AutoRefreshSubscription } from "@/components/pricing/auto-refresh-subscription";
 
 export const dynamic = "force-dynamic";
 
@@ -87,6 +88,7 @@ export default async function RootLayout({
                         <DynamicProviders>
                           {children}
                         </DynamicProviders>
+                        <AutoRefreshSubscription />
                         <Toaster richColors closeButton />
                         <TailwindIndicator />
                         <PerformanceTracker />

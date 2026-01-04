@@ -285,3 +285,9 @@ Das CommandMenu verwendet Tailwind CSS und folgt dem AlignUI Designsystem. Sie k
 - Demo-Komponente: `apps/web/components/alignui/overlays/command-menu-demo.tsx`
 
 
+
+
+
+
+
+

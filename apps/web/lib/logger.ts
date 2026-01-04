@@ -39,7 +39,40 @@ class Logger {
 
   error(message: string, error?: any) {
     if (error) {
-      console.error(this.formatMessage('error', message), error);
+      // Check if error is an empty object or has no meaningful properties
+      const errorKeys = typeof error === 'object' && error !== null 
+        ? Object.keys(error).filter(key => error[key] !== undefined && error[key] !== null)
+        : [];
+      
+      if (errorKeys.length === 0 && typeof error === 'object') {
+        // Empty object - try to serialize it or log a warning
+        try {
+          const serialized = JSON.stringify(error);
+          if (serialized === '{}') {
+            // Try to extract more information from the error
+            const errorString = this.serializeError(error);
+            if (errorString && errorString !== 'Error: Unknown') {
+              console.error(this.formatMessage('error', message), errorString);
+            } else {
+              console.error(this.formatMessage('error', message), '(Empty error object - check console for details)');
+              // Try to log error properties that might not be enumerable
+              if (error instanceof Error) {
+                console.error('Error name:', error.name);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
+              }
+            }
+          } else {
+            console.error(this.formatMessage('error', message), error);
+          }
+        } catch {
+          // If serialization fails, try to extract what we can
+          const errorString = this.serializeError(error);
+          console.error(this.formatMessage('error', message), errorString || error);
+        }
+      } else {
+        console.error(this.formatMessage('error', message), error);
+      }
     } else {
       console.error(this.formatMessage('error', message));
     }

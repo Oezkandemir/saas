@@ -22,11 +22,43 @@ const LabelRoot = React.forwardRef<
 ));
 LabelRoot.displayName = 'Label.Root';
 
-// Export individual components
-export { LabelRoot, labelVariants };
+const LabelAsterisk = React.forwardRef<
+  HTMLSpanElement,
+  React.HTMLAttributes<HTMLSpanElement>
+>(({ className, ...props }, ref) => (
+  <span
+    ref={ref}
+    className={cn('text-destructive ml-0.5', className)}
+    {...props}
+  >
+    *
+  </span>
+));
+LabelAsterisk.displayName = 'Label.Asterisk';
 
-// Export namespace object
-export const Label = {
+const LabelSub = React.forwardRef<
+  HTMLSpanElement,
+  React.HTMLAttributes<HTMLSpanElement>
+>(({ className, ...props }, ref) => (
+  <span
+    ref={ref}
+    className={cn('text-text-sub-600 font-normal ml-1', className)}
+    {...props}
+  />
+));
+LabelSub.displayName = 'Label.Sub';
+
+// Export individual components
+export { LabelRoot, LabelAsterisk, LabelSub, labelVariants };
+
+// Export namespace object with explicit typing
+export const Label: {
+  Root: typeof LabelRoot;
+  Asterisk: typeof LabelAsterisk;
+  Sub: typeof LabelSub;
+} = {
   Root: LabelRoot,
+  Asterisk: LabelAsterisk,
+  Sub: LabelSub,
 };
 

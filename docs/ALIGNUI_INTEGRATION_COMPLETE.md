@@ -123,3 +123,9 @@ import { BadgeRoot } from '@/components/alignui/data-display/badge';
 
 Alle Basis-Utilities, Styles, Fonts und Design Tokens sind vorhanden und können verwendet werden.
 
+
+
+
+
+
+

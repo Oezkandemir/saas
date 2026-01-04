@@ -227,3 +227,9 @@ Mit diesen Prompts erhältst du:
 **Letzte Aktualisierung:** 2026-01-03
 **Version:** 1.0.0
 
+
+
+
+
+
+
