@@ -74,7 +74,7 @@ export async function toggleUserBanStatus(userId: string, status: string) {
 }
 
 /**
- * Delete a user from the system
+ * Delete a user from the system (including auth.users)
  *
  * @param userId - The ID of the user to delete
  * @returns Result of the operation
@@ -90,7 +90,17 @@ export async function deleteUser(userId: string) {
     // Validate the user ID
     const { userId: validatedUserId } = deleteUserSchema.parse({ userId });
 
-    // Delete the user
+    // Delete from auth.users first (this will cascade to public.users if foreign key is set up)
+    const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(
+      validatedUserId,
+    );
+
+    if (authError) {
+      logger.warn("Error deleting auth user (may not exist):", authError);
+      // Continue to delete from public.users even if auth deletion fails
+    }
+
+    // Delete the user from public.users
     const { error } = await supabaseAdmin
       .from("users")
       .delete()
@@ -113,6 +123,72 @@ export async function deleteUser(userId: string) {
     if (error instanceof z.ZodError) {
       return { success: false, error: "Invalid user ID format" };
     }
+    return { success: false, error: "An unexpected error occurred" };
+  }
+}
+
+/**
+ * Delete multiple users by their IDs (including auth.users)
+ * This is a batch operation for admin use
+ *
+ * @param userIds - Array of user IDs to delete
+ * @returns Result of the operation
+ */
+export async function deleteUsersBatch(userIds: string[]) {
+  try {
+    // Check if current user is admin
+    const currentUser = await getCurrentUser();
+    if (!currentUser || currentUser.role !== "ADMIN") {
+      return { success: false, error: "Unauthorized: Admin access required" };
+    }
+
+    const results = [];
+    const errors = [];
+
+    for (const userId of userIds) {
+      try {
+        // Validate the user ID
+        const { userId: validatedUserId } = deleteUserSchema.parse({ userId });
+
+        // Delete from auth.users first
+        const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(
+          validatedUserId,
+        );
+
+        if (authError) {
+          logger.warn(`Error deleting auth user ${validatedUserId}:`, authError);
+          errors.push({ userId: validatedUserId, error: authError.message });
+        } else {
+          results.push({ userId: validatedUserId, success: true });
+        }
+
+        // Delete from public.users (should already be done, but ensure cleanup)
+        const { error } = await supabaseAdmin
+          .from("users")
+          .delete()
+          .eq("id", validatedUserId);
+
+        if (error && error.code !== "PGRST116") {
+          // PGRST116 = no rows returned (user already deleted)
+          logger.warn(`Error deleting user ${validatedUserId} from public.users:`, error);
+        }
+      } catch (error) {
+        logger.error(`Error processing user ${userId}:`, error);
+        errors.push({ userId, error: error instanceof Error ? error.message : "Unknown error" });
+      }
+    }
+
+    // Revalidate the admin users page
+    revalidatePath("/admin/users");
+
+    return {
+      success: errors.length === 0,
+      message: `Deleted ${results.length} users${errors.length > 0 ? `, ${errors.length} errors` : ""}`,
+      results,
+      errors: errors.length > 0 ? errors : undefined,
+    };
+  } catch (error) {
+    logger.error("Error in deleteUsersBatch:", error);
     return { success: false, error: "An unexpected error occurred" };
   }
 }

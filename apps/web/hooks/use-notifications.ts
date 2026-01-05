@@ -59,6 +59,7 @@ export function useNotifications(): UseNotificationsResult {
   const supabaseContext = useSupabase();
   const queryClient = useQueryClient();
   const channelRef = useRef<RealtimeChannel | null>(null);
+  const isSubscribedRef = useRef<boolean>(false);
   const router = useRouter();
   const previousCountRef = useRef<number>(0);
 
@@ -125,18 +126,27 @@ export function useNotifications(): UseNotificationsResult {
           // Ignore cleanup errors
         });
         channelRef.current = null;
+        isSubscribedRef.current = false;
       }
       return;
     }
 
-    // Clean up existing channel before creating a new one
+    // ⚡ CRITICAL: Check if channel already exists and is subscribed
+    // This prevents double subscription in React Strict Mode
     if (channelRef.current) {
+      const channelState = channelRef.current.state;
+      if (channelState === "joined" || channelState === "joining") {
+        // Channel is already active, don't create a new one
+        return;
+      }
+      // Channel exists but is not active, clean it up
       try {
         supabase.removeChannel(channelRef.current);
       } catch (err) {
         // Ignore cleanup errors
       }
       channelRef.current = null;
+      isSubscribedRef.current = false;
     }
 
     try {
@@ -250,25 +260,30 @@ export function useNotifications(): UseNotificationsResult {
         )
         .subscribe((status, err) => {
           if (status === "SUBSCRIBED") {
+            isSubscribedRef.current = true;
             logger.debug(
               "✅ Successfully subscribed to real-time notifications for user:",
               userId,
             );
           } else if (status === "CHANNEL_ERROR") {
+            isSubscribedRef.current = false;
             logger.error("⚠️ Error subscribing to notifications channel:", err);
           } else if (status === "TIMED_OUT") {
+            isSubscribedRef.current = false;
             logger.warn(
               "⏱️ Subscription timed out, will retry on next effect run",
             );
             // Don't retry subscribe() on same channel - it will cause error
             // The useEffect will recreate the channel if dependencies change
           } else if (status === "CLOSED") {
+            isSubscribedRef.current = false;
             logger.warn("🔌 Channel closed, will reconnect on next mount");
           }
         });
 
       channelRef.current = channel;
     } catch (err) {
+      isSubscribedRef.current = false;
       logger.warn("Failed to set up real-time notifications:", err);
     }
 
@@ -276,14 +291,19 @@ export function useNotifications(): UseNotificationsResult {
     return () => {
       if (channelRef.current && supabase) {
         try {
-          supabase.removeChannel(channelRef.current);
+          // Check channel state before removing
+          const channelState = channelRef.current.state;
+          if (channelState === "joined" || channelState === "joining") {
+            supabase.removeChannel(channelRef.current);
+          }
         } catch (err) {
           // Ignore cleanup errors
         }
         channelRef.current = null;
+        isSubscribedRef.current = false;
       }
     };
-  }, [userId, supabase, queryClient]);
+  }, [userId, supabase, queryClient, router]);
 
   // Track count changes for initial load (don't show toast on initial load)
   useEffect(() => {

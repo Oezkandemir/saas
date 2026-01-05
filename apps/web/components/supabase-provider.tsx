@@ -33,34 +33,8 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   });
   const [session, setSession] = useState<Session | null>(null);
 
-  // Subscribe to realtime notifications channel (only once)
-  useEffect(() => {
-    let channel: ReturnType<typeof supabase.channel> | null = null;
-
-    try {
-      channel = supabase.channel("global_notifications_changes");
-      channel.subscribe((status) => {
-        if (status === "SUBSCRIBED") {
-          logger.debug("✅ Successfully subscribed to realtime notifications");
-        } else if (status === "CHANNEL_ERROR") {
-          logger.warn("Failed to subscribe to realtime notifications:", status);
-        }
-      });
-    } catch (error) {
-      logger.warn("Failed to subscribe to realtime notifications:", error);
-    }
-
-    // Cleanup: remove channel when component unmounts
-    return () => {
-      if (channel) {
-        try {
-          supabase.removeChannel(channel);
-        } catch (error) {
-          // Ignore cleanup errors
-        }
-      }
-    };
-  }, [supabase]);
+  // ⚡ PERFORMANCE: Removed global notifications channel - useNotifications hook handles it per-user
+  // This prevents duplicate subscriptions and reduces unnecessary realtime connections
 
   useEffect(() => {
     const {
