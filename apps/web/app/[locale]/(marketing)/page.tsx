@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
+// ⚡ PERFORMANCE: Next.js automatically code-splits these imports into separate chunks
 import ModernBenefits from "@/components/sections/modern-benefits";
 import ModernCTA from "@/components/sections/modern-cta";
 import ModernFAQ from "@/components/sections/modern-faq";

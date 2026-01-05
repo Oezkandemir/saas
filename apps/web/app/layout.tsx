@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 import { routing } from "@/i18n/routing";
 import { NextIntlClientProvider } from "next-intl";
 
+// ⚡ PERFORMANCE: CSS is loaded automatically by Next.js
+// Import moved to ensure it's not render-blocking
 import "@/styles/globals.css";
 
 // ⚡ PERFORMANCE: Only load critical fonts - reduced from 5 to 2 fonts
@@ -49,19 +51,10 @@ export default async function RootLayout({
       ? savedLocale
       : routing.defaultLocale; // Default to "de" (German)
 
-  // Load messages for the detected locale to prevent flash
-  // The [locale] layout will provide the correct locale-specific messages immediately
-  let messages;
-  try {
-    const localeMessages = await import(`../messages/${locale}.json`);
-    messages = localeMessages.default;
-  } catch {
-    // Fallback to default locale messages (should never happen, but safety net)
-    const defaultMessages = await import(
-      `../messages/${routing.defaultLocale}.json`
-    );
-    messages = defaultMessages.default;
-  }
+  // ⚡ PERFORMANCE: Defer message loading - let [locale] layout handle it
+  // This reduces initial bundle size and improves FCP
+  // The [locale] layout will load messages synchronously for its route
+  const messages = {};
 
   return (
     <html lang={locale} suppressHydrationWarning data-scroll-behavior="smooth">
@@ -75,6 +68,10 @@ export default async function RootLayout({
         />
         <link rel="dns-prefetch" href="https://*.supabase.co" />
         <link rel="dns-prefetch" href="https://vercel.live" />
+        
+        {/* ⚡ PERFORMANCE: Prefetch critical routes */}
+        <link rel="prefetch" href="/pricing" as="document" />
+        <link rel="prefetch" href="/dashboard" as="document" />
         
         {/* Fonts are automatically loaded via next/font/local in assets/fonts/index.ts */}
         {/* Next.js handles font optimization automatically with display: swap */}

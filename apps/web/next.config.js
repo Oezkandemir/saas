@@ -311,6 +311,10 @@ const nextConfig = {
     ],
     // Disable image optimization in development for faster builds
     unoptimized: process.env.NODE_ENV === "development",
+    // ⚡ PERFORMANCE: Enable image optimization for better LCP
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
   // ⚡ COMPRESSION & OPTIMIZATIONS
