@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -9,7 +8,6 @@ import * as z from "zod";
 
 import { siteConfig } from "@/config/site";
 import {
-  sendEmailWithEdgeFunction,
   sendSignupConfirmationEmail,
   sendWelcomeEmail,
 } from "@/lib/email-client";
@@ -17,7 +15,6 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from '@/components/alignui/actions/button';
 import { Input } from '@/components/alignui/forms/input';
 import { LabelRoot as Label } from "@/components/alignui/forms/label";
-import { Icons } from "@/components/shared/icons";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSupabase } from "@/components/supabase-provider";
 import { checkTwoFactorEnabledByEmail } from "@/actions/two-factor-actions";
@@ -50,7 +47,6 @@ export function UserAuthForm({
     register,
     handleSubmit,
     formState: { errors },
-    watch,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
@@ -59,9 +55,7 @@ export function UserAuthForm({
   const [twoFactorUserId, setTwoFactorUserId] = React.useState<string | null>(null);
   const [userEmail, setUserEmail] = React.useState<string>("");
   const [storedPassword, setStoredPassword] = React.useState<string>(""); // Temporarily store password for 2FA flow
-  const searchParams = useSearchParams();
   const { supabase } = useSupabase();
-  const router = useRouter();
 
   const completeLogin = async (session: any) => {
     // CRITICAL: Do NOT update the role during login
@@ -212,7 +206,7 @@ export function UserAuthForm({
       }
       toast.error("Authentication failed", {
         description:
-          error.message || "Please check your credentials and try again.",
+          error instanceof Error ? error.message : "Please check your credentials and try again.",
       });
     } finally {
       setIsLoading(false);
@@ -226,7 +220,6 @@ export function UserAuthForm({
       <div className={cn("grid gap-6 w-full flex-1 justify-center items-center", className)} {...props}>
         <TwoFactorLoginForm
           userId={twoFactorUserId}
-          email={userEmail}
           onSuccess={async () => {
             // 2FA verified successfully - now create session
             setIsLoading(true);

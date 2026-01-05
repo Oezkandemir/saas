@@ -31,7 +31,6 @@ interface CompanyProfilesListProps {
 }
 
 export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
-  const [selectedProfile, setSelectedProfile] = useState<CompanyProfileWithMembership | null>(null);
   const [profileToDelete, setProfileToDelete] = useState<CompanyProfileWithMembership | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
@@ -78,7 +77,6 @@ export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
     <div key={profile.id} className="relative group">
       <CompanyProfileCard
         profile={profile}
-        isSelected={selectedProfile?.id === profile.id}
         onClick={() => router.push(`/dashboard/settings/company/${profile.id}`)}
       />
 

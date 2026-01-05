@@ -7,7 +7,6 @@ import { UserSubscriptionPlan } from "types";
 import { cn, formatDate } from "@/lib/utils";
 import { buttonVariants } from '@/components/alignui/actions/button';
 import { Icons } from "@/components/shared/icons";
-import { getPolarCustomerPortalUrl } from "@/lib/polar";
 import { 
   Card, 
   CardContent, 
@@ -17,7 +16,6 @@ import {
 } from '@/components/alignui/data-display/card';
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 
-import { SyncSubscriptionButton } from "./sync-subscription-button";
 import { PolarPortalButton } from "./polar-portal-button";
 import { PolarPortalButtonWithSubscription } from "./polar-portal-button-subscription";
 import { PolarPortalButtonFallback } from "./polar-portal-button-fallback";
@@ -43,15 +41,13 @@ const DEFAULT_FREE_PLAN: UserSubscriptionPlan = {
 
 interface BillingInfoProps extends React.HTMLAttributes<HTMLFormElement> {
   userSubscriptionPlan?: UserSubscriptionPlan;
-  userEmail?: string | null;
 }
 
-export function BillingInfo({ userSubscriptionPlan = DEFAULT_FREE_PLAN, userEmail }: BillingInfoProps) {
+export function BillingInfo({ userSubscriptionPlan = DEFAULT_FREE_PLAN }: BillingInfoProps) {
   const t = useTranslations("Billing");
   const {
     title,
     description,
-    polarProductId,
     polarSubscriptionId,
     polarCustomerId,
     isPaid,
@@ -66,11 +62,6 @@ export function BillingInfo({ userSubscriptionPlan = DEFAULT_FREE_PLAN, userEmai
   const currentPeriodEnd = polarCurrentPeriodEnd || 0;
   const currentPeriodStart = polarCurrentPeriodStart || null;
   const subscriptionStart = polarSubscriptionStart || null;
-  
-  // Get Polar customer portal URL
-  const customerPortalUrl = polarCustomerId 
-    ? getPolarCustomerPortalUrl(polarCustomerId)
-    : "https://polar.sh";
 
   return (
     <div className="space-y-6">
@@ -250,9 +241,8 @@ export function BillingInfo({ userSubscriptionPlan = DEFAULT_FREE_PLAN, userEmai
                       </h3>
                       <p className="text-sm text-amber-700 dark:text-amber-300 mb-3">
                         If you&apos;ve recently upgraded but don&apos;t see your subscription, 
-                        click the button below to sync your account with Polar.
+                        it will be synced automatically via webhooks. Please wait a few moments and refresh the page.
                       </p>
-                      <SyncSubscriptionButton />
                     </div>
                   </div>
                 </div>

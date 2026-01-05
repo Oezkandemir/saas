@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BarChart3, Loader2, RefreshCw, TrendingUp } from "lucide-react";
+import { Loader2, RefreshCw, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,

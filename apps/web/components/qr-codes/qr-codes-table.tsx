@@ -18,7 +18,7 @@ import {
   type ColumnDef,
   type SortingState,
 } from '@tanstack/react-table';
-import { MoreVertical, Pencil, Trash2, Copy, Download, Eye } from 'lucide-react';
+import { Pencil, Trash2, Copy, Download, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { QRCode } from '@/actions/qr-codes-actions';
@@ -105,7 +105,7 @@ export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
     toast.success(t('linkCopied'));
   };
 
-  const handleDownload = (code: string) => {
+  const handleDownload = (_code: string) => {
     // TODO: Implement QR code image download
     toast.info('QR-Code Download wird implementiert');
   };

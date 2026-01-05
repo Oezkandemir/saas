@@ -23,10 +23,9 @@ import {
 
 interface WebhookListProps {
   initialWebhooks: Webhook[];
-  locale: string;
 }
 
-export function WebhookList({ initialWebhooks, locale }: WebhookListProps) {
+export function WebhookList({ initialWebhooks }: WebhookListProps) {
   const [webhooks, setWebhooks] = useState<Webhook[]>(initialWebhooks);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -129,6 +128,7 @@ export function WebhookList({ initialWebhooks, locale }: WebhookListProps) {
     </div>
   );
 }
+
 
 
 

@@ -72,7 +72,7 @@ export const signUpWithEmailConfirmation = async (
     logger.error("Error signing up user:", error);
     return {
       success: false,
-      error: error.message || "An error occurred during sign up",
+      error: error instanceof Error ? error.message : "An error occurred during sign up",
     };
   }
 };

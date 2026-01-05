@@ -10,14 +10,13 @@ interface InfoLandingProps {
   data: InfoLdg;
   reverse?: boolean;
   infoKey: "empower" | "integration";
-  locale?: string;
+  
 }
 
 export default async function InfoLanding({
   data,
   reverse = false,
   infoKey,
-  locale = "en",
 }: InfoLandingProps) {
   // Get translations using next-intl
   const t = await getTranslations(`Info.${infoKey}`);

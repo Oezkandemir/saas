@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
 import { CheckCircle2, XCircle, MapPin, Calendar, Shield } from "lucide-react";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
@@ -18,7 +17,6 @@ import { getLoginHistory, type LoginHistoryEntry } from "@/actions/security-acti
 import { logger } from "@/lib/logger";
 
 export function LoginHistory() {
-  const t = useTranslations("Security");
   const [history, setHistory] = useState<LoginHistoryEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 

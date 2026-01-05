@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
 import { useLocale } from "next-intl";
@@ -195,7 +194,6 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
           {filteredBookings.map((booking) => {
             const startDate = new Date(booking.start_at);
             const endDate = new Date(booking.end_at);
-            const isPast = endDate < new Date();
             const isUpcoming = startDate > new Date();
 
             const iconBgClass = booking.status === "canceled"

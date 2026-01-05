@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { 
   cancelSubscription, 
   reactivateSubscription,
@@ -14,7 +13,6 @@ import { cn, formatDate } from "@/lib/utils";
 import { Button } from '@/components/alignui/actions/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Icons } from "@/components/shared/icons";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { toast } from "sonner";
 import { 
@@ -28,7 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { CheckCircle2, XCircle, Calendar, CreditCard, AlertTriangle } from "lucide-react";
+import { CheckCircle2, XCircle, Calendar, CreditCard } from "lucide-react";
 import { pricingData } from "@/config/subscriptions";
 import { logger } from "@/lib/logger";
 
@@ -40,7 +38,6 @@ export function ManageSubscriptionClient({
   userSubscriptionPlan 
 }: ManageSubscriptionClientProps) {
   const router = useRouter();
-  const t = useTranslations("Billing");
   const [isLoading, setIsLoading] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showReactivateDialog, setShowReactivateDialog] = useState(false);
@@ -50,7 +47,6 @@ export function ManageSubscriptionClient({
     description,
     polarProductId,
     polarSubscriptionId,
-    isPaid,
     isCanceled,
     polarCurrentPeriodEnd,
     polarCurrentPeriodStart,
@@ -62,7 +58,6 @@ export function ManageSubscriptionClient({
 
   // Get available plans for upgrade/downgrade
   const availablePlans = pricingData.filter(plan => plan.title !== title);
-  const currentPlan = pricingData.find(plan => plan.title === title);
 
   const handleCancel = async (cancelAtPeriodEnd: boolean) => {
     setIsLoading(true);
@@ -179,7 +174,7 @@ export function ManageSubscriptionClient({
       {/* Current Subscription Card */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex justify-between items-center">
             <div>
               <CardTitle className="text-2xl">{title} Plan</CardTitle>
               <CardDescription className="mt-1">{description}</CardDescription>
@@ -187,10 +182,10 @@ export function ManageSubscriptionClient({
             <Badge 
               variant={isCanceled ? "outline" : "default"} 
               className={cn(
-                "text-sm px-3 py-1",
+                "px-3 py-1 text-sm",
                 isCanceled 
-                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
-                  : "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20"
+                  ? "text-amber-600 bg-amber-500/10 dark:text-amber-400 border-amber-500/20"
+                  : "text-green-600 bg-green-500/10 dark:text-green-400 border-green-500/20"
               )}
             >
               {isCanceled ? (
@@ -210,8 +205,8 @@ export function ManageSubscriptionClient({
         <CardContent className="space-y-6">
           {/* Subscription Details */}
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2 p-4 rounded-lg border bg-muted/30">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+            <div className="p-4 space-y-2 rounded-lg border bg-muted/30">
+              <div className="flex gap-2 items-center mb-1 text-sm text-muted-foreground">
                 <CreditCard className="size-4" />
                 <span>Billing Cycle</span>
               </div>
@@ -221,8 +216,8 @@ export function ManageSubscriptionClient({
             </div>
 
             {currentPeriodStart && (
-              <div className="space-y-2 p-4 rounded-lg border bg-muted/30">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+              <div className="p-4 space-y-2 rounded-lg border bg-muted/30">
+                <div className="flex gap-2 items-center mb-1 text-sm text-muted-foreground">
                   <Calendar className="size-4" />
                   <span>Current Period</span>
                 </div>
@@ -233,8 +228,8 @@ export function ManageSubscriptionClient({
             )}
 
             {currentPeriodEnd > 0 && (
-              <div className="space-y-2 p-4 rounded-lg border bg-muted/30">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+              <div className="p-4 space-y-2 rounded-lg border bg-muted/30">
+                <div className="flex gap-2 items-center mb-1 text-sm text-muted-foreground">
                   <Calendar className="size-4" />
                   <span>{isCanceled ? "Ends On" : "Renews On"}</span>
                 </div>
@@ -312,13 +307,13 @@ export function ManageSubscriptionClient({
                     <AlertDialogCancel className="w-full sm:w-auto">Keep Subscription</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => handleCancel(true)}
-                      className="w-full sm:w-auto bg-amber-600 hover:bg-amber-700 text-white"
+                      className="w-full text-white bg-amber-600 sm:w-auto hover:bg-amber-700"
                     >
                       Cancel at Period End
                     </AlertDialogAction>
                     <AlertDialogAction
                       onClick={() => handleCancel(false)}
-                      className="w-full sm:w-auto bg-destructive hover:bg-destructive/90 text-white"
+                      className="w-full text-white sm:w-auto bg-destructive hover:bg-destructive/90"
                     >
                       Cancel Immediately
                     </AlertDialogAction>
@@ -330,7 +325,7 @@ export function ManageSubscriptionClient({
             {/* Change Plan Section */}
             {!isCanceled && (
               <div className="pt-4 border-t">
-                <h3 className="text-lg font-semibold mb-4">Change Plan</h3>
+                <h3 className="mb-4 text-lg font-semibold">Change Plan</h3>
                 <div className="grid gap-3 md:grid-cols-2">
                   {availablePlans.map((plan) => {
                     const planProductId = interval === "month" 
@@ -349,7 +344,7 @@ export function ManageSubscriptionClient({
                           <CardDescription>{plan.description}</CardDescription>
                         </CardHeader>
                         <CardContent>
-                          <div className="flex items-center justify-between">
+                          <div className="flex justify-between items-center">
                             <div>
                               <p className="text-2xl font-bold">
                                 €{interval === "month" ? plan.prices.monthly : plan.prices.yearly}

@@ -1,5 +1,5 @@
 import { supabaseAdmin } from "@/lib/db";
-import type { Document, DocumentItem } from "@/actions/documents-actions";
+import type { Document } from "@/actions/documents-actions";
 import { logger } from "@/lib/logger";
 
 export interface PDFOptions {

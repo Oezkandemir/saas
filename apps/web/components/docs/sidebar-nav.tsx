@@ -8,7 +8,7 @@ import { docsConfig } from "@/config/docs";
 import { cn } from "@/lib/utils";
 
 export interface DocsSidebarNavProps {
-  setOpen?: (boolean) => void;
+  setOpen?: (value: boolean) => void;
 }
 
 export function DocsSidebarNav({ setOpen }: DocsSidebarNavProps) {
@@ -38,7 +38,7 @@ export function DocsSidebarNav({ setOpen }: DocsSidebarNavProps) {
 interface DocsSidebarNavItemsProps {
   items: NavItem[];
   pathname: string | null;
-  setOpen?: (boolean) => void;
+  setOpen?: (value: boolean) => void;
 }
 
 export function DocsSidebarNavItems({
@@ -48,7 +48,7 @@ export function DocsSidebarNavItems({
 }: DocsSidebarNavItemsProps) {
   return items?.length > 0 ? (
     <div className="grid grid-flow-row auto-rows-max text-[15px] md:text-sm">
-      {items.map((item, index) =>
+      {items.map((item) =>
         !item.disabled && item.href ? (
           <Link
             key={item.title + item.href}

@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect, useTransition, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { type AvailableSlot, getPublicSlots, getPublicOverrides } from "@/actions/scheduling/bookings-actions";
 import type { EventType } from "@/actions/scheduling/event-types-actions";
 import { Button } from '@/components/alignui/actions/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { Calendar, Clock, MapPin, User, Mail, MessageSquare, CheckCircle2, Users, Plus, Minus, Euro, DollarSign, CreditCard, Video, Phone, Building2, Link as LinkIcon, ChevronLeft, ChevronRight, Loader2, ArrowLeft } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
+import { Calendar, Clock, MapPin, User, Users, Euro, DollarSign, CreditCard, Video, Phone, Building2, ChevronLeft, ChevronRight, Loader2, ArrowLeft } from "lucide-react";
 import { BookingFormDrawer } from "./booking-form-drawer";
 import { format, addDays, startOfWeek, eachDayOfInterval, isSameDay, addMonths, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import { de, enUS } from "date-fns/locale";
@@ -22,7 +21,6 @@ interface BookingPageClientProps {
 }
 
 export function BookingPageClient({ eventType, initialDate, initialSlots }: BookingPageClientProps) {
-  const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("Scheduling.booking");
   const [isPending, startTransition] = useTransition();
@@ -43,7 +41,6 @@ export function BookingPageClient({ eventType, initialDate, initialSlots }: Book
   const [selectedSlot, setSelectedSlot] = useState<AvailableSlot | null>(null);
   const [slots, setSlots] = useState<AvailableSlot[]>(initialSlots);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [unavailableDates, setUnavailableDates] = useState<Set<string>>(new Set());
   const [drawerOpen, setDrawerOpen] = useState(false);
 

@@ -1,7 +1,6 @@
 import { redirect, notFound } from "next/navigation";
 import { formatDistance } from "date-fns";
 import {
-  BadgeCheck,
   Calendar,
   Mail,
   Shield,
@@ -86,7 +85,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
       <div className="grid gap-6 md:grid-cols-3">
         {/* Left sidebar with user info */}
         <Card className="md:col-span-1">
-          <CardHeader className="flex flex-row items-center gap-4 pb-2">
+          <CardHeader className="flex flex-row gap-4 items-center pb-2">
             <Avatar className="size-16">
               <AvatarImage
                 src={user.avatar_url || ""}
@@ -100,7 +99,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
               <CardTitle>{user.name || "User"}</CardTitle>
               <CardDescription className="flex items-center">
                 {user.role === "ADMIN" && (
-                  <Shield className="mr-1 size-3 text-blue-500" />
+                  <Shield className="mr-1 text-blue-500 size-3" />
                 )}
                 {user.email}
               </CardDescription>
@@ -114,8 +113,8 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                 {t("accountInfo")}
               </p>
               
-              <div className="flex items-center justify-between">
-                <span className="text-sm flex items-center gap-1">
+              <div className="flex justify-between items-center">
+                <span className="flex gap-1 items-center text-sm">
                   <Calendar className="size-3" />
                   {t("memberSince")}
                 </span>
@@ -129,8 +128,8 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
               </div>
 
               {user.role === 'ADMIN' && (
-                <div className="flex items-center justify-between">
-                  <span className="text-sm flex items-center gap-1">
+                <div className="flex justify-between items-center">
+                  <span className="flex gap-1 items-center text-sm">
                     <Shield className="size-3" />
                     Role
                   </span>
@@ -141,10 +140,10 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
               )}
 
               {/* User Status */}
-              <div className="flex items-center justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-sm">Status</span>
                 <span className="flex items-center text-sm font-medium text-green-500">
-                  <div className="mr-1 size-2 rounded-full bg-green-500" />
+                  <div className="mr-1 bg-green-500 rounded-full size-2" />
                   Active
                 </span>
               </div>
@@ -155,7 +154,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
         {/* Right content area */}
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex gap-2 items-center">
               <User className="size-5" />
               About {user.name || user.email}
             </CardTitle>
@@ -171,7 +170,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                 <h4 className="text-sm font-medium text-muted-foreground">
                   Contact Information
                 </h4>
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex gap-2 items-center text-sm">
                   <Mail className="size-4" />
                   {user.email}
                 </div>
@@ -205,7 +204,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
               <h4 className="text-sm font-medium text-muted-foreground">
                 Recent Activity
               </h4>
-              <div className="rounded-lg border p-4 text-center text-muted-foreground">
+              <div className="p-4 text-center rounded-lg border text-muted-foreground">
                 <p className="text-sm">No recent activity to display</p>
               </div>
             </div>

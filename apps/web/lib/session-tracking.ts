@@ -7,12 +7,10 @@ import { logger } from "@/lib/logger";
 /**
  * Create a login session and log to history
  * @param userId User ID
- * @param sessionToken Session token from Supabase
  * @param expiresAt Session expiration time
  */
 export async function createLoginSession(
   userId: string,
-  sessionToken: string,
   expiresAt: Date,
 ): Promise<void> {
   try {
@@ -39,7 +37,6 @@ export async function createLoginSession(
     // Create new session
     await supabase.from("login_sessions").insert({
       user_id: userId,
-      session_token: sessionToken,
       ip_address: ipAddress,
       user_agent: userAgent,
       device_info: deviceInfo,
@@ -66,13 +63,13 @@ export async function createLoginSession(
  * Update session activity timestamp
  * @param sessionToken Session token
  */
-export async function updateSessionActivity(sessionToken: string): Promise<void> {
+export async function updateSessionActivity(_sessionToken: string): Promise<void> {
   try {
     const supabase = await createClient();
     await supabase
       .from("login_sessions")
       .update({ last_activity: new Date().toISOString() })
-      .eq("session_token", sessionToken)
+      .eq("is_current", true)
       .gte("expires_at", new Date().toISOString());
   } catch (error) {
     logger.error("Error updating session activity", error);
@@ -120,7 +117,7 @@ export async function logFailedLogin(
  * @param sessionToken Session token from Supabase
  */
 export async function updateLoginHistoryWith2FA(
-  sessionToken: string,
+  _sessionToken: string,
 ): Promise<void> {
   try {
     const supabase = await createClient();

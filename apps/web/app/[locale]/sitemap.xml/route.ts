@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { routing } from "@/i18n/routing";
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   // Define routes that should be included in the sitemap

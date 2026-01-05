@@ -2,18 +2,13 @@ import { Link } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 
 import { features } from "@/config/landing";
-import { Button } from '@/components/alignui/actions/button';
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
-import { cn } from "@/lib/utils";
 
-interface ModernFeaturesProps {
-  locale?: string;
-}
 
-export default async function ModernFeatures({
-  locale = "en",
-}: ModernFeaturesProps) {
+interface ModernFeaturesProps {}
+
+export default async function ModernFeatures({}: ModernFeaturesProps) {
   const t = await getTranslations("Features");
 
   return (

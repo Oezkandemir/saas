@@ -36,7 +36,6 @@ export async function GET(request: Request) {
       const expiresAt = new Date(data.session.expires_at! * 1000);
       await createLoginSession(
         data.user.id,
-        data.session.access_token,
         expiresAt,
       );
     }

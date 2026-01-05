@@ -70,7 +70,7 @@ export default async function DocumentsPage({
       contentClassName=""
     >
       {/* Plan Limit Warning */}
-      <PlanLimitWarning userId={user.id} limitType="documents" />
+      <PlanLimitWarning limitType="documents" />
 
       {/* Data Table - Visual Focus, genau wie Dashboard */}
       <div>

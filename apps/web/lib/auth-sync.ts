@@ -1,6 +1,6 @@
 import { User } from "@supabase/supabase-js";
 
-import { env } from "@/env.mjs";
+
 import { supabaseAdmin } from "@/lib/db-admin";
 import { logger } from "@/lib/logger";
 

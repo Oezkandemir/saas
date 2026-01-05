@@ -9,12 +9,10 @@ import {
 } from "react";
 
 import { siteConfig } from "@/config/site";
-import { Button } from '@/components/alignui/actions/button';
 import { Modal } from "@/components/ui/modal";
 import { DialogDescription } from "@/components/ui/dialog";
 import { UserAuthForm } from "@/components/forms/user-auth-form";
 import { Icons } from "@/components/shared/icons";
-import { useSupabase } from "@/components/supabase-provider";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 function SignInModal({

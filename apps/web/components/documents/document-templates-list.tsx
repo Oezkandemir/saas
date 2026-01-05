@@ -6,7 +6,6 @@ import { Button } from '@/components/alignui/actions/button';
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Edit, Trash2, Eye } from "lucide-react";
 import type { DocumentTemplate } from "@/actions/document-templates-actions";
-import type { DocumentType } from "@/actions/documents-actions";
 import {
   AlertDialogRoot as AlertDialog,
   AlertDialogAction,
@@ -26,12 +25,10 @@ import { logger } from "@/lib/logger";
 
 interface DocumentTemplatesListProps {
   templates: DocumentTemplate[];
-  type: DocumentType;
 }
 
 export function DocumentTemplatesList({
   templates,
-  type,
 }: DocumentTemplatesListProps) {
   const t = useTranslations("Documents.templates");
   const router = useRouter();

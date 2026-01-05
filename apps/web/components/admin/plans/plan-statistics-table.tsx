@@ -8,7 +8,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import type { PlanStatistics } from "@/actions/admin-plan-actions";
 
 interface PlanStatisticsTableProps {

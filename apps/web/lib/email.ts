@@ -9,7 +9,6 @@ import { siteConfig } from "@/config/site";
 
 import { getServerUserByEmail, getServerUserById } from "./db-admin";
 import { getSupabaseClient } from "./supabase";
-import { logger } from "./logger";
 import { logger } from "@/lib/logger";
 
 export const resend = new Resend(env.RESEND_API_KEY);
@@ -114,8 +113,7 @@ export const sendVerificationRequest = async ({
       return;
     } catch (edgeFunctionError) {
       logger.warn(
-        "Edge function failed, falling back to Resend direct",
-        edgeFunctionError,
+        `Edge function failed, falling back to Resend direct. Error: ${edgeFunctionError instanceof Error ? edgeFunctionError.message : String(edgeFunctionError)}`
       );
       // Continue with direct Resend API fallback
     }
@@ -237,7 +235,7 @@ export const sendBookingConfirmationEmail = async ({
   eventSlug: string;
 }) => {
   try {
-    logger.info("sendBookingConfirmationEmail called", { inviteeEmail, eventTitle });
+    logger.info(`sendBookingConfirmationEmail called - inviteeEmail: ${inviteeEmail}, eventTitle: ${eventTitle}`);
     
     // Check if Resend is configured
     if (!env.RESEND_API_KEY) {
@@ -300,11 +298,7 @@ export const sendBookingConfirmationEmail = async ({
       finalFromField = fromField;
     } else if (emailOnlyRegex.test(validFromEmail)) {
       // Fallback to email only if name format is invalid
-      logger.warn("Invalid from field format, using email only", {
-        fromField,
-        sanitizedName,
-        validFromEmail,
-      });
+      logger.warn(`Invalid from field format, using email only - fromField: ${fromField}, sanitizedName: ${sanitizedName}, validFromEmail: ${validFromEmail}`);
       finalFromField = validFromEmail;
     } else {
       // Last resort fallback
@@ -315,17 +309,7 @@ export const sendBookingConfirmationEmail = async ({
       finalFromField = "hello@cenety.com";
     }
     
-    logger.info(`Sending booking confirmation email to ${inviteeEmail} (actual recipient: ${recipientEmail})`, {
-      inviteeEmail,
-      recipientEmail,
-      fromEmail: validFromEmail,
-      fromField: finalFromField,
-      sanitizedName,
-      hasResendKey: !!env.RESEND_API_KEY,
-      hostUserId,
-      eventTitle,
-      eventSlug,
-    });
+    logger.info(`Sending booking confirmation email to ${inviteeEmail} (actual recipient: ${recipientEmail}), fromEmail: ${validFromEmail}, fromField: ${finalFromField}, sanitizedName: ${sanitizedName}, hasResendKey: ${!!env.RESEND_API_KEY}, hostUserId: ${hostUserId}, eventTitle: ${eventTitle}, eventSlug: ${eventSlug}`);
 
     // Send email via Resend - use validated from field
     const { data, error } = await resend.emails.send({
@@ -380,13 +364,7 @@ export const sendBookingConfirmationEmail = async ({
       return { success: false, error: "No message ID returned from Resend" };
     }
 
-    logger.info(`Booking confirmation email sent successfully`, {
-      inviteeEmail,
-      recipientEmail,
-      messageId: data.id,
-      fromEmail: validFromEmail,
-      fromField: finalFromField,
-    });
+    logger.info(`Booking confirmation email sent successfully - inviteeEmail: ${inviteeEmail}, recipientEmail: ${recipientEmail}, messageId: ${data.id}, fromEmail: ${validFromEmail}, fromField: ${finalFromField}`);
     
     return { success: true, messageId: data.id };
   } catch (error) {

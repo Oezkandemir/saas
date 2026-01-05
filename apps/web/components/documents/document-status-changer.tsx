@@ -67,7 +67,7 @@ export function DocumentStatusChanger({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {availableStatuses.map(([status, option]) => (
+        {availableStatuses.map(([status]) => (
           <DropdownMenuItem
             key={status}
             onClick={() => handleStatusChange(status)}

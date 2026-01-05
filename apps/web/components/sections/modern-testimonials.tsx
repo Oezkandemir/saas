@@ -5,13 +5,9 @@ import { testimonials } from "@/config/landing";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { Icons } from "@/components/shared/icons";
 
-interface ModernTestimonialsProps {
-  locale?: string;
-}
+interface ModernTestimonialsProps {}
 
-export default async function ModernTestimonials({
-  locale = "en",
-}: ModernTestimonialsProps) {
+export default async function ModernTestimonials({}: ModernTestimonialsProps) {
   const t = await getTranslations("Testimonials");
 
   return (

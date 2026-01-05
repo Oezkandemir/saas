@@ -22,7 +22,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 
 export async function generateMetadata() {
   const locale = await getLocale();

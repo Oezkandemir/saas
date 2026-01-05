@@ -619,7 +619,7 @@ export async function getPublicEventTypeByUserId(
  * Get a public event type by owner slug and event slug
  */
 export async function getPublicEventType(
-  ownerSlug: string,
+  _ownerSlug: string,
   eventSlug: string
 ): Promise<ActionResult<EventType & { owner: { name: string | null; email: string | null } }>> {
   try {

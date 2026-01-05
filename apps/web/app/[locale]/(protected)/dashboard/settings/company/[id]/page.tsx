@@ -1,7 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
-import { getCompanyProfile, type CompanyProfileWithMembership } from "@/actions/company-profiles-actions";
+import { getCompanyProfile } from "@/actions/company-profiles-actions";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Button } from '@/components/alignui/actions/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';

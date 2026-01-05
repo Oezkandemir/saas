@@ -174,15 +174,13 @@ export default async function proxy(request: NextRequest) {
     // Get role from cache first (fast path)
     const now = Date.now();
     const cached = userRoleCache.get(authUser.id);
-    let userRole = "USER"; // Default to USER for security
     
     if (cached && (now - cached.timestamp) < CACHE_TTL) {
-      userRole = cached.role;
+      // Use cached role
     } else {
       // Only query database if cache miss (async, don't block)
       // For redirect, use default USER and let AuthLayout handle admin redirect
       // This prevents blocking the redirect with a DB query
-      userRole = "USER";
       
       // Update cache asynchronously (don't await)
       Promise.resolve(
@@ -237,20 +235,24 @@ export default async function proxy(request: NextRequest) {
                        !request.nextUrl.hostname.includes("localhost") &&
                        !request.nextUrl.hostname.includes("127.0.0.1");
   
-  // SECURITY: CSP without unsafe-eval (removed for security, except for docs routes)
+  // SECURITY: CSP without unsafe-eval (removed for security, except for MDX routes)
   // Note: unsafe-inline for scripts is required for Next.js hydration
-  // unsafe-eval is required for MDXRemote in docs pages
-  // Check for docs routes - handle both /docs/ and /:locale/docs/ patterns
-  // Match patterns like: /en/docs/..., /de/docs/..., /docs/..., /en/guides/..., etc.
-  const isDocsRoute = 
+  // unsafe-eval is required for MDXRemote in docs, guides, blog, and marketing pages
+  // Check for routes that use MDXRemote - handle both /docs/ and /:locale/docs/ patterns
+  // Match patterns like: /en/docs/..., /de/docs/..., /docs/..., /en/guides/..., /blog/..., etc.
+  const isMdxRoute = 
     pathname.includes("/docs/") || 
     pathname.includes("/guides/") ||
+    pathname.includes("/blog/") ||
     pathname.startsWith("/en/docs") ||
     pathname.startsWith("/de/docs") ||
     pathname.startsWith("/en/guides") ||
     pathname.startsWith("/de/guides") ||
+    pathname.startsWith("/en/blog") ||
+    pathname.startsWith("/de/blog") ||
     pathname.match(/^\/[a-z]{2}\/docs\//) !== null ||
-    pathname.match(/^\/[a-z]{2}\/guides\//) !== null;
+    pathname.match(/^\/[a-z]{2}\/guides\//) !== null ||
+    pathname.match(/^\/[a-z]{2}\/blog\//) !== null;
   
   const baseCspDirectives = [
     "default-src 'self'",
@@ -266,8 +268,8 @@ export default async function proxy(request: NextRequest) {
     "frame-ancestors 'none'",
   ];
   
-  // Add unsafe-eval for docs routes (required for MDXRemote)
-  const cspDirectives = isDocsRoute
+  // Add unsafe-eval for MDX routes (required for MDXRemote)
+  const cspDirectives = isMdxRoute
     ? [
         "default-src 'self'",
         "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com",

@@ -5,7 +5,7 @@ import {
   Head,
   Hr,
   Html,
-  Img,
+  
   Preview,
   Section,
   Tailwind,

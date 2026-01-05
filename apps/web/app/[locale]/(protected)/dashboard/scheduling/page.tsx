@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
-import { getEventTypes, type EventType } from "@/actions/scheduling/event-types-actions";
-import { listBookings, getBookingStatistics, type Booking } from "@/actions/scheduling/bookings-actions";
+import { getEventTypes } from "@/actions/scheduling/event-types-actions";
+import { listBookings, getBookingStatistics } from "@/actions/scheduling/bookings-actions";
 import { Calendar } from "lucide-react";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { SchedulingDashboard } from "@/components/scheduling/scheduling-dashboard";
@@ -41,7 +41,7 @@ export default async function SchedulingPage() {
     <UnifiedPageLayout
       title={t("title")}
       description={t("description")}
-      icon={<Calendar className="h-4 w-4 text-primary" />}
+      icon={<Calendar className="w-4 h-4 text-primary" />}
       contentClassName=""
     >
       <SchedulingDashboard

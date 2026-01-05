@@ -6,10 +6,9 @@ import { DashboardSidebar as DashboardSidebarComponent, MobileSheetSidebar as Mo
 
 interface DashboardSidebarWrapperProps {
   links: SidebarNavItem[];
-  isFreePlan?: boolean;
 }
 
-export function DashboardSidebar({ links, isFreePlan = true }: DashboardSidebarWrapperProps) {
+export function DashboardSidebar({ links }: DashboardSidebarWrapperProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -27,10 +26,10 @@ export function DashboardSidebar({ links, isFreePlan = true }: DashboardSidebarW
     );
   }
 
-  return <DashboardSidebarComponent links={links} isFreePlan={isFreePlan} />;
+  return <DashboardSidebarComponent links={links} />;
 }
 
-export function MobileSheetSidebar({ links, isFreePlan = true }: DashboardSidebarWrapperProps) {
+export function MobileSheetSidebar({ links }: DashboardSidebarWrapperProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -41,6 +40,6 @@ export function MobileSheetSidebar({ links, isFreePlan = true }: DashboardSideba
     return null;
   }
 
-  return <MobileSheetSidebarComponent links={links} isFreePlan={isFreePlan} />;
+  return <MobileSheetSidebarComponent links={links} />;
 }
 

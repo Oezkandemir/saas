@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
@@ -19,8 +18,6 @@ export const metadata: Metadata = constructMetadata({
 });
 
 export default async function CustomersPage() {
-  const t = await getTranslations("Footer");
-
   const testimonials = [
     {
       name: "John Doe",

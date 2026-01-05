@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
-import { BarChart3, TrendingUp, AlertTriangle } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/session";
 import { getAllPlanFeatures } from "@/lib/plan-features";
@@ -22,16 +22,7 @@ export async function generateMetadata() {
   };
 }
 
-type Props = {
-  params: Promise<{
-    locale: string;
-  }>;
-};
-
-export default async function UsagePage(props: Props) {
-  const resolvedParams = await props.params;
-  const locale = resolvedParams.locale;
-
+export default async function UsagePage() {
   const user = await getCurrentUser();
   const t = await getTranslations("Settings.usage");
 

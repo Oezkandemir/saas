@@ -79,7 +79,7 @@ interface CompanyProfileFormProps {
 }
 
 export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
   const router = useRouter();
 
   const form = useForm<CompanyProfileFormValues>({

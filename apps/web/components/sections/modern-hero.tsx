@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 
-import { siteConfig } from "@/config/site";
+
 import { cn } from "@/lib/utils";
 import { buttonVariants } from '@/components/alignui/actions/button';
 import { Icons } from "@/components/shared/icons";

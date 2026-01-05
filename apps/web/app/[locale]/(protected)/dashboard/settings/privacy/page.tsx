@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
-import { Shield, FileText } from "lucide-react";
+import { Shield } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
@@ -25,7 +25,6 @@ export async function generateMetadata() {
 
 export default async function PrivacySettingsPage() {
   const user = await getCurrentUser();
-  const t = await getTranslations("Settings");
 
   if (!user?.id) redirect("/login");
 
@@ -33,7 +32,7 @@ export default async function PrivacySettingsPage() {
     <UnifiedPageLayout
       title="Datenschutz-Einstellungen"
       description="Verwalten Sie Ihre Datenschutz-Einstellungen, Einwilligungen und Datenexport"
-      icon={<Shield className="h-4 w-4 text-primary" />}
+      icon={<Shield className="w-4 h-4 text-primary" />}
       contentClassName="space-y-6 pb-10"
     >
       {/* Cookie Settings Section */}

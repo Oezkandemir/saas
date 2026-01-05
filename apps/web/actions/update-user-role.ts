@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
 import { getSession } from "@/lib/session";
 import { getCurrentUser } from "@/lib/session";

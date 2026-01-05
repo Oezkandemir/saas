@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { UserSubscriptionPlan } from "@/types";
 
-import { pricingData } from "@/config/subscriptions";
 import { getCurrentUser } from "@/lib/session";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { constructMetadata, resolveStaticPath } from "@/lib/utils";

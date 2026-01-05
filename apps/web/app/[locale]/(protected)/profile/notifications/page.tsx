@@ -7,15 +7,13 @@ import { constructMetadata } from "@/lib/utils";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from '@/components/alignui/data-display/card';
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { ClearAllNotificationsButton } from "@/components/profile/clear-all-notifications-button";
 import { MarkAllAsReadButton } from "@/components/profile/mark-all-as-read-button";
 import { NotificationsList } from "@/components/profile/notifications-list";
 import { ResponsiveNotificationsTabs } from "@/components/profile/responsive-notifications-tabs";
-import { Bell, CheckCircle2, Circle, Inbox } from "lucide-react";
+import { Bell } from "lucide-react";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -31,7 +29,6 @@ export async function generateMetadata() {
 
 export default async function NotificationsPage() {
   const user = await getCurrentUser();
-  const t = await getTranslations("Profile");
 
   if (!user?.email) {
     redirect("/login");
@@ -62,16 +59,6 @@ export default async function NotificationsPage() {
       notification.type === "SYSTEM" || notification.type === "system",
   );
 
-  const billingNotifications = allNotifications.filter(
-    (notification) =>
-      notification.type === "BILLING" || notification.type === "billing",
-  );
-
-  const successNotifications = allNotifications.filter(
-    (notification) =>
-      notification.type === "SUCCESS" || notification.type === "success",
-  );
-
   const welcomeNotifications = allNotifications.filter(
     (notification) =>
       notification.type === "WELCOME" || notification.type === "welcome",
@@ -82,26 +69,11 @@ export default async function NotificationsPage() {
       notification.type === "TEAM" || notification.type === "team",
   );
 
-  const customerNotifications = allNotifications.filter(
-    (notification) =>
-      notification.type === "CUSTOMER" || notification.type === "customer",
-  );
-
-  const documentNotifications = allNotifications.filter(
-    (notification) =>
-      notification.type === "DOCUMENT" || notification.type === "document",
-  );
-
-  const invoiceNotifications = allNotifications.filter(
-    (notification) =>
-      notification.type === "INVOICE" || notification.type === "invoice",
-  );
-
   return (
     <UnifiedPageLayout
       title="Benachrichtigungen"
       description="Verwalten Sie alle Ihre Benachrichtigungen"
-      icon={<Bell className="h-4 w-4 text-primary" />}
+      icon={<Bell className="w-4 h-4 text-primary" />}
       actions={
         totalCount > 0 ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -114,21 +86,21 @@ export default async function NotificationsPage() {
     >
       <div className="space-y-6">
         {/* Stats - Matching Dashboard Design: Simple Links */}
-        <div className="flex gap-8 mb-6 pb-6 border-b border-border">
+        <div className="flex gap-8 pb-6 mb-6 border-b border-border">
           <div>
-            <p className="text-xs text-muted-foreground mb-1">
+            <p className="mb-1 text-xs text-muted-foreground">
               Gesamt
             </p>
             <p className="text-lg font-semibold">{totalCount}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground mb-1">
+            <p className="mb-1 text-xs text-muted-foreground">
               Ungelesen
             </p>
             <p className="text-lg font-semibold">{unreadCount}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground mb-1">
+            <p className="mb-1 text-xs text-muted-foreground">
               Gelesen
             </p>
             <p className="text-lg font-semibold">{readCount}</p>
@@ -138,12 +110,12 @@ export default async function NotificationsPage() {
         {/* Notifications Content */}
         {totalCount === 0 ? (
           <Card className="border-2 border-dashed">
-            <CardContent className="flex flex-col items-center justify-center py-16">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted mb-4">
-                <Bell className="h-8 w-8 text-muted-foreground" />
+            <CardContent className="flex flex-col justify-center items-center py-16">
+              <div className="flex justify-center items-center mb-4 w-16 h-16 rounded-full bg-muted">
+                <Bell className="w-8 h-8 text-muted-foreground" />
               </div>
               <h3 className="mb-2 text-lg font-semibold">Keine Benachrichtigungen</h3>
-              <p className="text-center text-sm text-muted-foreground max-w-md">
+              <p className="max-w-md text-sm text-center text-muted-foreground">
                 Sie haben derzeit keine Benachrichtigungen. Neue Benachrichtigungen werden hier angezeigt, sobald sie eintreffen.
               </p>
             </CardContent>

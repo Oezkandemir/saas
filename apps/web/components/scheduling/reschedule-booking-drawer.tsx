@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sheet";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { toast } from "sonner";
-import { Calendar, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { Clock, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface RescheduleBookingDrawerProps {
   booking: Booking;

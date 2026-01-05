@@ -37,7 +37,7 @@ export default async function CustomersPage() {
       contentClassName=""
     >
       {/* Plan Limit Warning */}
-      <PlanLimitWarning userId={user.id} limitType="customers" />
+      <PlanLimitWarning limitType="customers" />
 
       {/* Data Table - Visual Focus, genau wie Dashboard */}
       <div>

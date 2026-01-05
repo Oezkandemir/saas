@@ -7,7 +7,6 @@ import { de } from "date-fns/locale";
 
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,

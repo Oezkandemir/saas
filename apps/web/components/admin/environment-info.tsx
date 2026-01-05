@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Settings, Loader2, RefreshCw, CheckCircle2, XCircle } from "lucide-react";
+import { Loader2, RefreshCw, CheckCircle2, XCircle } from "lucide-react";
 
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -101,7 +100,7 @@ export function EnvironmentInfo() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between items-center">
         <div>
           <h4 className="text-sm font-medium text-muted-foreground">
             Systemkonfiguration und Speicher
@@ -115,7 +114,7 @@ export function EnvironmentInfo() {
         >
           {isRefreshing ? (
             <>
-              <Loader2 className="mr-2 size-4 animate-spin" />
+              <Loader2 className="mr-2 animate-spin size-4" />
               Aktualisieren...
             </>
           ) : (
@@ -132,9 +131,9 @@ export function EnvironmentInfo() {
           <div className="space-y-3">
             <h3 className="text-sm font-semibold">Umgebung</h3>
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg border p-3">
+              <div className="p-3 rounded-lg border">
                 <p className="text-sm text-muted-foreground">Node Environment</p>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex gap-2 items-center mt-1">
                   <Badge
                     variant={envInfo.nodeEnv === "production" ? "default" : "outline"}
                   >
@@ -142,42 +141,42 @@ export function EnvironmentInfo() {
                   </Badge>
                 </div>
               </div>
-              <div className="rounded-lg border p-3">
+              <div className="p-3 rounded-lg border">
                 <p className="text-sm text-muted-foreground">App URL</p>
-                <p className="text-sm font-medium mt-1 truncate">
+                <p className="mt-1 text-sm font-medium truncate">
                   {envInfo.nextPublicUrl}
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg border p-3">
+              <div className="p-3 rounded-lg border">
                 <p className="text-sm text-muted-foreground">Service Key</p>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex gap-2 items-center mt-1">
                   {envInfo.hasServiceKey ? (
                     <>
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      <CheckCircle2 className="w-4 h-4 text-green-500" />
                       <span className="text-sm text-green-500">Gesetzt</span>
                     </>
                   ) : (
                     <>
-                      <XCircle className="h-4 w-4 text-red-500" />
+                      <XCircle className="w-4 h-4 text-red-500" />
                       <span className="text-sm text-red-500">Nicht gesetzt</span>
                     </>
                   )}
                 </div>
               </div>
-              <div className="rounded-lg border p-3">
+              <div className="p-3 rounded-lg border">
                 <p className="text-sm text-muted-foreground">Anon Key</p>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex gap-2 items-center mt-1">
                   {envInfo.hasAnonKey ? (
                     <>
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      <CheckCircle2 className="w-4 h-4 text-green-500" />
                       <span className="text-sm text-green-500">Gesetzt</span>
                     </>
                   ) : (
                     <>
-                      <XCircle className="h-4 w-4 text-red-500" />
+                      <XCircle className="w-4 h-4 text-red-500" />
                       <span className="text-sm text-red-500">Nicht gesetzt</span>
                     </>
                   )}
@@ -191,8 +190,8 @@ export function EnvironmentInfo() {
         {storageStats && (
           <div className="space-y-3">
             <h3 className="text-sm font-semibold">Speicher</h3>
-            <div className="rounded-lg border p-4">
-              <div className="flex items-center justify-between mb-3">
+            <div className="p-4 rounded-lg border">
+              <div className="flex justify-between items-center mb-3">
                 <div>
                   <p className="text-sm text-muted-foreground">Gesamtgröße</p>
                   <p className="text-2xl font-bold">{storageStats.totalSize}</p>
@@ -203,11 +202,11 @@ export function EnvironmentInfo() {
                 </div>
               </div>
               {storageStats.buckets.length > 0 && (
-                <div className="space-y-2 mt-4">
+                <div className="mt-4 space-y-2">
                   {storageStats.buckets.map((bucket) => (
                     <div
                       key={bucket.name}
-                      className="flex items-center justify-between rounded border p-2"
+                      className="flex justify-between items-center p-2 rounded border"
                     >
                       <div>
                         <p className="text-sm font-medium">{bucket.name}</p>

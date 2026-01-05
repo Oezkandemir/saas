@@ -71,7 +71,6 @@ export async function getActiveSessions(): Promise<
       const expiresAt = new Date(currentSession.expires_at! * 1000);
       await createLoginSession(
         user.id,
-        currentSession.access_token,
         expiresAt,
       );
       

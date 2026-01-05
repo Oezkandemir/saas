@@ -1,6 +1,5 @@
 import { LucideIcon, LucideProps } from "lucide-react";
 import { cn } from "@/lib/utils";
-import * as React from "react";
 
 interface IconProps extends LucideProps {
   size?: "xs" | "sm" | "md" | "lg" | "xl";
@@ -43,6 +42,7 @@ export function createIconWrapper(size: IconProps["size"] = "md") {
     );
   };
 }
+
 
 
 

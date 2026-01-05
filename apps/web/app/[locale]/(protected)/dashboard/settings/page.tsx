@@ -31,7 +31,6 @@ import {
   Key,
   Webhook,
   Globe,
-  Mail,
   FileText,
   Trash2,
   CheckCircle2,
@@ -107,8 +106,8 @@ export default async function SettingsPage() {
       color: "text-green-500",
       bgColor: "bg-green-500/10",
       badge: twoFactorEnabled ? (
-        <Badge variant="default" className="text-xs bg-green-500/10 text-green-600 border-green-500/20">
-          <CheckCircle2 className="size-3 mr-1" />
+        <Badge variant="default" className="text-xs text-green-600 bg-green-500/10 border-green-500/20">
+          <CheckCircle2 className="mr-1 size-3" />
           2FA Aktiv
         </Badge>
       ) : null,
@@ -135,16 +134,16 @@ export default async function SettingsPage() {
     <UnifiedPageLayout
       title={t("heading")}
       description={t("text")}
-      icon={<Settings className="h-4 w-4 text-primary" />}
+      icon={<Settings className="w-4 h-4 text-primary" />}
       contentClassName="space-y-6"
     >
       {/* Quick Overview Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="flex items-center justify-center size-8 rounded-lg bg-primary/10">
+            <div className="flex justify-between items-center">
+              <div className="flex gap-2 items-center">
+                <div className="flex justify-center items-center rounded-lg size-8 bg-primary/10">
                   <User className="size-4 text-primary" />
                 </div>
                 <CardTitle className="text-sm font-medium">Profil</CardTitle>
@@ -153,17 +152,17 @@ export default async function SettingsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <p className="text-sm text-muted-foreground break-words">{user.email}</p>
-              <div className="flex items-center gap-2">
+              <p className="text-sm break-words text-muted-foreground">{user.email}</p>
+              <div className="flex gap-2 items-center">
                 <Badge variant={emailVerified ? "default" : "destructive"} className="text-xs">
                   {emailVerified ? (
                     <>
-                      <CheckCircle2 className="size-3 mr-1" />
+                      <CheckCircle2 className="mr-1 size-3" />
                       Verifiziert
                     </>
                   ) : (
                     <>
-                      <XCircle className="size-3 mr-1" />
+                      <XCircle className="mr-1 size-3" />
                       Nicht verifiziert
                     </>
                   )}
@@ -176,9 +175,9 @@ export default async function SettingsPage() {
         {subscriptionPlan && (
           <Card>
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center justify-center size-8 rounded-lg bg-primary/10">
+              <div className="flex justify-between items-center">
+                <div className="flex gap-2 items-center">
+                  <div className="flex justify-center items-center rounded-lg size-8 bg-primary/10">
                     <CreditCard className="size-4 text-primary" />
                   </div>
                   <CardTitle className="text-sm font-medium">{t("subscription.title")}</CardTitle>
@@ -187,7 +186,7 @@ export default async function SettingsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
+                <div className="flex gap-2 items-center">
                   <Badge
                     variant={subscriptionPlan.isPaid ? "default" : "outline"}
                     className="text-xs"
@@ -200,9 +199,9 @@ export default async function SettingsPage() {
                     </span>
                   )}
                 </div>
-                <Link href="/dashboard/billing" className="text-xs text-primary hover:underline flex items-center gap-1">
+                <Link href="/dashboard/billing" className="flex gap-1 items-center text-xs text-primary hover:underline">
                   {t("subscription.manageBilling")}
-                  <ArrowRight className="h-3 w-3" />
+                  <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
             </CardContent>
@@ -212,9 +211,9 @@ export default async function SettingsPage() {
         {planFeatures && planFeatures.features && planFeatures.features.length > 0 && (
           <Card>
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center justify-center size-8 rounded-lg bg-primary/10">
+              <div className="flex justify-between items-center">
+                <div className="flex gap-2 items-center">
+                  <div className="flex justify-center items-center rounded-lg size-8 bg-primary/10">
                     <Zap className="size-4 text-primary" />
                   </div>
                   <CardTitle className="text-sm font-medium">{t("features.title")}</CardTitle>
@@ -222,7 +221,7 @@ export default async function SettingsPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-xs text-muted-foreground space-y-1">
+              <div className="space-y-1 text-xs text-muted-foreground">
                 {planFeatures.features
                   .filter((feature) => {
                     return feature && 
@@ -234,9 +233,9 @@ export default async function SettingsPage() {
                   .map((feature) => {
                     const limit = feature.limit!;
                     return (
-                      <div key={feature.name || Math.random()} className="flex items-center justify-between">
+                      <div key={feature.name || Math.random()} className="flex justify-between items-center">
                         <span className="truncate">{feature.name || 'Unknown'}</span>
-                        <span className="font-medium shrink-0 ml-2">
+                        <span className="ml-2 font-medium shrink-0">
                           {limit.current} / {limit.max === "unlimited" ? "∞" : String(limit.max)}
                         </span>
                       </div>
@@ -252,7 +251,7 @@ export default async function SettingsPage() {
       {/* Profile Section */}
       <Card>
         <CardHeader>
-          <div className="flex items-center gap-2">
+          <div className="flex gap-2 items-center">
             <User className="size-5 text-primary" />
             <CardTitle>Profil</CardTitle>
           </div>
@@ -272,23 +271,23 @@ export default async function SettingsPage() {
           const Icon = section.icon;
           return (
             <Link key={section.href} href={section.href}>
-              <Card className="hover:border-primary/50 transition-all cursor-pointer group h-full">
+              <Card className="h-full transition-all cursor-pointer hover:border-primary/50 group">
                 <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
+                  <div className="flex gap-3 items-start">
                     <div className={`flex items-center justify-center size-10 rounded-lg ${section.bgColor} shrink-0`}>
                       <Icon className={`size-5 ${section.color}`} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
+                      <div className="flex gap-2 justify-between items-start">
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-semibold mb-1 break-words">{section.title}</h3>
-                          <p className="text-xs text-muted-foreground break-words">{section.description}</p>
+                          <h3 className="mb-1 text-sm font-semibold break-words">{section.title}</h3>
+                          <p className="text-xs break-words text-muted-foreground">{section.description}</p>
                         </div>
                         {section.badge}
                       </div>
-                      <div className="mt-3 flex items-center text-xs text-primary group-hover:underline">
+                      <div className="flex items-center mt-3 text-xs text-primary group-hover:underline">
                         Verwalten
-                        <ArrowRight className="size-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                        <ArrowRight className="ml-1 transition-transform size-3 group-hover:translate-x-1" />
                       </div>
                     </div>
                   </div>
@@ -303,7 +302,7 @@ export default async function SettingsPage() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <Key className="size-5 text-primary" />
               <CardTitle>API & Integrationen</CardTitle>
             </div>
@@ -311,15 +310,15 @@ export default async function SettingsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
-                <div className="flex items-center gap-2">
+              <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
+                <div className="flex gap-2 items-center">
                   <Key className="size-4 text-muted-foreground" />
                   <span className="text-sm">API-Schlüssel</span>
                 </div>
                 <Badge variant="outline" className="text-xs">Bald verfügbar</Badge>
               </div>
-              <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
-                <div className="flex items-center gap-2">
+              <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
+                <div className="flex gap-2 items-center">
                   <Webhook className="size-4 text-muted-foreground" />
                   <span className="text-sm">Webhooks</span>
                 </div>
@@ -331,7 +330,7 @@ export default async function SettingsPage() {
 
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <FileText className="size-5 text-primary" />
               <CardTitle>Dokumente & Export</CardTitle>
             </div>
@@ -339,21 +338,21 @@ export default async function SettingsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
-                <div className="flex items-center gap-2">
+              <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
+                <div className="flex gap-2 items-center">
                   <FileText className="size-4 text-muted-foreground" />
                   <span className="text-sm">Export-Formate</span>
                 </div>
                 <Badge variant="outline" className="text-xs">Bald verfügbar</Badge>
               </div>
-              <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
-                <div className="flex items-center gap-2">
+              <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
+                <div className="flex gap-2 items-center">
                   <Globe className="size-4 text-muted-foreground" />
                   <span className="text-sm">Sprache & Region</span>
                 </div>
-                <Link href="/dashboard/settings/preferences" className="text-xs text-primary hover:underline flex items-center gap-1">
+                <Link href="/dashboard/settings/preferences" className="flex gap-1 items-center text-xs text-primary hover:underline">
                   Verwalten
-                  <ArrowRight className="h-3 w-3" />
+                  <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
             </div>
@@ -364,7 +363,7 @@ export default async function SettingsPage() {
       {/* Danger Zone */}
       <Card className="border-destructive/50">
         <CardHeader>
-          <div className="flex items-center gap-2">
+          <div className="flex gap-2 items-center">
             <Trash2 className="size-5 text-destructive" />
             <CardTitle className="text-destructive">{t("dangerZone.title")}</CardTitle>
           </div>

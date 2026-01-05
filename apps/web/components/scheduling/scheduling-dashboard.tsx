@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Button } from '@/components/alignui/actions/button';
 import { Switch } from "@/components/ui/switch";
@@ -12,14 +11,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import {
   Calendar,
-  Clock,
-  MapPin,
-  Users,
   Plus,
-  ExternalLink,
   Copy,
   Check,
-  Power,
   PowerOff,
   Settings,
   TrendingUp,
@@ -35,7 +29,7 @@ import {
   toggleEventType,
   type EventType,
 } from "@/actions/scheduling/event-types-actions";
-import { CopyBookingLinkButton } from "./copy-booking-link-button";
+import { type Booking } from "@/actions/scheduling/bookings-actions";
 import { getURL } from "@/lib/utils";
 import { BookingDrawer } from "./booking-drawer";
 import { CreateEventTypeDrawer } from "./create-event-type-drawer";
@@ -44,16 +38,7 @@ import { EventTypeDetailDrawer } from "./event-type-detail-drawer";
 
 interface SchedulingDashboardProps {
   eventTypes: EventType[];
-  bookings: Array<{
-    id: string;
-    invitee_name: string;
-    invitee_email: string;
-    start_at: string;
-    end_at?: string;
-    created_at?: string;
-    status?: "scheduled" | "canceled";
-    event_type?: { title: string };
-  }>;
+  bookings: Booking[];
   userId: string;
   statistics?: {
     totalBookings: number;
@@ -119,7 +104,6 @@ export function SchedulingDashboard({
     .sort((a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime());
 
   const isLive = activeEventTypes.length > 0;
-  const totalBookings = bookings.length;
 
   const handleToggleEventType = async (eventType: EventType) => {
     startTransition(async () => {

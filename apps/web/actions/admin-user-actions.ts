@@ -38,7 +38,7 @@ export async function toggleUserBanStatus(userId: string, status: string) {
     const { userId: validatedUserId } = banUserSchema.parse({ userId });
 
     // Call the appropriate RPC function
-    const { data, error } = await supabaseAdmin.rpc(
+    const { error } = await supabaseAdmin.rpc(
       status === "banned" ? "unban_user" : "ban_user",
       { user_id: validatedUserId },
     );
@@ -239,11 +239,10 @@ export async function getAllUsers() {
 
     // Fetch last_sign_in_at from auth.users for all users
     // Note: We need to use admin API to access auth.users
-    const userIds = users.map((u) => u.id);
     const { data: authUsers, error: authError } = await supabaseAdmin.auth.admin.listUsers();
 
     if (authError) {
-      logger.warn("Error fetching auth users (last_sign_in_at may be missing):", authError);
+      logger.warn(`Error fetching auth users (last_sign_in_at may be missing): ${authError instanceof Error ? authError.message : String(authError)}`);
     }
 
     // Create a map of auth user data by ID

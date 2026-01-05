@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 import { getUserPreferences } from "@/actions/preferences-actions";
 import { PreferencesPanel } from "@/components/settings/preferences-panel";
 import { constructMetadata } from "@/lib/utils";
@@ -11,7 +11,6 @@ export async function generateMetadata() {
   // This ensures correct language during client-side navigation
   const locale = await getLocale();
   setRequestLocale(locale);
-  const t = await getTranslations("Settings");
 
   return constructMetadata({
     title: "Preferences",
@@ -20,7 +19,6 @@ export async function generateMetadata() {
 }
 
 export default async function PreferencesPage() {
-  const t = await getTranslations("Settings");
   const result = await getUserPreferences();
 
   if (!result.success || !result.data) {

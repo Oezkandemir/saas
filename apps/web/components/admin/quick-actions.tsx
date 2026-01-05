@@ -4,19 +4,9 @@ import { useState } from "react";
 import {
   Trash2,
   Zap,
-  Database,
   Loader2,
-  CheckCircle2,
-  AlertCircle,
 } from "lucide-react";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/alignui/data-display/card';
 import { Button } from '@/components/alignui/actions/button';
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -41,7 +31,7 @@ interface QuickAction {
   title: string;
   description: string;
   icon: React.ReactNode;
-  variant: "default" | "destructive" | "outline";
+  variant: "primary" | "destructive" | "outline";
   action: () => Promise<QuickActionResult>;
   requiresConfirmation: boolean;
 }
@@ -55,7 +45,7 @@ export function QuickActions() {
       id: "clear-old-errors",
       title: "Alte Fehler löschen",
       description: "Löscht alle Systemfehler, die älter als 30 Tage sind",
-      icon: <Trash2 className="h-4 w-4" />,
+      icon: <Trash2 className="w-4 h-4" />,
       variant: "destructive",
       requiresConfirmation: true,
       action: async () => await clearOldErrors(30),
@@ -64,8 +54,8 @@ export function QuickActions() {
       id: "optimize-database",
       title: "Datenbank optimieren",
       description: "Führt ANALYZE aus, um Statistiken zu aktualisieren",
-      icon: <Zap className="h-4 w-4" />,
-      variant: "default",
+      icon: <Zap className="w-4 h-4" />,
+      variant: "primary",
       requiresConfirmation: true,
       action: async () => await optimizeDatabase(),
     },
@@ -110,10 +100,10 @@ export function QuickActions() {
                   <AlertDialogTrigger asChild>
                     <Button
                       variant={action.variant}
-                      className="w-full justify-start h-auto py-3"
+                      className="justify-start py-3 w-full h-auto"
                       disabled={isLoading}
                     >
-                      <div className="flex items-center gap-3 w-full">
+                      <div className="flex gap-3 items-center w-full">
                         <div className={`p-2 rounded-md ${
                           action.variant === "destructive" 
                             ? "bg-destructive/10 text-destructive" 
@@ -128,14 +118,14 @@ export function QuickActions() {
                           </div>
                         </div>
                         {isLoading && (
-                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <Loader2 className="w-4 h-4 animate-spin" />
                         )}
                       </div>
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle className="flex items-center gap-2">
+                      <AlertDialogTitle className="flex gap-2 items-center">
                         {action.icon}
                         {action.title}
                       </AlertDialogTitle>
@@ -155,7 +145,7 @@ export function QuickActions() {
                       >
                         {isLoading ? (
                           <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            <Loader2 className="mr-2 w-4 h-4 animate-spin" />
                             Wird ausgeführt...
                           </>
                         ) : (
@@ -172,11 +162,11 @@ export function QuickActions() {
               <Button
                 key={action.id}
                 variant={action.variant}
-                className="w-full justify-start h-auto py-3"
+                className="justify-start py-3 w-full h-auto"
                 onClick={() => handleAction(action)}
                 disabled={isLoading}
               >
-                <div className="flex items-center gap-3 w-full">
+                <div className="flex gap-3 items-center w-full">
                   <div className={`p-2 rounded-md ${
                     action.variant === "destructive" 
                       ? "bg-destructive/10 text-destructive" 
@@ -191,7 +181,7 @@ export function QuickActions() {
                     </div>
                   </div>
                   {isLoading && loadingAction === action.id && (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                   )}
                 </div>
               </Button>

@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import * as Select from '@/components/ui/select';

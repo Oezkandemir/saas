@@ -70,7 +70,7 @@ export async function duplicateEntity<T extends { id: string }>(
     const duplicate = await createDuplicate({
       ...duplicateData,
       identifier,
-    });
+    } as Partial<T> & { identifier: string });
 
     // Copy related items if provided
     if (copyRelatedItems) {
@@ -120,7 +120,7 @@ export async function generateUniqueSlug(
 /**
  * Copy items from one entity to another
  */
-export async function copyItems<T extends { id: string }>(
+export async function copyItems(
   sourceId: string,
   targetId: string,
   tableName: string,
@@ -207,5 +207,6 @@ export const duplicationPatterns = {
     title: original.title ? `${original.title}${suffix}` : undefined,
   }),
 };
+
 
 

@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
@@ -11,8 +10,6 @@ export const metadata: Metadata = constructMetadata({
 });
 
 export default async function ChangelogPage() {
-  const t = await getTranslations("Footer");
-
   const releases = [
     {
       version: "2.0.0",

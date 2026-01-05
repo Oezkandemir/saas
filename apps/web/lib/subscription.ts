@@ -39,7 +39,7 @@ async function _getUserSubscriptionPlanInternal(
     const userResult = await supabaseAdmin
       .from("users")
       .select(
-        "id, email, stripe_customer_id, stripe_subscription_id, stripe_price_id, stripe_current_period_end, polar_customer_id, polar_subscription_id, polar_product_id, polar_current_period_end, payment_provider",
+        "id, email, polar_customer_id, polar_subscription_id, polar_product_id, polar_current_period_end, payment_provider",
       )
       .eq("id", userId)
       .single();

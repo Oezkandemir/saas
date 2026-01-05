@@ -36,7 +36,7 @@ async function testConnection() {
   }
 
   try {
-    const { data, error } = await supabaseAdmin.from("users").select("count").limit(1);
+    const { error } = await supabaseAdmin.from("users").select("count").limit(1);
 
     if (error) {
       // Only log as warning in development, not as error

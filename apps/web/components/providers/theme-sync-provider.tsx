@@ -13,7 +13,7 @@ import { logger } from "@/lib/logger";
  */
 export function ThemeSyncProvider({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useTheme();
-  const { supabase, session } = useSupabase();
+  const { session } = useSupabase();
   const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {

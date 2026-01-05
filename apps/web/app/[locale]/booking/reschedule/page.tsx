@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getBookingByToken } from "@/actions/scheduling/bookings-actions";
-import { Button } from "@/components/alignui/actions/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/alignui/data-display/card";
 import { AlertRoot as Alert, AlertDescription } from "@/components/alignui/feedback/alert";
 import { Loader2, XCircle, Calendar, Info } from "lucide-react";

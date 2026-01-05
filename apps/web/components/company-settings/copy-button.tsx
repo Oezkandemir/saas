@@ -2,7 +2,6 @@
 
 import { Copy, Check } from "lucide-react";
 import { useState } from "react";
-import { Button } from '@/components/alignui/actions/button';
 import { logger } from "@/lib/logger";
 
 interface CopyButtonProps {

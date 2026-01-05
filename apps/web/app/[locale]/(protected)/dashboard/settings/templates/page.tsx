@@ -6,7 +6,6 @@ import { FileText, Plus } from "lucide-react";
 import Link from "next/link";
 import { Button } from '@/components/alignui/actions/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { DocumentTemplatesList } from "@/components/documents/document-templates-list";
 
 export const dynamic = "force-dynamic";
@@ -46,7 +45,7 @@ export default async function TemplatesPage() {
           </CardHeader>
           <CardContent>
             {invoiceTemplates.length > 0 ? (
-              <DocumentTemplatesList templates={invoiceTemplates} type="invoice" />
+              <DocumentTemplatesList templates={invoiceTemplates} />
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <p className="mb-4">Noch keine Templates vorhanden</p>
@@ -69,7 +68,7 @@ export default async function TemplatesPage() {
           </CardHeader>
           <CardContent>
             {quoteTemplates.length > 0 ? (
-              <DocumentTemplatesList templates={quoteTemplates} type="quote" />
+              <DocumentTemplatesList templates={quoteTemplates} />
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <p className="mb-4">Noch keine Templates vorhanden</p>

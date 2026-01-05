@@ -19,7 +19,6 @@ import {
   Clock,
   User,
   Mail,
-  MapPin,
   MessageSquare,
   XCircle,
   CheckCircle2,

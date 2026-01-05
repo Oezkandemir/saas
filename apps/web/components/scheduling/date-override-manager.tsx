@@ -27,7 +27,7 @@ import { Switch } from "@/components/ui/switch";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Plus, Calendar, Trash2, Edit, Clock, X } from "lucide-react";
+import { Plus, Calendar, Trash2, Edit, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";

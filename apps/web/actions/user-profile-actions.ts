@@ -490,7 +490,7 @@ export async function deleteAllNotifications(): Promise<ActionResult<null>> {
   const supabase = await createClient();
 
   try {
-    const { data, error } = await supabase.rpc("api_delete_all_notifications");
+    const { error } = await supabase.rpc("api_delete_all_notifications");
 
     if (error) {
       throw new Error(error.message);

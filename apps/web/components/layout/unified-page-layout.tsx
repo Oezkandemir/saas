@@ -16,13 +16,7 @@ interface UnifiedPageLayoutProps {
   children: ReactNode;
   className?: string;
   contentClassName?: string;
-  stickyHeader?: boolean;
 }
-
-// Calculate offsets for sticky positioning
-// Main header height: h-14 (56px) on mobile, lg:h-[60px] (60px) on desktop
-const MAIN_HEADER_HEIGHT_DESKTOP = 60; // lg:h-[60px]
-const PAGE_HEADER_HEIGHT = 52; // Height of page header (py-3 sm:py-3.5, approximately)
 
 export function UnifiedPageLayout({
   title,
@@ -35,14 +29,7 @@ export function UnifiedPageLayout({
   children,
   className,
   contentClassName,
-  stickyHeader = true,
 }: UnifiedPageLayoutProps) {
-  // Calculate top offsets for sticky positioning relative to main header
-  // Main header is at top-0, page header starts directly below it
-  // Use responsive values: mobile (56px) and desktop (60px)
-  const pageHeaderTop = MAIN_HEADER_HEIGHT_DESKTOP;
-  const statusBarTop = MAIN_HEADER_HEIGHT_DESKTOP + PAGE_HEADER_HEIGHT;
-
   return (
     <div className={cn("flex flex-col h-full", className)}>
       {/* Page Header - Directly below main header, border-bottom for separation, symmetric padding */}

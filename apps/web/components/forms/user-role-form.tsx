@@ -1,21 +1,17 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { updateUserRole, type FormData } from "@/actions/update-user-role";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
 
 import { userRoleSchema } from "@/lib/validations/user";
 import { Button } from '@/components/alignui/actions/button';
 import { FormRoot as Form, FormField } from "@/components/alignui/forms/form";
 import { SectionColumns } from "@/components/dashboard/section-columns";
-import { Icons } from "@/components/shared/icons";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { useSupabase } from "@/components/supabase-provider";
 
 export enum UserRole {
   USER = "USER",
@@ -32,11 +28,9 @@ interface UserNameFormProps {
 }
 
 export function UserRoleForm({ user }: UserNameFormProps) {
-  const { session, supabase } = useSupabase();
   const [updated, setUpdated] = useState(false);
   const [isPending, startTransition] = useTransition();
   const updateUserRoleWithId = updateUserRole.bind(null, user.id);
-  const router = useRouter();
   const t = useTranslations("Settings.userRole");
 
   const roles = Object.values(UserRole);
@@ -49,7 +43,7 @@ export function UserRoleForm({ user }: UserNameFormProps) {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof userRoleSchema>) => {
+  const onSubmit = (data: FormData) => {
     startTransition(async () => {
       const { status } = await updateUserRoleWithId(data);
 

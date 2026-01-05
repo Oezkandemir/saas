@@ -1,4 +1,4 @@
-import { siteConfig } from "@/config/site";
+
 
 import { getSupabaseClient } from "./supabase";
 import { logger } from "./logger";

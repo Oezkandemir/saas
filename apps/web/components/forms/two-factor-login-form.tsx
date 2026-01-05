@@ -11,7 +11,6 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from '@/components/alignui/actions/button';
 import { Input } from '@/components/alignui/forms/input';
 import { LabelRoot as Label } from "@/components/alignui/forms/label";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
   Card,
   CardContent,
@@ -23,7 +22,6 @@ import { verifyTwoFactorCodeForSignIn } from "@/actions/two-factor-actions";
 
 interface TwoFactorLoginFormProps {
   userId: string;
-  email: string;
   onSuccess: () => void;
   onCancel?: () => void;
 }
@@ -39,7 +37,6 @@ type TwoFactorFormData = z.infer<typeof twoFactorSchema>;
 
 export function TwoFactorLoginForm({
   userId,
-  email,
   onSuccess,
   onCancel,
 }: TwoFactorLoginFormProps) {

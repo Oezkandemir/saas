@@ -38,7 +38,6 @@ export function MultiStepForm<T extends FieldValues>({
   className,
   showProgress = true,
   allowSkip = false,
-  autoSave = false,
 }: MultiStepFormProps<T>) {
   const [currentStep, setCurrentStep] = React.useState(defaultStep);
   const [completedSteps, setCompletedSteps] = React.useState<Set<number>>(new Set());
@@ -221,8 +220,6 @@ export function MultiStepForm<T extends FieldValues>({
           {steps.map((step, index) => {
             const isActive = index === currentStep;
             const isCompleted = completedSteps.has(index) || index < currentStep;
-            // All steps are always clickable - no restrictions
-            const isClickable = true;
 
             return (
               <React.Fragment key={step.id}>

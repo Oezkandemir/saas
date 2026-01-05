@@ -1,8 +1,8 @@
-import { redirect, notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { getDocument, type Document } from "@/actions/documents-actions";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { Button } from '@/components/alignui/actions/button';
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Edit, FileText } from "lucide-react";

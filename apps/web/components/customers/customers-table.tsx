@@ -26,7 +26,6 @@ import { MoreVertical, Pencil, Trash2, Eye, QrCode, Mail, Phone, Building2, Chev
 import { deleteCustomer } from "@/actions/customers-actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import {
   AlertDialogRoot as AlertDialog,
   AlertDialogAction,

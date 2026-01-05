@@ -1,6 +1,5 @@
 import { allPages } from "@/.contentlayer/generated";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
 import { constructMetadata } from "@/lib/utils";
 
 export const metadata = constructMetadata({
@@ -9,8 +8,6 @@ export const metadata = constructMetadata({
 });
 
 export default async function PagesPage() {
-  const t = await getTranslations("Navigation");
-
   return (
     <div className="w-full py-6 lg:py-12">
       <div className="space-y-4 mb-8">

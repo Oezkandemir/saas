@@ -287,9 +287,14 @@ export async function checkResourceAccess(
     }
 
     // Check permission level hierarchy: delete > write > read
-    const levelHierarchy = { read: 1, write: 2, delete: 3 };
+    const levelHierarchy: Record<"read" | "write" | "delete", number> = { 
+      read: 1, 
+      write: 2, 
+      delete: 3 
+    };
+    const permissionLevel = permission.permission_level as "read" | "write" | "delete";
     const hasAccess =
-      levelHierarchy[permission.permission_level] >=
+      levelHierarchy[permissionLevel] >=
       levelHierarchy[requiredLevel];
 
     return {
@@ -365,6 +370,7 @@ async function checkResourceOwnership(
     return false;
   }
 }
+
 
 
 

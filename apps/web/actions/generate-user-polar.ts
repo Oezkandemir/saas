@@ -11,9 +11,6 @@ export type responseAction = {
   polarUrl?: string;
 };
 
-// Update the billingUrl to always point to the dashboard billing page
-const billingUrl = absoluteUrl("/dashboard/billing");
-
 /**
  * Generate Polar checkout session for user
  * This redirects the user to Polar's checkout page with the specified product

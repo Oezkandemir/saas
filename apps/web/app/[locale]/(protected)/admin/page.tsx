@@ -4,9 +4,6 @@ import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 import {
   Shield,
   Users,
-  ShieldCheck,
-  CreditCard,
-  AlertTriangle,
   ArrowRight,
 } from "lucide-react";
 
@@ -56,7 +53,6 @@ export default async function AdminPanelPage(props: Props) {
   const locale = resolvedParams.locale;
 
   const user = await getCurrentUser();
-  const t = await getTranslations("Admin");
   const tPanel = await getTranslations("Admin.panel");
   const tUsers = await getTranslations("Admin.users");
   const tSupport = await getTranslations("Admin.support");
@@ -177,7 +173,7 @@ export default async function AdminPanelPage(props: Props) {
               <p className="text-lg font-semibold">{kpi.value}</p>
               {kpi.avatars && kpi.avatars.length > 0 && (
                 <div className="flex -space-x-2">
-                  {kpi.avatars.map((user, idx) => (
+                  {kpi.avatars.map((user) => (
                     <Avatar
                       key={user.id}
                       className="size-5 border-2 border-background"

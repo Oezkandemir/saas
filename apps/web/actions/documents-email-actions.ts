@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { getTranslations, getLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { getDocument } from "./documents-actions";
 import { resend } from "@/lib/email";
@@ -221,7 +221,7 @@ export async function sendDocumentEmail(
 /**
  * Gets email history for a document (if implemented)
  */
-export async function getDocumentEmailHistory(documentId: string) {
+export async function getDocumentEmailHistory(_documentId: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 

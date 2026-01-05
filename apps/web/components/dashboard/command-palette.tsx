@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { 
   Search, 
@@ -245,7 +245,7 @@ export function CommandPalette() {
                   <div className="mb-1 px-2 py-1 text-xs font-semibold text-muted-foreground">
                     {category}
                   </div>
-                  {items.map((item, index) => {
+                  {items.map((item) => {
                     const globalIndex = results.indexOf(item);
                     return (
                       <button

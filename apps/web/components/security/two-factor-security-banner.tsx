@@ -6,7 +6,6 @@ import { Shield, X } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from '@/components/alignui/actions/button';
 import { getTwoFactorStatus } from "@/actions/two-factor-actions";
-import { cn } from "@/lib/utils";
 import { logger } from "@/lib/logger";
 
 export function TwoFactorSecurityBanner() {

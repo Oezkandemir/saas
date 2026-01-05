@@ -12,7 +12,6 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Input } from '@/components/alignui/forms/input';
 import { Icons } from "@/components/shared/icons";
 
 interface DocsSearchProps extends React.HTMLAttributes<HTMLDivElement> {}

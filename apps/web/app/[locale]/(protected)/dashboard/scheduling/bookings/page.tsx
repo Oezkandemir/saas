@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
-import { listBookings, type Booking } from "@/actions/scheduling/bookings-actions";
+import { listBookings } from "@/actions/scheduling/bookings-actions";
 import { getEventTypes } from "@/actions/scheduling/event-types-actions";
 import { Calendar } from "lucide-react";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";

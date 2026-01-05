@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NavItem, SidebarNavItem } from "@/types";
+import { SidebarNavItem } from "@/types";
 import { Menu, PanelLeftClose, PanelRightClose } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -26,7 +26,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Icons } from "@/components/shared/icons";
-import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
 import { useSupabase } from "@/components/supabase-provider";
 import { LayoutDashboard, Mail, Sparkles } from "lucide-react";
 import { getUserPlan } from "@/actions/get-user-plan";
@@ -35,10 +34,9 @@ import { logger } from "@/lib/logger";
 
 interface DashboardSidebarProps {
   links: SidebarNavItem[];
-  isFreePlan?: boolean;
 }
 
-function DashboardSidebarContent({ links, isFreePlan = true }: DashboardSidebarProps) {
+function DashboardSidebarContent({ links }: DashboardSidebarProps) {
   const path = usePathname();
   // Desktop sidebar is always expanded by default (only shown on lg+ screens, 1024px+)
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
@@ -408,7 +406,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
   return <DashboardSidebarContent links={links} />;
 }
 
-function MobileSheetSidebarContent({ links, isFreePlan = true }: DashboardSidebarProps) {
+function MobileSheetSidebarContent({ links }: DashboardSidebarProps) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
   const [userPlan, setUserPlan] = useState<{ title: string; isPaid: boolean } | null>(null);
@@ -638,6 +636,6 @@ function MobileSheetSidebarContent({ links, isFreePlan = true }: DashboardSideba
 }
 
 // Internal component - use MobileSheetSidebarWrapper for SSR safety
-export function MobileSheetSidebar({ links, isFreePlan = true }: DashboardSidebarProps) {
-  return <MobileSheetSidebarContent links={links} isFreePlan={isFreePlan} />;
+export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
+  return <MobileSheetSidebarContent links={links} />;
 }

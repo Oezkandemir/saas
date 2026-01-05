@@ -1,6 +1,6 @@
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { checkPlanLimit, LimitType } from "@/lib/plan-limits";
-import { getSupabaseServer } from "@/lib/supabase-server";
+
 
 export interface PlanFeature {
   name: string;
@@ -120,6 +120,7 @@ export async function getAllPlanFeatures(userId: string): Promise<PlanFeaturesIn
     features,
   };
 }
+
 
 
 

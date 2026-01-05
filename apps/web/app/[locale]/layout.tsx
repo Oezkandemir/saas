@@ -29,27 +29,30 @@ export default async function LocaleLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: "en" | "de" }>;
+  params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
 
-  // Ensure the locale is valid
-  if (!routing.locales.includes(locale)) {
+  // Ensure the locale is valid - type guard to narrow to "de" | "en"
+  if (!routing.locales.includes(locale as "de" | "en")) {
     notFound();
   }
 
+  // Type assertion after validation
+  const validLocale = locale as "de" | "en";
+
   // Enable static rendering
-  setRequestLocale(locale);
+  setRequestLocale(validLocale);
 
   // Load messages directly for immediate availability
   // This prevents any flash of incorrect language during client-side navigation
-  const messages = await loadMessages(locale);
+  const messages = await loadMessages(validLocale);
 
   // Locale layout no longer needs html/body tags as they're in root layout
   // But we need to provide locale-specific messages, so we wrap with NextIntlClientProvider
   // This will override the default locale messages from root layout immediately
   return (
-    <NextIntlClientProvider messages={messages} locale={locale}>
+    <NextIntlClientProvider messages={messages} locale={validLocale}>
       {children}
     </NextIntlClientProvider>
   );

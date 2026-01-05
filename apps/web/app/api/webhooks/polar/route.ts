@@ -6,7 +6,6 @@ import { env } from "@/env.mjs";
 const revalidateTagSafe = revalidateTag as (tag: string) => void;
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
-import { createPolarCheckout } from "@/lib/polar";
 
 /**
  * Polar.sh Webhook Route
@@ -15,7 +14,8 @@ import { createPolarCheckout } from "@/lib/polar";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.text();
-    const signature = req.headers.get("polar-signature");
+    // Note: Signature verification should be added in production
+    // const signature = req.headers.get("polar-signature");
 
     // Verify webhook signature if webhook secret is configured
     // Note: Polar.sh may use different signature verification
@@ -23,10 +23,7 @@ export async function POST(req: NextRequest) {
 
     const event = JSON.parse(body);
     
-    logger.info(`Processing Polar webhook event: ${event.type}`, {
-      eventId: event.id,
-      eventType: event.type,
-    });
+    logger.info(`Processing Polar webhook event: ${event.type}, eventId: ${event.id}, eventType: ${event.type}`);
 
     switch (event.type) {
       case "checkout.succeeded":
@@ -66,10 +63,7 @@ async function handleCheckoutSucceeded(data: any) {
     const subscriptionId = checkout.subscription_id;
     const productId = checkout.product_id;
 
-    logger.info(`Checkout succeeded for ${customerEmail}`, {
-      subscriptionId,
-      productId,
-    });
+    logger.info(`Checkout succeeded for ${customerEmail}, subscriptionId: ${subscriptionId}, productId: ${productId}`);
 
     if (!customerEmail) {
       logger.error("No customer email in checkout event");
@@ -114,12 +108,7 @@ async function handleSubscriptionUpdated(data: any) {
     const customerId = subscription.customer_id;
     const productId = subscription.product_id;
 
-    logger.info(`Subscription updated: ${subscriptionId}`, {
-      customerId,
-      subscriptionId,
-      productId,
-      status: subscription.status,
-    });
+    logger.info(`Subscription updated: ${subscriptionId}, customerId: ${customerId}, productId: ${productId}, status: ${subscription.status}`);
 
     let userData: { id: string } | null = null;
     let userError: any = null;
@@ -305,11 +294,7 @@ async function syncPolarSubscription(userId: string, subscriptionId: string) {
         .insert(subscriptionData);
     }
 
-    logger.info(`Synced Polar subscription ${subscriptionId} for user ${userId}`, {
-      productId,
-      customerId,
-      status,
-    });
+    logger.info(`Synced Polar subscription ${subscriptionId} for user ${userId}, productId: ${productId}, customerId: ${customerId}, status: ${status}`);
   } catch (error: any) {
     logger.error("Error syncing Polar subscription", error);
     throw error;

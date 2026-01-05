@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { getEventType } from "@/actions/scheduling/event-types-actions";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { Edit, Calendar } from "lucide-react";
+import { Edit } from "lucide-react";
 import { EditEventTypeForm } from "@/components/scheduling/edit-event-type-form";
 
 export const dynamic = "force-dynamic";

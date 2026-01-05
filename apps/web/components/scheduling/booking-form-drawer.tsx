@@ -28,7 +28,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { toast } from "sonner";
-import { User, Mail, MessageSquare, Users, Plus, Minus, Euro, DollarSign, CreditCard } from "lucide-react";
+import { User, Mail, MessageSquare, Users, Plus, Minus } from "lucide-react";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
 
@@ -116,15 +116,6 @@ export function BookingFormDrawer({
     // Price is always per person (not per hour)
     return eventType.price_amount * participants;
   };
-
-  const getCurrencyIcon = (currency: string | null) => {
-    const curr = (currency || 'EUR').toUpperCase();
-    if (curr === 'USD') return DollarSign;
-    if (curr === 'EUR') return Euro;
-    return CreditCard;
-  };
-
-  const CurrencyIcon = eventType.price_currency ? getCurrencyIcon(eventType.price_currency) : Euro;
 
   const onSubmit = async (data: BookingFormValues) => {
     if (!selectedSlot) {

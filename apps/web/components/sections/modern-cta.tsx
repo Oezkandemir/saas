@@ -7,10 +7,10 @@ import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 interface ModernCTAProps {
-  locale?: string;
+  
 }
 
-export default async function ModernCTA({ locale = "en" }: ModernCTAProps) {
+export default async function ModernCTA({ }: ModernCTAProps) {
   const t = await getTranslations("CTA");
 
   return (

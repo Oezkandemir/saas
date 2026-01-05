@@ -42,7 +42,7 @@ export const BookingConfirmationEmail = ({
   eventDescription,
   startAt,
   endAt,
-  durationMinutes,
+  
   locationType,
   locationValue,
   hostName,

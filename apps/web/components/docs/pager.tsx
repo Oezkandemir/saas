@@ -5,6 +5,7 @@ import { docsConfig } from "@/config/docs";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from '@/components/alignui/actions/button';
 import { Icons } from "@/components/shared/icons";
+import type { NavItem, SidebarNavItem } from "types";
 
 interface DocsPagerProps {
   doc: Doc;
@@ -57,8 +58,11 @@ export function getPagerForDoc(doc: Doc) {
   };
 }
 
-export function flatten(links: { items? }[]) {
-  return links.reduce((flat, link) => {
-    return flat.concat(link.items ? flatten(link.items) : link);
+export function flatten(links: (SidebarNavItem | NavItem)[]): NavItem[] {
+  return links.reduce((flat: NavItem[], link) => {
+    if ('items' in link && link.items) {
+      return flat.concat(flatten(link.items));
+    }
+    return flat.concat([link as NavItem]);
   }, []);
 }

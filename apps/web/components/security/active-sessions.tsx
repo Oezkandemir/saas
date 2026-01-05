@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { Monitor, MapPin, Calendar, Trash2, AlertTriangle, LogOut } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
@@ -37,7 +36,6 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export function ActiveSessions() {
-  const t = useTranslations("Security");
   const { toast } = useToast();
   const router = useRouter();
   const [sessions, setSessions] = useState<ActiveSession[]>([]);

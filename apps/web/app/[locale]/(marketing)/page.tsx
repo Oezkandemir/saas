@@ -64,13 +64,13 @@ export default async function IndexPage({ params }: PageProps) {
     <>
       <ModernHero />
       <ModernStats />
-      <ModernFeatures locale={locale} />
+      <ModernFeatures />
       <ModernOfferings />
       <ModernHowItWorks />
       <ModernBenefits />
-      <ModernTestimonials locale={locale} />
+      <ModernTestimonials />
       <ModernFAQ />
-      <ModernCTA locale={locale} />
+      <ModernCTA />
     </>
   );
 }

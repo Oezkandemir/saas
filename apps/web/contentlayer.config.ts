@@ -8,6 +8,7 @@ import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import { visit } from "unist-util-visit";
+import type { Element } from "hast";
 
 const defaultComputedFields: ComputedFields = {
   slug: {
@@ -163,7 +164,7 @@ export default makeSource({
         {
           theme: "github-dark",
           keepBackground: false,
-          onVisitLine(node) {
+          onVisitLine(node: Element) {
             // Prevent lines from collapsing in `display: grid` mode, and allow empty lines to be copy/pasted
             if (node.children.length === 0) {
               node.children = [{ type: "text", value: " " }];

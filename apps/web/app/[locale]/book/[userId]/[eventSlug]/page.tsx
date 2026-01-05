@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
 import { getPublicEventTypeByUserId } from "@/actions/scheduling/event-types-actions";
 import { getPublicSlots } from "@/actions/scheduling/bookings-actions";
 import { BookingPageClient } from "@/components/scheduling/booking-page-client";
@@ -13,7 +12,6 @@ export default async function BookingPage({
   params: Promise<{ userId: string; eventSlug: string; locale: string }>;
 }) {
   const { userId, eventSlug } = await params;
-  const t = await getTranslations("Scheduling.booking");
 
   // Get event type
   const eventTypeResult = await getPublicEventTypeByUserId(userId, eventSlug);
@@ -36,6 +34,7 @@ export default async function BookingPage({
     />
   );
 }
+
 
 
 

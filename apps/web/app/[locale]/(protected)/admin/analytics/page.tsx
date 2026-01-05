@@ -2,11 +2,8 @@ import { redirect } from "next/navigation";
 import { getAnalyticsData } from "@/actions/analytics-actions";
 import { formatDistanceToNow } from "date-fns";
 import {
-  Users,
-  CreditCard,
   TrendingUp,
 } from "lucide-react";
-import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
@@ -60,7 +57,6 @@ export default async function AnalyticsPage() {
   const user = await getCurrentUser();
   if (!user || user.role !== "ADMIN") redirect("/");
 
-  const t = await getTranslations("Admin.stats");
   const result = await getAnalyticsData();
 
   if (!result.success) {

@@ -1,5 +1,3 @@
-import React from "react";
-
 export function TestTailwindOrder() {
   // These classes are deliberately in the wrong order to demonstrate the linting
   return (

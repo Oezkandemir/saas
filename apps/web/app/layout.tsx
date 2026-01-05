@@ -68,21 +68,8 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://*.supabase.co" />
         
-        {/* Preload critical fonts - Inter für optimale Lesbarkeit */}
-        <link
-          rel="preload"
-          href="/assets/fonts/Inter-Regular.ttf"
-          as="font"
-          type="font/ttf"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/assets/fonts/Inter-Bold.ttf"
-          as="font"
-          type="font/ttf"
-          crossOrigin="anonymous"
-        />
+        {/* Fonts are automatically loaded via next/font/local in assets/fonts/index.ts */}
+        {/* No manual preload needed - Next.js handles font loading optimally */}
         
         {/* Only load manifest in production to avoid SSL errors in development */}
         {process.env.NODE_ENV === "production" && (

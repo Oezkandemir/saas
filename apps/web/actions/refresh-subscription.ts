@@ -1,17 +1,14 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { revalidateTag } from "next/cache";
 import { auth } from "@/auth";
 
 // Type assertion to handle Next.js 16 type requirements
 const revalidateTagSafe = revalidateTag as (tag: string) => void;
-import { env } from "@/env.mjs";
 
 import { supabaseAdmin } from "@/lib/db";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { logger } from "@/lib/logger";
-import { fixPolarSubscription } from "./fix-polar-subscription";
 
 export type RefreshResult = {
   success: boolean;
@@ -41,32 +38,23 @@ export async function refreshSubscription(): Promise<RefreshResult> {
       return { success: false, message: "Error fetching user data" };
     }
 
-    // Use fix function to sync Polar subscription
-    const result = await fixPolarSubscription();
+    // Subscriptions are automatically synced via webhooks
+    // Just invalidate cache and return current subscription data
+    revalidateTagSafe("subscription-plan");
     
-    if (result.success) {
-      // Invalidate cache to force refresh
-      revalidateTagSafe("subscription-plan");
-      
-      // Get updated subscription plan
-      const updatedPlan = await getUserSubscriptionPlan(user.id);
-      
-      return {
-        success: true,
-        message: "Polar subscription data refreshed successfully",
-        subscription: {
-          plan: updatedPlan.title,
-          isPaid: updatedPlan.isPaid,
-          interval: updatedPlan.interval,
-          productId: updatedPlan.polarProductId,
-        },
-      };
-    } else {
-      return {
-        success: false,
-        message: result.message || "Failed to refresh Polar subscription",
-      };
-    }
+    // Get current subscription plan
+    const updatedPlan = await getUserSubscriptionPlan(user.id);
+    
+    return {
+      success: true,
+      message: "Subscription data refreshed (synced automatically via webhooks)",
+      subscription: {
+        plan: updatedPlan.title,
+        isPaid: updatedPlan.isPaid,
+        interval: updatedPlan.interval,
+        productId: updatedPlan.polarProductId,
+      },
+    };
   } catch (error) {
     logger.error("Unexpected error in refreshSubscription:", error);
     return { success: false, message: "Unexpected error occurred" };

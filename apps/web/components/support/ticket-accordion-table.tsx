@@ -100,7 +100,7 @@ export function TicketAccordionTable({
   const [openItem, setOpenItem] = React.useState<string | undefined>(undefined);
 
   // Create a filterable table without rendering it
-  const table = useReactTable({
+  useReactTable({
     data,
     columns: [],
     state: {
@@ -196,7 +196,7 @@ export function TicketAccordionTable({
     });
   }, [filteredData, sorting]);
 
-  const gridContainerClasses = "grid grid-cols-2 gap-3 pt-2 sm:grid-cols-4";
+  
 
   return (
     <div className="space-y-4">

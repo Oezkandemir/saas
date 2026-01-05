@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
 
@@ -9,8 +8,6 @@ export const metadata: Metadata = constructMetadata({
 });
 
 export default async function AboutPage() {
-  const t = await getTranslations("Footer");
-
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">About Cenety</h1>

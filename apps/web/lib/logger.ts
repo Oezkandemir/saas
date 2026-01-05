@@ -5,21 +5,17 @@
 
 type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
-interface LogData {
-  [key: string]: any;
-}
-
 class Logger {
   private isDevelopment = process.env.NODE_ENV === 'development';
   private isClient = typeof window !== 'undefined';
 
-  private formatMessage(level: LogLevel, message: string, data?: LogData): string {
+  private formatMessage(level: LogLevel, message: string): string {
     const timestamp = new Date().toISOString();
     const context = this.isClient ? '[Client]' : '[Server]';
     return `${timestamp} ${context} [${level.toUpperCase()}] ${message}`;
   }
 
-  info(message: string, data?: LogData) {
+  info(message: string, data?: any) {
     if (this.isDevelopment) {
       if (data) {
         console.log(this.formatMessage('info', message), data);
@@ -29,7 +25,7 @@ class Logger {
     }
   }
 
-  warn(message: string, data?: LogData) {
+  warn(message: string, data?: any) {
     if (data) {
       console.warn(this.formatMessage('warn', message), data);
     } else {
@@ -253,7 +249,7 @@ class Logger {
     }
   }
 
-  debug(message: string, data?: LogData) {
+  debug(message: string, data?: any) {
     if (this.isDevelopment) {
       if (data) {
         console.debug(this.formatMessage('debug', message), data);

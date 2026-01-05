@@ -1,6 +1,6 @@
 "use client";
 
-import { Phone, Mail, MessageSquare, FileText, Calendar, Copy, Check } from "lucide-react";
+import { Phone, Mail, FileText, Copy, Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import { Customer } from "@/actions/customers-actions";

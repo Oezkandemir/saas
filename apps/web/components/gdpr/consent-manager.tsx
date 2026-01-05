@@ -30,7 +30,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { logger } from "@/lib/logger";
 
@@ -144,7 +143,7 @@ export function ConsentManager() {
     <>
       <Card>
         <CardHeader>
-          <div className="flex items-center gap-2">
+          <div className="flex gap-2 items-center">
             <Shield className="size-5 text-primary" />
             <CardTitle>{t("consent.title")}</CardTitle>
           </div>
@@ -161,15 +160,15 @@ export function ConsentManager() {
             return (
               <div
                 key={consentType}
-                className="flex items-start justify-between gap-4 rounded-lg border p-4"
+                className="flex gap-4 justify-between items-start p-4 rounded-lg border"
               >
                 <div className="flex-1 space-y-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex gap-2 items-center">
                     <Label htmlFor={consentType} className="font-medium cursor-pointer">
                       {description.title}
                     </Label>
                     {isGranted ? (
-                      <CheckCircle2 className="size-4 text-green-500" />
+                      <CheckCircle2 className="text-green-500 size-4" />
                     ) : (
                       <XCircle className="size-4 text-muted-foreground" />
                     )}
@@ -179,7 +178,7 @@ export function ConsentManager() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="mt-2 h-auto p-0 text-xs"
+                      className="p-0 mt-2 h-auto text-xs"
                       onClick={() => handleViewHistory(consentType)}
                     >
                       <History className="mr-1 size-3" />
@@ -187,7 +186,7 @@ export function ConsentManager() {
                     </Button>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex gap-2 items-center">
                   {consentType === "necessary" ? (
                     <Switch checked={true} disabled />
                   ) : (
@@ -200,7 +199,7 @@ export function ConsentManager() {
                       disabled={isUpdating}
                     />
                   )}
-                  {isUpdating && <Loader2 className="size-4 animate-spin" />}
+                  {isUpdating && <Loader2 className="animate-spin size-4" />}
                 </div>
               </div>
             );
@@ -218,22 +217,22 @@ export function ConsentManager() {
               {t("consent.historyDescription")}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2 max-h-96 overflow-y-auto">
+          <div className="overflow-y-auto space-y-2 max-h-96">
             {consentHistory.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
+              <p className="py-4 text-sm text-center text-muted-foreground">
                 {t("consent.noHistory")}
               </p>
             ) : (
               consentHistory.map((record) => (
                 <div
                   key={record.id}
-                  className="flex items-center justify-between gap-4 rounded-lg border p-3"
+                  className="flex gap-4 justify-between items-center p-3 rounded-lg border"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex gap-2 items-center">
                     {record.granted ? (
-                      <CheckCircle2 className="size-4 text-green-500" />
+                      <CheckCircle2 className="text-green-500 size-4" />
                     ) : (
-                      <XCircle className="size-4 text-red-500" />
+                      <XCircle className="text-red-500 size-4" />
                     )}
                     <span className="text-sm font-medium">
                       {record.granted ? t("consent.grantedStatus") : t("consent.revokedStatus")}

@@ -30,6 +30,9 @@ export default async function AdminWebhooksPage(props: Props) {
   const resolvedParams = await props.params;
   const locale = resolvedParams.locale;
 
+  // Set the locale for this request to ensure translations work correctly
+  setRequestLocale(locale);
+
   const user = await getCurrentUser();
   const t = await getTranslations("Admin.webhooks");
 
@@ -51,7 +54,6 @@ export default async function AdminWebhooksPage(props: Props) {
     >
       <WebhookList
         initialWebhooks={result.success ? result.data || [] : []}
-        locale={locale}
       />
     </UnifiedPageLayout>
   );

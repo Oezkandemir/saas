@@ -7,11 +7,7 @@ import { HeaderSection } from "@/components/shared/header-section";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
-interface FeaturesProps {
-  locale?: string;
-}
-
-export default async function Features({ locale = "en" }: FeaturesProps) {
+export default async function Features() {
   // Get translations
   const t = await getTranslations("Features");
 
@@ -23,8 +19,6 @@ export default async function Features({ locale = "en" }: FeaturesProps) {
             label={t("label")}
             title={t("title")}
             subtitle={t("subtitle")}
-            locale={locale}
-            sectionKey="features"
           />
 
           <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

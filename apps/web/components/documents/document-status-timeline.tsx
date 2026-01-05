@@ -41,15 +41,6 @@ export function DocumentStatusTimeline({
   const router = useRouter();
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const statusLabels: Record<DocumentStatus, string> = {
-    draft: t("labels.draft"),
-    sent: t("labels.sent"),
-    accepted: t("labels.accepted"),
-    declined: t("labels.declined"),
-    paid: t("labels.paid"),
-    overdue: t("labels.overdue"),
-  };
-
   const statusOptions: Record<DocumentStatus, { label: string; availableFor: ("quote" | "invoice")[] }> = {
     draft: { label: t("labels.draft"), availableFor: ["quote", "invoice"] },
     sent: { label: t("labels.sent"), availableFor: ["quote", "invoice"] },
@@ -87,8 +78,8 @@ export function DocumentStatusTimeline({
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Clock className="h-4 w-4" />
+        <CardTitle className="flex gap-2 items-center text-base">
+          <Clock className="w-4 h-4" />
           {t("title")}
         </CardTitle>
       </CardHeader>
@@ -101,7 +92,7 @@ export function DocumentStatusTimeline({
               const isLast = index === reachedStatuses.length - 1;
               
               return (
-                <div key={status} className="flex items-start gap-3">
+                <div key={status} className="flex gap-3 items-start">
                   <div className="flex flex-col items-center pt-0.5">
                     <div
                       className={`w-2.5 h-2.5 rounded-full shrink-0 ${
@@ -118,14 +109,14 @@ export function DocumentStatusTimeline({
                       />
                     )}
                   </div>
-                  <div className="flex-1 min-w-0 pb-1">
-                    <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex-1 pb-1 min-w-0">
+                    <div className="flex flex-wrap gap-2 items-center">
                       <StatusBadge status={status} />
                       {isCurrent && (
-                        <span className="text-xs text-muted-foreground font-medium">{t("current")}</span>
+                        <span className="text-xs font-medium text-muted-foreground">{t("current")}</span>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       {isCurrent && index === reachedStatuses.length - 1
                         ? format(new Date(updatedAt), "d. MMMM yyyy, HH:mm", { locale: dateLocale })
                         : index === 0
@@ -148,7 +139,7 @@ export function DocumentStatusTimeline({
               <Button 
                 variant="outline" 
                 disabled={isUpdating} 
-                className="w-full justify-between gap-2 h-9"
+                className="gap-2 justify-between w-full h-9"
                 size="sm"
               >
                 <span className="text-sm">{t("changeStatus")}</span>
@@ -156,7 +147,7 @@ export function DocumentStatusTimeline({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              {availableStatuses.map(([status, option]) => (
+              {availableStatuses.map(([status]) => (
                 <DropdownMenuItem
                   key={status}
                   onClick={() => handleStatusChange(status)}

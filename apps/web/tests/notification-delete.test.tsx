@@ -1,9 +1,8 @@
-import React from "react";
+
 import {
   deleteAllNotifications,
   deleteNotification,
-  getUserNotifications,
-} from "@/actions/user-profile-actions";
+  } from "@/actions/user-profile-actions";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -20,7 +19,6 @@ vi.mock("next/navigation", () => ({
 vi.mock("@/actions/user-profile-actions", () => ({
   deleteNotification: vi.fn(),
   deleteAllNotifications: vi.fn(),
-  getUserNotifications: vi.fn(),
 }));
 
 vi.mock("@/components/ui/use-toast", () => ({

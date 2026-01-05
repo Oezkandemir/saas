@@ -18,12 +18,16 @@ export async function getUserPlan(): Promise<UserSubscriptionPlan | null> {
       return subscriptionPlan;
     } catch (subscriptionError) {
       // Log subscription-specific errors but don't fail completely
-      logger.warn("Error fetching subscription plan:", subscriptionError);
+      logger.warn("Error fetching subscription plan:", {
+        error: subscriptionError instanceof Error ? subscriptionError.message : String(subscriptionError),
+      });
       return null;
     }
   } catch (error) {
     // Log session/user fetch errors
-    logger.warn("Error fetching user for plan:", error);
+    logger.warn("Error fetching user for plan:", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return null;
   }
 }

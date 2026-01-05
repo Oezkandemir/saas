@@ -1,8 +1,8 @@
 import { redirect, notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
-import { getEventType, type EventType } from "@/actions/scheduling/event-types-actions";
-import { listBookings, type Booking } from "@/actions/scheduling/bookings-actions";
+import { getEventType } from "@/actions/scheduling/event-types-actions";
+import { listBookings } from "@/actions/scheduling/bookings-actions";
 import Link from "next/link";
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Button } from '@/components/alignui/actions/button';
@@ -11,7 +11,6 @@ import {
   Clock,
   MapPin,
   Edit,
-  Copy,
   Link as LinkIcon,
   Users,
   BarChart3,
@@ -19,7 +18,6 @@ import {
   ExternalLink,
   CheckCircle2,
   XCircle,
-  Trash2,
 } from "lucide-react";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import {

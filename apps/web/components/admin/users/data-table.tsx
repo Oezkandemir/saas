@@ -4,7 +4,6 @@ import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -20,7 +19,6 @@ import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger,
 } from "@/components/ui/accordion";
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Button } from '@/components/alignui/actions/button';
@@ -113,7 +111,6 @@ export function DataTable<TData, TValue>({
   };
 
   // For proper typing in our mobile view
-  const typedData = data as unknown as User[];
   const filteredData = table
     .getFilteredRowModel()
     .rows.map((row) => row.original) as unknown as User[];

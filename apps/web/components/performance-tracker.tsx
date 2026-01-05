@@ -49,6 +49,9 @@ export function PerformanceTracker() {
         window.removeEventListener("load", handleLoad);
       };
     }
+    
+    // Return undefined if performance API is not available
+    return undefined;
   }, []);
 
   return null; // This component doesn't render anything

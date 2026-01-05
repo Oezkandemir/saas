@@ -1,5 +1,7 @@
 "use client";
 
+import { logger } from "@/lib/logger";
+
 /**
  * Simple client-side PDF generator using jsPDF and html2canvas
  * Much simpler than Puppeteer - no server dependencies needed!
@@ -56,7 +58,6 @@ export async function generatePDFFromElement(
       import("jspdf"),
       import("html2canvas"),
     ]);
-import { logger } from "@/lib/logger";
 
     const {
       filename = "document.pdf",

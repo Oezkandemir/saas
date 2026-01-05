@@ -456,7 +456,7 @@ export async function checkTwoFactorEnabledByEmail(
   | { success: false; message: string }
 > {
   try {
-    logger.debug("Checking 2FA for email:", email);
+    logger.debug("Checking 2FA for email", { email });
     
     // Use admin client to get user from users table
     const { supabaseAdmin } = await import("@/lib/db-admin");
@@ -482,7 +482,7 @@ export async function checkTwoFactorEnabledByEmail(
     }
     
     const userId = user.id;
-    logger.debug("Found user ID:", userId);
+    logger.debug("Found user ID", { userId });
     
     // Check 2FA status using admin client
     const { data, error } = await supabaseAdmin
@@ -499,7 +499,7 @@ export async function checkTwoFactorEnabledByEmail(
     }
     
     const isEnabled = data?.enabled ?? false;
-    logger.debug("2FA enabled status:", isEnabled);
+    logger.debug("2FA enabled status", { isEnabled });
     
     return {
       success: true,
@@ -550,7 +550,7 @@ export async function verifyTwoFactorCodeForSignIn(
     
     if (isBackupCode) {
       // Remove used backup code
-      const updatedBackupCodes = backupCodes.filter((c) => c !== code.toUpperCase());
+      const updatedBackupCodes = backupCodes.filter((c: string) => c !== code.toUpperCase());
       const { error: updateError } = await supabaseAdmin
         .from("two_factor_auth")
         .update({ backup_codes: updatedBackupCodes })

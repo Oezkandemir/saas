@@ -13,9 +13,7 @@ import { userNameSchema } from "@/lib/validations/user";
 import { Button } from '@/components/alignui/actions/button';
 import { Input } from '@/components/alignui/forms/input';
 import { LabelRoot as Label } from "@/components/alignui/forms/label";
-import { Icons } from "@/components/shared/icons";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { useSupabase } from "@/components/supabase-provider";
 
 interface UserNameFormProps {
   user: Pick<User, "id" | "name">;
@@ -23,13 +21,12 @@ interface UserNameFormProps {
 
 export function UserNameForm({ user }: UserNameFormProps) {
   const router = useRouter();
-  const { supabase } = useSupabase();
   const [updated, setUpdated] = useState(false);
   const [isPending, startTransition] = useTransition();
   const updateUserNameWithId = updateUserName.bind(null, user.id);
   const t = useTranslations("Settings.userName");
 
-  const checkUpdate = (value) => {
+  const checkUpdate = (value: string) => {
     setUpdated(user.name !== value);
   };
 

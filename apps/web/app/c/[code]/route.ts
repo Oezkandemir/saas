@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseStatic } from "@/lib/supabase-server";
 import { trackCustomerQRCodeScan, getCustomerByQRCode } from "@/actions/customers-actions";
 import { logger } from "@/lib/logger";
 

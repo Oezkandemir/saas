@@ -17,18 +17,11 @@ import {
   Bell,
   Check,
   CheckCircle2,
-  Clock,
   ExternalLink,
   Loader2,
   Trash2,
-  X,
-  Users,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
-
-import { getCurrentUser } from "@/lib/session";
 import { cn } from "@/lib/utils";
-import { useNotifications } from "@/hooks/use-notifications";
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Button } from '@/components/alignui/actions/button';
 import {
@@ -40,7 +33,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { useNotificationsContext } from "@/components/context/notifications-context";
-import { useSupabase } from "@/components/supabase-provider";
 import { logger } from "@/lib/logger";
 
 interface NotificationsPopoverProps {
@@ -80,10 +72,7 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
   >(null);
   const router = useRouter();
   const { toast } = useToast();
-  const { refetch: refetchUnreadCount } = useNotifications();
   const { refetchAll } = useNotificationsContext();
-  const t = useTranslations("Notifications");
-  const { supabase, session } = useSupabase();
 
   // Fetch notifications when popover is opened
   const {
@@ -281,7 +270,7 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
         align="end"
         side="bottom"
         sideOffset={8}
-        onInteractOutside={(e) => {
+        onInteractOutside={() => {
           // Only close when clicking outside the popover
           setOpen(false);
         }}

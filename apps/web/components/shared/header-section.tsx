@@ -2,16 +2,12 @@ interface HeaderSectionProps {
   label?: string;
   title: string;
   subtitle?: string;
-  locale?: string;
-  sectionKey?: string; // A key to identify which section this header belongs to
 }
 
 export function HeaderSection({
   label,
   title,
   subtitle,
-  locale = "en",
-  sectionKey,
 }: HeaderSectionProps) {
   // Parent components already pass translated strings, so just use them directly
   const localizedContent = { label, title, subtitle };

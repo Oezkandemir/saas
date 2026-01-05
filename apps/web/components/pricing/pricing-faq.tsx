@@ -61,7 +61,7 @@ export function PricingFaq() {
         {/* Accordion */}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
           <Accordion type="single" collapsible className="w-full space-y-2">
-            {pricingFaqData.map((faqItem, index) => (
+            {pricingFaqData.map((faqItem) => (
               <AccordionItem 
                 key={faqItem.id} 
                 value={faqItem.id}

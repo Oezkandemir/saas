@@ -4,7 +4,6 @@ import { getUserTickets } from "@/actions/support-ticket-actions";
 import { formatDistance } from "date-fns";
 import {
   BadgeCheck,
-  Bell,
   Building2,
   CreditCard,
   HelpCircle,
@@ -12,17 +11,13 @@ import {
   Shield,
   User,
   ArrowRight,
-  ExternalLink,
-  CheckCircle2,
-  Clock,
-  Calendar,
 } from "lucide-react";
 import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
-import { constructMetadata, formatDate } from "@/lib/utils";
+import { constructMetadata } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
 import { Button } from '@/components/alignui/actions/button';
 import {
@@ -46,7 +41,6 @@ import { UserNameForm } from "@/components/forms/user-name-form";
 import { getUserPreferences } from "@/actions/preferences-actions";
 import { pricingData } from "@/config/subscriptions";
 import { UserSubscriptionPlan } from "types";
-import { cn } from "@/lib/utils";
 import { logger } from "@/lib/logger";
 
 export async function generateMetadata() {
@@ -76,7 +70,7 @@ export default async function ProfilePage() {
 
   // Fetch user subscription and other details
   const supabase = await createClient();
-  const { data: userData, error } = await supabase
+  const { error } = await supabase
     .from("users")
     .select("*")
     .eq("id", user.id)
@@ -121,12 +115,8 @@ export default async function ProfilePage() {
   const preferences = preferencesResult.success ? preferencesResult.data : null;
 
   // Check subscription status - Polar only (Stripe is deprecated)
-  const paymentProvider = userData?.payment_provider || "polar";
   const hasSubscription = userSubscriptionPlan?.isPaid || false;
   const subscriptionStatus = hasSubscription ? "active" : null;
-  const subscriptionEndsAt = hasSubscription && userSubscriptionPlan?.polarCurrentPeriodEnd
-    ? new Date(userSubscriptionPlan.polarCurrentPeriodEnd)
-    : null;
 
   // Get email verification status from Supabase user metadata
   const emailVerified = user.email_confirmed_at != null;
@@ -135,53 +125,53 @@ export default async function ProfilePage() {
     <UnifiedPageLayout
       title={t("heading")}
       description={t("updateProfile")}
-      icon={<User className="h-4 w-4 text-primary" />}
+      icon={<User className="w-4 h-4 text-primary" />}
       contentClassName="space-y-6"
     >
       {/* Hero Profile Section - Modern Big Tech Style */}
-      <Card className="border-2 bg-gradient-to-br from-background via-background to-muted/20 overflow-hidden">
+      <Card className="overflow-hidden bg-gradient-to-br border-2 from-background via-background to-muted/20">
         <div className="relative">
           {/* Background Pattern */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
+          <div className="absolute inset-0 bg-gradient-to-br via-transparent from-primary/5 to-primary/5" />
           
           <CardContent className="relative p-6 sm:p-8">
-            <div className="flex flex-col sm:flex-row items-start sm:items-end gap-6">
+            <div className="flex flex-col gap-6 items-start sm:flex-row sm:items-end">
               {/* Avatar - Perfect Circle, Not Stretched */}
               <div className="relative flex-shrink-0">
-                <Avatar className="size-24 sm:size-32 border-4 border-background shadow-lg ring-2 ring-primary/20">
+                <Avatar className="border-4 ring-2 shadow-lg size-24 sm:size-32 border-background ring-primary/20">
                   <AvatarImage
                     src={user.avatar_url || ""}
                     alt={user.name || "User"}
                     className="object-cover"
                   />
-                  <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary text-2xl sm:text-3xl font-semibold">
+                  <AvatarFallback className="text-2xl font-semibold bg-gradient-to-br from-primary/20 to-primary/10 text-primary sm:text-3xl">
                     {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
                 {user.role === "ADMIN" && (
-                  <div className="absolute -bottom-1 -right-1 flex items-center justify-center size-8 sm:size-10 rounded-full bg-blue-500 border-4 border-background shadow-lg">
-                    <Shield className="size-4 sm:size-5 text-white" />
+                  <div className="flex absolute -right-1 -bottom-1 justify-center items-center bg-blue-500 rounded-full border-4 shadow-lg size-8 sm:size-10 border-background">
+                    <Shield className="text-white size-4 sm:size-5" />
                   </div>
                 )}
               </div>
 
               {/* User Info */}
-              <div className="flex-1 min-w-0 pb-2">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+              <div className="flex-1 pb-2 min-w-0">
+                <div className="flex flex-col gap-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
-                    <h1 className="text-2xl sm:text-3xl font-bold mb-1 truncate">
+                    <h1 className="mb-1 text-2xl font-bold truncate sm:text-3xl">
                       {user.name || t("personalInfo.title")}
                     </h1>
-                    <p className="text-muted-foreground text-sm sm:text-base break-all">
+                    <p className="text-sm break-all text-muted-foreground sm:text-base">
                       {user.email}
                     </p>
                   </div>
                 </div>
 
                 {/* Stats Row */}
-                <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center justify-center size-8 rounded-lg bg-muted/50 border border-border">
+                <div className="flex flex-wrap gap-4 items-center sm:gap-6">
+                  <div className="flex gap-2 items-center">
+                    <div className="flex justify-center items-center rounded-lg border size-8 bg-muted/50 border-border">
                       <User className="size-4 text-muted-foreground" />
                     </div>
                     <div>
@@ -197,9 +187,9 @@ export default async function ProfilePage() {
                   </div>
                   
                   {subscriptionStatus && userSubscriptionPlan && (
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center justify-center size-8 rounded-lg bg-green-500/10 border border-green-500/20">
-                        <BadgeCheck className="size-4 text-green-600 dark:text-green-400" />
+                    <div className="flex gap-2 items-center">
+                      <div className="flex justify-center items-center rounded-lg border size-8 bg-green-500/10 border-green-500/20">
+                        <BadgeCheck className="text-green-600 size-4 dark:text-green-400" />
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground">{t("subscription")}</p>
@@ -211,8 +201,8 @@ export default async function ProfilePage() {
                   )}
 
                   {companyProfile && (
-                    <Link href={`/dashboard/settings/company/${companyProfile.id}`} className="flex items-center gap-2 group hover:opacity-80 transition-opacity">
-                      <div className="flex items-center justify-center size-8 rounded-lg bg-primary/10 border border-primary/20">
+                    <Link href={`/dashboard/settings/company/${companyProfile.id}`} className="flex gap-2 items-center transition-opacity group hover:opacity-80">
+                      <div className="flex justify-center items-center rounded-lg border size-8 bg-primary/10 border-primary/20">
                         <Building2 className="size-4 text-primary" />
                       </div>
                       <div>
@@ -415,11 +405,11 @@ export default async function ProfilePage() {
                   <CardDescription>{t("manageSubscription")}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <BillingInfo userSubscriptionPlan={userSubscriptionPlan} userEmail={user.email} />
+                  <BillingInfo userSubscriptionPlan={userSubscriptionPlan} />
                   
                   {/* Micro Actions */}
-                  <div className="pt-4 border-t space-y-2">
-                    <div className="flex items-center justify-between text-sm">
+                  <div className="pt-4 space-y-2 border-t">
+                    <div className="flex justify-between items-center text-sm">
                       <span className="text-muted-foreground">Abrechnung verwalten</span>
                       {userSubscriptionPlan.polarCustomerId ? (
                         <PolarPortalButton 
@@ -440,7 +430,7 @@ export default async function ProfilePage() {
                         />
                       )}
                     </div>
-                    <Link href="/dashboard/billing" className="flex items-center justify-between text-sm group hover:text-primary transition-colors">
+                    <Link href="/dashboard/billing" className="flex justify-between items-center text-sm transition-colors group hover:text-primary">
                       <span className="text-muted-foreground">Vollständige Abrechnungsübersicht</span>
                       <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
                     </Link>
@@ -459,13 +449,13 @@ export default async function ProfilePage() {
                 <CardContent className="space-y-6">
                   <div className="space-y-4">
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Profilbild</label>
+                      <label className="block mb-2 text-sm font-medium">Profilbild</label>
                       <UserAvatarForm
                         user={{ id: user.id, avatar_url: user.avatar_url }}
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Name</label>
+                      <label className="block mb-2 text-sm font-medium">Name</label>
                       <UserNameForm user={{ id: user.id, name: user.name || "" }} />
                     </div>
                   </div>
@@ -499,7 +489,7 @@ export default async function ProfilePage() {
                       </div>
                     </div>
                     <div className="pt-4 border-t">
-                      <Link href="/dashboard/settings/preferences" className="flex items-center justify-between text-sm group hover:text-primary transition-colors">
+                      <Link href="/dashboard/settings/preferences" className="flex justify-between items-center text-sm transition-colors group hover:text-primary">
                         <span className="text-muted-foreground">Alle Einstellungen verwalten</span>
                         <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
                       </Link>
@@ -514,21 +504,21 @@ export default async function ProfilePage() {
                   <CardTitle>Weitere Einstellungen</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-0 divide-y divide-border">
-                  <Link href="/dashboard/settings/company" className="flex items-center justify-between py-3 group hover:text-primary transition-colors">
+                  <Link href="/dashboard/settings/company" className="flex justify-between items-center py-3 transition-colors group hover:text-primary">
                     <div>
                       <h3 className="text-sm font-medium">Firmenprofile</h3>
                       <p className="text-xs text-muted-foreground mt-0.5">Firmendaten verwalten</p>
                     </div>
                     <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
                   </Link>
-                  <Link href="/dashboard/settings/security" className="flex items-center justify-between py-3 group hover:text-primary transition-colors">
+                  <Link href="/dashboard/settings/security" className="flex justify-between items-center py-3 transition-colors group hover:text-primary">
                     <div>
                       <h3 className="text-sm font-medium">Sicherheit</h3>
                       <p className="text-xs text-muted-foreground mt-0.5">Passwort und 2FA</p>
                     </div>
                     <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
                   </Link>
-                  <Link href="/dashboard/settings/privacy" className="flex items-center justify-between py-3 group hover:text-primary transition-colors">
+                  <Link href="/dashboard/settings/privacy" className="flex justify-between items-center py-3 transition-colors group hover:text-primary">
                     <div>
                       <h3 className="text-sm font-medium">Datenschutz</h3>
                       <p className="text-xs text-muted-foreground mt-0.5">GDPR & Datenschutz</p>

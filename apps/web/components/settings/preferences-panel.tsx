@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useTransition, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -18,7 +18,6 @@ import {
   Bell, 
   Globe, 
   Calendar, 
-  Clock, 
   DollarSign, 
   Mail, 
   Moon, 
@@ -90,7 +89,7 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
   const t = useTranslations("Preferences");
   const [isPending, startTransition] = useTransition();
   const { theme, setTheme } = useTheme();
-  const { register, handleSubmit, watch, setValue, formState: { isDirty } } = useForm<PreferencesFormData>({
+  const { handleSubmit, watch, setValue, formState: { isDirty } } = useForm<PreferencesFormData>({
     resolver: zodResolver(preferencesSchema),
     defaultValues: {
       theme_preference: initialPreferences.theme_preference as "system" | "light" | "dark",

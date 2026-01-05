@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import { auth } from "@/auth";
 
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";

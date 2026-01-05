@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
-import { cn } from "@/lib/utils";
+
 
 export default async function ModernOfferings() {
   const t = await getTranslations("Offerings");

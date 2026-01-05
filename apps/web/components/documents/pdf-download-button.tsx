@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
 import { Download, Loader2 } from "lucide-react";
@@ -12,11 +12,6 @@ interface PDFDownloadButtonProps {
   pdfUrl?: string | null;
   variant?: "primary" | "secondary" | "ghost" | "destructive" | "outline";
   size?: "default" | "sm" | "lg" | "icon";
-  /**
-   * Optional: Pass a ref to the element to convert to PDF
-   * If not provided, will try to find the preview element automatically
-   */
-  previewElementRef?: React.RefObject<HTMLElement>;
 }
 
 export function PDFDownloadButton({
@@ -24,7 +19,6 @@ export function PDFDownloadButton({
   pdfUrl,
   variant = "outline",
   size = "default",
-  previewElementRef,
 }: PDFDownloadButtonProps) {
   const t = useTranslations("Documents.pdfDownload");
   const [loading, setLoading] = useState(false);

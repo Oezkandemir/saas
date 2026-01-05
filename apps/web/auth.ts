@@ -1,5 +1,4 @@
 import { cache } from "react";
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 import { syncUserWithDatabase } from "@/lib/auth-sync";

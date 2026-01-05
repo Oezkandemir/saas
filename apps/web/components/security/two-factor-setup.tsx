@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
-import { Shield, Copy, Check, Loader2, AlertCircle } from "lucide-react";
+import { Shield, Copy, Check, Loader2 } from "lucide-react";
 
 import { Button } from '@/components/alignui/actions/button';
 import {
@@ -25,7 +24,6 @@ interface TwoFactorSetupProps {
 }
 
 export function TwoFactorSetup({ onComplete }: TwoFactorSetupProps) {
-  const t = useTranslations("Security");
   const { toast } = useToast();
   const [step, setStep] = useState<"generate" | "verify">("generate");
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");

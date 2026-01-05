@@ -132,7 +132,7 @@ export function CustomerActivityTimeline({
         <div className="relative">
           <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-border" />
           <div className="space-y-6">
-            {activities.map((activity, index) => (
+            {activities.map((activity) => (
               <div key={activity.id} className="relative flex gap-4">
                 <div
                   className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-background ${getActivityColor(

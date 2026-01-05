@@ -163,8 +163,7 @@ export async function generatePolarCustomerPortalLink(customerId: string): Promi
   } catch (error: any) {
     logger.error("Error generating Polar customer portal link", {
       error: error.message,
-      customerId,
-    });
+      });
     throw error;
   }
 }
@@ -174,7 +173,7 @@ export async function generatePolarCustomerPortalLink(customerId: string): Promi
  * For new implementations, use generatePolarCustomerPortalLink() instead
  * @deprecated Use generatePolarCustomerPortalLink() for authenticated portal links
  */
-export function getPolarCustomerPortalUrl(customerId?: string): string {
+export function getPolarCustomerPortalUrl(_customerId?: string): string {
   // Return base URL - for authenticated links, use generatePolarCustomerPortalLink()
   return POLAR_DASHBOARD_BASE_URL;
 }
@@ -359,8 +358,7 @@ export async function findCustomerIdByEmail(email: string): Promise<string | nul
     for (const subscription of subscriptions) {
       if (subscription.customer?.email === email || subscription.customer_email === email) {
         logger.info("Found customer ID by email", {
-          email,
-          customerId: subscription.customer_id,
+          email: subscription.customer_id,
         });
         return subscription.customer_id || null;
       }

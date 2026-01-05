@@ -6,13 +6,11 @@ import { getPlanLimitInfo } from "@/actions/plan-limits-actions";
 import { LimitType } from "@/lib/plan-limits";
 
 interface PlanLimitWarningProps {
-  userId: string;
   limitType: LimitType;
   className?: string;
 }
 
 export async function PlanLimitWarning({
-  userId,
   limitType,
   className,
 }: PlanLimitWarningProps) {

@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Building2, CheckCircle2, UserPlus, Shield } from "lucide-react";
+import { Building2, CheckCircle2, Shield } from "lucide-react";
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Button } from '@/components/alignui/actions/button';
 import Link from "next/link";

@@ -29,23 +29,7 @@ export function CustomerPersonalInfoStep({
   form: UseFormReturn<CustomerInput>;
 }) {
   const t = useTranslations("Customers.form.fields");
-  const tCountries = useTranslations("Customers.countries");
   const { getFieldState, watch, formState } = useFormContext<CustomerInput>();
-
-  const countries = [
-    { value: "DE", label: tCountries("germany") },
-    { value: "AT", label: tCountries("austria") },
-    { value: "CH", label: tCountries("switzerland") },
-    { value: "FR", label: tCountries("france") },
-    { value: "IT", label: tCountries("italy") },
-    { value: "ES", label: tCountries("spain") },
-    { value: "NL", label: tCountries("netherlands") },
-    { value: "BE", label: tCountries("belgium") },
-    { value: "PL", label: tCountries("poland") },
-    { value: "GB", label: tCountries("unitedKingdom") },
-    { value: "US", label: tCountries("usa") },
-    { value: "CA", label: tCountries("canada") },
-  ];
 
   const getFieldStatus = (fieldName: keyof CustomerInput) => {
     const fieldState = getFieldState(fieldName, formState);

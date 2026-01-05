@@ -8,7 +8,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
   createEventType,
-  type EventType,
 } from "@/actions/scheduling/event-types-actions";
 import { Button } from '@/components/alignui/actions/button';
 import {

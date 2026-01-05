@@ -3,7 +3,6 @@ import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { getCustomers, type Customer } from "@/actions/customers-actions";
 import { getDocuments, type Document } from "@/actions/documents-actions";
-import { getQRCodes, type QRCode } from "@/actions/qr-codes-actions";
 import Link from "next/link";
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Button } from '@/components/alignui/actions/button';
@@ -36,10 +35,9 @@ export default async function DashboardPage() {
   const tDocs = await getTranslations("Documents");
   const tTable = await getTranslations("Documents.table.columns");
 
-  const [customers, documents, qrCodes]: [Customer[], Document[], QRCode[]] = await Promise.all([
+  const [customers, documents]: [Customer[], Document[]] = await Promise.all([
     getCustomers().catch(() => []),
     getDocuments().catch(() => []),
-    getQRCodes().catch(() => []),
   ]);
 
   const quotes = documents.filter((d) => d.type === "quote");
@@ -48,7 +46,6 @@ export default async function DashboardPage() {
   const unpaidInvoices = invoices.filter((d) => d.status !== "paid");
   const paidInvoices = invoices.filter((d) => d.status === "paid");
   
-  const recentCustomers = customers.slice(0, 5);
   const recentDocuments = documents
     .slice(0, 5)
     .sort((a, b) => 
@@ -56,7 +53,6 @@ export default async function DashboardPage() {
     );
 
   const totalRevenue = paidInvoices.reduce((sum, inv) => sum + (inv.total || 0), 0);
-  const pendingRevenue = unpaidInvoices.reduce((sum, inv) => sum + (inv.total || 0), 0);
 
   // Maximal 3 KPIs: Customers, Open Quotes, Unpaid Invoices
   const kpis = [

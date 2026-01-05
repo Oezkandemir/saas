@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/session";
 import { getDocument } from "@/actions/documents-actions";
 import { generateAndUploadPDF } from "@/lib/pdf/generator-vercel";
-import { generateInvoiceHTMLAsync } from "@/lib/pdf/templates";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { applyAPIMiddleware } from "@/lib/api-middleware";
@@ -64,7 +62,7 @@ export async function GET(
           }
         } catch (error) {
           // Error fetching PDF, regenerate it
-          logger.warn("Error validating PDF, regenerating", { error });
+          logger.warn(`Error validating PDF, regenerating: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
     }

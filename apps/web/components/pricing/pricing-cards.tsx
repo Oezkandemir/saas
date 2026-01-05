@@ -46,10 +46,6 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
   const [isYearly, setIsYearly] = useState<boolean>(!!isYearlyDefault);
   const { setShowSignInModal } = useContext(ModalContext);
 
-  const toggleBilling = () => {
-    setIsYearly(!isYearly);
-  };
-
   // Icon mapping for features
   const getFeatureIcon = (feature: string) => {
     const lowerFeature = feature.toLowerCase();
@@ -78,7 +74,6 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
   const PricingCard = ({ offer }: { offer: SubscriptionPlan }) => {
     const isPro = offer.title.toLocaleLowerCase() === "pro";
     const isEnterprise = offer.title.toLocaleLowerCase() === "enterprise";
-    const isFree = offer.title.toLocaleLowerCase() === "free";
     const isCurrentPlan = userId && subscriptionPlan && offer.title.toLowerCase() === subscriptionPlan.title.toLowerCase();
 
     return (
@@ -200,7 +195,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
             ))}
 
             {offer.limitations.length > 0 &&
-              offer.limitations.map((feature, index) => (
+              offer.limitations.map((feature) => (
                 <li
                   className="flex items-start gap-3 text-muted-foreground"
                   key={feature}

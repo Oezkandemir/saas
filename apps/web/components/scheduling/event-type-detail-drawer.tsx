@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { getEventType, type EventType } from "@/actions/scheduling/event-types-actions";
 import { listBookings, type Booking } from "@/actions/scheduling/bookings-actions";
@@ -18,11 +17,9 @@ import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
 import {
-  Calendar,
   Clock,
   MapPin,
   Users,
-  Settings,
   BarChart3,
   CheckCircle2,
   XCircle,
@@ -52,7 +49,6 @@ export function EventTypeDetailDrawer({
 }: EventTypeDetailDrawerProps) {
   const t = useTranslations("Scheduling.eventTypes.detail");
   const locale = useLocale();
-  const router = useRouter();
   const [eventType, setEventType] = useState<EventType | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -365,19 +361,22 @@ export function EventTypeDetailDrawer({
 
                 {/* Edit Tab */}
                 <TabsContent value="edit" className="mt-6">
-                  <EditEventTypeForm
-                    eventType={eventType}
-                    onSuccess={() => {
-                      // Reload event type data after successful update
-                      if (eventTypeId) {
-                        getEventType(eventTypeId).then((result) => {
-                          if (result.success && result.data) {
-                            setEventType(result.data);
-                          }
-                        });
-                      }
-                    }}
-                  />
+                  {eventType && eventType.owner_user_id && (
+                    <EditEventTypeForm
+                      eventType={eventType}
+                      userId={eventType.owner_user_id}
+                      onSuccess={() => {
+                        // Reload event type data after successful update
+                        if (eventTypeId) {
+                          getEventType(eventTypeId).then((result) => {
+                            if (result.success && result.data) {
+                              setEventType(result.data);
+                            }
+                          });
+                        }
+                      }}
+                    />
+                  )}
                 </TabsContent>
 
                 {/* Bookings Tab */}

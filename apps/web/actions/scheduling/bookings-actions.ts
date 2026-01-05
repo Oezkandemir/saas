@@ -25,12 +25,6 @@ const createBookingSchema = z.object({
   participant_names: z.array(z.string().min(1).max(200)).optional(), // Array of participant names
 });
 
-const cancelBookingSchema = z.object({
-  booking_id: z.string().uuid().optional(),
-  cancel_token: z.string().optional(),
-  reason: z.string().max(500).optional(),
-});
-
 // ============================================
 // TYPES
 // ============================================
@@ -338,7 +332,6 @@ function calculateSlotsFromTimeSlots(params: {
   const {
     date,
     timezone,
-    eventType,
     timeSlots,
     availabilityRules,
     overrides,
@@ -357,9 +350,6 @@ function calculateSlotsFromTimeSlots(params: {
 
   // Get current time for filtering past slots
   const now = new Date();
-  
-  // Check if selected date is today
-  const isToday = daysDiff === 0;
 
   // Check for full-day unavailability override
   const fullDayUnavailable = overrides.some(
@@ -566,9 +556,6 @@ function calculateAvailableSlots(params: {
 
   // Get current time for filtering past slots
   const now = new Date();
-  
-  // Check if selected date is today
-  const isToday = daysDiff === 0;
 
   // Check for full-day unavailability override
   const fullDayUnavailable = overrides.some(
@@ -1239,28 +1226,6 @@ export async function getBookingStatistics(): Promise<ActionResult<{
     const todayDay = String(now.getDate()).padStart(2, '0');
     const todayDateStr = `${todayYear}-${todayMonth}-${todayDay}`;
     
-    // Create start and end of today in local timezone
-    const todayStartLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-    const todayEndLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
-    
-    // Convert to UTC for database query (database stores in UTC)
-    // getTimezoneOffset() returns offset in minutes, positive for timezones behind UTC
-    const timezoneOffsetMinutes = now.getTimezoneOffset();
-    const timezoneOffsetMs = timezoneOffsetMinutes * 60 * 1000;
-    
-    // Convert local time to UTC: subtract the offset to get UTC time
-    const todayStartUTC = new Date(todayStartLocal.getTime() - timezoneOffsetMs);
-    const todayEndUTC = new Date(todayEndLocal.getTime() - timezoneOffsetMs);
-    
-    // For yesterday, subtract one day from local time first, then convert
-    const yesterdayStartLocal = new Date(todayStartLocal);
-    yesterdayStartLocal.setDate(yesterdayStartLocal.getDate() - 1);
-    const yesterdayEndLocal = new Date(todayEndLocal);
-    yesterdayEndLocal.setDate(yesterdayEndLocal.getDate() - 1);
-    
-    const yesterdayStartUTC = new Date(yesterdayStartLocal.getTime() - timezoneOffsetMs);
-    const yesterdayEndUTC = new Date(yesterdayEndLocal.getTime() - timezoneOffsetMs);
-
     // Simplified approach: Load ALL scheduled bookings and filter client-side
     // This ensures admins see everything and avoids timezone issues
     let allBookingsQuery = supabase

@@ -15,7 +15,6 @@ import { de } from "date-fns/locale";
 import { Button } from '@/components/alignui/actions/button';
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,

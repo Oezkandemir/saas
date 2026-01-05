@@ -11,14 +11,9 @@ import { useRouter } from 'next/navigation';
 import {
   RiArrowDownLine,
   RiArrowUpLine,
-  RiBankCardLine,
-  RiBankLine,
   RiCloseLine,
   RiCornerDownLeftLine,
-  RiFolderOpenLine,
-  RiHistoryLine,
   RiSearch2Line,
-  RiSparklingLine,
   RiHomeLine,
   RiUserLine,
   RiSettingsLine,
@@ -29,8 +24,6 @@ import { Button } from '@/components/alignui/actions/button';
 import { CommandMenu } from '@/components/alignui/overlays/command-menu';
 import { CompactButton } from '@/components/alignui/actions/compact-button';
 import { Kbd } from '@/components/alignui/actions/kbd';
-import { LinkButton } from '@/components/alignui/actions/link-button';
-import { Tag } from '@/components/alignui/data-display/tag';
 import { cn } from '@/lib/utils';
 
 interface CommandMenuItem {
@@ -44,21 +37,11 @@ interface CommandMenuItem {
 }
 
 interface CommandMenuExampleProps {
-  /** Navigation-Links für die Suche */
-  navigationItems?: Array<{
-    title: string;
-    items: Array<{
-      title: string;
-      href: string;
-      icon?: string;
-    }>;
-  }>;
   /** Zusätzliche Aktionen */
   actions?: CommandMenuItem[];
 }
 
 export function CommandMenuExample({
-  navigationItems = [],
   actions = [],
 }: CommandMenuExampleProps) {
   const [open, setOpen] = React.useState(false);

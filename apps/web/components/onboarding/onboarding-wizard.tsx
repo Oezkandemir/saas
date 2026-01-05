@@ -3,7 +3,6 @@
 import * as React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { 
   Building2, 
   FileText, 
@@ -25,7 +24,6 @@ import {
 } from '@/components/alignui/data-display/card';
 import { Input } from '@/components/alignui/forms/input';
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -37,7 +35,6 @@ interface OnboardingWizardProps {
 export function OnboardingWizard({ onComplete, onSkip }: OnboardingWizardProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const t = useTranslations("Onboarding");
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 

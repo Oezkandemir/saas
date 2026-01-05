@@ -102,19 +102,12 @@ export async function recordUsageForBilling(
     const supabase = await getSupabaseServer();
     
     // Determine period based on metric type
-    let periodStart: Date;
-    let periodEnd: Date;
-    
     if (["documents", "api_calls", "email_sends"].includes(metricType)) {
       // Monthly metrics
-      const now = new Date();
-      periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      periodEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      // Period is handled by the database function
     } else {
       // Lifetime metrics
-      const now = new Date();
-      periodStart = new Date(now.getFullYear(), 0, 1);
-      periodEnd = new Date(now.getFullYear() + 1, 0, 1);
+      // Period is handled by the database function
     }
 
     const { error } = await supabase.rpc("record_usage", {
@@ -164,6 +157,7 @@ export async function checkUsageWarnings(
 
   return warnings;
 }
+
 
 
 

@@ -26,9 +26,6 @@ export function BillingFormButton({
   const userCurrentProductId = subscriptionPlan.polarProductId;
   const selectedPolarId = offer.polarIds?.[year ? "yearly" : "monthly"];
 
-  // Use Polar only (Stripe is deprecated)
-  const usePolar = !!selectedPolarId;
-
   // Check if this is the user's current plan
   const isCurrentPlan = userCurrentProductId === selectedPolarId;
 

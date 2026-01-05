@@ -14,17 +14,6 @@ export interface PDFOptions {
   printBackground?: boolean;
 }
 
-const DEFAULT_OPTIONS: PDFOptions = {
-  format: "A4",
-  margin: {
-    top: "20mm",
-    right: "15mm",
-    bottom: "20mm",
-    left: "15mm",
-  },
-  displayHeaderFooter: false,
-  printBackground: true,
-};
 
 /**
  * Generates a PDF using @react-pdf/renderer (no external services needed!)
@@ -33,8 +22,8 @@ const DEFAULT_OPTIONS: PDFOptions = {
  * It uses React components to generate PDFs server-side.
  */
 export async function generatePDFFromHTML(
-  html: string,
-  options: PDFOptions = {},
+  _html: string,
+  _options: PDFOptions = {},
 ): Promise<Buffer> {
   // This function is kept for compatibility but we use generatePDFFromDocument instead
   // HTML-based generation is not supported with @react-pdf/renderer
@@ -108,8 +97,8 @@ export async function uploadPDFToStorage(
  */
 export async function generateAndUploadPDF(
   document: Document,
-  htmlContent: string, // Kept for compatibility but not used
-  options?: PDFOptions,
+  _htmlContent: string, // Kept for compatibility but not used
+  _options?: PDFOptions,
 ): Promise<string> {
   try {
     logger.debug("Starting PDF generation for document:", document.id);
@@ -151,7 +140,7 @@ export async function generateAndUploadPDF(
       throw new Error(`Invalid PDF generated. Header: ${pdfHeader}, Buffer length: ${pdfBuffer.length}`);
     }
     
-    logger.debug("PDF generated successfully, size:", pdfBuffer.length, "bytes");
+    logger.debug("PDF generated successfully", { size: `${pdfBuffer.length} bytes` });
 
     // Upload to storage
     logger.debug("Uploading PDF to storage...");

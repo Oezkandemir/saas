@@ -10,12 +10,11 @@ import {
 import {
   MoreHorizontal,
   Shield,
-  ShieldAlert,
   Trash,
   Unlock,
   X,
 } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 import { Button } from '@/components/alignui/actions/button';
@@ -47,7 +46,6 @@ interface UserActionsProps {
   inline?: boolean; // Prop for inline display
   compact?: boolean; // New prop for compact view in header
   isExpanded?: boolean; // Whether the parent accordion item is expanded
-  locale?: string; // Locale for translations
 }
 
 // Define Tailwind class combinations to avoid lint errors
@@ -60,11 +58,9 @@ export function UserActions({
   inline = false,
   compact = false,
   isExpanded = false,
-  locale,
 }: UserActionsProps) {
   const { toast } = useToast();
   const router = useRouter();
-  const activeLocale = useLocale(); // Get the current locale from the context
   const t = useTranslations("Admin.users");
   const tTable = useTranslations("Admin.table");
 
@@ -72,13 +68,11 @@ export function UserActions({
   const [showBanDrawer, setShowBanDrawer] = useState(false);
   const [showAdminDrawer, setShowAdminDrawer] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   // Handle user ban/unban
   const handleBanUser = async () => {
     try {
       setLoading(true);
-      setError(null);
 
       // Call the server action
       const result = await toggleUserBanStatus(user.id, user.status);
@@ -98,7 +92,6 @@ export function UserActions({
       router.refresh();
     } catch (err) {
       logger.error("Error banning/unbanning user:", err);
-      setError(err instanceof Error ? err.message : "Unknown error occurred");
 
       toast({
         title: "Operation Failed",
@@ -115,7 +108,6 @@ export function UserActions({
   const handleDeleteUser = async () => {
     try {
       setLoading(true);
-      setError(null);
 
       // Call the server action
       const result = await deleteUser(user.id);
@@ -134,7 +126,6 @@ export function UserActions({
       router.refresh();
     } catch (err) {
       logger.error("Error deleting user:", err);
-      setError(err instanceof Error ? err.message : "Unknown error occurred");
 
       toast({
         title: "Delete Failed",
@@ -151,7 +142,6 @@ export function UserActions({
   const handleToggleAdmin = async () => {
     try {
       setLoading(true);
-      setError(null);
 
       // Call the server action
       const result = await toggleUserAdminStatus(user.id, user.role);
@@ -173,7 +163,6 @@ export function UserActions({
       router.refresh();
     } catch (err) {
       logger.error("Error toggling admin status:", err);
-      setError(err instanceof Error ? err.message : "Unknown error occurred");
 
       toast({
         title: "Operation Failed",

@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import { Check } from "lucide-react";
-import { getTranslations } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
 import { Button } from '@/components/alignui/actions/button';
@@ -18,8 +17,6 @@ export const metadata: Metadata = constructMetadata({
 });
 
 export default async function EnterprisePage() {
-  const t = await getTranslations("Footer");
-
   return (
     <div className="space-y-8">
       <div className="space-y-4">

@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { createLoginSession, logFailedLogin } from "@/lib/session-tracking";
+import { createLoginSession } from "@/lib/session-tracking";
 import { logger } from "@/lib/logger";
 
 /**
@@ -10,7 +10,7 @@ import { logger } from "@/lib/logger";
  * @param expiresAt Session expiration timestamp
  */
 export async function trackLoginSession(
-  sessionToken: string,
+  _sessionToken: string,
   expiresAt: number,
 ): Promise<{ success: boolean; message?: string }> {
   try {
@@ -25,7 +25,7 @@ export async function trackLoginSession(
     }
 
     const expiresAtDate = new Date(expiresAt * 1000);
-    await createLoginSession(user.id, sessionToken, expiresAtDate);
+    await createLoginSession(user.id, expiresAtDate);
 
     return { success: true };
   } catch (error) {

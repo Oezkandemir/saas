@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { getUserTickets } from "@/actions/support-ticket-actions";
 import { Plus, HelpCircle, Mail, MessageCircle, Phone, ArrowRight } from "lucide-react";
-import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { siteConfig } from "@/config/site";
-import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
 import { Button } from '@/components/alignui/actions/button';
 import { Separator } from "@/components/ui/separator";
@@ -17,7 +16,6 @@ export async function generateMetadata() {
   // This ensures correct language during client-side navigation
   const locale = await getLocale();
   setRequestLocale(locale);
-  const t = await getTranslations("Support");
 
   return constructMetadata({
     title: "Support Center - Get Help & Submit Tickets | Professional Customer Support",
@@ -26,9 +24,6 @@ export async function generateMetadata() {
 }
 
 export default async function SupportPage() {
-  const user = await getCurrentUser();
-  const t = await getTranslations("Support");
-
   // Fetch user tickets
   const ticketsResult = await getUserTickets();
   const tickets = ticketsResult.success ? ticketsResult.data || [] : [];
@@ -36,7 +31,6 @@ export default async function SupportPage() {
   // Calculate ticket stats
   const openTickets = tickets.filter(t => t.status === 'open').length;
   const inProgressTickets = tickets.filter(t => t.status === 'in_progress').length;
-  const resolvedTickets = tickets.filter(t => t.status === 'resolved' || t.status === 'closed').length;
 
   // Contextual description with ticket counts
   const description = tickets.length > 0 

@@ -1,5 +1,5 @@
 import { PlansRow } from "@/types";
-import { CircleCheck, Info, Check, X } from "lucide-react";
+import { Info, Check, X } from "lucide-react";
 
 import { comparePlans, plansColumns } from "@/config/subscriptions";
 import {

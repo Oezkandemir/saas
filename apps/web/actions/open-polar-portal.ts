@@ -4,15 +4,12 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { generatePolarCustomerPortalLink } from "@/lib/polar";
 import { logger } from "@/lib/logger";
-import { absoluteUrl } from "@/lib/utils";
 
 export type responseAction = {
   status: "success" | "error";
   portalUrl?: string;
   message?: string;
 };
-
-const billingUrl = absoluteUrl("/dashboard/billing");
 
 /**
  * Open Polar customer portal
@@ -212,37 +209,11 @@ export async function openPolarPortalFallback(): Promise<responseAction> {
       }
     }
 
-    // If still not found, try to sync subscription from Polar API
-    logger.info("Fallback: No Polar data found, attempting to sync from Polar API");
+    // If still not found, subscriptions will be synced automatically via webhooks
+    logger.info("No Polar data found - subscription will be synced automatically via webhooks");
     
-    try {
-      const { fixPolarSubscription } = await import("./fix-polar-subscription");
-      const syncResult = await fixPolarSubscription();
-      
-      if (syncResult.success) {
-        // Retry getting data after sync
-        const { data: retryUserData } = await supabaseAdmin
-          .from("users")
-          .select("polar_customer_id, polar_subscription_id")
-          .eq("id", session.user.id)
-          .single();
-        
-        if (retryUserData?.polar_customer_id) {
-          logger.info("Fallback: Found customer ID after sync");
-          return await openPolarPortal(retryUserData.polar_customer_id);
-        }
-        
-        if (retryUserData?.polar_subscription_id) {
-          logger.info("Fallback: Found subscription ID after sync");
-          return await openPolarPortalFromSubscription(retryUserData.polar_subscription_id);
-        }
-      }
-    } catch (syncError: any) {
-      logger.error("Fallback: Error syncing subscription", syncError);
-    }
-
-    // If still not found, log detailed error and provide helpful message
-    logger.error("Fallback: No Polar data found after all attempts", {
+    // Return error - user needs to wait for webhook or complete checkout
+    logger.error("No Polar data found after all attempts", {
       userId: session.user.id,
       userEmail: session.user.email,
       userData: userData,
@@ -252,7 +223,7 @@ export async function openPolarPortalFallback(): Promise<responseAction> {
     // Return error with helpful message
     return {
       status: "error",
-      message: "No Polar subscription found. Please ensure you have completed a purchase through Polar.sh. If you have, please use the sync button to update your subscription data.",
+      message: "No Polar subscription found. Please ensure you have completed a purchase through Polar.sh. Subscriptions are synced automatically via webhooks.",
     };
   } catch (error: any) {
     logger.error("Error opening Polar customer portal (fallback)", error);

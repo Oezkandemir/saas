@@ -43,7 +43,7 @@ export async function updateUserAvatar(userId: string, formData: FormData) {
     const buffer = new Uint8Array(arrayBuffer);
 
     // Upload to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+    const { error: uploadError } = await supabaseAdmin.storage
       .from("avatars")
       .upload(fileName, buffer, {
         contentType: avatarFile.type,
@@ -87,7 +87,8 @@ export async function updateUserAvatar(userId: string, formData: FormData) {
     logger.error("Error updating user avatar", error);
     return {
       status: "error",
-      message: error.message || "Failed to update avatar",
+      message:
+        error instanceof Error ? error.message : "Failed to update avatar",
     };
   }
 }

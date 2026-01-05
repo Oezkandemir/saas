@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { routing } from "@/i18n/routing";
 
@@ -40,7 +39,6 @@ export async function GET(request: NextRequest) {
         const expiresAt = new Date(data.session.expires_at! * 1000);
         await createLoginSession(
           data.user.id,
-          data.session.access_token,
           expiresAt,
         );
       }

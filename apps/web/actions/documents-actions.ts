@@ -132,7 +132,7 @@ export async function getDocuments(
 
   // Items are already loaded via join, just need to sort them
   const documentsWithItems = (data || []).map((doc) => {
-    const items = (doc.document_items || []).sort((a, b) => 
+    const items = (doc.document_items || []).sort((a: DocumentItem, b: DocumentItem) => 
       (a.position || 0) - (b.position || 0)
     );
     return { ...doc, items };
@@ -215,7 +215,7 @@ export async function getDocument(id: string): Promise<Document | null> {
   }
 
   // Items are already loaded via join, just need to sort them
-  const items = (data.document_items || []).sort((a, b) => 
+  const items = (data.document_items || []).sort((a: DocumentItem, b: DocumentItem) => 
     (a.position || 0) - (b.position || 0)
   );
 

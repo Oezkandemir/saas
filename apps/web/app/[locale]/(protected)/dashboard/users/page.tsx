@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { UserSearch } from './user-search';
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader } from '@/components/alignui/data-display/card';
 
 export const metadata: Metadata = {
   title: 'Users - Dashboard',

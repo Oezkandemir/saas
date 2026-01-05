@@ -22,12 +22,12 @@ export function NavMobile() {
   const selectedLayout = useSelectedLayoutSegment();
   const documentation = selectedLayout === "docs";
 
-  const configMap = {
+  const configMap: Record<string, typeof docsConfig.mainNav> = {
     docs: docsConfig.mainNav,
   };
 
   const links =
-    (selectedLayout && configMap[selectedLayout]) || marketingConfig.mainNav;
+    (selectedLayout && selectedLayout in configMap ? configMap[selectedLayout] : undefined) || marketingConfig.mainNav;
 
   // Fetch user role from database (not from metadata for security)
   useEffect(() => {

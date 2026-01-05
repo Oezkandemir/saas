@@ -19,7 +19,6 @@ import {
 } from "@/components/alignui/forms/form";
 import { Input } from '@/components/alignui/forms/input';
 import { useNotificationsContext } from "@/components/context/notifications-context";
-import { Icons } from "@/components/shared/icons";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSupabase } from "@/components/supabase-provider";
 

@@ -11,7 +11,6 @@ import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { useScroll } from "@/hooks/use-scroll";
 import { Button } from '@/components/alignui/actions/button';
-import { SkeletonRoot as Skeleton } from "@/components/alignui/data-display/skeleton";
 import { DocsSearch } from "@/components/docs/search";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Icons } from "@/components/shared/icons";
@@ -36,12 +35,12 @@ export function NavBar({ scroll = false }: NavBarProps) {
   const selectedLayout = useSelectedLayoutSegment();
   const documentation = selectedLayout === "docs";
 
-  const configMap = {
+  const configMap: Record<string, typeof docsConfig.mainNav> = {
     docs: docsConfig.mainNav,
   };
 
   const links =
-    (selectedLayout && configMap[selectedLayout]) || marketingConfig.mainNav;
+    (selectedLayout && selectedLayout in configMap ? configMap[selectedLayout] : undefined) || marketingConfig.mainNav;
 
   return (
     <header

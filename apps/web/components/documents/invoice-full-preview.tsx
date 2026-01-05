@@ -28,9 +28,7 @@ export function InvoiceFullPreview({ document, companyProfile }: InvoiceFullPrev
   const companyEmail = companyProfile?.company_email || "info@ihr-unternehmen.de";
   const companyWebsite = companyProfile?.company_website || "www.ihr-unternehmen.de";
   const companyVatId = companyProfile?.company_vat_id || "DE123456789";
-  const companyTaxId = companyProfile?.company_tax_id || "";
   const companyRegistrationNumber = companyProfile?.company_registration_number || "";
-  const bankName = companyProfile?.bank_name || "Musterbank AG";
   const iban = companyProfile?.iban || "DE89 3704 0044 0532 0130 00";
   const bic = companyProfile?.bic || "COBADEFFXXX";
   const contactPerson = companyProfile?.contact_person_name || "";

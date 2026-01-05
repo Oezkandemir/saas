@@ -5,7 +5,6 @@ import {
   getSystemStatus,
   performHealthCheck as performHealthCheckLib,
   type SystemComponent,
-  type SystemStatus,
 } from "@/lib/system-monitoring";
 
 export interface SystemErrorRecord {

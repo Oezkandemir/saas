@@ -18,15 +18,12 @@ import {
   type ColumnDef,
   type SortingState,
 } from '@tanstack/react-table';
-import { MoreVertical, Pencil, Trash2, Copy, FileDown, Check, X } from 'lucide-react';
+import { Pencil, Trash2, Copy, FileDown, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Document } from '@/actions/documents-actions';
 import { deleteDocument, convertQuoteToInvoice, duplicateDocument } from '@/actions/documents-actions';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/alignui/data-display/avatar';
-import { ButtonRoot, ButtonIcon } from '@/components/alignui/actions/button';
-import { CheckboxRoot } from '@/components/alignui/forms/checkbox';
-import { StatusBadgeRoot, StatusBadgeIcon } from '@/components/alignui/data-display/status-badge';
+import { ButtonRoot } from '@/components/alignui/actions/button';
 import {
   TableRoot,
   TableHeader,
@@ -56,15 +53,6 @@ const getSortingIcon = (state: 'asc' | 'desc' | false) => {
   if (state === 'desc')
     return <RiArrowDownSFill className='size-5 text-text-sub-600' />;
   return <RiExpandUpDownFill className='size-5 text-text-sub-600' />;
-};
-
-const statusVariantMap: Record<string, 'completed' | 'pending' | 'failed' | 'disabled'> = {
-  draft: 'pending',
-  sent: 'pending',
-  accepted: 'completed',
-  declined: 'failed',
-  paid: 'completed',
-  overdue: 'failed',
 };
 
 export function DocumentsTable({ documents }: DocumentsTableProps) {

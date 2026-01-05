@@ -2,7 +2,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { Progress } from "@/components/ui/progress";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import type { PlanFeaturesInfo } from "@/lib/plan-features";
 import { CheckCircle, XCircle, Infinity as InfinityIcon } from "lucide-react";
 

@@ -30,7 +30,7 @@ import { Input } from '@/components/alignui/forms/input';
 import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
-import { Plus, Trash2, FileText, Calendar, ShoppingCart, Receipt, Loader2 } from "lucide-react";
+import { Plus, Trash2, FileText, ShoppingCart, Receipt, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 // Schema will be created inside component to access translations

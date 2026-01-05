@@ -78,23 +78,26 @@ export function BlogCard({
         </div>
         <div className="mt-4 flex items-center space-x-3">
           <div className="flex items-center -space-x-2">
-            {data.authors.map((author) => (
-              <div key={author} className="relative">
-                {BLOG_AUTHORS[author] && (
-                  <Image
-                    src={
-                      BLOG_AUTHORS[author].image
-                        ? resolveStaticPath(BLOG_AUTHORS[author].image)
-                        : ""
-                    }
-                    alt={BLOG_AUTHORS[author].name}
-                    width={32}
-                    height={32}
-                    className="size-8 rounded-full border-2 border-background transition-all group-hover:brightness-90"
-                  />
-                )}
-              </div>
-            ))}
+            {data.authors.map((author) => {
+              const authorData = BLOG_AUTHORS[author as keyof typeof BLOG_AUTHORS];
+              return (
+                <div key={author} className="relative">
+                  {authorData && (
+                    <Image
+                      src={
+                        authorData.image
+                          ? resolveStaticPath(authorData.image)
+                          : ""
+                      }
+                      alt={authorData.name}
+                      width={32}
+                      height={32}
+                      className="size-8 rounded-full border-2 border-background transition-all group-hover:brightness-90"
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {data.date && (

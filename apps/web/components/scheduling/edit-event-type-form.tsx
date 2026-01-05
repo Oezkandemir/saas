@@ -438,7 +438,7 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
               <div className="flex flex-wrap gap-2">
                 <Button
                   type="button"
-                  variant={embedType === "button" ? "default" : "outline"}
+                  variant={embedType === "button" ? "primary" : "outline"}
                   size="sm"
                   onClick={() => setEmbedType("button")}
                 >
@@ -446,7 +446,7 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
                 </Button>
                 <Button
                   type="button"
-                  variant={embedType === "script" ? "default" : "outline"}
+                  variant={embedType === "script" ? "primary" : "outline"}
                   size="sm"
                   onClick={() => setEmbedType("script")}
                 >
@@ -454,7 +454,7 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
                 </Button>
                 <Button
                   type="button"
-                  variant={embedType === "link" ? "default" : "outline"}
+                  variant={embedType === "link" ? "primary" : "outline"}
                   size="sm"
                   onClick={() => setEmbedType("link")}
                 >

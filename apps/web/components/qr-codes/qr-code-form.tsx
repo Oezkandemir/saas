@@ -10,7 +10,6 @@ import {
   createQRCode,
   updateQRCode,
   QRCode,
-  QRCodeType,
 } from "@/actions/qr-codes-actions";
 import { Button } from '@/components/alignui/actions/button';
 import {
@@ -32,12 +31,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
+import { Card, CardContent, CardHeader } from '@/components/alignui/data-display/card';
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { toast } from "sonner";
-import { Icons } from "@/components/shared/icons";
-import { QrCode, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 const qrCodeSchema = z.object({
   name: z.string().min(1, "Name ist erforderlich"),

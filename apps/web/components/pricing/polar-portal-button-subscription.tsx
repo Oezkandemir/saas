@@ -1,7 +1,6 @@
 "use client";
 
 import { useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { openPolarPortalFromSubscription } from "@/actions/open-polar-portal";
 import { toast } from "sonner";
@@ -26,7 +25,6 @@ export function PolarPortalButtonWithSubscription({
   // Map old variants to new ones for backward compatibility
   const mappedVariant = variant === "default" ? "primary" : variant;
   const [isPending, startTransition] = useTransition();
-  const router = useRouter();
   const t = useTranslations("Billing");
 
   const handleOpenPortal = () => {

@@ -1,13 +1,11 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getTicketWithMessages } from "@/actions/support-ticket-actions";
 import { formatDistance } from "date-fns";
-import { ChevronLeft, MessageSquare } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { Button } from '@/components/alignui/actions/button';
 import {
   Card,
   CardContent,

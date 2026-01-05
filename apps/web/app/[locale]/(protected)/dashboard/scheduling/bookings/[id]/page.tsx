@@ -4,13 +4,12 @@ import { getCurrentUser } from "@/lib/session";
 import { getBooking } from "@/actions/scheduling/bookings-actions";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { formatDurationHours } from "@/lib/utils";
-import { Calendar, Clock, User, Mail, MapPin, MessageSquare, XCircle, CheckCircle2, Users } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
+import { Calendar, Clock, User, Mail, MessageSquare, XCircle, CheckCircle2, Users } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
-import { formatDurationHours } from "@/lib/utils";
 import { BookingActions } from "@/components/scheduling/booking-actions";
 
 export const dynamic = "force-dynamic";

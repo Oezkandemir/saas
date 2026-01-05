@@ -28,7 +28,6 @@ interface CustomerFormProps {
 export function CustomerForm({ customer }: CustomerFormProps) {
   const router = useRouter();
   const t = useTranslations("Customers.form");
-  const tCountries = useTranslations("Customers.countries");
   const [isLoading, setIsLoading] = useState(false);
 
   const customerSchema = z.object({
@@ -44,21 +43,6 @@ export function CustomerForm({ customer }: CustomerFormProps) {
     tax_id: z.string().optional(),
     notes: z.string().optional(),
   });
-
-  const countries = [
-    { value: "DE", label: tCountries("germany") },
-    { value: "AT", label: tCountries("austria") },
-    { value: "CH", label: tCountries("switzerland") },
-    { value: "FR", label: tCountries("france") },
-    { value: "IT", label: tCountries("italy") },
-    { value: "ES", label: tCountries("spain") },
-    { value: "NL", label: tCountries("netherlands") },
-    { value: "BE", label: tCountries("belgium") },
-    { value: "PL", label: tCountries("poland") },
-    { value: "GB", label: tCountries("unitedKingdom") },
-    { value: "US", label: tCountries("usa") },
-    { value: "CA", label: tCountries("canada") },
-  ];
 
   // Normalize customer data: convert null values to empty strings for form inputs
   const normalizedCustomer = customer

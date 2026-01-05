@@ -6,7 +6,6 @@ import { z } from "zod";
 import { siteConfig } from "@/config/site";
 import {
   sendNewsletterConfirmationEmail,
-  sendUnsubscribeConfirmationEmail,
 } from "@/lib/email-client";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
@@ -155,7 +154,7 @@ export async function subscribeToNewsletter(data: NewsletterFormData) {
 }
 
 // Function to unsubscribe from newsletter
-export async function unsubscribeFromNewsletter(email: string, token: string) {
+export async function unsubscribeFromNewsletter(email: string, _token: string) {
   try {
     // Get Supabase client
     const supabase = await createClient();

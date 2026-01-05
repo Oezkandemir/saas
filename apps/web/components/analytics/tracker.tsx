@@ -1,12 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   recordPageView,
   trackUserInteraction,
-  type PageViewData,
-  type UserInteractionData,
 } from "@/actions/analytics-actions";
 import { v4 as uuidv4 } from "uuid";
 
@@ -45,7 +43,6 @@ type GeolocationInfo = {
 
 export function AnalyticsTracker() {
   const { session } = useSupabase();
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const prevPathRef = useRef<string | null>(null);
@@ -73,7 +70,7 @@ export function AnalyticsTracker() {
       }
     } catch (error) {
       // Silent fail - return defaults
-      logger.debug("Geolocation fetch failed:", error);
+      logger.debug(`Geolocation fetch failed: ${error instanceof Error ? error.message : String(error)}`);
     }
     
     // Return defaults with timezone from browser

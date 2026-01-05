@@ -2,14 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { syncSubscriptionFromSession } from "@/actions/sync-subscription-from-session";
 import { syncPolarSubscriptionFromCheckout } from "@/actions/sync-polar-subscription";
 import { toast } from "sonner";
 import { logger } from "@/lib/logger";
 
 /**
- * Automatically syncs subscription when user returns from checkout
- * Supports both Stripe (session_id) and Polar.sh (checkout_id)
+ * Automatically syncs subscription when user returns from Polar.sh checkout
  */
 export function AutoSyncSubscription() {
   const router = useRouter();
@@ -18,32 +16,25 @@ export function AutoSyncSubscription() {
   const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
-    const sessionId = searchParams.get("session_id"); // Stripe
     const checkoutId = searchParams.get("checkout_id"); // Polar.sh
     
-    // Only sync once and if we have a session_id or checkout_id
-    if ((!sessionId && !checkoutId) || hasSynced || isSyncing) {
+    // Only sync once and if we have a checkout_id
+    if (!checkoutId || hasSynced || isSyncing) {
       return;
     }
 
     async function syncIfNeeded() {
+      if (!checkoutId) {
+        return;
+      }
+      
       setIsSyncing(true);
       try {
         // Wait a bit for webhook to process
         await new Promise((resolve) => setTimeout(resolve, 2000));
         
-        let result;
-        
-        // Sync based on which provider was used
-        if (checkoutId) {
-          // Polar.sh checkout
-          result = await syncPolarSubscriptionFromCheckout(checkoutId);
-        } else if (sessionId) {
-          // Stripe checkout
-          result = await syncSubscriptionFromSession(sessionId);
-        } else {
-          return;
-        }
+        // Sync Polar.sh checkout
+        const result = await syncPolarSubscriptionFromCheckout(checkoutId);
         
         if (result.success) {
           toast.success("Subscription aktualisiert!", {
@@ -62,7 +53,9 @@ export function AutoSyncSubscription() {
           });
         }
       } catch (error) {
-        logger.error("Error auto-syncing subscription:", error);
+        logger.error("Error auto-syncing subscription:", {
+          error: error instanceof Error ? error.message : String(error),
+        });
         toast.error("Fehler beim Synchronisieren", {
           description: "Bitte verwenden Sie den Refresh-Button.",
         });

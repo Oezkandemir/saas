@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image, { ImageProps } from "next/image";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 import { cn, resolveStaticPath } from "@/lib/utils";

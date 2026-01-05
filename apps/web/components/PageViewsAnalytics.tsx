@@ -1,4 +1,3 @@
-import React from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight, BarChart3, ExternalLink, Eye } from "lucide-react";
