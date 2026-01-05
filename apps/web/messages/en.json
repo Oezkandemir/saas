@@ -21,7 +21,8 @@
     "blog": "Blog",
     "kurse": "Courses",
     "documentation": "Documentation",
-    "guides": "Guides"
+    "guides": "Guides",
+    "notifications": "Notifications"
   },
   "Common": {
     "imageUnavailable": "Image unavailable",
@@ -32,6 +33,11 @@
   },
   "UserNav": {
     "admin": "Admin",
+    "adminPanel": "Admin Panel",
+    "account": "Account",
+    "profile": "Profile",
+    "company": "Company",
+    "myCompany": "My Company",
     "billing": "Billing",
     "settings": "Settings",
     "logout": "Log out",
@@ -103,7 +109,13 @@
     "quickActions": {
       "title": "Quick Actions",
       "scheduling": "Scheduling",
-      "schedulingDescription": "Manage event types and bookings"
+      "schedulingDescription": "Manage event types and bookings",
+      "newCustomer": "New Customer",
+      "newCustomerDescription": "Add and manage customers",
+      "newDocument": "New Document",
+      "newDocumentDescription": "Create quote or invoice",
+      "newQrCode": "New QR Code",
+      "newQrCodeDescription": "Create dynamic QR code"
     },
     "overview": {
       "title": "Documents Overview",
@@ -647,6 +659,10 @@
       "description": "Manage subscription plans, limits, and features",
       "heading": "Plan Management",
       "subheading": "Manage subscription plans, view statistics, and configure limits",
+      "overview": {
+        "activePlans": "Active Plans",
+        "availablePlans": "All Plans"
+      },
       "stats": {
         "totalMRR": "Total MRR",
         "totalARR": "Total ARR",
@@ -708,6 +724,7 @@
       "webhooks": "Webhooks",
       "emails": "Emails",
       "firmenprofile": "Company Profiles",
+      "company_profiles": "Company Profiles",
       "system": "System"
     }
   },
@@ -2433,6 +2450,25 @@
         "priceDescription": "Price per person (will be multiplied by number of participants)",
         "currency": "Currency",
         "selectCurrency": "Select currency",
+        "embed": "Embed Code",
+        "embedDescription": "Embed this event type on your website - no iframe issues",
+        "embedType": "Embed Type",
+        "buttonWidget": "Button Widget",
+        "scriptWidget": "JavaScript Widget",
+        "directLink": "Direct Link",
+        "buttonWidgetDescription": "Simple HTML button with link",
+        "scriptWidgetDescription": "JavaScript widget opens modal/popup",
+        "directLinkDescription": "Simple link to booking page",
+        "scriptWidgetPreview": "The JavaScript widget will render a button that opens a modal with the booking page when clicked.",
+        "embedCode": "Embed Code",
+        "embedCopied": "Embed code copied",
+        "embedCopyError": "Failed to copy",
+        "copied": "Copied",
+        "copy": "Copy",
+        "embedInstructions": "Copy this code and paste it into your website's HTML",
+        "preview": "Preview",
+        "bookButton": "Book Appointment",
+        "bookLink": "Book Appointment",
         "cancel": "Cancel",
         "creating": "Creating...",
         "create": "Create Event Type",
@@ -2560,6 +2596,7 @@
       "participants": "Participants"
     },
     "booking": {
+      "back": "Back",
       "with": "with",
       "minutes": "minutes",
       "selectDate": "Select Date",

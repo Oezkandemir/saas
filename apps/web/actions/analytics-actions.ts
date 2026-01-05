@@ -88,7 +88,7 @@ export async function getAnalyticsData() {
         logger.warn("get_user_stats_aggregated function not found, using fallback");
         const { data: users, error: usersError } = await supabaseAdmin
           .from("users")
-          .select("role, status, stripe_subscription_id");
+          .select("role, status, polar_subscription_id");
 
         if (usersError) throw usersError;
 
@@ -96,7 +96,7 @@ export async function getAnalyticsData() {
         const adminCount = users.filter((user) => user.role === "ADMIN").length;
         const bannedCount = users.filter((user) => user.status === "banned").length;
         const subscribersCount = users.filter(
-          (user) => user.stripe_subscription_id !== null,
+          (user) => user.polar_subscription_id !== null,
         ).length;
 
         return {
@@ -292,9 +292,9 @@ export async function getAnalyticsData() {
     const getRecentSubscriptions = async () => {
       const { data, error } = await supabaseAdmin
         .from("users")
-        .select("id, email, stripe_subscription_id, stripe_current_period_end")
-        .not("stripe_subscription_id", "is", null)
-        .order("stripe_current_period_end", { ascending: true })
+        .select("id, email, polar_subscription_id, polar_current_period_end")
+        .not("polar_subscription_id", "is", null)
+        .order("polar_current_period_end", { ascending: true })
         .limit(5);
 
       if (error) throw error;
@@ -305,19 +305,148 @@ export async function getAnalyticsData() {
     // Get detailed analytics data
     const detailedData = await getDetailedAnalytics(30);
 
+    // Get popular pages directly from page_views table using SQL aggregation
+    const getPopularPages = async () => {
+      try {
+        // Use direct SQL query for efficient aggregation
+        const { data, error } = await supabaseAdmin.rpc("get_popular_pages", {
+          p_limit: 50,
+        });
+
+        if (!error && data && Array.isArray(data) && data.length > 0) {
+          logger.debug(`Found ${data.length} popular pages from RPC function`);
+          const result = data
+            .filter((page: any) => page.page_path && page.page_path.trim() !== "")
+            .map((page: any) => ({
+              page_path: String(page.page_path || "").trim(),
+              view_count: Number(page.view_count) || 0,
+              unique_visitors: Number(page.unique_visitors) || 0,
+              avg_duration: page.avg_duration ? Number(page.avg_duration) : null,
+            }));
+          
+          if (result.length > 0) {
+            logger.debug(`Returning ${result.length} filtered popular pages from RPC`);
+            return result;
+          }
+        }
+
+        if (error) {
+          logger.warn("RPC function error, falling back:", error);
+        }
+
+        // Fallback: Use direct SQL query if RPC function doesn't exist or returns empty
+        logger.debug("Falling back to direct SQL query for popular pages...");
+        const { data: sqlData, error: sqlError } = await supabaseAdmin
+          .from("page_views")
+          .select("page_path, user_id, session_id")
+          .not("page_path", "is", null)
+          .neq("page_path", "")
+          .limit(10000); // Increase limit for better aggregation
+
+        if (sqlError) {
+          logger.warn("Error fetching page views:", sqlError);
+          return [];
+        }
+
+        if (!sqlData || sqlData.length === 0) {
+          logger.debug("No page view data found in database");
+          return [];
+        }
+
+        logger.debug(`Found ${sqlData.length} page view records for aggregation`);
+
+        // Aggregate manually
+        const pageMap = new Map<
+          string,
+          {
+            page_path: string;
+            view_count: number;
+            unique_visitors: Set<string>;
+          }
+        >();
+
+        sqlData.forEach((view: any) => {
+          const path = view.page_path?.trim() || "";
+          if (!path) return;
+
+          if (!pageMap.has(path)) {
+            pageMap.set(path, {
+              page_path: path,
+              view_count: 1,
+              unique_visitors: new Set(),
+            });
+          } else {
+            const page = pageMap.get(path)!;
+            page.view_count += 1;
+          }
+
+          const pageData = pageMap.get(path)!;
+          if (view.session_id) {
+            pageData.unique_visitors.add(`session_${view.session_id}`);
+          }
+          if (view.user_id) {
+            pageData.unique_visitors.add(`user_${view.user_id}`);
+          }
+        });
+
+        const result = Array.from(pageMap.values())
+          .map((page) => ({
+            page_path: page.page_path,
+            view_count: page.view_count,
+            unique_visitors: page.unique_visitors.size || page.view_count,
+            avg_duration: null,
+          }))
+          .sort((a, b) => b.view_count - a.view_count)
+          .slice(0, 50);
+
+        logger.debug(`Returning ${result.length} popular pages from manual aggregation`);
+        return result;
+      } catch (error) {
+        logger.error("Error in getPopularPages:", error);
+        return [];
+      }
+    };
+
     const [
       userStats,
       userGrowthByMonth,
       ticketStats,
       recentLogins,
       recentSubscriptions,
+      popularPages,
     ] = await Promise.all([
       getUserStats(),
       getUserGrowth(),
       getTicketStats(),
       getRecentLogins(),
       getRecentSubscriptions(),
+      getPopularPages(),
     ]);
+
+    // Log for debugging
+    logger.debug(`getPopularPages returned ${popularPages.length} pages`);
+    if (popularPages.length > 0) {
+      logger.debug(`First page: ${JSON.stringify(popularPages[0])}`);
+    }
+
+    // Merge detailed analytics with popular pages
+    // Always use popularPages from getPopularPages() - don't override with page_view_stats
+    // page_view_stats contains daily statistics, not page-level data
+    const enhancedDetailedAnalytics = detailedData.success
+      ? {
+          ...detailedData.data,
+          popular_pages: popularPages.length > 0 ? popularPages : [],
+        }
+      : {
+          popular_pages: popularPages.length > 0 ? popularPages : [],
+          page_view_stats: [],
+          user_engagement: [],
+          device_stats: [],
+          browser_stats: [],
+          referrer_stats: [],
+        };
+
+    logger.debug(`Enhanced analytics has ${enhancedDetailedAnalytics.popular_pages.length} popular pages`);
 
     return {
       success: true,
@@ -327,7 +456,7 @@ export async function getAnalyticsData() {
         ticketStats,
         recentLogins,
         recentSubscriptions,
-        detailedAnalytics: detailedData.success ? detailedData.data : null,
+        detailedAnalytics: enhancedDetailedAnalytics,
       },
     };
   } catch (error) {

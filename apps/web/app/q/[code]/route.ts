@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseStatic } from "@/lib/supabase-server";
 import { trackQRCodeScan } from "@/actions/qr-codes-actions";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,7 @@ export async function GET(
       .single();
 
     if (error || !qrCode) {
-      console.error("QR code not found:", { code, error });
+      logger.error("QR code not found:", { code, error });
       return new NextResponse(
         `<!DOCTYPE html>
 <html lang="de">
@@ -239,7 +240,7 @@ export async function GET(
         return new NextResponse("Unbekannter QR-Code-Typ", { status: 400 });
     }
   } catch (error) {
-    console.error("QR redirect error:", error);
+    logger.error("QR redirect error:", error);
     return new NextResponse(
       `<!DOCTYPE html>
 <html lang="de">

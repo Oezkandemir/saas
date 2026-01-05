@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseStatic } from "@/lib/supabase-server";
 import { trackCustomerQRCodeScan, getCustomerByQRCode } from "@/actions/customers-actions";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -291,7 +292,7 @@ export async function GET(
       }
     );
   } catch (error) {
-    console.error("QR redirect error:", error);
+    logger.error("QR redirect error:", error);
     return new NextResponse(
       `<!DOCTYPE html>
 <html lang="de">

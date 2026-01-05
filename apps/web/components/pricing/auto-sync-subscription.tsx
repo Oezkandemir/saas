@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { syncSubscriptionFromSession } from "@/actions/sync-subscription-from-session";
 import { syncPolarSubscriptionFromCheckout } from "@/actions/sync-polar-subscription";
 import { toast } from "sonner";
+import { logger } from "@/lib/logger";
 
 /**
  * Automatically syncs subscription when user returns from checkout
@@ -61,7 +62,7 @@ export function AutoSyncSubscription() {
           });
         }
       } catch (error) {
-        console.error("Error auto-syncing subscription:", error);
+        logger.error("Error auto-syncing subscription:", error);
         toast.error("Fehler beim Synchronisieren", {
           description: "Bitte verwenden Sie den Refresh-Button.",
         });

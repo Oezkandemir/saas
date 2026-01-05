@@ -20,6 +20,7 @@ import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TicketMessageItem } from "@/components/support/ticket-message";
 import { TicketReplyForm } from "@/components/support/ticket-reply-form";
 import { MessageSquare } from "lucide-react";
+import { logger } from "@/lib/logger";
 
 // Helper function to get status badge color
 const getStatusColor = (status: string) => {
@@ -86,7 +87,7 @@ export default async function TicketPage({
   const ticketResult = await getTicketWithMessages(resolvedParams.id);
 
   if (!ticketResult.success || !ticketResult.data) {
-    console.error("Error fetching ticket:", ticketResult.error);
+    logger.error("Error fetching ticket:", ticketResult.error);
     notFound();
   }
 

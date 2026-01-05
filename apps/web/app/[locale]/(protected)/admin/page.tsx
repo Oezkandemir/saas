@@ -13,8 +13,10 @@ import {
 import { getCurrentUser } from "@/lib/session";
 import { getAdminStats } from "@/actions/admin-stats-actions";
 import { getAllUsers } from "@/actions/admin-user-actions";
+import { getPlanStatistics, getUsersByPlan } from "@/actions/admin-plan-actions";
 import { Button } from '@/components/alignui/actions/button';
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/alignui/data-display/avatar';
 import {
   Table,
   TableBody,
@@ -59,6 +61,7 @@ export default async function AdminPanelPage(props: Props) {
   const tUsers = await getTranslations("Admin.users");
   const tSupport = await getTranslations("Admin.support");
   const tStats = await getTranslations("Admin.stats");
+  const tPlans = await getTranslations("Admin.plans");
 
   if (!user?.email) {
     redirect("/login");
@@ -71,10 +74,12 @@ export default async function AdminPanelPage(props: Props) {
     redirect("/dashboard");
   }
 
-  // Fetch optimized admin statistics and recent users
-  const [statsResult, usersResult] = await Promise.all([
+  // Fetch optimized admin statistics, recent users, plan statistics, and users by plan
+  const [statsResult, usersResult, plansResult, usersByPlanResult] = await Promise.all([
     getAdminStats(),
     getAllUsers(),
+    getPlanStatistics(),
+    getUsersByPlan(),
   ]);
 
   // Default values in case of errors
@@ -95,7 +100,38 @@ export default async function AdminPanelPage(props: Props) {
     ? usersResult.data.slice(0, 5)
     : [];
 
-  // Maximal 3 KPIs: Admin Users, Subscribers, Open Tickets
+  // Get active plans with user counts
+  const activePlans = plansResult.success && plansResult.data
+    ? plansResult.data.filter(plan => plan.user_count > 0)
+    : [];
+
+  // Calculate total users in active plans
+  const totalUsersInActivePlans = activePlans.reduce(
+    (sum, plan) => sum + (plan.user_count || 0),
+    0
+  );
+
+  // Get users in active plans for avatars
+  const usersInActivePlans = usersByPlanResult.success && usersByPlanResult.data
+    ? usersByPlanResult.data.filter(user => 
+        activePlans.some(plan => plan.plan_id === user.plan_id)
+      )
+    : [];
+
+  // Get user data with avatars for active plan users
+  const activePlanUsersWithAvatars = usersResult.success && usersResult.data
+    ? usersInActivePlans.map(planUser => {
+        const userData = usersResult.data.find(u => u.id === planUser.user_id);
+        return {
+          id: planUser.user_id,
+          name: planUser.user_name || planUser.user_email || "User",
+          email: planUser.user_email,
+          avatar_url: userData?.avatar_url || null,
+        };
+      })
+    : [];
+
+  // Maximal 3 KPIs: Admin Users, Open Tickets, Active Plans (with user count and avatars)
   const kpis = [
     {
       title: tUsers("adminUsers"),
@@ -103,14 +139,15 @@ export default async function AdminPanelPage(props: Props) {
       href: `/${locale}/admin/users?role=ADMIN`,
     },
     {
-      title: tUsers("subscribers"),
-      value: statsData.subscribedUsers,
-      href: `/${locale}/admin/users?subscription=active`,
-    },
-    {
       title: tSupport("openTickets"),
       value: statsData.openTickets,
       href: `/${locale}/admin/support?status=open`,
+    },
+    {
+      title: tPlans("overview.activePlans"),
+      value: `${activePlans.length} (${totalUsersInActivePlans})`,
+      href: `/${locale}/admin/plans`,
+      avatars: activePlanUsersWithAvatars.slice(0, 5), // Show max 5 avatars
     },
   ];
 
@@ -136,7 +173,37 @@ export default async function AdminPanelPage(props: Props) {
             <p className="text-xs text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
               {kpi.title}
             </p>
-            <p className="text-lg font-semibold">{kpi.value}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-lg font-semibold">{kpi.value}</p>
+              {kpi.avatars && kpi.avatars.length > 0 && (
+                <div className="flex -space-x-2">
+                  {kpi.avatars.map((user, idx) => (
+                    <Avatar
+                      key={user.id}
+                      className="size-5 border-2 border-background"
+                      title={user.name}
+                    >
+                      {user.avatar_url ? (
+                        <AvatarImage
+                          src={user.avatar_url}
+                          alt={user.name}
+                          className="object-cover"
+                        />
+                      ) : (
+                        <AvatarFallback className="text-[10px] bg-muted">
+                          {user.name[0]?.toUpperCase() || user.email[0]?.toUpperCase() || "U"}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                  ))}
+                  {activePlanUsersWithAvatars.length > 5 && (
+                    <div className="flex items-center justify-center size-5 rounded-full border-2 border-background bg-muted text-[10px] font-medium">
+                      +{activePlanUsersWithAvatars.length - 5}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </Link>
         ))}
       </div>

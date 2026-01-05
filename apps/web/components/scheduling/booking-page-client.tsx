@@ -7,7 +7,7 @@ import { type AvailableSlot, getPublicSlots, getPublicOverrides } from "@/action
 import type { EventType } from "@/actions/scheduling/event-types-actions";
 import { Button } from '@/components/alignui/actions/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { Calendar, Clock, MapPin, User, Mail, MessageSquare, CheckCircle2, Users, Plus, Minus, Euro, DollarSign, CreditCard, Video, Phone, Building2, Link as LinkIcon, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Calendar, Clock, MapPin, User, Mail, MessageSquare, CheckCircle2, Users, Plus, Minus, Euro, DollarSign, CreditCard, Video, Phone, Building2, Link as LinkIcon, ChevronLeft, ChevronRight, Loader2, ArrowLeft } from "lucide-react";
 import { BookingFormDrawer } from "./booking-form-drawer";
 import { format, addDays, startOfWeek, eachDayOfInterval, isSameDay, addMonths, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import { de, enUS } from "date-fns/locale";
@@ -166,6 +166,19 @@ export function BookingPageClient({ eventType, initialDate, initialSlots }: Book
   return (
     <div className="min-h-screen bg-gradient-to-b from-muted/30 to-background p-2 sm:p-4 md:p-6 lg:p-8">
       <div className="max-w-5xl mx-auto space-y-3 sm:space-y-4 md:space-y-6">
+        {/* Back Button */}
+        <div className="flex items-center">
+          <Button
+            onClick={() => window.history.back()}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>{t("back") || "Zurück"}</span>
+          </Button>
+        </div>
+
         {/* Slim Header */}
         <Card className="border">
           <CardContent className="pt-3 pb-2 sm:pt-4 sm:pb-3">

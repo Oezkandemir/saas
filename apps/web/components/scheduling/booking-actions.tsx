@@ -4,14 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { MoreVertical, X, Mail, Calendar, Trash2, RotateCcw } from "lucide-react";
+import { X, Mail, Calendar, Trash2, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { cancelBookingAsHost, deleteBooking, reactivateBooking, type Booking } from "@/actions/scheduling/bookings-actions";
 import {
@@ -111,34 +104,35 @@ export function BookingActions({ booking }: BookingActionsProps) {
   if (booking.status === "canceled") {
     return (
       <>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-              <MoreVertical className="h-4 w-4" />
-              <span className="sr-only">{t("openMenu") || "Open menu"}</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => window.location.href = `mailto:${booking.invitee_email}`}>
-              <Mail className="mr-2 h-4 w-4" />
-              {t("sendEmail") || "Send Email"}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              onClick={() => setShowReactivateDialog(true)}
-            >
-              <RotateCcw className="mr-2 h-4 w-4" />
-              {t("reactivate") || "Reactivate Booking"}
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => setShowDeleteDialog(true)}
-              className="text-destructive focus:text-destructive"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              {t("delete") || "Delete Booking"}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => window.location.href = `mailto:${booking.invitee_email}`}
+            className="gap-2"
+          >
+            <Mail className="h-4 w-4" />
+            <span className="hidden sm:inline">{t("sendEmail") || "Send Email"}</span>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowReactivateDialog(true)}
+            className="gap-2"
+          >
+            <RotateCcw className="h-4 w-4" />
+            <span className="hidden sm:inline">{t("reactivate") || "Reactivate Booking"}</span>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowDeleteDialog(true)}
+            className="gap-2 text-destructive hover:text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
+            <span className="hidden sm:inline">{t("delete") || "Delete Booking"}</span>
+          </Button>
+        </div>
 
         <AlertDialog open={showReactivateDialog} onOpenChange={setShowReactivateDialog}>
           <AlertDialogContent>
@@ -186,41 +180,44 @@ export function BookingActions({ booking }: BookingActionsProps) {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-            <MoreVertical className="h-4 w-4" />
-            <span className="sr-only">{t("openMenu") || "Open menu"}</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => window.location.href = `mailto:${booking.invitee_email}`}>
-            <Mail className="mr-2 h-4 w-4" />
-            {t("sendEmail") || "Send Email"}
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem 
-            onClick={() => setShowRescheduleDialog(true)}
-          >
-            <Calendar className="mr-2 h-4 w-4" />
-            {t("reschedule") || "Reschedule Booking"}
-          </DropdownMenuItem>
-          <DropdownMenuItem 
-            onClick={() => setShowCancelDialog(true)}
-            className="text-destructive focus:text-destructive"
-          >
-            <X className="mr-2 h-4 w-4" />
-            {t("cancel") || "Cancel Booking"}
-          </DropdownMenuItem>
-          <DropdownMenuItem 
-            onClick={() => setShowDeleteDialog(true)}
-            className="text-destructive focus:text-destructive"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            {t("delete") || "Delete Booking"}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex items-center gap-2 flex-wrap">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => window.location.href = `mailto:${booking.invitee_email}`}
+          className="gap-2"
+        >
+          <Mail className="h-4 w-4" />
+          <span className="hidden sm:inline">{t("sendEmail") || "Send Email"}</span>
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowRescheduleDialog(true)}
+          className="gap-2"
+        >
+          <Calendar className="h-4 w-4" />
+          <span className="hidden sm:inline">{t("reschedule") || "Reschedule Booking"}</span>
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowCancelDialog(true)}
+          className="gap-2 text-destructive hover:text-destructive"
+        >
+          <X className="h-4 w-4" />
+          <span className="hidden sm:inline">{t("cancel") || "Cancel Booking"}</span>
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowDeleteDialog(true)}
+          className="gap-2 text-destructive hover:text-destructive"
+        >
+          <Trash2 className="h-4 w-4" />
+          <span className="hidden sm:inline">{t("delete") || "Delete Booking"}</span>
+        </Button>
+      </div>
 
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <AlertDialogContent>

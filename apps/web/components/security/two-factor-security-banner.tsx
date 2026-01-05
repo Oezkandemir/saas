@@ -7,6 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from '@/components/alignui/actions/button';
 import { getTwoFactorStatus } from "@/actions/two-factor-actions";
 import { cn } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 
 export function TwoFactorSecurityBanner() {
   const [isEnabled, setIsEnabled] = useState<boolean | null>(null);
@@ -45,7 +46,7 @@ export function TwoFactorSecurityBanner() {
         }
         // Only log in development for debugging
         if (process.env.NODE_ENV === "development") {
-          console.debug("2FA status check:", error?.message || "Unknown error");
+          logger.debug("2FA status check:", error?.message || "Unknown error");
         }
       } finally {
         setIsLoading(false);

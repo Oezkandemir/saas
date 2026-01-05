@@ -32,7 +32,9 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
 import { toast } from "sonner";
-import { Calendar, Clock, MapPin, Settings } from "lucide-react";
+import { Calendar, Clock, MapPin, Settings, Code, Copy, Check } from "lucide-react";
+import { getURL } from "@/lib/utils";
+import { useLocale } from "next-intl";
 
 const eventTypeSchema = z.object({
   slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens"),
@@ -50,12 +52,60 @@ type EventTypeFormValues = z.infer<typeof eventTypeSchema>;
 
 interface EditEventTypeFormProps {
   eventType: EventType;
+  userId: string;
+  onSuccess?: () => void;
 }
 
-export function EditEventTypeForm({ eventType }: EditEventTypeFormProps) {
+export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTypeFormProps) {
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations("Scheduling.eventTypes.form");
   const [isLoading, setIsLoading] = useState(false);
+  const [embedType, setEmbedType] = useState<"button" | "script" | "link">("button");
+  const [copiedEmbed, setCopiedEmbed] = useState(false);
+
+  // Use userId prop or fallback to eventType.owner_user_id
+  const ownerUserId = userId || eventType.owner_user_id;
+
+  // Function to generate embed code based on type
+  const getEmbedCode = (userId: string, slug: string, locale: string, type: "button" | "script" | "link"): string => {
+    const baseUrl = getURL();
+    const bookingUrl = `${baseUrl}/${locale}/book/${userId}/${slug}`;
+    
+    switch (type) {
+      case "button":
+        // Simple HTML button with link
+        const buttonText = t("bookButton") || "Termin buchen";
+        return `<a href="${bookingUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 24px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 6px; font-weight: 500; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; transition: background-color 0.2s;">
+  ${buttonText}
+</a>`;
+      
+      case "script":
+        // JavaScript widget that opens a modal/popup
+        const widgetButtonText = t("bookButton") || "Termin buchen";
+        return `<script>
+  (function() {
+    var script = document.createElement('script');
+    script.src = '${baseUrl}/widget/booking.js';
+    script.setAttribute('data-user-id', '${userId}');
+    script.setAttribute('data-event-slug', '${slug}');
+    script.setAttribute('data-locale', '${locale}');
+    script.setAttribute('data-button-text', '${widgetButtonText}');
+    script.setAttribute('data-container-id', 'booking-widget-${slug}');
+    document.head.appendChild(script);
+  })();
+</script>
+<div id="booking-widget-${slug}"></div>`;
+      
+      case "link":
+        // Simple direct link
+        const linkText = t("bookLink") || "Termin buchen";
+        return `<a href="${bookingUrl}" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
+      
+      default:
+        return "";
+    }
+  };
 
   const form = useForm<EventTypeFormValues>({
     resolver: zodResolver(eventTypeSchema),
@@ -92,8 +142,8 @@ export function EditEventTypeForm({ eventType }: EditEventTypeFormProps) {
         description: t("updateSuccessDescription") || "Your event type has been updated successfully",
       });
       
-      router.push(`/dashboard/scheduling/event-types/${eventType.id}`);
       router.refresh();
+      onSuccess?.();
     } catch (error) {
       const errorMessage = error instanceof Error 
         ? error.message 
@@ -367,6 +417,143 @@ export function EditEventTypeForm({ eventType }: EditEventTypeFormProps) {
                 )}
               />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Embed Code */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Code className="h-4 w-4" />
+              {t("embed") || "Einbettungscode"}
+            </CardTitle>
+            <CardDescription>
+              {t("embedDescription") || "Betten Sie diesen Event Type auf Ihrer Website ein - ohne iframe-Probleme"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Embed Type Selection */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">{t("embedType") || "Einbettungstyp"}</label>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant={embedType === "button" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setEmbedType("button")}
+                >
+                  {t("buttonWidget") || "Button Widget"}
+                </Button>
+                <Button
+                  type="button"
+                  variant={embedType === "script" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setEmbedType("script")}
+                >
+                  {t("scriptWidget") || "JavaScript Widget"}
+                </Button>
+                <Button
+                  type="button"
+                  variant={embedType === "link" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setEmbedType("link")}
+                >
+                  {t("directLink") || "Direkter Link"}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {embedType === "button" && (t("buttonWidgetDescription") || "Einfacher HTML-Button mit Link")}
+                {embedType === "script" && (t("scriptWidgetDescription") || "JavaScript Widget öffnet Modal/Popup")}
+                {embedType === "link" && (t("directLinkDescription") || "Einfacher Link zur Buchungsseite")}
+              </p>
+            </div>
+
+            {/* Embed Code */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">{t("embedCode") || "Einbettungscode"}</label>
+              <div className="relative">
+                <textarea
+                  readOnly
+                  value={getEmbedCode(ownerUserId, eventType.slug, locale, embedType)}
+                  className="w-full min-h-[120px] p-3 pr-10 font-mono text-sm bg-muted rounded-md border resize-none"
+                  onClick={(e) => (e.target as HTMLTextAreaElement).select()}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="absolute top-2 right-2"
+                  onClick={async () => {
+                    const embedCode = getEmbedCode(ownerUserId, eventType.slug, locale, embedType);
+                    try {
+                      await navigator.clipboard.writeText(embedCode);
+                      setCopiedEmbed(true);
+                      toast.success(t("embedCopied") || "Einbettungscode kopiert");
+                      setTimeout(() => setCopiedEmbed(false), 2000);
+                    } catch (error) {
+                      toast.error(t("embedCopyError") || "Fehler beim Kopieren");
+                    }
+                  }}
+                >
+                  {copiedEmbed ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      {t("copied") || "Kopiert"}
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4 mr-2" />
+                      {t("copy") || "Kopieren"}
+                    </>
+                  )}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {t("embedInstructions") || "Kopieren Sie diesen Code und fügen Sie ihn in das HTML Ihrer Website ein"}
+              </p>
+            </div>
+
+            {/* Preview */}
+            {embedType === "button" && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("preview") || "Vorschau"}</label>
+                <div className="border rounded-md p-4 bg-muted/50 flex items-center justify-center">
+                  <a 
+                    href={`${getURL()}/${locale}/book/${ownerUserId}/${eventType.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block px-6 py-3 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    {t("bookButton") || "Termin buchen"}
+                  </a>
+                </div>
+              </div>
+            )}
+            {embedType === "link" && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("preview") || "Vorschau"}</label>
+                <div className="border rounded-md p-4 bg-muted/50">
+                  <a 
+                    href={`${getURL()}/${locale}/book/${ownerUserId}/${eventType.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    {t("bookLink") || "Termin buchen"}
+                  </a>
+                </div>
+              </div>
+            )}
+            {embedType === "script" && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("preview") || "Vorschau"}</label>
+                <div className="border rounded-md p-4 bg-muted/50">
+                  <p className="text-sm text-muted-foreground">
+                    {t("scriptWidgetPreview") || "Das JavaScript Widget wird einen Button rendern, der beim Klick ein Modal mit der Buchungsseite öffnet."}
+                  </p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 

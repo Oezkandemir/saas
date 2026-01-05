@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from '@/components/alignui/actions/button';
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Icons } from "@/components/shared/icons";
+import { logger } from "@/lib/logger";
 
 export function SyncSubscriptionButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +26,7 @@ export function SyncSubscriptionButton() {
         toast.error(result.message || "Failed to sync subscription");
       }
     } catch (error) {
-      console.error("Error syncing subscription:", error);
+      logger.error("Error syncing subscription:", error);
       toast.error("An error occurred while syncing subscription");
     } finally {
       setIsLoading(false);

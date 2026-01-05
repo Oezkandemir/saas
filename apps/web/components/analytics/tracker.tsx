@@ -11,6 +11,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 
 import { useSupabase } from "@/components/supabase-provider";
+import { logger } from "@/lib/logger";
 
 // Type to store browser details
 type BrowserInfo = {
@@ -72,7 +73,7 @@ export function AnalyticsTracker() {
       }
     } catch (error) {
       // Silent fail - return defaults
-      console.debug("Geolocation fetch failed:", error);
+      logger.debug("Geolocation fetch failed:", error);
     }
     
     // Return defaults with timezone from browser
@@ -244,7 +245,7 @@ export function AnalyticsTracker() {
           });
         }
       } catch (error) {
-        console.error("Error tracking page view:", error);
+        logger.error("Error tracking page view:", error);
       }
     },
     [session],
@@ -284,7 +285,7 @@ export function AnalyticsTracker() {
             elementText: elementText,
           });
         } catch (error) {
-          console.error("Error tracking click:", error);
+          logger.error("Error tracking click:", error);
         }
       }
     };
@@ -325,7 +326,7 @@ export function AnalyticsTracker() {
           formData: formEntries,
         });
       } catch (error) {
-        console.error("Error tracking form submission:", error);
+        logger.error("Error tracking form submission:", error);
       }
     };
 

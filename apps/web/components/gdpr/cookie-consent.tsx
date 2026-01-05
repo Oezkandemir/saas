@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 
 const COOKIE_CONSENT_KEY = "cenety-cookie-consent";
 const COOKIE_CONSENT_VERSION = "1.0";
@@ -120,24 +121,24 @@ export function CookieConsent({ autoShow = true, open: controlledOpen, onOpenCha
 
   const enableAnalytics = () => {
     // Initialize your analytics here
-    console.log("Analytics enabled");
+    logger.debug("Analytics enabled");
     // Example: window.gtag?.('consent', 'update', { analytics_storage: 'granted' });
   };
 
   const disableAnalytics = () => {
     // Disable your analytics here
-    console.log("Analytics disabled");
+    logger.debug("Analytics disabled");
     // Example: window.gtag?.('consent', 'update', { analytics_storage: 'denied' });
   };
 
   const enableMarketing = () => {
     // Initialize your marketing cookies here
-    console.log("Marketing enabled");
+    logger.debug("Marketing enabled");
   };
 
   const disableMarketing = () => {
     // Disable your marketing cookies here
-    console.log("Marketing disabled");
+    logger.debug("Marketing disabled");
   };
 
   // Don't render if not open (unless autoShow is true and we're waiting to show)

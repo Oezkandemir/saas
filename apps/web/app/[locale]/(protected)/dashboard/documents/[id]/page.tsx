@@ -13,6 +13,7 @@ import { PDFActionButtons } from "@/components/documents/document-pdf-components
 import { DocumentDeleteButton } from "@/components/documents/document-delete-button";
 import { InvoiceFullPreview } from "@/components/documents/invoice-full-preview";
 import { getCompanyProfile, getDefaultCompanyProfile } from "@/actions/company-profiles-actions";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +46,7 @@ export default async function DocumentDetailPage({
       companyProfile = await getDefaultCompanyProfile();
     }
   } catch (error) {
-    console.error("Error loading company profile:", error);
+    logger.error("Error loading company profile:", error);
     // Continue without company profile - will use defaults
   }
 

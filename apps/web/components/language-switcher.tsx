@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import * as Select from '@/components/ui/select';
 import { useRouter as useI18nRouter, usePathname } from '@/i18n/routing';
+import { logger } from "@/lib/logger";
 
 const languages = [
   {
@@ -36,7 +37,7 @@ export function LanguageSwitcher() {
         body: JSON.stringify({ locale: newLocale }),
       });
     } catch (error) {
-      console.error('Failed to save locale preference:', error);
+      logger.error('Failed to save locale preference:', error);
     }
 
     // Navigate to new locale

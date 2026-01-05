@@ -9,6 +9,7 @@ import { constructMetadata, resolveStaticPath } from "@/lib/utils";
 import { ComparePlans } from "@/components/pricing/compare-plans";
 import { PricingCards } from "@/components/pricing/pricing-cards";
 import { PricingFaq } from "@/components/pricing/pricing-faq";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -53,7 +54,7 @@ export default async function PricingPage() {
       subscriptionPlan = await getUserSubscriptionPlan(user.id);
     }
   } catch (error) {
-    console.error("Error fetching subscription plan:", error);
+    logger.error("Error fetching subscription plan:", error);
     // We'll handle this below with the default plan from the subscription service
   }
 

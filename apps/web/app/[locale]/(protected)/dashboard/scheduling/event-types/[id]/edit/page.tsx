@@ -34,7 +34,7 @@ export default async function EditEventTypePage({
       showBackButton
       backHref={`/dashboard/scheduling/event-types/${id}`}
     >
-      <EditEventTypeForm eventType={eventType} />
+      <EditEventTypeForm eventType={eventType} userId={user.id} />
     </UnifiedPageLayout>
   );
 }

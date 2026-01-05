@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { Bell, CreditCard } from "lucide-react";
 import {
   DrawerRoot,
   DrawerTrigger,
@@ -30,6 +31,7 @@ import {
 import { ButtonRoot, ButtonIcon } from "@/components/alignui/actions/button";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { useSupabase } from "@/components/supabase-provider";
+import { logger } from "@/lib/logger";
 
 // Create namespace objects locally for AlignUI pattern
 const Button = {
@@ -52,6 +54,7 @@ export function UserAccountNav() {
   const { session, supabase } = useSupabase();
   const user = session?.user;
   const t = useTranslations("UserNav");
+  const tNav = useTranslations("Navigation");
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dbUserName, setDbUserName] = useState<string | null>(null);
@@ -68,7 +71,7 @@ export function UserAccountNav() {
       // Use window.location for reliable redirect after sign out
       window.location.href = "/";
     } catch (error) {
-      console.error("Error signing out:", error);
+      logger.error("Error signing out:", error);
       toast.error(t("signOutError"));
       // Still redirect even if there's an error
       window.location.href = "/";
@@ -95,7 +98,7 @@ export function UserAccountNav() {
           }
         }
       } catch (err) {
-        console.error("Error fetching user data:", err);
+        logger.error("Error fetching user data:", err);
         setDbUserRole("USER");
       }
     }
@@ -156,7 +159,7 @@ export function UserAccountNav() {
               <Drawer.Header className="bg-bg-white-0 border-b border-stroke-soft-200">
                 <div className="flex items-center justify-between">
                   <Drawer.Title className="text-label-lg text-text-strong-950">
-                    Konto
+                    {t("account")}
                   </Drawer.Title>
                   <Drawer.Close asChild>
                     <Button.Root variant="ghost" size="icon" className="h-8 w-8">
@@ -199,7 +202,7 @@ export function UserAccountNav() {
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-bg-white-50 active:bg-bg-white-100 transition-colors rounded-lg"
                   >
                     <LayoutDashboard className="size-4" />
-                    <span>Dashboard</span>
+                    <span>{tNav("dashboard")}</span>
                   </Link>
 
                   <Link
@@ -209,7 +212,17 @@ export function UserAccountNav() {
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-bg-white-50 active:bg-bg-white-100 transition-colors rounded-lg"
                   >
                     <UserIcon className="size-4" />
-                    <span>Profile</span>
+                    <span>{t("profile")}</span>
+                  </Link>
+
+                  <Link
+                    href="/profile/notifications"
+                    prefetch={true}
+                    onClick={closeDrawer}
+                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-bg-white-50 active:bg-bg-white-100 transition-colors rounded-lg"
+                  >
+                    <Bell className="size-4" />
+                    <span>{tNav("notifications")}</span>
                   </Link>
 
                   <Link
@@ -219,7 +232,17 @@ export function UserAccountNav() {
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-bg-white-50 active:bg-bg-white-100 transition-colors rounded-lg"
                   >
                     <Building2 className="size-4" />
-                    <span>Meine Firma</span>
+                    <span>{t("myCompany")}</span>
+                  </Link>
+
+                  <Link
+                    href="/dashboard/billing"
+                    prefetch={true}
+                    onClick={closeDrawer}
+                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-bg-white-50 active:bg-bg-white-100 transition-colors rounded-lg"
+                  >
+                    <CreditCard className="size-4" />
+                    <span>{t("billing")}</span>
                   </Link>
 
                   <Link
@@ -229,7 +252,7 @@ export function UserAccountNav() {
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-bg-white-50 active:bg-bg-white-100 transition-colors rounded-lg"
                   >
                     <Settings className="size-4" />
-                    <span>Settings</span>
+                    <span>{t("settings")}</span>
                   </Link>
 
                   {userRole === "ADMIN" && (
@@ -240,7 +263,7 @@ export function UserAccountNav() {
                       className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-bg-white-50 active:bg-bg-white-100 transition-colors rounded-lg"
                     >
                       <Lock className="size-4" />
-                      <span>Admin Panel</span>
+                      <span>{t("adminPanel")}</span>
                     </Link>
                   )}
 
@@ -253,7 +276,7 @@ export function UserAccountNav() {
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-bg-white-50 active:bg-bg-white-100 transition-colors rounded-lg"
                   >
                     <Home className="size-4" />
-                    <span>Home</span>
+                    <span>{tNav("home")}</span>
                   </Link>
 
                   <Link
@@ -263,7 +286,7 @@ export function UserAccountNav() {
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-bg-white-50 active:bg-bg-white-100 transition-colors rounded-lg"
                   >
                     <FileText className="size-4" />
-                    <span>Blog</span>
+                    <span>{tNav("blog")}</span>
                   </Link>
 
                   <Link
@@ -273,7 +296,7 @@ export function UserAccountNav() {
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-bg-white-50 active:bg-bg-white-100 transition-colors rounded-lg"
                   >
                     <Crown className="size-4" />
-                    <span>Pricing</span>
+                    <span>{tNav("pricing")}</span>
                   </Link>
 
                   <Link
@@ -283,7 +306,7 @@ export function UserAccountNav() {
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-bg-white-50 active:bg-bg-white-100 transition-colors rounded-lg"
                   >
                     <BookOpen className="size-4" />
-                    <span>Documentation</span>
+                    <span>{tNav("documentation")}</span>
                   </Link>
 
                   <div className="border-t border-stroke-soft-200 my-2" />
@@ -298,7 +321,7 @@ export function UserAccountNav() {
                     className="flex w-full items-center gap-3 px-3 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 active:bg-destructive/20 transition-colors rounded-lg"
                   >
                     <LogOut className="size-4" />
-                    <span>Logout</span>
+                    <span>{t("logout")}</span>
                   </button>
                 </div>
               </Drawer.Body>

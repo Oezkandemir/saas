@@ -4,14 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from '@/components/alignui/actions/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { MoreVertical, Power, Trash2, Copy } from "lucide-react";
+import { Power, Trash2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { toggleEventType, deleteEventType, duplicateEventType, type EventType } from "@/actions/scheduling/event-types-actions";
 import {
@@ -113,36 +106,42 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-            <MoreVertical className="h-4 w-4" />
-            <span className="sr-only">{t("openMenu") || "Open menu"}</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={handleToggle} disabled={isToggling}>
-            <Power className="mr-2 h-4 w-4" />
+      <div className="flex items-center gap-2 flex-wrap">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleToggle}
+          disabled={isToggling}
+          className="gap-2"
+        >
+          <Power className="h-4 w-4" />
+          <span className="hidden sm:inline">
             {eventType.is_active 
               ? (t("deactivate") || "Deactivate")
               : (t("activate") || "Activate")
             }
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleDuplicate} disabled={isDuplicating}>
-            <Copy className="mr-2 h-4 w-4" />
-            {t("duplicate") || "Duplicate"}
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem 
-            onClick={() => setShowDeleteDialog(true)}
-            className="text-destructive focus:text-destructive"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            {t("delete") || "Delete"}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          </span>
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleDuplicate}
+          disabled={isDuplicating}
+          className="gap-2"
+        >
+          <Copy className="h-4 w-4" />
+          <span className="hidden sm:inline">{t("duplicate") || "Duplicate"}</span>
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowDeleteDialog(true)}
+          className="gap-2 text-destructive hover:text-destructive"
+        >
+          <Trash2 className="h-4 w-4" />
+          <span className="hidden sm:inline">{t("delete") || "Delete"}</span>
+        </Button>
+      </div>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>

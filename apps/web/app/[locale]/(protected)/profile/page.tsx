@@ -47,6 +47,7 @@ import { getUserPreferences } from "@/actions/preferences-actions";
 import { pricingData } from "@/config/subscriptions";
 import { UserSubscriptionPlan } from "types";
 import { cn } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -82,7 +83,7 @@ export default async function ProfilePage() {
     .single();
 
   if (error) {
-    console.error("Error fetching user data:", error);
+    logger.error("Error fetching user data:", error);
   }
 
   // Get company profile - only default profile
@@ -111,7 +112,7 @@ export default async function ProfilePage() {
     const plan = await getUserSubscriptionPlan(user.id, user.email);
     userSubscriptionPlan = plan || defaultFreePlan;
   } catch (error) {
-    console.error("Error fetching subscription plan:", error);
+    logger.error("Error fetching subscription plan:", error);
     userSubscriptionPlan = defaultFreePlan;
   }
 

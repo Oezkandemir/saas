@@ -38,25 +38,20 @@ export default async function proxy(request: NextRequest) {
   }
 
   // Handle i18n routing first - simplified approach
+  let intlResponse: NextResponse | null = null;
   try {
-    const intlResponse = await intlMiddleware(request);
+    intlResponse = await intlMiddleware(request);
 
-    // If intl middleware returns a redirect or rewrite, return it immediately
-    if (
-      intlResponse &&
-      (intlResponse.status === 307 ||
-        intlResponse.status === 308 ||
-        intlResponse.headers.has("x-middleware-rewrite"))
-    ) {
-      return intlResponse;
-    }
+    // If intl middleware returns a redirect or rewrite, we'll add CSP headers to it later
+    // Don't return early - we need to add security headers
   } catch (error) {
     logger.error("Intl middleware error", error);
-    return NextResponse.next();
+    // Continue with normal flow if intl middleware fails
   }
 
   // Clone the response to modify it
-  let response = NextResponse.next({
+  // Use intlResponse if it exists (for rewrites/redirects), otherwise create new response
+  let response = intlResponse || NextResponse.next({
     request: {
       headers: request.headers,
     },
@@ -242,13 +237,23 @@ export default async function proxy(request: NextRequest) {
                        !request.nextUrl.hostname.includes("localhost") &&
                        !request.nextUrl.hostname.includes("127.0.0.1");
   
-  // SECURITY: CSP without unsafe-eval (removed for security)
+  // SECURITY: CSP without unsafe-eval (removed for security, except for docs routes)
   // Note: unsafe-inline for scripts is required for Next.js hydration
-  // Consider implementing nonces in future for better security
-  const cspDirectives = [
+  // unsafe-eval is required for MDXRemote in docs pages
+  // Check for docs routes - handle both /docs/ and /:locale/docs/ patterns
+  // Match patterns like: /en/docs/..., /de/docs/..., /docs/..., /en/guides/..., etc.
+  const isDocsRoute = 
+    pathname.includes("/docs/") || 
+    pathname.includes("/guides/") ||
+    pathname.startsWith("/en/docs") ||
+    pathname.startsWith("/de/docs") ||
+    pathname.startsWith("/en/guides") ||
+    pathname.startsWith("/de/guides") ||
+    pathname.match(/^\/[a-z]{2}\/docs\//) !== null ||
+    pathname.match(/^\/[a-z]{2}\/guides\//) !== null;
+  
+  const baseCspDirectives = [
     "default-src 'self'",
-    // Removed 'unsafe-eval' - major security improvement
-    // unsafe-inline kept for Next.js hydration scripts (can be improved with nonces)
     "script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com data:",
@@ -260,6 +265,23 @@ export default async function proxy(request: NextRequest) {
     "form-action 'self'",
     "frame-ancestors 'none'",
   ];
+  
+  // Add unsafe-eval for docs routes (required for MDXRemote)
+  const cspDirectives = isDocsRoute
+    ? [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src 'self' https://fonts.gstatic.com data:",
+        "img-src 'self' data: https: blob:",
+        "connect-src 'self' https://*.supabase.co https://*.vercel.app wss://*.supabase.co https://ipapi.co",
+        "frame-src 'self' https://vercel.live",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+      ]
+    : baseCspDirectives;
   
   if (isProduction) {
     cspDirectives.push("upgrade-insecure-requests");

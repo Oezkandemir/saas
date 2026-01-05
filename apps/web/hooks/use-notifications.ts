@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Bell } from "lucide-react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import { logger } from "@/lib/logger";
 
 export interface UseNotificationsResult {
   unreadCount: number;
@@ -42,7 +43,7 @@ function playNotificationSound() {
     oscillator.stop(audioContext.currentTime + 0.3);
   } catch (err) {
     // Fallback: use a simple beep if Web Audio API is not available
-    console.warn("Could not play notification sound:", err);
+    logger.warn("Could not play notification sound:", err);
   }
 }
 
@@ -94,7 +95,7 @@ export function useNotifications(): UseNotificationsResult {
           return 0;
         }
         // Log error but don't throw - return 0 as fallback
-        console.error("Error fetching notifications", err);
+        logger.error("Error fetching notifications", err);
         return 0;
       }
     },
@@ -147,7 +148,7 @@ export function useNotifications(): UseNotificationsResult {
             filter: `user_id=eq.${userId}`,
           },
           (payload) => {
-            console.log("🔔 Real-time INSERT event received:", payload);
+            logger.debug("🔔 Real-time INSERT event received:", payload);
             const newNotification = payload.new as { 
               read?: boolean; 
               title?: string; 
@@ -233,21 +234,21 @@ export function useNotifications(): UseNotificationsResult {
         )
         .subscribe((status, err) => {
           if (status === "SUBSCRIBED") {
-            console.log("✅ Successfully subscribed to real-time notifications for user:", userId);
+            logger.debug("✅ Successfully subscribed to real-time notifications for user:", userId);
           } else if (status === "CHANNEL_ERROR") {
-            console.error("⚠️ Error subscribing to notifications channel:", err);
+            logger.error("⚠️ Error subscribing to notifications channel:", err);
           } else if (status === "TIMED_OUT") {
-            console.warn("⏱️ Subscription timed out, will retry on next effect run");
+            logger.warn("⏱️ Subscription timed out, will retry on next effect run");
             // Don't retry subscribe() on same channel - it will cause error
             // The useEffect will recreate the channel if dependencies change
           } else if (status === "CLOSED") {
-            console.warn("🔌 Channel closed, will reconnect on next mount");
+            logger.warn("🔌 Channel closed, will reconnect on next mount");
           }
         });
 
       channelRef.current = channel;
     } catch (err) {
-      console.warn("Failed to set up real-time notifications:", err);
+      logger.warn("Failed to set up real-time notifications:", err);
     }
 
     // Cleanup on unmount

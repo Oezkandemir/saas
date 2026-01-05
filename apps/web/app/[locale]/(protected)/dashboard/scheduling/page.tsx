@@ -20,7 +20,8 @@ export default async function SchedulingPage() {
     data: undefined as undefined
   }));
   
-  const bookingsResult = await listBookings({ status: "scheduled" }).catch(() => ({ 
+  // Load all bookings (not just scheduled) so admins can see everything
+  const bookingsResult = await listBookings().catch(() => ({ 
     success: false as const, 
     error: "Failed to load" as const,
     data: undefined as undefined

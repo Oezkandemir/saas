@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { UserSubscriptionPlan } from "@/types";
 import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/logger";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -65,7 +66,7 @@ export default async function SettingsPage() {
     subscriptionPlan = await getUserSubscriptionPlan(user.id, user.email);
     planFeatures = await getAllPlanFeatures(user.id);
   } catch (error) {
-    console.error("Error fetching subscription plan:", error);
+    logger.error("Error fetching subscription plan:", error);
   }
 
   // Get email verification status

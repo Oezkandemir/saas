@@ -6,6 +6,7 @@ import { siteConfig } from "@/config/site";
 import { cn, nFormatter } from "@/lib/utils";
 import { buttonVariants } from '@/components/alignui/actions/button';
 import { Icons } from "@/components/shared/icons";
+import { logger } from "@/lib/logger";
 
 export default async function HeroLanding() {
   let stars = 0;
@@ -30,7 +31,7 @@ export default async function HeroLanding() {
       stars = data.stargazers_count || 0;
     }
   } catch (e) {
-    console.log("Error fetching GitHub stars:", e);
+    logger.debug("Error fetching GitHub stars:", e);
   }
 
   // Get translations

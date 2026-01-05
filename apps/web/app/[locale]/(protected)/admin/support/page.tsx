@@ -6,6 +6,7 @@ import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TicketAccordionTable } from "@/components/support/ticket-accordion-table";
+import { logger } from "@/lib/logger";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -50,7 +51,7 @@ export default async function AdminSupportPage(props: Props) {
   const result = await getAllTickets();
 
   if (!result.success || !result.data) {
-    console.error("Error fetching tickets:", result.error);
+    logger.error("Error fetching tickets:", result.error);
     return (
       <UnifiedPageLayout
         title={tSupport("pageTitle")}

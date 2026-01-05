@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
+import { logger } from "@/lib/logger";
 
 /**
  * Encode buffer to base32 string
@@ -56,7 +57,7 @@ function verifyTOTP(token: string, secret: string, window: number = 1): boolean 
     
     return false;
   } catch (error) {
-    console.error("Error verifying TOTP:", error);
+    logger.error("Error verifying TOTP:", error);
     return false;
   }
 }
@@ -169,7 +170,7 @@ export async function generateTwoFactorSecret(): Promise<
       );
 
     if (upsertError) {
-      console.error("Error storing 2FA secret:", upsertError);
+      logger.error("Error storing 2FA secret:", upsertError);
       return { success: false, message: "Failed to store 2FA secret" };
     }
 
@@ -182,7 +183,7 @@ export async function generateTwoFactorSecret(): Promise<
       },
     };
   } catch (error) {
-    console.error("Error generating 2FA secret:", error);
+    logger.error("Error generating 2FA secret:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to generate 2FA secret",
@@ -247,7 +248,7 @@ export async function verifyAndEnableTwoFactor(
     revalidatePath("/dashboard/settings/security");
     return { success: true, message: "Two-factor authentication enabled successfully" };
   } catch (error) {
-    console.error("Error verifying 2FA code:", error);
+    logger.error("Error verifying 2FA code:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to verify code",
@@ -304,7 +305,7 @@ export async function disableTwoFactor(
     revalidatePath("/dashboard/settings/security");
     return { success: true, message: "Two-factor authentication disabled successfully" };
   } catch (error) {
-    console.error("Error disabling 2FA:", error);
+    logger.error("Error disabling 2FA:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to disable 2FA",
@@ -328,7 +329,7 @@ export async function getTwoFactorStatus(): Promise<
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      console.error("Auth error in getTwoFactorStatus:", authError);
+      logger.error("Auth error in getTwoFactorStatus:", authError);
       return { success: false, message: "User not authenticated" };
     }
 
@@ -340,7 +341,7 @@ export async function getTwoFactorStatus(): Promise<
 
     // If error exists and it's not a "no rows" error, return error
     if (error) {
-      console.error("Database error in getTwoFactorStatus:", error);
+      logger.error("Database error in getTwoFactorStatus:", error);
       // PGRST116 = no rows returned, which is fine - treat as not enabled
       if (error.code === "PGRST116") {
         return {
@@ -373,7 +374,7 @@ export async function getTwoFactorStatus(): Promise<
       },
     };
   } catch (error) {
-    console.error("Error getting 2FA status:", error);
+    logger.error("Error getting 2FA status:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to get 2FA status",
@@ -434,7 +435,7 @@ export async function regenerateBackupCodes(): Promise<
 
     return { success: true, backupCodes };
   } catch (error) {
-    console.error("Error regenerating backup codes:", error);
+    logger.error("Error regenerating backup codes:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to regenerate backup codes",
@@ -455,7 +456,7 @@ export async function checkTwoFactorEnabledByEmail(
   | { success: false; message: string }
 > {
   try {
-    console.log("Checking 2FA for email:", email);
+    logger.debug("Checking 2FA for email:", email);
     
     // Use admin client to get user from users table
     const { supabaseAdmin } = await import("@/lib/db-admin");
@@ -467,21 +468,21 @@ export async function checkTwoFactorEnabledByEmail(
       .eq("email", email)
       .maybeSingle();
     
-    console.log("User lookup result:", { userId: user?.id, error: userError });
+    logger.debug("User lookup result:", { userId: user?.id, error: userError });
     
     if (userError && userError.code !== "PGRST116") {
-      console.error("Error looking up user:", userError);
+      logger.error("Error looking up user:", userError);
       return { success: false, message: `Failed to lookup user: ${userError.message}` };
     }
     
     if (!user) {
       // User not found - treat as no 2FA (new user)
-      console.log("User not found, returning no 2FA");
+      logger.debug("User not found, returning no 2FA");
       return { success: true, enabled: false, userId: null };
     }
     
     const userId = user.id;
-    console.log("Found user ID:", userId);
+    logger.debug("Found user ID:", userId);
     
     // Check 2FA status using admin client
     const { data, error } = await supabaseAdmin
@@ -490,15 +491,15 @@ export async function checkTwoFactorEnabledByEmail(
       .eq("user_id", userId)
       .maybeSingle();
     
-    console.log("2FA data lookup result:", { data, error });
+    logger.debug("2FA data lookup result:", { data, error });
     
     if (error && error.code !== "PGRST116") {
-      console.error("Error checking 2FA status:", error);
+      logger.error("Error checking 2FA status:", error);
       return { success: false, message: `Failed to check 2FA status: ${error.message}` };
     }
     
     const isEnabled = data?.enabled ?? false;
-    console.log("2FA enabled status:", isEnabled);
+    logger.debug("2FA enabled status:", isEnabled);
     
     return {
       success: true,
@@ -506,7 +507,7 @@ export async function checkTwoFactorEnabledByEmail(
       userId,
     };
   } catch (error) {
-    console.error("Error checking 2FA by email:", error);
+    logger.error("Error checking 2FA by email:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to check 2FA status",
@@ -556,7 +557,7 @@ export async function verifyTwoFactorCodeForSignIn(
         .eq("user_id", userId);
       
       if (updateError) {
-        console.error("Error updating backup codes:", updateError);
+        logger.error("Error updating backup codes:", updateError);
         // Still allow login, but log the error
       }
       
@@ -572,7 +573,7 @@ export async function verifyTwoFactorCodeForSignIn(
     
     return { success: true, message: "Code verified successfully" };
   } catch (error) {
-    console.error("Error verifying 2FA code for sign-in:", error);
+    logger.error("Error verifying 2FA code for sign-in:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to verify code",

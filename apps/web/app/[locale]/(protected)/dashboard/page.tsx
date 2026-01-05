@@ -20,6 +20,9 @@ import {
   ArrowRight,
   LayoutDashboard,
   Calendar,
+  Users,
+  QrCode,
+  Plus,
 } from "lucide-react";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
@@ -31,6 +34,7 @@ export default async function DashboardPage() {
   if (!user) redirect("/login");
   const t = await getTranslations("Dashboard");
   const tDocs = await getTranslations("Documents");
+  const tTable = await getTranslations("Documents.table.columns");
 
   const [customers, documents, qrCodes]: [Customer[], Document[], QRCode[]] = await Promise.all([
     getCustomers().catch(() => []),
@@ -107,8 +111,68 @@ export default async function DashboardPage() {
 
       {/* Quick Actions / Feature Cards */}
       <div className="mb-10 pb-8 border-b border-border">
-        <h2 className="text-sm font-semibold mb-4">{t("quickActions.title") || "Quick Actions"}</h2>
+        <h2 className="text-sm font-semibold mb-4">{t("quickActions.title")}</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <Link
+            href="/dashboard/customers/new"
+            className="group border rounded-lg p-4 hover:bg-muted/50 transition-colors"
+          >
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-lg bg-green-500/10 group-hover:bg-green-500/20 transition-colors">
+                <Users className="h-4 w-4 text-green-500" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold mb-1 group-hover:text-primary transition-colors">
+                  {t("quickActions.newCustomer")}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {t("quickActions.newCustomerDescription")}
+                </p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+            </div>
+          </Link>
+
+          <Link
+            href="/dashboard/documents/new"
+            className="group border rounded-lg p-4 hover:bg-muted/50 transition-colors"
+          >
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-lg bg-purple-500/10 group-hover:bg-purple-500/20 transition-colors">
+                <FileText className="h-4 w-4 text-purple-500" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold mb-1 group-hover:text-primary transition-colors">
+                  {t("quickActions.newDocument")}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {t("quickActions.newDocumentDescription")}
+                </p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+            </div>
+          </Link>
+
+          <Link
+            href="/dashboard/qr-codes/new"
+            className="group border rounded-lg p-4 hover:bg-muted/50 transition-colors"
+          >
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-lg bg-orange-500/10 group-hover:bg-orange-500/20 transition-colors">
+                <QrCode className="h-4 w-4 text-orange-500" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold mb-1 group-hover:text-primary transition-colors">
+                  {t("quickActions.newQrCode")}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {t("quickActions.newQrCodeDescription")}
+                </p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+            </div>
+          </Link>
+
           <Link
             href="/dashboard/scheduling"
             className="group border rounded-lg p-4 hover:bg-muted/50 transition-colors"
@@ -119,10 +183,10 @@ export default async function DashboardPage() {
               </div>
               <div className="flex-1">
                 <h3 className="text-sm font-semibold mb-1 group-hover:text-primary transition-colors">
-                  {t("quickActions.scheduling") || "Scheduling"}
+                  {t("quickActions.scheduling")}
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  {t("quickActions.schedulingDescription") || "Manage event types and bookings"}
+                  {t("quickActions.schedulingDescription")}
                 </p>
               </div>
               <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -135,12 +199,20 @@ export default async function DashboardPage() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold">{t("recent.documents")}</h2>
-          <Link href="/dashboard/documents">
-            <Button variant="ghost" size="sm" className="h-7 text-xs -mr-2">
-              {t("recent.all")}
-              <ArrowRight className="ml-1 h-3 w-3" />
-            </Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/dashboard/documents/new">
+              <Button size="sm" className="h-7 text-xs">
+                <Plus className="h-3 w-3 mr-1" />
+                {t("recent.create")}
+              </Button>
+            </Link>
+            <Link href="/dashboard/documents">
+              <Button variant="ghost" size="sm" className="h-7 text-xs -mr-2">
+                {t("recent.all")}
+                <ArrowRight className="ml-1 h-3 w-3" />
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {recentDocuments.length === 0 ? (
@@ -157,10 +229,10 @@ export default async function DashboardPage() {
           <Table>
             <TableHeader>
               <TableRow className="border-b border-border">
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground">Document</TableHead>
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground">Type</TableHead>
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground">Date</TableHead>
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground text-right">Amount</TableHead>
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground">{tTable("number")}</TableHead>
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground">{tTable("type")}</TableHead>
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground">{tTable("date")}</TableHead>
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground text-right">{tTable("amount")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

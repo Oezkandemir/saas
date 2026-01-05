@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from '@/components/alignui/forms/input';
 import { Label } from "@/components/ui/label";
+import { logger } from "@/lib/logger";
 
 export function TwoFactorAuth() {
   const { toast } = useToast();
@@ -62,7 +63,7 @@ export function TwoFactorAuth() {
         // If no record exists, 2FA is not enabled
         setIsEnabled(false);
         setHasBackupCodes(false);
-        console.error("Error loading 2FA status:", result.message);
+        logger.error("Error loading 2FA status:", result.message);
         // Only show error toast if it's not a "no record" case
         if (result.message && !result.message.includes("PGRST116")) {
           toast({
@@ -73,7 +74,7 @@ export function TwoFactorAuth() {
         }
       }
     } catch (error) {
-      console.error("Error loading 2FA status:", error);
+      logger.error("Error loading 2FA status:", error);
       setIsEnabled(false);
       setHasBackupCodes(false);
       toast({

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { getCurrentUser } from "@/lib/session";
+import { logger } from "@/lib/logger";
 
 export type ProfileType = "personal" | "team";
 
@@ -258,7 +259,7 @@ export async function createCompanyProfile(
     .single();
 
   if (error) {
-    console.error("Error creating company profile:", error);
+    logger.error("Error creating company profile:", error);
     throw new Error(
       error.message || `Fehler beim Erstellen des Firmenprofils: ${error.code || "Unbekannter Fehler"}`
     );
@@ -395,7 +396,7 @@ export async function updateCompanyProfile(
     .single();
 
   if (error) {
-    console.error("Error updating company profile:", error);
+    logger.error("Error updating company profile:", error);
     throw new Error(
       error.message || `Fehler beim Aktualisieren des Firmenprofils: ${error.code || "Unbekannter Fehler"}`
     );

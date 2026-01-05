@@ -8,12 +8,12 @@ export const adminSidebarLinks: SidebarNavItem[] = [
       {
         href: "/admin",
         icon: "layoutDashboard",
-        title: "Overview",
+        title: "Dashboard",
       },
       {
-        href: "/dashboard",
-        icon: "dashboard",
-        title: "Dashboard",
+        href: "/dashboard/scheduling",
+        icon: "calendar",
+        title: "Scheduling",
       },
       {
         href: "/admin/users",
@@ -58,7 +58,7 @@ export const adminSidebarLinks: SidebarNavItem[] = [
       {
         href: "/admin/companies",
         icon: "building",
-        title: "Firmenprofile",
+        title: "Company Profiles",
       },
       {
         href: "/admin/system",

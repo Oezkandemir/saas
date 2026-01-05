@@ -51,7 +51,7 @@ interface AnalyticsData {
   recentSubscriptions: {
     id: string;
     email: string;
-    stripe_current_period_end: string | null;
+    polar_current_period_end: string | null;
   }[];
   detailedAnalytics: any;
 }
@@ -112,11 +112,7 @@ export default async function AnalyticsPage() {
       </div>
 
       {/* Secondary KPIs - Max 3 */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <div>
-          <div className="text-sm text-muted-foreground mb-1">Subscribers</div>
-          <div className="text-2xl font-semibold">{data.subscribersCount || 0}</div>
-        </div>
+      <div className="grid gap-4 md:grid-cols-2">
         <div>
           <div className="text-sm text-muted-foreground mb-1">Active Users (30d)</div>
           <div className="text-2xl font-semibold">{activeUsers30d}</div>
@@ -174,9 +170,9 @@ export default async function AnalyticsPage() {
                         <Badge variant="outline">Subscription</Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
-                        {sub.stripe_current_period_end
+                        {sub.polar_current_period_end
                           ? formatDistanceToNow(
-                              new Date(sub.stripe_current_period_end),
+                              new Date(sub.polar_current_period_end),
                               { addSuffix: true },
                             )
                           : "N/A"}
@@ -272,35 +268,123 @@ export default async function AnalyticsPage() {
 
         {/* Page Analytics Tab */}
         <TabsContent value="page-analytics" className="space-y-6">
-          {detailedData?.popular_pages && detailedData.popular_pages.length > 0 && (
+          {detailedData?.popular_pages && detailedData.popular_pages.length > 0 ? (
+            <>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Most Viewed Pages</CardTitle>
+                  <CardDescription>
+                    Top {Math.min(detailedData.popular_pages.length, 20)} pages by view count
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Page Path</TableHead>
+                        <TableHead className="text-right">Total Views</TableHead>
+                        <TableHead className="text-right">Unique Visitors</TableHead>
+                        <TableHead className="text-right">Avg Duration</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {detailedData.popular_pages
+                        .filter((page: any) => {
+                          const path = page.page_path || page.slug || "";
+                          return path && String(path).trim() !== "";
+                        })
+                        .slice(0, 20)
+                        .map((page: any, index: number) => {
+                          const pagePath = String(page.page_path || page.slug || "").trim();
+                          const avgDuration = page.avg_duration
+                            ? `${Math.round(Number(page.avg_duration))}s`
+                            : "N/A";
+                          return (
+                            <TableRow key={`page-${index}-${pagePath}`}>
+                              <TableCell className="font-mono text-xs max-w-[300px] truncate" title={pagePath}>
+                                {pagePath}
+                              </TableCell>
+                              <TableCell className="text-right font-medium">
+                                {Number(page.view_count || 0).toLocaleString()}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                {Number(page.unique_visitors || page.view_count || 0).toLocaleString()}
+                              </TableCell>
+                              <TableCell className="text-right text-muted-foreground">
+                                {avgDuration}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      {detailedData.popular_pages.filter((page: any) => {
+                        const path = page.page_path || page.slug || "";
+                        return path && String(path).trim() !== "";
+                      }).length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                            No page view data available. Check console for debugging info.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+
+              {/* Summary Statistics */}
+              <div className="grid gap-4 md:grid-cols-3">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardDescription>Total Page Views</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-semibold">
+                      {detailedData.popular_pages
+                        .reduce((sum: number, page: any) => sum + (page.view_count || 0), 0)
+                        .toLocaleString()}
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardDescription>Unique Pages</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-semibold">
+                      {detailedData.popular_pages.filter(
+                        (page: any) => {
+                          const path = page.page_path || page.slug || "";
+                          return path && String(path).trim() !== "";
+                        },
+                      ).length}
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardDescription>Total Unique Visitors</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-semibold">
+                      {detailedData.popular_pages.reduce(
+                        (sum: number, page: any) => sum + (page.unique_visitors || 0),
+                        0,
+                      ).toLocaleString()}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </>
+          ) : (
             <Card>
               <CardHeader>
                 <CardTitle>Most Viewed Pages</CardTitle>
                 <CardDescription>Top pages by view count</CardDescription>
               </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Page</TableHead>
-                      <TableHead>Views</TableHead>
-                      <TableHead>Unique</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {detailedData.popular_pages.slice(0, 10).map((page: any, index: number) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-mono text-xs">
-                          {page.page_path.length > 40
-                            ? page.page_path.substring(0, 40) + "..."
-                            : page.page_path}
-                        </TableCell>
-                        <TableCell>{page.view_count}</TableCell>
-                        <TableCell>{page.unique_visitors}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+              <CardContent className="pt-8 text-center">
+                <p className="text-muted-foreground">
+                  No page view data available yet. Page views will appear here once users start browsing your site.
+                </p>
               </CardContent>
             </Card>
           )}

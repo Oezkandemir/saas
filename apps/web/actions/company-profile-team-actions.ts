@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { getCurrentUser } from "@/lib/session";
+import { logger } from "@/lib/logger";
 
 export type CompanyProfileRole = "owner" | "admin" | "editor" | "viewer";
 
@@ -204,7 +205,7 @@ export async function addCompanyProfileTeamMember(
     .single();
 
   if (error) {
-    console.error("Error adding team member:", error);
+    logger.error("Error adding team member:", error);
     throw new Error(
       error.message || "Fehler beim Hinzufügen des Teammitglieds",
     );
@@ -311,7 +312,7 @@ export async function updateCompanyProfileTeamMember(
     .single();
 
   if (error) {
-    console.error("Error updating team member:", error);
+    logger.error("Error updating team member:", error);
     throw new Error(
       error.message || "Fehler beim Aktualisieren des Teammitglieds",
     );
@@ -366,7 +367,7 @@ export async function removeCompanyProfileTeamMember(
     .eq("id", memberId);
 
   if (error) {
-    console.error("Error removing team member:", error);
+    logger.error("Error removing team member:", error);
     throw new Error(
       error.message || "Fehler beim Entfernen des Teammitglieds",
     );
@@ -393,7 +394,7 @@ export async function hasCompanyProfilePermission(
   });
 
   if (error) {
-    console.error("Error checking permission:", error);
+    logger.error("Error checking permission:", error);
     return false;
   }
 

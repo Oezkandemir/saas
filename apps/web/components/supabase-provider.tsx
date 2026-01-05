@@ -5,6 +5,7 @@ import { createBrowserClient } from "@supabase/ssr";
 import { type Session } from "@supabase/supabase-js";
 
 import { type Database } from "@/lib/supabase";
+import { logger } from "@/lib/logger";
 
 type SupabaseContextType = {
   supabase: ReturnType<typeof createBrowserClient<Database>>;
@@ -40,13 +41,13 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       channel = supabase.channel("global_notifications_changes");
       channel.subscribe((status) => {
         if (status === "SUBSCRIBED") {
-          console.log("✅ Successfully subscribed to realtime notifications");
+          logger.debug("✅ Successfully subscribed to realtime notifications");
         } else if (status === "CHANNEL_ERROR") {
-          console.warn("Failed to subscribe to realtime notifications:", status);
+          logger.warn("Failed to subscribe to realtime notifications:", status);
         }
       });
     } catch (error) {
-      console.warn("Failed to subscribe to realtime notifications:", error);
+      logger.warn("Failed to subscribe to realtime notifications:", error);
     }
 
     // Cleanup: remove channel when component unmounts
@@ -77,7 +78,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
           setSession(sessionData.session);
         }
       } catch (error) {
-        console.error("Error loading initial session:", error);
+        logger.error("Error loading initial session:", error);
       }
     }
 

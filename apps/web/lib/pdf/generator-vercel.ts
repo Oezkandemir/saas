@@ -1,5 +1,6 @@
 import { supabaseAdmin } from "@/lib/db";
 import type { Document } from "@/actions/documents-actions";
+import { logger } from "@/lib/logger";
 
 export interface PDFOptions {
   format?: "A4" | "Letter";
@@ -56,7 +57,7 @@ export async function uploadPDFToStorage(
   try {
     const fileName = `documents/${userId}/${documentId}.pdf`;
 
-    console.log("Uploading PDF to Supabase storage...", {
+    logger.debug("Uploading PDF to Supabase storage...", {
       fileName,
       bufferSize: pdfBuffer.length,
       bucket: "documents"
@@ -72,7 +73,7 @@ export async function uploadPDFToStorage(
       });
 
     if (error) {
-      console.error("Supabase storage upload error:", {
+      logger.error("Supabase storage upload error:", {
         error,
         errorMessage: error.message,
         errorName: error.name,
@@ -81,18 +82,18 @@ export async function uploadPDFToStorage(
       throw new Error(`Failed to upload PDF to storage: ${error.message || JSON.stringify(error)}`);
     }
 
-    console.log("PDF uploaded successfully to storage:", data);
+    logger.debug("PDF uploaded successfully to storage:", data);
 
     // Get public URL
     const {
       data: { publicUrl },
     } = supabaseAdmin.storage.from("documents").getPublicUrl(fileName);
 
-    console.log("Generated public URL:", publicUrl);
+    logger.debug("Generated public URL:", publicUrl);
 
     return publicUrl;
   } catch (error) {
-    console.error("Error in uploadPDFToStorage:", error);
+    logger.error("Error in uploadPDFToStorage:", error);
     if (error instanceof Error) {
       throw error;
     }
@@ -111,7 +112,7 @@ export async function generateAndUploadPDF(
   options?: PDFOptions,
 ): Promise<string> {
   try {
-    console.log("Starting PDF generation for document:", document.id);
+    logger.debug("Starting PDF generation for document:", document.id);
     
     // Import pdf-lib generator
     const { generatePDFFromDocument } = await import("./pdf-lib-generator");
@@ -124,18 +125,18 @@ export async function generateAndUploadPDF(
       const { getDefaultCompanyProfile } = await import("@/actions/company-profiles-actions");
       const defaultProfile = await getDefaultCompanyProfile();
       companyInfo = convertCompanyProfileToInfo(defaultProfile);
-      console.log("Loaded company profile:", companyInfo?.name || "none");
+      logger.debug("Loaded company profile:", companyInfo?.name || "none");
     } catch (error) {
-      console.warn("Could not load company profile, using defaults:", error);
+      logger.warn("Could not load company profile, using defaults:", error);
     }
     
     // Use default company info if none found
     if (!companyInfo) {
       companyInfo = DEFAULT_COMPANY_INFO;
-      console.log("Using default company info");
+      logger.debug("Using default company info");
     }
 
-    console.log("Generating PDF buffer with pdf-lib...");
+    logger.debug("Generating PDF buffer with pdf-lib...");
     // Generate PDF buffer using pdf-lib
     const pdfBuffer = await generatePDFFromDocument(document, companyInfo);
     
@@ -150,17 +151,17 @@ export async function generateAndUploadPDF(
       throw new Error(`Invalid PDF generated. Header: ${pdfHeader}, Buffer length: ${pdfBuffer.length}`);
     }
     
-    console.log("PDF generated successfully, size:", pdfBuffer.length, "bytes");
+    logger.debug("PDF generated successfully, size:", pdfBuffer.length, "bytes");
 
     // Upload to storage
-    console.log("Uploading PDF to storage...");
+    logger.debug("Uploading PDF to storage...");
     const pdfUrl = await uploadPDFToStorage(
       pdfBuffer,
       document.id,
       document.user_id,
     );
 
-    console.log("PDF uploaded successfully, URL:", pdfUrl);
+    logger.debug("PDF uploaded successfully, URL:", pdfUrl);
     return pdfUrl;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -168,11 +169,11 @@ export async function generateAndUploadPDF(
     // Only log as warning if it's a known/expected error
     if (errorMessage.includes("Failed to load Puppeteer") || 
         errorMessage.includes("Puppeteer not available")) {
-      console.warn("PDF generation skipped (Puppeteer not available)", {
+      logger.warn("PDF generation skipped (Puppeteer not available)", {
         documentId: document.id
       });
     } else {
-      console.error("Error generating and uploading PDF:", {
+      logger.error("Error generating and uploading PDF:", {
         message: errorMessage,
         stack: errorStack,
         documentId: document.id,
@@ -201,7 +202,7 @@ export async function generatePDFInBackground(
       .eq("id", document.id)
       .eq("user_id", document.user_id);
     
-    console.log(`PDF generated successfully for document ${document.id}`);
+    logger.debug(`PDF generated successfully for document ${document.id}`);
   } catch (error) {
     // Log error but don't throw - we don't want to break document creation/update
     // Extract error message
@@ -218,9 +219,9 @@ export async function generatePDFInBackground(
     // Only log as warning for background PDF generation failures (non-critical)
     if (errorMessage.includes("Failed to load Puppeteer") || 
         errorMessage.includes("Puppeteer not available")) {
-      console.debug(`Background PDF generation skipped (Puppeteer not available) for document ${document.id}`);
+      logger.debug(`Background PDF generation skipped (Puppeteer not available) for document ${document.id}`);
     } else {
-      console.warn(`Background PDF generation failed for document ${document.id}:`, errorMessage);
+      logger.warn(`Background PDF generation failed for document ${document.id}:`, errorMessage);
     }
     // Don't throw - let the document creation/update succeed even if PDF generation fails
   }

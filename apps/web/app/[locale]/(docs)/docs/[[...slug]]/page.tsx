@@ -17,6 +17,7 @@ import "@/styles/mdx.css";
 import { Metadata } from "next";
 
 import { constructMetadata, getBlurDataURL } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 
 interface DocPageProps {
   params: Promise<{
@@ -103,7 +104,7 @@ export default async function DocPage({ params }: DocPageProps) {
       },
     });
   } catch (error) {
-    console.error("Error serializing MDX:", error);
+    logger.error("Error serializing MDX:", error);
     // If serialization fails, fall back to contentlayer's version
     mdxResult = {
       compiledSource: doc.body.code || "",

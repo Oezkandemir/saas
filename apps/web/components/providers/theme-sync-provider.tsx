@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { useSupabase } from "@/components/supabase-provider";
 import { getUserPreferences } from "@/actions/preferences-actions";
+import { logger } from "@/lib/logger";
 
 /**
  * ThemeSyncProvider synchronizes the theme preference from the database
@@ -41,7 +42,7 @@ export function ThemeSyncProvider({ children }: { children: React.ReactNode }) {
         setHasLoaded(true);
       } catch (error) {
         // Silently fail - theme will default to system
-        console.warn("Failed to load theme preference:", error);
+        logger.warn("Failed to load theme preference:", error);
         setHasLoaded(true);
       }
     };

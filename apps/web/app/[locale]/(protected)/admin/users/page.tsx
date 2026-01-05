@@ -68,9 +68,6 @@ export default async function AdminUsersPage(props: Props) {
   // Calculate stats
   const totalUsers = users.length;
   const adminUsers = users.filter((user) => user.role === "ADMIN").length;
-  const subscribedUsers = users.filter(
-    (user) => user.stripe_subscription_id,
-  ).length;
 
   // Format the data for the table
   const formattedUsers = users.map((user) => {
@@ -91,7 +88,7 @@ export default async function AdminUsersPage(props: Props) {
           })
         : tUsers("table.never"),
       emailVerified: user.email_verified,
-      hasSubscription: !!user.stripe_subscription_id,
+      hasSubscription: !!user.polar_subscription_id,
       avatar_url: user.avatar_url || null,
     };
   });
@@ -117,12 +114,6 @@ export default async function AdminUsersPage(props: Props) {
 
         {/* Secondary KPIs */}
         <div className="flex gap-6 sm:gap-8">
-          <div className="space-y-1">
-            <div className="text-2xl font-medium">{subscribedUsers}</div>
-            <div className="text-xs text-muted-foreground">
-              {tUsers("subscribers")}
-            </div>
-          </div>
           <div className="space-y-1">
             <div className="text-2xl font-medium">{adminUsers}</div>
             <div className="text-xs text-muted-foreground">

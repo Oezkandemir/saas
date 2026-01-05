@@ -8,7 +8,7 @@ export const sidebarLinks: SidebarNavItem[] = [
       {
         href: "/dashboard",
         icon: "layoutDashboard",
-        title: "Overview",
+        title: "Dashboard",
       },
       {
         href: "/dashboard/customers",
@@ -29,12 +29,6 @@ export const sidebarLinks: SidebarNavItem[] = [
         href: "/dashboard/scheduling",
         icon: "calendar",
         title: "Scheduling",
-      },
-      {
-        href: "/dashboard/templates",
-        icon: "fileText",
-        title: "Templates",
-        disabled: true,
       },
       {
         href: "/dashboard/settings",

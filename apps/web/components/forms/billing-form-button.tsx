@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from '@/components/alignui/actions/button';
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Icons } from "@/components/shared/icons";
+import { logger } from "@/lib/logger";
 
 interface BillingFormButtonProps {
   offer: SubscriptionPlan;
@@ -57,7 +58,7 @@ export function BillingFormButton({
           return;
         }
         
-        console.error("Error with Polar checkout:", error);
+        logger.error("Error with Polar checkout:", error);
         const errorMessage = error instanceof Error ? error.message : "Failed to process Polar checkout";
         toast.error(errorMessage, { duration: 10000 });
       }

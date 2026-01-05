@@ -14,6 +14,7 @@ import { Icons } from "@/components/shared/icons";
 import { CreditCard } from "lucide-react";
 import { pricingData } from "@/config/subscriptions";
 import { UserSubscriptionPlan } from "types";
+import { logger } from "@/lib/logger";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -68,7 +69,7 @@ export default async function BillingPage() {
         userSubscriptionPlan = plan || defaultFreePlan;
       } catch (error) {
         // If admin has no subscription, use default free plan
-        console.log("Admin has no subscription, using default free plan");
+        logger.debug("Admin has no subscription, using default free plan");
         userSubscriptionPlan = defaultFreePlan;
       }
     } else {
@@ -78,7 +79,7 @@ export default async function BillingPage() {
   } catch (error) {
     // If there's an error fetching subscription, use default plan
     // This allows admins to view the page even without a subscription
-    console.error("Error fetching subscription plan:", error);
+    logger.error("Error fetching subscription plan:", error);
     userSubscriptionPlan = defaultFreePlan;
   }
 

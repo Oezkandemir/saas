@@ -21,6 +21,7 @@ import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TicketMessageItem } from "@/components/support/ticket-message";
 import { TicketReplyForm } from "@/components/support/ticket-reply-form";
 import { TicketStatusUpdater } from "@/components/support/ticket-status-updater";
+import { logger } from "@/lib/logger";
 
 export async function generateMetadata({
   params,
@@ -60,7 +61,7 @@ export default async function AdminTicketPage({
   const ticketResult = await getTicketWithMessages(resolvedParams.id);
 
   if (!ticketResult.success || !ticketResult.data) {
-    console.error("Error fetching ticket:", ticketResult.error);
+    logger.error("Error fetching ticket:", ticketResult.error);
     notFound();
   }
 

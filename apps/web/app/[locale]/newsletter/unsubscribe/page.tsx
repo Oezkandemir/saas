@@ -17,6 +17,7 @@ import {
 } from '@/components/alignui/data-display/card';
 import { Icons } from "@/components/shared/icons";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { logger } from "@/lib/logger";
 
 export default function NewsletterUnsubscribe() {
   const t = useTranslations("Newsletter");
@@ -34,7 +35,7 @@ export default function NewsletterUnsubscribe() {
         const email = searchParams.get("email");
         const token = searchParams.get("token");
 
-        console.log("Unsubscribe attempt for:", email, "with token:", token);
+        logger.debug("Unsubscribe attempt for:", email, "with token:", token);
         setDebugInfo(`Attempting to unsubscribe: ${email}`);
 
         if (!email || !token) {
@@ -45,7 +46,7 @@ export default function NewsletterUnsubscribe() {
 
         // Normalize the email by trimming and converting to lowercase
         const normalizedEmail = email.trim().toLowerCase();
-        console.log("Normalized email:", normalizedEmail);
+        logger.debug("Normalized email:", normalizedEmail);
 
         const result = await unsubscribeFromNewsletter(normalizedEmail, token);
 
@@ -72,14 +73,14 @@ export default function NewsletterUnsubscribe() {
           // Clean up interval if component unmounts
           return () => clearInterval(countdownInterval);
         } else {
-          console.error("Unsubscribe failed:", result.message);
+          logger.error("Unsubscribe failed:", result.message);
           setError(result.message);
           toast.error(t("unsubscribeError"), {
             description: result.message,
           });
         }
       } catch (error) {
-        console.error("Error unsubscribing:", error);
+        logger.error("Error unsubscribing:", error);
         setError(t("unsubscribeErrorDescription"));
         toast.error(t("unsubscribeError"), {
           description: t("unsubscribeErrorDescription"),

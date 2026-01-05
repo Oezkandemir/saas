@@ -56,6 +56,7 @@ export async function generatePDFFromElement(
       import("jspdf"),
       import("html2canvas"),
     ]);
+import { logger } from "@/lib/logger";
 
     const {
       filename = "document.pdf",
@@ -133,7 +134,7 @@ export async function generatePDFFromElement(
     // Download PDF
     pdf.save(filename);
   } catch (error) {
-    console.error("Error generating PDF:", error);
+    logger.error("Error generating PDF:", error);
     throw new Error(
       `Failed to generate PDF: ${error instanceof Error ? error.message : String(error)}`
     );

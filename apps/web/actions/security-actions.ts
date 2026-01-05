@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { logger } from "@/lib/logger";
 
 export interface ActiveSession {
   id: string;
@@ -119,7 +120,7 @@ export async function getActiveSessions(): Promise<
       })),
     };
   } catch (error) {
-    console.error("Error getting active sessions:", error);
+    logger.error("Error getting active sessions:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to get sessions",
@@ -183,7 +184,7 @@ export async function revokeSession(
     revalidatePath("/dashboard/settings/security");
     return { success: true, message: "Session revoked successfully" };
   } catch (error) {
-    console.error("Error revoking session:", error);
+    logger.error("Error revoking session:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to revoke session",
@@ -231,7 +232,7 @@ export async function revokeAllOtherSessions(): Promise<{
     revalidatePath("/dashboard/settings/security");
     return { success: true, message: "All other sessions revoked successfully" };
   } catch (error) {
-    console.error("Error revoking all sessions:", error);
+    logger.error("Error revoking all sessions:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to revoke sessions",
@@ -282,7 +283,7 @@ export async function clearAllSessions(): Promise<{
     revalidatePath("/dashboard/settings/security");
     return { success: true, message: "All sessions cleared successfully" };
   } catch (error) {
-    console.error("Error clearing all sessions:", error);
+    logger.error("Error clearing all sessions:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to clear sessions",
@@ -338,7 +339,7 @@ export async function getLoginHistory(
       })),
     };
   } catch (error) {
-    console.error("Error getting login history:", error);
+    logger.error("Error getting login history:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to get login history",
@@ -387,7 +388,7 @@ export async function logLoginAttempt(
       two_factor_used: twoFactorUsed,
     });
   } catch (error) {
-    console.error("Error logging login attempt:", error);
+    logger.error("Error logging login attempt:", error);
     // Don't throw - logging failures shouldn't break login flow
   }
 }

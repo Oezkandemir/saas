@@ -10,6 +10,7 @@ import { Button } from '@/components/alignui/actions/button';
 import { useToast } from "@/components/ui/use-toast";
 import { useNotificationsContext } from "@/components/context/notifications-context";
 import { useSupabase } from "@/components/supabase-provider";
+import { logger } from "@/lib/logger";
 
 interface DeleteNotificationButtonProps {
   notificationId: string;
@@ -61,7 +62,7 @@ export function DeleteNotificationButton({
       await refetchAll();
       router.refresh();
     } catch (error) {
-      console.error("Error deleting notification:", error);
+      logger.error("Error deleting notification:", error);
       toast({
         title: "Error",
         description:

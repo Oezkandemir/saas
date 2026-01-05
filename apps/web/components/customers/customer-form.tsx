@@ -19,6 +19,7 @@ import {
   CustomerAdditionalInfoStep,
 } from "./customer-form-steps";
 import { useAutoSave } from "@/lib/hooks/use-auto-save";
+import { logger } from "@/lib/logger";
 
 interface CustomerFormProps {
   customer?: Customer;
@@ -137,7 +138,7 @@ export function CustomerForm({ customer }: CustomerFormProps) {
       });
       
       if (process.env.NODE_ENV === "development") {
-        console.error("Customer form error:", error);
+        logger.error("Customer form error:", error);
       }
       throw error; // Re-throw to prevent form from completing
     } finally {

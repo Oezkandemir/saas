@@ -13,6 +13,7 @@ import { Building2, CheckCircle2, UserPlus, Shield } from "lucide-react";
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Button } from '@/components/alignui/actions/button';
 import Link from "next/link";
+import { logger } from "@/lib/logger";
 
 interface CompanyProfileSelectorProps {
   value?: string;
@@ -49,7 +50,7 @@ export function CompanyProfileSelector({
           }
         }
       } catch (error) {
-        console.error("Error loading company profiles:", error);
+        logger.error("Error loading company profiles:", error);
       } finally {
         setIsLoading(false);
       }

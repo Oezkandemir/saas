@@ -12,17 +12,42 @@ export function PerformanceTracker() {
     // Initialize performance monitoring
     performanceMonitor.init();
 
-    // Track page load time
+    // Track page load time using modern Performance API
     if (typeof window !== "undefined" && window.performance) {
-      window.addEventListener("load", () => {
-        const loadTime =
-          window.performance.timing.loadEventEnd -
-          window.performance.timing.navigationStart;
+      const handleLoad = () => {
+        // Use PerformanceNavigationTiming if available (modern API)
+        const perfData = window.performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
+        
+        if (perfData) {
+          const loadTime = perfData.loadEventEnd - perfData.fetchStart;
+          performanceMonitor.recordMetric("PageLoad", loadTime, "ms", {
+            url: window.location.pathname,
+            domContentLoaded: perfData.domContentLoadedEventEnd - perfData.fetchStart,
+            firstPaint: perfData.domInteractive - perfData.fetchStart,
+          });
+        } else {
+          // Fallback to legacy timing API
+          const timing = window.performance.timing;
+          if (timing) {
+            const loadTime = timing.loadEventEnd - timing.navigationStart;
+            performanceMonitor.recordMetric("PageLoad", loadTime, "ms", {
+              url: window.location.pathname,
+            });
+          }
+        }
+      };
 
-        performanceMonitor.recordMetric("PageLoad", loadTime, "ms", {
-          url: window.location.pathname,
-        });
-      });
+      // Check if page is already loaded
+      if (document.readyState === "complete") {
+        handleLoad();
+      } else {
+        window.addEventListener("load", handleLoad);
+      }
+
+      // Cleanup
+      return () => {
+        window.removeEventListener("load", handleLoad);
+      };
     }
   }, []);
 

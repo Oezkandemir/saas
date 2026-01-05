@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Drawer } from "vaul";
 
 import { useRouter as useI18nRouter, usePathname } from "@/i18n/routing";
+import { logger } from "@/lib/logger";
 
 export default function LanguageDrawer() {
   const [open, setOpen] = useState(false);
@@ -24,7 +25,7 @@ export default function LanguageDrawer() {
         body: JSON.stringify({ locale }),
       });
     } catch (error) {
-      console.error("Failed to save locale preference:", error);
+      logger.error("Failed to save locale preference:", error);
     }
 
     // Navigate to new locale

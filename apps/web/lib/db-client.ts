@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 import { Database } from "./supabase";
+import { logger } from "@/lib/logger";
 
 // Create a client-safe Supabase client function
 // This uses the anon key which is safe for client-side usage
@@ -9,7 +10,7 @@ export function getClientDbAdmin() {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.error("Supabase environment variables are missing!");
+    logger.error("Supabase environment variables are missing!");
     throw new Error("Supabase environment variables are required");
   }
 
@@ -31,13 +32,13 @@ export async function getUserByEmail(email: string) {
       .single();
 
     if (error) {
-      console.error("Error fetching user by email:", error);
+      logger.error("Error fetching user by email:", error);
       return null;
     }
 
     return data;
   } catch (error) {
-    console.error("Exception fetching user by email:", error);
+    logger.error("Exception fetching user by email:", error);
     return null;
   }
 }
@@ -52,13 +53,13 @@ export async function getUserById(id: string) {
       .single();
 
     if (error) {
-      console.error("Error fetching user by id:", error);
+      logger.error("Error fetching user by id:", error);
       return null;
     }
 
     return data;
   } catch (error) {
-    console.error("Exception fetching user by id:", error);
+    logger.error("Exception fetching user by id:", error);
     return null;
   }
 }

@@ -4,24 +4,25 @@
  */
 
 import { supabaseAdmin } from "@/lib/db-admin";
+import { logger } from "@/lib/logger";
 
 const userId = process.argv[2];
 const newRole = process.argv[3];
 
 if (!userId || !newRole) {
-  console.error("Usage: npx tsx scripts/update-user-role.ts <userId> <role>");
-  console.error("Example: npx tsx scripts/update-user-role.ts bfe22e7b-05a2-48c8-ab53-dc4542dc9367 ADMIN");
+  logger.error("Usage: npx tsx scripts/update-user-role.ts <userId> <role>");
+  logger.error("Example: npx tsx scripts/update-user-role.ts bfe22e7b-05a2-48c8-ab53-dc4542dc9367 ADMIN");
   process.exit(1);
 }
 
 if (newRole !== "ADMIN" && newRole !== "USER") {
-  console.error("Role must be either 'ADMIN' or 'USER'");
+  logger.error("Role must be either 'ADMIN' or 'USER'");
   process.exit(1);
 }
 
 async function updateUserRole() {
   try {
-    console.log(`Updating user ${userId} to role ${newRole}...`);
+    logger.debug(`Updating user ${userId} to role ${newRole}...`);
 
     // Update role in database
     const { error: dbError } = await supabaseAdmin
@@ -30,18 +31,18 @@ async function updateUserRole() {
       .eq("id", userId);
 
     if (dbError) {
-      console.error("Error updating database:", dbError);
+      logger.error("Error updating database:", dbError);
       process.exit(1);
     }
 
-    console.log("✓ Database updated");
+    logger.debug("✓ Database updated");
 
     // Get current user metadata from Auth
     const { data: authUserData, error: authFetchError } =
       await supabaseAdmin.auth.admin.getUserById(userId);
 
     if (authFetchError) {
-      console.error("Error fetching auth user:", authFetchError);
+      logger.error("Error fetching auth user:", authFetchError);
       process.exit(1);
     }
 
@@ -56,19 +57,20 @@ async function updateUserRole() {
       });
 
     if (authUpdateError) {
-      console.error("Error updating auth metadata:", authUpdateError);
+      logger.error("Error updating auth metadata:", authUpdateError);
       process.exit(1);
     }
 
-    console.log("✓ Auth metadata updated");
-    console.log(`\nSuccessfully updated user ${userId} to role ${newRole}`);
+    logger.debug("✓ Auth metadata updated");
+    logger.debug(`\nSuccessfully updated user ${userId} to role ${newRole}`);
   } catch (error) {
-    console.error("Unexpected error:", error);
+    logger.error("Unexpected error:", error);
     process.exit(1);
   }
 }
 
 updateUserRole();
+
 
 
 

@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from '@/components/alignui/actions/button';
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Icons } from "@/components/shared/icons";
+import { logger } from "@/lib/logger";
 
 export function RefreshSubscriptionButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +26,7 @@ export function RefreshSubscriptionButton() {
         toast.error(result.message || "Failed to refresh subscription data");
       }
     } catch (error) {
-      console.error("Error refreshing subscription:", error);
+      logger.error("Error refreshing subscription:", error);
       toast.error("An error occurred while refreshing subscription data");
     } finally {
       setIsLoading(false);

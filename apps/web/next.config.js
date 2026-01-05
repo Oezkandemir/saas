@@ -18,14 +18,27 @@ const nextConfig = {
   async headers() {
     const isProduction = process.env.NODE_ENV === 'production';
     
-    // SECURITY: CSP directives - removed unsafe-eval for security
+    // SECURITY: CSP directives - removed unsafe-eval for security (except for docs routes)
     // Note: unsafe-inline for scripts is required for Next.js hydration
-    // Consider implementing nonces in future for better security
-    const cspDirectives = [
+    // unsafe-eval is required for MDXRemote in docs pages
+    const baseCspDirectives = [
       "default-src 'self'",
-      // Removed 'unsafe-eval' - major security improvement
-      // unsafe-inline kept for Next.js hydration scripts (can be improved with nonces)
       "script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com data:",
+      "img-src 'self' data: https: blob:",
+      "connect-src 'self' https://*.supabase.co https://*.vercel.app wss://*.supabase.co https://ipapi.co",
+      "frame-src 'self' https://vercel.live",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+    ];
+    
+    // CSP for docs routes (requires unsafe-eval for MDXRemote)
+    const docsCspDirectives = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com data:",
       "img-src 'self' data: https: blob:",
@@ -39,36 +52,44 @@ const nextConfig = {
     
     // Only add upgrade-insecure-requests in production
     if (isProduction) {
-      cspDirectives.push("upgrade-insecure-requests");
+      baseCspDirectives.push("upgrade-insecure-requests");
+      docsCspDirectives.push("upgrade-insecure-requests");
     }
     
+    const commonHeaders = [
+      {
+        key: 'X-Content-Type-Options',
+        value: 'nosniff',
+      },
+      {
+        key: 'X-Frame-Options',
+        value: 'DENY',
+      },
+      {
+        key: 'X-XSS-Protection',
+        value: '1; mode=block',
+      },
+      {
+        key: 'Referrer-Policy',
+        value: 'strict-origin-when-cross-origin',
+      },
+      {
+        key: 'Permissions-Policy',
+        value: 'geolocation=(self), microphone=(), camera=()',
+      },
+    ];
+    
     return [
+      // Note: CSP headers are handled by proxy.ts middleware
+      // This allows dynamic route detection and proper CSP for docs routes
+      // Base CSP for all routes (middleware will override for docs routes)
       {
         source: '/:path*',
         headers: [
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'geolocation=(self), microphone=(), camera=()',
-          },
+          ...commonHeaders,
           {
             key: 'Content-Security-Policy',
-            value: cspDirectives.join('; '),
+            value: baseCspDirectives.join('; '),
           },
         ],
       },

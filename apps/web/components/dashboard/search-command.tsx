@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { CommandMenu } from '@/components/alignui/overlays/command-menu';
 import { CompactButton } from '@/components/alignui/actions/compact-button';
 import { Kbd } from '@/components/alignui/actions/kbd';
+import { logger } from "@/lib/logger";
 
 // Icon mapping von Icons-Namen zu Remix Icons
 const iconMap: Record<string, React.ElementType> = {
@@ -282,7 +283,7 @@ class TranslationErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error) {
-    console.warn("Translation context error caught:", error.message);
+    logger.warn("Translation context error caught:", error.message);
   }
 
   render() {

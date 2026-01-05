@@ -40,6 +40,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { UserAvatar } from "@/components/shared/user-avatar";
 
 import { User } from "./columns";
+import { logger } from "@/lib/logger";
 
 interface UserActionsProps {
   user: User;
@@ -96,7 +97,7 @@ export function UserActions({
       // Refresh the page data
       router.refresh();
     } catch (err) {
-      console.error("Error banning/unbanning user:", err);
+      logger.error("Error banning/unbanning user:", err);
       setError(err instanceof Error ? err.message : "Unknown error occurred");
 
       toast({
@@ -132,7 +133,7 @@ export function UserActions({
       // Refresh the page data
       router.refresh();
     } catch (err) {
-      console.error("Error deleting user:", err);
+      logger.error("Error deleting user:", err);
       setError(err instanceof Error ? err.message : "Unknown error occurred");
 
       toast({
@@ -171,7 +172,7 @@ export function UserActions({
       // Refresh the page data
       router.refresh();
     } catch (err) {
-      console.error("Error toggling admin status:", err);
+      logger.error("Error toggling admin status:", err);
       setError(err instanceof Error ? err.message : "Unknown error occurred");
 
       toast({

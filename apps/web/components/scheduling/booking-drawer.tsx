@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
+import { formatDurationHours } from "@/lib/utils";
 import {
   Sheet,
   SheetContent,
@@ -127,10 +128,10 @@ export function BookingDrawer({ bookingId, open, onOpenChange }: BookingDrawerPr
 
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground flex items-center gap-2">
-                    <Clock className="h-3 w-3" />
-                    {t("date") || "Datum"}
+                    <Clock className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                    <span className="text-blue-600 dark:text-blue-400 font-medium">{t("eventDate") || t("date") || "Event Datum"}</span>
                   </p>
-                  <p className="text-sm font-medium">
+                  <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
                     {format(startDate, "EEEE, d. MMMM yyyy", { locale: dateLocale })}
                   </p>
                 </div>
@@ -142,7 +143,7 @@ export function BookingDrawer({ bookingId, open, onOpenChange }: BookingDrawerPr
                     <p className="text-xs text-muted-foreground">
                       {t("startTime") || "Startzeit"}
                     </p>
-                    <p className="text-sm font-medium">
+                    <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
                       {format(startDate, "HH:mm", { locale: dateLocale })}
                     </p>
                   </div>
@@ -150,7 +151,7 @@ export function BookingDrawer({ bookingId, open, onOpenChange }: BookingDrawerPr
                     <p className="text-xs text-muted-foreground">
                       {t("endTime") || "Endzeit"}
                     </p>
-                    <p className="text-sm font-medium">
+                    <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
                       {format(endDate, "HH:mm", { locale: dateLocale })}
                     </p>
                   </div>
@@ -164,7 +165,22 @@ export function BookingDrawer({ bookingId, open, onOpenChange }: BookingDrawerPr
                         {t("duration") || "Dauer"}
                       </p>
                       <p className="text-sm font-medium">
-                        {booking.duration_hours} {t("hours") || "Stunden"}
+                        {formatDurationHours(booking.duration_hours, locale)}
+                      </p>
+                    </div>
+                  </>
+                )}
+
+                {booking.created_at && (
+                  <>
+                    <Separator />
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground flex items-center gap-2">
+                        <Calendar className="h-3 w-3 text-green-600 dark:text-green-400" />
+                        <span className="text-green-600 dark:text-green-400 font-medium">{t("bookedAt") || "Gebucht am"}</span>
+                      </p>
+                      <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                        {format(new Date(booking.created_at), "EEEE, d. MMMM yyyy 'um' HH:mm", { locale: dateLocale })}
                       </p>
                     </div>
                   </>

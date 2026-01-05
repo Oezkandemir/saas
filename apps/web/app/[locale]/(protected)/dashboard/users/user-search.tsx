@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Users, Crown, Search } from 'lucide-react';
 import { searchUsers, getUserStats, type UserSearchResult } from '@/actions/user-search-actions';
 import { useRouter } from 'next/navigation';
+import { logger } from "@/lib/logger";
 
 export function UserSearch() {
   const router = useRouter();
@@ -39,7 +40,7 @@ export function UserSearch() {
         setFilteredUsers(usersResult.users);
         setStats(statsData);
       } catch (error) {
-        console.error('Failed to load users:', error);
+        logger.error('Failed to load users:', error);
       } finally {
         setLoading(false);
       }

@@ -3,6 +3,7 @@
 import { createContext, ReactNode, useContext, useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "@/components/supabase-provider";
+import { logger } from "@/lib/logger";
 
 type NotificationsContextType = {
   refetchAll: () => Promise<void>;
@@ -45,7 +46,7 @@ export function NotificationsProvider({
         window.dispatchEvent(new CustomEvent("notifications-changed"));
       }
     } catch (error) {
-      console.warn("Error clearing cache:", error);
+      logger.warn("Error clearing cache:", error);
     }
   };
 
@@ -64,7 +65,7 @@ export function NotificationsProvider({
         });
       }
     } catch (error) {
-      console.warn("Error refetching notifications:", error);
+      logger.warn("Error refetching notifications:", error);
     }
   };
 

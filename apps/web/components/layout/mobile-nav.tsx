@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { DocsSidebarNav } from "@/components/docs/sidebar-nav";
 import { Icons } from "@/components/shared/icons";
 import { useSupabase } from "@/components/supabase-provider";
+import { logger } from "@/lib/logger";
 
 
 export function NavMobile() {
@@ -49,7 +50,7 @@ export function NavMobile() {
           }
         }
       } catch (err) {
-        console.error("Error fetching user role:", err);
+        logger.error("Error fetching user role:", err);
         setUserRole("USER");
       }
     }

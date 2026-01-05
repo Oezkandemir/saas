@@ -22,6 +22,7 @@ import { deleteDocumentTemplate } from "@/actions/document-templates-actions";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { logger } from "@/lib/logger";
 
 interface DocumentTemplatesListProps {
   templates: DocumentTemplate[];
@@ -42,7 +43,7 @@ export function DocumentTemplatesList({
       await deleteDocumentTemplate(id);
       router.refresh();
     } catch (error) {
-      console.error("Error deleting template:", error);
+      logger.error("Error deleting template:", error);
       toast.error(t("deleteError"));
     } finally {
       setDeletingId(null);

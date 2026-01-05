@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/alignui/overlays/dialog";
+import { logger } from "@/lib/logger";
 
 interface PDFPreviewProps {
   documentId: string;
@@ -91,7 +92,7 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
                            (response.status >= 500 && retryCount < 2);
         
         if (isRetryable && retryCount < 2) {
-          console.log(`PDF generation failed, retrying... (${retryCount + 1}/2)`);
+          logger.debug(`PDF generation failed, retrying... (${retryCount + 1}/2)`);
           await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
           return fetchPDFUrl(retryCount + 1);
         }
@@ -119,7 +120,7 @@ export function PDFPreview({ documentId, pdfUrl, onDownload, showPreviewByDefaul
         }
       }
       
-      console.error("PDF generation error:", err);
+      logger.error("PDF generation error:", err);
       setError(errorMessage);
     } finally {
       setLoading(false);

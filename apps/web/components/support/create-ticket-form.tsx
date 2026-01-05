@@ -19,6 +19,7 @@ import { Input } from '@/components/alignui/forms/input';
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
+import { logger } from "@/lib/logger";
 
 export function CreateTicketForm() {
   const router = useRouter();
@@ -46,7 +47,7 @@ export function CreateTicketForm() {
         router.push("/dashboard/support");
       }
     } catch (err) {
-      console.error("Error creating ticket:", err);
+      logger.error("Error creating ticket:", err);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);

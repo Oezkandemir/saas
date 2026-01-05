@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from '@/components/alignui/actions/button';
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Icons } from "@/components/shared/icons";
+import { logger } from "@/lib/logger";
 
 // Direct link to the test customer portal - keeping it in component for easy testing
 const STRIPE_TEST_PORTAL_URL =
@@ -40,7 +41,7 @@ export function CustomerPortalButton({
         // Note: The above action will redirect, so the code below will never execute
         // unless there's an error and the action returns instead of redirecting
       } catch (error) {
-        console.error("Error opening customer portal:", error);
+        logger.error("Error opening customer portal:", error);
         toast.error(
           "Failed to open customer portal. Please try again or contact support.",
         );

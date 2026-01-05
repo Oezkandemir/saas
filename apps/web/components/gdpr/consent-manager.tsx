@@ -32,6 +32,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { logger } from "@/lib/logger";
 
 export function ConsentManager() {
   const t = useTranslations("GDPR");
@@ -74,7 +75,7 @@ export function ConsentManager() {
         setConsents(result.consents);
       }
     } catch (error) {
-      console.error("Error loading consents:", error);
+      logger.error("Error loading consents:", error);
     } finally {
       setIsLoading(false);
     }
@@ -119,7 +120,7 @@ export function ConsentManager() {
         setConsentHistory(result.history);
       }
     } catch (error) {
-      console.error("Error loading consent history:", error);
+      logger.error("Error loading consent history:", error);
     }
   };
 

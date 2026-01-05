@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { CheckCircle2, XCircle, Calendar, CreditCard, AlertTriangle } from "lucide-react";
 import { pricingData } from "@/config/subscriptions";
+import { logger } from "@/lib/logger";
 
 interface ManageSubscriptionClientProps {
   userSubscriptionPlan: UserSubscriptionPlan;
@@ -80,7 +81,7 @@ export function ManageSubscriptionClient({
         });
       }
     } catch (error) {
-      console.error("Error canceling subscription:", error);
+      logger.error("Error canceling subscription:", error);
       toast.error("An error occurred while canceling subscription");
     } finally {
       setIsLoading(false);
@@ -104,7 +105,7 @@ export function ManageSubscriptionClient({
         });
       }
     } catch (error) {
-      console.error("Error reactivating subscription:", error);
+      logger.error("Error reactivating subscription:", error);
       toast.error("An error occurred while reactivating subscription");
     } finally {
       setIsLoading(false);
@@ -166,7 +167,7 @@ export function ManageSubscriptionClient({
         });
       }
     } catch (error) {
-      console.error("Error updating plan:", error);
+      logger.error("Error updating plan:", error);
       toast.error("An error occurred while updating plan");
     } finally {
       setIsLoading(false);

@@ -15,6 +15,7 @@ import {
 } from '@/components/alignui/data-display/card';
 import { Icons } from "@/components/shared/icons";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { logger } from "@/lib/logger";
 
 export function ConfigureStripePortalButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +34,7 @@ export function ConfigureStripePortalButton() {
         toast.error(result.message);
       }
     } catch (error) {
-      console.error("Error configuring Stripe portal:", error);
+      logger.error("Error configuring Stripe portal:", error);
       toast.error("An error occurred while configuring the Stripe portal");
     } finally {
       setIsLoading(false);

@@ -165,7 +165,7 @@ export default async function CustomersPage() {
               </CardContent>
               <CardFooter>
                 <a
-                  href="#"
+                  href="/pricing"
                   className="text-sm text-primary underline-offset-4 hover:underline"
                 >
                   Read full case study →
@@ -185,7 +185,7 @@ export default async function CustomersPage() {
           difference.
         </p>
         <a
-          href="#"
+          href="/pricing"
           className="inline-flex items-center justify-center rounded-md bg-primary px-8 py-3 text-sm font-medium text-primary-foreground"
         >
           Get Started

@@ -5,6 +5,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import "server-only";
 
 import { type Database } from "./supabase";
+import { logger } from "@/lib/logger";
 
 // Check if environment variables are set
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -13,7 +14,7 @@ const supabaseJwtSecret = process.env.SUPABASE_JWT_SECRET;
 
 // Log environment variable status for debugging
 if (!supabaseUrl || !supabaseAnonKey || !supabaseJwtSecret) {
-  console.error("Supabase server environment variables missing:", {
+  logger.error("Supabase server environment variables missing:", {
     url: supabaseUrl ? "Set" : "Missing",
     anonKey: supabaseAnonKey ? "Set" : "Missing",
     jwtSecret: supabaseJwtSecret ? "Set" : "Missing",
@@ -45,7 +46,7 @@ export const createSupabaseServerClient = (
     );
     return supabaseClient;
   } catch (error) {
-    console.error("Error creating Supabase server client:", error);
+    logger.error("Error creating Supabase server client:", error);
     throw error;
   }
 };
@@ -57,7 +58,7 @@ export const getSupabaseServer = async () => {
     const client = createSupabaseServerClient(cookieStore);
     return client;
   } catch (error) {
-    console.error("Error getting Supabase server instance:", error);
+    logger.error("Error getting Supabase server instance:", error);
     // Don't throw immediately - let the calling code handle it
     // This prevents the spawn EBADF error from crashing the entire request
     const cookieStore = await cookies();
@@ -82,7 +83,7 @@ export const getSupabaseStatic = () => {
     );
     return supabaseClient;
   } catch (error) {
-    console.error("Error creating static Supabase client:", error);
+    logger.error("Error creating static Supabase client:", error);
     throw error;
   }
 };

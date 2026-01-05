@@ -2,9 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
+import { applyAPIMiddleware } from "@/lib/api-middleware";
 
 // POST handler to increment page views
 export async function POST(request: NextRequest) {
+  // SECURITY: Apply rate limiting
+  const middleware = await applyAPIMiddleware(request, {
+    rateLimit: {
+      endpoint: "/api/views",
+      useUserBasedLimit: false,
+    },
+  });
+
+  if (!middleware.valid) {
+    return middleware.response;
+  }
   try {
     const { slug } = await request.json();
 
@@ -32,6 +44,17 @@ export async function POST(request: NextRequest) {
 
 // GET handler to fetch page views for a specific slug
 export async function GET(request: NextRequest) {
+  // SECURITY: Apply rate limiting
+  const middleware = await applyAPIMiddleware(request, {
+    rateLimit: {
+      endpoint: "/api/views",
+      useUserBasedLimit: false,
+    },
+  });
+
+  if (!middleware.valid) {
+    return middleware.response;
+  }
   try {
     // Get the slug from the URL params
     const url = new URL(request.url);

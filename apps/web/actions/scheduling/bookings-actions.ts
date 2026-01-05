@@ -732,9 +732,11 @@ export async function createBooking(
     const startAt = new Date(validatedData.start_at);
     const endAt = new Date(startAt.getTime() + eventType.duration_minutes * 60 * 1000);
     
-    // Calculate duration in hours
+    // Calculate duration in hours (rounded to nearest half hour)
     const durationMs = endAt.getTime() - startAt.getTime();
-    const durationHours = parseFloat((durationMs / (1000 * 60 * 60)).toFixed(2));
+    const durationHoursDecimal = durationMs / (1000 * 60 * 60);
+    // Round to nearest half hour (0, 0.5, 1, 1.5, 2, etc.)
+    const durationHours = Math.round(durationHoursDecimal * 2) / 2;
     
     // Calculate price (if event type has price)
     // Price is always per person, regardless of duration
@@ -1047,6 +1049,7 @@ export async function cancelBookingAsHost(
 
 /**
  * Get all bookings for the current user
+ * Admins can see all bookings, regular users only see their own bookings
  */
 export async function listBookings(filters?: {
   status?: "scheduled" | "canceled";
@@ -1062,7 +1065,9 @@ export async function listBookings(filters?: {
   }
 
   try {
-    const supabase = await createClient();
+    // Admins should see all bookings, so use admin client to bypass RLS
+    const isAdmin = user.role === "ADMIN";
+    const supabase = isAdmin ? supabaseAdmin : await createClient();
 
     let query = supabase
       .from("bookings")
@@ -1070,8 +1075,12 @@ export async function listBookings(filters?: {
         *,
         event_type:event_types(id, title, slug, duration_minutes, price_amount, price_currency)
       `)
-      .eq("host_user_id", user.id)
       .order("start_at", { ascending: false });
+
+    // Only filter by host_user_id if user is not an admin
+    if (!isAdmin) {
+      query = query.eq("host_user_id", user.id);
+    }
 
     if (filters?.status) {
       query = query.eq("status", filters.status);
@@ -1202,8 +1211,10 @@ export async function getBookingByToken(
 export async function getBookingStatistics(): Promise<ActionResult<{
   todayBookings: number;
   yesterdayBookings: number;
+  totalBookings: number;
   todayRevenue: number;
   yesterdayRevenue: number;
+  totalRevenue: number;
   currency: string;
 }>> {
   const user = await getCurrentUser();
@@ -1216,50 +1227,133 @@ export async function getBookingStatistics(): Promise<ActionResult<{
   }
 
   try {
-    const supabase = await createClient();
+    // Admins should see all statistics, so use admin client to bypass RLS
+    const isAdmin = user.role === "ADMIN";
+    const supabase = isAdmin ? supabaseAdmin : await createClient();
 
     const now = new Date();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-    const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
-    const yesterdayStart = new Date(todayStart);
-    yesterdayStart.setDate(yesterdayStart.getDate() - 1);
-    const yesterdayEnd = new Date(todayEnd);
-    yesterdayEnd.setDate(yesterdayEnd.getDate() - 1);
+    
+    // Get today's date in YYYY-MM-DD format (local timezone)
+    const todayYear = now.getFullYear();
+    const todayMonth = String(now.getMonth() + 1).padStart(2, '0');
+    const todayDay = String(now.getDate()).padStart(2, '0');
+    const todayDateStr = `${todayYear}-${todayMonth}-${todayDay}`;
+    
+    // Create start and end of today in local timezone
+    const todayStartLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+    const todayEndLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+    
+    // Convert to UTC for database query (database stores in UTC)
+    // getTimezoneOffset() returns offset in minutes, positive for timezones behind UTC
+    const timezoneOffsetMinutes = now.getTimezoneOffset();
+    const timezoneOffsetMs = timezoneOffsetMinutes * 60 * 1000;
+    
+    // Convert local time to UTC: subtract the offset to get UTC time
+    const todayStartUTC = new Date(todayStartLocal.getTime() - timezoneOffsetMs);
+    const todayEndUTC = new Date(todayEndLocal.getTime() - timezoneOffsetMs);
+    
+    // For yesterday, subtract one day from local time first, then convert
+    const yesterdayStartLocal = new Date(todayStartLocal);
+    yesterdayStartLocal.setDate(yesterdayStartLocal.getDate() - 1);
+    const yesterdayEndLocal = new Date(todayEndLocal);
+    yesterdayEndLocal.setDate(yesterdayEndLocal.getDate() - 1);
+    
+    const yesterdayStartUTC = new Date(yesterdayStartLocal.getTime() - timezoneOffsetMs);
+    const yesterdayEndUTC = new Date(yesterdayEndLocal.getTime() - timezoneOffsetMs);
 
-    // Get today's bookings
-    const { data: todayBookingsData } = await supabase
+    // Simplified approach: Load ALL scheduled bookings and filter client-side
+    // This ensures admins see everything and avoids timezone issues
+    let allBookingsQuery = supabase
       .from("bookings")
-      .select("id, price_amount, price_currency, status")
-      .eq("host_user_id", user.id)
-      .eq("status", "scheduled")
-      .gte("start_at", todayStart.toISOString())
-      .lte("start_at", todayEnd.toISOString());
+      .select("id, price_amount, price_currency, status, start_at, created_at")
+      .eq("status", "scheduled");
 
-    // Get yesterday's bookings
-    const { data: yesterdayBookingsData } = await supabase
-      .from("bookings")
-      .select("id, price_amount, price_currency, status")
-      .eq("host_user_id", user.id)
-      .eq("status", "scheduled")
-      .gte("start_at", yesterdayStart.toISOString())
-      .lte("start_at", yesterdayEnd.toISOString());
+    // Only filter by host_user_id if user is not an admin
+    if (!isAdmin) {
+      allBookingsQuery = allBookingsQuery.eq("host_user_id", user.id);
+    }
 
-    const todayBookings = todayBookingsData?.length || 0;
-    const yesterdayBookings = yesterdayBookingsData?.length || 0;
+    // Get all scheduled bookings
+    const { data: allBookingsDataRaw } = await allBookingsQuery;
+    const allBookingsData = allBookingsDataRaw || [];
+
+    // Filter bookings by local date (client-side) to ensure accuracy
+    // This handles timezone differences between database (UTC) and user's local time
+    const yesterdayDate = new Date(now);
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterdayYear = yesterdayDate.getFullYear();
+    const yesterdayMonth = String(yesterdayDate.getMonth() + 1).padStart(2, '0');
+    const yesterdayDay = String(yesterdayDate.getDate()).padStart(2, '0');
+    const yesterdayDateStr = `${yesterdayYear}-${yesterdayMonth}-${yesterdayDay}`;
+    
+    // Helper function to get local date string from UTC date string
+    // This converts the UTC date from database to user's local date
+    const getLocalDateStr = (utcDateString: string): string => {
+      if (!utcDateString) return "";
+      const date = new Date(utcDateString);
+      // Use local date methods to get the date in user's timezone
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    
+    // Filter today's bookings from all bookings
+    // Show bookings that either:
+    // 1. Take place today (start_at matches today)
+    // 2. Were created today (created_at matches today)
+    const todayBookingsFiltered = allBookingsData.filter((booking: any) => {
+      if (!booking || booking.status !== "scheduled") return false;
+      
+      // Check if booking takes place today
+      const startDateStr = booking.start_at ? getLocalDateStr(booking.start_at) : "";
+      const startsToday = startDateStr === todayDateStr;
+      
+      // Check if booking was created today
+      const createdDateStr = booking.created_at ? getLocalDateStr(booking.created_at) : "";
+      const createdToday = createdDateStr === todayDateStr;
+      
+      // Include if either condition is true
+      return startsToday || createdToday;
+    });
+    
+    // Filter yesterday's bookings from all bookings
+    // Show bookings that either take place yesterday or were created yesterday
+    const yesterdayBookingsFiltered = allBookingsData.filter((booking: any) => {
+      if (!booking || booking.status !== "scheduled") return false;
+      
+      // Check if booking takes place yesterday
+      const startDateStr = booking.start_at ? getLocalDateStr(booking.start_at) : "";
+      const startsYesterday = startDateStr === yesterdayDateStr;
+      
+      // Check if booking was created yesterday
+      const createdDateStr = booking.created_at ? getLocalDateStr(booking.created_at) : "";
+      const createdYesterday = createdDateStr === yesterdayDateStr;
+      
+      // Include if either condition is true
+      return startsYesterday || createdYesterday;
+    });
+
+    const totalBookings = allBookingsData?.length || 0;
+    const todayBookings = todayBookingsFiltered.length;
+    const yesterdayBookings = yesterdayBookingsFiltered.length;
 
     // Calculate revenue
-    const todayRevenue = (todayBookingsData || []).reduce((sum, booking) => {
+    const totalRevenue = (allBookingsData || []).reduce((sum, booking) => {
       return sum + (booking.price_amount || 0);
     }, 0);
 
-    const yesterdayRevenue = (yesterdayBookingsData || []).reduce((sum, booking) => {
+    const todayRevenue = todayBookingsFiltered.reduce((sum: number, booking: any) => {
+      return sum + (booking.price_amount || 0);
+    }, 0);
+
+    const yesterdayRevenue = yesterdayBookingsFiltered.reduce((sum: number, booking: any) => {
       return sum + (booking.price_amount || 0);
     }, 0);
 
     // Get most common currency (default to EUR)
     const currencies = [
-      ...(todayBookingsData || []).map(b => b.price_currency || "EUR"),
-      ...(yesterdayBookingsData || []).map(b => b.price_currency || "EUR"),
+      ...(allBookingsData || []).map(b => b.price_currency || "EUR"),
     ];
     const currency = currencies.length > 0 
       ? currencies.reduce((a, b, _, arr) => 
@@ -1270,8 +1364,10 @@ export async function getBookingStatistics(): Promise<ActionResult<{
     return {
       success: true,
       data: {
+        totalBookings,
         todayBookings,
         yesterdayBookings,
+        totalRevenue: parseFloat(totalRevenue.toFixed(2)),
         todayRevenue: parseFloat(todayRevenue.toFixed(2)),
         yesterdayRevenue: parseFloat(yesterdayRevenue.toFixed(2)),
         currency,
@@ -1466,9 +1562,11 @@ export async function rescheduleBooking(
       }
     }
 
-    // Calculate new duration and price
+    // Calculate new duration and price (rounded to nearest half hour)
     const durationMs = newEndAt.getTime() - newStartAt.getTime();
-    const durationHours = parseFloat((durationMs / (1000 * 60 * 60)).toFixed(2));
+    const durationHoursDecimal = durationMs / (1000 * 60 * 60);
+    // Round to nearest half hour (0, 0.5, 1, 1.5, 2, etc.)
+    const durationHours = Math.round(durationHoursDecimal * 2) / 2;
     
     // Price is always per person, regardless of duration
     let priceAmount: number | null = null;

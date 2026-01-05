@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
+import { applyAPIMiddleware } from "@/lib/api-middleware";
 
 /**
  * Server-side geolocation API route
@@ -6,6 +8,17 @@ import { NextRequest, NextResponse } from "next/server";
  * Fails gracefully with default values if service is unavailable
  */
 export async function GET(request: NextRequest) {
+  // SECURITY: Apply rate limiting
+  const middleware = await applyAPIMiddleware(request, {
+    rateLimit: {
+      endpoint: "/api/analytics/geolocation",
+      useUserBasedLimit: false,
+    },
+  });
+
+  if (!middleware.valid) {
+    return middleware.response;
+  }
   // Default response - return immediately if geolocation fails
   const defaultResponse = {
     country: null,
@@ -73,7 +86,7 @@ export async function GET(request: NextRequest) {
     // Only log unexpected errors, not timeouts or expected failures
     if (error?.name !== "AbortError" && error?.code !== 23) {
       // Log only unexpected errors
-      console.debug("Geolocation API error:", error?.message || error);
+      logger.debug("Geolocation API error:", error?.message || error);
     }
     
     // Return default values on any error

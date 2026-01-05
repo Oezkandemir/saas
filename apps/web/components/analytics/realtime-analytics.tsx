@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/table";
 import { Users, Globe, Monitor, Activity, MapPin } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { logger } from "@/lib/logger";
 
 interface ActiveUser {
   user_id: string | null;
@@ -102,7 +103,7 @@ export function RealtimeAnalytics() {
           setDeviceStats(deviceResult.value.data || []);
         }
       } catch (error) {
-        console.error("Error fetching realtime analytics:", error);
+        logger.error("Error fetching realtime analytics:", error);
       } finally {
         setIsLoading(false);
       }
@@ -150,19 +151,19 @@ export function RealtimeAnalytics() {
                   setPageViews(viewsResult.value.data || []);
                 }
               } catch (error) {
-                console.error("Error refreshing realtime data:", error);
+                logger.error("Error refreshing realtime data:", error);
               }
             },
           )
           .subscribe((status) => {
             if (status === "SUBSCRIBED") {
-              console.debug("Realtime analytics subscribed");
+              logger.debug("Realtime analytics subscribed");
             } else if (status === "CHANNEL_ERROR") {
-              console.warn("Realtime channel error, will retry on next refresh");
+              logger.warn("Realtime channel error, will retry on next refresh");
             }
           });
       } catch (error) {
-        console.error("Error setting up realtime:", error);
+        logger.error("Error setting up realtime:", error);
       }
     };
 

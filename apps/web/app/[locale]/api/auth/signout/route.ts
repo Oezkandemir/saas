@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { logger } from "@/lib/logger";
 
 export async function POST() {
   try {
@@ -32,7 +33,7 @@ export async function POST() {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error during sign out:", error);
+    logger.error("Error during sign out:", error);
     return NextResponse.json(
       { error: "An unexpected error occurred" },
       { status: 500 },

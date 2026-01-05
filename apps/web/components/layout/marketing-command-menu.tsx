@@ -37,7 +37,7 @@ export function MarketingCommandMenu() {
   // Erstelle Menu Items aus Marketing Config
   const menuItems: MarketingCommandMenuItem[] = [
     {
-      title: "Home",
+      title: t("home"),
       href: "/",
       icon: RiHomeLine,
       category: "Navigation",

@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { refreshSubscription } from "@/actions/refresh-subscription";
 import { getUserPlan } from "@/actions/get-user-plan";
 import { toast } from "sonner";
+import { logger } from "@/lib/logger";
 
 /**
  * Automatically refreshes subscription data periodically when user is authenticated
@@ -78,7 +79,7 @@ export function AutoRefreshSubscription() {
       }
     } catch (error) {
       // Silently fail - don't show errors for background refresh
-      console.debug("Auto-refresh subscription check failed:", error);
+      logger.debug("Auto-refresh subscription check failed:", error);
     } finally {
       isRefreshingRef.current = false;
     }

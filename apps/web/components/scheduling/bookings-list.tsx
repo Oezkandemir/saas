@@ -252,19 +252,27 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-4 text-xs flex-wrap">
+                      <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
                         <Clock className="h-3 w-3" />
-                        <span>
-                          {format(startDate, "EEEE, d. MMMM yyyy", { locale: dateLocale })}
+                        <span className="font-medium">
+                          {t("bookings.eventDate") || "Event"}: {format(startDate, "EEEE, d. MMMM yyyy", { locale: dateLocale })}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <span>
+                      <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
+                        <span className="font-medium">
                           {format(startDate, "HH:mm", { locale: dateLocale })} -{" "}
                           {format(endDate, "HH:mm", { locale: dateLocale })}
                         </span>
                       </div>
+                      {booking.created_at && (
+                        <div className="flex items-center gap-1 text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          <span>
+                            {t("bookings.bookedAt") || "Gebucht am"}: {format(new Date(booking.created_at), "d. MMMM yyyy 'um' HH:mm", { locale: dateLocale })}
+                          </span>
+                        </div>
+                      )}
                       {booking.number_of_participants > 1 && (
                         <div className="flex items-center gap-1">
                           <User className="h-3 w-3" />

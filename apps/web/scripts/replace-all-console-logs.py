@@ -97,13 +97,13 @@ def main():
     for pattern in ['**/*.ts', '**/*.tsx']:
         for file_path in base_dir.rglob(pattern):
             # Skip certain directories
-            if any(skip in str(file_path) for skip in ['node_modules', '.next', 'dist', 'build']):
+            if any(skip in str(file_path) for skip in ['node_modules', '.next', 'dist', 'build', '.turbo']):
                 continue
-        
-        files_processed += 1
-        if replace_console_logs(file_path):
-            files_modified += 1
-            print(f"Modified: {file_path.relative_to(base_dir)}")
+            
+            files_processed += 1
+            if replace_console_logs(file_path):
+                files_modified += 1
+                print(f"Modified: {file_path.relative_to(base_dir)}")
     
     print(f"\nProcessed {files_processed} file(s), modified {files_modified} file(s)")
 

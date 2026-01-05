@@ -174,16 +174,14 @@ export function SystemErrors() {
   const criticalErrors = unresolvedErrors.filter((e) => e.errorType === "critical");
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>System-Fehler</CardTitle>
-            <CardDescription>
-              Übersicht über Systemfehler und Ausnahmen
-            </CardDescription>
-          </div>
-          {errors.length > 0 && (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h4 className="text-sm font-medium text-muted-foreground">
+            Fehler-Übersicht
+          </h4>
+        </div>
+        {errors.length > 0 && (
             <AlertDialogRoot>
               <AlertDialogTrigger asChild>
                 <Button
@@ -221,9 +219,8 @@ export function SystemErrors() {
               </AlertDialogContent>
             </AlertDialogRoot>
           )}
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+      </div>
+      <div className="space-y-4">
         {/* Summary */}
         <div className="grid grid-cols-3 gap-4">
           <div className="rounded-lg border p-3">
@@ -340,8 +337,8 @@ export function SystemErrors() {
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 

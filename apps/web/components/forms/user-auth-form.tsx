@@ -22,6 +22,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSupabase } from "@/components/supabase-provider";
 import { checkTwoFactorEnabledByEmail } from "@/actions/two-factor-actions";
 import { TwoFactorLoginForm } from "./two-factor-login-form";
+import { logger } from "@/lib/logger";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   type?: string;
@@ -78,7 +79,7 @@ export function UserAuthForm({
         session.expires_at!,
       ).catch((error) => {
         // Silently fail - session tracking shouldn't block login
-        console.error("Failed to track login session:", error);
+        logger.error("Failed to track login session:", error);
       });
     }
 
@@ -161,7 +162,7 @@ export function UserAuthForm({
               "We've sent you confirmation and welcome emails. Please check your inbox and follow the link to verify your account.",
           });
         } catch (emailError) {
-          console.error("Error with email sending:", emailError);
+          logger.error("Error with email sending:", emailError);
           toast.success("Account created successfully", {
             description:
               "Check your email for a confirmation link. You need to confirm your email before signing in.",
@@ -207,7 +208,7 @@ export function UserAuthForm({
     } catch (error) {
       // Log error (client-side logging)
       if (process.env.NODE_ENV === "development") {
-        console.error("Authentication error:", error);
+        logger.error("Authentication error:", error);
       }
       toast.error("Authentication failed", {
         description:
@@ -246,7 +247,7 @@ export function UserAuthForm({
                 await updateLoginHistoryWith2FA(signInResult.data.session.access_token);
               } catch (error) {
                 // Silently fail - logging shouldn't block login
-                console.error("Failed to update login history:", error);
+                logger.error("Failed to update login history:", error);
               }
 
               // Clear stored password immediately after use

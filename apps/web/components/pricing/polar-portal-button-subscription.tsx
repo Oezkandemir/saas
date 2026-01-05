@@ -10,6 +10,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Icons } from "@/components/shared/icons";
 import { buttonVariants } from '@/components/alignui/actions/button';
 import { cn } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 
 interface PolarPortalButtonWithSubscriptionProps {
   subscriptionId: string;
@@ -57,7 +58,7 @@ export function PolarPortalButtonWithSubscription({
           return;
         }
         
-        console.error("Error opening customer portal:", error);
+        logger.error("Error opening customer portal:", error);
         toast.error(
           "Failed to open customer portal. Please try again or contact support.",
         );

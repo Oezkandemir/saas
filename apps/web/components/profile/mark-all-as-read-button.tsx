@@ -10,6 +10,7 @@ import { Button } from '@/components/alignui/actions/button';
 import { toast } from "sonner";
 import { useNotificationsContext } from "@/components/context/notifications-context";
 import { useSupabase } from "@/components/supabase-provider";
+import { logger } from "@/lib/logger";
 
 export function MarkAllAsReadButton() {
   const [loading, setLoading] = useState(false);
@@ -44,7 +45,7 @@ export function MarkAllAsReadButton() {
       await refetchAll();
       router.refresh();
     } catch (error) {
-      console.error("Error marking all as read:", error);
+      logger.error("Error marking all as read:", error);
       
       // Revert optimistic update on error
       if (userId) {

@@ -2,8 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 import { routing } from "@/i18n/routing";
+import { logger } from "@/lib/logger";
+import { applyAPIMiddleware } from "@/lib/api-middleware";
 
 export async function POST(request: NextRequest) {
+  // SECURITY: Apply rate limiting
+  const middleware = await applyAPIMiddleware(request, {
+    rateLimit: {
+      endpoint: "/api/locale",
+      useUserBasedLimit: false,
+    },
+  });
+
+  if (!middleware.valid) {
+    return middleware.response;
+  }
   try {
     const { locale } = await request.json();
 
@@ -26,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, locale });
   } catch (error) {
-    console.error("Error saving locale preference:", error);
+    logger.error("Error saving locale preference:", error);
     return NextResponse.json(
       { error: "Failed to save locale preference" },
       { status: 500 },

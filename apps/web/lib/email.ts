@@ -10,6 +10,7 @@ import { siteConfig } from "@/config/site";
 import { getServerUserByEmail, getServerUserById } from "./db-admin";
 import { getSupabaseClient } from "./supabase";
 import { logger } from "./logger";
+import { logger } from "@/lib/logger";
 
 export const resend = new Resend(env.RESEND_API_KEY);
 
@@ -144,7 +145,7 @@ export const sendVerificationRequest = async ({
       throw new Error(error?.message);
     }
 
-    // console.log(data)
+    // logger.debug(data)
   } catch (error) {
     throw new Error("Failed to send verification email.");
   }

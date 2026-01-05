@@ -221,7 +221,7 @@ export async function getAllUsers() {
     const { data: users, error } = await supabaseAdmin
       .from("users")
       .select(
-        'id, email, name, role, status, avatar_url, stripe_subscription_id, created_at, updated_at, "emailVerified"',
+        'id, email, name, role, status, avatar_url, polar_subscription_id, created_at, updated_at, "emailVerified"',
       )
       .order("created_at", { ascending: false });
 

@@ -39,6 +39,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 
 import { DeleteNotificationButton } from "./delete-notification-button";
+import { logger } from "@/lib/logger";
 
 interface NotificationsListProps {
   notifications: UserNotification[];
@@ -178,7 +179,7 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
 
       router.refresh();
     } catch (error) {
-      console.error("Error marking notification as read:", error);
+      logger.error("Error marking notification as read:", error);
       toast({
         title: "Fehler",
         description: "Benachrichtigung konnte nicht als gelesen markiert werden",

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { logger } from "@/lib/logger";
 
 export interface CookieConsentData {
   necessary: boolean;
@@ -66,7 +67,7 @@ export async function saveCookieConsent(consent: CookieConsentData) {
     revalidatePath("/");
     return { success: true, message: "Consent saved successfully" };
   } catch (error) {
-    console.error("Error saving cookie consent:", error);
+    logger.error("Error saving cookie consent:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to save consent",
@@ -103,7 +104,7 @@ export async function getCookieConsent() {
 
     return { success: true, data };
   } catch (error) {
-    console.error("Error getting cookie consent:", error);
+    logger.error("Error getting cookie consent:", error);
     return {
       success: false,
       data: null,
@@ -140,7 +141,7 @@ export async function withdrawCookieConsent() {
     revalidatePath("/");
     return { success: true, message: "Consent withdrawn successfully" };
   } catch (error) {
-    console.error("Error withdrawing cookie consent:", error);
+    logger.error("Error withdrawing cookie consent:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to withdraw consent",

@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
 
 // ============================================
@@ -476,13 +477,21 @@ export async function getEventTypes(): Promise<ActionResult<EventType[]>> {
   }
 
   try {
-    const supabase = await createClient();
+    // Admins should see all event types, so use admin client to bypass RLS
+    const isAdmin = user.role === "ADMIN";
+    const supabase = isAdmin ? supabaseAdmin : await createClient();
 
-    const { data, error } = await supabase
+    let query = supabase
       .from("event_types")
       .select("*")
-      .eq("owner_user_id", user.id)
       .order("created_at", { ascending: false });
+
+    // Only filter by owner_user_id if user is not an admin
+    if (!isAdmin) {
+      query = query.eq("owner_user_id", user.id);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       logger.error("Error fetching event types", error);
@@ -521,14 +530,21 @@ export async function getEventType(
   }
 
   try {
-    const supabase = await createClient();
+    // Admins should see all event types, so use admin client to bypass RLS
+    const isAdmin = user.role === "ADMIN";
+    const supabase = isAdmin ? supabaseAdmin : await createClient();
 
-    const { data, error } = await supabase
+    let query = supabase
       .from("event_types")
       .select("*")
-      .eq("id", id)
-      .eq("owner_user_id", user.id)
-      .single();
+      .eq("id", id);
+
+    // Only filter by owner_user_id if user is not an admin
+    if (!isAdmin) {
+      query = query.eq("owner_user_id", user.id);
+    }
+
+    const { data, error } = await query.single();
 
     if (error) {
       logger.error("Error fetching event type", error);

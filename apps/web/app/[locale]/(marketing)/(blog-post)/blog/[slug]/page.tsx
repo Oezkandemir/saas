@@ -27,6 +27,7 @@ import Author from "@/components/content/author";
 import { BlurImage } from "@/components/shared/blur-image";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { DashboardTableOfContents } from "@/components/shared/toc";
+import { logger } from "@/lib/logger";
 
 interface PostPageProps {
   params: Promise<{
@@ -112,7 +113,7 @@ export default async function PostPage({ params }: PostPageProps) {
       },
     });
   } catch (error) {
-    console.error("Error serializing MDX:", error);
+    logger.error("Error serializing MDX:", error);
     // If serialization fails, fall back to contentlayer's version
     mdxResult = {
       compiledSource: post.body.code || "",

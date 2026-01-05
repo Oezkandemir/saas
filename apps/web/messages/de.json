@@ -21,7 +21,8 @@
     "blog": "Blog",
     "kurse": "Kurse",
     "documentation": "Dokumentation",
-    "guides": "Anleitungen"
+    "guides": "Anleitungen",
+    "notifications": "Benachrichtigungen"
   },
   "Common": {
     "imageUnavailable": "Bild nicht verfügbar",
@@ -32,6 +33,11 @@
   },
   "UserNav": {
     "admin": "Admin",
+    "adminPanel": "Admin-Panel",
+    "account": "Konto",
+    "profile": "Profil",
+    "company": "Firma",
+    "myCompany": "Meine Firma",
     "billing": "Abrechnung",
     "settings": "Einstellungen",
     "logout": "Abmelden",
@@ -103,7 +109,13 @@
     "quickActions": {
       "title": "Schnellzugriff",
       "scheduling": "Terminplanung",
-      "schedulingDescription": "Event Types und Buchungen verwalten"
+      "schedulingDescription": "Event Types und Buchungen verwalten",
+      "newCustomer": "Neuer Kunde",
+      "newCustomerDescription": "Kunden hinzufügen und verwalten",
+      "newDocument": "Neues Dokument",
+      "newDocumentDescription": "Angebot oder Rechnung erstellen",
+      "newQrCode": "Neuer QR-Code",
+      "newQrCodeDescription": "Dynamischen QR-Code erstellen"
     },
     "overview": {
       "title": "Dokumente Übersicht",
@@ -647,6 +659,10 @@
       "description": "Abonnement-Pläne, Limits und Features verwalten",
       "heading": "Plan-Verwaltung",
       "subheading": "Abonnement-Pläne verwalten, Statistiken anzeigen und Limits konfigurieren",
+      "overview": {
+        "activePlans": "Aktive Pläne",
+        "availablePlans": "Alle Pläne"
+      },
       "stats": {
         "totalMRR": "Gesamt MRR",
         "totalARR": "Gesamt ARR",
@@ -708,6 +724,7 @@
       "webhooks": "Webhooks",
       "emails": "E-Mails",
       "firmenprofile": "Firmenprofile",
+      "company_profiles": "Firmenprofile",
       "system": "System"
     }
   },
@@ -2273,10 +2290,16 @@
       "eventTypesDescription": "Aktivieren oder deaktivieren Sie Event Types mit einem Klick",
       "upcomingBookingsDescription": "Ihre nächsten Termine",
       "statistics": {
+        "totalBookings": "Gesamt Buchungen",
         "todayBookings": "Heutige Buchungen",
         "yesterdayBookings": "Gestern Buchungen",
-        "todayRevenue": "Heutiger Umsatz"
+        "totalRevenue": "Gesamt Umsatz",
+        "todayRevenue": "Heutiger Umsatz",
+        "yesterdayRevenue": "Umsatz Gestern"
       }
+    },
+    "tabs": {
+      "dashboard": "Dashboard"
     },
     "error": "Fehler",
     "eventTypes": {
@@ -2341,10 +2364,33 @@
         "pricePlaceholder": "0.00",
         "priceDescription": "Preis pro Person (wird mit der Anzahl der Teilnehmer multipliziert)",
         "currency": "Währung",
-        "selectCurrency": "Währung auswählen"
+        "selectCurrency": "Währung auswählen",
+        "embed": "Einbettungscode",
+        "embedDescription": "Betten Sie diesen Event Type auf Ihrer Website ein - ohne iframe-Probleme",
+        "embedType": "Einbettungstyp",
+        "buttonWidget": "Button Widget",
+        "scriptWidget": "JavaScript Widget",
+        "directLink": "Direkter Link",
+        "buttonWidgetDescription": "Einfacher HTML-Button mit Link",
+        "scriptWidgetDescription": "JavaScript Widget öffnet Modal/Popup",
+        "directLinkDescription": "Einfacher Link zur Buchungsseite",
+        "scriptWidgetPreview": "Das JavaScript Widget wird einen Button rendern, der beim Klick ein Modal mit der Buchungsseite öffnet.",
+        "embedCode": "Einbettungscode",
+        "embedCopied": "Einbettungscode kopiert",
+        "embedCopyError": "Fehler beim Kopieren",
+        "copied": "Kopiert",
+        "copy": "Kopieren",
+        "embedInstructions": "Kopieren Sie diesen Code und fügen Sie ihn in das HTML Ihrer Website ein",
+        "preview": "Vorschau",
+        "bookButton": "Termin buchen",
+        "bookLink": "Termin buchen"
       },
       "detail": {
+        "title": "Event Type Details",
         "description": "Event Type Details anzeigen und verwalten",
+        "loading": "Lädt...",
+        "error": "Fehler beim Laden",
+        "errorDescription": "Der Event Type konnte nicht geladen werden. Bitte versuchen Sie es erneut.",
         "edit": "Bearbeiten",
         "stats": {
           "totalBookings": "Gesamt Buchungen",
@@ -2355,6 +2401,7 @@
         "tabs": {
           "overview": "Übersicht",
           "overviewShort": "Info",
+          "edit": "Bearbeiten",
           "bookings": "Buchungen",
           "bookingsShort": "Buch",
           "settings": "Einstellungen",
@@ -2369,7 +2416,8 @@
           "active": "Aktiv",
           "inactive": "Inaktiv",
           "description": "Beschreibung",
-          "location": "Ort"
+          "location": "Ort",
+          "price": "Preis"
         },
         "availability": {
           "title": "Verfügbarkeitseinstellungen",
@@ -2441,6 +2489,8 @@
       "title": "Buchungen",
       "description": "Verwalten Sie alle Ihre Buchungen",
       "upcoming": "Anstehende Buchungen",
+      "bookedAt": "Gebucht am",
+      "eventDate": "Event Datum",
       "viewAll": "Alle anzeigen",
       "empty": "Keine anstehenden Buchungen",
       "invitee": "Teilnehmer",
@@ -2465,6 +2515,8 @@
         "bookingInfo": "Buchungsinformationen",
         "eventType": "Event Type",
         "date": "Datum",
+        "eventDate": "Event Datum",
+        "bookedAt": "Gebucht am",
         "startTime": "Startzeit",
         "endTime": "Endzeit",
         "duration": "Dauer",
@@ -2524,6 +2576,7 @@
       }
     },
     "booking": {
+      "back": "Zurück",
       "with": "mit",
       "minutes": "Minuten",
       "hours": "Std",

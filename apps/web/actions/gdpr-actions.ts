@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { logger } from "@/lib/logger";
 
 /**
  * Export all user data as JSON (GDPR Art. 15 - Right to Access)
@@ -107,7 +108,7 @@ export async function exportUserData() {
       filename: `cenety-data-export-${user.id}-${Date.now()}.json`,
     };
   } catch (error) {
-    console.error("Error exporting user data:", error);
+    logger.error("Error exporting user data:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to export data",
@@ -167,7 +168,7 @@ export async function exportUserDataCSV() {
       filename: `cenety-data-export-${userData.user.id}-${Date.now()}.zip`,
     };
   } catch (error) {
-    console.error("Error exporting user data as CSV:", error);
+    logger.error("Error exporting user data as CSV:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to export data as CSV",
@@ -296,7 +297,7 @@ export async function deleteUserAccount(confirmation: string) {
     const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id);
     
     if (deleteError) {
-      console.error("Error deleting auth user:", deleteError);
+      logger.error("Error deleting auth user:", deleteError);
       // Continue even if auth deletion fails - data is already deleted
     }
 
@@ -311,7 +312,7 @@ export async function deleteUserAccount(confirmation: string) {
       anonymized: false,
     };
   } catch (error) {
-    console.error("Error deleting user account:", error);
+    logger.error("Error deleting user account:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to delete account",
@@ -416,7 +417,7 @@ export async function requestAccountDeletion() {
       message: "Account deletion requested. Please check your email for confirmation.",
     };
   } catch (error) {
-    console.error("Error requesting account deletion:", error);
+    logger.error("Error requesting account deletion:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to request deletion",

@@ -163,36 +163,33 @@ export function SystemStatus() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>System Status</CardTitle>
-            <CardDescription>
-              Übersicht über den aktuellen Systemstatus
-            </CardDescription>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-          >
-            {isRefreshing ? (
-              <>
-                <Loader2 className="mr-2 size-4 animate-spin" />
-                Aktualisieren...
-              </>
-            ) : (
-              <>
-                <RefreshCw className="mr-2 size-4" />
-                Aktualisieren
-              </>
-            )}
-          </Button>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h4 className="text-sm font-medium text-muted-foreground">
+            System-Status Übersicht
+          </h4>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleRefresh}
+          disabled={isRefreshing}
+        >
+          {isRefreshing ? (
+            <>
+              <Loader2 className="mr-2 size-4 animate-spin" />
+              Aktualisieren...
+            </>
+          ) : (
+            <>
+              <RefreshCw className="mr-2 size-4" />
+              Aktualisieren
+            </>
+          )}
+        </Button>
+      </div>
+      <div className="space-y-4">
         {/* Overall Status */}
         <div className="flex items-center justify-between rounded-lg border p-4">
           <div className="flex items-center gap-3">
@@ -249,8 +246,8 @@ export function SystemStatus() {
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 

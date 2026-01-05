@@ -115,6 +115,80 @@ export function getURL() {
 /**
  * Format a date to a readable string
  */
+/**
+ * Format duration in minutes to a human-readable string
+ * Rounds to nearest half hour (0, 0.5, 1, 1.5, 2, etc.)
+ * Examples: 180 min -> "3 Stunden", 90 min -> "1.5 Stunden", 30 min -> "0.5 Stunden"
+ */
+export function formatDuration(minutes: number, locale: string = "de"): string {
+  const hours = minutes / 60;
+  // Round to nearest half hour
+  const roundedHours = Math.round(hours * 2) / 2;
+  
+  if (roundedHours === 0) {
+    return locale === "de" ? "0 Stunden" : "0 hours";
+  }
+  
+  // Check if it's a whole number or half hour
+  if (roundedHours % 1 === 0) {
+    // Whole hours
+    const hoursText = locale === "de" 
+      ? roundedHours === 1 ? "Stunde" : "Stunden"
+      : roundedHours === 1 ? "hour" : "hours";
+    return `${roundedHours} ${hoursText}`;
+  } else {
+    // Half hours - format as "X.5 Stunden" or "X Stunden 30 Minuten"
+    const wholeHours = Math.floor(roundedHours);
+    if (locale === "de") {
+      if (wholeHours === 0) {
+        return "30 Minuten";
+      }
+      return `${wholeHours}.5 Stunden`;
+    } else {
+      if (wholeHours === 0) {
+        return "30 minutes";
+      }
+      return `${wholeHours}.5 hours`;
+    }
+  }
+}
+
+/**
+ * Format duration hours (decimal) to a human-readable string
+ * Rounds to nearest half hour
+ */
+export function formatDurationHours(hours: number, locale: string = "de"): string {
+  // Round to nearest half hour
+  const roundedHours = Math.round(hours * 2) / 2;
+  
+  if (roundedHours === 0) {
+    return locale === "de" ? "0 Stunden" : "0 hours";
+  }
+  
+  // Check if it's a whole number or half hour
+  if (roundedHours % 1 === 0) {
+    // Whole hours
+    const hoursText = locale === "de" 
+      ? roundedHours === 1 ? "Stunde" : "Stunden"
+      : roundedHours === 1 ? "hour" : "hours";
+    return `${roundedHours} ${hoursText}`;
+  } else {
+    // Half hours
+    const wholeHours = Math.floor(roundedHours);
+    if (locale === "de") {
+      if (wholeHours === 0) {
+        return "30 Minuten";
+      }
+      return `${wholeHours}.5 Stunden`;
+    } else {
+      if (wholeHours === 0) {
+        return "30 minutes";
+      }
+      return `${wholeHours}.5 hours`;
+    }
+  }
+}
+
 export function formatDate(input: string | number | Date): string {
   const date = new Date(input);
   return date.toLocaleDateString("en-US", {

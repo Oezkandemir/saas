@@ -10,6 +10,12 @@ export interface InputProps
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, hasError, hasSuccess, ...props }, ref) => {
+    // Ensure proper ARIA attributes
+    const ariaProps = {
+      "aria-invalid": hasError ? "true" : "false",
+      "aria-describedby": props["aria-describedby"],
+    };
+
     return (
       <div className="relative">
         <input
@@ -24,6 +30,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             className,
           )}
           ref={ref}
+          {...ariaProps}
           {...props}
         />
         {hasError && (

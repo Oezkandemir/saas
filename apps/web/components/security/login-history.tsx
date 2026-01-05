@@ -15,6 +15,7 @@ import {
 } from '@/components/alignui/data-display/card';
 import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { getLoginHistory, type LoginHistoryEntry } from "@/actions/security-actions";
+import { logger } from "@/lib/logger";
 
 export function LoginHistory() {
   const t = useTranslations("Security");
@@ -33,7 +34,7 @@ export function LoginHistory() {
         setHistory(result.history);
       }
     } catch (error) {
-      console.error("Error loading login history:", error);
+      logger.error("Error loading login history:", error);
     } finally {
       setIsLoading(false);
     }

@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { logger } from "@/lib/logger";
 
 export type ConsentType = "marketing" | "analytics" | "functional" | "necessary";
 
@@ -65,7 +66,7 @@ export async function getUserConsents(): Promise<
       consents: Array.from(latestConsents.values()),
     };
   } catch (error) {
-    console.error("Error getting user consents:", error);
+    logger.error("Error getting user consents:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to get consents",
@@ -130,7 +131,7 @@ export async function updateConsent(
     revalidatePath("/dashboard/settings/privacy");
     return { success: true, message: "Consent updated successfully" };
   } catch (error) {
-    console.error("Error updating consent:", error);
+    logger.error("Error updating consent:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to update consent",
@@ -183,7 +184,7 @@ export async function getConsentHistory(
       })),
     };
   } catch (error) {
-    console.error("Error getting consent history:", error);
+    logger.error("Error getting consent history:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to get consent history",

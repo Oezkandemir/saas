@@ -326,11 +326,11 @@ export async function getUsersByPlan(): Promise<{
       return { success: false, error: "Unauthorized: Admin access required" };
     }
 
-    // First get all users with Polar subscriptions
+    // First get all users with Polar subscriptions (Stripe removed)
     const { data: usersData, error: usersError } = await supabaseAdmin
       .from("users")
-      .select("id, email, name, role, polar_product_id, polar_subscription_id, polar_current_period_end, stripe_subscription_id, stripe_price_id, stripe_current_period_end")
-      .or("polar_subscription_id.not.is.null,stripe_subscription_id.not.is.null")
+      .select("id, email, name, role, polar_product_id, polar_subscription_id, polar_current_period_end")
+      .not("polar_subscription_id", "is", null)
       .order("created_at", { ascending: false });
 
     if (usersError) {
@@ -338,29 +338,25 @@ export async function getUsersByPlan(): Promise<{
       return { success: false, error: usersError.message };
     }
 
-    // Then get all plans
+    // Then get all plans (Polar only)
     const { data: plansData, error: plansError } = await supabaseAdmin
       .from("plans")
-      .select("id, title, plan_key, polar_product_id_monthly, polar_product_id_yearly, stripe_price_id_monthly, stripe_price_id_yearly");
+      .select("id, title, plan_key, polar_product_id_monthly, polar_product_id_yearly");
 
     if (plansError) {
       logger.error("Error fetching plans:", plansError);
       return { success: false, error: plansError.message };
     }
 
-    // Match users to plans
+    // Match users to plans (Polar only)
     const users: PlanUser[] = (usersData || []).map((user) => {
-      // Find matching plan by polar_product_id (preferred) or stripe_price_id (fallback)
+      // Find matching plan by polar_product_id
       const matchingPlan = (plansData || []).find(
         (plan) =>
-          (user.polar_product_id && (
+          user.polar_product_id && (
             user.polar_product_id === plan.polar_product_id_monthly ||
             user.polar_product_id === plan.polar_product_id_yearly
-          )) ||
-          (user.stripe_price_id && (
-            user.stripe_price_id === plan.stripe_price_id_monthly ||
-            user.stripe_price_id === plan.stripe_price_id_yearly
-          ))
+          )
       );
 
       return {
@@ -368,9 +364,9 @@ export async function getUsersByPlan(): Promise<{
         user_email: user.email,
         user_name: user.name,
         user_role: user.role,
-        stripe_price_id: user.stripe_price_id,
-        stripe_subscription_id: user.stripe_subscription_id,
-        stripe_current_period_end: user.stripe_current_period_end,
+        stripe_price_id: null,
+        stripe_subscription_id: null,
+        stripe_current_period_end: null,
         polar_product_id: user.polar_product_id,
         polar_subscription_id: user.polar_subscription_id,
         polar_current_period_end: user.polar_current_period_end,

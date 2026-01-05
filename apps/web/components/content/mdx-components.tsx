@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Callout } from "@/components/callout";
 import { BlurImage } from "@/components/shared/blur-image";
 import { MdxCard } from "@/components/shared/mdx-card";
+import { logger } from "@/lib/logger";
 
 // Add Steps component for MDX
 const Steps = ({ children }: { children: React.ReactNode }) => {
@@ -262,7 +263,7 @@ export function Mdx({ code, images = [] }: MdxProps) {
           </div>
         );
       } catch (mdxError) {
-        console.warn(
+        logger.warn(
           "Failed to render with MDXRemote, falling back to HTML:",
           mdxError,
         );
@@ -281,7 +282,7 @@ export function Mdx({ code, images = [] }: MdxProps) {
       </div>
     );
   } catch (error) {
-    console.error("Error rendering MDX content:", error);
+    logger.error("Error rendering MDX content:", error);
     return (
       <div className="rounded-md border border-red-500 bg-red-50 p-4 text-red-600">
         <p>There was an error rendering this content.</p>

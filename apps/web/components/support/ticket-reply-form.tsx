@@ -7,6 +7,7 @@ import { AlertCircle, Loader2, SendIcon } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from '@/components/alignui/actions/button';
 import { Textarea } from "@/components/ui/textarea";
+import { logger } from "@/lib/logger";
 
 interface TicketReplyFormProps {
   ticketId: string;
@@ -48,7 +49,7 @@ export function TicketReplyForm({ ticketId, onSuccess }: TicketReplyFormProps) {
         onSuccess();
       }
     } catch (err) {
-      console.error("Error sending message:", err);
+      logger.error("Error sending message:", err);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);

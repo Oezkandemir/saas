@@ -1,5 +1,6 @@
 import { supabaseAdmin } from "@/lib/db";
 import type { Document, DocumentItem } from "@/actions/documents-actions";
+import { logger } from "@/lib/logger";
 
 export interface PDFOptions {
   format?: "A4" | "Letter";
@@ -41,7 +42,7 @@ async function generatePDFWithRetry(
     let page;
     
     try {
-      console.log(`PDF generation attempt ${attempt + 1}/${retries + 1}`);
+      logger.debug(`PDF generation attempt ${attempt + 1}/${retries + 1}`);
       // Launch browser in headless mode with optimized settings for stability
       const browserArgs = [
         "--no-sandbox",
@@ -49,7 +50,7 @@ async function generatePDFWithRetry(
         "--disable-dev-shm-usage",
       ];
 
-      console.log("Launching Puppeteer browser...");
+      logger.debug("Launching Puppeteer browser...");
       
       // Special configuration for Apple Silicon
       const launchOptions: any = {
@@ -72,7 +73,7 @@ async function generatePDFWithRetry(
             const fs = await import("fs");
             if (fs.existsSync(chromePath)) {
               launchOptions.executablePath = chromePath;
-              console.log("Using system Chrome at:", chromePath);
+              logger.debug("Using system Chrome at:", chromePath);
               break;
             }
           } catch (e) {
@@ -82,11 +83,11 @@ async function generatePDFWithRetry(
       }
       
       browser = await puppeteer.launch(launchOptions);
-      console.log("Browser launched successfully");
+      logger.debug("Browser launched successfully");
 
-      console.log("Creating new page...");
+      logger.debug("Creating new page...");
       page = await browser.newPage();
-      console.log("Page created successfully");
+      logger.debug("Page created successfully");
       
       // Set timeouts for page operations
       page.setDefaultTimeout(60000); // 60 seconds
@@ -98,20 +99,20 @@ async function generatePDFWithRetry(
 
       // Set content with timeout handling
       // Use "domcontentloaded" for faster and more reliable loading
-      console.log("Setting HTML content...");
+      logger.debug("Setting HTML content...");
       await page.setContent(html, {
         waitUntil: "domcontentloaded", // Faster and more reliable than "load"
         timeout: 60000, // 60 second timeout
       });
-      console.log("HTML content set successfully");
+      logger.debug("HTML content set successfully");
 
       // Wait for any dynamic content to render
-      console.log("Waiting for content to render...");
+      logger.debug("Waiting for content to render...");
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log("Content render wait complete");
+      logger.debug("Content render wait complete");
 
       // Generate PDF with timeout
-      console.log("Generating PDF with page.pdf()...");
+      logger.debug("Generating PDF with page.pdf()...");
       const pdfBuffer = await page.pdf({
         format: options.format || DEFAULT_OPTIONS.format,
         margin: options.margin || DEFAULT_OPTIONS.margin,
@@ -119,13 +120,13 @@ async function generatePDFWithRetry(
         printBackground: options.printBackground ?? DEFAULT_OPTIONS.printBackground,
         timeout: 60000, // 60 second timeout for PDF generation
       });
-      console.log("PDF buffer generated successfully, size:", pdfBuffer.length);
+      logger.debug("PDF buffer generated successfully, size:", pdfBuffer.length);
 
       // Close page and browser before returning
-      console.log("Closing page and browser...");
+      logger.debug("Closing page and browser...");
       await page.close();
       await browser.close();
-      console.log("Page and browser closed successfully");
+      logger.debug("Page and browser closed successfully");
       
       return Buffer.from(pdfBuffer);
     } catch (error) {
@@ -141,8 +142,8 @@ async function generatePDFWithRetry(
         errorMessage = err.message || err.error || err.toString?.() || JSON.stringify(error, Object.getOwnPropertyNames(error));
       }
       
-      console.error("PDF generation attempt failed:", errorMessage);
-      console.error("Full error object:", error);
+      logger.error("PDF generation attempt failed:", errorMessage);
+      logger.error("Full error object:", error);
       
       lastError = error instanceof Error ? error : new Error(errorMessage);
       
@@ -155,7 +156,7 @@ async function generatePDFWithRetry(
           await browser.close().catch(() => {});
         }
       } catch (cleanupError) {
-        console.error("Error during cleanup:", cleanupError);
+        logger.error("Error during cleanup:", cleanupError);
       }
 
       // Check if this is a retryable error
@@ -174,7 +175,7 @@ async function generatePDFWithRetry(
 
       // Wait before retry (exponential backoff)
       const delay = Math.min(1000 * Math.pow(2, attempt), 5000);
-      console.warn(`PDF generation failed (attempt ${attempt + 1}/${retries + 1}), retrying in ${delay}ms...`, lastErrorMsg);
+      logger.warn(`PDF generation failed (attempt ${attempt + 1}/${retries + 1}), retrying in ${delay}ms...`, lastErrorMsg);
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
@@ -299,7 +300,7 @@ export async function uploadPDFToStorage(
   try {
     const fileName = `documents/${userId}/${documentId}.pdf`;
 
-    console.log("Uploading PDF to Supabase storage...", {
+    logger.debug("Uploading PDF to Supabase storage...", {
       fileName,
       bufferSize: pdfBuffer.length,
       bucket: "documents"
@@ -315,7 +316,7 @@ export async function uploadPDFToStorage(
       });
 
     if (error) {
-      console.error("Supabase storage upload error:", {
+      logger.error("Supabase storage upload error:", {
         error,
         errorMessage: error.message,
         errorName: error.name,
@@ -324,14 +325,14 @@ export async function uploadPDFToStorage(
       throw new Error(`Failed to upload PDF to storage: ${error.message || JSON.stringify(error)}`);
     }
 
-    console.log("PDF uploaded successfully to storage:", data);
+    logger.debug("PDF uploaded successfully to storage:", data);
 
     // Get public URL
     const {
       data: { publicUrl },
     } = supabaseAdmin.storage.from("documents").getPublicUrl(fileName);
 
-    console.log("Generated public URL:", publicUrl);
+    logger.debug("Generated public URL:", publicUrl);
 
     return publicUrl;
   } catch (error) {
@@ -400,7 +401,7 @@ export async function generatePDFInBackground(
       .eq("id", document.id)
       .eq("user_id", document.user_id);
     
-    console.log(`PDF generated successfully for document ${document.id}`);
+    logger.debug(`PDF generated successfully for document ${document.id}`);
   } catch (error) {
     // Log error but don't throw - we don't want to break document creation/update
     const { logger } = await import("@/lib/logger");
@@ -427,7 +428,7 @@ export async function generatePDFInBackground(
       });
     }
     
-    console.error(`PDF generation error details: ${errorMessage}`);
+    logger.error(`PDF generation error details: ${errorMessage}`);
     // Don't throw - let the document creation/update succeed even if PDF generation fails
   }
 }

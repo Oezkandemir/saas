@@ -102,7 +102,7 @@ export async function updateComponentStatus(
       );
   } catch (error) {
     // Don't use logger.error here to avoid infinite loops
-    console.error("Error updating component status:", error);
+    logger.error("Error updating component status:", error);
   }
 }
 
@@ -256,7 +256,7 @@ export async function recordMetric(
     });
   } catch (error) {
     // Don't use logger.error here to avoid infinite loops
-    console.error("Error recording metric:", error);
+    logger.error("Error recording metric:", error);
   }
 }
 

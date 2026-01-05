@@ -14,6 +14,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { config } from "dotenv";
 import { resolve } from "path";
+import { logger } from "@/lib/logger";
 
 // Load environment variables
 config({ path: resolve(process.cwd(), ".env.local") });
@@ -23,14 +24,14 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 if (!supabaseUrl || !supabaseServiceKey) {
-  console.error("❌ Missing Supabase environment variables");
+  logger.error("❌ Missing Supabase environment variables");
   process.exit(1);
 }
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 async function updatePlanStripeIds() {
-  console.log("🔄 Updating Stripe Price IDs in database...\n");
+  logger.debug("🔄 Updating Stripe Price IDs in database...\n");
 
   // Get Price IDs from environment
   const proMonthly = process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID;
@@ -38,11 +39,11 @@ async function updatePlanStripeIds() {
   const businessMonthly = process.env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID;
   const businessYearly = process.env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID;
 
-  console.log("📋 Environment Variables:");
-  console.log(`  PRO_MONTHLY: ${proMonthly || "❌ Not set"}`);
-  console.log(`  PRO_YEARLY: ${proYearly || "❌ Not set"}`);
-  console.log(`  BUSINESS_MONTHLY: ${businessMonthly || "❌ Not set"}`);
-  console.log(`  BUSINESS_YEARLY: ${businessYearly || "❌ Not set"}\n`);
+  logger.debug("📋 Environment Variables:");
+  logger.debug(`  PRO_MONTHLY: ${proMonthly || "❌ Not set"}`);
+  logger.debug(`  PRO_YEARLY: ${proYearly || "❌ Not set"}`);
+  logger.debug(`  BUSINESS_MONTHLY: ${businessMonthly || "❌ Not set"}`);
+  logger.debug(`  BUSINESS_YEARLY: ${businessYearly || "❌ Not set"}\n`);
 
   // Update Pro Plan
   if (proMonthly || proYearly) {
@@ -57,9 +58,9 @@ async function updatePlanStripeIds() {
       .select();
 
     if (error) {
-      console.error(`❌ Error updating Pro plan:`, error);
+      logger.error(`❌ Error updating Pro plan:`, error);
     } else {
-      console.log(`✅ Updated Pro plan:`, data[0]);
+      logger.debug(`✅ Updated Pro plan:`, data[0]);
     }
   }
 
@@ -76,33 +77,34 @@ async function updatePlanStripeIds() {
       .select();
 
     if (error) {
-      console.error(`❌ Error updating Enterprise plan:`, error);
+      logger.error(`❌ Error updating Enterprise plan:`, error);
     } else {
-      console.log(`✅ Updated Enterprise plan:`, data[0]);
+      logger.debug(`✅ Updated Enterprise plan:`, data[0]);
     }
   }
 
   // Show current state
-  console.log("\n📊 Current Plans in Database:");
+  logger.debug("\n📊 Current Plans in Database:");
   const { data: plans, error: plansError } = await supabase
     .from("plans")
     .select("id, title, plan_key, stripe_price_id_monthly, stripe_price_id_yearly")
     .order("sort_order");
 
   if (plansError) {
-    console.error("❌ Error fetching plans:", plansError);
+    logger.error("❌ Error fetching plans:", plansError);
   } else {
     plans.forEach((plan) => {
-      console.log(`\n  ${plan.title} (${plan.plan_key}):`);
-      console.log(`    Monthly: ${plan.stripe_price_id_monthly || "❌ Not set"}`);
-      console.log(`    Yearly: ${plan.stripe_price_id_yearly || "❌ Not set"}`);
+      logger.debug(`\n  ${plan.title} (${plan.plan_key}):`);
+      logger.debug(`    Monthly: ${plan.stripe_price_id_monthly || "❌ Not set"}`);
+      logger.debug(`    Yearly: ${plan.stripe_price_id_yearly || "❌ Not set"}`);
     });
   }
 
-  console.log("\n✨ Done!");
+  logger.debug("\n✨ Done!");
 }
 
 updatePlanStripeIds().catch(console.error);
+
 
 
 

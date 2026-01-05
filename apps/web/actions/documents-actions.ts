@@ -5,6 +5,7 @@ import { getSupabaseServer } from "@/lib/supabase-server";
 import { getCurrentUser } from "@/lib/session";
 import { enforcePlanLimit } from "@/lib/plan-limits";
 import { hasCompanyProfilePermission } from "@/actions/company-profile-team-actions";
+import { logger } from "@/lib/logger";
 
 export type DocumentType = "quote" | "invoice";
 export type DocumentStatus =
@@ -88,7 +89,8 @@ export async function getDocuments(
     .select(
       `
       *,
-      customer:customers(id, name, email, address_line1, address_line2, city, postal_code, country)
+      customer:customers(id, name, email, address_line1, address_line2, city, postal_code, country),
+      document_items(*)
     `,
     );
 
@@ -128,18 +130,13 @@ export async function getDocuments(
 
   if (error) throw error;
 
-  // Fetch items for each document
-  const documentsWithItems = await Promise.all(
-    (data || []).map(async (doc) => {
-      const { data: items } = await supabase
-        .from("document_items")
-        .select("*")
-        .eq("document_id", doc.id)
-        .order("position", { ascending: true });
-
-      return { ...doc, items: items || [] };
-    }),
-  );
+  // Items are already loaded via join, just need to sort them
+  const documentsWithItems = (data || []).map((doc) => {
+    const items = (doc.document_items || []).sort((a, b) => 
+      (a.position || 0) - (b.position || 0)
+    );
+    return { ...doc, items };
+  });
 
   return documentsWithItems;
 }
@@ -200,7 +197,8 @@ export async function getDocument(id: string): Promise<Document | null> {
     .select(
       `
       *,
-      customer:customers(id, name, email, address_line1, address_line2, city, postal_code, country)
+      customer:customers(id, name, email, address_line1, address_line2, city, postal_code, country),
+      document_items(*)
     `,
     )
     .eq("id", id)
@@ -216,14 +214,12 @@ export async function getDocument(id: string): Promise<Document | null> {
     throw new Error("Keine Berechtigung für dieses Dokument");
   }
 
-  // Fetch items
-  const { data: items } = await supabase
-    .from("document_items")
-    .select("*")
-    .eq("document_id", id)
-    .order("position", { ascending: true });
+  // Items are already loaded via join, just need to sort them
+  const items = (data.document_items || []).sort((a, b) => 
+    (a.position || 0) - (b.position || 0)
+  );
 
-  return { ...data, items: items || [] };
+  return { ...data, items };
 }
 
 export async function createDocument(
@@ -477,19 +473,19 @@ export async function updateDocument(
           generateInvoiceHTMLAsync(updatedDoc)
             .then((htmlContent) => {
               generatePDFInBackground(updatedDoc, htmlContent).catch((err) => {
-                console.error("Background PDF regeneration failed:", err);
+                logger.error("Background PDF regeneration failed:", err);
               });
             })
             .catch((err) => {
-              console.error("Failed to generate HTML for PDF:", err);
+              logger.error("Failed to generate HTML for PDF:", err);
             });
         })
         .catch((err) => {
-          console.error("Failed to load PDF templates:", err);
+          logger.error("Failed to load PDF templates:", err);
         });
     })
     .catch((err) => {
-      console.error("Failed to load PDF generator:", err);
+      logger.error("Failed to load PDF generator:", err);
     });
 
   revalidatePath("/dashboard/documents");
@@ -569,19 +565,19 @@ export async function convertQuoteToInvoice(quoteId: string): Promise<Document> 
           generateInvoiceHTMLAsync(completeInvoice)
             .then((htmlContent) => {
               generatePDFInBackground(completeInvoice, htmlContent).catch((err) => {
-                console.error("Background PDF generation failed:", err);
+                logger.error("Background PDF generation failed:", err);
               });
             })
             .catch((err) => {
-              console.error("Failed to generate HTML for PDF:", err);
+              logger.error("Failed to generate HTML for PDF:", err);
             });
         })
         .catch((err) => {
-          console.error("Failed to load PDF templates:", err);
+          logger.error("Failed to load PDF templates:", err);
         });
     })
     .catch((err) => {
-      console.error("Failed to load PDF generator:", err);
+      logger.error("Failed to load PDF generator:", err);
     });
 
   revalidatePath("/dashboard/documents");
@@ -728,19 +724,19 @@ export async function duplicateDocument(id: string): Promise<Document> {
           generateInvoiceHTMLAsync(completeDoc)
             .then((htmlContent) => {
               generatePDFInBackground(completeDoc, htmlContent).catch((err) => {
-                console.error("Background PDF generation failed:", err);
+                logger.error("Background PDF generation failed:", err);
               });
             })
             .catch((err) => {
-              console.error("Failed to generate HTML for PDF:", err);
+              logger.error("Failed to generate HTML for PDF:", err);
             });
         })
         .catch((err) => {
-          console.error("Failed to load PDF templates:", err);
+          logger.error("Failed to load PDF templates:", err);
         });
     })
     .catch((err) => {
-      console.error("Failed to load PDF generator:", err);
+      logger.error("Failed to load PDF generator:", err);
     });
 
   revalidatePath("/dashboard/documents");

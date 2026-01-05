@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 import { corsHeaders } from "../_shared/cors.ts";
+import { logger } from "@/lib/logger";
 
 // Load environment variables
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "";
@@ -135,7 +136,7 @@ const generateEmailTemplate = (type: string, data: any) => {
       // Create a properly encoded token - using simple encoding for compatibility
       // We're not using btoa for security but just to have a token that can be verified
       const unsubscribeToken = encodeURIComponent(data.email);
-      console.log(
+      logger.debug(
         `Newsletter email: ${data.email}, generated token: ${unsubscribeToken}`,
       );
       return `
@@ -266,7 +267,7 @@ Deno.serve(async (req) => {
 
   try {
     const requestBody = await req.json();
-    console.log("Request body:", JSON.stringify(requestBody)); // Debug log
+    logger.debug("Request body:", JSON.stringify(requestBody)); // Debug log
     
     const { type, email, name, actionUrl, emailType, inviterName, inviterEmail, teamName, teamSlug, role } = requestBody;
 
@@ -282,7 +283,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    console.log(`Processing ${type} email for ${email}`);
+    logger.debug(`Processing ${type} email for ${email}`);
 
     let htmlContent = "";
     let subject = "";
@@ -338,14 +339,14 @@ Deno.serve(async (req) => {
     } else if (type === "team-invitation") {
       // For team invitations
       if (!inviterName || !inviterEmail || !teamName || !role) {
-        console.error("Missing team invitation data:", { inviterName, inviterEmail, teamName, role });
+        logger.error("Missing team invitation data:", { inviterName, inviterEmail, teamName, role });
         return new Response(JSON.stringify({ error: "Missing required team invitation data" }), {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       
-      console.log(`Sending team invitation email: ${teamName} to ${email} as ${role}`);
+      logger.debug(`Sending team invitation email: ${teamName} to ${email} as ${role}`);
       
       subject = `You've been invited to join ${teamName} on ${SITE_NAME}`;
       htmlContent = generateEmailTemplate("team-invitation", {
@@ -369,10 +370,10 @@ Deno.serve(async (req) => {
     const isDevMode = Deno.env.get("NODE_ENV") === "development";
     const finalEmail = isDevMode ? "delivered@resend.dev" : email;
     
-    console.log(`Environment: ${Deno.env.get("NODE_ENV") || "production"}`);
-    console.log(`Sending email to: ${finalEmail} (original: ${email})`);
-    console.log(`From: ${SITE_NAME} <${EMAIL_FROM}>`);
-    console.log(`Subject: ${subject}`);
+    logger.debug(`Environment: ${Deno.env.get("NODE_ENV") || "production"}`);
+    logger.debug(`Sending email to: ${finalEmail} (original: ${email})`);
+    logger.debug(`From: ${SITE_NAME} <${EMAIL_FROM}>`);
+    logger.debug(`Subject: ${subject}`);
     
     const emailPayload = {
       from: `${SITE_NAME} <${EMAIL_FROM}>`,
@@ -384,7 +385,7 @@ Deno.serve(async (req) => {
       },
     };
     
-    console.log("Email payload:", JSON.stringify(emailPayload, null, 2));
+    logger.debug("Email payload:", JSON.stringify(emailPayload, null, 2));
     
     const resendResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -397,15 +398,15 @@ Deno.serve(async (req) => {
 
     const resendData = await resendResponse.json();
     
-    console.log(`Resend API Response Status: ${resendResponse.status}`);
-    console.log("Resend API Response:", JSON.stringify(resendData, null, 2));
+    logger.debug(`Resend API Response Status: ${resendResponse.status}`);
+    logger.debug("Resend API Response:", JSON.stringify(resendData, null, 2));
 
     if (!resendResponse.ok) {
-      console.error("Resend API Error:", resendData);
+      logger.error("Resend API Error:", resendData);
       throw new Error(resendData.message || "Failed to send email");
     }
 
-    console.log("Email sent successfully!");
+    logger.debug("Email sent successfully!");
     return new Response(JSON.stringify({ success: true, data: resendData }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

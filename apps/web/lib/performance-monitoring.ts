@@ -1,297 +1,155 @@
 /**
- * Performance Monitoring Utilities
- * Tracks Core Web Vitals and custom performance metrics
+ * Performance monitoring utilities
+ * Tracks Core Web Vitals and performance metrics
  */
 
-// Web API type definitions for Performance Observer entries
-interface LayoutShift extends PerformanceEntry {
-  value: number;
-  hadRecentInput: boolean;
-  sources: LayoutShiftAttribution[];
-}
+import { recordMetric } from "./system-monitoring";
 
-interface LayoutShiftAttribution {
-  node?: Node;
-  previousRect: DOMRectReadOnly;
-  currentRect: DOMRectReadOnly;
-}
-
-interface PerformanceEventTiming extends PerformanceEntry {
-  processingStart: number;
-  processingEnd: number;
-  duration: number;
-  cancelable: boolean;
-}
-
-interface PerformanceNavigationTiming extends PerformanceEntry {
-  requestStart: number;
-  responseStart: number;
-  responseEnd: number;
-  domContentLoadedEventStart: number;
-  domContentLoadedEventEnd: number;
-  loadEventStart: number;
-  loadEventEnd: number;
-}
-
-export interface CoreWebVitals {
-  lcp?: number; // Largest Contentful Paint
-  fid?: number; // First Input Delay
-  cls?: number; // Cumulative Layout Shift
-  fcp?: number; // First Contentful Paint
-  ttfb?: number; // Time to First Byte
-}
-
-export interface PerformanceMetric {
+export interface WebVitals {
+  id: string;
   name: string;
   value: number;
-  unit: string;
-  timestamp: number;
-  metadata?: Record<string, unknown>;
+  rating: "good" | "needs-improvement" | "poor";
+  delta: number;
+  navigationType: string;
 }
 
-class PerformanceMonitor {
-  private isClient = typeof window !== "undefined";
-  private metrics: PerformanceMetric[] = [];
+/**
+ * Report Web Vitals to monitoring system
+ */
+export function reportWebVital(metric: WebVitals) {
+  // Only report in production
+  if (process.env.NODE_ENV !== "production") {
+    return;
+  }
 
+  // Map Web Vitals names to component names
+  const componentMap: Record<string, "api" | "database" | "auth" | "email" | "storage" | "payment"> = {
+    CLS: "api",
+    FID: "api",
+    FCP: "api",
+    LCP: "api",
+    TTFB: "api",
+    INP: "api",
+  };
+
+  const component = componentMap[metric.name] || "api";
+
+  // Report to system monitoring (server-side)
+  recordMetric(
+    component,
+    `web_vital_${metric.name.toLowerCase()}`,
+    metric.value,
+    "ms",
+    {
+      rating: metric.rating,
+      delta: metric.delta,
+      navigationType: metric.navigationType,
+    }
+  ).catch((error) => {
+    // Silently fail to avoid breaking the app
+    console.error("Failed to report Web Vital:", error);
+  });
+}
+
+/**
+ * Measure function execution time
+ */
+export async function measurePerformance<T>(
+  name: string,
+  fn: () => Promise<T>
+): Promise<T> {
+  const start = performance.now();
+  try {
+    const result = await fn();
+    const duration = performance.now() - start;
+
+    if (process.env.NODE_ENV === "production") {
+      recordMetric("api", `performance_${name}`, duration, "ms").catch(() => {
+        // Silently fail
+      });
+    }
+
+    return result;
+  } catch (error) {
+    const duration = performance.now() - start;
+    if (process.env.NODE_ENV === "production") {
+      recordMetric("api", `performance_${name}_error`, duration, "ms").catch(() => {
+        // Silently fail
+      });
+    }
+    throw error;
+  }
+}
+
+/**
+ * Track database query performance
+ */
+export async function trackQueryPerformance<T>(
+  queryName: string,
+  fn: () => Promise<T>
+): Promise<T> {
+  return measurePerformance(`db_query_${queryName}`, fn);
+}
+
+/**
+ * Track API route performance
+ */
+export async function trackAPIPerformance<T>(
+  route: string,
+  fn: () => Promise<T>
+): Promise<T> {
+  return measurePerformance(`api_route_${route.replace(/\//g, "_")}`, fn);
+}
+
+/**
+ * Client-side performance monitor
+ * Provides a simple interface for tracking performance metrics in the browser
+ */
+export const performanceMonitor = {
   /**
    * Initialize performance monitoring
    */
-  init() {
-    if (!this.isClient) return;
-
-    // Track Core Web Vitals
-    this.trackLCP();
-    this.trackFID();
-    this.trackCLS();
-    this.trackFCP();
-    this.trackTTFB();
-  }
-
-  /**
-   * Track Largest Contentful Paint (LCP)
-   */
-  private trackLCP() {
-    if (!this.isClient || typeof window.PerformanceObserver === "undefined") return;
-
-    try {
-      const observer = new PerformanceObserver((list) => {
-        const entries = list.getEntries();
-        const lastEntry = entries[entries.length - 1] as PerformanceEntry & {
-          renderTime?: number;
-          loadTime?: number;
-        };
-
-        const lcp = lastEntry.renderTime || lastEntry.loadTime || 0;
-        this.recordMetric("LCP", lcp, "ms", {
-          element: lastEntry.name,
-        });
-
-        // Send to analytics if available
-        if (window.va?.track) {
-          window.va.track("LCP", { value: lcp });
-        }
-      });
-
-      observer.observe({ entryTypes: ["largest-contentful-paint"] });
-    } catch (error) {
-      // Silently fail if PerformanceObserver is not supported
+  init: () => {
+    // Initialize Web Vitals tracking if available
+    if (typeof window !== "undefined" && typeof window.performance !== "undefined") {
+      // Web Vitals tracking can be added here if needed
+      // For now, we'll just ensure the performance API is available
     }
-  }
+  },
 
   /**
-   * Track First Input Delay (FID)
+   * Record a performance metric
    */
-  private trackFID() {
-    if (!this.isClient || typeof window.PerformanceObserver === "undefined") return;
-
-    try {
-      const observer = new PerformanceObserver((list) => {
-        const entries = list.getEntries();
-        entries.forEach((entry) => {
-          const fidEntry = entry as PerformanceEventTiming;
-          const fid = fidEntry.processingStart - fidEntry.startTime;
-
-          this.recordMetric("FID", fid, "ms", {
-            eventType: fidEntry.name,
-          });
-
-          // Send to analytics if available
-          if (window.va?.track) {
-            window.va.track("FID", { value: fid });
-          }
-        });
-      });
-
-      observer.observe({ entryTypes: ["first-input"] });
-    } catch (error) {
-      // Silently fail if PerformanceObserver is not supported
-    }
-  }
-
-  /**
-   * Track Cumulative Layout Shift (CLS)
-   */
-  private trackCLS() {
-    if (!this.isClient || typeof window.PerformanceObserver === "undefined") return;
-
-    try {
-      let clsValue = 0;
-      const observer = new PerformanceObserver((list) => {
-        const entries = list.getEntries();
-        entries.forEach((entry) => {
-          const layoutShiftEntry = entry as LayoutShift;
-          if (!layoutShiftEntry.hadRecentInput) {
-            clsValue += layoutShiftEntry.value;
-          }
-        });
-
-        this.recordMetric("CLS", clsValue, "score", {});
-
-        // Send to analytics if available
-        if (window.va?.track) {
-          window.va.track("CLS", { value: clsValue });
-        }
-      });
-
-      observer.observe({ entryTypes: ["layout-shift"] });
-    } catch (error) {
-      // Silently fail if PerformanceObserver is not supported
-    }
-  }
-
-  /**
-   * Track First Contentful Paint (FCP)
-   */
-  private trackFCP() {
-    if (!this.isClient || typeof window.PerformanceObserver === "undefined") return;
-
-    try {
-      const observer = new PerformanceObserver((list) => {
-        const entries = list.getEntries();
-        entries.forEach((entry) => {
-          const fcp = entry.startTime;
-          this.recordMetric("FCP", fcp, "ms", {});
-
-          // Send to analytics if available
-          if (window.va?.track) {
-            window.va.track("FCP", { value: fcp });
-          }
-        });
-      });
-
-      observer.observe({ entryTypes: ["paint"] });
-    } catch (error) {
-      // Silently fail if PerformanceObserver is not supported
-    }
-  }
-
-  /**
-   * Track Time to First Byte (TTFB)
-   */
-  private trackTTFB() {
-    if (!this.isClient) return;
-
-    try {
-      const navigation = performance.getEntriesByType(
-        "navigation"
-      )[0] as PerformanceNavigationTiming;
-
-      if (navigation) {
-        const ttfb = navigation.responseStart - navigation.requestStart;
-        this.recordMetric("TTFB", ttfb, "ms", {});
-
-        // Send to analytics if available
-        if (window.va?.track) {
-          window.va.track("TTFB", { value: ttfb });
-        }
-      }
-    } catch (error) {
-      // Silently fail if performance API is not available
-    }
-  }
-
-  /**
-   * Record a custom performance metric
-   */
-  recordMetric(
+  recordMetric: async (
     name: string,
     value: number,
-    unit: string,
+    unit: string = "ms",
     metadata?: Record<string, unknown>
-  ) {
-    const metric: PerformanceMetric = {
-      name,
-      value,
-      unit,
-      timestamp: Date.now(),
-      metadata,
-    };
-
-    this.metrics.push(metric);
-
-    // Keep only last 100 metrics to prevent memory issues
-    if (this.metrics.length > 100) {
-      this.metrics.shift();
+  ) => {
+    // Only report in production
+    if (process.env.NODE_ENV !== "production") {
+      return;
     }
-  }
 
-  /**
-   * Get all recorded metrics
-   */
-  getMetrics(): PerformanceMetric[] {
-    return [...this.metrics];
-  }
-
-  /**
-   * Get Core Web Vitals
-   */
-  getCoreWebVitals(): CoreWebVitals {
-    const vitals: CoreWebVitals = {};
-
-    this.metrics.forEach((metric) => {
-      switch (metric.name) {
-        case "LCP":
-          vitals.lcp = metric.value;
-          break;
-        case "FID":
-          vitals.fid = metric.value;
-          break;
-        case "CLS":
-          vitals.cls = metric.value;
-          break;
-        case "FCP":
-          vitals.fcp = metric.value;
-          break;
-        case "TTFB":
-          vitals.ttfb = metric.value;
-          break;
-      }
-    });
-
-    return vitals;
-  }
-}
-
-// Extend Window interface for Vercel Analytics
-declare global {
-  interface Window {
-    va?: {
-      track: (event: string, data?: Record<string, unknown>) => void;
-    };
-  }
-}
-
-export const performanceMonitor = new PerformanceMonitor();
-
-// Auto-initialize on client side
-if (typeof window !== "undefined") {
-  // Wait for page load to ensure accurate metrics
-  if (document.readyState === "complete") {
-    performanceMonitor.init();
-  } else {
-    window.addEventListener("load", () => {
-      performanceMonitor.init();
-    });
-  }
-}
-
+    try {
+      // Report to server-side monitoring via API
+      await fetch("/api/performance/metric", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          value,
+          unit,
+          metadata: metadata || {},
+        }),
+      }).catch(() => {
+        // Silently fail to avoid breaking the app
+      });
+    } catch (error) {
+      // Silently fail to avoid breaking the app
+    }
+  },
+};

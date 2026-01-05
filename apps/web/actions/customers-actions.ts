@@ -124,11 +124,11 @@ export async function getCustomers(companyProfileId?: string): Promise<Customer[
       
       // Also log raw error for debugging
       try {
-        console.error("Raw Supabase error object:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+        logger.error("Raw Supabase error object:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
       } catch (e) {
-        console.error("Raw Supabase error object (stringified):", String(error));
-        console.error("Error object type:", typeof error);
-        console.error("Error object constructor:", error?.constructor?.name);
+        logger.error("Raw Supabase error object (stringified):", String(error));
+        logger.error("Error object type:", typeof error);
+        logger.error("Error object constructor:", error?.constructor?.name);
       }
       
       // Return empty array instead of throwing to prevent UI breakage
@@ -167,10 +167,10 @@ export async function getCustomers(companyProfileId?: string): Promise<Customer[
     logger.error("Error in getCustomers", errorDetails);
     
     try {
-      console.error("Raw caught error:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+      logger.error("Raw caught error:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
     } catch {
-      console.error("Raw caught error (stringified):", String(error));
-      console.error("Error type:", typeof error);
+      logger.error("Raw caught error (stringified):", String(error));
+      logger.error("Error type:", typeof error);
     }
     
     // Return empty array on any error to prevent UI breakage

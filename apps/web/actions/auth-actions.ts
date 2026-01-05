@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createLoginSession, logFailedLogin } from "@/lib/session-tracking";
+import { logger } from "@/lib/logger";
 
 /**
  * Track login session after successful client-side login
@@ -28,7 +29,7 @@ export async function trackLoginSession(
 
     return { success: true };
   } catch (error) {
-    console.error("Error tracking login session:", error);
+    logger.error("Error tracking login session:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to track session",

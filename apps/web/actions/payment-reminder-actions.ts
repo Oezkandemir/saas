@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { logger } from "@/lib/logger";
 
 export interface PaymentReminderData {
   documentId: string;
@@ -43,7 +44,7 @@ export async function createPaymentReminder(data: PaymentReminderData) {
     revalidatePath("/dashboard/documents");
     return { success: true, data: reminder };
   } catch (error) {
-    console.error("Error creating payment reminder:", error);
+    logger.error("Error creating payment reminder:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to create reminder",
@@ -112,7 +113,7 @@ export async function sendPaymentReminder(reminderId: string) {
     revalidatePath("/dashboard/documents");
     return { success: true, message: "Reminder sent successfully" };
   } catch (error) {
-    console.error("Error sending payment reminder:", error);
+    logger.error("Error sending payment reminder:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to send reminder",
@@ -137,7 +138,7 @@ export async function getPaymentReminders(documentId: string) {
 
     return { success: true, data };
   } catch (error) {
-    console.error("Error getting payment reminders:", error);
+    logger.error("Error getting payment reminders:", error);
     return {
       success: false,
       data: [],
@@ -169,7 +170,7 @@ export async function cancelPaymentReminder(reminderId: string) {
     revalidatePath("/dashboard/documents");
     return { success: true, message: "Reminder cancelled" };
   } catch (error) {
-    console.error("Error cancelling payment reminder:", error);
+    logger.error("Error cancelling payment reminder:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to cancel reminder",
@@ -241,7 +242,7 @@ export async function autoCreateRemindersForOverdue() {
 
     return { success: true, created: results.length };
   } catch (error) {
-    console.error("Error auto-creating reminders:", error);
+    logger.error("Error auto-creating reminders:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to create reminders",

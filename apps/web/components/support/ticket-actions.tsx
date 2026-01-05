@@ -29,6 +29,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
+import { logger } from "@/lib/logger";
 
 interface TicketActionsProps {
   ticket: Ticket;
@@ -71,7 +72,7 @@ export function TicketActions({
 
       router.refresh();
     } catch (error) {
-      console.error("Error updating ticket status:", error);
+      logger.error("Error updating ticket status:", error);
       toast({
         title: "Error",
         description: "Failed to update ticket status. Please try again.",
@@ -100,7 +101,7 @@ export function TicketActions({
       setShowDeleteDialog(false);
       router.refresh();
     } catch (error) {
-      console.error("Error deleting ticket:", error);
+      logger.error("Error deleting ticket:", error);
       toast({
         title: "Error",
         description: "Failed to delete ticket. Please try again.",
