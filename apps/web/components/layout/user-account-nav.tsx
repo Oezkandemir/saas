@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Bell,
-  BookOpen,
   Building2,
   CreditCard,
   Crown,
@@ -307,16 +306,6 @@ export function UserAccountNav() {
                   >
                     <Crown className="size-4" />
                     <span>{tNav("pricing")}</span>
-                  </Link>
-
-                  <Link
-                    href="/docs"
-                    prefetch={true}
-                    onClick={closeDrawer}
-                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-bg-white-50 active:bg-bg-white-100 transition-colors rounded-lg"
-                  >
-                    <BookOpen className="size-4" />
-                    <span>{tNav("documentation")}</span>
                   </Link>
 
                   <div className="border-t border-stroke-soft-200 my-2" />

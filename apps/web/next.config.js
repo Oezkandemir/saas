@@ -18,9 +18,8 @@ const nextConfig = {
   async headers() {
     const isProduction = process.env.NODE_ENV === "production";
 
-    // SECURITY: CSP directives - removed unsafe-eval for security (except for docs routes)
+    // SECURITY: CSP directives - removed unsafe-eval for security
     // Note: unsafe-inline for scripts is required for Next.js hydration
-    // unsafe-eval is required for MDXRemote in docs pages
     const baseCspDirectives = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
@@ -35,25 +34,9 @@ const nextConfig = {
       "frame-ancestors 'none'",
     ];
 
-    // CSP for docs routes (requires unsafe-eval for MDXRemote)
-    const docsCspDirectives = [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com data:",
-      "img-src 'self' data: https: blob:",
-      "connect-src 'self' https://*.supabase.co https://*.vercel.app wss://*.supabase.co https://ipapi.co",
-      "frame-src 'self' https://vercel.live",
-      "object-src 'none'",
-      "base-uri 'self'",
-      "form-action 'self'",
-      "frame-ancestors 'none'",
-    ];
-
     // Only add upgrade-insecure-requests in production
     if (isProduction) {
       baseCspDirectives.push("upgrade-insecure-requests");
-      docsCspDirectives.push("upgrade-insecure-requests");
     }
 
     const commonHeaders = [
@@ -81,8 +64,6 @@ const nextConfig = {
 
     return [
       // Note: CSP headers are handled by proxy.ts middleware
-      // This allows dynamic route detection and proper CSP for docs routes
-      // Base CSP for all routes (middleware will override for docs routes)
       {
         source: "/:path*",
         headers: [

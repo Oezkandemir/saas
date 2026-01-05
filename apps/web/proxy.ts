@@ -246,26 +246,9 @@ export default async function proxy(request: NextRequest) {
     !request.nextUrl.hostname.includes("localhost") &&
     !request.nextUrl.hostname.includes("127.0.0.1");
 
-  // SECURITY: CSP without unsafe-eval (removed for security, except for MDX routes)
+  // SECURITY: CSP without unsafe-eval (removed for security)
   // Note: unsafe-inline for scripts is required for Next.js hydration
-  // unsafe-eval is required for MDXRemote in docs, guides, blog, and marketing pages
-  // Check for routes that use MDXRemote - handle both /docs/ and /:locale/docs/ patterns
-  // Match patterns like: /en/docs/..., /de/docs/..., /docs/..., /en/guides/..., /blog/..., etc.
-  const isMdxRoute =
-    pathname.includes("/docs/") ||
-    pathname.includes("/guides/") ||
-    pathname.includes("/blog/") ||
-    pathname.startsWith("/en/docs") ||
-    pathname.startsWith("/de/docs") ||
-    pathname.startsWith("/en/guides") ||
-    pathname.startsWith("/de/guides") ||
-    pathname.startsWith("/en/blog") ||
-    pathname.startsWith("/de/blog") ||
-    pathname.match(/^\/[a-z]{2}\/docs\//) !== null ||
-    pathname.match(/^\/[a-z]{2}\/guides\//) !== null ||
-    pathname.match(/^\/[a-z]{2}\/blog\//) !== null;
-
-  const baseCspDirectives = [
+  const cspDirectives = [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
@@ -279,27 +262,13 @@ export default async function proxy(request: NextRequest) {
     "frame-ancestors 'none'",
   ];
 
-  // Add unsafe-eval for MDX routes (required for MDXRemote)
-  const cspDirectives = isMdxRoute
-    ? [
-        "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com",
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-        "font-src 'self' https://fonts.gstatic.com data:",
-        "img-src 'self' data: https: blob:",
-        "connect-src 'self' https://*.supabase.co https://*.vercel.app wss://*.supabase.co https://ipapi.co",
-        "frame-src 'self' https://vercel.live",
-        "object-src 'none'",
-        "base-uri 'self'",
-        "form-action 'self'",
-        "frame-ancestors 'none'",
-      ]
-    : baseCspDirectives;
-
   if (isProduction) {
     cspDirectives.push("upgrade-insecure-requests");
   }
 
+  // Ensure CSP header takes precedence by deleting any existing header first
+  // This prevents conflicts with CSP headers set in next.config.js
+  response.headers.delete("Content-Security-Policy");
   response.headers.set("Content-Security-Policy", cspDirectives.join("; "));
 
   // Return the response we've built up

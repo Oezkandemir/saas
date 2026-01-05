@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import {
   RiArrowDownLine,
   RiArrowUpLine,
-  RiBookOpenLine,
   RiCloseLine,
   RiCornerDownLeftLine,
   RiFileTextLine,
@@ -15,7 +14,6 @@ import {
 } from "@remixicon/react";
 import { useTranslations } from "next-intl";
 
-import { docsConfig } from "@/config/docs";
 import { marketingConfig } from "@/config/marketing";
 import { cn } from "@/lib/utils";
 import { CompactButton } from "@/components/alignui/actions/compact-button";
@@ -50,28 +48,9 @@ export function MarketingCommandMenu() {
         ? RiFileTextLine
         : item.href.includes("/pricing")
           ? RiPriceTagLine
-          : item.href.includes("/docs")
-            ? RiBookOpenLine
-            : RiHomeLine,
+          : RiHomeLine,
       category: "Navigation",
     })) || []),
-    // Docs Main Nav Links
-    ...(docsConfig.mainNav?.map((item) => ({
-      title: item.title,
-      href: item.href,
-      icon: RiBookOpenLine,
-      category: "Documentation",
-    })) || []),
-    // Docs Sidebar Links
-    ...(docsConfig.sidebarNav?.flatMap(
-      (section) =>
-        section.items?.map((item) => ({
-          title: item.title,
-          href: item.href,
-          icon: RiBookOpenLine,
-          category: "Documentation",
-        })) || [],
-    ) || []),
   ];
 
   React.useEffect(() => {

@@ -8,7 +8,7 @@ import "@/styles/mdx.css";
 
 import { Metadata } from "next";
 
-import { constructMetadata, getBlurDataURL } from "@/lib/utils";
+import { constructMetadata } from "@/lib/utils";
 
 export async function generateStaticParams() {
   return allPages.map((page) => ({
@@ -53,13 +53,6 @@ export default async function PagePage({
     notFound();
   }
 
-  const images = await Promise.all(
-    page.images.map(async (src: string) => ({
-      src,
-      blurDataURL: await getBlurDataURL(src),
-    })),
-  );
-
   return (
     <article className="w-full py-6 lg:py-12">
       <div className="space-y-4">
@@ -71,7 +64,7 @@ export default async function PagePage({
         )}
       </div>
       <hr className="my-4" />
-      <Mdx code={page.body.code} images={images} />
+      <Mdx code={page.body.code} />
     </article>
   );
 }

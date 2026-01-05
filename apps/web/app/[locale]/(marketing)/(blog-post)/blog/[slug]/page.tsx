@@ -1,10 +1,5 @@
 import { notFound } from "next/navigation";
 import { allPosts } from "@/.contentlayer/generated";
-import { serialize } from "next-mdx-remote/serialize";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import rehypePrettyCode from "rehype-pretty-code";
-import rehypeSlug from "rehype-slug";
-import remarkGfm from "remark-gfm";
 
 import { Mdx } from "@/components/content/mdx-components";
 
@@ -14,7 +9,6 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 import { BLOG_CATEGORIES } from "@/config/blog";
-import { logger } from "@/lib/logger";
 import { getTableOfContents } from "@/lib/toc";
 import {
   cn,
@@ -89,48 +83,10 @@ export default async function PostPage({ params }: PostPageProps) {
 
   const toc = await getTableOfContents(post.body.raw);
 
-  // Serialize the MDX content for client-side rendering
-  let mdxResult;
+  // Use compiled code directly from contentlayer (no MDXRemote serialization needed)
+  const mdxResult = post.body.code || "";
 
-  try {
-    // Convert MDX to serialized content
-    mdxResult = await serialize(post.body.raw, {
-      mdxOptions: {
-        remarkPlugins: [remarkGfm],
-        rehypePlugins: [
-          rehypeSlug,
-          [rehypePrettyCode, { theme: "github-dark" }],
-          [
-            rehypeAutolinkHeadings,
-            {
-              properties: {
-                className: ["subheading-anchor"],
-                ariaLabel: "Link to section",
-              },
-            },
-          ],
-        ],
-      },
-    });
-  } catch (error) {
-    logger.error("Error serializing MDX:", error);
-    // If serialization fails, fall back to contentlayer's version
-    mdxResult = {
-      compiledSource: post.body.code || "",
-      scope: {},
-      frontmatter: {},
-    };
-  }
-
-  const [thumbnailBlurhash, images] = await Promise.all([
-    getBlurDataURL(post.image),
-    await Promise.all(
-      post.images.map(async (src: string) => ({
-        src,
-        blurDataURL: await getBlurDataURL(src),
-      })),
-    ),
-  ]);
+  const thumbnailBlurhash = await getBlurDataURL(post.image);
 
   return (
     <>
@@ -187,7 +143,7 @@ export default async function PostPage({ params }: PostPageProps) {
               sizes="(max-width: 768px) 770px, 1000px"
             />
             <div className="px-[.8rem] pb-10 md:px-8">
-              <Mdx code={mdxResult} images={images} />
+              <Mdx code={mdxResult} />
             </div>
           </div>
 

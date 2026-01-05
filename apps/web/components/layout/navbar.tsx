@@ -5,13 +5,10 @@ import { useSelectedLayoutSegment } from "next/navigation";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 
-import { docsConfig } from "@/config/docs";
 import { marketingConfig } from "@/config/marketing";
-import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { useScroll } from "@/hooks/use-scroll";
 import { Button } from "@/components/alignui/actions/button";
-import { DocsSearch } from "@/components/docs/search";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { ModalContext } from "@/components/modals/providers";
 import { Icons } from "@/components/shared/icons";
@@ -33,16 +30,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
   const meta = useTranslations("Meta");
 
   const selectedLayout = useSelectedLayoutSegment();
-  const documentation = selectedLayout === "docs";
-
-  const configMap: Record<string, typeof docsConfig.mainNav> = {
-    docs: docsConfig.mainNav,
-  };
-
-  const links =
-    (selectedLayout && selectedLayout in configMap
-      ? configMap[selectedLayout]
-      : undefined) || marketingConfig.mainNav;
+  const links = marketingConfig.mainNav;
 
   return (
     <header
@@ -52,7 +40,6 @@ export function NavBar({ scroll = false }: NavBarProps) {
     >
       <MaxWidthWrapper
         className="flex h-14 sm:h-16 items-center justify-between py-3 sm:py-4 px-4 sm:px-6"
-        large={documentation}
       >
         <div className="flex gap-4 sm:gap-6 md:gap-10 items-center min-w-0 flex-1">
           <Link
@@ -94,24 +81,6 @@ export function NavBar({ scroll = false }: NavBarProps) {
             <LanguageSwitcher />
           </div>
 
-          {/* right header for docs */}
-          {documentation ? (
-            <div className="flex flex-1 items-center space-x-4 sm:justify-end">
-              <div className="flex-grow-0">
-                <DocsSearch />
-              </div>
-              <div className="flex space-x-4">
-                <Link
-                  href={siteConfig.links.github}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Icons.gitHub className="size-7" />
-                  <span className="sr-only">GitHub</span>
-                </Link>
-              </div>
-            </div>
-          ) : null}
 
           {session ? (
             <div className="flex items-center gap-1 sm:gap-2 pr-0 md:pr-0">
