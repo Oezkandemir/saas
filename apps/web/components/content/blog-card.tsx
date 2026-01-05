@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Post } from "@/.contentlayer/generated";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 
@@ -15,22 +14,39 @@ import {
 } from "@/lib/utils";
 import { BlurImage } from "@/components/shared/blur-image";
 
+type BlogPostData = {
+  _id?: string;
+  id?: string;
+  title: string;
+  description?: string | null;
+  image: string;
+  authors: string[];
+  date?: string;
+  created_at?: string;
+  slug: string;
+  blurDataURL: string;
+};
+
 export function BlogCard({
   data,
   priority,
   horizontale = false,
 }: {
-  data: Post & {
-    blurDataURL: string;
-  };
+  data: BlogPostData;
   priority?: boolean;
   horizontale?: boolean;
 }) {
   const t = useTranslations("Blog");
   const [imageError, setImageError] = useState(false);
 
-  // Ensure the image path is properly resolved
-  const imageSrc = data.image ? resolveStaticPath(data.image) : "";
+  // Check if image is a full URL (Supabase) or a relative path (legacy)
+  const imageSrc = data.image
+    ? data.image.startsWith("http")
+      ? data.image
+      : resolveStaticPath(data.image)
+    : "";
+  
+  const postDate = data.date || data.created_at || "";
 
   return (
     <article
@@ -42,16 +58,13 @@ export function BlogCard({
       )}
     >
       {imageSrc && !imageError && (
-        <div className="w-full overflow-hidden rounded-xl border">
+        <div className="w-full overflow-hidden rounded-xl border aspect-video bg-muted/30 flex items-center justify-center">
           <BlurImage
             alt={data.title}
             blurDataURL={data.blurDataURL ?? placeholderBlurhash}
-            className={cn(
-              "size-full object-cover object-center",
-              horizontale ? "lg:h-72" : null,
-            )}
+            className="w-full h-full object-contain object-center"
             width={800}
-            height={400}
+            height={450}
             priority={priority}
             placeholder="blur"
             src={imageSrc}
@@ -101,9 +114,9 @@ export function BlogCard({
             })}
           </div>
 
-          {data.date && (
+          {postDate && (
             <p className="text-sm text-muted-foreground">
-              {formatDate(data.date)}
+              {formatDate(postDate)}
             </p>
           )}
         </div>

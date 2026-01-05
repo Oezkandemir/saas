@@ -32,7 +32,7 @@ export default async function ChangelogPage() {
         },
         {
           type: "feature",
-          desc: "Added Contentlayer for improved content management",
+          desc: "Implemented Supabase-based blog system for content management",
         },
         {
           type: "improvement",

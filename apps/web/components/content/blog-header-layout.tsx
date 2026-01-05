@@ -49,7 +49,6 @@ export function BlogHeaderLayout() {
                 active={category.slug === slug}
               />
             ))}
-            <CategoryLink title={t("guides")} href="/guides" active={false} />
           </ul>
         </nav>
       </MaxWidthWrapper>
@@ -89,12 +88,6 @@ export function BlogHeaderLayout() {
                   mobile
                 />
               ))}
-              <CategoryLink
-                title={t("guides")}
-                href="/guides"
-                active={false}
-                mobile
-              />
             </ul>
           </Drawer.Content>
           <Drawer.Overlay />

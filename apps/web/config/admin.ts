@@ -60,6 +60,11 @@ export const adminSidebarLinks: SidebarNavItem[] = [
         title: "Company Profiles",
       },
       {
+        href: "/admin/blog",
+        icon: "fileText",
+        title: "Blog Posts",
+      },
+      {
         href: "/admin/system",
         icon: "activity",
         title: "System",

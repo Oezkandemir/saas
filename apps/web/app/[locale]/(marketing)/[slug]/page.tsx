@@ -1,8 +1,5 @@
 import { notFound } from "next/navigation";
-import { allPages } from "@/.contentlayer/generated";
 import { setRequestLocale } from "next-intl/server";
-
-import { Mdx } from "@/components/content/mdx-components";
 
 import "@/styles/mdx.css";
 
@@ -11,9 +8,8 @@ import { Metadata } from "next";
 import { constructMetadata } from "@/lib/utils";
 
 export async function generateStaticParams() {
-  return allPages.map((page) => ({
-    slug: page.slugAsParams,
-  }));
+  // No static pages from Contentlayer anymore
+  return [];
 }
 
 export async function generateMetadata({
@@ -22,18 +18,9 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata | undefined> {
   const resolvedParams = await params;
-  const page = allPages.find(
-    (page) => page.slugAsParams === resolvedParams.slug,
-  );
-  if (!page) {
-    return;
-  }
-
-  const { title, description } = page;
-
   return constructMetadata({
-    title: `${title} – Cenety`,
-    description: description,
+    title: `${resolvedParams.slug} – Cenety`,
+    description: "Page not found",
   });
 }
 
@@ -45,26 +32,6 @@ export default async function PagePage({
   const resolvedParams = await params;
   setRequestLocale(resolvedParams.locale);
 
-  const page = allPages.find(
-    (page) => page.slugAsParams === resolvedParams.slug,
-  );
-
-  if (!page) {
-    notFound();
-  }
-
-  return (
-    <article className="w-full py-6 lg:py-12">
-      <div className="space-y-4">
-        <h1 className="inline-block font-heading text-4xl lg:text-5xl">
-          {page.title}
-        </h1>
-        {page.description && (
-          <p className="text-xl text-muted-foreground">{page.description}</p>
-        )}
-      </div>
-      <hr className="my-4" />
-      <Mdx code={page.body.code} />
-    </article>
-  );
+  // Since we removed Contentlayer, all pages will return 404
+  notFound();
 }

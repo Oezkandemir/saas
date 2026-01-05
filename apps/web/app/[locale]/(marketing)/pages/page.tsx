@@ -1,6 +1,3 @@
-import Link from "next/link";
-import { allPages } from "@/.contentlayer/generated";
-
 import { constructMetadata } from "@/lib/utils";
 
 export const metadata = constructMetadata({
@@ -20,19 +17,8 @@ export default async function PagesPage() {
         </p>
       </div>
       <hr className="my-4" />
-      <div className="grid gap-4 md:grid-cols-2">
-        {allPages.map((page) => (
-          <Link
-            key={page.slugAsParams}
-            href={`/${page.slugAsParams}`}
-            className="block p-4 rounded-lg border hover:bg-muted transition-colors"
-          >
-            <h2 className="text-xl font-semibold mb-2">{page.title}</h2>
-            {page.description && (
-              <p className="text-muted-foreground">{page.description}</p>
-            )}
-          </Link>
-        ))}
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">No pages available.</p>
       </div>
     </div>
   );

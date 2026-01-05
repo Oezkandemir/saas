@@ -41,7 +41,8 @@ export function BlurImage({
   };
 
   // Resolve the image path to ensure it works with localized routes
-  const resolvedSrc = resolveStaticPath(src);
+  // Don't resolve if it's already a full URL (Supabase storage URLs)
+  const resolvedSrc = src.startsWith("http") ? src : resolveStaticPath(src);
 
   if (imgError) {
     return (
@@ -80,6 +81,7 @@ export function BlurImage({
         sizes={
           sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         }
+        unoptimized={resolvedSrc.startsWith("http")}
         {...props}
       />
     </div>
