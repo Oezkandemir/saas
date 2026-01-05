@@ -1,48 +1,93 @@
 import { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { Building2 } from "lucide-react";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
+import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 
-export const metadata: Metadata = constructMetadata({
-  title: "Impressum",
-  description: "Impressum und Angaben gemäß § 5 TMG",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  setRequestLocale(locale);
+  const t = await getTranslations("Imprint");
+
+  return constructMetadata({
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  });
+}
 
 export default async function ImprintPage() {
+  const locale = await getLocale();
+  setRequestLocale(locale);
   const t = await getTranslations("Imprint");
 
   return (
-    <div className="container mx-auto max-w-4xl py-12">
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold">{t("title")}</h1>
-          <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
-        </div>
-
-        <div className="space-y-6">
-          <section className="space-y-3">
-            <h2 className="text-2xl font-semibold">{t("company.title")}</h2>
-            <div className="rounded-lg border bg-muted/30 p-6">
-              <div className="space-y-2">
-                <p className="font-medium">[Ihr Firmenname]</p>
-                <p>[Rechtsform, z.B. GmbH, UG, Einzelunternehmen]</p>
-                <p>[Straße und Hausnummer]</p>
-                <p>[PLZ Stadt]</p>
-                <p>[Land]</p>
-              </div>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <div className="overflow-hidden relative py-16 bg-gradient-to-b border-b from-background via-background to-muted/20 md:py-24">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        <div className="container flex relative z-10 flex-col gap-6 items-center text-center duration-700 animate-in fade-in slide-in-from-top-4">
+          <div className="mb-4 flex justify-center">
+            <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+              <Building2 className="size-6 text-primary" />
             </div>
-          </section>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-2">
+            <span className="flex relative w-2 h-2">
+              <span className="inline-flex absolute w-full h-full rounded-full opacity-75 animate-ping bg-primary"></span>
+              <span className="inline-flex relative w-2 h-2 rounded-full bg-primary"></span>
+            </span>
+            {t("hero.badge")}
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b sm:text-5xl md:text-6xl lg:text-7xl from-foreground to-foreground/70">
+            {t("hero.title")}
+          </h1>
+          <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+            {t("hero.description")}
+          </p>
+        </div>
+      </div>
 
-          <section className="space-y-3">
-            <h2 className="text-2xl font-semibold">{t("contact.title")}</h2>
-            <div className="rounded-lg border bg-muted/30 p-6">
+      <MaxWidthWrapper className="py-16 md:py-24">
+        <div className="mx-auto max-w-4xl space-y-8">
+          {/* Company */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">{t("company.title")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <p className="font-medium">{t("company.name")}</p>
+                <p className="text-muted-foreground">
+                  {t("company.legalForm")}
+                </p>
+                <p className="text-muted-foreground">{t("company.address")}</p>
+                <p className="text-muted-foreground">{t("company.city")}</p>
+                <p className="text-muted-foreground">{t("company.country")}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Contact */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">{t("contact.title")}</CardTitle>
+            </CardHeader>
+            <CardContent>
               <div className="space-y-2">
                 <p>
-                  <span className="font-medium">Telefon:</span> [Ihre
-                  Telefonnummer]
+                  <span className="font-medium">{t("contact.phone")}:</span>{" "}
+                  {t("contact.phoneValue")}
                 </p>
                 <p>
-                  <span className="font-medium">E-Mail:</span>{" "}
+                  <span className="font-medium">{t("contact.email")}:</span>{" "}
                   <a
                     href="mailto:info@cenety.com"
                     className="text-primary hover:underline"
@@ -51,7 +96,7 @@ export default async function ImprintPage() {
                   </a>
                 </p>
                 <p>
-                  <span className="font-medium">Website:</span>{" "}
+                  <span className="font-medium">{t("contact.website")}:</span>{" "}
                   <a
                     href="https://cenety.com"
                     className="text-primary hover:underline"
@@ -60,55 +105,59 @@ export default async function ImprintPage() {
                   </a>
                 </p>
               </div>
-            </div>
-          </section>
+            </CardContent>
+          </Card>
 
-          <section className="space-y-3">
-            <h2 className="text-2xl font-semibold">
-              {t("registration.title")}
-            </h2>
-            <div className="rounded-lg border bg-muted/30 p-6">
+          {/* Registration */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("registration.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
               <div className="space-y-2">
                 <p>
                   <span className="font-medium">
                     {t("registration.registrationCourt")}:
                   </span>{" "}
-                  [z.B. Amtsgericht München]
+                  {t("registration.registrationCourtValue")}
                 </p>
                 <p>
                   <span className="font-medium">
                     {t("registration.registrationNumber")}:
                   </span>{" "}
-                  [z.B. HRB 123456]
+                  {t("registration.registrationNumberValue")}
                 </p>
                 <p>
-                  <span className="font-medium">
-                    {t("registration.vatId")}:
-                  </span>{" "}
-                  [DE123456789]
+                  <span className="font-medium">{t("registration.vatId")}:</span>{" "}
+                  {t("registration.vatIdValue")}
                 </p>
                 <p>
                   <span className="font-medium">
                     {t("registration.managingDirector")}:
                   </span>{" "}
-                  [Name des Geschäftsführers]
+                  {t("registration.managingDirectorValue")}
                 </p>
               </div>
-            </div>
-          </section>
+            </CardContent>
+          </Card>
 
-          <section className="space-y-3">
-            <h2 className="text-2xl font-semibold">{t("responsible.title")}</h2>
-            <p className="text-sm text-muted-foreground">
-              {t("responsible.description")}
-            </p>
-            <div className="rounded-lg border bg-muted/30 p-6">
+          {/* Responsible */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">{t("responsible.title")}</CardTitle>
+              <CardDescription>{t("responsible.description")}</CardDescription>
+            </CardHeader>
+            <CardContent>
               <div className="space-y-2">
-                <p className="font-medium">[Name des Verantwortlichen]</p>
-                <p>[Straße und Hausnummer]</p>
-                <p>[PLZ Stadt]</p>
+                <p className="font-medium">{t("responsible.name")}</p>
+                <p className="text-muted-foreground">
+                  {t("responsible.address")}
+                </p>
+                <p className="text-muted-foreground">{t("responsible.city")}</p>
                 <p>
-                  E-Mail:{" "}
+                  {t("responsible.email")}:{" "}
                   <a
                     href="mailto:info@cenety.com"
                     className="text-primary hover:underline"
@@ -117,12 +166,15 @@ export default async function ImprintPage() {
                   </a>
                 </p>
               </div>
-            </div>
-          </section>
+            </CardContent>
+          </Card>
 
-          <section className="space-y-3">
-            <h2 className="text-2xl font-semibold">{t("dispute.title")}</h2>
-            <div className="rounded-lg border bg-yellow-50 p-6 dark:bg-yellow-900/20">
+          {/* Dispute */}
+          <Card className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-900/20">
+            <CardHeader>
+              <CardTitle className="text-2xl">{t("dispute.title")}</CardTitle>
+            </CardHeader>
+            <CardContent>
               <p className="text-sm">{t("dispute.euPlatform")}</p>
               <p className="mt-2">
                 <a
@@ -135,12 +187,15 @@ export default async function ImprintPage() {
                 </a>
               </p>
               <p className="mt-4 text-sm">{t("dispute.participation")}</p>
-            </div>
-          </section>
+            </CardContent>
+          </Card>
 
-          <section className="space-y-3">
-            <h2 className="text-2xl font-semibold">{t("liability.title")}</h2>
-            <div className="space-y-4">
+          {/* Liability */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">{t("liability.title")}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div>
                 <h3 className="mb-2 font-semibold">
                   {t("liability.contentTitle")}
@@ -157,26 +212,31 @@ export default async function ImprintPage() {
                   {t("liability.linksText")}
                 </p>
               </div>
-            </div>
-          </section>
+            </CardContent>
+          </Card>
 
-          <section className="space-y-3">
-            <h2 className="text-2xl font-semibold">{t("copyright.title")}</h2>
-            <p className="text-sm text-muted-foreground">
-              {t("copyright.text")}
-            </p>
-          </section>
+          {/* Copyright */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">{t("copyright.title")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                {t("copyright.text")}
+              </p>
+            </CardContent>
+          </Card>
 
-          <section className="mt-8 rounded-lg border border-blue-200 bg-blue-50 p-6 dark:border-blue-800 dark:bg-blue-900/20">
-            <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-              ⚠️ Hinweis: Bitte ersetzen Sie alle Platzhalter in eckigen
-              Klammern [wie diese] mit Ihren tatsächlichen Firmendaten. Lassen
-              Sie das Impressum von einem Rechtsanwalt prüfen, um die
-              vollständige Konformität mit § 5 TMG sicherzustellen.
-            </p>
-          </section>
+          {/* Legal Notice */}
+          <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
+            <CardContent className="pt-6">
+              <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                ⚠️ {t("legalNotice")}
+              </p>
+            </CardContent>
+          </Card>
         </div>
-      </div>
+      </MaxWidthWrapper>
     </div>
   );
 }

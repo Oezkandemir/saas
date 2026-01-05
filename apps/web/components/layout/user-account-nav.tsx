@@ -8,15 +8,20 @@ import {
   CreditCard,
   Crown,
   FileText,
+  Globe,
   Home,
   LayoutDashboard,
   Lock,
   LogOut,
+  Moon,
   Settings,
+  Sun,
   User as UserIcon,
   X,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useRouter as useI18nRouter, usePathname } from "@/i18n/routing";
+import { useTheme } from "next-themes";
 import { toast } from "sonner";
 
 import { logger } from "@/lib/logger";
@@ -51,11 +56,28 @@ const Drawer = {
   Close: DrawerClose,
 };
 
+// Languages will be translated dynamically
+const languages = [
+  {
+    value: "en",
+    flag: "🇺🇸",
+  },
+  {
+    value: "de",
+    flag: "🇩🇪",
+  },
+];
+
 export function UserAccountNav() {
   const { session, supabase } = useSupabase();
   const user = session?.user;
   const t = useTranslations("UserNav");
   const tNav = useTranslations("Navigation");
+  const tCommon = useTranslations("Common");
+  const locale = useLocale();
+  const router = useI18nRouter();
+  const pathname = usePathname();
+  const { theme, setTheme } = useTheme();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dbUserName, setDbUserName] = useState<string | null>(null);
@@ -63,6 +85,28 @@ export function UserAccountNav() {
 
   const closeDrawer = () => {
     setDrawerOpen(false);
+  };
+
+  const switchLanguage = async (newLocale: string) => {
+    // Save locale preference to cookie
+    try {
+      await fetch("/api/locale", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ locale: newLocale }),
+      });
+    } catch (error) {
+      logger.error("Failed to save locale preference:", error);
+    }
+
+    // Navigate to new locale
+    router.replace(pathname, { locale: newLocale });
+  };
+
+  const setThemeMode = (mode: "light" | "dark" | "system") => {
+    setTheme(mode);
   };
 
   const handleSignOut = async () => {
@@ -195,7 +239,7 @@ export function UserAccountNav() {
                       </p>
                       {userRole === "ADMIN" && (
                         <span className="inline-block mt-1 px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-md">
-                          Admin
+                          {t("admin")}
                         </span>
                       )}
                     </div>
@@ -307,6 +351,91 @@ export function UserAccountNav() {
                     <Crown className="size-4" />
                     <span>{tNav("pricing")}</span>
                   </Link>
+
+                  <div className="border-t border-stroke-soft-200 my-2" />
+
+                  {/* Language Switcher */}
+                  <div className="px-3 py-2.5">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <Globe className="size-4 shrink-0" />
+                        <span className="text-sm font-medium">{tNav("switchLanguage")}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        {languages.map((lang) => (
+                          <button
+                            key={lang.value}
+                            onClick={() => switchLanguage(lang.value)}
+                            className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs transition-colors ${
+                              locale === lang.value
+                                ? "bg-primary text-primary-foreground"
+                                : "hover:bg-bg-white-50 border border-stroke-soft-200"
+                            }`}
+                          >
+                            <span className="text-sm leading-none">{lang.flag}</span>
+                            <span className="hidden sm:inline text-xs">
+                              {lang.value === "en" ? tCommon("languages.english") : tCommon("languages.german")}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Theme Switcher */}
+                  <div className="px-3 py-2.5">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        {theme === "dark" ? (
+                          <Moon className="size-4 shrink-0" />
+                        ) : theme === "light" ? (
+                          <Sun className="size-4 shrink-0" />
+                        ) : (
+                          <Sun className="size-4 shrink-0 opacity-50" />
+                        )}
+                        <span className="text-sm font-medium">
+                          {tNav("theme", { defaultValue: "Theme" })}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => setThemeMode("light")}
+                          className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs transition-colors ${
+                            theme === "light"
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-bg-white-50 border border-stroke-soft-200"
+                          }`}
+                        >
+                          <Sun className="size-3" />
+                          <span className="hidden sm:inline">{tNav("lightMode")}</span>
+                        </button>
+                        <button
+                          onClick={() => setThemeMode("dark")}
+                          className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs transition-colors ${
+                            theme === "dark"
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-bg-white-50 border border-stroke-soft-200"
+                          }`}
+                        >
+                          <Moon className="size-3" />
+                          <span className="hidden sm:inline">{tNav("darkMode")}</span>
+                        </button>
+                        <button
+                          onClick={() => setThemeMode("system")}
+                          className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs transition-colors ${
+                            theme === "system" || !theme
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-bg-white-50 border border-stroke-soft-200"
+                          }`}
+                        >
+                          <Sun className="size-3 opacity-50" />
+                          <span className="hidden sm:inline">
+                            {tNav("systemMode", { defaultValue: "System" })}
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
 
                   <div className="border-t border-stroke-soft-200 my-2" />
 

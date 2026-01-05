@@ -52,6 +52,7 @@ export default async function ModernHero() {
             <Link
               href="/pricing"
               prefetch={true}
+              aria-label={t("ctaPrimary")}
               className={cn(
                 buttonVariants({ size: "lg" }),
                 "group relative gap-2 px-6 py-5 text-sm font-semibold shadow-2xl transition-all hover:scale-105 hover:shadow-primary/25 sm:px-8 sm:py-6 sm:text-base rounded-full",
@@ -59,10 +60,11 @@ export default async function ModernHero() {
               )}
             >
               <span>{t("ctaPrimary")}</span>
-              <Icons.arrowRight className="size-4 transition-transform group-hover:translate-x-1 sm:size-5" />
+              <Icons.arrowRight className="size-4 transition-transform group-hover:translate-x-1 sm:size-5" aria-hidden="true" />
             </Link>
             <Link
               href="/dashboard"
+              aria-label={t("ctaSecondary")}
               className={cn(
                 buttonVariants({
                   variant: "outline",
@@ -71,7 +73,7 @@ export default async function ModernHero() {
                 "group gap-2 border-2 px-6 py-5 text-sm font-semibold backdrop-blur-sm transition-all hover:scale-105 hover:bg-background/80 sm:px-8 sm:py-6 sm:text-base rounded-full",
               )}
             >
-              <Icons.play className="size-4 transition-transform group-hover:scale-110 sm:size-5" />
+              <Icons.play className="size-4 transition-transform group-hover:scale-110 sm:size-5" aria-hidden="true" />
               <span>{t("ctaSecondary")}</span>
             </Link>
           </div>

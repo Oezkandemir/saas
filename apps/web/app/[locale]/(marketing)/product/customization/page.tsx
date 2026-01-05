@@ -1,7 +1,9 @@
 import { Metadata } from "next";
 import { Code, Paintbrush, Puzzle, Settings } from "lucide-react";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
+import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import {
   Card,
   CardContent,
@@ -9,146 +11,181 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/alignui/data-display/card";
+import { Button } from "@/components/alignui/actions/button";
 
-export const metadata: Metadata = constructMetadata({
-  title: "Customization",
-  description: "Customize Cenety to fit your unique needs",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  setRequestLocale(locale);
+  const t = await getTranslations("Product.Customization");
+
+  return constructMetadata({
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  });
+}
 
 export default async function CustomizationPage() {
+  const locale = await getLocale();
+  setRequestLocale(locale);
+  const t = await getTranslations("Product.Customization");
+
   return (
-    <div className="space-y-8">
-      <div className="space-y-4">
-        <h1 className="text-3xl font-bold">Customization</h1>
-        <p className="text-xl text-muted-foreground">
-          Tailor Cenety to match your brand and workflow
-        </p>
-      </div>
-
-      <div className="space-y-4">
-        <p>
-          Cenety is designed to be highly customizable, allowing you to adapt
-          the platform to your specific requirements without compromise. From
-          visual elements to core functionality, our flexible architecture gives
-          you the freedom to create a truly personalized experience.
-        </p>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader className="flex flex-row items-center gap-4">
-            <Paintbrush className="size-8 text-primary" />
-            <div>
-              <CardTitle>Visual Customization</CardTitle>
-              <CardDescription>Make Cenety your own</CardDescription>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <div className="overflow-hidden relative py-16 bg-gradient-to-b border-b from-background via-background to-muted/20 md:py-24">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        <div className="container flex relative z-10 flex-col gap-6 items-center text-center duration-700 animate-in fade-in slide-in-from-top-4">
+          <div className="mb-4 flex justify-center">
+            <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+              <Settings className="size-6 text-primary" />
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p>
-              Customize the look and feel of your Cenety implementation to match
-              your brand identity:
-            </p>
-            <ul className="space-y-2">
-              <li>• Custom color schemes and theming</li>
-              <li>• Logo and branding elements</li>
-              <li>• Typography customization</li>
-              <li>• Light and dark mode support</li>
-              <li>• Custom layouts and page designs</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center gap-4">
-            <Settings className="size-8 text-primary" />
-            <div>
-              <CardTitle>Functional Customization</CardTitle>
-              <CardDescription>Adapt to your workflow</CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p>
-              Tailor the functionality to meet your specific business
-              requirements:
-            </p>
-            <ul className="space-y-2">
-              <li>• Custom user roles and permissions</li>
-              <li>• Workflow automation</li>
-              <li>• Form and field customization</li>
-              <li>• Dashboard and reporting tools</li>
-              <li>• Notification preferences</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center gap-4">
-            <Code className="size-8 text-primary" />
-            <div>
-              <CardTitle>Developer Extensibility</CardTitle>
-              <CardDescription>Build with your preferred tools</CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p>Extend Cenety with custom code and integrations:</p>
-            <ul className="space-y-2">
-              <li>• API access for custom functionality</li>
-              <li>• Webhook support for event-driven architectures</li>
-              <li>• Custom component development</li>
-              <li>• Server-side extensions</li>
-              <li>• Database schema extensions</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center gap-4">
-            <Puzzle className="size-8 text-primary" />
-            <div>
-              <CardTitle>Integration Capabilities</CardTitle>
-              <CardDescription>
-                Connect with your existing tools
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p>
-              Seamlessly connect Cenety with your existing tools and services:
-            </p>
-            <ul className="space-y-2">
-              <li>• Third-party service integrations</li>
-              <li>• SSO and identity management</li>
-              <li>• Analytics and monitoring tools</li>
-              <li>• CRM and marketing platforms</li>
-              <li>• Payment processors and billing systems</li>
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="rounded-lg bg-muted p-8 text-center">
-        <h2 className="mb-4 text-2xl font-bold">
-          Need help with customization?
-        </h2>
-        <p className="mb-6">
-          Our team of experts can assist you with advanced customization needs
-          or provide guidance on best practices for extending Cenety.
-        </p>
-        <div className="flex justify-center gap-4">
-          <a
-            href="#"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-          >
-            Contact Us
-          </a>
-          <a
-            href="#"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium"
-          >
-            View Documentation
-          </a>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-2">
+            <span className="flex relative w-2 h-2">
+              <span className="inline-flex absolute w-full h-full rounded-full opacity-75 animate-ping bg-primary"></span>
+              <span className="inline-flex relative w-2 h-2 rounded-full bg-primary"></span>
+            </span>
+            {t("hero.badge")}
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b sm:text-5xl md:text-6xl lg:text-7xl from-foreground to-foreground/70">
+            {t("hero.title")}
+          </h1>
+          <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+            {t("hero.description")}
+          </p>
         </div>
       </div>
+
+      <MaxWidthWrapper className="py-16 md:py-24">
+        <div className="mx-auto max-w-4xl space-y-8">
+          {/* Intro */}
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-muted-foreground leading-relaxed">
+                {t("intro")}
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Features Grid */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader className="flex flex-row items-center gap-4">
+                <Paintbrush className="size-8 text-primary" />
+                <div>
+                  <CardTitle>{t("visual.title")}</CardTitle>
+                  <CardDescription>{t("visual.description")}</CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  {t("visual.intro")}
+                </p>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li>• {t("visual.item1")}</li>
+                  <li>• {t("visual.item2")}</li>
+                  <li>• {t("visual.item3")}</li>
+                  <li>• {t("visual.item4")}</li>
+                  <li>• {t("visual.item5")}</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center gap-4">
+                <Settings className="size-8 text-primary" />
+                <div>
+                  <CardTitle>{t("functional.title")}</CardTitle>
+                  <CardDescription>
+                    {t("functional.description")}
+                  </CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  {t("functional.intro")}
+                </p>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li>• {t("functional.item1")}</li>
+                  <li>• {t("functional.item2")}</li>
+                  <li>• {t("functional.item3")}</li>
+                  <li>• {t("functional.item4")}</li>
+                  <li>• {t("functional.item5")}</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center gap-4">
+                <Code className="size-8 text-primary" />
+                <div>
+                  <CardTitle>{t("developer.title")}</CardTitle>
+                  <CardDescription>
+                    {t("developer.description")}
+                  </CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  {t("developer.intro")}
+                </p>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li>• {t("developer.item1")}</li>
+                  <li>• {t("developer.item2")}</li>
+                  <li>• {t("developer.item3")}</li>
+                  <li>• {t("developer.item4")}</li>
+                  <li>• {t("developer.item5")}</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center gap-4">
+                <Puzzle className="size-8 text-primary" />
+                <div>
+                  <CardTitle>{t("integration.title")}</CardTitle>
+                  <CardDescription>
+                    {t("integration.description")}
+                  </CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  {t("integration.intro")}
+                </p>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li>• {t("integration.item1")}</li>
+                  <li>• {t("integration.item2")}</li>
+                  <li>• {t("integration.item3")}</li>
+                  <li>• {t("integration.item4")}</li>
+                  <li>• {t("integration.item5")}</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* CTA */}
+          <Card className="bg-muted">
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <h2 className="mb-4 text-2xl font-bold">
+                  {t("cta.title")}
+                </h2>
+                <p className="mb-6 text-muted-foreground">
+                  {t("cta.description")}
+                </p>
+                <div className="flex justify-center gap-4">
+                  <Button asChild>
+                    <a href="mailto:support@cenety.com">
+                      {t("cta.contact")}
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </MaxWidthWrapper>
     </div>
   );
 }

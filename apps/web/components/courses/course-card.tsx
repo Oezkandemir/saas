@@ -3,12 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { EventType } from "@/actions/scheduling/event-types-actions";
-import { ArrowRight, Clock, Euro } from "lucide-react";
-import { useLocale } from "next-intl";
+import { ArrowRight, Clock, Euro, Calendar } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 import { logger } from "@/lib/logger";
 import { formatDuration } from "@/lib/utils";
-import { Button } from "@/components/alignui/actions/button";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 
 interface CourseCardProps {
   eventType: EventType & {
@@ -18,18 +20,21 @@ interface CourseCardProps {
 
 /**
  * CourseCard Component
- * Moderne Produktkarte für Kurse mit Bild, Titel, Beschreibung, Dauer und Buchen-Button
+ * Moderne Event-Karte im Stil der Pricing-Cards
  */
 export function CourseCard({ eventType }: CourseCardProps) {
   const locale = useLocale();
+  const t = useTranslations("Courses");
 
   // Format duration using the utility function
-  const durationText = formatDuration(eventType.duration_minutes, "de");
+  const durationText = formatDuration(eventType.duration_minutes, locale);
 
   // Format price
   const priceText = eventType.price_amount
-    ? `${eventType.price_amount.toFixed(2)} ${eventType.price_currency || "EUR"}`
-    : "Auf Anfrage";
+    ? `${eventType.price_amount.toFixed(2)}`
+    : t("onRequest");
+
+  const hasPrice = eventType.price_amount && eventType.price_amount > 0;
 
   // Booking link - ensure owner_user_id is available
   const ownerUserId = eventType.owner_user_id;
@@ -44,69 +49,104 @@ export function CourseCard({ eventType }: CourseCardProps) {
   const imageUrl = `/illustrations/work-from-home.jpg`;
 
   return (
-    <div className="group relative overflow-hidden rounded-3xl border border-border/50 bg-card/80 backdrop-blur-sm flex flex-col h-full will-change-transform">
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 via-purple-500/5 to-transparent opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100" />
+    <div
+      className={cn(
+        "group relative flex flex-col overflow-hidden rounded-2xl border-2 transition-all duration-300",
+        "hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1",
+        "border-border bg-card hover:border-primary/20",
+      )}
+    >
+      {/* Header */}
+      <div className="relative overflow-hidden border-b bg-gradient-to-br from-muted/50 to-muted/20 p-6 pt-8">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_0%,rgba(255,255,255,0.1)_50%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-      {/* Image Section */}
-      <div className="relative h-48 w-full overflow-hidden">
-        <Image
-          src={imageUrl}
-          alt={eventType.title}
-          fill
-          className="object-cover transition-transform duration-500 ease-out will-change-transform group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-card/90 via-card/50 to-transparent" />
-
-        {/* Duration Badge */}
-        <div className="absolute top-4 right-4 flex items-center gap-1.5 rounded-full bg-background/90 backdrop-blur-sm px-3 py-1.5 text-sm font-medium shadow-lg">
-          <Clock className="h-4 w-4 text-primary" />
-          <span>{durationText}</span>
+        {/* Image */}
+        <div className="relative h-40 w-full mb-4 rounded-lg overflow-hidden">
+          <Image
+            src={imageUrl}
+            alt={eventType.title}
+            fill
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-card/90 via-card/50 to-transparent" />
         </div>
-      </div>
 
-      {/* Content Section */}
-      <div className="flex flex-1 flex-col p-6">
-        {/* Title */}
-        <h3 className="mb-2 text-2xl font-bold line-clamp-2 transition-colors duration-200 group-hover:text-primary">
-          {eventType.title}
-        </h3>
+        {/* Badges */}
+        <div className="absolute top-4 right-4 flex flex-col gap-2 items-end z-10">
+          {durationText && (
+            <Badge className="bg-primary text-primary-foreground shadow-md text-xs flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              {durationText}
+            </Badge>
+          )}
+        </div>
 
-        {/* Description */}
-        <p className="mb-6 flex-1 line-clamp-3 leading-relaxed text-muted-foreground">
-          {eventType.description || "Keine Beschreibung verfügbar"}
-        </p>
-
-        {/* Price and Button */}
-        <div className="mt-auto space-y-4">
-          {/* Price */}
-          <div className="flex items-center gap-2">
-            <Euro className="h-5 w-5 text-primary" />
-            <span className="text-2xl font-bold">{priceText}</span>
+        <div className="relative flex items-start justify-between mb-4">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 shrink-0 bg-primary/10 text-primary">
+              <Calendar className="h-6 w-6" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="text-lg font-semibold line-clamp-2 transition-colors duration-200 group-hover:text-primary">
+                {eventType.title}
+              </h3>
+            </div>
           </div>
+        </div>
 
-          {/* Book Button */}
-          <Button
-            asChild
-            variant="primary"
-            className="w-full group/button"
-            size="lg"
-          >
-            <Link
-              href={bookingLink}
-              className="flex items-center justify-center gap-2"
-            >
-              Jetzt buchen
-              <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/button:translate-x-1" />
-            </Link>
-          </Button>
+        {/* Price */}
+        <div className="relative">
+          <div className="flex items-baseline gap-2">
+            <div className="flex items-baseline">
+              {hasPrice ? (
+                <>
+                  <Euro className="h-5 w-5 text-muted-foreground mr-1" />
+                  <span className="text-4xl font-bold tracking-tight">
+                    {priceText}
+                  </span>
+                </>
+              ) : (
+                <span className="text-2xl font-bold tracking-tight">
+                  {priceText}
+                </span>
+              )}
+            </div>
+          </div>
+          {hasPrice && (
+            <p className="text-xs text-muted-foreground mt-2">
+              {t("perAppointment")}
+            </p>
+          )}
         </div>
       </div>
 
-      {/* Decorative elements */}
-      <div className="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/2 rounded-full bg-gradient-to-br from-primary/20 to-transparent blur-3xl opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 pointer-events-none" />
+      {/* Content */}
+      <div className="flex flex-1 flex-col gap-6 p-6">
+        {/* Description */}
+        <div className="space-y-3 text-left">
+          <p className="text-sm font-medium leading-relaxed text-muted-foreground line-clamp-3">
+            {eventType.description || t("noDescriptionAvailable")}
+          </p>
+        </div>
+
+        {/* CTA Button */}
+        <div className="mt-auto pt-4">
+          <Link
+            href={bookingLink}
+            className={cn(
+              buttonVariants({
+                variant: "primary",
+                size: "lg",
+              }),
+              "w-full group/btn",
+            )}
+          >
+            {t("bookNow")}
+            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

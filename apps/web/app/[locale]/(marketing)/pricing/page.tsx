@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { UserSubscriptionPlan } from "@/types";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
@@ -12,18 +13,28 @@ import { PricingFaq } from "@/components/pricing/pricing-faq";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = constructMetadata({
-  title: "Pricing – Cenety",
-  description: "Explore our subscription plans.",
-});
+export async function generateMetadata() {
+  const locale = await getLocale();
+  setRequestLocale(locale);
+  const t = await getTranslations("Pricing.page");
+
+  return constructMetadata({
+    title: t("title"),
+    description: t("description"),
+  });
+}
 
 export default async function PricingPage() {
+  const locale = await getLocale();
+  setRequestLocale(locale);
+  const t = await getTranslations("Pricing.page");
+  const tNav = await getTranslations("Navigation");
   const user = await getCurrentUser();
 
   if (user?.role === "ADMIN") {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen">
-        <h1 className="text-5xl font-bold">Seriously?</h1>
+        <h1 className="text-5xl font-bold">{t("adminSeriously")}</h1>
         <Image
           src={resolveStaticPath("illustrations/call-waiting.svg")}
           alt="403"
@@ -32,12 +43,12 @@ export default async function PricingPage() {
           className="-my-20 pointer-events-none dark:invert"
         />
         <p className="px-4 text-2xl font-medium text-center text-balance">
-          You are an {user.role}. Back to{" "}
+          {t("adminMessage", { role: user.role })}{" "}
           <Link
             href="/admin"
             className="underline text-muted-foreground underline-offset-4 hover:text-purple-500"
           >
-            Dashboard
+            {tNav("dashboard")}
           </Link>
           .
         </p>
@@ -68,14 +79,13 @@ export default async function PricingPage() {
               <span className="inline-flex absolute w-full h-full rounded-full opacity-75 animate-ping bg-primary"></span>
               <span className="inline-flex relative w-2 h-2 rounded-full bg-primary"></span>
             </span>
-            Transparente Preise, keine versteckten Kosten
+            {t("heroBadge")}
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b sm:text-5xl md:text-6xl lg:text-7xl from-foreground to-foreground/70">
-            Ein QR-Code, der immer bleibt.
+            {t("heroTitle")}
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-            Angebote & Rechnungen in Minuten. Dynamische QR-Codes für Ihr
-            Business.
+            {t("heroDescription")}
           </p>
         </div>
       </div>

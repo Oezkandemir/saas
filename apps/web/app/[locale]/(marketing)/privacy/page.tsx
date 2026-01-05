@@ -1,73 +1,137 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { Shield } from "lucide-react";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
+import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 import { Button } from "@/components/alignui/actions/button";
 
-export const metadata: Metadata = constructMetadata({
-  title: "Datenschutzerklärung",
-  description: "DSGVO-konforme Datenschutzerklärung für Cenety",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  setRequestLocale(locale);
+  const t = await getTranslations("Privacy");
+
+  return constructMetadata({
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  });
+}
 
 export default async function PrivacyPage({
   params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
+  const resolvedParams = await params;
+  const locale = resolvedParams.locale || "de";
+  setRequestLocale(locale);
   const t = await getTranslations("Privacy");
-  const locale = params.locale || "de";
 
   return (
-    <div className="container mx-auto max-w-4xl py-12">
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold">{t("title")}</h1>
-          <p className="mt-2 text-muted-foreground">
-            Stand:{" "}
-            {new Date().toLocaleDateString(locale, {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="flex flex-wrap gap-3 rounded-lg border bg-muted/30 p-6">
-          <Link href="/dashboard/settings">
-            <Button variant="outline" size="sm">
-              📥 Meine Daten exportieren
-            </Button>
-          </Link>
-          <Link href="/dashboard/settings">
-            <Button variant="outline" size="sm">
-              🗑️ Account löschen
-            </Button>
-          </Link>
-          <a href="mailto:privacy@cenety.com">
-            <Button variant="outline" size="sm">
-              ✉️ Kontakt Datenschutz
-            </Button>
-          </a>
-        </div>
-
-        <div className="space-y-8">
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">
-              1. Name und Kontaktdaten des Verantwortlichen
-            </h2>
-            <div className="rounded-lg border bg-muted/30 p-6">
-              <p className="mb-2">
-                <strong>Verantwortlich für die Datenverarbeitung:</strong>
-              </p>
-              <p>[Ihr Firmenname]</p>
-              <p>[Straße und Hausnummer]</p>
-              <p>[PLZ Stadt]</p>
-              <p>E-Mail: privacy@cenety.com</p>
-              <p>Telefon: [Ihre Telefonnummer]</p>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <div className="overflow-hidden relative py-16 bg-gradient-to-b border-b from-background via-background to-muted/20 md:py-24">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        <div className="container flex relative z-10 flex-col gap-6 items-center text-center duration-700 animate-in fade-in slide-in-from-top-4">
+          <div className="mb-4 flex justify-center">
+            <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+              <Shield className="size-6 text-primary" />
             </div>
-          </section>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-2">
+            <span className="flex relative w-2 h-2">
+              <span className="inline-flex absolute w-full h-full rounded-full opacity-75 animate-ping bg-primary"></span>
+              <span className="inline-flex relative w-2 h-2 rounded-full bg-primary"></span>
+            </span>
+            {t("hero.badge")}
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b sm:text-5xl md:text-6xl lg:text-7xl from-foreground to-foreground/70">
+            {t("hero.title")}
+          </h1>
+          <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+            {t("hero.description")}
+          </p>
+          <div className="mt-2 flex items-center justify-center gap-4 text-sm text-muted-foreground">
+            <span>
+              {t("hero.lastUpdated")}:{" "}
+              {new Date().toLocaleDateString(locale, {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <MaxWidthWrapper className="py-16 md:py-24">
+        <div className="mx-auto max-w-4xl space-y-8">
+          {/* Quick Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("quickActions.title")}</CardTitle>
+              <CardDescription>{t("quickActions.description")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-3">
+                <Link href="/dashboard/settings">
+                  <Button variant="outline" size="sm">
+                    📥 {t("quickActions.export")}
+                  </Button>
+                </Link>
+                <Link href="/dashboard/settings">
+                  <Button variant="outline" size="sm">
+                    🗑️ {t("quickActions.delete")}
+                  </Button>
+                </Link>
+                <a href="mailto:privacy@cenety.com">
+                  <Button variant="outline" size="sm">
+                    ✉️ {t("quickActions.contact")}
+                  </Button>
+                </a>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Section 1 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("sections.section1.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-lg border bg-muted/30 p-6">
+                <p className="mb-2">
+                  <strong>{t("sections.section1.responsible")}</strong>
+                </p>
+                <p>{t("sections.section1.companyName")}</p>
+                <p>{t("sections.section1.address")}</p>
+                <p>{t("sections.section1.city")}</p>
+                <p>
+                  {t("sections.section1.email")}:{" "}
+                  <a
+                    href="mailto:privacy@cenety.com"
+                    className="text-primary hover:underline"
+                  >
+                    privacy@cenety.com
+                  </a>
+                </p>
+                <p>
+                  {t("sections.section1.phone")}:{" "}
+                  {t("sections.section1.phoneValue")}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
 
           <section className="space-y-4">
             <h2 className="text-2xl font-semibold">
@@ -404,7 +468,7 @@ export default async function PrivacyPage({
             </div>
           </section>
         </div>
-      </div>
+      </MaxWidthWrapper>
     </div>
   );
 }

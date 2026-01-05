@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { adminSidebarLinks } from "@/config/admin";
 import { sidebarLinks } from "@/config/dashboard";
 import { SearchCommand } from "@/components/dashboard/search-command";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { TwoFactorSecurityBanner } from "@/components/security/two-factor-security-banner";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
@@ -81,7 +80,6 @@ export function SidebarLinksProvider({
             {/* Command Menu - Hidden but accessible via Command+K */}
             <SearchCommand links={filteredLinks} />
 
-            <LanguageSwitcher />
             <UserAccountNav />
           </div>
         </header>

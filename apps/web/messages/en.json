@@ -18,6 +18,10 @@
     "signIn": "Sign In",
     "signUp": "Sign Up",
     "switchLanguage": "Switch language",
+    "theme": "Theme",
+    "lightMode": "Light",
+    "darkMode": "Dark",
+    "systemMode": "System",
     "blog": "Blog",
     "kurse": "Courses",
     "documentation": "Documentation",
@@ -29,7 +33,26 @@
     "alerts": "Alerts",
     "user": "User",
     "no": "No",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "languages": {
+      "english": "English",
+      "german": "Deutsch"
+    },
+    "multiStepForm": {
+      "stepOf": "Step {current} of {total}",
+      "percentComplete": "{percent}% complete",
+      "goToStep": "Go to step {number}: {title}",
+      "fillAllRequiredFields": "Please fill in all required fields",
+      "completeStep": "Please complete: {stepTitle}",
+      "fixFormErrors": "Please fix the errors in the form",
+      "saveError": "Error saving",
+      "tryAgain": "Please try again",
+      "back": "Back",
+      "save": "Save",
+      "saving": "Saving...",
+      "next": "Next",
+      "stepNumber": "Step {number}"
+    }
   },
   "UserNav": {
     "admin": "Admin",
@@ -147,6 +170,118 @@
     "openingPortal": "Opening Portal...",
     "syncToManage": "Please sync your subscription to manage it"
   },
+  "Pricing": {
+    "pricing": "Pricing",
+    "chooseYourPlan": "Choose Your Plan",
+    "pricingDescription": "Flexible plans for every business. Start free and upgrade anytime.",
+    "currentPlan": "Current Plan",
+    "popular": "Popular",
+    "free": "Free",
+    "perMonth": "/month",
+    "billedMonthly": "billed monthly",
+    "billedYearly": "{amount} billed yearly",
+    "savePercent": "Save {percent}%",
+    "goToDashboard": "Go to Dashboard",
+    "startFree": "Start Free",
+    "upgradeNow": "Upgrade Now",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "toggleMonthlyBilling": "Toggle monthly billing",
+    "toggleYearlyBilling": "Toggle yearly billing",
+    "questions": "Questions? Contact us at",
+    "tryAllPlansFree": "Try all plans for free.",
+    "noCreditCardRequired": "No credit card required.",
+    "page": {
+      "title": "Pricing – Cenety",
+      "description": "Explore our subscription plans.",
+      "adminSeriously": "Seriously?",
+      "adminMessage": "You are an {role}. Back to",
+      "heroBadge": "Transparent pricing, no hidden costs",
+      "heroTitle": "One QR code that always stays.",
+      "heroDescription": "Quotes & invoices in minutes. Dynamic QR codes for your business."
+    },
+    "faq": {
+      "badge": "FAQ",
+      "title": "Frequently Asked Questions",
+      "description": "Find quick answers to common questions. For further questions, please contact us.",
+      "questions": {
+        "q1": {
+          "question": "What is a dynamic QR code?",
+          "answer": "A dynamic QR code is a QR code whose target URL you can change at any time without having to reprint the code itself. The QR code remains the same, but the destination address can be updated."
+        },
+        "q2": {
+          "question": "Can I change the link later?",
+          "answer": "Yes, absolutely! With dynamic QR codes, you can change the target URL at any time without regenerating or reprinting the QR code. Once printed, the code remains valid while you can flexibly adjust the destination."
+        },
+        "q3": {
+          "question": "How does invoice creation work?",
+          "answer": "You can create quotes and later convert them directly into invoices. All data is automatically transferred. Documents can be exported as PDF and sent by email."
+        },
+        "q4": {
+          "question": "What happens when I reach my limit?",
+          "answer": "When you reach your limit, you can either upgrade to a higher plan or wait until the counter resets next month. For documents, the counter resets monthly."
+        },
+        "q5": {
+          "question": "Can I upgrade or downgrade at any time?",
+          "answer": "Yes, you can switch between plans at any time. When upgrading, additional features are unlocked immediately. When downgrading, your data remains, but some features will be restricted."
+        }
+      }
+    },
+    "features": {
+      "customers": "Customers",
+      "customersTooltip": "Number of customers you can manage.",
+      "qrCodes": "QR Codes",
+      "qrCodesTooltip": "Number of dynamic QR codes you can create.",
+      "documentsPerMonth": "Documents per Month",
+      "documentsPerMonthTooltip": "Number of quotes and invoices you can create per month.",
+      "pdfExport": "PDF Export",
+      "pdfExportTooltip": "Download documents as PDF.",
+      "statusManagement": "Status Management",
+      "statusManagementTooltip": "Manage document status (Draft, Sent, Paid, etc.).",
+      "quoteToInvoice": "Quote to Invoice",
+      "quoteToInvoiceTooltip": "Convert quotes directly into invoices.",
+      "qrCodeScanTracking": "QR Code Scan Tracking",
+      "qrCodeScanTrackingTooltip": "Track when and where your QR codes were scanned.",
+      "customQrAlias": "Custom QR Alias",
+      "customQrAliasTooltip": "Create custom links for QR codes.",
+      "customLogoFooter": "Custom Logo & Footer",
+      "customLogoFooterTooltip": "Use your own logo and footer on documents.",
+      "prioritySupport": "Priority Support",
+      "prioritySupportTooltip": "Prioritized support with faster response time.",
+      "apiAccess": "API Access",
+      "apiAccessTooltip": "API access for integrations.",
+      "cenetyBranding": "Cenety Branding",
+      "cenetyBrandingTooltip": "Cenety branding will be displayed on your documents.",
+      "unlimited": "Unlimited"
+    },
+    "benefits": {
+      "threeCustomers": "3 Customers",
+      "threeQrCodes": "3 QR Codes",
+      "threeDocumentsPerMonth": "3 Documents per Month",
+      "unlimitedCustomers": "Unlimited Customers",
+      "unlimitedQrCodes": "Unlimited QR Codes",
+      "unlimitedDocuments": "Unlimited Documents",
+      "pdfExport": "PDF Export",
+      "basicStatusManagement": "Basic Status Management",
+      "qrCodeScanTracking": "QR Code Scan Tracking",
+      "customQrAlias": "Custom QR Alias",
+      "customLogoFooter": "Custom Logo & Footer",
+      "noCenetyBranding": "No Cenety Branding",
+      "fullStatusManagement": "Full Status Management",
+      "quoteToInvoice": "Convert Quote to Invoice",
+      "prioritySupport": "Priority Support",
+      "apiAccess": "API Access",
+      "cenetyBrandingOnDocuments": "Cenety Branding on Documents",
+      "noScanTracking": "No Scan Tracking",
+      "noCustomQrAlias": "No Custom QR Alias",
+      "noCustomLogoFooter": "No Custom Logo/Footer",
+      "planDescription": {
+        "free": "For getting started",
+        "pro": "For professional users",
+        "enterprise": "For large businesses"
+      }
+    }
+  },
   "Settings": {
     "title": "Settings – Cenety",
     "description": "Configure your account and website settings.",
@@ -227,7 +362,21 @@
       "settingsTitle": "Security Settings",
       "settingsDescription": "Manage 2FA, sessions, and login history",
       "detailedDescription": "Two-factor authentication, active sessions, and login history",
-      "manageSecurity": "Manage Security"
+      "manageSecurity": "Manage Security",
+      "twoFactorActive": "2FA Active",
+      "emailVerification": {
+        "title": "Email Verification",
+        "verified": "Verified",
+        "notVerified": "Not Verified"
+      },
+      "twoFactor": {
+        "title": "Two-Factor Authentication",
+        "description": "Increase your account security"
+      },
+      "activeSessions": {
+        "title": "Active Sessions",
+        "description": "Manage your login sessions"
+      }
     },
     "privacy": {
       "title": "Privacy & GDPR",
@@ -236,11 +385,48 @@
       "settingsTitle": "Privacy Settings",
       "settingsDescription": "Manage consents and data export",
       "manageDescription": "Manage your consents and export your data",
-      "managePrivacy": "Manage Privacy"
+      "managePrivacy": "Manage Privacy",
+      "cookieSettings": {
+        "title": "Cookie Settings",
+        "description": "Manage your cookie preferences and contact methods"
+      },
+      "consentManagement": {
+        "title": "Consent Management",
+        "description": "Manage your consents for different data types"
+      },
+      "dataExport": {
+        "title": "Data Export",
+        "description": "Export your data according to GDPR Art. 20"
+      }
     },
     "dangerZone": {
       "title": "Danger Zone",
       "description": "Irreversible actions"
+    },
+    "profile": {
+      "title": "Profile",
+      "description": "Manage your profile information",
+      "editProfile": "Edit Profile",
+      "verified": "Verified",
+      "notVerified": "Not Verified"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Manage email, push, and in-app notifications"
+    },
+    "manage": "Manage",
+    "comingSoon": "Coming Soon",
+    "apiIntegrations": {
+      "title": "API & Integrations",
+      "description": "Manage API keys and webhooks",
+      "apiKeys": "API Keys",
+      "webhooks": "Webhooks"
+    },
+    "documentsExport": {
+      "title": "Documents & Export",
+      "description": "Export settings and document templates",
+      "exportFormats": "Export Formats",
+      "languageRegion": "Language & Region"
     }
   },
   "Blog": {
@@ -252,6 +438,8 @@
     "all": "All",
     "guides": "Guides",
     "viewArticle": "View Article",
+    "backToBlog": "Back to Blog",
+    "moreArticles": "More Articles",
     "categories": {
       "news": {
         "title": "News",
@@ -299,8 +487,9 @@
     "illustrationsBy": "Illustrationen von"
   },
   "Newsletter": {
-    "subscribeLabel": "Subscribe to our newsletter",
-    "emailPlaceholder": "janedoe@example.com",
+    "subscribeLabel": "Newsletter",
+    "description": "Stay updated with our latest news and updates.",
+    "emailPlaceholder": "your@email.com",
     "subscribeButton": "Subscribe",
     "subscribingButton": "Subscribing...",
     "submittedTitle": "Thank you!",
@@ -889,31 +1078,214 @@
     "metaTitle": "Terms of Service - Cenety",
     "metaDescription": "Terms and conditions for using Cenety services",
     "title": "Terms of Service",
-    "section1": {
-      "title": "1. Terms of Use",
-      "content": "By accessing this website, you are agreeing to be bound by these terms of service, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws."
+    "hero": {
+      "badge": "Legal",
+      "title": "Terms of Service",
+      "description": "Terms and conditions for using Cenety SaaS services",
+      "lastUpdated": "Last Updated",
+      "version": "Version 1.0"
     },
-    "section2": {
-      "title": "2. Use License",
-      "content": "Permission is granted to temporarily download one copy of the materials on Cenety's website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title."
+    "sections": {
+      "section1": {
+        "title": "1. Scope and Subject Matter",
+        "description": "These Terms of Service (ToS) apply to the use of the Software-as-a-Service (SaaS) platform Cenety, operated by [Your Company Name].",
+        "description2": "Cenety provides a cloud-based platform for managing customers, creating quotes and invoices, and generating and managing QR codes.",
+        "important": "Important:",
+        "importantText": "Conflicting or deviating conditions of the user will not become part of the contract unless we expressly agree to their validity in writing."
+      },
+      "section2": {
+        "title": "2. Contract Conclusion and Registration",
+        "subsection1": {
+          "title": "2.1 Registration",
+          "text": "The use of Cenety requires registration. By registering, the user makes a binding offer to conclude a usage contract."
+        },
+        "subsection2": {
+          "title": "2.2 Contract Acceptance",
+          "text": "The contract is concluded by confirming the registration via email. There is no right to conclude a contract."
+        },
+        "subsection3": {
+          "title": "2.3 Age of Majority",
+          "text": "Registration is only permitted for fully legally competent natural persons and legal entities. Minors may only register with the consent of their legal guardians."
+        }
+      },
+      "section3": {
+        "title": "3. Scope of Services",
+        "description": "The specific scope of services depends on the selected price tier (Free, Starter, Pro):",
+        "customers": "customers",
+        "qrCodes": "QR codes",
+        "documents": "documents/month",
+        "basicFeatures": "Basic features",
+        "unlimitedCustomers": "Unlimited customers",
+        "unlimitedDocuments": "Unlimited documents",
+        "emailSupport": "Email support",
+        "allStarterFeatures": "All Starter features",
+        "unlimitedQrCodes": "Unlimited QR codes",
+        "qrScanTracking": "QR scan tracking",
+        "prioritySupport": "Priority support",
+        "note": "We reserve the right to change or expand the scope of services at any time. Significant restrictions will be communicated to existing users in a timely manner."
+      },
+      "section4": {
+        "title": "4. Prices and Payment Terms",
+        "subsection1": {
+          "title": "4.1 Prices",
+          "text": "Current prices can be viewed on our",
+          "link": "pricing page",
+          "text2": ". All prices are plus applicable VAT."
+        },
+        "subsection2": {
+          "title": "4.2 Payment Method",
+          "text": "Payment is made in advance by credit card or SEPA direct debit via our payment service provider Stripe, depending on the selected billing interval (monthly or annually)."
+        },
+        "subsection3": {
+          "title": "4.3 Payment Default",
+          "text": "In case of payment default, we are entitled to block access to the platform. Default interest is calculated at 9 percentage points above the base rate (for consumers) or 9 percentage points above the base rate (for entrepreneurs)."
+        },
+        "subsection4": {
+          "title": "4.4 Price Changes",
+          "text": "Price changes for existing customers will be announced by email at least 6 weeks before they take effect. If the user does not object within 4 weeks, the new prices are considered accepted."
+        }
+      },
+      "section5": {
+        "title": "5. Right of Withdrawal for Consumers",
+        "subtitle": "Withdrawal Instructions",
+        "right": "Right of withdrawal:",
+        "rightText": "You have the right to withdraw from this contract within fourteen days without giving any reason.",
+        "period": "The withdrawal period is fourteen days from the day of contract conclusion.",
+        "howTo": "To exercise your right of withdrawal, you must inform us by means of a clear statement (e.g., by email to support@cenety.com) of your decision to withdraw from this contract.",
+        "consequences": "Consequences of withdrawal:",
+        "consequencesText": "If you withdraw from this contract, we must reimburse you for all payments we have received from you immediately and no later than fourteen days.",
+        "earlyExpiry": "Early expiry of the right of withdrawal:",
+        "earlyExpiryText": "The right of withdrawal expires prematurely if we have only begun to execute the contract after you have given your express consent and at the same time confirmed your knowledge that you will lose your right of withdrawal upon complete fulfillment of the contract."
+      },
+      "section6": {
+        "title": "6. Contract Duration and Termination",
+        "subsection1": {
+          "title": "6.1 Contract Duration",
+          "text": "The contract is concluded for the selected term (monthly or annually) and automatically renews for the same term unless terminated."
+        },
+        "subsection2": {
+          "title": "6.2 Ordinary Termination",
+          "text": "Either party may terminate the contract with 30 days' notice at the end of the respective term. Termination must be in text form (email is sufficient) to support@cenety.com."
+        },
+        "subsection3": {
+          "title": "6.3 Extraordinary Termination",
+          "text": "The right to extraordinary termination for important reasons remains unaffected. An important reason exists in particular in the case of:",
+          "item1": "Violation of these ToS despite warning",
+          "item2": "Payment default of more than 30 days",
+          "item3": "Misuse of the platform for illegal purposes"
+        },
+        "subsection4": {
+          "title": "6.4 Data Export",
+          "text": "After the end of the contract, the user has a period of 30 days to export their data. After that, all data will be irrevocably deleted."
+        }
+      },
+      "section7": {
+        "title": "7. User Obligations",
+        "subsection1": {
+          "title": "7.1 Account Security",
+          "text": "The user is obliged to keep their access data secret and protect them from access by third parties. In case of suspicion of misuse, the user is obliged to inform us immediately."
+        },
+        "subsection2": {
+          "title": "7.2 Data Accuracy",
+          "text": "The user is responsible for the accuracy and legality of the data entered by them, especially in invoices and documents."
+        },
+        "subsection3": {
+          "title": "7.3 Prohibited Use",
+          "text": "The user undertakes not to use the platform for the following purposes:",
+          "item1": "Illegal, fraudulent or misleading activities",
+          "item2": "Sending spam or unwanted messages",
+          "item3": "Distribution of malware or harmful software",
+          "item4": "Violation of third-party rights (copyright, trademark rights, etc.)",
+          "item5": "Reverse engineering or decompilation of the software"
+        }
+      },
+      "section8": {
+        "title": "8. Availability and Maintenance",
+        "description": "We strive to ensure platform availability of 99% on an annual average. Excluded are:",
+        "item1": "Planned maintenance work (announced 48h in advance)",
+        "item2": "Emergency maintenance to fix critical security vulnerabilities",
+        "item3": "Force majeure events",
+        "item4": "DDoS attacks and other cyber attacks"
+      },
+      "section9": {
+        "title": "9. Data Protection",
+        "description": "The protection of your personal data is important to us. Details on data processing can be found in our",
+        "link": "Privacy Policy",
+        "note": "The user is themselves responsible under the GDPR for the customer data stored by them in Cenety and undertakes to comply with data protection regulations."
+      },
+      "section10": {
+        "title": "10. Liability and Warranty",
+        "subsection1": {
+          "title": "10.1 Limitation of Liability",
+          "text": "We are liable without limitation for damages resulting from injury to life, body or health as well as for intent and gross negligence.",
+          "text2": "In case of slight negligence, we are only liable for breach of essential contractual obligations (cardinal obligations). Liability in this case is limited to the contract-typical, foreseeable damage."
+        },
+        "subsection2": {
+          "title": "10.2 Data Loss",
+          "text": "We perform daily automatic backups. Nevertheless, we recommend that the user regularly perform their own backups of their data. Liability for data loss only exists if the user has ensured through regular data backup that data can be restored with reasonable effort."
+        },
+        "subsection3": {
+          "title": "10.3 Warranty",
+          "text": "We warrant that the software essentially fulfills the agreed functions. Insignificant defects do not justify warranty claims."
+        }
+      },
+      "section11": {
+        "title": "11. Intellectual Property",
+        "description": "All rights to the platform, including the source code, design and documentation, belong to us. The user is only granted a non-exclusive, non-transferable right of use.",
+        "note": "The user retains all rights to the content created by them (customer data, documents, etc.)."
+      },
+      "section12": {
+        "title": "12. Changes to the ToS",
+        "description": "We reserve the right to change these ToS with 6 weeks' notice. Changes will be communicated to the user by email.",
+        "description2": "If the user does not object within 4 weeks of receipt of the change notice, the changed ToS are considered accepted. In case of objection, the user may terminate the contract extraordinarily at the time the changes take effect."
+      },
+      "section13": {
+        "title": "13. Final Provisions",
+        "subsection1": {
+          "title": "13.1 Applicable Law",
+          "text": "The law of the Federal Republic of Germany exclusively applies, excluding the UN Sales Law."
+        },
+        "subsection2": {
+          "title": "13.2 Place of Jurisdiction",
+          "text": "If the user is a merchant, legal entity under public law or public-law special fund, the exclusive place of jurisdiction for all disputes arising from this contract is our business location."
+        },
+        "subsection3": {
+          "title": "13.3 Severability Clause",
+          "text": "Should individual provisions of these ToS be or become invalid, the validity of the remaining provisions remains unaffected."
+        }
+      }
     },
-    "section3": {
-      "title": "3. Disclaimer",
-      "content": "The materials on Cenety's website are provided on an 'as is' basis. Cenety makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights."
-    },
-    "section4": {
-      "title": "4. Limitations",
-      "content": "In no event shall Cenety or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on Cenety's website, even if Cenety or a Cenety authorized representative has been notified orally or in writing of the possibility of such damage."
-    },
-    "lastUpdated": {
-      "title": "Last Updated",
-      "content": "These terms and conditions were last updated on June 1, 2023."
-    }
+    "legalNotice": "Legal Notice: This ToS template should be reviewed by a specialist lawyer for IT law and adapted to your specific business conditions. Replace all placeholders in square brackets with your actual company data."
   },
   "Privacy": {
     "metaTitle": "Privacy Policy - Cenety",
     "metaDescription": "GDPR compliant privacy policy for Cenety services",
     "title": "Privacy Policy",
+    "hero": {
+      "badge": "Privacy",
+      "title": "Privacy Policy",
+      "description": "GDPR compliant privacy policy for Cenety",
+      "lastUpdated": "Last Updated"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "description": "Manage your data and privacy settings",
+      "export": "Export My Data",
+      "delete": "Delete Account",
+      "contact": "Contact Privacy"
+    },
+    "sections": {
+      "section1": {
+        "title": "1. Name and Contact Details of the Controller",
+        "responsible": "Responsible for data processing:",
+        "companyName": "[Your Company Name]",
+        "address": "[Street and house number]",
+        "city": "[ZIP City]",
+        "email": "Email",
+        "phone": "Phone",
+        "phoneValue": "[Your phone number]"
+      }
+    },
     "section1": {
       "title": "1. Information Collection",
       "content": "We collect information to provide better services to all our users. The information we collect includes basic account information such as your name and email address, as well as usage data related to your interactions with our services."
@@ -936,24 +1308,48 @@
     }
   },
   "Imprint": {
+    "metaTitle": "Imprint - Cenety",
+    "metaDescription": "Imprint and information according to § 5 TMG",
     "title": "Imprint",
     "subtitle": "Information according to § 5 TMG (German Telemedia Act)",
+    "hero": {
+      "badge": "Legal",
+      "title": "Imprint",
+      "description": "Information according to § 5 TMG (German Telemedia Act)"
+    },
     "company": {
-      "title": "Company Information"
+      "title": "Company Information",
+      "name": "[Your Company Name]",
+      "legalForm": "[Legal form, e.g. GmbH, UG, Sole proprietorship]",
+      "address": "[Street and house number]",
+      "city": "[ZIP City]",
+      "country": "[Country]"
     },
     "contact": {
-      "title": "Contact"
+      "title": "Contact",
+      "phone": "Phone",
+      "phoneValue": "[Your phone number]",
+      "email": "Email",
+      "website": "Website"
     },
     "registration": {
       "title": "Registration Entry",
       "registrationCourt": "Registration Court",
+      "registrationCourtValue": "[e.g. Amtsgericht München]",
       "registrationNumber": "Registration Number",
+      "registrationNumberValue": "[e.g. HRB 123456]",
       "vatId": "VAT ID",
-      "managingDirector": "Managing Director"
+      "vatIdValue": "[DE123456789]",
+      "managingDirector": "Managing Director",
+      "managingDirectorValue": "[Name of the managing director]"
     },
     "responsible": {
       "title": "Responsible for Content according to § 55 Abs. 2 RStV",
-      "description": "Responsible for journalistic-editorial content"
+      "description": "Responsible for journalistic-editorial content",
+      "name": "[Name of the responsible person]",
+      "address": "[Street and house number]",
+      "city": "[ZIP City]",
+      "email": "Email"
     },
     "dispute": {
       "title": "EU Dispute Resolution",
@@ -970,7 +1366,8 @@
     "copyright": {
       "title": "Copyright",
       "text": "The content and works published on this website underlie the German copyright law. Any kind of duplication, processing, distribution or any kind of utilization beyond the scope of copyright law shall require the prior written consent of the author or originator in question."
-    }
+    },
+    "legalNotice": "Note: Please replace all placeholders in square brackets [like these] with your actual company data. Have the imprint reviewed by a lawyer to ensure full compliance with § 5 TMG."
   },
   "CookieConsent": {
     "title": "Cookie Settings",
@@ -2303,7 +2700,15 @@
       "updateSuccess": "Customer successfully updated",
       "updateDescription": "Customer data has been saved.",
       "createSuccess": "Customer successfully created",
+      "createSuccessDescription": "{name} has been added.",
       "createDescription": "The customer has been created and a QR code has been generated.",
+      "createError": "Error creating",
+      "createCustomer": "Create Customer",
+      "newCustomer": "New Customer",
+      "cancel": "Cancel",
+      "optional": "Optional",
+      "notesHint": "This information will be stored in the customer profile.",
+      "errorOccurred": "An error occurred.",
       "saveError": "Error saving",
       "unexpectedError": "An unexpected error occurred. Please try again.",
       "fields": {
@@ -2435,9 +2840,12 @@
       "eventTypesDescription": "Activate or deactivate event types with one click",
       "upcomingBookingsDescription": "Your upcoming appointments",
       "statistics": {
+        "totalBookings": "Total Bookings",
         "todayBookings": "Today's Bookings",
         "yesterdayBookings": "Yesterday's Bookings",
-        "todayRevenue": "Today's Revenue"
+        "totalRevenue": "Total Revenue",
+        "todayRevenue": "Today's Revenue",
+        "yesterdayRevenue": "Yesterday's Revenue"
       }
     },
     "error": "Error",
@@ -2526,7 +2934,11 @@
         "updateError": "Failed to update event type"
       },
       "detail": {
+        "title": "Event Type Details",
         "description": "View and manage event type details",
+        "loading": "Loading...",
+        "error": "Error loading",
+        "errorDescription": "The event type could not be loaded. Please try again.",
         "edit": "Edit",
         "stats": {
           "totalBookings": "Total Bookings",
@@ -2621,13 +3033,12 @@
     "bookings": {
       "title": "Bookings",
       "description": "Manage all your bookings",
-      "upcoming": "Upcoming Bookings",
+      "upcoming": "Upcoming",
+      "today": "Today",
+      "past": "Past",
       "viewAll": "View All",
-      "empty": "No upcoming bookings",
-      "invitee": "Invitee",
-      "eventType": "Event Type",
-      "date": "Date",
-      "time": "Time",
+      "bookedAt": "Booked at",
+      "eventDate": "Event",
       "filter": "Filter",
       "all": "All",
       "scheduled": "Scheduled",
@@ -2635,54 +3046,8 @@
       "allEventTypes": "All Event Types",
       "clearFilters": "Clear Filters",
       "total": "Total",
-      "past": "Past",
-      "participants": "Participants"
-    },
-    "booking": {
-      "back": "Back",
-      "with": "with",
-      "minutes": "minutes",
-      "selectDate": "Select Date",
-      "selectTime": "Select Time",
-      "loadingSlots": "Loading available times...",
-      "duration": "Duration",
-      "price": "Price",
-      "location": "Location",
+      "empty": "No bookings found",
       "participants": "Participants",
-      "max": "max",
-      "unlimited": "Unlimited",
-      "perParticipant": "per participant",
-      "perHourPerParticipant": "per hour / participant",
-      "totalPrice": "Total Price",
-      "bookedParticipants": "Booked Participants",
-      "available": "available",
-      "noSlots": "No available times for this date",
-      "yourDetails": "Your Details",
-      "yourDetailsDescription": "Please provide your information to complete the booking",
-      "selectedSlot": "Selected Slot",
-      "name": "Name",
-      "namePlaceholder": "Your name",
-      "email": "Email",
-      "emailPlaceholder": "your@email.com",
-      "notes": "Notes (Optional)",
-      "notesPlaceholder": "Any additional information...",
-      "numberOfParticipants": "Number of Participants",
-      "numberOfParticipantsPlaceholder": "1",
-      "availablePlaces": "{places} place available",
-      "fullyBooked": "Fully Booked",
-      "participantName": "Participant {number}",
-      "participantNamePlaceholder": "Name of participant {number}",
-      "confirmBooking": "Confirm Booking",
-      "booking": "Booking...",
-      "selectSlot": "Please select a time slot",
-      "bookingError": "Failed to create booking",
-      "bookingSuccess": "Booking confirmed!",
-      "bookingSuccessDescription": "Your booking has been confirmed. Check your email for details.",
-      "unexpectedError": "An unexpected error occurred",
-      "successTitle": "Booking Confirmed!",
-      "successDescription": "Your booking has been confirmed. Check your email for details."
-    },
-    "bookings": {
       "detail": {
         "title": "Booking Details",
         "status": {
@@ -2692,6 +3057,8 @@
         "bookingInfo": "Booking Information",
         "eventType": "Event Type",
         "date": "Date",
+        "eventDate": "Event Date",
+        "bookedAt": "Booked at",
         "startTime": "Start Time",
         "endTime": "End Time",
         "duration": "Duration",
@@ -2749,6 +3116,54 @@
           "reactivateError": "Failed to reactivate booking"
         }
       }
+    },
+    "booking": {
+      "back": "Back",
+      "with": "with",
+      "minutes": "minutes",
+      "selectDate": "Select Date",
+      "selectTime": "Select Time",
+      "loadingSlots": "Loading available times...",
+      "duration": "Duration",
+      "price": "Price",
+      "location": "Location",
+      "participants": "Participants",
+      "dateAndTime": "Date & Time",
+      "contactInformation": "Contact Information",
+      "emailCouldNotBeSent": "Email could not be sent",
+      "emailCouldNotBeSentDescription": "The booking was successfully created, but the confirmation email could not be sent. Please contact us directly.",
+      "max": "max",
+      "unlimited": "Unlimited",
+      "perParticipant": "per participant",
+      "perHourPerParticipant": "per hour / participant",
+      "totalPrice": "Total Price",
+      "bookedParticipants": "Booked Participants",
+      "available": "available",
+      "noSlots": "No available times for this date",
+      "yourDetails": "Your Details",
+      "yourDetailsDescription": "Please provide your information to complete the booking",
+      "selectedSlot": "Selected Slot",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "notes": "Notes (Optional)",
+      "notesPlaceholder": "Any additional information...",
+      "numberOfParticipants": "Number of Participants",
+      "numberOfParticipantsPlaceholder": "1",
+      "availablePlaces": "{places} place available",
+      "fullyBooked": "Fully Booked",
+      "participantName": "Participant {number}",
+      "participantNamePlaceholder": "Name of participant {number}",
+      "confirmBooking": "Confirm Booking",
+      "booking": "Booking...",
+      "selectSlot": "Please select a time slot",
+      "bookingError": "Failed to create booking",
+      "bookingSuccess": "Booking confirmed!",
+      "bookingSuccessDescription": "Your booking has been confirmed. Check your email for details.",
+      "unexpectedError": "An unexpected error occurred",
+      "successTitle": "Booking Confirmed!",
+      "successDescription": "Your booking has been confirmed. Check your email for details."
     },
     "applyToAll": {
       "title": "Select Course",
@@ -2860,6 +3275,327 @@
         "update": "Update",
         "delete": "Delete",
         "saving": "Saving..."
+      }
+    }
+  },
+  "Courses": {
+    "onRequest": "On Request",
+    "perAppointment": "per appointment",
+    "noDescriptionAvailable": "No description available",
+    "bookNow": "Book Now",
+    "page": {
+      "metaDescription": "Discover our courses for business management, CRM, invoicing and more. Perfect for freelancers and small businesses.",
+      "badge": "Courses",
+      "availableBadge": "Available Now",
+      "heroTitle": "Our Courses",
+      "heroDescription": "Discover our diverse courses for business management, CRM, invoicing and more. Perfect for freelancers and small businesses.",
+      "emptyStateDescription": "No courses are currently available. Please check back later.",
+      "sectionBadge": "Courses",
+      "sectionTitle": "Available Courses",
+      "sectionDescription": "Browse our complete course offering and find the perfect course for your needs",
+      "ctaTitle": "Questions about our courses?",
+      "ctaDescription": "Contact us for more information or individual consultation about our courses.",
+      "ctaButton": "Get in Touch"
+    }
+  },
+  "ComparePlans": {
+    "compare": "Compare",
+    "comparePlans": "Compare Plans",
+    "findPerfectPlan": "Find the perfect plan for your needs!",
+    "popular": "Popular",
+    "premium": "Premium"
+  },
+  "Security": {
+    "changePassword": {
+      "title": "Change Password",
+      "description": "Change your password to keep your account secure",
+      "currentPassword": "Current Password",
+      "currentPasswordPlaceholder": "Enter current password",
+      "currentPasswordRequired": "Current password is required",
+      "newPassword": "New Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Re-enter password",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "button": "Change Password",
+      "changing": "Changing password...",
+      "success": "Password changed",
+      "successDescription": "Your password has been successfully changed",
+      "error": "Error",
+      "strength": {
+        "weak": "Weak",
+        "medium": "Medium",
+        "strong": "Strong"
+      }
+    },
+    "twoFactor": {
+      "title": "Two-Factor Authentication",
+      "description": "Increase your account security with an additional authentication layer",
+      "loading": "Loading...",
+      "enabled": "Enabled",
+      "enabledStatus": "2FA is enabled",
+      "enabledDescription": "Your account is protected by two-factor authentication.",
+      "notEnabledStatus": "2FA is not enabled",
+      "notEnabledDescription": "Enable 2FA to increase your account security.",
+      "setup": "Setup 2FA",
+      "regenerateBackupCodes": "Regenerate Backup Codes",
+      "newBackupCodes": "New Backup Codes",
+      "saveBackupCodes": "Save these codes in a safe place",
+      "understood": "Understood",
+      "disable": "Disable 2FA",
+      "disableConfirmTitle": "Disable 2FA?",
+      "disableConfirmDescription": "To disable 2FA, you must confirm your password. This reduces your account security.",
+      "password": "Password",
+      "passwordPlaceholder": "Your password",
+      "cancel": "Cancel",
+      "disabling": "Disabling...",
+      "disabled": "2FA disabled",
+      "disabledDescription": "Two-factor authentication has been disabled",
+      "backupCodesRegenerated": "Backup codes regenerated",
+      "backupCodesRegeneratedDescription": "New backup codes have been generated",
+      "loadError": "Error loading",
+      "loadErrorDescription": "Error loading 2FA status. Please reload the page.",
+      "passwordRequired": "Password required",
+      "passwordRequiredDescription": "Please enter your password",
+      "error": "Error",
+      "unexpectedError": "An error occurred"
+    },
+    "activeSessions": {
+      "title": "Active Sessions",
+      "description": "Manage your active login sessions",
+      "loading": "Loading...",
+      "empty": "No active sessions",
+      "current": "Current",
+      "unknown": "Unknown",
+      "error": "Error",
+      "loadError": "Sessions could not be loaded",
+      "revoked": "Session ended",
+      "revokedDescription": "The session has been successfully ended",
+      "revokeError": "Session could not be ended",
+      "allRevoked": "Sessions ended",
+      "allRevokedDescription": "All other sessions have been ended",
+      "revokeAllError": "Sessions could not be ended",
+      "allCleared": "All sessions cleared",
+      "allClearedDescription": "You will now be logged out. Please log in again to test the 2FA system.",
+      "clearError": "Sessions could not be cleared",
+      "revokeAll": "End All Others",
+      "revokeAllConfirmTitle": "End All Sessions?",
+      "revokeAllConfirmDescription": "This will end all other active sessions except the current one. You will need to log in again on those devices.",
+      "revokeAllConfirm": "End All",
+      "clearAll": "Clear All & Logout",
+      "clearAllConfirmTitle": "Clear All Sessions?",
+      "clearAllConfirmDescription": "This will delete ALL sessions including the current one. You will be logged out and must log in again. This is useful for testing the 2FA system.",
+      "clearAllConfirm": "Clear All & Logout",
+      "revokeConfirmTitle": "End Session?",
+      "revokeConfirmDescription": "This session will be ended and the user must log in again.",
+      "revoke": "End",
+      "cancel": "Cancel"
+    },
+    "loginHistory": {
+      "title": "Login History",
+      "description": "Overview of your recent login attempts",
+      "loading": "Loading...",
+      "empty": "No login history available",
+      "successfulLogin": "Successful Login",
+      "failedLogin": "Failed Login",
+      "twoFactor": "2FA",
+      "reason": "Reason",
+      "unknown": "Unknown"
+    },
+    "passwordStrength": {
+      "label": "Password Strength",
+      "weak": "Weak",
+      "medium": "Medium",
+      "strong": "Strong",
+      "valid": "Password meets all requirements"
+    }
+  },
+  "About": {
+    "metaTitle": "About Us – Cenety",
+    "metaDescription": "Learn more about Cenety, our mission, vision and values",
+    "hero": {
+      "badge": "About Us",
+      "title": "About Cenety",
+      "description": "Founded in 2023, Cenety is a company dedicated to helping businesses and developers create exceptional SaaS applications with modern technologies."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "description": "We're on a mission to simplify the development process and empower creators to build exceptional software applications without getting bogged down in repetitive tasks and configurations."
+    },
+    "vision": {
+      "title": "Our Vision",
+      "description": "We envision a world where building robust SaaS applications is accessible to all developers, regardless of their experience level or resources. By providing high-quality starter kits and templates, we aim to democratize SaaS development and help businesses launch faster."
+    },
+    "values": {
+      "title": "Our Values",
+      "description": "The principles that guide everything we do",
+      "quality": {
+        "title": "Quality",
+        "description": "We believe in creating high-quality, well-documented code that stands the test of time."
+      },
+      "innovation": {
+        "title": "Innovation",
+        "description": "We embrace new technologies and continuously improve our products."
+      },
+      "accessibility": {
+        "title": "Accessibility",
+        "description": "We make development more accessible by providing clear documentation and intuitive interfaces."
+      },
+      "community": {
+        "title": "Community",
+        "description": "We value the developer community and actively contribute to open-source projects."
+      }
+    },
+    "team": {
+      "title": "Our Team",
+      "description": "Our team consists of passionate developers, designers, and product managers who are dedicated to creating exceptional developer experiences.",
+      "location": "Distributed Worldwide",
+      "locationDescription": "We're located around the world and embrace remote work and diverse perspectives."
+    }
+  },
+  "Product": {
+    "Security": {
+      "metaTitle": "Security - Cenety",
+      "metaDescription": "How we keep your data secure at Cenety",
+      "hero": {
+        "badge": "Security",
+        "title": "Security at Cenety",
+        "description": "Your security and privacy are our top priorities"
+      },
+      "intro": "At Cenety, we understand that the security of your data is critical. We've built our platform with security in mind at every step, implementing industry best practices and continuously monitoring for threats.",
+      "infrastructure": {
+        "title": "Infrastructure Security",
+        "item1": "All data is encrypted at rest and in transit using industry-standard encryption",
+        "item2": "Hosted on secure cloud infrastructure with multiple redundancy layers",
+        "item3": "Regular security audits and penetration testing by third-party specialists"
+      },
+      "account": {
+        "title": "Account Security",
+        "item1": "Multi-factor authentication (MFA) to protect your account",
+        "item2": "Role-based access controls for team management",
+        "item3": "Session management with automatic timeouts for inactive sessions"
+      },
+      "reporting": {
+        "title": "Reporting Security Issues",
+        "description": "We take security issues seriously",
+        "text": "If you discover a potential security vulnerability, please report it responsibly by emailing our security team at security@cenety.com.",
+        "text2": "Our security team will acknowledge your report within 24 hours and work with you to understand and address the issue quickly."
+      },
+      "compliance": {
+        "title": "Compliance and Certifications",
+        "description": "Cenety is committed to meeting industry standards and regulatory requirements to ensure your data is protected:",
+        "item1": "GDPR compliant",
+        "item2": "SOC 2 Type II certified",
+        "item3": "ISO 27001 certified"
+      }
+    },
+    "Customization": {
+      "metaTitle": "Customization - Cenety",
+      "metaDescription": "Customize Cenety to fit your unique needs",
+      "hero": {
+        "badge": "Customization",
+        "title": "Customization",
+        "description": "Tailor Cenety to match your brand and workflow"
+      },
+      "intro": "Cenety is designed to be highly customizable, allowing you to adapt the platform to your specific requirements without compromise. From visual elements to core functionality, our flexible architecture gives you the freedom to create a truly personalized experience.",
+      "visual": {
+        "title": "Visual Customization",
+        "description": "Make Cenety your own",
+        "intro": "Customize the look and feel of your Cenety implementation to match your brand identity:",
+        "item1": "Custom color schemes and theming",
+        "item2": "Logo and branding elements",
+        "item3": "Typography customization",
+        "item4": "Light and dark mode support",
+        "item5": "Custom layouts and page designs"
+      },
+      "functional": {
+        "title": "Functional Customization",
+        "description": "Adapt to your workflow",
+        "intro": "Tailor the functionality to meet your specific business requirements:",
+        "item1": "Custom user roles and permissions",
+        "item2": "Workflow automation",
+        "item3": "Form and field customization",
+        "item4": "Dashboard and reporting tools",
+        "item5": "Notification preferences"
+      },
+      "developer": {
+        "title": "Developer Extensibility",
+        "description": "Build with your preferred tools",
+        "intro": "Extend Cenety with custom code and integrations:",
+        "item1": "API access for custom functionality",
+        "item2": "Webhook support for event-driven architectures",
+        "item3": "Custom component development",
+        "item4": "Server-side extensions",
+        "item5": "Database schema extensions"
+      },
+      "integration": {
+        "title": "Integration Capabilities",
+        "description": "Connect with your existing tools",
+        "intro": "Seamlessly connect Cenety with your existing tools and services:",
+        "item1": "Third-party service integrations",
+        "item2": "SSO and identity management",
+        "item3": "Analytics and monitoring tools",
+        "item4": "CRM and marketing platforms",
+        "item5": "Payment processors and billing systems"
+      },
+      "cta": {
+        "title": "Need help with customization?",
+        "description": "Our team of experts can assist you with advanced customization needs or provide guidance on best practices for extending Cenety.",
+        "contact": "Contact Us"
+      }
+    },
+    "Changelog": {
+      "metaTitle": "Changelog - Cenety",
+      "metaDescription": "The latest updates and improvements to Cenety",
+      "hero": {
+        "badge": "Updates",
+        "title": "Changelog",
+        "description": "The latest updates and improvements to Cenety"
+      },
+      "badges": {
+        "new": "New",
+        "improved": "Improved",
+        "fixed": "Fixed"
+      },
+      "releases": {
+        "v2": {
+          "date": "June 15, 2023",
+          "title": "Major Release - Version 2.0",
+          "description": "A complete rebuild with Next.js 15, improved UI, and enhanced features",
+          "changes": {
+            "feature1": "Upgraded to Next.js 15 with improved performance",
+            "feature2": "Added Supabase integration for more flexible database operations",
+            "feature3": "Implemented Next-Intl for better internationalization support",
+            "feature4": "Implemented Supabase-based blog system for content management",
+            "improvement1": "Redesigned dashboard with better user experience",
+            "improvement2": "Enhanced Stripe integration with more payment options",
+            "fix1": "Fixed authentication issues with email providers",
+            "fix2": "Resolved styling inconsistencies across different browsers"
+          }
+        },
+        "v1_5": {
+          "date": "March 10, 2023",
+          "title": "Feature Update",
+          "description": "New features and improvements to enhance user experience",
+          "changes": {
+            "feature1": "Added multi-factor authentication support",
+            "feature2": "Implemented dark mode toggle",
+            "improvement1": "Improved dashboard loading performance",
+            "improvement2": "Enhanced mobile responsiveness",
+            "fix1": "Fixed subscription cancellation flow"
+          }
+        },
+        "v1_4": {
+          "date": "January 15, 2023",
+          "title": "Dashboard Enhancements",
+          "description": "Improvements to the dashboard UI and functionality",
+          "changes": {
+            "feature1": "Added custom dashboard widgets",
+            "feature2": "Implemented user activity logs",
+            "improvement1": "Enhanced data visualization components",
+            "fix1": "Fixed billing information display issues"
+          }
+        }
       }
     }
   }

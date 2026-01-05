@@ -22,22 +22,39 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
               {t(`sections.${section.title.toLowerCase()}`)}
             </span>
             <ul className="mt-4 list-inside space-y-3">
-              {section.items?.map((link) => (
-                <li key={link.title}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground hover:text-primary"
-                  >
-                    {t(
-                      `links.${link.title.toLowerCase().replace(/\s+/g, "_")}`,
-                    )}
-                  </Link>
-                </li>
-              ))}
+              {section.items?.map((link) => {
+                const isDocsSection = section.title === "Docs";
+                const linkKey = link.title.toLowerCase().replace(/\s+/g, "_");
+                
+                if (isDocsSection) {
+                  // Disable documentation links (not clickable)
+                  return (
+                    <li key={link.title}>
+                      <span 
+                        className="text-sm text-muted-foreground/50 cursor-not-allowed pointer-events-none select-none"
+                        aria-disabled="true"
+                      >
+                        {t(`links.${linkKey}`)}
+                      </span>
+                    </li>
+                  );
+                }
+                
+                return (
+                  <li key={link.title}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-muted-foreground hover:text-primary"
+                    >
+                      {t(`links.${linkKey}`)}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         ))}
-        <div className="col-span-full flex flex-col items-end sm:col-span-1 md:col-span-2">
+        <div className="col-span-full sm:col-span-1 md:col-span-2">
           <NewsletterForm />
         </div>
       </div>

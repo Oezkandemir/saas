@@ -180,10 +180,10 @@ export function BookingFormDrawer({
             t("bookingSuccessDescription") ||
             "Your booking has been confirmed.",
         });
-        toast.warning("E-Mail konnte nicht gesendet werden", {
+        toast.warning(t("emailCouldNotBeSent"), {
           description:
             emailError ||
-            "Die Buchung wurde erfolgreich erstellt, aber die Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte kontaktieren Sie uns direkt.",
+            t("emailCouldNotBeSentDescription"),
         });
       }
 
@@ -244,7 +244,7 @@ export function BookingFormDrawer({
                         <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                           <CalendarIcon className="h-3 w-3 text-blue-600 dark:text-blue-400" />
                           <span className="text-blue-600 dark:text-blue-400 font-medium">
-                            Datum & Zeit
+                            {t("dateAndTime")}
                           </span>
                         </p>
                         <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
@@ -275,7 +275,7 @@ export function BookingFormDrawer({
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
                       <User className="h-3.5 w-3.5 text-muted-foreground" />
-                      Kontaktinformationen
+                      {t("contactInformation")}
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>
@@ -331,7 +331,7 @@ export function BookingFormDrawer({
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
                       <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                      Teilnehmer
+                      {t("participants")}
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>

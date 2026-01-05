@@ -1,5 +1,6 @@
 import { PlansRow } from "@/types";
 import { Check, Info, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { comparePlans, plansColumns } from "@/config/subscriptions";
 import { cn } from "@/lib/utils";
@@ -12,6 +13,38 @@ import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 export function ComparePlans() {
+  const t = useTranslations("ComparePlans");
+  const tFeatures = useTranslations("Pricing.features");
+  
+  // Feature name mapping from config to translation keys
+  const featureKeyMap: Record<string, string> = {
+    "Kunden": "customers",
+    "QR-Codes": "qrCodes",
+    "Dokumente pro Monat": "documentsPerMonth",
+    "PDF-Export": "pdfExport",
+    "Statusverwaltung": "statusManagement",
+    "Angebot zu Rechnung": "quoteToInvoice",
+    "QR-Code Scan-Tracking": "qrCodeScanTracking",
+    "Custom QR Alias": "customQrAlias",
+    "Eigenes Logo & Footer": "customLogoFooter",
+    "Priority Support": "prioritySupport",
+    "API-Zugang": "apiAccess",
+    "Cenety Branding": "cenetyBranding",
+  };
+  
+  // Translate features dynamically
+  const translatedPlans = comparePlans.map((row) => {
+    const featureKey = featureKeyMap[row.feature] || row.feature.toLowerCase().replace(/\s+/g, "");
+    const translatedRow: PlansRow = {
+      ...row,
+      feature: tFeatures(featureKey),
+    };
+    if (row.tooltip) {
+      translatedRow.tooltip = tFeatures(`${featureKey}Tooltip`);
+    }
+    return translatedRow;
+  });
+  
   const renderCell = (value: string | boolean | null, col: string) => {
     if (value === null)
       return <span className="text-muted-foreground/50">—</span>;
@@ -46,9 +79,9 @@ export function ComparePlans() {
   const getPlanBadge = (col: string) => {
     if (col === "pro")
       return (
-        <Badge className="bg-primary text-primary-foreground">Beliebt</Badge>
+        <Badge className="bg-primary text-primary-foreground">{t("popular")}</Badge>
       );
-    if (col === "enterprise") return <Badge variant="secondary">Premium</Badge>;
+    if (col === "enterprise") return <Badge variant="secondary">{t("premium")}</Badge>;
     return null;
   };
 
@@ -57,76 +90,75 @@ export function ComparePlans() {
       {/* Header */}
       <div className="mb-12 text-center animate-in fade-in slide-in-from-top-4 duration-700">
         <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-4">
-          Vergleich
+          {t("compare")}
         </div>
         <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-          Pläne vergleichen
+          {t("comparePlans")}
         </h2>
         <p className="max-w-2xl mx-auto text-lg text-muted-foreground">
-          Finden Sie den perfekten Plan für Ihre Bedürfnisse!
+          {t("findPerfectPlan")}
         </p>
       </div>
 
-      {/* Comparison Table */}
-      <div className="my-10 overflow-x-auto rounded-xl border bg-card shadow-lg animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
-        <div className="min-w-full">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b bg-muted/50">
-                <th className="sticky left-0 z-20 w-48 bg-muted/50 p-5 text-left md:w-1/3 lg:top-14">
-                  <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                    Features
-                  </span>
-                </th>
-                {plansColumns.map((col) => (
-                  <th
-                    key={col}
-                    className="sticky z-10 w-32 bg-muted/50 p-5 text-center font-heading text-lg capitalize tracking-wide md:w-auto lg:top-14 lg:text-xl"
-                  >
-                    <div className="flex flex-col items-center gap-2">
-                      <span>{col}</span>
-                      {getPlanBadge(col)}
+      {/* Comparison Table - Modern Card Layout */}
+      <div className="my-10 grid gap-6 md:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+        {plansColumns.map((col) => (
+          <div
+            key={col}
+            className="rounded-xl border bg-card shadow-sm hover:shadow-md transition-shadow"
+          >
+            {/* Plan Header */}
+            <div className="border-b bg-muted/30 p-5 text-center">
+              <div className="flex flex-col items-center gap-2">
+                <h3 className="text-xl font-bold capitalize">{col}</h3>
+                {getPlanBadge(col) && (
+                  <div className="mt-1">{getPlanBadge(col)}</div>
+                )}
+              </div>
+            </div>
+
+            {/* Features List */}
+            <div className="divide-y">
+              {translatedPlans.map((row: PlansRow, index: number) => (
+                <div
+                  key={index}
+                  className="p-4 transition-colors hover:bg-muted/30"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">
+                          {row.feature}
+                        </span>
+                        {row.tooltip && (
+                          <Popover>
+                            <PopoverTrigger className="shrink-0 rounded p-0.5 hover:bg-muted transition-colors">
+                              <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                            </PopoverTrigger>
+                            <PopoverContent
+                              side="top"
+                              className="max-w-80 p-3 text-sm"
+                            >
+                              {row.tooltip}
+                            </PopoverContent>
+                          </Popover>
+                        )}
+                      </div>
                     </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {comparePlans.map((row: PlansRow, index: number) => (
-                <tr key={index} className="transition-colors hover:bg-muted/30">
-                  <td className="sticky left-0 z-10 bg-card p-4">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-medium lg:text-base">
-                        {row.feature}
-                      </span>
-                      {row.tooltip && (
-                        <Popover>
-                          <PopoverTrigger className="shrink-0 rounded p-1 hover:bg-muted transition-colors">
-                            <Info className="h-4 w-4 text-muted-foreground" />
-                          </PopoverTrigger>
-                          <PopoverContent
-                            side="top"
-                            className="max-w-80 p-3 text-sm"
-                          >
-                            {row.tooltip}
-                          </PopoverContent>
-                        </Popover>
+                    <div className="shrink-0">
+                      {renderCell(
+                        typeof row[col] === "string" && (row[col] === "Unbegrenzt" || row[col] === "Unlimited" || row[col] === "3")
+                          ? row[col] === "3" ? row[col] : tFeatures("unlimited")
+                          : row[col],
+                        col
                       )}
                     </div>
-                  </td>
-                  {plansColumns.map((col) => (
-                    <td
-                      key={col}
-                      className="p-4 text-center text-sm lg:text-base"
-                    >
-                      {renderCell(row[col], col)}
-                    </td>
-                  ))}
-                </tr>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </div>
+          </div>
+        ))}
       </div>
     </MaxWidthWrapper>
   );

@@ -60,14 +60,14 @@ export function UserNameForm({ user }: UserNameFormProps) {
   });
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} className="space-y-3">
       <div className="flex items-center gap-2">
         <Label className="sr-only" htmlFor="name">
           {t("label")}
         </Label>
         <Input
           id="name"
-          className="flex-1"
+          className="flex-1 h-9"
           size={32}
           {...register("name")}
           onChange={(e) => checkUpdate(e.target.value)}
@@ -77,15 +77,24 @@ export function UserNameForm({ user }: UserNameFormProps) {
           type="submit"
           variant={updated ? "primary" : "outline"}
           size="sm"
-          className="h-8 text-xs shrink-0"
+          className="h-9 shrink-0 min-w-[80px]"
           disabled={isPending || !updated}
         >
-          {isPending ? <LoadingSpinner size="sm" variant="primary" /> : "Save"}
+          {isPending ? (
+            <>
+              <LoadingSpinner size="sm" variant="primary" />
+              <span className="ml-2">Saving...</span>
+            </>
+          ) : (
+            "Save"
+          )}
         </Button>
       </div>
-      <div className="mt-1">
+      <div className="flex flex-col gap-1">
         {errors?.name && (
-          <p className="text-xs text-red-600">{errors.name.message}</p>
+          <p className="text-xs text-destructive font-medium">
+            {errors.name.message}
+          </p>
         )}
         <p className="text-xs text-muted-foreground">{t("maxChars")}</p>
       </div>

@@ -59,11 +59,20 @@ export const getSupabaseServer = async () => {
     const client = createSupabaseServerClient(cookieStore);
     return client;
   } catch (error) {
-    logger.error("Error getting Supabase server instance:", error);
-    // Don't throw immediately - let the calling code handle it
-    // This prevents the spawn EBADF error from crashing the entire request
-    const cookieStore = await cookies();
-    return createSupabaseServerClient(cookieStore);
+    // If cookies() fails (e.g., outside request scope), fall back to static client
+    // This happens during build time or in contexts without request scope
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (
+      errorMessage.includes("request scope") ||
+      errorMessage.includes("cookies") ||
+      errorMessage.includes("AsyncLocalStorage")
+    ) {
+      // Silently fall back to static client - this is expected in some contexts
+      return getSupabaseStatic();
+    }
+    // For other errors, log and fall back to static client
+    logger.warn("Error getting Supabase server instance, falling back to static client:", errorMessage);
+    return getSupabaseStatic();
   }
 };
 

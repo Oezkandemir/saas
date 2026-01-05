@@ -22,6 +22,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { SubscriptionPlan } from "@/types/index";
 import { pricingData } from "@/config/subscriptions";
@@ -45,6 +46,38 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
       : false;
   const [isYearly, setIsYearly] = useState<boolean>(!!isYearlyDefault);
   const { setShowSignInModal } = useContext(ModalContext);
+  const t = useTranslations("Pricing");
+  const tBenefits = useTranslations("Pricing.benefits");
+  const tPlanDesc = useTranslations("Pricing.benefits.planDescription");
+  
+  // Translate benefit/limitation text
+  const translateText = (text: string): string => {
+    // Map common benefit texts to translation keys
+    const benefitMap: Record<string, string> = {
+      "3 Kunden": tBenefits("threeCustomers"),
+      "3 QR-Codes": tBenefits("threeQrCodes"),
+      "3 Dokumente pro Monat": tBenefits("threeDocumentsPerMonth"),
+      "Unbegrenzt Kunden": tBenefits("unlimitedCustomers"),
+      "Unbegrenzt QR-Codes": tBenefits("unlimitedQrCodes"),
+      "Unbegrenzt Dokumente": tBenefits("unlimitedDocuments"),
+      "PDF-Export": tBenefits("pdfExport"),
+      "Grundlegende Statusverwaltung": tBenefits("basicStatusManagement"),
+      "QR-Code Scan-Tracking": tBenefits("qrCodeScanTracking"),
+      "Custom QR Alias": tBenefits("customQrAlias"),
+      "Eigenes Logo & Footer": tBenefits("customLogoFooter"),
+      "Kein Cenety Branding": tBenefits("noCenetyBranding"),
+      "Vollständige Statusverwaltung": tBenefits("fullStatusManagement"),
+      "Angebot zu Rechnung umwandeln": tBenefits("quoteToInvoice"),
+      "Priority Support": tBenefits("prioritySupport"),
+      "API-Zugang": tBenefits("apiAccess"),
+      "Cenety Branding auf Dokumenten": tBenefits("cenetyBrandingOnDocuments"),
+      "Kein Scan-Tracking": tBenefits("noScanTracking"),
+      "Kein Custom QR Alias": tBenefits("noCustomQrAlias"),
+      "Kein eigenes Logo/Footer": tBenefits("noCustomLogoFooter"),
+    };
+    
+    return benefitMap[text] || text;
+  };
 
   // Icon mapping for features
   const getFeatureIcon = (feature: string) => {
@@ -101,36 +134,29 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
         )}
         key={offer.title}
       >
-        {/* Badge for current plan */}
-        {isCurrentPlan && (
-          <div className="absolute right-4 top-4 z-10">
-            <Badge className="bg-primary text-primary-foreground shadow-md">
-              Aktueller Plan
-            </Badge>
-          </div>
-        )}
-
-        {/* Popular badge */}
-        {isPro && (
-          <div className="absolute left-0 top-6 z-10">
-            <div className="relative">
-              <div className="absolute inset-0 bg-primary blur-xl opacity-50"></div>
-              <Badge className="relative bg-primary text-primary-foreground shadow-md rounded-r-full rounded-l-none px-4 py-1">
-                Beliebt
-              </Badge>
-            </div>
-          </div>
-        )}
-
         {/* Header */}
-        <div className="relative overflow-hidden border-b bg-gradient-to-br from-muted/50 to-muted/20 p-6">
+        <div className="relative overflow-hidden border-b bg-gradient-to-br from-muted/50 to-muted/20 p-6 pt-8">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_0%,rgba(255,255,255,0.1)_50%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-          <div className="relative flex items-start justify-between mb-4">
+          {/* Badges - positioned at top with proper spacing */}
+          <div className="absolute top-4 right-4 flex flex-col gap-2 items-end z-10">
+            {isCurrentPlan && (
+              <Badge className="bg-primary text-primary-foreground shadow-md text-xs">
+                {t("currentPlan")}
+              </Badge>
+            )}
+            {isPro && (
+              <Badge className="bg-primary text-primary-foreground shadow-md text-xs">
+                {t("popular")}
+              </Badge>
+            )}
+          </div>
+
+          <div className="relative flex items-start justify-between mb-4 pr-24">
             <div className="flex items-center gap-3">
               <div
                 className={cn(
-                  "flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300",
+                  "flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 shrink-0",
                   isPro
                     ? "bg-primary/10 text-primary"
                     : isEnterprise
@@ -140,13 +166,20 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
               >
                 {getPlanIcon(offer.title)}
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                   {offer.title}
                 </p>
                 {offer.description && (
                   <p className="text-xs text-muted-foreground/80 mt-0.5">
-                    {offer.description}
+                    {(() => {
+                      const planKey = offer.title.toLowerCase() as "free" | "pro" | "enterprise";
+                      try {
+                        return tPlanDesc(planKey, { defaultValue: offer.description });
+                      } catch {
+                        return offer.description;
+                      }
+                    })()}
                   </p>
                 )}
               </div>
@@ -168,7 +201,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                   </>
                 ) : offer.prices.monthly === 0 ? (
                   <span className="text-4xl font-bold tracking-tight">
-                    Kostenlos
+                    {t("free")}
                   </span>
                 ) : (
                   <span className="text-4xl font-bold tracking-tight">
@@ -178,25 +211,27 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
               </div>
               {offer.prices.monthly > 0 && (
                 <span className="text-sm font-medium text-muted-foreground">
-                  /Monat
+                  {t("perMonth")}
                 </span>
               )}
             </div>
             {offer.prices.monthly > 0 && (
               <p className="text-xs text-muted-foreground mt-2">
                 {isYearly
-                  ? `€${offer.prices.yearly} jährlich abgerechnet`
-                  : "monatlich abgerechnet"}
+                  ? t("billedYearly", { amount: `€${offer.prices.yearly}` })
+                  : t("billedMonthly")}
               </p>
             )}
             {isYearly && offer.prices.monthly > 0 && (
-              <Badge variant="secondary" className="mt-2 text-xs">
-                Sparen Sie{" "}
-                {Math.round(
-                  (1 - offer.prices.yearly / (offer.prices.monthly * 12)) * 100,
-                )}
-                %
-              </Badge>
+              <div className="mt-3">
+                <Badge variant="secondary" className="text-xs px-2 py-0.5">
+                  {t("savePercent", {
+                    percent: Math.round(
+                      (1 - offer.prices.yearly / (offer.prices.monthly * 12)) * 100,
+                    ),
+                  })}
+                </Badge>
+              </div>
             )}
           </div>
         </div>
@@ -213,7 +248,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                 <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                   {getFeatureIcon(feature)}
                 </div>
-                <p className="text-sm font-medium leading-relaxed">{feature}</p>
+                <p className="text-sm font-medium leading-relaxed">{translateText(feature)}</p>
               </li>
             ))}
 
@@ -226,7 +261,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                   <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted">
                     <X className="h-3 w-3" />
                   </div>
-                  <p className="text-sm leading-relaxed">{feature}</p>
+                  <p className="text-sm leading-relaxed">{translateText(feature)}</p>
                 </li>
               ))}
           </ul>
@@ -246,7 +281,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                     "w-full group/btn",
                   )}
                 >
-                  Zum Dashboard
+                  {t("goToDashboard")}
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
                 </Link>
               ) : (
@@ -264,8 +299,8 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                 onClick={() => setShowSignInModal(true)}
               >
                 {offer.prices.monthly === 0
-                  ? "Kostenlos starten"
-                  : "Jetzt upgraden"}
+                  ? t("startFree")
+                  : t("upgradeNow")}
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
               </Button>
             )}
@@ -281,14 +316,13 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
         {/* Header */}
         <div className="mb-12 text-center animate-in fade-in slide-in-from-top-4 duration-700">
           <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-4">
-            Preise
+            {t("pricing")}
           </div>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-            Wählen Sie Ihren Plan
+            {t("chooseYourPlan")}
           </h2>
           <p className="max-w-2xl mx-auto text-lg text-muted-foreground">
-            Flexible Pläne für jedes Unternehmen. Starten Sie kostenlos und
-            upgraden Sie jederzeit.
+            {t("pricingDescription")}
           </p>
         </div>
 
@@ -301,7 +335,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
               isYearly && "text-muted-foreground",
             )}
           >
-            Monatlich
+            {t("monthly")}
           </span>
           <ToggleGroup
             type="single"
@@ -314,16 +348,16 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
             <ToggleGroupItem
               value="monthly"
               className="rounded-full px-6 data-[state=on]:!bg-primary data-[state=on]:!text-primary-foreground data-[state=on]:!shadow-md transition-all"
-              aria-label="Toggle monthly billing"
+              aria-label={t("toggleMonthlyBilling")}
             >
-              Monatlich
+              {t("monthly")}
             </ToggleGroupItem>
             <ToggleGroupItem
               value="yearly"
               className="rounded-full px-6 data-[state=on]:!bg-primary data-[state=on]:!text-primary-foreground data-[state=on]:!shadow-md transition-all relative"
-              aria-label="Toggle yearly billing"
+              aria-label={t("toggleYearlyBilling")}
             >
-              Jährlich
+              {t("yearly")}
               <Badge
                 variant="secondary"
                 className="ml-2 text-xs px-1.5 py-0 h-4"
@@ -339,7 +373,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
               !isYearly && "text-muted-foreground",
             )}
           >
-            Jährlich
+            {t("yearly")}
           </span>
         </div>
 
@@ -362,7 +396,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
         {/* Footer Note */}
         <div className="max-w-2xl mx-auto text-center space-y-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
           <p className="text-sm text-muted-foreground">
-            Fragen? Kontaktieren Sie uns unter{" "}
+            {t("questions")}{" "}
             <a
               className="font-medium text-primary hover:underline transition-colors"
               href="mailto:support@saas-starter.com"
@@ -371,8 +405,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
             </a>
           </p>
           <p className="text-xs text-muted-foreground/80">
-            <strong>Testen Sie alle Pläne kostenlos.</strong> Keine Kreditkarte
-            erforderlich.
+            <strong>{t("tryAllPlansFree")}</strong> {t("noCreditCardRequired")}
           </p>
         </div>
       </section>

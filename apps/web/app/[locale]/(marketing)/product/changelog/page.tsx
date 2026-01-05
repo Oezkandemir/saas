@@ -1,200 +1,155 @@
 import { Metadata } from "next";
+import { GitBranch } from "lucide-react";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
+import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
 
-export const metadata: Metadata = constructMetadata({
-  title: "Changelog",
-  description: "The latest updates and improvements to Cenety",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  setRequestLocale(locale);
+  const t = await getTranslations("Product.Changelog");
+
+  return constructMetadata({
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  });
+}
 
 export default async function ChangelogPage() {
+  const locale = await getLocale();
+  setRequestLocale(locale);
+  const t = await getTranslations("Product.Changelog");
+
   const releases = [
     {
       version: "2.0.0",
-      date: "June 15, 2023",
-      title: "Major Release - Version 2.0",
-      description:
-        "A complete rebuild with Next.js 15, improved UI, and enhanced features",
+      date: t("releases.v2.date"),
+      title: t("releases.v2.title"),
+      description: t("releases.v2.description"),
       changes: [
-        {
-          type: "feature",
-          desc: "Upgraded to Next.js 15 with improved performance",
-        },
-        {
-          type: "feature",
-          desc: "Added Supabase integration for more flexible database operations",
-        },
-        {
-          type: "feature",
-          desc: "Implemented Next-Intl for better internationalization support",
-        },
-        {
-          type: "feature",
-          desc: "Implemented Supabase-based blog system for content management",
-        },
-        {
-          type: "improvement",
-          desc: "Redesigned dashboard with better user experience",
-        },
-        {
-          type: "improvement",
-          desc: "Enhanced Stripe integration with more payment options",
-        },
-        {
-          type: "fix",
-          desc: "Fixed authentication issues with email providers",
-        },
-        {
-          type: "fix",
-          desc: "Resolved styling inconsistencies across different browsers",
-        },
+        { type: "feature", desc: t("releases.v2.changes.feature1") },
+        { type: "feature", desc: t("releases.v2.changes.feature2") },
+        { type: "feature", desc: t("releases.v2.changes.feature3") },
+        { type: "feature", desc: t("releases.v2.changes.feature4") },
+        { type: "improvement", desc: t("releases.v2.changes.improvement1") },
+        { type: "improvement", desc: t("releases.v2.changes.improvement2") },
+        { type: "fix", desc: t("releases.v2.changes.fix1") },
+        { type: "fix", desc: t("releases.v2.changes.fix2") },
       ],
     },
     {
       version: "1.5.0",
-      date: "March 10, 2023",
-      title: "Feature Update",
-      description: "New features and improvements to enhance user experience",
+      date: t("releases.v1_5.date"),
+      title: t("releases.v1_5.title"),
+      description: t("releases.v1_5.description"),
       changes: [
-        { type: "feature", desc: "Added multi-factor authentication support" },
-        { type: "feature", desc: "Implemented dark mode toggle" },
-        { type: "improvement", desc: "Improved dashboard loading performance" },
-        { type: "improvement", desc: "Enhanced mobile responsiveness" },
-        { type: "fix", desc: "Fixed subscription cancellation flow" },
+        { type: "feature", desc: t("releases.v1_5.changes.feature1") },
+        { type: "feature", desc: t("releases.v1_5.changes.feature2") },
+        { type: "improvement", desc: t("releases.v1_5.changes.improvement1") },
+        { type: "improvement", desc: t("releases.v1_5.changes.improvement2") },
+        { type: "fix", desc: t("releases.v1_5.changes.fix1") },
       ],
     },
     {
       version: "1.4.0",
-      date: "January 15, 2023",
-      title: "Dashboard Enhancements",
-      description: "Improvements to the dashboard UI and functionality",
+      date: t("releases.v1_4.date"),
+      title: t("releases.v1_4.title"),
+      description: t("releases.v1_4.description"),
       changes: [
-        { type: "feature", desc: "Added custom dashboard widgets" },
-        { type: "feature", desc: "Implemented user activity logs" },
-        { type: "improvement", desc: "Enhanced data visualization components" },
-        { type: "fix", desc: "Fixed billing information display issues" },
-      ],
-    },
-    {
-      version: "1.3.0",
-      date: "November 5, 2022",
-      title: "Stripe Integration Update",
-      description: "Improvements to payment processing and billing",
-      changes: [
-        { type: "feature", desc: "Added support for more payment methods" },
-        { type: "feature", desc: "Implemented tiered pricing capabilities" },
-        { type: "improvement", desc: "Enhanced subscription management UI" },
-        { type: "fix", desc: "Fixed payment webhook handling" },
-      ],
-    },
-    {
-      version: "1.2.0",
-      date: "September 20, 2022",
-      title: "Authentication Enhancements",
-      description: "Improved user authentication and security",
-      changes: [
-        { type: "feature", desc: "Added social login options" },
-        { type: "feature", desc: "Implemented password strength requirements" },
-        { type: "improvement", desc: "Enhanced session management" },
-        { type: "fix", desc: "Fixed account recovery flow" },
-      ],
-    },
-    {
-      version: "1.1.0",
-      date: "August 1, 2022",
-      title: "Performance Update",
-      description: "Performance improvements and bug fixes",
-      changes: [
-        { type: "improvement", desc: "Optimized database queries" },
-        { type: "improvement", desc: "Reduced initial load time" },
-        { type: "improvement", desc: "Enhanced caching strategy" },
-        { type: "fix", desc: "Fixed memory leaks in components" },
-      ],
-    },
-    {
-      version: "1.0.0",
-      date: "June 1, 2022",
-      title: "Initial Release",
-      description: "First public release of Cenety",
-      changes: [
-        { type: "feature", desc: "Core SaaS functionality" },
-        { type: "feature", desc: "User authentication and management" },
-        { type: "feature", desc: "Stripe subscription integration" },
-        { type: "feature", desc: "Dashboard and settings" },
+        { type: "feature", desc: t("releases.v1_4.changes.feature1") },
+        { type: "feature", desc: t("releases.v1_4.changes.feature2") },
+        { type: "improvement", desc: t("releases.v1_4.changes.improvement1") },
+        { type: "fix", desc: t("releases.v1_4.changes.fix1") },
       ],
     },
   ];
 
   return (
-    <div className="space-y-10">
-      <div className="space-y-4">
-        <h1 className="text-3xl font-bold">Changelog</h1>
-        <p className="text-xl text-muted-foreground">
-          The latest updates and improvements to Cenety
-        </p>
-      </div>
-
-      <div className="space-y-12">
-        {releases.map((release, index) => (
-          <div key={index} className="space-y-4">
-            <div className="flex items-baseline justify-between">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-2xl font-bold">{release.version}</h2>
-                  <Badge variant="outline">{release.date}</Badge>
-                </div>
-                <h3 className="text-lg font-semibold">{release.title}</h3>
-                <p className="text-muted-foreground">{release.description}</p>
-              </div>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <div className="overflow-hidden relative py-16 bg-gradient-to-b border-b from-background via-background to-muted/20 md:py-24">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        <div className="container flex relative z-10 flex-col gap-6 items-center text-center duration-700 animate-in fade-in slide-in-from-top-4">
+          <div className="mb-4 flex justify-center">
+            <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+              <GitBranch className="size-6 text-primary" />
             </div>
-
-            <div className="space-y-3 pl-4">
-              {release.changes.map((change, changeIndex) => (
-                <div key={changeIndex} className="flex items-start gap-2">
-                  <Badge
-                    variant={
-                      change.type === "feature"
-                        ? "default"
-                        : change.type === "improvement"
-                          ? "secondary"
-                          : "outline"
-                    }
-                    className="mt-0.5 whitespace-nowrap"
-                  >
-                    {change.type === "feature"
-                      ? "New"
-                      : change.type === "improvement"
-                        ? "Improved"
-                        : "Fixed"}
-                  </Badge>
-                  <p>{change.desc}</p>
-                </div>
-              ))}
-            </div>
-
-            {index < releases.length - 1 && <Separator className="mt-6" />}
           </div>
-        ))}
-      </div>
-
-      <div className="rounded-lg bg-muted p-6 text-center">
-        <h2 className="mb-2 text-lg font-semibold">Subscribe to updates</h2>
-        <p className="mb-4 text-muted-foreground">
-          Get notified about new features and improvements.
-        </p>
-        <div className="mx-auto flex w-full max-w-sm items-center space-x-2">
-          <input
-            type="email"
-            placeholder="Enter your email"
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          />
-          <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-            Subscribe
-          </button>
+          <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-2">
+            <span className="flex relative w-2 h-2">
+              <span className="inline-flex absolute w-full h-full rounded-full opacity-75 animate-ping bg-primary"></span>
+              <span className="inline-flex relative w-2 h-2 rounded-full bg-primary"></span>
+            </span>
+            {t("hero.badge")}
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b sm:text-5xl md:text-6xl lg:text-7xl from-foreground to-foreground/70">
+            {t("hero.title")}
+          </h1>
+          <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+            {t("hero.description")}
+          </p>
         </div>
       </div>
+
+      <MaxWidthWrapper className="py-16 md:py-24">
+        <div className="mx-auto max-w-4xl space-y-12">
+          {releases.map((release, index) => (
+            <Card key={index}>
+              <CardHeader>
+                <div className="flex items-baseline justify-between">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <CardTitle className="text-2xl">{release.version}</CardTitle>
+                      <Badge variant="outline">{release.date}</Badge>
+                    </div>
+                    <h3 className="text-lg font-semibold">{release.title}</h3>
+                    <p className="text-muted-foreground">
+                      {release.description}
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3 pl-4">
+                  {release.changes.map((change, changeIndex) => (
+                    <div key={changeIndex} className="flex items-start gap-2">
+                      <Badge
+                        variant={
+                          change.type === "feature"
+                            ? "default"
+                            : change.type === "improvement"
+                              ? "secondary"
+                              : "outline"
+                        }
+                        className="mt-0.5 whitespace-nowrap"
+                      >
+                        {change.type === "feature"
+                          ? t("badges.new")
+                          : change.type === "improvement"
+                            ? t("badges.improved")
+                            : t("badges.fixed")}
+                      </Badge>
+                      <p className="text-muted-foreground">{change.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+              {index < releases.length - 1 && (
+                <Separator className="mt-6" />
+              )}
+            </Card>
+          ))}
+        </div>
+      </MaxWidthWrapper>
     </div>
   );
 }

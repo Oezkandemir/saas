@@ -103,8 +103,8 @@ export function UserAvatarForm({ user }: UserAvatarFormProps) {
 
   return (
     <form>
-      <div className="flex items-center gap-4">
-        <div className="relative size-16 overflow-hidden rounded-full border border-border shrink-0">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div className="relative size-24 overflow-hidden rounded-full border-2 border-border shrink-0 ring-2 ring-background">
           {previewUrl ? (
             <Image
               src={previewUrl}
@@ -113,24 +113,24 @@ export function UserAvatarForm({ user }: UserAvatarFormProps) {
               className="object-cover"
             />
           ) : (
-            <div className="flex size-full items-center justify-center bg-muted">
-              <Icons.user className="size-8 text-muted-foreground" />
+            <div className="flex size-full items-center justify-center bg-muted/50">
+              <Icons.user className="size-12 text-muted-foreground" />
             </div>
           )}
           {isPending && (
-            <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-full">
               <LoadingSpinner size="sm" variant="primary" />
             </div>
           )}
         </div>
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-3 flex-1 min-w-0 w-full sm:w-auto">
+          <div className="flex items-center gap-2 flex-wrap">
             <Button
               type="button"
               variant="outline"
               size="sm"
-              className="h-8 text-xs"
+              className="h-9"
               onClick={() => fileInputRef.current?.click()}
             >
               {t("title")}
@@ -140,7 +140,7 @@ export function UserAvatarForm({ user }: UserAvatarFormProps) {
               <Button
                 type="button"
                 size="sm"
-                className="h-8 text-xs"
+                className="h-9"
                 onClick={handleAvatarUpload}
                 disabled={isPending}
               >
@@ -167,11 +167,11 @@ export function UserAvatarForm({ user }: UserAvatarFormProps) {
           />
 
           {errors?.avatar && (
-            <p className="text-xs text-red-600 mt-1">
+            <p className="text-xs text-destructive font-medium">
               {String(errors.avatar.message || "Invalid file")}
             </p>
           )}
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs text-muted-foreground leading-relaxed">
             {t("recommendation")}
           </p>
         </div>

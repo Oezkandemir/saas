@@ -63,6 +63,7 @@ export function NewCustomerDrawer({
 }: NewCustomerDrawerProps) {
   const router = useRouter();
   const t = useTranslations("Customers.form.fields");
+  const tForm = useTranslations("Customers.form");
   const [internalOpen, setInternalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -79,15 +80,15 @@ export function NewCustomerDrawer({
 
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
-      toast.error("Name ist erforderlich");
+      toast.error(tForm("nameRequired"));
       return;
     }
 
     setIsLoading(true);
     try {
       const newCustomer = await createCustomer(formData);
-      toast.success("Kunde erfolgreich erstellt", {
-        description: `${formData.name} wurde hinzugefügt.`,
+      toast.success(tForm("createSuccess"), {
+        description: tForm("createSuccessDescription", { name: formData.name }),
       });
       setOpen(false);
       // Reset form
@@ -102,8 +103,8 @@ export function NewCustomerDrawer({
       router.push(`/dashboard/customers/${newCustomer.id}`);
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Ein Fehler ist aufgetreten.";
-      toast.error("Fehler beim Erstellen", {
+        error instanceof Error ? error.message : tForm("errorOccurred");
+      toast.error(tForm("createError"), {
         description: errorMessage,
       });
     } finally {
@@ -127,7 +128,7 @@ export function NewCustomerDrawer({
       {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
       <SheetContent side="right" className="w-[min(400px,calc(100%-16px))] flex flex-col p-0">
         <SheetHeader className="px-6 pt-6 pb-4">
-          <SheetTitle>Neuer Kunde</SheetTitle>
+          <SheetTitle>{tForm("newCustomer")}</SheetTitle>
         </SheetHeader>
         
         <div className="overflow-y-auto flex-1 px-6 pb-4">
@@ -150,7 +151,7 @@ export function NewCustomerDrawer({
               </div>
 
               <div className="space-y-1.5">
-                <Label.Root htmlFor="email">E-Mail</Label.Root>
+                <Label.Root htmlFor="email">{t("email")}</Label.Root>
                 <Input
                   id="email"
                   type="email"
@@ -163,7 +164,7 @@ export function NewCustomerDrawer({
               </div>
 
               <div className="space-y-1.5">
-                <Label.Root htmlFor="phone">Telefon</Label.Root>
+                <Label.Root htmlFor="phone">{t("phone")}</Label.Root>
                 <Input
                   id="phone"
                   type="tel"
@@ -192,7 +193,7 @@ export function NewCustomerDrawer({
 
               <div className="space-y-1.5">
                 <Label.Root htmlFor="notes">
-                  Notizen <Label.Sub>(Optional)</Label.Sub>
+                  {t("notes")} <Label.Sub>({tForm("optional")})</Label.Sub>
                 </Label.Root>
                 <Textarea.Root
                   placeholder={t("notesPlaceholder")}
@@ -211,7 +212,7 @@ export function NewCustomerDrawer({
                 </Textarea.Root>
                 <Hint.Root>
                   <Hint.Icon as={RiInformationFill} />
-                  Diese Informationen werden im Kundenprofil gespeichert.
+                  {tForm("notesHint")}
                 </Hint.Root>
               </div>
             </div>
@@ -229,7 +230,7 @@ export function NewCustomerDrawer({
               disabled={isLoading}
               type="button"
             >
-              Abbrechen
+              {tForm("cancel")}
             </Button.Root>
             <Button.Root
               variant="primary"
@@ -239,7 +240,7 @@ export function NewCustomerDrawer({
               disabled={isLoading || !formData.name.trim()}
               type="button"
             >
-              {isLoading ? "Wird erstellt..." : "Kunde erstellen"}
+              {isLoading ? tForm("creating") : tForm("createCustomer")}
             </Button.Root>
           </div>
         </div>

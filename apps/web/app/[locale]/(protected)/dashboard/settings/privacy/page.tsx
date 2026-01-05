@@ -30,18 +30,20 @@ export default async function PrivacySettingsPage() {
 
   if (!user?.id) redirect("/login");
 
+  const t = await getTranslations("Settings.privacy");
+
   return (
     <UnifiedPageLayout
-      title="Datenschutz-Einstellungen"
-      description="Verwalten Sie Ihre Datenschutz-Einstellungen, Einwilligungen und Datenexport"
+      title={t("settingsTitle")}
+      description={t("settingsDescription")}
       icon={<Shield className="w-4 h-4 text-primary" />}
       contentClassName="space-y-6 pb-10"
     >
       {/* Cookie Settings Section */}
       <div>
         <SectionColumns
-          title="Cookie-Einstellungen"
-          description="Verwalten Sie Ihre Cookie-Präferenzen und Kontaktmethoden"
+          title={t("cookieSettings.title")}
+          description={t("cookieSettings.description")}
         >
           <CookieSettingsButton />
         </SectionColumns>
@@ -50,8 +52,8 @@ export default async function PrivacySettingsPage() {
       {/* Consent Management Section */}
       <div>
         <SectionColumns
-          title="Einwilligungsverwaltung"
-          description="Verwalten Sie Ihre Einwilligungen für verschiedene Datentypen"
+          title={t("consentManagement.title")}
+          description={t("consentManagement.description")}
         >
           <ConsentManager />
         </SectionColumns>
@@ -60,8 +62,8 @@ export default async function PrivacySettingsPage() {
       {/* Data Export Section */}
       <div>
         <SectionColumns
-          title="Datenexport"
-          description="Exportieren Sie Ihre Daten gemäß DSGVO Art. 20"
+          title={t("dataExport.title")}
+          description={t("dataExport.description")}
         >
           <DataExport />
         </SectionColumns>

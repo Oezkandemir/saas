@@ -5,7 +5,6 @@ import { ArrowLeft } from "lucide-react";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { BlogPostForm } from "@/components/admin/blog/blog-post-form";
 
 export async function generateMetadata() {
@@ -49,22 +48,40 @@ export default async function EditBlogPostPage(props: Props) {
   }
 
   return (
-    <UnifiedPageLayout
-      title={t("editPost") || "Edit Blog Post"}
-      description={t("editPostDescription") || "Edit your blog post"}
-      icon={<ArrowLeft className="w-4 h-4 text-primary" />}
-    >
-      <div className="space-y-4">
-        <Link href="/admin/blog">
-          <button className="flex items-center mb-4 text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="mr-2 w-4 h-4" />
-            {t("backToPosts") || "Back to Posts"}
-          </button>
-        </Link>
-
-        <BlogPostForm post={post} />
+    <div className="flex flex-col w-full">
+      {/* Hero Section */}
+      <div className="overflow-hidden relative py-16 bg-gradient-to-b border-b from-background via-background to-muted/20 md:py-24">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        <div className="container flex relative z-10 flex-col gap-6 items-center text-center duration-700 animate-in fade-in slide-in-from-top-4">
+          <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-2">
+            <span className="flex relative w-2 h-2">
+              <span className="inline-flex absolute w-full h-full rounded-full opacity-75 animate-ping bg-primary"></span>
+              <span className="inline-flex relative w-2 h-2 rounded-full bg-primary"></span>
+            </span>
+            {t("editPost") || "Blog Post bearbeiten"}
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b sm:text-5xl md:text-6xl lg:text-7xl from-foreground to-foreground/70">
+            {post.title || t("editPost") || "Blog Post bearbeiten"}
+          </h1>
+          <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+            {t("editPostDescription") || "Bearbeiten Sie Ihren Blog-Post und veröffentlichen Sie ihn."}
+          </p>
+          <Link href="/admin/blog">
+            <button className="flex gap-2 items-center px-4 py-2 mt-4 rounded-lg border transition-colors bg-background hover:bg-muted text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="w-4 h-4" />
+              {t("backToPosts") || "Zurück zu Posts"}
+            </button>
+          </Link>
+        </div>
       </div>
-    </UnifiedPageLayout>
+
+      {/* Form Section */}
+      <div className="py-16 md:py-24">
+        <div className="container">
+          <BlogPostForm post={post} />
+        </div>
+      </div>
+    </div>
   );
 }
 

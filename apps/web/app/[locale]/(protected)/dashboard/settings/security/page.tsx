@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { CheckCircle2, Monitor, Shield, XCircle } from "lucide-react";
-import { getLocale, setRequestLocale } from "next-intl/server";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
@@ -21,15 +21,17 @@ import { TwoFactorAuth } from "@/components/security/two-factor-auth";
 export async function generateMetadata() {
   const locale = await getLocale();
   setRequestLocale(locale);
+  const t = await getTranslations("Settings.security");
 
   return constructMetadata({
-    title: "Sicherheitseinstellungen",
-    description: "Verwalten Sie Ihre Sicherheitseinstellungen und 2FA",
+    title: t("settingsTitle"),
+    description: t("settingsDescription"),
   });
 }
 
 export default async function SecuritySettingsPage() {
   const user = await getCurrentUser();
+  const t = await getTranslations("Settings.security");
 
   if (!user?.id) redirect("/login");
 
@@ -40,8 +42,8 @@ export default async function SecuritySettingsPage() {
 
   return (
     <UnifiedPageLayout
-      title="Sicherheitseinstellungen"
-      description="Verwalten Sie Ihre Sicherheitseinstellungen, 2FA und aktive Sessions"
+      title={t("settingsTitle")}
+      description={t("detailedDescription")}
       icon={<Shield className="w-4 h-4 text-primary" />}
       contentClassName="space-y-6 pb-10"
     >
@@ -51,7 +53,7 @@ export default async function SecuritySettingsPage() {
           <CardHeader className="pb-3">
             <div className="flex justify-between items-center">
               <CardTitle className="text-sm font-medium">
-                E-Mail-Verifizierung
+                {t("emailVerification.title")}
               </CardTitle>
               {emailVerified ? (
                 <CheckCircle2 className="text-green-500 size-5" />
@@ -69,7 +71,9 @@ export default async function SecuritySettingsPage() {
                 variant={emailVerified ? "default" : "destructive"}
                 className="text-xs"
               >
-                {emailVerified ? "Verifiziert" : "Nicht verifiziert"}
+                {emailVerified
+                  ? t("emailVerification.verified")
+                  : t("emailVerification.notVerified")}
               </Badge>
             </div>
           </CardContent>
@@ -79,14 +83,14 @@ export default async function SecuritySettingsPage() {
           <CardHeader className="pb-3">
             <div className="flex justify-between items-center">
               <CardTitle className="text-sm font-medium">
-                Zwei-Faktor-Authentifizierung
+                {t("twoFactor.title")}
               </CardTitle>
               <Shield className="size-5 text-primary" />
             </div>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Erhöhen Sie die Sicherheit Ihres Kontos
+              {t("twoFactor.description")}
             </p>
           </CardContent>
         </Card>
@@ -95,14 +99,14 @@ export default async function SecuritySettingsPage() {
           <CardHeader className="pb-3">
             <div className="flex justify-between items-center">
               <CardTitle className="text-sm font-medium">
-                Aktive Sessions
+                {t("activeSessions.title")}
               </CardTitle>
               <Monitor className="size-5 text-primary" />
             </div>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Verwalten Sie Ihre Login-Sessions
+              {t("activeSessions.description")}
             </p>
           </CardContent>
         </Card>

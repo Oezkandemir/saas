@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 import {
@@ -20,6 +21,7 @@ export function PasswordPolicyIndicator({
   policy,
   showStrength = true,
 }: PasswordPolicyIndicatorProps) {
+  const t = useTranslations("Security.passwordStrength");
   const validation = useMemo(() => {
     return validatePassword(password, policy);
   }, [password, policy]);
@@ -31,9 +33,9 @@ export function PasswordPolicyIndicator({
   };
 
   const strengthLabels = {
-    weak: "Schwach",
-    medium: "Mittel",
-    strong: "Stark",
+    weak: t("weak"),
+    medium: t("medium"),
+    strong: t("strong"),
   };
 
   if (!password) {
@@ -45,7 +47,7 @@ export function PasswordPolicyIndicator({
       {showStrength && (
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Passwort-Stärke</span>
+            <span className="text-muted-foreground">{t("label")}</span>
             <span
               className={cn(
                 "font-medium",
@@ -88,7 +90,7 @@ export function PasswordPolicyIndicator({
       {validation.isValid && (
         <div className="flex items-center gap-2 text-xs text-green-500">
           <CheckCircle2 className="size-3 shrink-0" />
-          <span>Passwort erfüllt alle Anforderungen</span>
+          <span>{t("valid")}</span>
         </div>
       )}
     </div>

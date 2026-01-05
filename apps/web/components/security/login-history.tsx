@@ -6,8 +6,9 @@ import {
   type LoginHistoryEntry,
 } from "@/actions/security-actions";
 import { format } from "date-fns";
-import { de } from "date-fns/locale";
+import { de, enUS } from "date-fns/locale";
 import { Calendar, CheckCircle2, MapPin, Shield, XCircle } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 import { logger } from "@/lib/logger";
 import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
@@ -20,6 +21,9 @@ import {
 } from "@/components/alignui/data-display/card";
 
 export function LoginHistory() {
+  const t = useTranslations("Security.loginHistory");
+  const locale = useLocale();
+  const dateLocale = locale === "de" ? de : enUS;
   const [history, setHistory] = useState<LoginHistoryEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -51,7 +55,7 @@ export function LoginHistory() {
         return String(loc.country);
       }
     }
-    return entry.ipAddress || "Unbekannt";
+    return entry.ipAddress || t("unknown");
   };
 
   const getDeviceInfo = (entry: LoginHistoryEntry) => {
@@ -63,15 +67,15 @@ export function LoginHistory() {
       if (ua.includes("Edge")) return "Edge";
       if (ua.includes("Mobile")) return "Mobile";
     }
-    return "Unbekannt";
+    return t("unknown");
   };
 
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Login-Historie</CardTitle>
-          <CardDescription>Laden...</CardDescription>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("loading")}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -80,15 +84,13 @@ export function LoginHistory() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Login-Historie</CardTitle>
-        <CardDescription>
-          Übersicht über Ihre letzten Login-Versuche
-        </CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
         {history.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">
-            Keine Login-Historie verfügbar
+            {t("empty")}
           </p>
         ) : (
           <div className="space-y-3">
@@ -108,13 +110,13 @@ export function LoginHistory() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-medium break-words">
                       {entry.success
-                        ? "Erfolgreicher Login"
-                        : "Fehlgeschlagener Login"}
+                        ? t("successfulLogin")
+                        : t("failedLogin")}
                     </span>
                     {entry.twoFactorUsed && (
                       <Badge variant="outline" className="text-xs shrink-0">
                         <Shield className="mr-1 size-3" />
-                        2FA
+                        {t("twoFactor")}
                       </Badge>
                     )}
                   </div>
@@ -129,7 +131,7 @@ export function LoginHistory() {
                       <Calendar className="size-3" />
                       <span className="break-words">
                         {format(new Date(entry.createdAt), "PPp", {
-                          locale: de,
+                          locale: dateLocale,
                         })}
                       </span>
                     </div>
@@ -141,7 +143,7 @@ export function LoginHistory() {
                   </div>
                   {!entry.success && entry.failureReason && (
                     <p className="text-xs text-destructive break-words overflow-wrap-anywhere">
-                      Grund: {entry.failureReason}
+                      {t("reason")}: {entry.failureReason}
                     </p>
                   )}
                 </div>

@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
+import { useTranslations } from "next-intl";
 
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
@@ -40,6 +41,7 @@ export function MultiStepForm<T extends FieldValues>({
   showProgress = true,
   allowSkip = false,
 }: MultiStepFormProps<T>) {
+  const t = useTranslations("Common.multiStepForm");
   const [currentStep, setCurrentStep] = React.useState(defaultStep);
   const [completedSteps, setCompletedSteps] = React.useState<Set<number>>(
     new Set(),
@@ -157,10 +159,10 @@ export function MultiStepForm<T extends FieldValues>({
 
       // Show error toast
       const stepTitle =
-        steps[firstInvalidStep]?.title || `Schritt ${firstInvalidStep + 1}`;
+        steps[firstInvalidStep]?.title || t("stepNumber", { number: firstInvalidStep + 1 });
       const { toast } = await import("sonner");
-      toast.error("Bitte füllen Sie alle erforderlichen Felder aus", {
-        description: `Bitte vervollständigen Sie: ${stepTitle}`,
+      toast.error(t("fillAllRequiredFields"), {
+        description: t("completeStep", { stepTitle }),
       });
       return;
     }
@@ -184,7 +186,7 @@ export function MultiStepForm<T extends FieldValues>({
           form.setFocus(firstErrorField);
         }
         const { toast } = await import("sonner");
-        toast.error("Bitte korrigieren Sie die Fehler im Formular");
+        toast.error(t("fixFormErrors"));
         return;
       }
 
@@ -193,11 +195,11 @@ export function MultiStepForm<T extends FieldValues>({
       logger.error("Form submission error:", error);
       // Don't close form on error - let user fix it
       const { toast } = await import("sonner");
-      toast.error("Fehler beim Speichern", {
+      toast.error(t("saveError"), {
         description:
           error instanceof Error
             ? error.message
-            : "Bitte versuchen Sie es erneut",
+            : t("tryAgain"),
       });
     } finally {
       setIsSubmitting(false);
@@ -213,9 +215,9 @@ export function MultiStepForm<T extends FieldValues>({
         <div className="mb-6 space-y-2">
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>
-              Schritt {currentStep + 1} von {steps.length}
+              {t("stepOf", { current: currentStep + 1, total: steps.length })}
             </span>
-            <span>{Math.round(progress)}% abgeschlossen</span>
+            <span>{t("percentComplete", { percent: Math.round(progress) })}</span>
           </div>
           <Progress value={progress} className="h-2" />
         </div>
@@ -249,7 +251,7 @@ export function MultiStepForm<T extends FieldValues>({
                         "border-muted bg-background text-muted-foreground hover:border-primary/50 hover:bg-accent",
                       "cursor-pointer hover:scale-110 active:scale-95",
                     )}
-                    aria-label={`Gehe zu Schritt ${index + 1}: ${step.title}`}
+                    aria-label={t("goToStep", { number: index + 1, title: step.title })}
                     title={`${step.title}${step.description ? ` - ${step.description}` : ""}`}
                   >
                     {isCompleted && !isActive ? (
@@ -299,7 +301,7 @@ export function MultiStepForm<T extends FieldValues>({
                   isCompleted && !isActive && "bg-primary/50",
                   !isCompleted && !isActive && "bg-muted",
                 )}
-                aria-label={`Gehe zu Schritt ${index + 1}: ${step.title}`}
+                aria-label={t("goToStep", { number: index + 1, title: step.title })}
               />
             );
           })}
@@ -318,7 +320,7 @@ export function MultiStepForm<T extends FieldValues>({
       <form
         onSubmit={(e) => {
           // Always prevent default form submission
-          // Form submission is handled manually via the "Speichern" button
+          // Form submission is handled manually via the save button
           e.preventDefault();
         }}
         className="space-y-6"
@@ -345,11 +347,11 @@ export function MultiStepForm<T extends FieldValues>({
             className="gap-1.5 text-sm h-8"
           >
             <ChevronLeft className="size-3.5" />
-            Zurück
+            {t("back")}
           </Button>
 
           <div className="flex items-center gap-2">
-            {/* Speichern Button - immer sichtbar */}
+            {/* Save Button - always visible */}
             <Button
               type="button"
               size="sm"
@@ -368,9 +370,9 @@ export function MultiStepForm<T extends FieldValues>({
                   }
                   const { toast } = await import("sonner");
                   toast.error(
-                    "Bitte füllen Sie alle erforderlichen Felder aus",
+                    t("fillAllRequiredFields"),
                     {
-                      description: `Bitte vervollständigen Sie: ${currentStepData.title}`,
+                      description: t("completeStep", { stepTitle: currentStepData.title }),
                     },
                   );
                   return;
@@ -383,10 +385,10 @@ export function MultiStepForm<T extends FieldValues>({
                 await handleSubmit(syntheticEvent);
               }}
             >
-              {isSubmitting ? "Speichert..." : "Speichern"}
+              {isSubmitting ? t("saving") : t("save")}
             </Button>
 
-            {/* Weiter Button - nur wenn nicht letzter Schritt */}
+            {/* Next Button - only if not last step */}
             {!isLastStep && (
               <Button
                 type="button"
@@ -400,7 +402,7 @@ export function MultiStepForm<T extends FieldValues>({
                 disabled={isSubmitting}
                 className="gap-1.5 text-sm h-8"
               >
-                Weiter
+                {t("next")}
                 <ChevronRight className="size-3.5" />
               </Button>
             )}

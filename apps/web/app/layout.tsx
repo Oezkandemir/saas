@@ -66,7 +66,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
-        {/* Resource hints for performance - preconnect to external domains */}
+        {/* ⚡ PERFORMANCE: Resource hints for faster external resource loading */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -74,14 +74,18 @@ export default async function RootLayout({
           crossOrigin="anonymous"
         />
         <link rel="dns-prefetch" href="https://*.supabase.co" />
-
+        <link rel="dns-prefetch" href="https://vercel.live" />
+        
         {/* Fonts are automatically loaded via next/font/local in assets/fonts/index.ts */}
-        {/* No manual preload needed - Next.js handles font loading optimally */}
+        {/* Next.js handles font optimization automatically with display: swap */}
 
-        {/* Only load manifest in production to avoid SSL errors in development */}
+        {/* ⚡ SEO: Only load manifest in production to avoid SSL errors in development */}
         {process.env.NODE_ENV === "production" && (
           <link rel="manifest" href="/site.webmanifest" />
         )}
+        
+        {/* ⚡ SEO: Robots meta tag */}
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
       </head>
       <body
         className={cn(

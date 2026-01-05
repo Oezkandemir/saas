@@ -16,6 +16,7 @@ import {
   Shield,
   Trash2,
   User,
+  UserCircle,
   Webhook,
   XCircle,
   Zap,
@@ -36,10 +37,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/alignui/data-display/card";
+import {
+  AccordionRoot,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/alignui/layout/accordion";
 import { UserAvatarForm } from "@/components/forms/user-avatar-form";
 import { UserNameForm } from "@/components/forms/user-name-form";
 import { AccountDeletion } from "@/components/gdpr/account-deletion";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { LabelRoot as Label } from "@/components/alignui/forms/label";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -111,13 +119,13 @@ export default async function SettingsPage() {
           className="text-xs text-green-600 bg-green-500/10 border-green-500/20"
         >
           <CheckCircle2 className="mr-1 size-3" />
-          2FA Aktiv
+          {t("security.twoFactorActive")}
         </Badge>
       ) : null,
     },
     {
-      title: "Benachrichtigungen",
-      description: "E-Mail, Push und In-App Benachrichtigungen verwalten",
+      title: t("notifications.title"),
+      description: t("notifications.description"),
       icon: Bell,
       href: "/dashboard/settings/preferences#notifications",
       color: "text-orange-500",
@@ -149,7 +157,9 @@ export default async function SettingsPage() {
                 <div className="flex justify-center items-center rounded-lg size-8 bg-primary/10">
                   <User className="size-4 text-primary" />
                 </div>
-                <CardTitle className="text-sm font-medium">Profil</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  {t("profile.title")}
+                </CardTitle>
               </div>
             </div>
           </CardHeader>
@@ -166,12 +176,12 @@ export default async function SettingsPage() {
                   {emailVerified ? (
                     <>
                       <CheckCircle2 className="mr-1 size-3" />
-                      Verifiziert
+                      {t("profile.verified")}
                     </>
                   ) : (
                     <>
                       <XCircle className="mr-1 size-3" />
-                      Nicht verifiziert
+                      {t("profile.notVerified")}
                     </>
                   )}
                 </Badge>
@@ -284,17 +294,42 @@ export default async function SettingsPage() {
         <CardHeader>
           <div className="flex gap-2 items-center">
             <User className="size-5 text-primary" />
-            <CardTitle>Profil</CardTitle>
+            <CardTitle>{t("profile.title")}</CardTitle>
           </div>
-          <CardDescription>
-            Verwalten Sie Ihre Profilinformationen
-          </CardDescription>
+          <CardDescription>{t("profile.description")}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <UserAvatarForm
-            user={{ id: user.id, avatar_url: user.user_metadata?.avatar_url }}
-          />
-          <UserNameForm user={{ id: user.id, name: user.name || "" }} />
+        <CardContent>
+          <AccordionRoot type="single" defaultValue="profile" collapsible className="w-full">
+            <AccordionItem value="profile">
+              <AccordionTrigger className="flex items-center gap-2">
+                <UserCircle className="size-4 text-muted-foreground" />
+                <span>{t("profile.editProfile")}</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-6 pt-4">
+                  {/* Avatar Section */}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-foreground">
+                      {t("profilePicture.label")}
+                    </Label>
+                    <UserAvatarForm
+                      user={{ id: user.id, avatar_url: user.user_metadata?.avatar_url }}
+                    />
+                  </div>
+
+                  <div className="border-t" />
+
+                  {/* Name Section */}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-foreground" htmlFor="name">
+                      {t("userName.label")}
+                    </Label>
+                    <UserNameForm user={{ id: user.id, name: user.name || "" }} />
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </AccordionRoot>
         </CardContent>
       </Card>
 
@@ -325,7 +360,7 @@ export default async function SettingsPage() {
                         {section.badge}
                       </div>
                       <div className="flex items-center mt-3 text-xs text-primary group-hover:underline">
-                        Verwalten
+                        {t("manage")}
                         <ArrowRight className="ml-1 transition-transform size-3 group-hover:translate-x-1" />
                       </div>
                     </div>
@@ -343,30 +378,28 @@ export default async function SettingsPage() {
           <CardHeader>
             <div className="flex gap-2 items-center">
               <Key className="size-5 text-primary" />
-              <CardTitle>API & Integrationen</CardTitle>
+              <CardTitle>{t("apiIntegrations.title")}</CardTitle>
             </div>
-            <CardDescription>
-              API-Schlüssel und Webhooks verwalten
-            </CardDescription>
+            <CardDescription>{t("apiIntegrations.description")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
                 <div className="flex gap-2 items-center">
                   <Key className="size-4 text-muted-foreground" />
-                  <span className="text-sm">API-Schlüssel</span>
+                  <span className="text-sm">{t("apiIntegrations.apiKeys")}</span>
                 </div>
                 <Badge variant="outline" className="text-xs">
-                  Bald verfügbar
+                  {t("comingSoon")}
                 </Badge>
               </div>
               <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
                 <div className="flex gap-2 items-center">
                   <Webhook className="size-4 text-muted-foreground" />
-                  <span className="text-sm">Webhooks</span>
+                  <span className="text-sm">{t("apiIntegrations.webhooks")}</span>
                 </div>
                 <Badge variant="outline" className="text-xs">
-                  Bald verfügbar
+                  {t("comingSoon")}
                 </Badge>
               </div>
             </div>
@@ -377,33 +410,31 @@ export default async function SettingsPage() {
           <CardHeader>
             <div className="flex gap-2 items-center">
               <FileText className="size-5 text-primary" />
-              <CardTitle>Dokumente & Export</CardTitle>
+              <CardTitle>{t("documentsExport.title")}</CardTitle>
             </div>
-            <CardDescription>
-              Export-Einstellungen und Dokumentvorlagen
-            </CardDescription>
+            <CardDescription>{t("documentsExport.description")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
                 <div className="flex gap-2 items-center">
                   <FileText className="size-4 text-muted-foreground" />
-                  <span className="text-sm">Export-Formate</span>
+                  <span className="text-sm">{t("documentsExport.exportFormats")}</span>
                 </div>
                 <Badge variant="outline" className="text-xs">
-                  Bald verfügbar
+                  {t("comingSoon")}
                 </Badge>
               </div>
               <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
                 <div className="flex gap-2 items-center">
                   <Globe className="size-4 text-muted-foreground" />
-                  <span className="text-sm">Sprache & Region</span>
+                  <span className="text-sm">{t("documentsExport.languageRegion")}</span>
                 </div>
                 <Link
                   href="/dashboard/settings/preferences"
                   className="flex gap-1 items-center text-xs text-primary hover:underline"
                 >
-                  Verwalten
+                  {t("manage")}
                   <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>

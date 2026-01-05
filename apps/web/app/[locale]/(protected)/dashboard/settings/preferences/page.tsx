@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getUserPreferences } from "@/actions/preferences-actions";
 import { Settings } from "lucide-react";
-import { getLocale, setRequestLocale } from "next-intl/server";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
@@ -12,15 +12,17 @@ export async function generateMetadata() {
   // This ensures correct language during client-side navigation
   const locale = await getLocale();
   setRequestLocale(locale);
+  const t = await getTranslations("Settings.preferences");
 
   return constructMetadata({
-    title: "Preferences",
-    description: "Manage your application preferences",
+    title: t("title"),
+    description: t("description"),
   });
 }
 
 export default async function PreferencesPage() {
   const result = await getUserPreferences();
+  const t = await getTranslations("Settings.preferences");
 
   if (!result.success || !result.data) {
     redirect("/dashboard/settings");
@@ -28,8 +30,8 @@ export default async function PreferencesPage() {
 
   return (
     <UnifiedPageLayout
-      title="Preferences"
-      description="Customize your application preferences, notifications, and display settings"
+      title={t("title")}
+      description={t("applicationPreferencesDescription")}
       icon={<Settings className="h-4 w-4 text-primary" />}
       contentClassName="max-w-4xl"
     >

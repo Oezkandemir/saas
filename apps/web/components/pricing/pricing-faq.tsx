@@ -1,4 +1,7 @@
+"use client";
+
 import { HelpCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import {
   Accordion,
@@ -8,40 +11,36 @@ import {
 } from "@/components/ui/accordion";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
-const pricingFaqData = [
-  {
-    id: "item-1",
-    question: "Was ist ein dynamischer QR-Code?",
-    answer:
-      "Ein dynamischer QR-Code ist ein QR-Code, dessen Ziel-URL Sie jederzeit ändern können, ohne den Code selbst neu drucken zu müssen. Der QR-Code bleibt gleich, aber die Zieladresse kann aktualisiert werden.",
-  },
-  {
-    id: "item-2",
-    question: "Kann ich den Link später ändern?",
-    answer:
-      "Ja, absolut! Mit dynamischen QR-Codes können Sie die Ziel-URL jederzeit ändern, ohne den QR-Code neu zu generieren oder zu drucken. Einmal gedruckt, bleibt der Code gültig, während Sie das Ziel flexibel anpassen können.",
-  },
-  {
-    id: "item-3",
-    question: "Wie funktioniert die Rechnungserstellung?",
-    answer:
-      "Sie können Angebote erstellen und diese später direkt in Rechnungen umwandeln. Alle Daten werden automatisch übernommen. Die Dokumente können als PDF exportiert und per E-Mail versendet werden.",
-  },
-  {
-    id: "item-4",
-    question: "Was passiert, wenn ich mein Limit erreiche?",
-    answer:
-      "Wenn Sie Ihr Limit erreichen, können Sie entweder auf einen höheren Plan upgraden oder warten, bis der Zähler im nächsten Monat zurückgesetzt wird. Bei Dokumenten wird der Zähler monatlich zurückgesetzt.",
-  },
-  {
-    id: "item-5",
-    question: "Kann ich jederzeit upgraden oder downgraden?",
-    answer:
-      "Ja, Sie können jederzeit zwischen den Plänen wechseln. Beim Upgrade werden die zusätzlichen Features sofort freigeschaltet. Beim Downgrade bleiben Ihre Daten erhalten, aber einige Features werden eingeschränkt.",
-  },
-];
-
 export function PricingFaq() {
+  const t = useTranslations("Pricing.faq");
+  
+  const pricingFaqData = [
+    {
+      id: "item-1",
+      question: t("questions.q1.question"),
+      answer: t("questions.q1.answer"),
+    },
+    {
+      id: "item-2",
+      question: t("questions.q2.question"),
+      answer: t("questions.q2.answer"),
+    },
+    {
+      id: "item-3",
+      question: t("questions.q3.question"),
+      answer: t("questions.q3.answer"),
+    },
+    {
+      id: "item-4",
+      question: t("questions.q4.question"),
+      answer: t("questions.q4.answer"),
+    },
+    {
+      id: "item-5",
+      question: t("questions.q5.question"),
+      answer: t("questions.q5.answer"),
+    },
+  ];
   return (
     <MaxWidthWrapper>
       <section className="max-w-4xl mx-auto">
@@ -49,14 +48,13 @@ export function PricingFaq() {
         <div className="mb-12 text-center animate-in fade-in slide-in-from-top-4 duration-700">
           <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-4">
             <HelpCircle className="h-4 w-4" />
-            FAQ
+            {t("badge")}
           </div>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-            Häufig gestellte Fragen
+            {t("title")}
           </h2>
           <p className="max-w-2xl mx-auto text-lg text-muted-foreground">
-            Finden Sie schnelle Antworten auf häufige Fragen. Bei weiteren
-            Fragen kontaktieren Sie uns gerne.
+            {t("description")}
           </p>
         </div>
 

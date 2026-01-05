@@ -1,420 +1,526 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { FileText } from "lucide-react";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
+import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 
-export const metadata: Metadata = constructMetadata({
-  title: "Allgemeine Geschäftsbedingungen (AGB)",
-  description: "Allgemeine Geschäftsbedingungen für Cenety SaaS-Dienste",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  setRequestLocale(locale);
+  const t = await getTranslations("Terms");
+
+  return constructMetadata({
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  });
+}
 
 export default async function TermsPage({
   params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
+  const resolvedParams = await params;
+  const locale = resolvedParams.locale || "de";
+  setRequestLocale(locale);
   const t = await getTranslations("Terms");
-  const locale = params.locale || "de";
 
   return (
-    <div className="container mx-auto max-w-4xl py-12">
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold">{t("title")}</h1>
-          <p className="mt-2 text-muted-foreground">
-            Stand:{" "}
-            {new Date().toLocaleDateString(locale, {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <div className="overflow-hidden relative py-16 bg-gradient-to-b border-b from-background via-background to-muted/20 md:py-24">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        <div className="container flex relative z-10 flex-col gap-6 items-center text-center duration-700 animate-in fade-in slide-in-from-top-4">
+          <div className="mb-4 flex justify-center">
+            <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+              <FileText className="size-6 text-primary" />
+            </div>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-2">
+            <span className="flex relative w-2 h-2">
+              <span className="inline-flex absolute w-full h-full rounded-full opacity-75 animate-ping bg-primary"></span>
+              <span className="inline-flex relative w-2 h-2 rounded-full bg-primary"></span>
+            </span>
+            {t("hero.badge")}
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b sm:text-5xl md:text-6xl lg:text-7xl from-foreground to-foreground/70">
+            {t("hero.title")}
+          </h1>
+          <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+            {t("hero.description")}
           </p>
-          <p className="mt-2 text-sm text-muted-foreground">Version 1.0</p>
-        </div>
-
-        <div className="space-y-8">
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">
-              1. Geltungsbereich und Vertragsgegenstand
-            </h2>
-            <p className="text-muted-foreground">
-              Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für die
-              Nutzung der Software-as-a-Service (SaaS) Plattform Cenety, die von
-              [Ihr Firmenname] betrieben wird.
-            </p>
-            <p className="text-muted-foreground">
-              Cenety stellt eine Cloud-basierte Plattform zur Verwaltung von
-              Kunden, Erstellung von Angeboten und Rechnungen sowie zur
-              Generierung und Verwaltung von QR-Codes bereit.
-            </p>
-            <div className="rounded-lg border bg-yellow-50 p-4 dark:bg-yellow-900/20">
-              <p className="text-sm">
-                <strong>Wichtig:</strong> Entgegenstehende oder abweichende
-                Bedingungen des Nutzers werden nicht Vertragsbestandteil, es sei
-                denn, wir stimmen ihrer Geltung ausdrücklich schriftlich zu.
-              </p>
-            </div>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">
-              2. Vertragsschluss und Registrierung
-            </h2>
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold">2.1 Registrierung</h3>
-              <p className="text-sm text-muted-foreground">
-                Die Nutzung von Cenety erfordert eine Registrierung. Mit der
-                Registrierung gibt der Nutzer ein verbindliches Angebot zum
-                Abschluss eines Nutzungsvertrages ab.
-              </p>
-              <h3 className="text-lg font-semibold">2.2 Vertragsannahme</h3>
-              <p className="text-sm text-muted-foreground">
-                Der Vertrag kommt durch die Bestätigung der Registrierung per
-                E-Mail zustande. Ein Anspruch auf Vertragsschluss besteht nicht.
-              </p>
-              <h3 className="text-lg font-semibold">2.3 Volljährigkeit</h3>
-              <p className="text-sm text-muted-foreground">
-                Die Registrierung ist nur für voll geschäftsfähige natürliche
-                Personen und juristische Personen zulässig. Minderjährige dürfen
-                sich nur mit Zustimmung ihrer Erziehungsberechtigten
-                registrieren.
-              </p>
-            </div>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">3. Leistungsumfang</h2>
-            <p className="text-muted-foreground">
-              Der konkrete Leistungsumfang ergibt sich aus der gewählten
-              Preisstufe (Free, Starter, Pro):
-            </p>
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-lg border p-4">
-                <h3 className="mb-2 font-semibold">Free</h3>
-                <ul className="space-y-1 text-sm text-muted-foreground">
-                  <li>✓ 3 Kunden</li>
-                  <li>✓ 3 QR-Codes</li>
-                  <li>✓ 3 Dokumente/Monat</li>
-                  <li>✓ Basis-Funktionen</li>
-                </ul>
-              </div>
-              <div className="rounded-lg border p-4">
-                <h3 className="mb-2 font-semibold">Starter</h3>
-                <ul className="space-y-1 text-sm text-muted-foreground">
-                  <li>✓ Unbegrenzte Kunden</li>
-                  <li>✓ 10 QR-Codes</li>
-                  <li>✓ Unbegrenzte Dokumente</li>
-                  <li>✓ E-Mail Support</li>
-                </ul>
-              </div>
-              <div className="rounded-lg border p-4">
-                <h3 className="mb-2 font-semibold">Pro</h3>
-                <ul className="space-y-1 text-sm text-muted-foreground">
-                  <li>✓ Alle Starter Features</li>
-                  <li>✓ Unbegrenzte QR-Codes</li>
-                  <li>✓ QR-Scan-Tracking</li>
-                  <li>✓ Prioritäts-Support</li>
-                </ul>
-              </div>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Wir behalten uns vor, den Leistungsumfang jederzeit zu ändern oder
-              zu erweitern. Wesentliche Einschränkungen werden Bestandsnutzern
-              rechtzeitig mitgeteilt.
-            </p>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">
-              4. Preise und Zahlungsbedingungen
-            </h2>
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold">4.1 Preise</h3>
-              <p className="text-sm text-muted-foreground">
-                Die aktuellen Preise sind auf unserer{" "}
-                <Link href="/pricing" className="text-primary hover:underline">
-                  Preisseite
-                </Link>{" "}
-                einsehbar. Alle Preise verstehen sich zzgl. der gesetzlichen
-                Umsatzsteuer.
-              </p>
-              <h3 className="text-lg font-semibold">4.2 Zahlungsweise</h3>
-              <p className="text-sm text-muted-foreground">
-                Die Zahlung erfolgt je nach gewähltem Abrechnungsintervall
-                (monatlich oder jährlich) im Voraus per Kreditkarte oder
-                SEPA-Lastschrift über unseren Zahlungsdienstleister Stripe.
-              </p>
-              <h3 className="text-lg font-semibold">4.3 Zahlungsverzug</h3>
-              <p className="text-sm text-muted-foreground">
-                Bei Zahlungsverzug sind wir berechtigt, den Zugang zur Plattform
-                zu sperren. Verzugszinsen werden in Höhe von 9 Prozentpunkten
-                über dem Basiszinssatz (bei Verbrauchern) bzw. 9 Prozentpunkten
-                über dem Basiszinssatz (bei Unternehmern) berechnet.
-              </p>
-              <h3 className="text-lg font-semibold">4.4 Preisänderungen</h3>
-              <p className="text-sm text-muted-foreground">
-                Preisänderungen für Bestandskunden werden mindestens 6 Wochen
-                vor Inkrafttreten per E-Mail angekündigt. Widerspricht der
-                Nutzer nicht innerhalb von 4 Wochen, gelten die neuen Preise als
-                akzeptiert.
-              </p>
-            </div>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">
-              5. Widerrufsrecht für Verbraucher
-            </h2>
-            <div className="rounded-lg border bg-blue-50 p-6 dark:bg-blue-900/20">
-              <h3 className="mb-3 font-semibold">Widerrufsbelehrung</h3>
-              <p className="mb-2 text-sm">
-                <strong>Widerrufsrecht:</strong> Sie haben das Recht, binnen
-                vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu
-                widerrufen.
-              </p>
-              <p className="mb-2 text-sm">
-                Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag des
-                Vertragsschlusses.
-              </p>
-              <p className="mb-2 text-sm">
-                Um Ihr Widerrufsrecht auszuüben, müssen Sie uns mittels einer
-                eindeutigen Erklärung (z.B. per E-Mail an support@cenety.com)
-                über Ihren Entschluss, diesen Vertrag zu widerrufen,
-                informieren.
-              </p>
-              <p className="mb-3 text-sm">
-                <strong>Folgen des Widerrufs:</strong> Wenn Sie diesen Vertrag
-                widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen
-                erhalten haben, unverzüglich und spätestens binnen vierzehn
-                Tagen zurückzuzahlen.
-              </p>
-              <p className="text-sm">
-                <strong>Vorzeitiger Erlös des Widerrufsrechts:</strong> Das
-                Widerrufsrecht erlischt vorzeitig, wenn wir mit der Ausführung
-                des Vertrages erst begonnen haben, nachdem Sie dazu Ihre
-                ausdrückliche Zustimmung gegeben und gleichzeitig Ihre Kenntnis
-                davon bestätigt haben, dass Sie Ihr Widerrufsrecht bei
-                vollständiger Vertragserfüllung verlieren.
-              </p>
-            </div>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">
-              6. Vertragslaufzeit und Kündigung
-            </h2>
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold">6.1 Vertragslaufzeit</h3>
-              <p className="text-sm text-muted-foreground">
-                Der Vertrag wird für die gewählte Laufzeit (monatlich oder
-                jährlich) geschlossen und verlängert sich automatisch um die
-                gleiche Laufzeit, sofern nicht gekündigt wird.
-              </p>
-              <h3 className="text-lg font-semibold">
-                6.2 Ordentliche Kündigung
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Beide Parteien können den Vertrag mit einer Frist von 30 Tagen
-                zum Ende der jeweiligen Laufzeit kündigen. Die Kündigung muss in
-                Textform (E-Mail ausreichend) an support@cenety.com erfolgen.
-              </p>
-              <h3 className="text-lg font-semibold">
-                6.3 Außerordentliche Kündigung
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Das Recht zur außerordentlichen Kündigung aus wichtigem Grund
-                bleibt unberührt. Ein wichtiger Grund liegt insbesondere vor
-                bei:
-              </p>
-              <ul className="list-disc space-y-1 pl-6 text-sm text-muted-foreground">
-                <li>Verstoß gegen diese AGB trotz Abmahnung</li>
-                <li>Zahlungsverzug von mehr als 30 Tagen</li>
-                <li>Missbrauch der Plattform für illegale Zwecke</li>
-              </ul>
-              <h3 className="text-lg font-semibold">6.4 Datenexport</h3>
-              <p className="text-sm text-muted-foreground">
-                Nach Vertragsende steht dem Nutzer eine Frist von 30 Tagen für
-                den Export seiner Daten zur Verfügung. Danach werden alle Daten
-                unwiderruflich gelöscht.
-              </p>
-            </div>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">7. Pflichten des Nutzers</h2>
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold">7.1 Account-Sicherheit</h3>
-              <p className="text-sm text-muted-foreground">
-                Der Nutzer ist verpflichtet, seine Zugangsdaten geheim zu halten
-                und vor dem Zugriff Dritter zu schützen. Bei Verdacht auf
-                Missbrauch ist der Nutzer verpflichtet, uns unverzüglich zu
-                informieren.
-              </p>
-              <h3 className="text-lg font-semibold">7.2 Datenrichtigkeit</h3>
-              <p className="text-sm text-muted-foreground">
-                Der Nutzer ist verantwortlich für die Richtigkeit und
-                Rechtmäßigkeit der von ihm eingegebenen Daten, insbesondere bei
-                Rechnungen und Dokumenten.
-              </p>
-              <h3 className="text-lg font-semibold">7.3 Verbotene Nutzung</h3>
-              <p className="text-sm text-muted-foreground">
-                Der Nutzer verpflichtet sich, die Plattform nicht für folgende
-                Zwecke zu nutzen:
-              </p>
-              <ul className="list-disc space-y-1 pl-6 text-sm text-muted-foreground">
-                <li>Illegale, betrügerische oder irreführende Aktivitäten</li>
-                <li>Versand von Spam oder unerwünschten Nachrichten</li>
-                <li>Verbreitung von Malware oder schädlicher Software</li>
-                <li>
-                  Verletzung von Rechten Dritter (Urheberrecht, Markenrecht,
-                  etc.)
-                </li>
-                <li>Reverse Engineering oder Dekompilierung der Software</li>
-              </ul>
-            </div>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">
-              8. Verfügbarkeit und Wartung
-            </h2>
-            <p className="text-muted-foreground">
-              Wir sind bemüht, eine Verfügbarkeit der Plattform von 99% im
-              Jahresdurchschnitt zu gewährleisten. Ausgenommen sind:
-            </p>
-            <ul className="list-disc space-y-1 pl-6 text-sm text-muted-foreground">
-              <li>
-                Geplante Wartungsarbeiten (werden 48h im Voraus angekündigt)
-              </li>
-              <li>
-                Notfallwartungen zur Behebung kritischer Sicherheitslücken
-              </li>
-              <li>Ereignisse höherer Gewalt</li>
-              <li>DDoS-Angriffe und andere Cyberattacken</li>
-            </ul>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">9. Datenschutz</h2>
-            <p className="text-muted-foreground">
-              Der Schutz Ihrer personenbezogenen Daten ist uns wichtig. Details
-              zur Datenverarbeitung finden Sie in unserer{" "}
-              <Link href="/privacy" className="text-primary hover:underline">
-                Datenschutzerklärung
-              </Link>
-              .
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Der Nutzer ist selbst Verantwortlicher im Sinne der DSGVO für die
-              von ihm in Cenety gespeicherten Kundendaten und verpflichtet sich,
-              die datenschutzrechtlichen Bestimmungen einzuhalten.
-            </p>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">
-              10. Haftung und Gewährleistung
-            </h2>
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold">
-                10.1 Haftungsbeschränkung
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Wir haften unbeschränkt für Schäden aus der Verletzung des
-                Lebens, des Körpers oder der Gesundheit sowie für Vorsatz und
-                grobe Fahrlässigkeit.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Bei leichter Fahrlässigkeit haften wir nur bei Verletzung
-                wesentlicher Vertragspflichten (Kardinalpflichten). Die Haftung
-                ist in diesem Fall auf den vertragstypischen, vorhersehbaren
-                Schaden begrenzt.
-              </p>
-              <h3 className="text-lg font-semibold">10.2 Datenverlust</h3>
-              <p className="text-sm text-muted-foreground">
-                Wir führen täglich automatische Backups durch. Dennoch empfehlen
-                wir dem Nutzer, regelmäßig eigene Backups seiner Daten
-                durchzuführen. Eine Haftung für Datenverlust besteht nur, wenn
-                der Nutzer durch regelmäßige Datensicherung dafür gesorgt hat,
-                dass Daten mit vertretbarem Aufwand wiederhergestellt werden
-                können.
-              </p>
-              <h3 className="text-lg font-semibold">10.3 Gewährleistung</h3>
-              <p className="text-sm text-muted-foreground">
-                Wir gewährleisten, dass die Software im Wesentlichen die
-                vereinbarten Funktionen erfüllt. Unwesentliche Mängel begründen
-                keine Gewährleistungsansprüche.
-              </p>
-            </div>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">11. Geistiges Eigentum</h2>
-            <p className="text-muted-foreground">
-              Alle Rechte an der Plattform, einschließlich des Quellcodes,
-              Designs und der Dokumentation, liegen bei uns. Dem Nutzer wird
-              lediglich ein nicht-exklusives, nicht übertragbares Nutzungsrecht
-              eingeräumt.
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Der Nutzer behält alle Rechte an den von ihm erstellten Inhalten
-              (Kundendaten, Dokumente, etc.).
-            </p>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">12. Änderungen der AGB</h2>
-            <p className="text-muted-foreground">
-              Wir behalten uns vor, diese AGB mit einer Ankündigungsfrist von 6
-              Wochen zu ändern. Die Änderungen werden dem Nutzer per E-Mail
-              mitgeteilt.
-            </p>
-            <p className="text-muted-foreground">
-              Widerspricht der Nutzer nicht innerhalb von 4 Wochen nach Zugang
-              der Änderungsmitteilung, gelten die geänderten AGB als angenommen.
-              Im Widerspruchsfall kann der Nutzer den Vertrag außerordentlich
-              zum Zeitpunkt des Inkrafttretens der Änderungen kündigen.
-            </p>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">13. Schlussbestimmungen</h2>
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold">13.1 Anwendbares Recht</h3>
-              <p className="text-sm text-muted-foreground">
-                Es gilt ausschließlich das Recht der Bundesrepublik Deutschland
-                unter Ausschluss des UN-Kaufrechts.
-              </p>
-              <h3 className="text-lg font-semibold">13.2 Gerichtsstand</h3>
-              <p className="text-sm text-muted-foreground">
-                Ist der Nutzer Kaufmann, juristische Person des öffentlichen
-                Rechts oder öffentlich-rechtliches Sondervermögen, ist
-                ausschließlicher Gerichtsstand für alle Streitigkeiten aus
-                diesem Vertrag unser Geschäftssitz.
-              </p>
-              <h3 className="text-lg font-semibold">
-                13.3 Salvatorische Klausel
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Sollten einzelne Bestimmungen dieser AGB unwirksam sein oder
-                werden, bleibt die Wirksamkeit der übrigen Bestimmungen hiervon
-                unberührt.
-              </p>
-            </div>
-          </section>
-
-          <section className="mt-8 rounded-lg border border-blue-200 bg-blue-50 p-6 dark:border-blue-800 dark:bg-blue-900/20">
-            <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-              ⚠️ Rechtlicher Hinweis: Diese AGB-Vorlage sollte von einem
-              Fachanwalt für IT-Recht geprüft und an Ihre spezifischen
-              Geschäftsbedingungen angepasst werden. Ersetzen Sie alle
-              Platzhalter in eckigen Klammern mit Ihren tatsächlichen
-              Firmendaten.
-            </p>
-          </section>
+          <div className="mt-2 flex items-center justify-center gap-4 text-sm text-muted-foreground">
+            <span>
+              {t("hero.lastUpdated")}:{" "}
+              {new Date().toLocaleDateString(locale, {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </span>
+            <span>•</span>
+            <span>{t("hero.version")}</span>
+          </div>
         </div>
       </div>
+
+      <MaxWidthWrapper className="py-16 md:py-24">
+        <div className="mx-auto max-w-4xl space-y-8">
+          {/* Section 1 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("sections.section1.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground leading-relaxed">
+                {t("sections.section1.description")}
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                {t("sections.section1.description2")}
+              </p>
+              <div className="rounded-lg border bg-yellow-50 p-4 dark:bg-yellow-900/20">
+                <p className="text-sm">
+                  <strong>{t("sections.section1.important")}</strong>{" "}
+                  {t("sections.section1.importantText")}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Section 2 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("sections.section2.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section2.subsection1.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section2.subsection1.text")}
+                </p>
+              </div>
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section2.subsection2.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section2.subsection2.text")}
+                </p>
+              </div>
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section2.subsection3.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section2.subsection3.text")}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Section 3 - Service Plans */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("sections.section3.title")}
+              </CardTitle>
+              <CardDescription>
+                {t("sections.section3.description")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-3">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Free</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-1 text-sm text-muted-foreground">
+                      <li>✓ 3 {t("sections.section3.customers")}</li>
+                      <li>✓ 3 {t("sections.section3.qrCodes")}</li>
+                      <li>✓ 3 {t("sections.section3.documents")}</li>
+                      <li>✓ {t("sections.section3.basicFeatures")}</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Starter</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-1 text-sm text-muted-foreground">
+                      <li>✓ {t("sections.section3.unlimitedCustomers")}</li>
+                      <li>✓ 10 {t("sections.section3.qrCodes")}</li>
+                      <li>✓ {t("sections.section3.unlimitedDocuments")}</li>
+                      <li>✓ {t("sections.section3.emailSupport")}</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Pro</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-1 text-sm text-muted-foreground">
+                      <li>✓ {t("sections.section3.allStarterFeatures")}</li>
+                      <li>✓ {t("sections.section3.unlimitedQrCodes")}</li>
+                      <li>✓ {t("sections.section3.qrScanTracking")}</li>
+                      <li>✓ {t("sections.section3.prioritySupport")}</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {t("sections.section3.note")}
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Section 4 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("sections.section4.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section4.subsection1.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section4.subsection1.text")}{" "}
+                  <Link
+                    href="/pricing"
+                    className="text-primary hover:underline"
+                  >
+                    {t("sections.section4.subsection1.link")}
+                  </Link>
+                  . {t("sections.section4.subsection1.text2")}
+                </p>
+              </div>
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section4.subsection2.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section4.subsection2.text")}
+                </p>
+              </div>
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section4.subsection3.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section4.subsection3.text")}
+                </p>
+              </div>
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section4.subsection4.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section4.subsection4.text")}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Section 5 - Withdrawal */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("sections.section5.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-lg border bg-blue-50 p-6 dark:bg-blue-900/20">
+                <h3 className="mb-3 font-semibold">
+                  {t("sections.section5.subtitle")}
+                </h3>
+                <div className="space-y-2 text-sm">
+                  <p>
+                    <strong>{t("sections.section5.right")}</strong>{" "}
+                    {t("sections.section5.rightText")}
+                  </p>
+                  <p>{t("sections.section5.period")}</p>
+                  <p>{t("sections.section5.howTo")}</p>
+                  <p className="mt-3">
+                    <strong>{t("sections.section5.consequences")}</strong>{" "}
+                    {t("sections.section5.consequencesText")}
+                  </p>
+                  <p className="mt-2">
+                    <strong>{t("sections.section5.earlyExpiry")}</strong>{" "}
+                    {t("sections.section5.earlyExpiryText")}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Section 6 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("sections.section6.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section6.subsection1.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section6.subsection1.text")}
+                </p>
+              </div>
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section6.subsection2.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section6.subsection2.text")}
+                </p>
+              </div>
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section6.subsection3.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section6.subsection3.text")}
+                </p>
+                <ul className="mt-2 list-disc space-y-1 pl-6 text-sm text-muted-foreground">
+                  <li>{t("sections.section6.subsection3.item1")}</li>
+                  <li>{t("sections.section6.subsection3.item2")}</li>
+                  <li>{t("sections.section6.subsection3.item3")}</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section6.subsection4.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section6.subsection4.text")}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Section 7 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("sections.section7.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section7.subsection1.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section7.subsection1.text")}
+                </p>
+              </div>
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section7.subsection2.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section7.subsection2.text")}
+                </p>
+              </div>
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section7.subsection3.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section7.subsection3.text")}
+                </p>
+                <ul className="mt-2 list-disc space-y-1 pl-6 text-sm text-muted-foreground">
+                  <li>{t("sections.section7.subsection3.item1")}</li>
+                  <li>{t("sections.section7.subsection3.item2")}</li>
+                  <li>{t("sections.section7.subsection3.item3")}</li>
+                  <li>{t("sections.section7.subsection3.item4")}</li>
+                  <li>{t("sections.section7.subsection3.item5")}</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Section 8 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("sections.section8.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                {t("sections.section8.description")}
+              </p>
+              <ul className="mt-4 list-disc space-y-1 pl-6 text-sm text-muted-foreground">
+                <li>{t("sections.section8.item1")}</li>
+                <li>{t("sections.section8.item2")}</li>
+                <li>{t("sections.section8.item3")}</li>
+                <li>{t("sections.section8.item4")}</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Section 9 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("sections.section9.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground">
+                {t("sections.section9.description")}{" "}
+                <Link href="/privacy" className="text-primary hover:underline">
+                  {t("sections.section9.link")}
+                </Link>
+                .
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {t("sections.section9.note")}
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Section 10 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("sections.section10.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section10.subsection1.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section10.subsection1.text")}
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {t("sections.section10.subsection1.text2")}
+                </p>
+              </div>
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section10.subsection2.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section10.subsection2.text")}
+                </p>
+              </div>
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section10.subsection3.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section10.subsection3.text")}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Section 11 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("sections.section11.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground">
+                {t("sections.section11.description")}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {t("sections.section11.note")}
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Section 12 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("sections.section12.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground">
+                {t("sections.section12.description")}
+              </p>
+              <p className="text-muted-foreground">
+                {t("sections.section12.description2")}
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Section 13 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("sections.section13.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section13.subsection1.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section13.subsection1.text")}
+                </p>
+              </div>
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section13.subsection2.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section13.subsection2.text")}
+                </p>
+              </div>
+              <div>
+                <h3 className="mb-2 font-semibold">
+                  {t("sections.section13.subsection3.title")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("sections.section13.subsection3.text")}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Legal Notice */}
+          <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
+            <CardContent className="pt-6">
+              <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                ⚠️ {t("legalNotice")}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </MaxWidthWrapper>
     </div>
   );
 }

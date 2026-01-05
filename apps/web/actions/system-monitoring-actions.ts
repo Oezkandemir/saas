@@ -519,15 +519,6 @@ export async function deleteAllErrors(): Promise<{
       return { success: false, message: "Unauthorized: Admin access required" };
     }
 
-    // Count errors before deletion
-    const { count, error: countError } = await supabase
-      .from("system_errors")
-      .select("*", { count: "exact", head: true });
-
-    if (countError) {
-      return { success: false, message: "Failed to count errors" };
-    }
-
     // Delete all errors - use a condition that matches all rows
     // Since we can't use .delete() without a filter in Supabase, we'll delete by selecting all IDs first
     const { data: allErrors, error: selectError } = await supabase
@@ -543,8 +534,9 @@ export async function deleteAllErrors(): Promise<{
     }
 
     const ids = allErrors.map((e) => e.id);
-    const batchSize = 1000; // Delete in batches to avoid hitting limits
+    const batchSize = 100; // Reduced batch size to avoid URL length limits
 
+    let deletedCount = 0;
     // Delete errors in batches
     for (let i = 0; i < ids.length; i += batchSize) {
       const batch = ids.slice(i, i + batchSize);
@@ -556,15 +548,17 @@ export async function deleteAllErrors(): Promise<{
       if (deleteError) {
         return {
           success: false,
-          message: `Failed to delete errors: ${deleteError.message}`,
+          message: `Failed to delete errors at batch ${Math.floor(i / batchSize) + 1}: ${deleteError.message}`,
         };
       }
+
+      deletedCount += batch.length;
     }
 
     return {
       success: true,
-      message: `Successfully deleted all ${count || ids.length} error(s)`,
-      count: count || ids.length,
+      message: `Successfully deleted all ${deletedCount} error(s)`,
+      count: deletedCount,
     };
   } catch (error) {
     return {

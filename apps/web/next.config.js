@@ -13,7 +13,7 @@ const nextConfig = {
   poweredByHeader: false,
   trailingSlash: false,
 
-  // Security headers
+  // Security headers + Performance headers
   async headers() {
     const isProduction = process.env.NODE_ENV === "production";
 
@@ -70,6 +70,43 @@ const nextConfig = {
           {
             key: "Content-Security-Policy",
             value: baseCspDirectives.join("; "),
+          },
+        ],
+      },
+      // Performance: Cache static assets aggressively
+      {
+        source: "/_next/static/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/images/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/favicon.ico",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/site.webmanifest",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400",
           },
         ],
       },

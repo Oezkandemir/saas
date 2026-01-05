@@ -9,7 +9,6 @@ import { marketingConfig } from "@/config/marketing";
 import { cn } from "@/lib/utils";
 import { useScroll } from "@/hooks/use-scroll";
 import { Button } from "@/components/alignui/actions/button";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { ModalContext } from "@/components/modals/providers";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
@@ -76,12 +75,6 @@ export function NavBar({ scroll = false }: NavBarProps) {
         </div>
 
         <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
-          {/* Language Switcher */}
-          <div className="flex items-center pr-1 sm:pr-2 md:pr-0">
-            <LanguageSwitcher />
-          </div>
-
-
           {session ? (
             <div className="flex items-center gap-1 sm:gap-2 pr-0 md:pr-0">
               <Link

@@ -8,6 +8,7 @@ import {
   regenerateBackupCodes,
 } from "@/actions/two-factor-actions";
 import { AlertCircle, CheckCircle2, Loader2, Shield } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { logger } from "@/lib/logger";
 import {
@@ -37,6 +38,7 @@ import { Input } from "@/components/alignui/forms/input";
 import { TwoFactorSetup } from "./two-factor-setup";
 
 export function TwoFactorAuth() {
+  const t = useTranslations("Security.twoFactor");
   const { toast } = useToast();
   const router = useRouter();
   const [isEnabled, setIsEnabled] = useState(false);
@@ -69,7 +71,7 @@ export function TwoFactorAuth() {
         if (result.message && !result.message.includes("PGRST116")) {
           toast({
             variant: "destructive",
-            title: "Fehler beim Laden",
+            title: t("loadError"),
             description: result.message,
           });
         }
@@ -80,8 +82,8 @@ export function TwoFactorAuth() {
       setHasBackupCodes(false);
       toast({
         variant: "destructive",
-        title: "Fehler",
-        description: "Fehler beim Laden des 2FA-Status. Bitte Seite neu laden.",
+        title: t("error"),
+        description: t("loadErrorDescription"),
       });
     } finally {
       setIsLoading(false);
@@ -92,8 +94,8 @@ export function TwoFactorAuth() {
     if (!password) {
       toast({
         variant: "destructive",
-        title: "Passwort erforderlich",
-        description: "Bitte geben Sie Ihr Passwort ein",
+        title: t("passwordRequired"),
+        description: t("passwordRequiredDescription"),
       });
       return;
     }
@@ -103,8 +105,8 @@ export function TwoFactorAuth() {
       const result = await disableTwoFactor(password);
       if (result.success) {
         toast({
-          title: "2FA deaktiviert",
-          description: "Zwei-Faktor-Authentifizierung wurde deaktiviert",
+          title: t("disabled"),
+          description: t("disabledDescription"),
         });
         setIsEnabled(false);
         setShowDisableDialog(false);
@@ -116,15 +118,15 @@ export function TwoFactorAuth() {
       } else {
         toast({
           variant: "destructive",
-          title: "Fehler",
+          title: t("error"),
           description: result.message,
         });
       }
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Fehler",
-        description: "Ein Fehler ist aufgetreten",
+        title: t("error"),
+        description: t("unexpectedError"),
       });
     } finally {
       setIsDisabling(false);
@@ -139,21 +141,21 @@ export function TwoFactorAuth() {
         setShowBackupCodes(true);
         setHasBackupCodes(true);
         toast({
-          title: "Backup-Codes regeneriert",
-          description: "Neue Backup-Codes wurden generiert",
+          title: t("backupCodesRegenerated"),
+          description: t("backupCodesRegeneratedDescription"),
         });
       } else {
         toast({
           variant: "destructive",
-          title: "Fehler",
+          title: t("error"),
           description: result.message,
         });
       }
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Fehler",
-        description: "Ein Fehler ist aufgetreten",
+        title: t("error"),
+        description: t("unexpectedError"),
       });
     }
   };
@@ -162,8 +164,8 @@ export function TwoFactorAuth() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Zwei-Faktor-Authentifizierung</CardTitle>
-          <CardDescription>Laden...</CardDescription>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("loading")}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -188,10 +190,8 @@ export function TwoFactorAuth() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Neue Backup-Codes</CardTitle>
-          <CardDescription>
-            Speichern Sie diese Codes an einem sicheren Ort
-          </CardDescription>
+          <CardTitle>{t("newBackupCodes")}</CardTitle>
+          <CardDescription>{t("saveBackupCodes")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="rounded-lg border bg-muted/50 p-4">
@@ -210,7 +210,7 @@ export function TwoFactorAuth() {
             }}
             className="w-full"
           >
-            Verstanden
+            {t("understood")}
           </Button>
         </CardContent>
       </Card>
@@ -223,19 +223,16 @@ export function TwoFactorAuth() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Shield className="size-5 text-primary" />
-            <CardTitle>Zwei-Faktor-Authentifizierung</CardTitle>
+            <CardTitle>{t("title")}</CardTitle>
           </div>
           {isEnabled && (
             <Badge variant="default" className="gap-1">
               <CheckCircle2 className="size-3" />
-              Aktiviert
+              {t("enabled")}
             </Badge>
           )}
         </div>
-        <CardDescription>
-          Erhöhen Sie die Sicherheit Ihres Kontos mit einer zusätzlichen
-          Authentifizierungsebene
-        </CardDescription>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {isEnabled ? (
@@ -245,10 +242,10 @@ export function TwoFactorAuth() {
                 <CheckCircle2 className="size-5 text-green-500 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium text-green-900 dark:text-green-100">
-                    2FA ist aktiviert
+                    {t("enabledStatus")}
                   </p>
                   <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                    Ihr Konto ist durch Zwei-Faktor-Authentifizierung geschützt.
+                    {t("enabledDescription")}
                   </p>
                 </div>
               </div>
@@ -261,7 +258,7 @@ export function TwoFactorAuth() {
                   onClick={handleRegenerateBackupCodes}
                   className="flex-1"
                 >
-                  Backup-Codes regenerieren
+                  {t("regenerateBackupCodes")}
                 </Button>
               </div>
             )}
@@ -272,29 +269,28 @@ export function TwoFactorAuth() {
             >
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" className="w-full">
-                  2FA deaktivieren
+                  {t("disable")}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>2FA deaktivieren?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("disableConfirmTitle")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Um 2FA zu deaktivieren, müssen Sie Ihr Passwort bestätigen.
-                    Dies reduziert die Sicherheit Ihres Kontos.
+                    {t("disableConfirmDescription")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <div className="space-y-2">
-                  <Label>Passwort</Label>
+                  <Label>{t("password")}</Label>
                   <Input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Ihr Passwort"
+                    placeholder={t("passwordPlaceholder")}
                   />
                 </div>
                 <AlertDialogFooter>
                   <AlertDialogCancel onClick={() => setPassword("")}>
-                    Abbrechen
+                    {t("cancel")}
                   </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleDisable}
@@ -303,10 +299,10 @@ export function TwoFactorAuth() {
                     {isDisabling ? (
                       <>
                         <Loader2 className="mr-2 size-4 animate-spin" />
-                        Deaktivieren...
+                        {t("disabling")}
                       </>
                     ) : (
-                      "Deaktivieren"
+                      t("disable")
                     )}
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -320,11 +316,10 @@ export function TwoFactorAuth() {
                 <AlertCircle className="size-5 text-yellow-500 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium text-yellow-900 dark:text-yellow-100">
-                    2FA ist nicht aktiviert
+                    {t("notEnabledStatus")}
                   </p>
                   <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
-                    Aktivieren Sie 2FA, um die Sicherheit Ihres Kontos zu
-                    erhöhen.
+                    {t("notEnabledDescription")}
                   </p>
                 </div>
               </div>
@@ -332,7 +327,7 @@ export function TwoFactorAuth() {
 
             <Button onClick={() => setShowSetup(true)} className="w-full">
               <Shield className="mr-2 size-4" />
-              2FA einrichten
+              {t("setup")}
             </Button>
           </>
         )}

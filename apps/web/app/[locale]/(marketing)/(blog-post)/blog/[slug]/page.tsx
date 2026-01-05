@@ -1,13 +1,15 @@
 import { notFound } from "next/navigation";
 import { getBlogPostBySlug, getPublishedBlogPosts } from "@/actions/blog-actions";
+import { getTranslations } from "next-intl/server";
 
 import "@/styles/mdx.css";
 
 import { Metadata } from "next";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 import { BLOG_CATEGORIES } from "@/config/blog";
-import { getTableOfContents } from "@/lib/toc";
+import { getTableOfContentsFromHTML } from "@/lib/toc";
 import {
   cn,
   constructMetadata,
@@ -29,7 +31,7 @@ interface PostPageProps {
 }
 
 export async function generateStaticParams() {
-  const posts = await getPublishedBlogPosts();
+  const posts = await getPublishedBlogPosts(true); // Use static client for build time
   return posts.map((post) => ({
     slug: post.slug,
   }));
@@ -64,6 +66,7 @@ export async function generateMetadata({
 export default async function PostPage({ params }: PostPageProps) {
   const resolvedParams = await params;
   const post = await getPostFromParams(resolvedParams);
+  const t = await getTranslations("Blog");
 
   if (!post) {
     notFound();
@@ -82,35 +85,30 @@ export default async function PostPage({ params }: PostPageProps) {
         .filter((post): post is NonNullable<typeof post> => post !== undefined)) ||
     [];
 
-  // Generate table of contents from HTML content
-  const toc = await getTableOfContents(post.content);
+  // Generate table of contents from HTML content and add IDs to headings
+  const { contentWithIds, toc } = getTableOfContentsFromHTML(post.content);
 
   const thumbnailBlurhash = await getBlurDataURL(post.image);
 
   return (
     <>
       <MaxWidthWrapper className="pt-6 md:pt-10">
+        {/* Go Back Button */}
+        <Link
+          href="/blog"
+          className={cn(
+            buttonVariants({
+              variant: "ghost",
+              size: "sm",
+            }),
+            "mb-6 -ml-2 w-fit",
+          )}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          {t("backToBlog")}
+        </Link>
+
         <div className="flex flex-col space-y-4">
-          <div className="flex items-center space-x-4">
-            <Link
-              href={`/blog/category/${category.slug}`}
-              className={cn(
-                buttonVariants({
-                  variant: "outline",
-                  size: "sm",
-                }),
-                "h-8 rounded-lg",
-              )}
-            >
-              {category.title}
-            </Link>
-            <time
-              dateTime={post.created_at}
-              className="text-sm font-medium text-muted-foreground"
-            >
-              {formatDate(post.created_at)}
-            </time>
-          </div>
           <h1 className="font-heading text-3xl text-foreground sm:text-4xl">
             {post.title}
           </h1>
@@ -119,10 +117,23 @@ export default async function PostPage({ params }: PostPageProps) {
               {post.description}
             </p>
           )}
-          <div className="flex flex-nowrap items-center space-x-5 pt-1 md:space-x-8">
+          <div className="flex flex-wrap items-center gap-4 pt-1">
             {post.authors.map((author) => (
               <Author username={author} key={post.id + author} />
             ))}
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>•</span>
+              <Link
+                href={`/blog/category/${category.slug}`}
+                className="hover:text-foreground transition-colors"
+              >
+                {category.title}
+              </Link>
+              <span>•</span>
+              <time dateTime={post.created_at}>
+                {formatDate(post.created_at)}
+              </time>
+            </div>
           </div>
         </div>
       </MaxWidthWrapper>
@@ -150,16 +161,20 @@ export default async function PostPage({ params }: PostPageProps) {
                 <p className="text-muted-foreground">Bild nicht verfügbar</p>
               </div>
             )}
-            <div className="px-[.8rem] pb-10 md:px-8">
+            <div className="px-[.8rem] pb-10 md:px-8 scroll-mt-[100px]">
               <div
-                className="mdx prose prose-slate dark:prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: post.content }}
+                className="mdx prose prose-slate dark:prose-invert max-w-none [&_h2]:scroll-mt-[100px] [&_h3]:scroll-mt-[100px] [&_h4]:scroll-mt-[100px] [&_h5]:scroll-mt-[100px] [&_h6]:scroll-mt-[100px]"
+                dangerouslySetInnerHTML={{ __html: contentWithIds }}
               />
             </div>
           </div>
 
-          <div className="sticky top-20 col-span-1 mt-52 hidden flex-col divide-y divide-muted self-start pb-24 lg:flex">
-            <DashboardTableOfContents toc={toc} />
+          <div className="sticky top-20 col-span-1 mt-52 hidden flex-col self-start pb-24 lg:flex">
+            {toc.items && toc.items.length > 0 && (
+              <div className="rounded-lg border bg-card p-4">
+                <DashboardTableOfContents toc={toc} />
+              </div>
+            )}
           </div>
         </MaxWidthWrapper>
       </div>
@@ -168,7 +183,7 @@ export default async function PostPage({ params }: PostPageProps) {
         {relatedArticles.length > 0 && (
           <div className="flex flex-col space-y-4 pb-16">
             <p className="font-heading text-2xl text-foreground">
-              More Articles
+              {t("moreArticles")}
             </p>
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:gap-6">

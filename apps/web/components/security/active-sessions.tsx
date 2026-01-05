@@ -19,6 +19,7 @@ import {
   Monitor,
   Trash2,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import {
   AlertDialog,
@@ -43,6 +44,7 @@ import {
 } from "@/components/alignui/data-display/card";
 
 export function ActiveSessions() {
+  const t = useTranslations("Security.activeSessions");
   const { toast } = useToast();
   const router = useRouter();
   const [sessions, setSessions] = useState<ActiveSession[]>([]);
@@ -61,15 +63,15 @@ export function ActiveSessions() {
       } else {
         toast({
           variant: "destructive",
-          title: "Fehler",
+          title: t("error"),
           description: result.message,
         });
       }
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Fehler",
-        description: "Sessions konnten nicht geladen werden",
+        title: t("error"),
+        description: t("loadError"),
       });
     } finally {
       setIsLoading(false);
@@ -81,22 +83,22 @@ export function ActiveSessions() {
       const result = await revokeSession(sessionId);
       if (result.success) {
         toast({
-          title: "Session beendet",
-          description: "Die Session wurde erfolgreich beendet",
+          title: t("revoked"),
+          description: t("revokedDescription"),
         });
         loadSessions();
       } else {
         toast({
           variant: "destructive",
-          title: "Fehler",
+          title: t("error"),
           description: result.message,
         });
       }
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Fehler",
-        description: "Session konnte nicht beendet werden",
+        title: t("error"),
+        description: t("revokeError"),
       });
     }
   };
@@ -106,22 +108,22 @@ export function ActiveSessions() {
       const result = await revokeAllOtherSessions();
       if (result.success) {
         toast({
-          title: "Sessions beendet",
-          description: "Alle anderen Sessions wurden beendet",
+          title: t("allRevoked"),
+          description: t("allRevokedDescription"),
         });
         loadSessions();
       } else {
         toast({
           variant: "destructive",
-          title: "Fehler",
+          title: t("error"),
           description: result.message,
         });
       }
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Fehler",
-        description: "Sessions konnten nicht beendet werden",
+        title: t("error"),
+        description: t("revokeAllError"),
       });
     }
   };
@@ -131,9 +133,8 @@ export function ActiveSessions() {
       const result = await clearAllSessions();
       if (result.success) {
         toast({
-          title: "Alle Sessions gelöscht",
-          description:
-            "Sie werden jetzt abgemeldet. Bitte melden Sie sich erneut an, um das 2FA-System zu testen.",
+          title: t("allCleared"),
+          description: t("allClearedDescription"),
         });
         // Redirect to login page after a short delay
         setTimeout(() => {
@@ -143,15 +144,15 @@ export function ActiveSessions() {
       } else {
         toast({
           variant: "destructive",
-          title: "Fehler",
+          title: t("error"),
           description: result.message,
         });
       }
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Fehler",
-        description: "Sessions konnten nicht gelöscht werden",
+        title: t("error"),
+        description: t("clearError"),
       });
     }
   };
@@ -165,7 +166,7 @@ export function ActiveSessions() {
       if (ua.includes("Safari")) return "Safari";
       if (ua.includes("Edge")) return "Edge";
     }
-    return "Unbekannt";
+    return t("unknown");
   };
 
   const getLocationInfo = (session: ActiveSession) => {
@@ -178,15 +179,15 @@ export function ActiveSessions() {
         return String(loc.country);
       }
     }
-    return session.ipAddress || "Unbekannt";
+    return session.ipAddress || t("unknown");
   };
 
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Aktive Sessions</CardTitle>
-          <CardDescription>Laden...</CardDescription>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("loading")}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -199,32 +200,28 @@ export function ActiveSessions() {
       <CardHeader>
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <CardTitle>Aktive Sessions</CardTitle>
-            <CardDescription>
-              Verwalten Sie Ihre aktiven Login-Sessions
-            </CardDescription>
+            <CardTitle>{t("title")}</CardTitle>
+            <CardDescription>{t("description")}</CardDescription>
           </div>
           <div className="flex items-center gap-2">
             {otherSessions.length > 0 && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="outline" size="sm">
-                    Alle anderen beenden
+                    {t("revokeAll")}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Alle Sessions beenden?</AlertDialogTitle>
+                    <AlertDialogTitle>{t("revokeAllConfirmTitle")}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Dies beendet alle anderen aktiven Sessions außer der
-                      aktuellen. Sie müssen sich auf diesen Geräten erneut
-                      anmelden.
+                      {t("revokeAllConfirmDescription")}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                    <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                     <AlertDialogAction onClick={handleRevokeAll}>
-                      Alle beenden
+                      {t("revokeAllConfirm")}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -234,28 +231,26 @@ export function ActiveSessions() {
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" size="sm" className="gap-2">
                   <LogOut className="size-4" />
-                  Alle löschen & Abmelden
+                  {t("clearAll")}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle className="flex items-center gap-2">
                     <AlertTriangle className="size-5 text-destructive" />
-                    Alle Sessions löschen?
+                    {t("clearAllConfirmTitle")}
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Dies löscht ALLE Sessions inklusive der aktuellen. Sie
-                    werden abgemeldet und müssen sich erneut anmelden. Dies ist
-                    nützlich zum Testen des 2FA-Systems.
+                    {t("clearAllConfirmDescription")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                  <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleClearAllSessions}
                     className="bg-destructive hover:bg-destructive/90"
                   >
-                    Alle löschen & Abmelden
+                    {t("clearAllConfirm")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -266,7 +261,7 @@ export function ActiveSessions() {
       <CardContent>
         {sessions.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">
-            Keine aktiven Sessions
+            {t("empty")}
           </p>
         ) : (
           <div className="space-y-4">
@@ -283,7 +278,7 @@ export function ActiveSessions() {
                     </span>
                     {session.isCurrent && (
                       <Badge variant="default" className="text-xs shrink-0">
-                        Aktuell
+                        {t("current")}
                       </Badge>
                     )}
                   </div>
@@ -319,18 +314,17 @@ export function ActiveSessions() {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Session beenden?</AlertDialogTitle>
+                        <AlertDialogTitle>{t("revokeConfirmTitle")}</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Diese Session wird beendet und der Benutzer muss sich
-                          erneut anmelden.
+                          {t("revokeConfirmDescription")}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                        <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => handleRevokeSession(session.id)}
                         >
-                          Beenden
+                          {t("revoke")}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>

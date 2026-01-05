@@ -94,6 +94,27 @@ interface TreeProps {
 }
 
 function Tree({ tree, level = 1, activeItem }: TreeProps) {
+  const handleClick = React.useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+      e.preventDefault();
+      const id = href.replace("#", "");
+      const element = document.getElementById(id);
+      if (element) {
+        // Calculate offset to show the heading title itself, accounting for sticky header
+        const headerHeight = 80; // Approximate header height
+        const offset = headerHeight + 20; // Header height + small padding
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth",
+        });
+      }
+    },
+    [],
+  );
+
   return tree?.items?.length && level < 3 ? (
     <ul className={cn("m-0 list-none", { "pl-4": level !== 1 })}>
       {tree.items.map((item, index) => {
@@ -101,8 +122,9 @@ function Tree({ tree, level = 1, activeItem }: TreeProps) {
           <li key={index} className={cn("mt-0 pt-1")}>
             <a
               href={item.url}
+              onClick={(e) => handleClick(e, item.url)}
               className={cn(
-                "inline-block text-sm no-underline",
+                "inline-block text-sm no-underline cursor-pointer",
                 item.url === `#${activeItem}`
                   ? "font-medium text-primary"
                   : "text-muted-foreground",

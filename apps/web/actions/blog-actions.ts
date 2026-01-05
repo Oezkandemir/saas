@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
-import { getSupabaseServer } from "@/lib/supabase-server";
+import { getSupabaseServer, getSupabaseStatic } from "@/lib/supabase-server";
 import { supabaseAdmin } from "@/lib/db";
 
 export type BlogPost = {
@@ -66,10 +66,24 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
 
 /**
  * Get published blog posts (public)
+ * @param useStaticClient - Use static client for generateStaticParams (no cookies)
  */
-export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
+export async function getPublishedBlogPosts(
+  useStaticClient = false,
+): Promise<BlogPost[]> {
   try {
-    const supabase = await getSupabaseServer();
+    let supabase;
+    if (useStaticClient) {
+      supabase = getSupabaseStatic();
+    } else {
+      try {
+        supabase = await getSupabaseServer();
+      } catch (error) {
+        // Fall back to static client if server client fails
+        supabase = getSupabaseStatic();
+      }
+    }
+
     const { data, error } = await supabase
       .from("blog_posts")
       .select("*")
@@ -83,7 +97,15 @@ export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
 
     return (data || []) as BlogPost[];
   } catch (error) {
-    logger.error("Error in getPublishedBlogPosts", error);
+    // Only log if it's not a cookies/request scope error (those are handled by getSupabaseServer)
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (
+      !errorMessage.includes("request scope") &&
+      !errorMessage.includes("cookies") &&
+      !errorMessage.includes("AsyncLocalStorage")
+    ) {
+      logger.error("Error in getPublishedBlogPosts", error);
+    }
     return [];
   }
 }

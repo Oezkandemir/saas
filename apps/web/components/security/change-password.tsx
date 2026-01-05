@@ -8,6 +8,7 @@ import {
 } from "@/actions/change-password";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Eye, EyeOff, Lock } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -30,6 +31,7 @@ import { Input } from "@/components/alignui/forms/input";
 import { LabelRoot as Label } from "@/components/alignui/forms/label";
 
 export function ChangePassword() {
+  const t = useTranslations("Security.changePassword");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -41,12 +43,12 @@ export function ChangePassword() {
 
   const changePasswordFormSchema = z
     .object({
-      currentPassword: z.string().min(1, "Aktuelles Passwort ist erforderlich"),
+      currentPassword: z.string().min(1, t("currentPasswordRequired")),
       newPassword: passwordSchema,
       confirmPassword: z.string(),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
-      message: "Passwörter stimmen nicht überein",
+      message: t("passwordsDoNotMatch"),
       path: ["confirmPassword"],
     });
 
@@ -80,14 +82,14 @@ export function ChangePassword() {
       });
 
       if (result.success) {
-        toast.success("Passwort geändert", {
-          description: "Ihr Passwort wurde erfolgreich geändert",
+        toast.success(t("success"), {
+          description: t("successDescription"),
         });
         reset();
         setPasswordStrength(null);
         router.refresh();
       } else {
-        toast.error("Fehler", {
+        toast.error(t("error"), {
           description: result.message,
         });
       }
@@ -110,11 +112,11 @@ export function ChangePassword() {
     if (!passwordStrength) return "";
     switch (passwordStrength) {
       case "weak":
-        return "Schwach";
+        return t("strength.weak");
       case "medium":
-        return "Mittel";
+        return t("strength.medium");
       case "strong":
-        return "Stark";
+        return t("strength.strong");
     }
   };
 
@@ -123,23 +125,21 @@ export function ChangePassword() {
       <CardHeader>
         <div className="flex items-center gap-2">
           <Lock className="size-5 text-primary" />
-          <CardTitle>Passwort ändern</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </div>
-        <CardDescription>
-          Ändern Sie Ihr Passwort, um Ihr Konto sicher zu halten
-        </CardDescription>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="currentPassword">Aktuelles Passwort</Label>
+            <Label htmlFor="currentPassword">{t("currentPassword")}</Label>
             <div className="relative">
               <Input
                 id="currentPassword"
                 type={showCurrentPassword ? "text" : "password"}
                 {...register("currentPassword")}
                 className="pr-10"
-                placeholder="Aktuelles Passwort eingeben"
+                placeholder={t("currentPasswordPlaceholder")}
               />
               <button
                 type="button"
@@ -162,14 +162,14 @@ export function ChangePassword() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="newPassword">Neues Passwort</Label>
+            <Label htmlFor="newPassword">{t("newPassword")}</Label>
             <div className="relative">
               <Input
                 id="newPassword"
                 type={showNewPassword ? "text" : "password"}
                 {...register("newPassword")}
                 className="pr-10"
-                placeholder="Neues Passwort eingeben"
+                placeholder={t("newPasswordPlaceholder")}
               />
               <button
                 type="button"
@@ -223,14 +223,14 @@ export function ChangePassword() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Passwort bestätigen</Label>
+            <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
             <div className="relative">
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 {...register("confirmPassword")}
                 className="pr-10"
-                placeholder="Passwort erneut eingeben"
+                placeholder={t("confirmPasswordPlaceholder")}
               />
               <button
                 type="button"
@@ -261,12 +261,12 @@ export function ChangePassword() {
             {isPending ? (
               <>
                 <LoadingSpinner size="sm" variant="primary" />
-                Passwort ändern...
+                {t("changing")}
               </>
             ) : (
               <>
                 <Lock className="mr-2 size-4" />
-                Passwort ändern
+                {t("button")}
               </>
             )}
           </Button>
