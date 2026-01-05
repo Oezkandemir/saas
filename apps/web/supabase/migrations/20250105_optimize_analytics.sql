@@ -77,3 +77,4 @@ COMMENT ON FUNCTION public.get_ticket_stats_aggregated IS 'Get aggregated ticket
 
 
 
+

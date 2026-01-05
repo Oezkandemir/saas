@@ -12,3 +12,4 @@ npx tsc --noEmit 2>&1 | grep -E "is declared but its value is never read" | \
 echo ""
 echo "Done! Format: file:line:column:variable"
 
+
