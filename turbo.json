@@ -29,7 +29,11 @@
         "STRIPE_WEBHOOK_SECRET",
         "NEXT_PUBLIC_SUPABASE_URL",
         "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
+        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+        "POLAR_ACCESS_TOKEN",
+        "POLAR_SUCCESS_URL",
+        "POLAR_USE_SANDBOX",
+        "USE_REAL_EMAIL"
       ],
       "cache": true,
       "persistent": false
@@ -48,7 +52,11 @@
         "STRIPE_WEBHOOK_SECRET",
         "NEXT_PUBLIC_SUPABASE_URL",
         "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
+        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+        "POLAR_ACCESS_TOKEN",
+        "POLAR_SUCCESS_URL",
+        "POLAR_USE_SANDBOX",
+        "USE_REAL_EMAIL"
       ]
     },
     "lint": {
