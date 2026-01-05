@@ -1126,7 +1126,7 @@ export async function listBookings(filters?: {
         event_type:event_types(id, title, slug, duration_minutes, price_amount, price_currency)
       `,
       )
-      .order("start_at", { ascending: false });
+      .order("start_at", { ascending: true });
 
     // Only filter by host_user_id if user is not an admin
     if (!isAdmin) {

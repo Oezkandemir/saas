@@ -2107,6 +2107,7 @@
       "createFirst": "Create First Customer"
     },
     "detail": {
+      "title": "Customer Details",
       "description": "Customer details and information",
       "edit": "Edit",
       "tabs": {
@@ -2410,6 +2411,7 @@
       "activated": "Event Type activated",
       "deactivated": "Event Type deactivated",
       "minutes": "min",
+      "edit": "Edit Event Type",
       "form": {
         "basicInfo": "Basic Information",
         "basicInfoDescription": "Set up the basic details for your event type",

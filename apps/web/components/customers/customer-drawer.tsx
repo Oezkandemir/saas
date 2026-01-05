@@ -1,0 +1,539 @@
+"use client";
+
+import { useEffect, useState, useMemo } from "react";
+import type { Customer } from "@/actions/customers-actions";
+import { getCustomer } from "@/actions/customers-actions";
+import { getDocuments, type Document } from "@/actions/documents-actions";
+import { format } from "date-fns";
+import { de, enUS } from "date-fns/locale";
+import {
+  Building2,
+  Calendar,
+  Mail,
+  MapPin,
+  Phone,
+  QrCode,
+  User,
+  FileText,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  Receipt,
+  TrendingUp,
+} from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
+import {
+  AccordionRoot,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/alignui/layout/accordion";
+import { Button } from "@/components/alignui/actions/button";
+import { EditCustomerDrawer } from "./edit-customer-drawer";
+import { DeleteCustomerButton } from "./delete-customer-button";
+import Link from "next/link";
+
+interface CustomerDrawerProps {
+  customerId: string | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function CustomerDrawer({
+  customerId,
+  open,
+  onOpenChange,
+}: CustomerDrawerProps) {
+  const t = useTranslations("Customers.detail");
+  const locale = useLocale();
+  const dateLocale = locale === "de" ? de : enUS;
+  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (open && customerId) {
+      setIsLoading(true);
+      Promise.all([
+        getCustomer(customerId),
+        getDocuments(undefined, customerId).catch(() => []),
+      ])
+        .then(([customerResult, documentsResult]) => {
+          if (customerResult) {
+            setCustomer(customerResult);
+          }
+          setDocuments(documentsResult || []);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } else {
+      setCustomer(null);
+      setDocuments([]);
+    }
+  }, [open, customerId]);
+
+  const stats = useMemo(() => {
+    if (!documents.length) return null;
+    const quotes = documents.filter((d) => d.type === "quote");
+    const invoices = documents.filter((d) => d.type === "invoice");
+    const paidInvoices = invoices.filter((d) => d.status === "paid");
+    const totalRevenue = paidInvoices.reduce(
+      (sum, d) => sum + Number(d.total),
+      0,
+    );
+    const pendingAmount = invoices
+      .filter((d) => d.status === "sent" || d.status === "overdue")
+      .reduce((sum, d) => sum + Number(d.total), 0);
+    return {
+      total: documents.length,
+      quotes: quotes.length,
+      invoices: invoices.length,
+      paidInvoices: paidInvoices.length,
+      totalRevenue,
+      pendingAmount,
+    };
+  }, [documents]);
+
+  if (!customer && !isLoading) {
+    return null;
+  }
+
+  const createdDate = customer ? new Date(customer.created_at) : null;
+  const updatedDate = customer ? new Date(customer.updated_at) : null;
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="w-[min(400px,calc(100%-16px))] overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>
+            {isLoading
+              ? t("title") || "Kundendetails"
+              : customer
+                ? customer.name
+                : t("title") || "Kundendetails"}
+          </SheetTitle>
+          {customer && (
+            <SheetDescription>
+              {customer.company || t("description") || "Kundendetails"}
+            </SheetDescription>
+          )}
+        </SheetHeader>
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-sm text-muted-foreground">Lädt...</div>
+          </div>
+        ) : customer && createdDate && updatedDate ? (
+          <div className="mt-3 flex flex-col">
+            <AccordionRoot type="multiple" defaultValue={["contact", "documents"]} className="w-full">
+              {/* Contact Information - Wichtigste Info zuerst */}
+              <AccordionItem value="contact" className="border-b border-stroke-soft-200">
+                <AccordionTrigger className="text-sm font-semibold">
+                  <div className="flex items-center gap-2">
+                    <User className="h-3.5 w-3.5 text-muted-foreground" />
+                    Kontaktinformationen
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 pt-1">
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                        <User className="h-3 w-3" />
+                        Name
+                      </p>
+                      <p className="text-sm font-medium">{customer.name}</p>
+                    </div>
+
+                    {customer.email && (
+                      <>
+                        <Separator />
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                            <Mail className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                            <span className="text-blue-600 dark:text-blue-400 font-medium">
+                              E-Mail
+                            </span>
+                          </p>
+                          <a
+                            href={`mailto:${customer.email}`}
+                            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline break-all"
+                          >
+                            {customer.email}
+                          </a>
+                        </div>
+                      </>
+                    )}
+
+                    {customer.phone && (
+                      <>
+                        <Separator />
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                            <Phone className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                            <span className="text-blue-600 dark:text-blue-400 font-medium">
+                              Telefon
+                            </span>
+                          </p>
+                          <a
+                            href={`tel:${customer.phone}`}
+                            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                          >
+                            {customer.phone}
+                          </a>
+                        </div>
+                      </>
+                    )}
+
+                    {customer.company && (
+                      <>
+                        <Separator />
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                            <Building2 className="h-3 w-3" />
+                            Unternehmen
+                          </p>
+                          <p className="text-sm font-medium">{customer.company}</p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Address Information */}
+              {(customer.address_line1 ||
+                customer.city ||
+                customer.postal_code ||
+                customer.country) && (
+                <AccordionItem value="address">
+                  <AccordionTrigger className="text-sm font-semibold">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                      Adresse
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-3 pt-1">
+                      {customer.address_line1 && (
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                            <MapPin className="h-3 w-3" />
+                            Straße
+                          </p>
+                          <p className="text-sm font-medium">
+                            {customer.address_line1}
+                          </p>
+                          {customer.address_line2 && (
+                            <p className="text-sm font-medium">
+                              {customer.address_line2}
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {(customer.postal_code || customer.city) && (
+                        <>
+                          {customer.address_line1 && <Separator />}
+                          <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground">Ort</p>
+                            <p className="text-sm font-medium">
+                              {[customer.postal_code, customer.city]
+                                .filter(Boolean)
+                                .join(" ")}
+                            </p>
+                          </div>
+                        </>
+                      )}
+
+                      {customer.country && (
+                        <>
+                          {(customer.address_line1 ||
+                            customer.postal_code ||
+                            customer.city) && <Separator />}
+                          <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground">Land</p>
+                            <p className="text-sm font-medium">
+                              {customer.country}
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
+
+              {/* Documents & Statistics */}
+              {stats && (
+                <AccordionItem value="documents">
+                  <AccordionTrigger className="text-sm font-semibold">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                      Dokumente & Statistiken
+                      {stats.total > 0 && (
+                        <Badge variant="secondary" className="ml-auto text-xs">
+                          {stats.total}
+                        </Badge>
+                      )}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-3 pt-1">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="p-2 rounded border bg-muted/30">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <FileText className="h-3 w-3 text-muted-foreground" />
+                            <p className="text-xs text-muted-foreground">Gesamt</p>
+                          </div>
+                          <p className="text-base font-semibold">{stats.total}</p>
+                        </div>
+                        <div className="p-2 rounded border bg-muted/30">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <Receipt className="h-3 w-3 text-muted-foreground" />
+                            <p className="text-xs text-muted-foreground">Angebote</p>
+                          </div>
+                          <p className="text-base font-semibold">{stats.quotes}</p>
+                        </div>
+                        <div className="p-2 rounded border bg-muted/30">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <FileText className="h-3 w-3 text-muted-foreground" />
+                            <p className="text-xs text-muted-foreground">Rechnungen</p>
+                          </div>
+                          <p className="text-base font-semibold">{stats.invoices}</p>
+                        </div>
+                        <div className="p-2 rounded border bg-muted/30">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400" />
+                            <p className="text-xs text-muted-foreground">Bezahlt</p>
+                          </div>
+                          <p className="text-base font-semibold">{stats.paidInvoices}</p>
+                        </div>
+                      </div>
+
+                      {stats.totalRevenue > 0 && (
+                        <>
+                          <Separator />
+                          <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                              <TrendingUp className="h-3 w-3 text-green-600 dark:text-green-400" />
+                              <span className="text-green-600 dark:text-green-400 font-medium">
+                                Umsatz gesamt
+                              </span>
+                            </p>
+                            <p className="text-sm font-semibold text-green-600 dark:text-green-400">
+                              {stats.totalRevenue.toLocaleString("de-DE", {
+                                style: "currency",
+                                currency: "EUR",
+                              })}
+                            </p>
+                          </div>
+                        </>
+                      )}
+
+                      {stats.pendingAmount > 0 && (
+                        <>
+                          <Separator />
+                          <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                              <AlertCircle className="h-3 w-3 text-orange-600 dark:text-orange-400" />
+                              <span className="text-orange-600 dark:text-orange-400 font-medium">
+                                Ausstehend
+                              </span>
+                            </p>
+                            <p className="text-sm font-semibold text-orange-600 dark:text-orange-400">
+                              {stats.pendingAmount.toLocaleString("de-DE", {
+                                style: "currency",
+                                currency: "EUR",
+                              })}
+                            </p>
+                          </div>
+                        </>
+                      )}
+
+                      <Separator />
+                      <Link href={`/dashboard/customers/${customer.id}`} className="block">
+                        <Button variant="outline" size="sm" className="w-full gap-1.5">
+                          <FileText className="h-3.5 w-3.5" />
+                          <span className="text-xs">Alle Dokumente anzeigen</span>
+                        </Button>
+                      </Link>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
+
+              {/* Additional Information */}
+              {(customer.tax_id || customer.qr_code || customer.notes) && (
+                <AccordionItem value="additional">
+                  <AccordionTrigger className="text-sm font-semibold">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                      Zusätzliche Informationen
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-3 pt-1">
+                      {customer.tax_id && (
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground">Steuernummer</p>
+                          <p className="text-sm font-medium font-mono">
+                            {customer.tax_id}
+                          </p>
+                        </div>
+                      )}
+
+                      {customer.qr_code && (
+                        <>
+                          {customer.tax_id && <Separator />}
+                          <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                              <QrCode className="h-3 w-3" />
+                              QR-Code
+                            </p>
+                            <Badge variant="secondary" className="text-xs font-mono">
+                              {customer.qr_code}
+                            </Badge>
+                          </div>
+                        </>
+                      )}
+
+                      {customer.notes && (
+                        <>
+                          {(customer.tax_id || customer.qr_code) && <Separator />}
+                          <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                              <FileText className="h-3 w-3" />
+                              Notizen
+                            </p>
+                            <p className="text-sm whitespace-pre-wrap">
+                              {customer.notes}
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
+
+
+              {/* Metadata - Nach unten verschoben */}
+              <AccordionItem value="metadata">
+                <AccordionTrigger className="text-sm font-semibold">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                    Metadaten
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 pt-1">
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                        <Calendar className="h-3 w-3 text-green-600 dark:text-green-400" />
+                        <span className="text-green-600 dark:text-green-400 font-medium">
+                          Erstellt am
+                        </span>
+                      </p>
+                      <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                        {format(createdDate, "d. MMMM yyyy 'um' HH:mm", {
+                          locale: dateLocale,
+                        })}
+                      </p>
+                    </div>
+                    <Separator />
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                        <Calendar className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                        <span className="text-blue-600 dark:text-blue-400 font-medium">
+                          Aktualisiert am
+                        </span>
+                      </p>
+                      <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                        {format(updatedDate, "d. MMMM yyyy 'um' HH:mm", {
+                          locale: dateLocale,
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </AccordionRoot>
+
+            {/* Actions - Immer ganz unten, außerhalb der Accordions */}
+            <div className="mt-4 pt-4 border-t border-border">
+              <div className="grid grid-cols-1 gap-1.5">
+                <Link href={`/dashboard/customers/${customer.id}`} className="w-full">
+                  <Button variant="outline" size="sm" className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50">
+                    <FileText className="h-3.5 w-3.5" />
+                    <span className="text-xs">Details anzeigen</span>
+                  </Button>
+                </Link>
+                {customer.email && (
+                  <a href={`mailto:${customer.email}`} className="w-full">
+                    <Button variant="outline" size="sm" className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50">
+                      <Mail className="h-3.5 w-3.5" />
+                      <span className="text-xs">E-Mail senden</span>
+                    </Button>
+                  </a>
+                )}
+                {customer.phone && (
+                  <a href={`tel:${customer.phone}`} className="w-full">
+                    <Button variant="outline" size="sm" className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50">
+                      <Phone className="h-3.5 w-3.5" />
+                      <span className="text-xs">Anrufen</span>
+                    </Button>
+                  </a>
+                )}
+                <EditCustomerDrawer
+                  customer={customer}
+                  trigger={
+                    <Button variant="primary" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
+                      <User className="h-3.5 w-3.5" />
+                      <span className="text-xs">Bearbeiten</span>
+                    </Button>
+                  }
+                />
+                <Link
+                  href={`/dashboard/documents/new?type=quote&customer_id=${customer.id}`}
+                  className="w-full"
+                >
+                  <Button variant="primary" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
+                    <FileText className="h-3.5 w-3.5" />
+                    <span className="text-xs">Angebot erstellen</span>
+                  </Button>
+                </Link>
+                <Link
+                  href={`/dashboard/documents/new?type=invoice&customer_id=${customer.id}`}
+                  className="w-full"
+                >
+                  <Button variant="primary" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
+                    <FileText className="h-3.5 w-3.5" />
+                    <span className="text-xs">Rechnung erstellen</span>
+                  </Button>
+                </Link>
+                <DeleteCustomerButton
+                  customerId={customer.id}
+                  customerName={customer.name}
+                  variant="primary"
+                  size="sm"
+                  className="w-full bg-foreground text-background hover:bg-destructive hover:text-destructive-foreground font-medium"
+                  onDeleted={() => onOpenChange(false)}
+                />
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </SheetContent>
+    </Sheet>
+  );
+}

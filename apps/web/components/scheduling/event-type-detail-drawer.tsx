@@ -33,21 +33,19 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/alignui/actions/button";
 import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/alignui/data-display/card";
 import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
+import {
+  AccordionRoot,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/alignui/layout/accordion";
 import { Input } from "@/components/alignui/forms/input";
 
 import { CopyBookingLinkButton } from "./copy-booking-link-button";
-import { EditEventTypeForm } from "./edit-event-type-form";
+import { EditEventTypeDrawer } from "./edit-event-type-drawer";
 import { EventTypeActions } from "./event-type-actions";
 
 interface EventTypeDetailDrawerProps {
@@ -66,8 +64,8 @@ export function EventTypeDetailDrawer({
   const [eventType, setEventType] = useState<EventType | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("overview");
   const [copiedLink, setCopiedLink] = useState(false);
+  const [editDrawerOpen, setEditDrawerOpen] = useState(false);
 
   useEffect(() => {
     if (open && eventTypeId) {
@@ -97,7 +95,6 @@ export function EventTypeDetailDrawer({
     } else {
       setEventType(null);
       setBookings([]);
-      setActiveTab("overview");
     }
   }, [open, eventTypeId, onOpenChange]);
 
@@ -139,7 +136,7 @@ export function EventTypeDetailDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-4xl overflow-y-auto"
+        className="w-[min(400px,calc(100%-16px))] overflow-y-auto"
       >
         <SheetHeader>
           <SheetTitle className="text-xl">
@@ -164,239 +161,188 @@ export function EventTypeDetailDrawer({
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
         ) : eventType ? (
-          <>
-            <div className="flex items-center justify-end gap-2 mt-4 mb-6">
-              <CopyBookingLinkButton bookingUrl={bookingUrl} />
-              <EventTypeActions eventType={eventType} />
-            </div>
+          <div className="mt-3 flex flex-col">
+            <AccordionRoot type="multiple" defaultValue={["details", "stats"]} className="w-full">
+              {/* Event Details - Wichtigste Info zuerst */}
+              <AccordionItem value="details" className="border-b border-stroke-soft-200">
+                <AccordionTrigger className="text-sm font-semibold">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                    {t("details.title") || "Event Details"}
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 pt-1">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                          <Clock className="h-3 w-3" />
+                          {t("details.duration") || "Dauer"}
+                        </p>
+                        <p className="text-sm font-medium">
+                          {eventType.duration_minutes}{" "}
+                          {t("details.minutes") || "Minuten"}
+                        </p>
+                      </div>
+                      <Badge
+                        variant={eventType.is_active ? "default" : "outline"}
+                        className="text-xs"
+                      >
+                        {eventType.is_active
+                          ? t("details.active") || "Aktiv"
+                          : t("details.inactive") || "Inaktiv"}
+                      </Badge>
+                    </div>
 
-            <div className="mt-6">
-              <Tabs
-                value={activeTab}
-                onValueChange={setActiveTab}
-                className="w-full"
-              >
-                <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger
-                    value="overview"
-                    className="flex items-center gap-2"
-                  >
-                    <BarChart3 className="h-4 w-4" />
-                    <span className="hidden sm:inline">
-                      {t("tabs.overview") || "Overview"}
-                    </span>
-                  </TabsTrigger>
-                  <TabsTrigger value="edit" className="flex items-center gap-2">
-                    <Edit className="h-4 w-4" />
-                    <span className="hidden sm:inline">
-                      {t("tabs.edit") || "Edit"}
-                    </span>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="bookings"
-                    className="flex items-center gap-2"
-                  >
-                    <Users className="h-4 w-4" />
-                    <span className="hidden sm:inline">
-                      {t("tabs.bookings") || "Bookings"}
-                    </span>
+                    {eventType.description && (
+                      <>
+                        <Separator />
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground">
+                            {t("details.description") || "Beschreibung"}
+                          </p>
+                          <p className="text-sm">{eventType.description}</p>
+                        </div>
+                      </>
+                    )}
+
+                    <Separator />
+
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                        <MapPin className="h-3 w-3" />
+                        {t("details.location") || "Ort"}
+                      </p>
+                      <p className="text-sm font-medium capitalize">
+                        {eventType.location_type?.replace("_", " ") || "-"}
+                      </p>
+                      {eventType.location_value && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {eventType.location_value}
+                        </p>
+                      )}
+                    </div>
+
+                    {eventType.price_amount && (
+                      <>
+                        <Separator />
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground">
+                            {t("details.price") || "Preis"}
+                          </p>
+                          <p className="text-sm font-medium">
+                            {eventType.price_amount.toFixed(2)}{" "}
+                            {eventType.price_currency || "EUR"}
+                          </p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Statistics */}
+              <AccordionItem value="stats">
+                <AccordionTrigger className="text-sm font-semibold">
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="h-3.5 w-3.5 text-muted-foreground" />
+                    Statistiken
                     {bookings.length > 0 && (
-                      <Badge variant="secondary" className="ml-1 text-xs">
+                      <Badge variant="secondary" className="ml-auto text-xs">
                         {bookings.length}
                       </Badge>
                     )}
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="share"
-                    className="flex items-center gap-2"
-                  >
-                    <LinkIcon className="h-4 w-4" />
-                    <span className="hidden sm:inline">
-                      {t("tabs.share") || "Share"}
-                    </span>
-                  </TabsTrigger>
-                </TabsList>
-
-                {/* Overview Tab */}
-                <TabsContent value="overview" className="space-y-6 mt-6">
-                  {/* Quick Stats */}
-                  <div className="grid gap-4 md:grid-cols-4">
-                    <Card>
-                      <CardContent className="pt-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">
-                              {t("stats.totalBookings") || "Total Bookings"}
-                            </p>
-                            <p className="text-2xl font-semibold">
-                              {bookings.length}
-                            </p>
-                          </div>
-                          <Users className="h-8 w-8 text-muted-foreground opacity-50" />
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardContent className="pt-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">
-                              {t("stats.upcoming") || "Upcoming"}
-                            </p>
-                            <p className="text-2xl font-semibold text-green-600">
-                              {upcomingBookings.length}
-                            </p>
-                          </div>
-                          <CheckCircle2 className="h-8 w-8 text-green-500 opacity-50" />
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardContent className="pt-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">
-                              {t("stats.completed") || "Completed"}
-                            </p>
-                            <p className="text-2xl font-semibold">
-                              {pastBookings.length}
-                            </p>
-                          </div>
-                          <BarChart3 className="h-8 w-8 text-muted-foreground opacity-50" />
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardContent className="pt-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">
-                              {t("stats.canceled") || "Canceled"}
-                            </p>
-                            <p className="text-2xl font-semibold text-red-600">
-                              {canceledBookings.length}
-                            </p>
-                          </div>
-                          <XCircle className="h-8 w-8 text-red-500 opacity-50" />
-                        </div>
-                      </CardContent>
-                    </Card>
                   </div>
-
-                  {/* Event Details */}
-                  <div className="grid gap-6 md:grid-cols-2">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          {t("details.title") || "Event Details"}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="flex items-start justify-between">
-                          <div className="space-y-1">
-                            <p className="text-xs text-muted-foreground">
-                              {t("details.duration") || "Duration"}
-                            </p>
-                            <p className="text-sm font-medium flex items-center gap-2">
-                              <Clock className="h-4 w-4" />
-                              {eventType.duration_minutes}{" "}
-                              {t("details.minutes") || "minutes"}
-                            </p>
-                          </div>
-                          <Badge
-                            variant={
-                              eventType.is_active ? "default" : "outline"
-                            }
-                          >
-                            {eventType.is_active
-                              ? t("details.active") || "Active"
-                              : t("details.inactive") || "Inactive"}
-                          </Badge>
-                        </div>
-
-                        {eventType.description && (
-                          <>
-                            <Separator />
-                            <div className="space-y-1">
-                              <p className="text-xs text-muted-foreground">
-                                {t("details.description") || "Description"}
-                              </p>
-                              <p className="text-sm">{eventType.description}</p>
-                            </div>
-                          </>
-                        )}
-
-                        <Separator />
-
-                        <div className="space-y-1">
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 pt-1">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="p-2 rounded border bg-muted/30">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <Users className="h-3 w-3 text-muted-foreground" />
                           <p className="text-xs text-muted-foreground">
-                            {t("details.location") || "Location"}
+                            {t("stats.totalBookings") || "Gesamt"}
                           </p>
-                          <p className="text-sm font-medium flex items-center gap-2 capitalize">
-                            <MapPin className="h-4 w-4" />
-                            {eventType.location_type?.replace("_", " ") || "-"}
-                          </p>
-                          {eventType.location_value && (
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {eventType.location_value}
-                            </p>
-                          )}
                         </div>
+                        <p className="text-base font-semibold">
+                          {bookings.length}
+                        </p>
+                      </div>
+                      <div className="p-2 rounded border bg-muted/30">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400" />
+                          <p className="text-xs text-muted-foreground">
+                            {t("stats.upcoming") || "Anstehend"}
+                          </p>
+                        </div>
+                        <p className="text-base font-semibold text-green-600 dark:text-green-400">
+                          {upcomingBookings.length}
+                        </p>
+                      </div>
+                      <div className="p-2 rounded border bg-muted/30">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <BarChart3 className="h-3 w-3 text-muted-foreground" />
+                          <p className="text-xs text-muted-foreground">
+                            {t("stats.completed") || "Abgeschlossen"}
+                          </p>
+                        </div>
+                        <p className="text-base font-semibold">
+                          {pastBookings.length}
+                        </p>
+                      </div>
+                      <div className="p-2 rounded border bg-muted/30">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <XCircle className="h-3 w-3 text-red-600 dark:text-red-400" />
+                          <p className="text-xs text-muted-foreground">
+                            {t("stats.canceled") || "Storniert"}
+                          </p>
+                        </div>
+                        <p className="text-base font-semibold text-red-600 dark:text-red-400">
+                          {canceledBookings.length}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
 
-                        {eventType.price_amount && (
-                          <>
-                            <Separator />
-                            <div className="space-y-1">
-                              <p className="text-xs text-muted-foreground">
-                                {t("details.price") || "Price"}
-                              </p>
-                              <p className="text-sm font-medium">
-                                {eventType.price_amount.toFixed(2)}{" "}
-                                {eventType.price_currency || "EUR"}
-                              </p>
-                            </div>
-                          </>
-                        )}
-                      </CardContent>
-                    </Card>
-
-                    {/* Recent Activity */}
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          {t("recentActivity.title") || "Recent Activity"}
-                        </CardTitle>
-                        <CardDescription>
-                          {t("recentActivity.description") ||
-                            "Latest bookings for this event type"}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        {upcomingBookings.length === 0 &&
-                        pastBookings.length === 0 ? (
-                          <div className="flex flex-col items-center justify-center py-8 text-center">
-                            <Users className="h-6 w-6 text-muted-foreground mb-2" />
-                            <p className="text-sm text-muted-foreground">
-                              {t("recentActivity.empty") || "No bookings yet"}
-                            </p>
-                          </div>
-                        ) : (
-                          <div className="space-y-4">
-                            {upcomingBookings.slice(0, 5).map((booking) => (
+              {/* Bookings */}
+              {bookings.length > 0 && (
+                <AccordionItem value="bookings">
+                  <AccordionTrigger className="text-sm font-semibold">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                      {t("tabs.bookings") || "Buchungen"}
+                      <Badge variant="secondary" className="ml-auto text-xs">
+                        {bookings.length}
+                      </Badge>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-3 pt-1">
+                      {upcomingBookings.length > 0 && (
+                        <div>
+                          <h3 className="text-xs font-semibold mb-2 flex items-center gap-1.5">
+                            <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400" />
+                            {t("bookings.upcoming") || "Anstehend"} (
+                            {upcomingBookings.length})
+                          </h3>
+                          <div className="space-y-1.5">
+                            {upcomingBookings.map((booking) => (
                               <div
                                 key={booking.id}
-                                className="flex items-center justify-between p-3 border rounded-lg"
+                                className="flex items-center justify-between p-2 border rounded text-xs"
                               >
-                                <div>
-                                  <p className="text-sm font-medium">
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-medium truncate">
                                     {booking.invitee_name}
                                   </p>
-                                  <p className="text-xs text-muted-foreground">
+                                  <p className="text-muted-foreground truncate">
                                     {booking.invitee_email}
                                   </p>
                                 </div>
-                                <div className="text-right">
-                                  <p className="text-xs font-medium">
+                                <div className="text-right flex-shrink-0 ml-2">
+                                  <p className="font-medium">
                                     {new Date(
                                       booking.start_at,
                                     ).toLocaleDateString(undefined, {
@@ -404,7 +350,7 @@ export function EventTypeDetailDrawer({
                                       month: "short",
                                     })}
                                   </p>
-                                  <p className="text-xs text-muted-foreground">
+                                  <p className="text-muted-foreground">
                                     {new Date(
                                       booking.start_at,
                                     ).toLocaleTimeString(undefined, {
@@ -416,119 +362,41 @@ export function EventTypeDetailDrawer({
                               </div>
                             ))}
                           </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </div>
-                </TabsContent>
-
-                {/* Edit Tab */}
-                <TabsContent value="edit" className="mt-6">
-                  {eventType && eventType.owner_user_id && (
-                    <EditEventTypeForm
-                      eventType={eventType}
-                      userId={eventType.owner_user_id}
-                      onSuccess={() => {
-                        // Reload event type data after successful update
-                        if (eventTypeId) {
-                          getEventType(eventTypeId).then((result) => {
-                            if (result.success && result.data) {
-                              setEventType(result.data);
-                            }
-                          });
-                        }
-                      }}
-                    />
-                  )}
-                </TabsContent>
-
-                {/* Bookings Tab */}
-                <TabsContent value="bookings" className="mt-6">
-                  <div className="space-y-4">
-                    {bookings.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-12 text-center border border-dashed rounded-lg">
-                        <Users className="h-8 w-8 text-muted-foreground mb-3" />
-                        <p className="text-sm text-muted-foreground">
-                          {t("bookings.empty") || "No bookings yet"}
-                        </p>
-                      </div>
-                    ) : (
-                      <>
-                        {upcomingBookings.length > 0 && (
+                        </div>
+                      )}
+                      {pastBookings.length > 0 && (
+                        <>
+                          {upcomingBookings.length > 0 && <Separator />}
                           <div>
-                            <h3 className="text-sm font-semibold mb-3">
-                              {t("bookings.upcoming") || "Upcoming"} (
-                              {upcomingBookings.length})
-                            </h3>
-                            <div className="space-y-2">
-                              {upcomingBookings.map((booking) => (
-                                <div
-                                  key={booking.id}
-                                  className="flex items-center justify-between p-3 border rounded-lg"
-                                >
-                                  <div>
-                                    <p className="text-sm font-medium">
-                                      {booking.invitee_name}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
-                                      {booking.invitee_email}
-                                    </p>
-                                  </div>
-                                  <div className="text-right">
-                                    <p className="text-xs font-medium">
-                                      {new Date(
-                                        booking.start_at,
-                                      ).toLocaleDateString(undefined, {
-                                        day: "2-digit",
-                                        month: "short",
-                                        year: "numeric",
-                                      })}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
-                                      {new Date(
-                                        booking.start_at,
-                                      ).toLocaleTimeString(undefined, {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })}
-                                    </p>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        {pastBookings.length > 0 && (
-                          <div>
-                            <h3 className="text-sm font-semibold mb-3">
-                              {t("bookings.past") || "Past"} (
+                            <h3 className="text-xs font-semibold mb-2 flex items-center gap-1.5">
+                              <Clock className="h-3 w-3 text-muted-foreground" />
+                              {t("bookings.past") || "Vergangen"} (
                               {pastBookings.length})
                             </h3>
-                            <div className="space-y-2">
-                              {pastBookings.slice(0, 10).map((booking) => (
+                            <div className="space-y-1.5">
+                              {pastBookings.slice(0, 5).map((booking) => (
                                 <div
                                   key={booking.id}
-                                  className="flex items-center justify-between p-3 border rounded-lg opacity-75"
+                                  className="flex items-center justify-between p-2 border rounded text-xs opacity-75"
                                 >
-                                  <div>
-                                    <p className="text-sm font-medium">
+                                  <div className="min-w-0 flex-1">
+                                    <p className="font-medium truncate">
                                       {booking.invitee_name}
                                     </p>
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-muted-foreground truncate">
                                       {booking.invitee_email}
                                     </p>
                                   </div>
-                                  <div className="text-right">
-                                    <p className="text-xs font-medium">
+                                  <div className="text-right flex-shrink-0 ml-2">
+                                    <p className="font-medium">
                                       {new Date(
                                         booking.start_at,
                                       ).toLocaleDateString(undefined, {
                                         day: "2-digit",
                                         month: "short",
-                                        year: "numeric",
                                       })}
                                     </p>
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-muted-foreground">
                                       {new Date(
                                         booking.start_at,
                                       ).toLocaleTimeString(undefined, {
@@ -541,51 +409,87 @@ export function EventTypeDetailDrawer({
                               ))}
                             </div>
                           </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </TabsContent>
+                        </>
+                      )}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
 
-                {/* Share Tab */}
-                <TabsContent value="share" className="mt-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>
-                        {t("share.title") || "Share Event Type"}
-                      </CardTitle>
-                      <CardDescription>
+              {/* Share */}
+              <AccordionItem value="share">
+                <AccordionTrigger className="text-sm font-semibold">
+                  <div className="flex items-center gap-2">
+                    <LinkIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                    {t("share.title") || "Teilen"}
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 pt-1">
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground">
                         {t("share.description") ||
-                          "Share this link to allow others to book this event type"}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <Input
-                          readOnly
-                          value={bookingUrl}
-                          className="flex-1 font-mono text-sm"
-                        />
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={handleCopyLink}
-                          className="flex-shrink-0"
-                        >
-                          {copiedLink ? (
-                            <CheckCircle2 className="h-4 w-4 text-green-500" />
-                          ) : (
-                            <Copy className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                      <CopyBookingLinkButton bookingUrl={bookingUrl} />
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-              </Tabs>
+                          "Teilen Sie diesen Link, damit andere diesen Event Type buchen können"}
+                      </p>
+                    </div>
+                    <Separator />
+                    <div className="flex items-center gap-2">
+                      <Input
+                        readOnly
+                        value={bookingUrl}
+                        className="flex-1 font-mono text-xs h-8"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCopyLink}
+                        className="flex-shrink-0 h-8"
+                      >
+                        {copiedLink ? (
+                          <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
+                      </Button>
+                    </div>
+                    <CopyBookingLinkButton bookingUrl={bookingUrl} />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+            </AccordionRoot>
+
+            {/* Actions - Immer ganz unten, außerhalb der Accordions */}
+            <div className="mt-4 pt-4 border-t border-border">
+              <div className="grid grid-cols-1 gap-1.5">
+                {eventType && eventType.owner_user_id && (
+                  <EditEventTypeDrawer
+                    eventType={eventType}
+                    open={editDrawerOpen}
+                    onOpenChange={(open) => {
+                      setEditDrawerOpen(open);
+                      if (!open && eventTypeId) {
+                        // Reload event type data after drawer closes
+                        getEventType(eventTypeId).then((result) => {
+                          if (result.success && result.data) {
+                            setEventType(result.data);
+                          }
+                        });
+                      }
+                    }}
+                    trigger={
+                      <Button variant="primary" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
+                        <Edit className="h-3.5 w-3.5" />
+                        <span className="text-xs">{t("tabs.edit") || "Bearbeiten"}</span>
+                      </Button>
+                    }
+                  />
+                )}
+                <CopyBookingLinkButton bookingUrl={bookingUrl} />
+                <EventTypeActions eventType={eventType} />
+              </div>
             </div>
-          </>
+          </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-12 text-center mt-8">
             <XCircle className="h-8 w-8 text-destructive mb-3" />

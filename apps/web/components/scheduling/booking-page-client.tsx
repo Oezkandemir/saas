@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import {
   getPublicOverrides,
   getPublicSlots,
@@ -65,20 +65,19 @@ export function BookingPageClient({
   const locale = useLocale();
   const t = useTranslations("Scheduling.booking");
   const [isPending, startTransition] = useTransition();
+  const isInitialMount = useRef(true);
 
-  // Set today as default selected date if initialDate is not today
-  // Reset to start of day for proper comparison
+  // Use initialDate from server (which is already the next available date)
+  const initialDateObj = new Date(initialDate);
+  initialDateObj.setHours(0, 0, 0, 0);
+  
+  // Today's date for comparison (to mark today and disable past dates)
   const todayDate = new Date();
   todayDate.setHours(0, 0, 0, 0);
-  const todayStr = format(todayDate, "yyyy-MM-dd");
-  const initialDateStr = format(new Date(initialDate), "yyyy-MM-dd");
-  const [selectedDate, setSelectedDate] = useState(
-    initialDateStr === todayStr ? todayDate : new Date(initialDate),
-  );
+  
+  const [selectedDate, setSelectedDate] = useState(initialDateObj);
   const [currentMonth, setCurrentMonth] = useState(() => {
-    const initial =
-      initialDateStr === todayStr ? todayDate : new Date(initialDate);
-    return startOfMonth(initial);
+    return startOfMonth(initialDateObj);
   });
   const [selectedSlot, setSelectedSlot] = useState<AvailableSlot | null>(null);
   const [slots, setSlots] = useState<AvailableSlot[]>(initialSlots);
@@ -134,15 +133,20 @@ export function BookingPageClient({
 
   // Load slots when date changes - use transition for non-blocking updates
   useEffect(() => {
-    // Only load if date actually changed (not initial mount with same date)
-    const currentDateStr = format(selectedDate, "yyyy-MM-dd");
-    const initialDateStr = format(new Date(initialDate), "yyyy-MM-dd");
-
-    // Skip if it's the initial date and we already have slots
-    if (currentDateStr === initialDateStr && initialSlots.length > 0) {
-      return;
+    // Skip loading on initial mount if we already have slots for the initial date
+    if (isInitialMount.current) {
+      const currentDateStr = format(selectedDate, "yyyy-MM-dd");
+      const initialDateStr = format(new Date(initialDate), "yyyy-MM-dd");
+      
+      // If it's the initial date and we have slots, skip loading
+      if (currentDateStr === initialDateStr && initialSlots.length > 0) {
+        isInitialMount.current = false;
+        return;
+      }
+      isInitialMount.current = false;
     }
 
+    // Always load slots when date changes (after initial mount)
     startTransition(() => {
       loadSlotsForDate(selectedDate);
     });
@@ -220,17 +224,17 @@ export function BookingPageClient({
     : MapPin;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-muted/30 to-background p-2 sm:p-4 md:p-6 lg:p-8">
-      <div className="max-w-5xl mx-auto space-y-3 sm:space-y-4 md:space-y-6">
+    <div className="p-2 min-h-screen bg-gradient-to-b from-muted/30 to-background sm:p-4 md:p-6 lg:p-8">
+      <div className="mx-auto space-y-3 max-w-5xl sm:space-y-4 md:space-y-6">
         {/* Back Button */}
         <div className="flex items-center">
           <Button
             onClick={() => window.history.back()}
             variant="outline"
             size="sm"
-            className="flex items-center gap-2"
+            className="flex gap-2 items-center"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="w-4 h-4" />
             <span>{t("back") || "Zurück"}</span>
           </Button>
         </div>
@@ -238,25 +242,25 @@ export function BookingPageClient({
         {/* Slim Header */}
         <Card className="border">
           <CardContent className="pt-3 pb-2 sm:pt-4 sm:pb-3">
-            <div className="flex items-center justify-between gap-2 sm:gap-4">
-              <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            <div className="flex gap-2 justify-between items-center sm:gap-4">
+              <div className="flex flex-1 gap-2 items-center min-w-0 sm:gap-3">
+                <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 rounded-lg sm:w-10 sm:h-10 bg-primary/10">
+                  <Calendar className="w-4 h-4 sm:h-5 sm:w-5 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h1 className="text-lg sm:text-xl font-bold truncate">
+                  <h1 className="text-lg font-bold truncate sm:text-xl">
                     {eventType.title}
                   </h1>
                   {eventType.owner.name && (
                     <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                      <User className="h-3 w-3" />
+                      <User className="w-3 h-3" />
                       {t("with") || "with"} {eventType.owner.name}
                     </p>
                   )}
                 </div>
               </div>
               {eventType.description && (
-                <p className="hidden md:block text-sm text-muted-foreground max-w-md text-right">
+                <p className="hidden max-w-md text-sm text-right md:block text-muted-foreground">
                   {eventType.description}
                 </p>
               )}
@@ -271,9 +275,9 @@ export function BookingPageClient({
           {/* Duration */}
           <Card>
             <CardContent className="pt-3 pb-3">
-              <div className="flex items-center gap-2">
+              <div className="flex gap-2 items-center">
                 <div className="p-1.5 rounded-md bg-blue-100 dark:bg-blue-900/20">
-                  <Clock className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-muted-foreground mb-0.5">
@@ -291,9 +295,9 @@ export function BookingPageClient({
           {eventType.price_amount && (
             <Card>
               <CardContent className="pt-3 pb-3">
-                <div className="flex items-center gap-2">
+                <div className="flex gap-2 items-center">
                   <div className="p-1.5 rounded-md bg-green-100 dark:bg-green-900/20">
-                    <CurrencyIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
+                    <CurrencyIcon className="w-4 h-4 text-green-600 dark:text-green-400" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-muted-foreground mb-0.5">
@@ -316,9 +320,9 @@ export function BookingPageClient({
           {eventType.location_type && (
             <Card>
               <CardContent className="pt-3 pb-3">
-                <div className="flex items-center gap-2">
+                <div className="flex gap-2 items-center">
                   <div className="p-1.5 rounded-md bg-purple-100 dark:bg-purple-900/20">
-                    <LocationIcon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                    <LocationIcon className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-muted-foreground mb-0.5">
@@ -328,7 +332,7 @@ export function BookingPageClient({
                       {eventType.location_type.replace("_", " ")}
                     </p>
                     {eventType.location_value && (
-                      <p className="text-xs text-muted-foreground truncate">
+                      <p className="text-xs truncate text-muted-foreground">
                         {eventType.location_value}
                       </p>
                     )}
@@ -344,9 +348,9 @@ export function BookingPageClient({
             selectedSlot.available_places !== undefined && (
               <Card>
                 <CardContent className="pt-3 pb-3">
-                  <div className="flex items-center gap-2">
+                  <div className="flex gap-2 items-center">
                     <div className="p-1.5 rounded-md bg-orange-100 dark:bg-orange-900/20">
-                      <Users className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                      <Users className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-muted-foreground mb-0.5">
@@ -373,19 +377,19 @@ export function BookingPageClient({
           {/* Calendar */}
           <Card>
             <CardHeader className="pb-2 sm:pb-3">
-              <div className="flex items-center justify-between gap-2">
-                <CardTitle className="text-xs sm:text-sm font-semibold">
+              <div className="flex gap-2 justify-between items-center">
+                <CardTitle className="text-xs font-semibold sm:text-sm">
                   {t("selectDate") || "Select Date"}
                 </CardTitle>
-                <div className="flex items-center gap-1 sm:gap-2">
+                <div className="flex gap-1 items-center sm:gap-2">
                   <Button
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-6 w-6 sm:h-7 sm:w-7"
+                    className="w-6 h-6 sm:h-7 sm:w-7"
                     onClick={handlePreviousMonth}
                   >
-                    <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <ChevronLeft className="w-3 h-3 sm:h-4 sm:w-4" />
                   </Button>
                   <span className="text-xs sm:text-sm font-medium min-w-[100px] sm:min-w-[120px] text-center">
                     {format(currentMonth, "MMMM yyyy", { locale: dateLocale })}
@@ -394,10 +398,10 @@ export function BookingPageClient({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-6 w-6 sm:h-7 sm:w-7"
+                    className="w-6 h-6 sm:h-7 sm:w-7"
                     onClick={handleNextMonth}
                   >
-                    <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <ChevronRight className="w-3 h-3 sm:h-4 sm:w-4" />
                   </Button>
                 </div>
               </div>
@@ -439,16 +443,14 @@ export function BookingPageClient({
                           ${!isCurrentMonth ? "text-muted-foreground/30" : ""}
                           ${
                             isDisabled
-                              ? "text-muted-foreground/50 cursor-not-allowed"
+                              ? "cursor-not-allowed text-muted-foreground/50"
                               : isSelected
-                                ? "bg-primary text-primary-foreground font-semibold"
+                                ? "font-semibold bg-primary text-primary-foreground"
                                 : isToday
-                                  ? "bg-muted font-semibold hover:bg-muted/80 active:bg-primary/20"
+                                  ? "font-semibold bg-muted hover:bg-muted/80 active:bg-primary/20"
                                   : isCurrentMonth
                                     ? "hover:bg-muted active:bg-primary/20"
-                                    : ""
-                          }
-                        `}
+                                    : ""}`}
                       >
                         {format(date, "d", { locale: dateLocale })}
                       </button>
@@ -467,23 +469,23 @@ export function BookingPageClient({
                   {t("selectTime") || "Select Time"}
                 </span>
                 <span className="hidden sm:inline"> - </span>
-                <span className="block sm:inline text-xs sm:text-base mt-1 sm:mt-0">
+                <span className="block mt-1 text-xs sm:inline sm:text-base sm:mt-0">
                   {format(selectedDate, "EEEE, MMMM d", { locale: dateLocale })}
                 </span>
               </CardTitle>
             </CardHeader>
             <CardContent>
               {isLoadingSlots || isPending ? (
-                <div className="text-center py-6 sm:py-8 text-muted-foreground">
-                  <div className="flex flex-col items-center gap-2">
-                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                <div className="py-6 text-center sm:py-8 text-muted-foreground">
+                  <div className="flex flex-col gap-2 items-center">
+                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
                     <span className="text-sm">
                       {t("loadingSlots") || "Loading available times..."}
                     </span>
                   </div>
                 </div>
               ) : slots.length === 0 ? (
-                <div className="text-center py-6 sm:py-8 text-muted-foreground text-sm">
+                <div className="py-6 text-sm text-center sm:py-8 text-muted-foreground">
                   {t("noSlots") || "No available times for this date"}
                 </div>
               ) : (
@@ -521,19 +523,19 @@ export function BookingPageClient({
                             isSelected
                               ? "border-primary bg-primary/5"
                               : isFullyBooked
-                                ? "border-border bg-muted/30 opacity-75"
+                                ? "opacity-75 border-border bg-muted/30"
                                 : "border-border hover:bg-muted/50 active:bg-primary/5"
                           }
                         `}
                       >
-                        <div className="flex items-center justify-between gap-2 sm:gap-3">
-                          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                            <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/20 flex-shrink-0">
-                              <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600 dark:text-yellow-400" />
+                        <div className="flex gap-2 justify-between items-center sm:gap-3">
+                          <div className="flex flex-1 gap-2 items-center min-w-0 sm:gap-3">
+                            <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 bg-yellow-100 rounded-full sm:w-10 sm:h-10 dark:bg-yellow-900/20">
+                              <Clock className="w-4 h-4 text-yellow-600 sm:h-5 sm:w-5 dark:text-yellow-400" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs sm:text-sm font-medium">
+                              <div className="flex gap-2 items-center">
+                                <span className="text-xs font-medium sm:text-sm">
                                   {format(slotStart, "HH:mm", {
                                     locale: dateLocale,
                                   })}{" "}
@@ -573,10 +575,7 @@ export function BookingPageClient({
                           </div>
                           <Button
                             onClick={() => handleSlotSelect(slot)}
-                            className={`
-                              ${isSelected ? "bg-primary" : ""}
-                              flex-shrink-0
-                            `}
+                            className={isSelected ? "flex-shrink-0 bg-primary" : "flex-shrink-0"}
                             size="sm"
                             disabled={
                               slot.available_places !== undefined &&

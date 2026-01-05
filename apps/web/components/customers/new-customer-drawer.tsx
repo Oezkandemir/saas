@@ -10,7 +10,7 @@ import { RiInformationFill } from "@remixicon/react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-import { ButtonIcon, ButtonRoot } from "@/components/alignui/actions/button";
+import { ButtonRoot } from "@/components/alignui/actions/button";
 import { HintIcon, HintRoot } from "@/components/alignui/feedback/hint";
 import { Input } from "@/components/alignui/forms/input";
 import {
@@ -23,29 +23,15 @@ import {
   TextareaRoot,
 } from "@/components/alignui/forms/textarea";
 import {
-  DrawerBody,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerRoot,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/alignui/overlays/drawer";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
-// Create namespace objects locally for AlignUI pattern
 const Button = {
   Root: ButtonRoot,
-  Icon: ButtonIcon,
-};
-
-const Drawer = {
-  Root: DrawerRoot,
-  Trigger: DrawerTrigger,
-  Content: DrawerContent,
-  Header: DrawerHeader,
-  Body: DrawerBody,
-  Footer: DrawerFooter,
-  Title: DrawerTitle,
 };
 
 const Hint = {
@@ -137,20 +123,16 @@ export function NewCustomerDrawer({
   };
 
   return (
-    <Drawer.Root open={open} onOpenChange={setOpen} direction="right">
-      {trigger && <Drawer.Trigger asChild>{trigger}</Drawer.Trigger>}
-
-      <Drawer.Content side="right" className="mr-2 shadow-custom-md">
-        <div className="flex flex-col h-full bg-bg-white-0">
-          <Drawer.Header className="bg-bg-white-0">
-            <Drawer.Title className="text-label-lg text-text-strong-950">
-              Neuer Kunde
-            </Drawer.Title>
-          </Drawer.Header>
-
-          <Drawer.Body className="overflow-y-auto flex-1 bg-bg-white-0">
-            {/* Form Fields */}
-            <div className="p-5 space-y-3">
+    <Sheet open={open} onOpenChange={setOpen}>
+      {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
+      <SheetContent side="right" className="w-[min(400px,calc(100%-16px))] flex flex-col p-0">
+        <SheetHeader className="px-6 pt-6 pb-4">
+          <SheetTitle>Neuer Kunde</SheetTitle>
+        </SheetHeader>
+        
+        <div className="overflow-y-auto flex-1 px-6 pb-4">
+          {/* Form Fields */}
+          <div className="space-y-3">
               <div className="flex flex-col gap-1">
                 <Label.Root htmlFor="name">
                   Name <Label.Asterisk />
@@ -194,7 +176,9 @@ export function NewCustomerDrawer({
               </div>
 
               <div className="space-y-1.5">
-                <Label.Root htmlFor="company">Unternehmen</Label.Root>
+                <Label.Root htmlFor="company">
+                  Unternehmen <Label.Sub>(Optional)</Label.Sub>
+                </Label.Root>
                 <Input
                   id="company"
                   type="text"
@@ -231,9 +215,11 @@ export function NewCustomerDrawer({
                 </Hint.Root>
               </div>
             </div>
-          </Drawer.Body>
+        </div>
 
-          <Drawer.Footer className="flex gap-3 justify-between p-5 border-t border-stroke-soft-200 bg-bg-white-0">
+        {/* Footer Buttons - Fixed at bottom */}
+        <div className="p-5 mt-auto border-t border-stroke-soft-200 bg-bg-white-0">
+          <div className="flex gap-3 justify-between">
             <Button.Root
               variant="neutral"
               mode="stroke"
@@ -241,6 +227,7 @@ export function NewCustomerDrawer({
               className="flex-1 px-6 h-12 text-base font-medium border-2 border-stroke-soft-200 bg-bg-white-0 text-text-strong-950 hover:bg-bg-white-50 hover:border-stroke-soft-300"
               onClick={handleDiscard}
               disabled={isLoading}
+              type="button"
             >
               Abbrechen
             </Button.Root>
@@ -250,12 +237,13 @@ export function NewCustomerDrawer({
               className="flex-1 px-6 h-12 text-base font-semibold shadow-sm bg-text-strong-950 text-bg-white-0 hover:bg-text-strong-900 hover:shadow-md"
               onClick={handleSubmit}
               disabled={isLoading || !formData.name.trim()}
+              type="button"
             >
               {isLoading ? "Wird erstellt..." : "Kunde erstellen"}
             </Button.Root>
-          </Drawer.Footer>
+          </div>
         </div>
-      </Drawer.Content>
-    </Drawer.Root>
+      </SheetContent>
+    </Sheet>
   );
 }

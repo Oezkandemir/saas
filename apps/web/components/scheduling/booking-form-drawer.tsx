@@ -10,7 +10,7 @@ import type { EventType } from "@/actions/scheduling/event-types-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
-import { Mail, MessageSquare, Minus, Plus, User, Users } from "lucide-react";
+import { Calendar as CalendarIcon, Mail, MessageSquare, Minus, Plus, User, Users } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import {
   useFieldArray,
@@ -40,6 +40,13 @@ import {
 } from "@/components/alignui/forms/form";
 import { Input } from "@/components/alignui/forms/input";
 import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
+import {
+  AccordionRoot,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/alignui/layout/accordion";
+import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
 
 const bookingSchema = z.object({
   invitee_name: z.string().min(1, "Name is required").max(200),
@@ -212,210 +219,281 @@ export function BookingFormDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>{t("yourDetails") || "Your Details"}</SheetTitle>
+          <SheetTitle>{t("yourDetails") || "Ihre Details"}</SheetTitle>
           <SheetDescription>
             {t("yourDetailsDescription") ||
-              "Please provide your information to complete the booking"}
+              "Bitte geben Sie Ihre Informationen ein, um die Buchung abzuschließen"}
           </SheetDescription>
         </SheetHeader>
 
-        <div className="mt-6 space-y-4">
-          {/* Selected Slot Info */}
-          <div className="p-4 rounded-lg border bg-muted/50">
-            <div className="text-sm font-semibold mb-2">
-              {t("selectedSlot") || "Selected Slot"}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {format(slotStart, "EEEE, d. MMMM yyyy 'um' HH:mm", {
-                locale: dateLocale,
-              })}
-            </div>
-            {totalPrice !== null && (
-              <div className="mt-2 flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  {t("totalPrice") || "Total Price"}:
-                </span>
-                <span className="text-lg font-bold text-primary">
-                  {totalPrice.toFixed(2)} {eventType.price_currency || "EUR"}
-                </span>
-              </div>
-            )}
-          </div>
-
+        <div className="mt-3 flex flex-col">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="invitee_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      {t("name") || "Name"}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={t("namePlaceholder") || "Your name"}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="invitee_email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2">
-                      <Mail className="h-4 w-4" />
-                      {t("email") || "Email"}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder={t("emailPlaceholder") || "your@email.com"}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="number_of_participants"
-                render={({ field }) => {
-                  const maxParticipants = selectedSlot?.max_participants || 999;
-                  const availablePlaces =
-                    selectedSlot?.available_places ?? maxParticipants;
-                  const currentValue = field.value || 1;
-
-                  return (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <Users className="h-4 w-4" />
-                        {t("numberOfParticipants") || "Number of Participants"}
-                      </FormLabel>
-                      <FormControl>
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-2">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon"
-                              className="h-9 w-9"
-                              onClick={() => {
-                                if (currentValue > 1) {
-                                  field.onChange(currentValue - 1);
-                                }
-                              }}
-                              disabled={currentValue <= 1}
-                            >
-                              <Minus className="h-4 w-4" />
-                            </Button>
-                            <div className="flex-1 text-center font-semibold text-lg min-w-[3rem]">
-                              {currentValue}
-                            </div>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon"
-                              className="h-9 w-9"
-                              onClick={() => {
-                                if (currentValue < availablePlaces) {
-                                  field.onChange(currentValue + 1);
-                                }
-                              }}
-                              disabled={currentValue >= availablePlaces}
-                            >
-                              <Plus className="h-4 w-4" />
-                            </Button>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
+              <AccordionRoot type="multiple" defaultValue={["slot", "contact"]} className="w-full">
+                {/* Selected Slot Info - Wichtigste Info zuerst */}
+                <AccordionItem value="slot" className="border-b border-stroke-soft-200">
+                  <AccordionTrigger className="text-sm font-semibold">
+                    <div className="flex items-center gap-2">
+                      <CalendarIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                      {t("selectedSlot") || "Ausgewählter Slot"}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-3 pt-1">
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                          <CalendarIcon className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                          <span className="text-blue-600 dark:text-blue-400 font-medium">
+                            Datum & Zeit
+                          </span>
+                        </p>
+                        <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                          {format(slotStart, "EEEE, d. MMMM yyyy 'um' HH:mm", {
+                            locale: dateLocale,
+                          })}
+                        </p>
+                      </div>
+                      {totalPrice !== null && (
+                        <>
+                          <Separator />
+                          <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground">
+                              {t("totalPrice") || "Gesamtpreis"}
+                            </p>
+                            <p className="text-lg font-bold text-primary">
+                              {totalPrice.toFixed(2)} {eventType.price_currency || "EUR"}
+                            </p>
                           </div>
-                        </div>
-                      </FormControl>
-                      <FormDescription>
-                        {selectedSlot?.max_participants &&
-                          selectedSlot.available_places !== undefined && (
-                            <span className="text-sm text-muted-foreground">
-                              {t("availablePlaces", {
-                                places: selectedSlot.available_places,
-                              }) ||
-                                `${selectedSlot.available_places} places available`}
-                            </span>
-                          )}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
+                        </>
+                      )}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
 
-              {/* Dynamic participant name fields */}
-              {fields.map((field, index) => (
-                <FormField
-                  key={field.id}
-                  control={form.control}
-                  name={`participant_names.${index}`}
-                  render={({ field: nameField }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <User className="h-4 w-4" />
-                        {t("participantName", { number: index + 2 }) ||
-                          `Teilnehmer ${index + 2}`}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={
-                            t("participantNamePlaceholder", {
-                              number: index + 2,
-                            }) || `Name des Teilnehmers ${index + 2}`
-                          }
-                          {...nameField}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ))}
-
-              <FormField
-                control={form.control}
-                name="invitee_notes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2">
-                      <MessageSquare className="h-4 w-4" />
-                      {t("notes") || "Notes (Optional)"}
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={
-                          t("notesPlaceholder") ||
-                          "Any additional information..."
-                        }
-                        {...field}
+                {/* Contact Information */}
+                <AccordionItem value="contact">
+                  <AccordionTrigger className="text-sm font-semibold">
+                    <div className="flex items-center gap-2">
+                      <User className="h-3.5 w-3.5 text-muted-foreground" />
+                      Kontaktinformationen
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-4 pt-1">
+                      <FormField
+                        control={form.control}
+                        name="invitee_name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              <User className="h-3.5 w-3.5" />
+                              {t("name") || "Name"}
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder={t("namePlaceholder") || "Ihr Name"}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
-              <div className="pt-4">
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting
-                    ? t("booking") || "Booking..."
-                    : t("confirmBooking") || "Confirm Booking"}
-                </Button>
+                      <Separator />
+
+                      <FormField
+                        control={form.control}
+                        name="invitee_email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              <Mail className="h-3.5 w-3.5" />
+                              {t("email") || "E-Mail"}
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                type="email"
+                                placeholder={t("emailPlaceholder") || "ihre@email.com"}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Participants */}
+                <AccordionItem value="participants">
+                  <AccordionTrigger className="text-sm font-semibold">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                      Teilnehmer
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-4 pt-1">
+                      <FormField
+                        control={form.control}
+                        name="number_of_participants"
+                        render={({ field }) => {
+                          const maxParticipants = selectedSlot?.max_participants || 999;
+                          const availablePlaces =
+                            selectedSlot?.available_places ?? maxParticipants;
+                          const currentValue = field.value || 1;
+
+                          return (
+                            <FormItem>
+                              <FormLabel className="flex items-center gap-2">
+                                <Users className="h-3.5 w-3.5" />
+                                {t("numberOfParticipants") || "Anzahl der Teilnehmer"}
+                              </FormLabel>
+                              <FormControl>
+                                <div className="space-y-3">
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="icon"
+                                      className="h-9 w-9"
+                                      onClick={() => {
+                                        if (currentValue > 1) {
+                                          field.onChange(currentValue - 1);
+                                        }
+                                      }}
+                                      disabled={currentValue <= 1}
+                                    >
+                                      <Minus className="h-4 w-4" />
+                                    </Button>
+                                    <div className="flex-1 text-center font-semibold text-lg min-w-[3rem]">
+                                      {currentValue}
+                                    </div>
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="icon"
+                                      className="h-9 w-9"
+                                      onClick={() => {
+                                        if (currentValue < availablePlaces) {
+                                          field.onChange(currentValue + 1);
+                                        }
+                                      }}
+                                      disabled={currentValue >= availablePlaces}
+                                    >
+                                      <Plus className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              </FormControl>
+                              <FormDescription>
+                                {selectedSlot?.max_participants &&
+                                  selectedSlot.available_places !== undefined && (
+                                    <span className="text-sm text-muted-foreground">
+                                      {t("availablePlaces", {
+                                        places: selectedSlot.available_places,
+                                      }) ||
+                                        `${selectedSlot.available_places} Plätze verfügbar`}
+                                    </span>
+                                  )}
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+
+                      {/* Dynamic participant name fields */}
+                      {fields.length > 0 && <Separator />}
+                      {fields.map((field, index) => (
+                        <div key={field.id}>
+                          {index > 0 && <Separator />}
+                          <FormField
+                            control={form.control}
+                            name={`participant_names.${index}`}
+                            render={({ field: nameField }) => (
+                              <FormItem>
+                                <FormLabel className="flex items-center gap-2">
+                                  <User className="h-3.5 w-3.5" />
+                                  {t("participantName", { number: index + 2 }) ||
+                                    `Teilnehmer ${index + 2}`}
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder={
+                                      t("participantNamePlaceholder", {
+                                        number: index + 2,
+                                      }) || `Name des Teilnehmers ${index + 2}`
+                                    }
+                                    {...nameField}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Notes */}
+                <AccordionItem value="notes">
+                  <AccordionTrigger className="text-sm font-semibold">
+                    <div className="flex items-center gap-2">
+                      <MessageSquare className="h-3.5 w-3.5 text-muted-foreground" />
+                      {t("notes") || "Notizen (Optional)"}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="pt-1">
+                      <FormField
+                        control={form.control}
+                        name="invitee_notes"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              <MessageSquare className="h-3.5 w-3.5" />
+                              {t("notes") || "Notizen"}
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder={
+                                  t("notesPlaceholder") ||
+                                  "Zusätzliche Informationen..."
+                                }
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </AccordionRoot>
+
+              {/* Actions - Immer ganz unten, außerhalb der Accordions */}
+              <div className="mt-4 pt-4 border-t border-border">
+                <div className="grid grid-cols-1 gap-1.5">
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50"
+                    disabled={isSubmitting}
+                    size="sm"
+                  >
+                    <span className="text-xs">
+                      {isSubmitting
+                        ? t("booking") || "Wird gebucht..."
+                        : t("confirmBooking") || "Buchung bestätigen"}
+                    </span>
+                  </Button>
+                </div>
               </div>
             </form>
           </Form>

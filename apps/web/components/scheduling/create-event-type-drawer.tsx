@@ -37,6 +37,13 @@ import {
 } from "@/components/alignui/forms/form";
 import { Input } from "@/components/alignui/forms/input";
 import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
+import {
+  AccordionRoot,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/alignui/layout/accordion";
+import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
 
 const eventTypeSchema = z.object({
   slug: z
@@ -154,318 +161,364 @@ export function CreateEventTypeDrawer({
           </SheetDescription>
         </SheetHeader>
 
-        <div className="mt-6">
+        <div className="mt-3 flex flex-col">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Basic Information */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  {t("form.basicInfo") || "Basic Information"}
-                </h3>
-
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("form.title") || "Title"}</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={
-                            t("form.titlePlaceholder") ||
-                            "e.g., 30-Minute Meeting"
-                          }
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        {t("form.titleDescription") ||
-                          "A descriptive name for this event type"}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="slug"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("form.slug") || "URL Slug"}</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={
-                            t("form.slugPlaceholder") ||
-                            "e.g., 30-minute-meeting"
-                          }
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        {t("form.slugDescription") ||
-                          "Used in the booking URL. Only lowercase letters, numbers, and hyphens."}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {t("form.description") || "Description"}
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder={
-                            t("form.descriptionPlaceholder") ||
-                            "Optional description for this event type"
-                          }
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Duration */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  {t("form.duration") || "Duration"}
-                </h3>
-
-                <FormField
-                  control={form.control}
-                  name="duration_minutes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {t("form.durationMinutes") || "Duration (minutes)"}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min={5}
-                          max={480}
-                          {...field}
-                          onChange={(e) =>
-                            field.onChange(parseInt(e.target.value) || 30)
-                          }
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        {t("form.durationDescription") ||
-                          "How long is this event? (5-480 minutes)"}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Location */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  {t("form.location") || "Location"}
-                </h3>
-
-                <FormField
-                  control={form.control}
-                  name="location_type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {t("form.locationType") || "Location Type"}
-                      </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue
-                              placeholder={
-                                t("form.selectLocationType") ||
-                                "Select location type"
-                              }
-                            />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="google_meet">
-                            Google Meet
-                          </SelectItem>
-                          <SelectItem value="zoom">Zoom</SelectItem>
-                          <SelectItem value="custom_link">
-                            Custom Link
-                          </SelectItem>
-                          <SelectItem value="phone">Phone Call</SelectItem>
-                          <SelectItem value="in_person">In Person</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="location_value"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {t("form.locationValue") || "Location Details"}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={
-                            t("form.locationValuePlaceholder") ||
-                            "URL, address, or phone number"
-                          }
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        {t("form.locationValueDescription") ||
-                          "Optional: Meeting link, address, or phone number"}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Active Status */}
-              <FormField
-                control={form.control}
-                name="is_active"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">
-                        {t("form.isActive") || "Active"}
-                      </FormLabel>
-                      <FormDescription>
-                        {t("form.isActiveDescription") ||
-                          "Inactive event types won't appear on booking pages"}
-                      </FormDescription>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
+              <AccordionRoot type="multiple" defaultValue={["basic", "duration"]} className="w-full">
+                {/* Basic Information */}
+                <AccordionItem value="basic" className="border-b border-stroke-soft-200">
+                  <AccordionTrigger className="text-sm font-semibold">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                      {t("form.basicInfo") || "Grundinformationen"}
                     </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              {/* Pricing */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold">
-                  {t("form.pricing") || "Pricing"}
-                </h3>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="price_amount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          {t("form.pricePerPerson") || "Price per Person"}
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            min={0}
-                            placeholder={t("form.pricePlaceholder") || "0.00"}
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.value
-                                  ? parseFloat(e.target.value)
-                                  : undefined,
-                              )
-                            }
-                            value={field.value || ""}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          {t("form.priceDescription") ||
-                            "Price per person (will be multiplied by number of participants)"}
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="price_currency"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          {t("form.currency") || "Currency"}
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value || "EUR"}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-4 pt-1">
+                      <FormField
+                        control={form.control}
+                        name="title"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t("form.title") || "Titel"}</FormLabel>
+                            <FormControl>
+                              <Input
                                 placeholder={
-                                  t("form.selectCurrency") || "Select currency"
+                                  t("form.titlePlaceholder") ||
+                                  "z.B., 30-Minuten-Meeting"
+                                }
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              {t("form.titleDescription") ||
+                                "Ein beschreibender Name für diesen Event Type"}
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <Separator />
+
+                      <FormField
+                        control={form.control}
+                        name="slug"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t("form.slug") || "URL Slug"}</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder={
+                                  t("form.slugPlaceholder") ||
+                                  "z.B., 30-minute-meeting"
+                                }
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              {t("form.slugDescription") ||
+                                "Wird in der Buchungs-URL verwendet. Nur Kleinbuchstaben, Zahlen und Bindestriche."}
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <Separator />
+
+                      <FormField
+                        control={form.control}
+                        name="description"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              {t("form.description") || "Beschreibung"}
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder={
+                                  t("form.descriptionPlaceholder") ||
+                                  "Optionale Beschreibung für diesen Event Type"
+                                }
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Duration */}
+                <AccordionItem value="duration">
+                  <AccordionTrigger className="text-sm font-semibold">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                      {t("form.duration") || "Dauer"}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="pt-1">
+                      <FormField
+                        control={form.control}
+                        name="duration_minutes"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              {t("form.durationMinutes") || "Dauer (Minuten)"}
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min={5}
+                                max={480}
+                                {...field}
+                                onChange={(e) =>
+                                  field.onChange(parseInt(e.target.value) || 30)
                                 }
                               />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="EUR">EUR (€)</SelectItem>
-                            <SelectItem value="USD">USD ($)</SelectItem>
-                            <SelectItem value="GBP">GBP (£)</SelectItem>
-                            <SelectItem value="CHF">CHF</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
+                            </FormControl>
+                            <FormDescription>
+                              {t("form.durationDescription") ||
+                                "Wie lange dauert dieses Event? (5-480 Minuten)"}
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
 
-              {/* Actions */}
-              <div className="flex justify-end gap-4 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                  disabled={isLoading}
-                >
-                  {t("form.cancel") || "Cancel"}
-                </Button>
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? (
-                    <>
-                      <span className="mr-2">
-                        {t("form.creating") || "Creating..."}
-                      </span>
-                    </>
-                  ) : (
-                    t("form.create") || "Create Event Type"
-                  )}
-                </Button>
+                {/* Location */}
+                <AccordionItem value="location">
+                  <AccordionTrigger className="text-sm font-semibold">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                      {t("form.location") || "Ort"}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-4 pt-1">
+                      <FormField
+                        control={form.control}
+                        name="location_type"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              {t("form.locationType") || "Ortstyp"}
+                            </FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue
+                                    placeholder={
+                                      t("form.selectLocationType") ||
+                                      "Ortstyp auswählen"
+                                    }
+                                  />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="google_meet">
+                                  Google Meet
+                                </SelectItem>
+                                <SelectItem value="zoom">Zoom</SelectItem>
+                                <SelectItem value="custom_link">
+                                  Custom Link
+                                </SelectItem>
+                                <SelectItem value="phone">Phone Call</SelectItem>
+                                <SelectItem value="in_person">In Person</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <Separator />
+
+                      <FormField
+                        control={form.control}
+                        name="location_value"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              {t("form.locationValue") || "Ortsdetails"}
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder={
+                                  t("form.locationValuePlaceholder") ||
+                                  "URL, Adresse oder Telefonnummer"
+                                }
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              {t("form.locationValueDescription") ||
+                                "Optional: Meeting-Link, Adresse oder Telefonnummer"}
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Active Status */}
+                <AccordionItem value="status">
+                  <AccordionTrigger className="text-sm font-semibold">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                      Status
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="pt-1">
+                      <FormField
+                        control={form.control}
+                        name="is_active"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                              <FormLabel className="text-base">
+                                {t("form.isActive") || "Aktiv"}
+                              </FormLabel>
+                              <FormDescription>
+                                {t("form.isActiveDescription") ||
+                                  "Inaktive Event Types erscheinen nicht auf Buchungsseiten"}
+                              </FormDescription>
+                            </div>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Pricing */}
+                <AccordionItem value="pricing">
+                  <AccordionTrigger className="text-sm font-semibold">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                      {t("form.pricing") || "Preis"}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-4 pt-1">
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="price_amount"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>
+                                {t("form.pricePerPerson") || "Preis pro Person"}
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  min={0}
+                                  placeholder={t("form.pricePlaceholder") || "0.00"}
+                                  {...field}
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      e.target.value
+                                        ? parseFloat(e.target.value)
+                                        : undefined,
+                                    )
+                                  }
+                                  value={field.value || ""}
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                {t("form.priceDescription") ||
+                                  "Preis pro Person (wird mit der Anzahl der Teilnehmer multipliziert)"}
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="price_currency"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>
+                                {t("form.currency") || "Währung"}
+                              </FormLabel>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value || "EUR"}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue
+                                      placeholder={
+                                        t("form.selectCurrency") || "Währung auswählen"
+                                      }
+                                    />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="EUR">EUR (€)</SelectItem>
+                                  <SelectItem value="USD">USD ($)</SelectItem>
+                                  <SelectItem value="GBP">GBP (£)</SelectItem>
+                                  <SelectItem value="CHF">CHF</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </AccordionRoot>
+
+              {/* Actions - Immer ganz unten, außerhalb der Accordions */}
+              <div className="mt-4 pt-4 border-t border-border">
+                <div className="grid grid-cols-1 gap-1.5">
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    size="sm"
+                    className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50"
+                  >
+                    <span className="text-xs">
+                      {isLoading
+                        ? t("form.creating") || "Wird erstellt..."
+                        : t("form.create") || "Event Type erstellen"}
+                    </span>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    onClick={() => onOpenChange(false)}
+                    disabled={isLoading}
+                    size="sm"
+                    className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
+                  >
+                    <span className="text-xs">{t("form.cancel") || "Abbrechen"}</span>
+                  </Button>
+                </div>
               </div>
             </form>
           </Form>

@@ -33,17 +33,17 @@ export function CopyBookingLinkButton({
       variant="outline"
       size="sm"
       onClick={handleCopy}
-      className="gap-1.5 h-8"
+      className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50"
     >
       {copied ? (
         <>
           <Check className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">{t("copied") || "Copied"}</span>
+          <span className="text-xs">{t("copied") || "Kopiert"}</span>
         </>
       ) : (
         <>
           <Copy className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">{t("copy") || "Copy Link"}</span>
+          <span className="text-xs">{t("copy") || "Link kopieren"}</span>
         </>
       )}
     </Button>

@@ -111,41 +111,35 @@ export function BookingActions({ booking }: BookingActionsProps) {
   if (booking.status === "canceled") {
     return (
       <>
-        <div className="flex items-center gap-2">
+        <div className="grid grid-cols-1 gap-1.5">
           <Button
             variant="outline"
             size="sm"
             onClick={() =>
               (window.location.href = `mailto:${booking.invitee_email}`)
             }
-            className="gap-2"
+            className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50"
           >
-            <Mail className="h-4 w-4" />
-            <span className="hidden sm:inline">
-              {t("sendEmail") || "Send Email"}
-            </span>
+            <Mail className="h-3.5 w-3.5" />
+            <span className="text-xs">{t("sendEmail") || "E-Mail senden"}</span>
           </Button>
           <Button
-            variant="outline"
+            variant="primary"
             size="sm"
             onClick={() => setShowReactivateDialog(true)}
-            className="gap-2"
+            className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
           >
-            <RotateCcw className="h-4 w-4" />
-            <span className="hidden sm:inline">
-              {t("reactivate") || "Reactivate Booking"}
-            </span>
+            <RotateCcw className="h-3.5 w-3.5" />
+            <span className="text-xs">{t("reactivate") || "Buchung reaktivieren"}</span>
           </Button>
           <Button
-            variant="outline"
+            variant="primary"
             size="sm"
             onClick={() => setShowDeleteDialog(true)}
-            className="gap-2 text-destructive hover:text-destructive"
+            className="gap-1.5 w-full bg-foreground text-background hover:bg-destructive hover:text-destructive-foreground font-medium"
           >
-            <Trash2 className="h-4 w-4" />
-            <span className="hidden sm:inline">
-              {t("delete") || "Delete Booking"}
-            </span>
+            <Trash2 className="h-3.5 w-3.5" />
+            <span className="text-xs">{t("delete") || "Buchung löschen"}</span>
           </Button>
         </div>
 
@@ -212,52 +206,44 @@ export function BookingActions({ booking }: BookingActionsProps) {
 
   return (
     <>
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="grid grid-cols-1 gap-1.5">
         <Button
           variant="outline"
           size="sm"
           onClick={() =>
             (window.location.href = `mailto:${booking.invitee_email}`)
           }
-          className="gap-2"
+          className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50"
         >
-          <Mail className="h-4 w-4" />
-          <span className="hidden sm:inline">
-            {t("sendEmail") || "Send Email"}
-          </span>
+          <Mail className="h-3.5 w-3.5" />
+          <span className="text-xs">{t("sendEmail") || "E-Mail senden"}</span>
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => setShowRescheduleDialog(true)}
-          className="gap-2"
+          className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50"
         >
-          <Calendar className="h-4 w-4" />
-          <span className="hidden sm:inline">
-            {t("reschedule") || "Reschedule Booking"}
-          </span>
+          <Calendar className="h-3.5 w-3.5" />
+          <span className="text-xs">{t("reschedule") || "Buchung umbuchen"}</span>
         </Button>
         <Button
-          variant="outline"
+          variant="primary"
           size="sm"
           onClick={() => setShowCancelDialog(true)}
-          className="gap-2 text-destructive hover:text-destructive"
+          className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
         >
-          <X className="h-4 w-4" />
-          <span className="hidden sm:inline">
-            {t("cancel") || "Cancel Booking"}
-          </span>
+          <X className="h-3.5 w-3.5" />
+          <span className="text-xs">{t("cancel") || "Buchung stornieren"}</span>
         </Button>
         <Button
-          variant="outline"
+          variant="primary"
           size="sm"
           onClick={() => setShowDeleteDialog(true)}
-          className="gap-2 text-destructive hover:text-destructive"
+          className="gap-1.5 w-full bg-foreground text-background hover:bg-destructive hover:text-destructive-foreground font-medium"
         >
-          <Trash2 className="h-4 w-4" />
-          <span className="hidden sm:inline">
-            {t("delete") || "Delete Booking"}
-          </span>
+          <Trash2 className="h-3.5 w-3.5" />
+          <span className="text-xs">{t("delete") || "Buchung löschen"}</span>
         </Button>
       </div>
 

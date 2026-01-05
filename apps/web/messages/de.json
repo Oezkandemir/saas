@@ -2004,6 +2004,7 @@
       "createFirst": "Ersten Kunden erstellen"
     },
     "detail": {
+      "title": "Kundendetails",
       "description": "Kundendetails und Informationen",
       "edit": "Bearbeiten",
       "tabs": {
@@ -2313,6 +2314,7 @@
       "activated": "Event Type aktiviert",
       "deactivated": "Event Type deaktiviert",
       "minutes": "Min",
+      "edit": "Event Type bearbeiten",
       "form": {
         "basicInfo": "Grundinformationen",
         "basicInfoDescription": "Grundlegende Details für Ihren Event Type festlegen",

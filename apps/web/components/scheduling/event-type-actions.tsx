@@ -114,41 +114,41 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
 
   return (
     <>
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="grid grid-cols-1 gap-1.5">
         <Button
-          variant="outline"
+          variant="primary"
           size="sm"
           onClick={handleToggle}
           disabled={isToggling}
-          className="gap-2"
+          className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
         >
-          <Power className="h-4 w-4" />
-          <span className="hidden sm:inline">
+          <Power className="h-3.5 w-3.5" />
+          <span className="text-xs">
             {eventType.is_active
-              ? t("deactivate") || "Deactivate"
-              : t("activate") || "Activate"}
+              ? t("deactivate") || "Deaktivieren"
+              : t("activate") || "Aktivieren"}
           </span>
         </Button>
         <Button
-          variant="outline"
+          variant="primary"
           size="sm"
           onClick={handleDuplicate}
           disabled={isDuplicating}
-          className="gap-2"
+          className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
         >
-          <Copy className="h-4 w-4" />
-          <span className="hidden sm:inline">
-            {t("duplicate") || "Duplicate"}
+          <Copy className="h-3.5 w-3.5" />
+          <span className="text-xs">
+            {t("duplicate") || "Duplizieren"}
           </span>
         </Button>
         <Button
-          variant="outline"
+          variant="primary"
           size="sm"
           onClick={() => setShowDeleteDialog(true)}
-          className="gap-2 text-destructive hover:text-destructive"
+          className="gap-1.5 w-full bg-foreground text-background hover:bg-destructive hover:text-destructive-foreground font-medium"
         >
-          <Trash2 className="h-4 w-4" />
-          <span className="hidden sm:inline">{t("delete") || "Delete"}</span>
+          <Trash2 className="h-3.5 w-3.5" />
+          <span className="text-xs">{t("delete") || "Löschen"}</span>
         </Button>
       </div>
 

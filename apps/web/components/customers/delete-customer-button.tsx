@@ -31,6 +31,8 @@ interface DeleteCustomerButtonProps {
     | "outline"
     | "ghost";
   size?: "default" | "sm" | "lg" | "icon";
+  className?: string;
+  onDeleted?: () => void;
 }
 
 export function DeleteCustomerButton({
@@ -38,6 +40,8 @@ export function DeleteCustomerButton({
   customerName,
   variant = "destructive",
   size = "default",
+  className,
+  onDeleted,
 }: DeleteCustomerButtonProps) {
   const router = useRouter();
   const t = useTranslations("Customers");
@@ -52,6 +56,9 @@ export function DeleteCustomerButton({
         description: t("table.toast.deletedDescription"),
       });
       setOpen(false);
+      if (onDeleted) {
+        onDeleted();
+      }
       router.push("/dashboard/customers");
       router.refresh();
     } catch (error) {
@@ -73,14 +80,14 @@ export function DeleteCustomerButton({
           variant={variant}
           size={size}
           disabled={isDeleting}
-          className="gap-2"
+          className={`gap-1.5 ${className || ""}`}
         >
           {isDeleting ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
           ) : (
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
           )}
-          {t("table.delete")}
+          <span className="text-xs">{t("table.delete")}</span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

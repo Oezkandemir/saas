@@ -87,18 +87,23 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
     setDrawerOpen(true);
   };
 
-  const filteredBookings = bookings.filter((booking) => {
-    if (statusFilter !== "all" && booking.status !== statusFilter) {
-      return false;
-    }
-    if (
-      eventTypeFilter !== "all" &&
-      booking.event_type_id !== eventTypeFilter
-    ) {
-      return false;
-    }
-    return true;
-  });
+  const filteredBookings = bookings
+    .filter((booking) => {
+      if (statusFilter !== "all" && booking.status !== statusFilter) {
+        return false;
+      }
+      if (
+        eventTypeFilter !== "all" &&
+        booking.event_type_id !== eventTypeFilter
+      ) {
+        return false;
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      // Sort by start_at ascending (next booking first)
+      return new Date(a.start_at).getTime() - new Date(b.start_at).getTime();
+    });
 
   const scheduledBookings = filteredBookings.filter(
     (b) => b.status === "scheduled",
