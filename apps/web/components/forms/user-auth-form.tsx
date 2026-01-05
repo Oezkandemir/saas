@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import { useLocale } from "next-intl";
 
 import { siteConfig } from "@/config/site";
 import {
@@ -44,6 +45,7 @@ export function UserAuthForm({
   redirectTo,
   ...props
 }: UserAuthFormProps) {
+  const locale = useLocale();
   const {
     register,
     handleSubmit,
@@ -104,6 +106,36 @@ export function UserAuthForm({
 
     try {
       if (type === "register") {
+        // Check if user already exists before attempting signup
+        try {
+          const checkResponse = await fetch(`/${locale}/api/auth/check-email`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: data.email.toLowerCase(),
+            }),
+          });
+
+          if (checkResponse.ok) {
+            const checkData = await checkResponse.json();
+            if (checkData.exists) {
+              toast.error("Benutzer existiert bereits", {
+                description: "Ein Benutzer mit dieser E-Mail-Adresse existiert bereits. Bitte melde dich an oder verwende eine andere E-Mail-Adresse.",
+              });
+              setIsLoading(false);
+              return;
+            }
+          }
+        } catch (checkError) {
+          // If check fails, continue with signup - Supabase will handle duplicates
+          logger.warn("Could not check for existing user:", checkError);
+        }
+
+        // Get the correct callback URL with locale
+        const callbackUrl = `${window.location.origin}/${locale}/auth/callback`;
+
         // Sign up with standard flow
         const signUpResult = await supabase.auth.signUp({
           email: data.email.toLowerCase(),
@@ -113,11 +145,23 @@ export function UserAuthForm({
               name: data.email.split("@")[0], // Set a default name from email
               role: "USER", // Default role as string
             },
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
+            emailRedirectTo: callbackUrl,
           },
         });
 
         if (signUpResult.error) {
+          // Check if error is due to user already existing
+          if (
+            signUpResult.error.message.includes("already registered") ||
+            signUpResult.error.message.includes("already exists") ||
+            signUpResult.error.message.includes("User already registered")
+          ) {
+            toast.error("Benutzer existiert bereits", {
+              description: "Ein Benutzer mit dieser E-Mail-Adresse existiert bereits. Bitte melde dich an.",
+            });
+            setIsLoading(false);
+            return;
+          }
           throw signUpResult.error;
         }
 
@@ -128,8 +172,9 @@ export function UserAuthForm({
 
           // Build the confirmation URL - use the site URL from config if available
           // This ensures we don't use localhost in production emails
+          // IMPORTANT: Include locale in the callback URL
           const baseUrl = siteConfig.url || window.location.origin;
-          const confirmationUrl = `${baseUrl}/auth/callback?type=signup&id=${signUpResult.data.user?.id}`;
+          const confirmationUrl = `${baseUrl}/${locale}/auth/callback?type=signup&id=${signUpResult.data.user?.id}`;
 
           // Send custom confirmation email
           await sendSignupConfirmationEmail({

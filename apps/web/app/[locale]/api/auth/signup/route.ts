@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { logger } from "@/lib/logger";
+import { supabaseAdmin } from "@/lib/db";
 import { getSupabaseServer } from "@/lib/supabase-server";
 
 // Validation schema for signup
@@ -16,10 +17,61 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { email, password, name } = signupSchema.parse(body);
 
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Check if user already exists in auth.users
+    const { data: existingUsers, error: checkError } =
+      await supabaseAdmin.auth.admin.listUsers();
+
+    if (checkError) {
+      logger.error("Error checking for existing users:", checkError);
+      // Continue with signup if check fails - Supabase will handle duplicates
+    } else {
+      const existingUser = existingUsers?.users.find(
+        (u) => u.email?.toLowerCase() === normalizedEmail,
+      );
+
+      if (existingUser) {
+        logger.warn("User already exists", {
+          email: normalizedEmail,
+          userId: existingUser.id,
+          emailConfirmed: !!existingUser.email_confirmed_at,
+        });
+
+        return NextResponse.json(
+          {
+            error: "Ein Benutzer mit dieser E-Mail-Adresse existiert bereits. Bitte melde dich an oder verwende eine andere E-Mail-Adresse.",
+          },
+          { status: 409 }, // Conflict
+        );
+      }
+    }
+
+    // Also check in public.users table
+    const { data: existingDbUser } = await supabaseAdmin
+      .from("users")
+      .select("id, email")
+      .eq("email", normalizedEmail)
+      .maybeSingle();
+
+    if (existingDbUser) {
+      logger.warn("User already exists in database", {
+        email: normalizedEmail,
+        userId: existingDbUser.id,
+      });
+
+      return NextResponse.json(
+        {
+          error: "Ein Benutzer mit dieser E-Mail-Adresse existiert bereits. Bitte melde dich an oder verwende eine andere E-Mail-Adresse.",
+        },
+        { status: 409 }, // Conflict
+      );
+    }
+
     const supabase = await getSupabaseServer();
 
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: normalizedEmail,
       password,
       options: {
         data: {
@@ -31,6 +83,17 @@ export async function POST(req: Request) {
 
     if (error) {
       logger.error("Supabase signup error:", error);
+      
+      // Check if error is due to user already existing
+      if (error.message.includes("already registered") || error.message.includes("already exists")) {
+        return NextResponse.json(
+          {
+            error: "Ein Benutzer mit dieser E-Mail-Adresse existiert bereits. Bitte melde dich an oder verwende eine andere E-Mail-Adresse.",
+          },
+          { status: 409 },
+        );
+      }
+      
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
