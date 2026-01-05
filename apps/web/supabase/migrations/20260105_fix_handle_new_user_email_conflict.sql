@@ -59,8 +59,8 @@ BEGIN
         NEW.email,
         COALESCE(NEW.raw_user_meta_data->>'name', split_part(NEW.email, '@', 1)),
         COALESCE(
-          (NEW.raw_user_meta_data->>'role')::user_role,
-          'USER'::user_role
+          (NEW.raw_user_meta_data->>'role')::public.user_role,
+          'USER'::public.user_role
         ),
         NOW(),
         NOW(),
