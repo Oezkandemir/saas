@@ -35,6 +35,22 @@ export async function GET(request: NextRequest) {
         );
       }
 
+      // If user was just verified (email confirmation), update emailVerified in public.users
+      if (data.user && data.user.email_confirmed_at) {
+        try {
+          const { supabaseAdmin } = await import("@/lib/db");
+          await supabaseAdmin
+            .from("users")
+            .update({ emailVerified: data.user.email_confirmed_at })
+            .eq("id", data.user.id);
+          
+          logger.info(`Email verified for user ${data.user.id}`);
+        } catch (dbError) {
+          // Log but don't fail - the trigger should handle this
+          logger.warn("Could not update emailVerified in database:", dbError);
+        }
+      }
+
       // Create login session and log to history
       if (data.session && data.user) {
         const { createLoginSession } = await import("@/lib/session-tracking");

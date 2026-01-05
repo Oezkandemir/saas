@@ -70,6 +70,10 @@ export async function POST(req: Request) {
 
     const supabase = await getSupabaseServer();
 
+    // Get locale from request headers or use default
+    const locale = req.headers.get("x-locale") || "de";
+    const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
     const { data, error } = await supabase.auth.signUp({
       email: normalizedEmail,
       password,
@@ -78,6 +82,8 @@ export async function POST(req: Request) {
           name: name || email.split("@")[0],
           role: "USER",
         },
+        // Disable automatic email - we'll send custom email instead
+        emailRedirectTo: `${origin}/${locale}/auth/callback`,
       },
     });
 
@@ -99,6 +105,26 @@ export async function POST(req: Request) {
 
     if (data?.user) {
       logger.info("Supabase auth signup successful", { userId: data.user?.id });
+
+      // Send custom confirmation email
+      try {
+        const { sendSignupConfirmationEmail } = await import("@/lib/email-client");
+        const userName = name || normalizedEmail.split("@")[0];
+        
+        // Build confirmation URL with locale
+        const confirmationUrl = `${origin}/${locale}/auth/callback?type=signup&id=${data.user.id}`;
+        
+        await sendSignupConfirmationEmail({
+          email: normalizedEmail,
+          name: userName,
+          actionUrl: confirmationUrl,
+        });
+        
+        logger.info("Custom confirmation email sent", { userId: data.user.id });
+      } catch (emailError) {
+        logger.error("Failed to send custom confirmation email:", emailError);
+        // Don't fail the signup if email fails - user can request resend
+      }
 
       return NextResponse.json({
         user: data.user,
