@@ -112,9 +112,10 @@ async function handleSubscriptionUpdated(data: any) {
     const subscriptionId = subscription.id;
     const customerId = subscription.customer_id;
     const productId = subscription.product_id;
+    const customerEmail = subscription.customer?.email || subscription.customer_email;
 
     logger.info(
-      `Subscription updated: ${subscriptionId}, customerId: ${customerId}, productId: ${productId}, status: ${subscription.status}`,
+      `Subscription updated: ${subscriptionId}, customerId: ${customerId}, productId: ${productId}, status: ${subscription.status}, customerEmail: ${customerEmail}`,
     );
 
     let userData: { id: string } | null = null;
@@ -170,9 +171,24 @@ async function handleSubscriptionUpdated(data: any) {
       }
     }
 
+    // If still not found and we have customer email, try to find by email
+    if ((userError || !userData) && customerEmail) {
+      logger.info(
+        `User not found by subscription ID, trying email: ${customerEmail}`,
+      );
+      const result = await supabaseAdmin
+        .from("users")
+        .select("id, email")
+        .eq("email", customerEmail)
+        .single();
+
+      userData = result.data;
+      userError = result.error;
+    }
+
     if (userError || !userData) {
       logger.error(
-        `User not found for subscription: ${subscriptionId}`,
+        `User not found for subscription: ${subscriptionId}, customerId: ${customerId}, email: ${customerEmail}`,
         userError,
       );
       return;

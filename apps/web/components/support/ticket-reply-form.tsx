@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { addTicketMessage } from "@/actions/support-ticket-actions";
-import { AlertCircle, Loader2, SendIcon } from "lucide-react";
+import { AlertCircle, Loader2, Send } from "lucide-react";
 
 import { logger } from "@/lib/logger";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -84,7 +84,7 @@ export function TicketReplyForm({ ticketId, onSuccess }: TicketReplyFormProps) {
               </>
             ) : (
               <>
-                <SendIcon className="mr-2 size-4" />
+                <Send className="mr-2 size-4" />
                 Send Message
               </>
             )}

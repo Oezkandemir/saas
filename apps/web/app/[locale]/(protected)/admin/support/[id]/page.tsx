@@ -133,6 +133,7 @@ export default async function AdminTicketPage({
                     key={message.id}
                     message={message}
                     isCurrentUser={message.user_id === user.id}
+                    isAdminView={true}
                   />
                 ))}
               </div>
