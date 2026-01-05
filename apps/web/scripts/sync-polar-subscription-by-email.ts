@@ -44,7 +44,20 @@ const logger = {
     console.log(`[INFO] ${message}`, data ? JSON.stringify(data, null, 2) : "");
   },
   error: (message: string, error?: any) => {
-    console.error(`[ERROR] ${message}`, error ? JSON.stringify(error, null, 2) : "");
+    if (error) {
+      if (error instanceof Error) {
+        console.error(`[ERROR] ${message}:`, error.message);
+        if (error.stack) {
+          console.error("Stack:", error.stack);
+        }
+      } else if (typeof error === "object") {
+        console.error(`[ERROR] ${message}:`, JSON.stringify(error, null, 2));
+      } else {
+        console.error(`[ERROR] ${message}:`, error);
+      }
+    } else {
+      console.error(`[ERROR] ${message}`);
+    }
   },
   warn: (message: string, data?: any) => {
     console.warn(`[WARN] ${message}`, data ? JSON.stringify(data, null, 2) : "");
@@ -133,27 +146,60 @@ async function syncSubscription(userId: string, subscriptionId: string) {
   try {
     const headers = await getPolarHeaders();
     
+    logger.info(`Fetching subscription details from Polar API: ${subscriptionId}`);
     const response = await fetch(`${POLAR_API_BASE_URL}/subscriptions/${subscriptionId}`, {
       headers,
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch subscription: ${response.status}`);
+      const errorText = await response.text().catch(() => "");
+      logger.error(`Failed to fetch subscription`, {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText,
+      });
+      throw new Error(`Failed to fetch subscription: ${response.status} ${response.statusText}`);
     }
 
     const subscription = await response.json();
+    logger.info(`Received subscription data:`, {
+      productId: subscription.product_id,
+      customerId: subscription.customer_id,
+      status: subscription.status,
+    });
 
     const productId = subscription.product_id;
     const customerId = subscription.customer_id;
     const status = subscription.status;
-    const currentPeriodEnd = subscription.current_period_end
-      ? new Date(subscription.current_period_end * 1000).toISOString()
-      : null;
-    const currentPeriodStart = subscription.current_period_start
-      ? new Date(subscription.current_period_start * 1000).toISOString()
-      : null;
+    
+    // Convert timestamps to ISO strings, handling null/undefined/invalid values
+    let currentPeriodEnd: string | null = null;
+    if (subscription.current_period_end) {
+      const timestamp = subscription.current_period_end * 1000;
+      const date = new Date(timestamp);
+      if (!isNaN(date.getTime())) {
+        currentPeriodEnd = date.toISOString();
+      }
+    }
+    
+    let currentPeriodStart: string | null = null;
+    if (subscription.current_period_start) {
+      const timestamp = subscription.current_period_start * 1000;
+      const date = new Date(timestamp);
+      if (!isNaN(date.getTime())) {
+        currentPeriodStart = date.toISOString();
+      }
+    }
+    
+    logger.info(`Date conversion:`, {
+      current_period_end_raw: subscription.current_period_end,
+      current_period_end_converted: currentPeriodEnd,
+      current_period_start_raw: subscription.current_period_start,
+      current_period_start_converted: currentPeriodStart,
+    });
 
     // Update user table
+    logger.info(`Updating user table for user: ${userId}`);
     const { error: userError } = await supabaseAdmin
       .from("users")
       .update({
@@ -166,15 +212,23 @@ async function syncSubscription(userId: string, subscriptionId: string) {
       .eq("id", userId);
 
     if (userError) {
+      logger.error(`Failed to update user table`, userError);
       throw new Error(`Failed to update user: ${userError.message}`);
     }
+    logger.info(`Successfully updated user table`);
 
     // Update or create subscription record
-    const { data: existingSub } = await supabaseAdmin
+    logger.info(`Checking for existing subscription record`);
+    const { data: existingSub, error: checkError } = await supabaseAdmin
       .from("subscriptions")
       .select("id")
       .eq("polar_subscription_id", subscriptionId)
-      .single();
+      .maybeSingle();
+    
+    if (checkError) {
+      logger.error(`Error checking for existing subscription:`, checkError);
+      throw new Error(`Failed to check for existing subscription: ${checkError.message}`);
+    }
 
     const subscriptionData: any = {
       user_id: userId,
@@ -194,22 +248,28 @@ async function syncSubscription(userId: string, subscriptionId: string) {
     };
 
     if (existingSub) {
+      logger.info(`Updating existing subscription record: ${existingSub.id}`);
       const { error: subError } = await supabaseAdmin
         .from("subscriptions")
         .update(subscriptionData)
         .eq("id", existingSub.id);
 
       if (subError) {
+        logger.error(`Failed to update subscription record`, subError);
         throw new Error(`Failed to update subscription: ${subError.message}`);
       }
+      logger.info(`Successfully updated subscription record`);
     } else {
+      logger.info(`Creating new subscription record`);
       const { error: subError } = await supabaseAdmin
         .from("subscriptions")
         .insert(subscriptionData);
 
       if (subError) {
+        logger.error(`Failed to create subscription record`, subError);
         throw new Error(`Failed to create subscription: ${subError.message}`);
       }
+      logger.info(`Successfully created subscription record`);
     }
 
     logger.info(
