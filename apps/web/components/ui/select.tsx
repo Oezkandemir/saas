@@ -23,9 +23,7 @@ const SelectTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       "flex items-center justify-between rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
-      variant === "compact" 
-        ? "h-8 px-2.5 py-1.5" 
-        : "h-10 w-full px-3 py-2",
+      variant === "compact" ? "h-8 px-2.5 py-1.5" : "h-10 w-full px-3 py-2",
       className,
     )}
     {...props}
@@ -46,7 +44,9 @@ const SelectTriggerIcon = React.forwardRef<
   }
 >(({ className, as: Component, ...props }, ref) => {
   if (Component) {
-    return <Component ref={ref} className={cn("size-4", className)} {...props} />;
+    return (
+      <Component ref={ref} className={cn("size-4", className)} {...props} />
+    );
   }
   return <span ref={ref} className={cn("size-4", className)} {...props} />;
 });
@@ -165,12 +165,27 @@ const SelectItemIcon = React.forwardRef<
     style?: React.CSSProperties;
   }
 >(({ className, as: Component, style, ...props }, ref) => {
-  const baseClasses = "size-4 shrink-0 rounded-sm bg-cover bg-center bg-no-repeat";
-  
+  const baseClasses =
+    "size-4 shrink-0 rounded-sm bg-cover bg-center bg-no-repeat";
+
   if (Component) {
-    return <Component ref={ref} className={cn(baseClasses, className)} style={style} {...props} />;
+    return (
+      <Component
+        ref={ref}
+        className={cn(baseClasses, className)}
+        style={style}
+        {...props}
+      />
+    );
   }
-  return <span ref={ref} className={cn(baseClasses, className)} style={style} {...props} />;
+  return (
+    <span
+      ref={ref}
+      className={cn(baseClasses, className)}
+      style={style}
+      {...props}
+    />
+  );
 });
 SelectItemIcon.displayName = "SelectItemIcon";
 

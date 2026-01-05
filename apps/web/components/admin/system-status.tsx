@@ -1,30 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
-  CheckCircle2,
-  AlertCircle,
-  XCircle,
-  Clock,
-  RefreshCw,
-  Loader2,
-} from "lucide-react";
+  getSystemStatusOverview,
+  performHealthCheck,
+} from "@/actions/system-monitoring-actions";
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  Loader2,
+  RefreshCw,
+  XCircle,
+} from "lucide-react";
 
-import { Button } from '@/components/alignui/actions/button';
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { useToast } from "@/components/ui/use-toast";
-import {
-  getSystemStatusOverview,
-  performHealthCheck,
-} from "@/actions/system-monitoring-actions";
+} from "@/components/alignui/data-display/card";
 
 interface ComponentStatus {
   component: string;
@@ -123,9 +123,7 @@ export function SystemStatus() {
           </Badge>
         );
       case "down":
-        return (
-          <Badge variant="destructive">Down</Badge>
-        );
+        return <Badge variant="destructive">Down</Badge>;
       case "maintenance":
         return (
           <Badge variant="default" className="bg-blue-500">
@@ -226,7 +224,9 @@ export function SystemStatus() {
               <div className="flex items-center gap-3">
                 {getStatusIcon(component.status)}
                 <div>
-                  <p className="font-medium capitalize">{component.component}</p>
+                  <p className="font-medium capitalize">
+                    {component.component}
+                  </p>
                   {component.message && (
                     <p className="text-xs text-muted-foreground">
                       {component.message}
@@ -249,8 +249,3 @@ export function SystemStatus() {
     </div>
   );
 }
-
-
-
-
-

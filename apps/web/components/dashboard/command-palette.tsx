@@ -2,22 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { 
-  Search, 
-  FileText, 
-  Users, 
-  QrCode, 
-  Settings,
-  Home,
-  CreditCard,
+import {
   Building2,
-  Loader2
+  CreditCard,
+  FileText,
+  Home,
+  Loader2,
+  QrCode,
+  Search,
+  Settings,
+  Users,
 } from "lucide-react";
-import { 
-  Dialog,
-  DialogContent,
-} from "@/components/ui/dialog";
-import { Input } from '@/components/alignui/forms/input';
+
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Input } from "@/components/alignui/forms/input";
 
 interface SearchResult {
   id: string;
@@ -168,7 +166,7 @@ export function CommandPalette() {
 
     setIsSearching(true);
     const searchLower = search.toLowerCase();
-    
+
     // Simple fuzzy search
     const filtered = allItems.filter((item) => {
       const titleMatch = item.title.toLowerCase().includes(searchLower);
@@ -198,13 +196,16 @@ export function CommandPalette() {
   };
 
   // Group results by category
-  const groupedResults = results.reduce((acc, item) => {
-    if (!acc[item.category]) {
-      acc[item.category] = [];
-    }
-    acc[item.category].push(item);
-    return acc;
-  }, {} as Record<string, SearchResult[]>);
+  const groupedResults = results.reduce(
+    (acc, item) => {
+      if (!acc[item.category]) {
+        acc[item.category] = [];
+      }
+      acc[item.category].push(item);
+      return acc;
+    },
+    {} as Record<string, SearchResult[]>,
+  );
 
   return (
     <>
@@ -288,4 +289,3 @@ export function CommandPalette() {
     </>
   );
 }
-

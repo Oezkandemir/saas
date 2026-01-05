@@ -51,7 +51,7 @@ export function useRealtimePageViews({
 
     // Create unique channel name per slug to avoid conflicts
     const channelName = `page_views_changes:${normalizedSlug}`;
-    
+
     // Subscribe to changes on the page_views table
     const channel = supabaseClient
       .channel(channelName)

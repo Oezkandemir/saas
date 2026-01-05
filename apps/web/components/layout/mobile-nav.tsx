@@ -8,12 +8,11 @@ import { Menu, X } from "lucide-react";
 import { docsConfig } from "@/config/docs";
 import { marketingConfig } from "@/config/marketing";
 import { siteConfig } from "@/config/site";
+import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
 import { DocsSidebarNav } from "@/components/docs/sidebar-nav";
 import { Icons } from "@/components/shared/icons";
 import { useSupabase } from "@/components/supabase-provider";
-import { logger } from "@/lib/logger";
-
 
 export function NavMobile() {
   const { session, supabase } = useSupabase();
@@ -27,7 +26,9 @@ export function NavMobile() {
   };
 
   const links =
-    (selectedLayout && selectedLayout in configMap ? configMap[selectedLayout] : undefined) || marketingConfig.mainNav;
+    (selectedLayout && selectedLayout in configMap
+      ? configMap[selectedLayout]
+      : undefined) || marketingConfig.mainNav;
 
   // Fetch user role from database (not from metadata for security)
   useEffect(() => {

@@ -1,8 +1,9 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+
 import { logger } from "@/lib/logger";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Export all user data as JSON (GDPR Art. 15 - Right to Access)
@@ -11,9 +12,12 @@ import { logger } from "@/lib/logger";
 export async function exportUserData() {
   try {
     const supabase = await createClient();
-    
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user) {
       return { success: false, message: "User not authenticated" };
     }
@@ -30,41 +34,41 @@ export async function exportUserData() {
     ] = await Promise.all([
       // User profile
       supabase.from("users").select("*").eq("id", user.id).single(),
-      
+
       // Customers
       supabase.from("customers").select("*").eq("user_id", user.id),
-      
+
       // Documents with items
       supabase
         .from("documents")
         .select("*, document_items(*)")
         .eq("user_id", user.id),
-      
+
       // QR Codes
       supabase.from("qr_codes").select("*").eq("user_id", user.id),
-      
+
       // QR Events (if Pro user) - Fixed: First get QR code IDs, then query events
       (async () => {
         const { data: qrCodesData } = await supabase
           .from("qr_codes")
           .select("id")
           .eq("user_id", user.id);
-        
-        const qrCodeIds = qrCodesData?.map(qr => qr.id) || [];
-        
+
+        const qrCodeIds = qrCodesData?.map((qr) => qr.id) || [];
+
         if (qrCodeIds.length === 0) {
           return { data: [], error: null };
         }
-        
+
         return await supabase
           .from("qr_events")
           .select("*")
           .in("qr_code_id", qrCodeIds);
       })(),
-      
+
       // Cookie consents
       supabase.from("cookie_consents").select("*").eq("user_id", user.id),
-      
+
       // Notifications
       supabase.from("notifications").select("*").eq("user_id", user.id),
     ]);
@@ -122,13 +126,13 @@ export async function exportUserData() {
 export async function exportUserDataCSV() {
   try {
     const result = await exportUserData();
-    
+
     if (!result.success || !result.data) {
       return result;
     }
 
     const userData = JSON.parse(result.data);
-    
+
     // Create CSV for customers
     const customersCSV = convertToCSV(userData.customers, [
       "name",
@@ -158,7 +162,12 @@ export async function exportUserDataCSV() {
     const csvData = {
       customers: customersCSV,
       documents: documentsCSV,
-      qrCodes: convertToCSV(userData.qrCodes, ["code", "type", "target_url", "created_at"]),
+      qrCodes: convertToCSV(userData.qrCodes, [
+        "code",
+        "type",
+        "target_url",
+        "created_at",
+      ]),
     };
 
     return {
@@ -170,7 +179,8 @@ export async function exportUserDataCSV() {
     logger.error("Error exporting user data as CSV:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to export data as CSV",
+      message:
+        error instanceof Error ? error.message : "Failed to export data as CSV",
     };
   }
 }
@@ -180,10 +190,10 @@ export async function exportUserDataCSV() {
  */
 function convertToCSV(data: any[], headers: string[]): string {
   if (!data || data.length === 0) return "";
-  
+
   const csvRows: string[] = [];
   csvRows.push(headers.join(","));
-  
+
   for (const row of data) {
     const values = headers.map((header) => {
       const value = row[header];
@@ -191,7 +201,7 @@ function convertToCSV(data: any[], headers: string[]): string {
     });
     csvRows.push(values.join(","));
   }
-  
+
   return csvRows.join("\n");
 }
 
@@ -210,9 +220,12 @@ export async function deleteUserAccount(confirmation: string) {
     }
 
     const supabase = await createClient();
-    
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user) {
       return { success: false, message: "User not authenticated" };
     }
@@ -235,7 +248,7 @@ export async function deleteUserAccount(confirmation: string) {
     if (invoicesToRetain && invoicesToRetain.length > 0) {
       // Anonymize instead of delete due to legal retention requirements
       await anonymizeUserData(user.id);
-      
+
       return {
         success: true,
         message: `Account anonymized. ${invoicesToRetain.length} invoice(s) retained for legal compliance (10 years). All other data deleted.`,
@@ -255,32 +268,35 @@ export async function deleteUserAccount(confirmation: string) {
 
     // Delete all user data (CASCADE will handle related records)
     // Order matters due to foreign key constraints
-    
+
     // First get QR code IDs
     const { data: userQrCodes } = await supabase
       .from("qr_codes")
       .select("id")
       .eq("user_id", user.id);
-    const qrCodeIds = userQrCodes?.map(qr => qr.id) || [];
-    
+    const qrCodeIds = userQrCodes?.map((qr) => qr.id) || [];
+
     // Get document IDs
     const { data: userDocuments } = await supabase
       .from("documents")
       .select("id")
       .eq("user_id", user.id);
-    const documentIds = userDocuments?.map(doc => doc.id) || [];
-    
+    const documentIds = userDocuments?.map((doc) => doc.id) || [];
+
     // Delete in sequence to ensure proper order
     // Delete QR events if there are QR codes
     if (qrCodeIds.length > 0) {
       await supabase.from("qr_events").delete().in("qr_code_id", qrCodeIds);
     }
-    
+
     // Delete document items if there are documents
     if (documentIds.length > 0) {
-      await supabase.from("document_items").delete().in("document_id", documentIds);
+      await supabase
+        .from("document_items")
+        .delete()
+        .in("document_id", documentIds);
     }
-    
+
     // Delete main records
     await Promise.all([
       supabase.from("qr_codes").delete().eq("user_id", user.id),
@@ -289,12 +305,14 @@ export async function deleteUserAccount(confirmation: string) {
       supabase.from("cookie_consents").delete().eq("user_id", user.id),
       supabase.from("notifications").delete().eq("user_id", user.id),
     ]);
-    
+
     await supabase.from("users").delete().eq("id", user.id);
 
     // Delete auth user (this will sign them out)
-    const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id);
-    
+    const { error: deleteError } = await supabase.auth.admin.deleteUser(
+      user.id,
+    );
+
     if (deleteError) {
       logger.error("Error deleting auth user:", deleteError);
       // Continue even if auth deletion fails - data is already deleted
@@ -302,9 +320,9 @@ export async function deleteUserAccount(confirmation: string) {
 
     // Sign out the user
     await supabase.auth.signOut();
-    
+
     redirect("/");
-    
+
     return {
       success: true,
       message: "Account and all data successfully deleted",
@@ -314,7 +332,8 @@ export async function deleteUserAccount(confirmation: string) {
     logger.error("Error deleting user account:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to delete account",
+      message:
+        error instanceof Error ? error.message : "Failed to delete account",
     };
   }
 }
@@ -325,10 +344,10 @@ export async function deleteUserAccount(confirmation: string) {
  */
 async function anonymizeUserData(userId: string) {
   const supabase = await createClient();
-  
+
   const anonymousId = `anonymous-${Date.now()}`;
   const anonymousEmail = `${anonymousId}@anonymized.local`;
-  
+
   // Anonymize user profile
   await supabase
     .from("users")
@@ -361,13 +380,13 @@ async function anonymizeUserData(userId: string) {
     .from("qr_codes")
     .select("id")
     .eq("user_id", userId);
-  const qrCodeIds = userQrCodes?.map(qr => qr.id) || [];
-  
+  const qrCodeIds = userQrCodes?.map((qr) => qr.id) || [];
+
   // Delete in sequence to avoid type issues
   await supabase.from("qr_codes").delete().eq("user_id", userId);
   await supabase.from("cookie_consents").delete().eq("user_id", userId);
   await supabase.from("notifications").delete().eq("user_id", userId);
-  
+
   // Only delete QR events if there are QR codes
   if (qrCodeIds.length > 0) {
     await supabase.from("qr_events").delete().in("qr_code_id", qrCodeIds);
@@ -391,9 +410,12 @@ async function anonymizeUserData(userId: string) {
 export async function requestAccountDeletion() {
   try {
     const supabase = await createClient();
-    
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user) {
       return { success: false, message: "User not authenticated" };
     }
@@ -413,14 +435,15 @@ export async function requestAccountDeletion() {
 
     return {
       success: true,
-      message: "Account deletion requested. Please check your email for confirmation.",
+      message:
+        "Account deletion requested. Please check your email for confirmation.",
     };
   } catch (error) {
     logger.error("Error requesting account deletion:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to request deletion",
+      message:
+        error instanceof Error ? error.message : "Failed to request deletion",
     };
   }
 }
-

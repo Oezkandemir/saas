@@ -1,5 +1,9 @@
 "use client";
 
+import type { PlanUser } from "@/actions/admin-plan-actions";
+import { format } from "date-fns";
+import { de } from "date-fns/locale";
+
 import {
   Table,
   TableBody,
@@ -8,11 +12,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Avatar, AvatarFallback } from '@/components/alignui/data-display/avatar';
-import type { PlanUser } from "@/actions/admin-plan-actions";
-import { format } from "date-fns";
-import { de } from "date-fns/locale";
+import {
+  Avatar,
+  AvatarFallback,
+} from "@/components/alignui/data-display/avatar";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 
 interface PlanUsersTableProps {
   users: PlanUser[];
@@ -28,18 +32,24 @@ export function PlanUsersTable({ users }: PlanUsersTableProps) {
   }
 
   // Group users by plan
-  const usersByPlan = users.reduce((acc, user) => {
-    const planKey = user.plan_key || "unassigned";
-    if (!acc[planKey]) {
-      acc[planKey] = {
-        plan_title: user.plan_title || "Nicht zugeordnet",
-        plan_key: planKey,
-        users: [],
-      };
-    }
-    acc[planKey].users.push(user);
-    return acc;
-  }, {} as Record<string, { plan_title: string; plan_key: string; users: PlanUser[] }>);
+  const usersByPlan = users.reduce(
+    (acc, user) => {
+      const planKey = user.plan_key || "unassigned";
+      if (!acc[planKey]) {
+        acc[planKey] = {
+          plan_title: user.plan_title || "Nicht zugeordnet",
+          plan_key: planKey,
+          users: [],
+        };
+      }
+      acc[planKey].users.push(user);
+      return acc;
+    },
+    {} as Record<
+      string,
+      { plan_title: string; plan_key: string; users: PlanUser[] }
+    >,
+  );
 
   return (
     <div className="space-y-6">
@@ -125,13 +135,13 @@ export function PlanUsersTable({ users }: PlanUsersTableProps) {
                       format(
                         new Date(user.polar_current_period_end),
                         "dd.MM.yyyy",
-                        { locale: de }
+                        { locale: de },
                       )
                     ) : user.stripe_current_period_end ? (
                       format(
                         new Date(user.stripe_current_period_end),
                         "dd.MM.yyyy",
-                        { locale: de }
+                        { locale: de },
                       )
                     ) : (
                       <span className="text-muted-foreground">-</span>
@@ -146,6 +156,3 @@ export function PlanUsersTable({ users }: PlanUsersTableProps) {
     </div>
   );
 }
-
-
-

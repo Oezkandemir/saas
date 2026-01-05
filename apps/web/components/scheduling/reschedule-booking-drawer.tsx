@@ -1,13 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations, useLocale } from "next-intl";
-import { format, addDays, startOfWeek, eachDayOfInterval, isSameDay, addMonths, startOfMonth, endOfMonth, subMonths } from "date-fns";
-import { de, enUS } from "date-fns/locale";
-import { rescheduleBooking, type AvailableSlot, getPublicSlots, getPublicOverrides, type Booking } from "@/actions/scheduling/bookings-actions";
+import {
+  getPublicOverrides,
+  getPublicSlots,
+  rescheduleBooking,
+  type AvailableSlot,
+  type Booking,
+} from "@/actions/scheduling/bookings-actions";
 import { type EventType } from "@/actions/scheduling/event-types-actions";
-import { Button } from '@/components/alignui/actions/button';
+import {
+  addDays,
+  addMonths,
+  eachDayOfInterval,
+  endOfMonth,
+  format,
+  isSameDay,
+  startOfMonth,
+  startOfWeek,
+  subMonths,
+} from "date-fns";
+import { de, enUS } from "date-fns/locale";
+import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { toast } from "sonner";
+
 import {
   Sheet,
   SheetContent,
@@ -15,9 +33,13 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { toast } from "sonner";
-import { Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/alignui/actions/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 
 interface RescheduleBookingDrawerProps {
   booking: Booking;
@@ -25,10 +47,10 @@ interface RescheduleBookingDrawerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function RescheduleBookingDrawer({ 
-  booking, 
-  open, 
-  onOpenChange 
+export function RescheduleBookingDrawer({
+  booking,
+  open,
+  onOpenChange,
 }: RescheduleBookingDrawerProps) {
   const router = useRouter();
   const locale = useLocale();
@@ -43,7 +65,9 @@ export function RescheduleBookingDrawer({
   const [selectedSlot, setSelectedSlot] = useState<AvailableSlot | null>(null);
   const [slots, setSlots] = useState<AvailableSlot[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
-  const [unavailableDates, setUnavailableDates] = useState<Set<string>>(new Set());
+  const [unavailableDates, setUnavailableDates] = useState<Set<string>>(
+    new Set(),
+  );
   const [eventType, setEventType] = useState<EventType | null>(null);
 
   // Initialize selected date to booking date
@@ -53,7 +77,7 @@ export function RescheduleBookingDrawer({
       setSelectedDate(bookingDate);
       setCurrentMonth(startOfMonth(bookingDate));
       setSelectedSlot(null);
-      
+
       // Load event type if available
       if (booking.event_type) {
         // Create a minimal EventType object from booking.event_type
@@ -71,7 +95,7 @@ export function RescheduleBookingDrawer({
   // Load overrides on mount
   useEffect(() => {
     if (!open || !eventType) return;
-    
+
     const loadOverrides = async () => {
       const result = await getPublicOverrides(eventType.slug);
       if (result.success && result.data) {
@@ -96,7 +120,7 @@ export function RescheduleBookingDrawer({
       setIsLoadingSlots(true);
       const dateStr = format(selectedDate, "yyyy-MM-dd");
       const result = await getPublicSlots(eventType.slug, dateStr);
-      
+
       if (result.success && result.data) {
         // Filter out the current booking's slot
         const filteredSlots = result.data.filter((slot) => {
@@ -122,7 +146,10 @@ export function RescheduleBookingDrawer({
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
   const calendarEnd = startOfWeek(monthEnd, { weekStartsOn: 1 });
   const calendarEndAdjusted = addDays(calendarEnd, 6);
-  const calendarDates = eachDayOfInterval({ start: calendarStart, end: calendarEndAdjusted });
+  const calendarDates = eachDayOfInterval({
+    start: calendarStart,
+    end: calendarEndAdjusted,
+  });
 
   const handlePreviousMonth = () => {
     setCurrentMonth(subMonths(currentMonth, 1));
@@ -164,10 +191,11 @@ export function RescheduleBookingDrawer({
       onOpenChange(false);
       router.refresh();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : t("unexpectedError") || "An unexpected error occurred";
-      
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : t("unexpectedError") || "An unexpected error occurred";
+
       toast.error(t("rescheduleError") || "Failed to reschedule booking", {
         description: errorMessage,
       });
@@ -185,11 +213,15 @@ export function RescheduleBookingDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+      <SheetContent
+        side="right"
+        className="w-full sm:max-w-2xl overflow-y-auto"
+      >
         <SheetHeader>
           <SheetTitle>{t("reschedule") || "Reschedule Booking"}</SheetTitle>
           <SheetDescription>
-            {t("rescheduleDescription") || "Select a new date and time for this booking. The old slot will be freed up."}
+            {t("rescheduleDescription") ||
+              "Select a new date and time for this booking. The old slot will be freed up."}
           </SheetDescription>
         </SheetHeader>
 
@@ -197,14 +229,20 @@ export function RescheduleBookingDrawer({
           {/* Current Booking Info */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">{t("currentBooking") || "Current Booking"}</CardTitle>
+              <CardTitle className="text-sm">
+                {t("currentBooking") || "Current Booking"}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   <span className="text-muted-foreground">
-                    {format(new Date(booking.start_at), "EEEE, d. MMMM yyyy 'um' HH:mm", { locale: dateLocale })}
+                    {format(
+                      new Date(booking.start_at),
+                      "EEEE, d. MMMM yyyy 'um' HH:mm",
+                      { locale: dateLocale },
+                    )}
                   </span>
                 </div>
                 {booking.event_type && (
@@ -221,7 +259,9 @@ export function RescheduleBookingDrawer({
             <Card>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-semibold">{t("selectDate") || "Select Date"}</CardTitle>
+                  <CardTitle className="text-sm font-semibold">
+                    {t("selectDate") || "Select Date"}
+                  </CardTitle>
                   <div className="flex items-center gap-2">
                     <Button
                       type="button"
@@ -233,7 +273,9 @@ export function RescheduleBookingDrawer({
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
                     <span className="text-sm font-medium min-w-[120px] text-center">
-                      {format(currentMonth, "MMMM yyyy", { locale: dateLocale })}
+                      {format(currentMonth, "MMMM yyyy", {
+                        locale: dateLocale,
+                      })}
                     </span>
                     <Button
                       type="button"
@@ -251,21 +293,26 @@ export function RescheduleBookingDrawer({
                 <div className="pr-2">
                   <div className="grid grid-cols-7 gap-1 mb-2">
                     {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((day) => (
-                      <div key={day} className="text-center text-xs font-medium text-muted-foreground p-1">
+                      <div
+                        key={day}
+                        className="text-center text-xs font-medium text-muted-foreground p-1"
+                      >
                         {day}
                       </div>
                     ))}
                   </div>
                   <div className="grid grid-cols-7 gap-1">
                     {calendarDates.map((date) => {
-                      const isSelected = selectedDate && isSameDay(date, selectedDate);
+                      const isSelected =
+                        selectedDate && isSameDay(date, selectedDate);
                       const dateStartOfDay = new Date(date);
                       dateStartOfDay.setHours(0, 0, 0, 0);
                       const isPast = dateStartOfDay < todayDate;
                       const isToday = isSameDay(date, todayDate);
                       const dateStr = format(date, "yyyy-MM-dd");
                       const isUnavailable = unavailableDates.has(dateStr);
-                      const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
+                      const isCurrentMonth =
+                        date.getMonth() === currentMonth.getMonth();
                       const isDisabled = isPast || isUnavailable;
 
                       return (
@@ -276,15 +323,16 @@ export function RescheduleBookingDrawer({
                           className={`
                             aspect-square p-2 text-sm rounded-md transition-colors
                             ${!isCurrentMonth ? "text-muted-foreground/30" : ""}
-                            ${isDisabled 
-                              ? "text-muted-foreground/50 cursor-not-allowed" 
-                              : isSelected
-                              ? "bg-primary text-primary-foreground font-semibold"
-                              : isToday
-                              ? "bg-muted font-semibold hover:bg-muted/80"
-                              : isCurrentMonth
-                              ? "hover:bg-muted"
-                              : ""
+                            ${
+                              isDisabled
+                                ? "text-muted-foreground/50 cursor-not-allowed"
+                                : isSelected
+                                  ? "bg-primary text-primary-foreground font-semibold"
+                                  : isToday
+                                    ? "bg-muted font-semibold hover:bg-muted/80"
+                                    : isCurrentMonth
+                                      ? "hover:bg-muted"
+                                      : ""
                             }
                           `}
                         >
@@ -301,7 +349,11 @@ export function RescheduleBookingDrawer({
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {t("selectTime") || "Select Time"} - {selectedDate && format(selectedDate, "EEEE, MMMM d", { locale: dateLocale })}
+                  {t("selectTime") || "Select Time"} -{" "}
+                  {selectedDate &&
+                    format(selectedDate, "EEEE, MMMM d", {
+                      locale: dateLocale,
+                    })}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -318,20 +370,26 @@ export function RescheduleBookingDrawer({
                     {slots.map((slot, index) => {
                       const slotStart = new Date(slot.start);
                       const slotEnd = new Date(slot.end);
-                      const isSelected = selectedSlot?.start === slot.start && selectedSlot?.time_slot_id === slot.time_slot_id;
-                      const isFullyBooked = slot.available_places !== undefined && slot.available_places === 0;
-                      const uniqueKey = slot.time_slot_id || `${slot.start}-${index}`;
+                      const isSelected =
+                        selectedSlot?.start === slot.start &&
+                        selectedSlot?.time_slot_id === slot.time_slot_id;
+                      const isFullyBooked =
+                        slot.available_places !== undefined &&
+                        slot.available_places === 0;
+                      const uniqueKey =
+                        slot.time_slot_id || `${slot.start}-${index}`;
 
                       return (
                         <div
                           key={uniqueKey}
                           className={`
                             p-4 rounded-lg border transition-colors cursor-pointer
-                            ${isSelected
-                              ? "border-primary bg-primary/5"
-                              : isFullyBooked
-                              ? "border-border bg-muted/30 opacity-75"
-                              : "border-border hover:bg-muted/50"
+                            ${
+                              isSelected
+                                ? "border-primary bg-primary/5"
+                                : isFullyBooked
+                                  ? "border-border bg-muted/30 opacity-75"
+                                  : "border-border hover:bg-muted/50"
                             }
                           `}
                           onClick={() => handleSlotSelect(slot)}
@@ -344,28 +402,36 @@ export function RescheduleBookingDrawer({
                               <div>
                                 <div className="flex items-center gap-2">
                                   <span className="text-sm font-medium">
-                                    {format(slotStart, "HH:mm", { locale: dateLocale })} - {format(slotEnd, "HH:mm", { locale: dateLocale })}
+                                    {format(slotStart, "HH:mm", {
+                                      locale: dateLocale,
+                                    })}{" "}
+                                    -{" "}
+                                    {format(slotEnd, "HH:mm", {
+                                      locale: dateLocale,
+                                    })}
                                   </span>
                                 </div>
-                                {slot.available_places !== undefined && slot.max_participants !== undefined && (
-                                  <div className="flex items-center gap-1 mt-1">
-                                    {slot.available_places > 0 ? (
-                                      <>
-                                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                        <span className="text-xs text-muted-foreground">
-                                          {slot.available_places} {t("available") || "available"}
-                                        </span>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                                        <span className="text-xs text-red-600 dark:text-red-400 font-medium">
-                                          {t("fullyBooked") || "Fully Booked"}
-                                        </span>
-                                      </>
-                                    )}
-                                  </div>
-                                )}
+                                {slot.available_places !== undefined &&
+                                  slot.max_participants !== undefined && (
+                                    <div className="flex items-center gap-1 mt-1">
+                                      {slot.available_places > 0 ? (
+                                        <>
+                                          <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                          <span className="text-xs text-muted-foreground">
+                                            {slot.available_places}{" "}
+                                            {t("available") || "available"}
+                                          </span>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                                          <span className="text-xs text-red-600 dark:text-red-400 font-medium">
+                                            {t("fullyBooked") || "Fully Booked"}
+                                          </span>
+                                        </>
+                                      )}
+                                    </div>
+                                  )}
                               </div>
                             </div>
                             {isSelected && (
@@ -396,10 +462,9 @@ export function RescheduleBookingDrawer({
               disabled={!selectedSlot || isRescheduling}
               className="flex-1"
             >
-              {isRescheduling 
-                ? (t("rescheduling") || "Rescheduling...")
-                : (t("confirmReschedule") || "Confirm Reschedule")
-              }
+              {isRescheduling
+                ? t("rescheduling") || "Rescheduling..."
+                : t("confirmReschedule") || "Confirm Reschedule"}
             </Button>
           </div>
         </div>
@@ -407,4 +472,3 @@ export function RescheduleBookingDrawer({
     </Sheet>
   );
 }
-

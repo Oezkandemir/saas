@@ -1,7 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
-import { logger } from "@/lib/logger";
-import { checkPermission } from "@/actions/role-actions";
 import { checkResourceAccess } from "@/actions/resource-permission-actions";
+import { checkPermission } from "@/actions/role-actions";
+
+import { logger } from "@/lib/logger";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Check if a user has a specific permission
@@ -138,21 +139,3 @@ export async function getUserPermissions(
     return {};
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

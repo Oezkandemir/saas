@@ -4,11 +4,9 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { siteConfig } from "@/config/site";
-import {
-  sendNewsletterConfirmationEmail,
-} from "@/lib/email-client";
-import { createClient } from "@/lib/supabase/server";
+import { sendNewsletterConfirmationEmail } from "@/lib/email-client";
 import { logger } from "@/lib/logger";
+import { createClient } from "@/lib/supabase/server";
 
 // Schema for newsletter subscription
 const NewsletterSchema = z.object({
@@ -62,10 +60,9 @@ export async function subscribeToNewsletter(data: NewsletterFormData) {
 
     // If no authenticated user, try to find a user with the provided email
     if (!userId) {
-      logger.debug(
-        "No authenticated user, searching for user with email",
-        { email: validatedData.email },
-      );
+      logger.debug("No authenticated user, searching for user with email", {
+        email: validatedData.email,
+      });
 
       // Search for a user with the provided email in the public.users table
       const { data: userData, error: userError } = await supabase
@@ -75,12 +72,14 @@ export async function subscribeToNewsletter(data: NewsletterFormData) {
         .single();
 
       if (userError) {
-        logger.debug("No user found with email", { email: validatedData.email });
+        logger.debug("No user found with email", {
+          email: validatedData.email,
+        });
       } else if (userData) {
-        logger.info(
-          "Found user with email",
-          { email: validatedData.email, userId: userData.id },
-        );
+        logger.info("Found user with email", {
+          email: validatedData.email,
+          userId: userData.id,
+        });
         userId = userData.id;
       }
     }

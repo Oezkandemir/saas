@@ -1,16 +1,26 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { Progress } from "@/components/ui/progress";
+import { CheckCircle, Infinity as InfinityIcon, XCircle } from "lucide-react";
+
 import type { PlanFeaturesInfo } from "@/lib/plan-features";
-import { CheckCircle, XCircle, Infinity as InfinityIcon } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 
 interface UsageDashboardProps {
   planFeatures: PlanFeaturesInfo;
 }
 
 export function UsageDashboard({ planFeatures }: UsageDashboardProps) {
-  const getUsagePercentage = (current: number, max: string | number): number => {
+  const getUsagePercentage = (
+    current: number,
+    max: string | number,
+  ): number => {
     if (max === "unlimited" || max === Infinity) return 0;
     const maxNum = typeof max === "string" ? parseInt(max) : max;
     if (maxNum === 0) return 0;
@@ -45,15 +55,20 @@ export function UsageDashboard({ planFeatures }: UsageDashboardProps) {
                       {feature.limit.current} / {formatLimit(feature.limit.max)}
                     </span>
                   </div>
-                  {feature.limit.max !== "unlimited" && feature.limit.max !== Infinity && (
-                    <Progress
-                      value={getUsagePercentage(feature.limit.current, feature.limit.max)}
-                      className="h-2"
-                    />
-                  )}
+                  {feature.limit.max !== "unlimited" &&
+                    feature.limit.max !== Infinity && (
+                      <Progress
+                        value={getUsagePercentage(
+                          feature.limit.current,
+                          feature.limit.max,
+                        )}
+                        className="h-2"
+                      />
+                    )}
                 </div>
                 <div className="flex items-center gap-2 text-xs">
-                  {feature.limit.max === "unlimited" || feature.limit.max === Infinity ? (
+                  {feature.limit.max === "unlimited" ||
+                  feature.limit.max === Infinity ? (
                     <>
                       <InfinityIcon className="size-3 text-muted-foreground" />
                       <span className="text-muted-foreground">Unlimited</span>
@@ -64,7 +79,8 @@ export function UsageDashboard({ planFeatures }: UsageDashboardProps) {
                         <>
                           <CheckCircle className="size-3 text-green-500" />
                           <span className="text-muted-foreground">
-                            {feature.limit.max - feature.limit.current} remaining
+                            {feature.limit.max - feature.limit.current}{" "}
+                            remaining
                           </span>
                         </>
                       ) : (
@@ -82,12 +98,16 @@ export function UsageDashboard({ planFeatures }: UsageDashboardProps) {
                 {feature.enabled ? (
                   <>
                     <CheckCircle className="size-4 text-green-500" />
-                    <span className="text-sm text-muted-foreground">Enabled</span>
+                    <span className="text-sm text-muted-foreground">
+                      Enabled
+                    </span>
                   </>
                 ) : (
                   <>
                     <XCircle className="size-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Not available</span>
+                    <span className="text-sm text-muted-foreground">
+                      Not available
+                    </span>
                   </>
                 )}
               </div>
@@ -98,4 +118,3 @@ export function UsageDashboard({ planFeatures }: UsageDashboardProps) {
     </div>
   );
 }
-

@@ -1,9 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useEffect, useState } from "react";
+import type { Booking } from "@/actions/scheduling/bookings-actions";
+import { getBooking } from "@/actions/scheduling/bookings-actions";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
+import {
+  Calendar,
+  CheckCircle2,
+  Clock,
+  Mail,
+  MessageSquare,
+  User,
+  Users,
+  XCircle,
+} from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+
 import { formatDurationHours } from "@/lib/utils";
 import {
   Sheet,
@@ -14,18 +27,6 @@ import {
 } from "@/components/ui/sheet";
 import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
-import {
-  Calendar,
-  Clock,
-  User,
-  Mail,
-  MessageSquare,
-  XCircle,
-  CheckCircle2,
-  Users,
-} from "lucide-react";
-import type { Booking } from "@/actions/scheduling/bookings-actions";
-import { getBooking } from "@/actions/scheduling/bookings-actions";
 import { BookingActions } from "@/components/scheduling/booking-actions";
 
 interface BookingDrawerProps {
@@ -34,7 +35,11 @@ interface BookingDrawerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function BookingDrawer({ bookingId, open, onOpenChange }: BookingDrawerProps) {
+export function BookingDrawer({
+  bookingId,
+  open,
+  onOpenChange,
+}: BookingDrawerProps) {
   const t = useTranslations("Scheduling.bookings.detail");
   const locale = useLocale();
   const dateLocale = locale === "de" ? de : enUS;
@@ -70,12 +75,11 @@ export function BookingDrawer({ bookingId, open, onOpenChange }: BookingDrawerPr
       <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
         <SheetHeader>
           <SheetTitle>
-            {isLoading 
-              ? (t("title") || "Buchungsdetails")
-              : booking 
-              ? (t("title") || "Buchungsdetails")
-              : (t("title") || "Buchungsdetails")
-            }
+            {isLoading
+              ? t("title") || "Buchungsdetails"
+              : booking
+                ? t("title") || "Buchungsdetails"
+                : t("title") || "Buchungsdetails"}
           </SheetTitle>
           {booking && (
             <SheetDescription>
@@ -128,10 +132,14 @@ export function BookingDrawer({ bookingId, open, onOpenChange }: BookingDrawerPr
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground flex items-center gap-2">
                     <Clock className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-                    <span className="text-blue-600 dark:text-blue-400 font-medium">{t("eventDate") || t("date") || "Event Datum"}</span>
+                    <span className="text-blue-600 dark:text-blue-400 font-medium">
+                      {t("eventDate") || t("date") || "Event Datum"}
+                    </span>
                   </p>
                   <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                    {format(startDate, "EEEE, d. MMMM yyyy", { locale: dateLocale })}
+                    {format(startDate, "EEEE, d. MMMM yyyy", {
+                      locale: dateLocale,
+                    })}
                   </p>
                 </div>
 
@@ -176,10 +184,16 @@ export function BookingDrawer({ bookingId, open, onOpenChange }: BookingDrawerPr
                     <div className="space-y-1">
                       <p className="text-xs text-muted-foreground flex items-center gap-2">
                         <Calendar className="h-3 w-3 text-green-600 dark:text-green-400" />
-                        <span className="text-green-600 dark:text-green-400 font-medium">{t("bookedAt") || "Gebucht am"}</span>
+                        <span className="text-green-600 dark:text-green-400 font-medium">
+                          {t("bookedAt") || "Gebucht am"}
+                        </span>
                       </p>
                       <p className="text-sm font-medium text-green-600 dark:text-green-400">
-                        {format(new Date(booking.created_at), "EEEE, d. MMMM yyyy 'um' HH:mm", { locale: dateLocale })}
+                        {format(
+                          new Date(booking.created_at),
+                          "EEEE, d. MMMM yyyy 'um' HH:mm",
+                          { locale: dateLocale },
+                        )}
                       </p>
                     </div>
                   </>
@@ -225,7 +239,10 @@ export function BookingDrawer({ bookingId, open, onOpenChange }: BookingDrawerPr
                         booking.participant_names.length > 0 && (
                           <div className="mt-2 space-y-1">
                             {booking.participant_names.map((name, index) => (
-                              <p key={index} className="text-xs text-muted-foreground">
+                              <p
+                                key={index}
+                                className="text-xs text-muted-foreground"
+                              >
                                 • {name}
                               </p>
                             ))}
@@ -263,5 +280,3 @@ export function BookingDrawer({ bookingId, open, onOpenChange }: BookingDrawerPr
     </Sheet>
   );
 }
-
-

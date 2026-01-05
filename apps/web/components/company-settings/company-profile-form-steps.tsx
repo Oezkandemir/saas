@@ -1,22 +1,24 @@
 "use client";
 
-import { UseFormReturn } from "react-hook-form";
 import { CompanyProfileInput } from "@/actions/company-profiles-actions";
-import { CompanyBasicFields } from "./company-basic-fields";
-import { CompanyLegalFields } from "./company-legal-fields";
-import { CompanyContactFields } from "./company-contact-fields";
-import { CompanyBankFields } from "./company-bank-fields";
+import { Calendar, CreditCard, Percent, Tag } from "lucide-react";
+import { UseFormReturn } from "react-hook-form";
+
+import { Checkbox } from "@/components/ui/checkbox";
 import {
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
-  FormDescription,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from '@/components/alignui/forms/input';
-import { Checkbox } from "@/components/ui/checkbox";
-import { Tag, Percent, Calendar, CreditCard } from "lucide-react";
+import { Input } from "@/components/alignui/forms/input";
+
+import { CompanyBankFields } from "./company-bank-fields";
+import { CompanyBasicFields } from "./company-basic-fields";
+import { CompanyContactFields } from "./company-contact-fields";
+import { CompanyLegalFields } from "./company-legal-fields";
 
 // Step 0: Profile Settings
 export function CompanyProfileSettingsStep({
@@ -125,7 +127,8 @@ export function CompanyDocumentDefaultsStep({
         <h3 className="text-lg font-semibold">Dokument-Standards</h3>
       </div>
       <p className="text-sm text-muted-foreground mb-4">
-        Diese Werte werden automatisch für neue Rechnungen und Angebote verwendet.
+        Diese Werte werden automatisch für neue Rechnungen und Angebote
+        verwendet.
       </p>
       <div className="grid gap-4 md:grid-cols-2">
         <FormField
@@ -146,7 +149,11 @@ export function CompanyDocumentDefaultsStep({
                   placeholder="19"
                   {...field}
                   value={field.value ?? ""}
-                  onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value ? parseFloat(e.target.value) : undefined,
+                    )
+                  }
                 />
               </FormControl>
               <FormDescription>
@@ -172,7 +179,11 @@ export function CompanyDocumentDefaultsStep({
                   placeholder="14"
                   {...field}
                   value={field.value ?? ""}
-                  onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value ? parseInt(e.target.value) : undefined,
+                    )
+                  }
                 />
               </FormControl>
               <FormDescription>
@@ -200,7 +211,8 @@ export function CompanyDocumentDefaultsStep({
                 Zahlung bei Erhalt der Rechnung
               </FormLabel>
               <FormDescription>
-                Wenn aktiviert, wird auf Rechnungen "Zahlung bei Erhalt" statt einer Fälligkeitsfrist angezeigt
+                Wenn aktiviert, wird auf Rechnungen "Zahlung bei Erhalt" statt
+                einer Fälligkeitsfrist angezeigt
               </FormDescription>
             </div>
           </FormItem>
@@ -209,4 +221,3 @@ export function CompanyDocumentDefaultsStep({
     </div>
   );
 }
-

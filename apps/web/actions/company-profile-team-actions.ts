@@ -1,9 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSupabaseServer } from "@/lib/supabase-server";
-import { getCurrentUser } from "@/lib/session";
+
 import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
+import { getSupabaseServer } from "@/lib/supabase-server";
 
 export type CompanyProfileRole = "owner" | "admin" | "editor" | "viewer";
 
@@ -115,12 +116,14 @@ export async function getCompanyProfileTeamMembers(
 
   return (data || []).map((member: any) => ({
     ...member,
-    user: member.user ? {
-      id: member.user.id,
-      name: member.user.name,
-      email: member.user.email,
-      avatar_url: member.user.avatar_url,
-    } : undefined,
+    user: member.user
+      ? {
+          id: member.user.id,
+          name: member.user.name,
+          email: member.user.email,
+          avatar_url: member.user.avatar_url,
+        }
+      : undefined,
   }));
 }
 
@@ -221,11 +224,14 @@ export async function addCompanyProfileTeamMember(
   // Create notification for the invited user
   if (companyProfile) {
     try {
-      const { createTeamInvitationNotification } = await import("@/lib/notifications");
+      const { createTeamInvitationNotification } = await import(
+        "@/lib/notifications"
+      );
       await createTeamInvitationNotification({
         userId: targetUser.id,
         companyProfileId: input.company_profile_id,
-        companyProfileName: companyProfile.profile_name || companyProfile.company_name,
+        companyProfileName:
+          companyProfile.profile_name || companyProfile.company_name,
         inviterName: user.name || user.email || "Ein Benutzer",
         inviterEmail: user.email || "",
         role: input.role,
@@ -233,19 +239,24 @@ export async function addCompanyProfileTeamMember(
     } catch (notificationError) {
       // Don't fail the operation if notification fails
       const { logger } = await import("@/lib/logger");
-      logger.error("Failed to create team invitation notification", notificationError);
+      logger.error(
+        "Failed to create team invitation notification",
+        notificationError,
+      );
     }
   }
 
   revalidatePath(`/dashboard/settings/company`);
   return {
     ...data,
-    user: data.user ? {
-      id: data.user.id,
-      name: data.user.name,
-      email: data.user.email,
-      avatar_url: data.user.avatar_url,
-    } : undefined,
+    user: data.user
+      ? {
+          id: data.user.id,
+          name: data.user.name,
+          email: data.user.email,
+          avatar_url: data.user.avatar_url,
+        }
+      : undefined,
   };
 }
 
@@ -321,12 +332,14 @@ export async function updateCompanyProfileTeamMember(
   revalidatePath(`/dashboard/settings/company`);
   return {
     ...data,
-    user: data.user ? {
-      id: data.user.id,
-      name: data.user.name,
-      email: data.user.email,
-      avatar_url: data.user.avatar_url,
-    } : undefined,
+    user: data.user
+      ? {
+          id: data.user.id,
+          name: data.user.name,
+          email: data.user.email,
+          avatar_url: data.user.avatar_url,
+        }
+      : undefined,
   };
 }
 
@@ -368,9 +381,7 @@ export async function removeCompanyProfileTeamMember(
 
   if (error) {
     logger.error("Error removing team member:", error);
-    throw new Error(
-      error.message || "Fehler beim Entfernen des Teammitglieds",
-    );
+    throw new Error(error.message || "Fehler beim Entfernen des Teammitglieds");
   }
 
   revalidatePath(`/dashboard/settings/company`);
@@ -381,7 +392,13 @@ export async function removeCompanyProfileTeamMember(
  */
 export async function hasCompanyProfilePermission(
   companyProfileId: string,
-  permission: "view" | "edit_documents" | "delete_documents" | "edit_customers" | "delete_customers" | "manage_team",
+  permission:
+    | "view"
+    | "edit_documents"
+    | "delete_documents"
+    | "edit_customers"
+    | "delete_customers"
+    | "manage_team",
 ): Promise<boolean> {
   const user = await getCurrentUser();
   if (!user) return false;
@@ -446,4 +463,3 @@ export async function getCompanyProfilesForUser(): Promise<{
     member: member || [],
   };
 }
-

@@ -20,9 +20,6 @@ import {
   AccordionContent,
   AccordionItem,
 } from "@/components/ui/accordion";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Button } from '@/components/alignui/actions/button';
-import { Input } from '@/components/alignui/forms/input';
 import {
   Select,
   SelectContent,
@@ -32,6 +29,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserActions } from "@/components/admin/users/user-actions";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Input } from "@/components/alignui/forms/input";
 import { UserAvatar } from "@/components/shared/user-avatar";
 
 import { User } from "./columns";
@@ -114,7 +114,6 @@ export function DataTable<TData, TValue>({
   const filteredData = table
     .getFilteredRowModel()
     .rows.map((row) => row.original) as unknown as User[];
-
 
   return (
     <div className="space-y-4">
@@ -257,7 +256,9 @@ export function DataTable<TData, TValue>({
                       <div className="space-y-4">
                         <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
                           <div>
-                            <span className="text-muted-foreground">Status:</span>{" "}
+                            <span className="text-muted-foreground">
+                              Status:
+                            </span>{" "}
                             <Badge
                               variant={
                                 user.status === "banned"
@@ -271,7 +272,9 @@ export function DataTable<TData, TValue>({
                             </Badge>
                           </div>
                           <div>
-                            <span className="text-muted-foreground">Subscription:</span>{" "}
+                            <span className="text-muted-foreground">
+                              Subscription:
+                            </span>{" "}
                             <Badge
                               variant={
                                 user.hasSubscription ? "default" : "outline"
@@ -282,8 +285,12 @@ export function DataTable<TData, TValue>({
                             </Badge>
                           </div>
                           <div>
-                            <span className="text-muted-foreground">Last Sign In:</span>{" "}
-                            <span className="text-foreground">{user.lastSignIn}</span>
+                            <span className="text-muted-foreground">
+                              Last Sign In:
+                            </span>{" "}
+                            <span className="text-foreground">
+                              {user.lastSignIn}
+                            </span>
                           </div>
                         </div>
 
@@ -307,7 +314,8 @@ export function DataTable<TData, TValue>({
       {/* Pagination */}
       <div className="flex items-center justify-between pt-2">
         <div className="text-xs text-muted-foreground">
-          {table.getFilteredRowModel().rows.length} {table.getFilteredRowModel().rows.length === 1 ? "user" : "users"}
+          {table.getFilteredRowModel().rows.length}{" "}
+          {table.getFilteredRowModel().rows.length === 1 ? "user" : "users"}
         </div>
         <div className="flex gap-2">
           <Button

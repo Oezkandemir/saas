@@ -1,13 +1,18 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { FileText, Mail, Phone, Edit, Plus, Calendar } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { de, enUS } from "date-fns/locale";
-import { useLocale } from "next-intl";
 import Link from "next/link";
 import { Customer } from "@/actions/customers-actions";
+import { formatDistanceToNow } from "date-fns";
+import { de, enUS } from "date-fns/locale";
+import { Calendar, Edit, FileText, Mail, Phone, Plus } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 
 interface Activity {
   id: string;
@@ -136,7 +141,7 @@ export function CustomerActivityTimeline({
               <div key={activity.id} className="relative flex gap-4">
                 <div
                   className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-background ${getActivityColor(
-                    activity.type
+                    activity.type,
                   )} text-white`}
                 >
                   {getActivityIcon(activity.type)}
@@ -174,4 +179,3 @@ export function CustomerActivityTimeline({
     </Card>
   );
 }
-

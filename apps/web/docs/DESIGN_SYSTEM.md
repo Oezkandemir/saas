@@ -3,6 +3,7 @@
 ## 🎯 Design-Philosophie
 
 **Clean, Subtle, Professional** - Ein Design-System inspiriert von Big-Tech/SaaS-Unternehmen (Vercel, Linear, Stripe) mit Fokus auf:
+
 - Großzügige Whitespaces
 - Subtile Borders statt harte Boxen
 - Weiche Shadows für Tiefe
@@ -15,6 +16,7 @@
 ### Farben (HSL)
 
 **Light Mode:**
+
 - `--background`: 0 0% 100% (Pure White)
 - `--foreground`: 0 0% 3.9% (Near Black)
 - `--card`: 0 0% 100% (White)
@@ -36,6 +38,7 @@
 - `--ring`: 0 0% 3.9% (Focus Ring)
 
 **Dark Mode:**
+
 - `--background`: 0 0% 3.9% (Near Black)
 - `--foreground`: 0 0% 98% (Near White)
 - `--card`: 0 0% 3.9% (Near Black)
@@ -69,6 +72,7 @@
 ```
 
 **Container Padding:**
+
 - Mobile: `1rem` (16px)
 - Tablet: `1.5rem` (24px)
 - Desktop: `2rem` (32px)
@@ -78,17 +82,20 @@
 ### Typography Scale
 
 **Headings:**
+
 - `h1`: `1.875rem` (30px) / `2.25rem` (36px) - Line Height: 1.2
 - `h2`: `1.5rem` (24px) / `1.875rem` (30px) - Line Height: 1.3
 - `h3`: `1.25rem` (20px) / `1.5rem` (24px) - Line Height: 1.4
 - `h4`: `1.125rem` (18px) / `1.25rem` (20px) - Line Height: 1.5
 
 **Body:**
+
 - `base`: `1rem` (16px) - Line Height: 1.6
 - `sm`: `0.875rem` (14px) - Line Height: 1.5
 - `xs`: `0.75rem` (12px) - Line Height: 1.5
 
 **Weights:**
+
 - Normal: `400`
 - Medium: `500`
 - Semibold: `600`
@@ -108,12 +115,14 @@
 ### Shadows
 
 **Subtle Shadows (SaaS-Style):**
+
 - `sm`: `0 1px 2px 0 rgb(0 0 0 / 0.05)`
 - `md`: `0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)`
 - `lg`: `0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)`
 - `xl`: `0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)`
 
 **Dark Mode Shadows:**
+
 - Weicher, subtiler
 - Mehr Glow-Effekt statt harte Schatten
 
@@ -122,6 +131,7 @@
 ### Button
 
 **Variants:**
+
 - `default`: Primary Action (Dark BG, White Text)
 - `destructive`: Danger Actions (Red)
 - `outline`: Secondary Actions (Border, Transparent BG)
@@ -130,12 +140,14 @@
 - `link`: Text Links (Underline on Hover)
 
 **Sizes:**
+
 - `sm`: `h-9 px-3 text-sm`
 - `default`: `h-10 px-4 text-sm`
 - `lg`: `h-11 px-8 text-base`
 - `icon`: `size-10`
 
 **States:**
+
 - Hover: Subtle scale (0.98) + Shadow
 - Active: Scale (0.96)
 - Disabled: Opacity 50% + No Pointer Events
@@ -144,6 +156,7 @@
 ### Card
 
 **Structure:**
+
 - Border: Subtle (`border-border`)
 - Background: `bg-card`
 - Shadow: `shadow-sm` (subtle)
@@ -151,6 +164,7 @@
 - Padding: `p-4 sm:p-5` (responsive)
 
 **Variants:**
+
 - `hover`: Hover shadow + border color change
 - `interactive`: Cursor pointer + active scale
 - `compact`: Reduced padding
@@ -158,6 +172,7 @@
 ### Input
 
 **Base:**
+
 - Height: `h-10` (40px)
 - Padding: `px-3 py-2`
 - Border: `border-input`
@@ -165,6 +180,7 @@
 - Focus: Ring (2px, offset 2px)
 
 **States:**
+
 - Default: Transparent BG, Border
 - Focus: Ring visible
 - Disabled: Opacity 50%
@@ -173,33 +189,39 @@
 ### Table
 
 **Header:**
+
 - Background: `bg-muted/50`
 - Font: `font-semibold`
 - Padding: `px-4 py-3`
 - Border: Bottom border
 
 **Row:**
+
 - Hover: `bg-muted/30`
 - Border: Bottom border (subtle)
 - Padding: `px-4 py-3`
 
 **Cell:**
+
 - Padding: `p-4`
 - Text: `text-sm`
 
 ### Page Header
 
 **Structure:**
+
 - Container: `border-b bg-card/50 backdrop-blur-sm`
 - Padding: `px-4 py-3.5 sm:py-4`
 - Layout: Flex, space-between
 
 **Title:**
+
 - Size: `text-base sm:text-lg`
 - Weight: `font-semibold`
 - Truncate: Yes
 
 **Description:**
+
 - Size: `text-xs sm:text-sm`
 - Color: `text-muted-foreground`
 - Truncate: Yes
@@ -207,12 +229,14 @@
 ### Status Bar
 
 **Structure:**
+
 - Container: `border-b bg-muted/20`
 - Grid: `grid-cols-2 sm:grid-cols-3 lg:grid-cols-6`
 - Gap: `gap-4 sm:gap-6`
 - Padding: `px-4 sm:px-6 py-4`
 
 **Item:**
+
 - Icon Container: `size-10 rounded-lg bg-background border shadow-sm`
 - Value: `text-2xl font-bold`
 - Label: `text-xs text-muted-foreground`
@@ -229,13 +253,11 @@
     icon={<Icon />}
     actions={<Button>Action</Button>}
   />
-  
+
   <StatusBar items={statusBarItems} />
-  
+
   <div className="flex-1 overflow-y-auto p-4">
-    <div className="space-y-4">
-      {/* Content Sections */}
-    </div>
+    <div className="space-y-4">{/* Content Sections */}</div>
   </div>
 </div>
 ```
@@ -243,19 +265,19 @@
 ### Content Sections
 
 **Card Section:**
+
 ```tsx
 <Card>
   <CardHeader>
     <CardTitle>Section Title</CardTitle>
     <CardDescription>Section description</CardDescription>
   </CardHeader>
-  <CardContent>
-    {/* Content */}
-  </CardContent>
+  <CardContent>{/* Content */}</CardContent>
 </Card>
 ```
 
 **Grid Layout:**
+
 - Mobile: `grid-cols-1` or `grid-cols-2`
 - Tablet: `grid-cols-2` or `grid-cols-3`
 - Desktop: `grid-cols-3` or `grid-cols-4`
@@ -279,4 +301,3 @@
 3. **Folge Page Patterns** für konsistente Layouts
 4. **Teste Dark Mode** bei allen Änderungen
 5. **Mobile First**: Teste immer auf Mobile zuerst
-

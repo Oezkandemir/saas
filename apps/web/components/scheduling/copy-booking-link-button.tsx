@@ -1,16 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from '@/components/alignui/actions/button';
-import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
+
+import { Button } from "@/components/alignui/actions/button";
 
 interface CopyBookingLinkButtonProps {
   bookingUrl: string;
 }
 
-export function CopyBookingLinkButton({ bookingUrl }: CopyBookingLinkButtonProps) {
+export function CopyBookingLinkButton({
+  bookingUrl,
+}: CopyBookingLinkButtonProps) {
   const t = useTranslations("Scheduling.eventTypes.detail.share");
   const [copied, setCopied] = useState(false);
 
@@ -46,10 +49,3 @@ export function CopyBookingLinkButton({ bookingUrl }: CopyBookingLinkButtonProps
     </Button>
   );
 }
-
-
-
-
-
-
-

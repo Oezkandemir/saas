@@ -1,38 +1,39 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { useAutoSave } from "@/lib/hooks/use-auto-save";
-
 import {
   CompanyProfile,
   CompanyProfileInput,
   createCompanyProfile,
   updateCompanyProfile,
 } from "@/actions/company-profiles-actions";
-import { Form } from "@/components/ui/form";
-import { Card, CardContent } from '@/components/alignui/data-display/card';
-import { Building2, Scale, Mail, Landmark, Tag, FileText } from "lucide-react";
-import { MultiStepForm, Step } from "@/components/ui/multi-step-form";
-import {
-  CompanyProfileSettingsStep,
-  CompanyBasicInfoStep,
-  CompanyLegalInfoStep,
-  CompanyContactInfoStep,
-  CompanyBankInfoStep,
-  CompanyDocumentDefaultsStep,
-} from "./company-profile-form-steps";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Building2, FileText, Landmark, Mail, Scale, Tag } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+
+import { useAutoSave } from "@/lib/hooks/use-auto-save";
 import { logger } from "@/lib/logger";
+import { Form } from "@/components/ui/form";
+import { MultiStepForm, Step } from "@/components/ui/multi-step-form";
+import { Card, CardContent } from "@/components/alignui/data-display/card";
+
+import {
+  CompanyBankInfoStep,
+  CompanyBasicInfoStep,
+  CompanyContactInfoStep,
+  CompanyDocumentDefaultsStep,
+  CompanyLegalInfoStep,
+  CompanyProfileSettingsStep,
+} from "./company-profile-form-steps";
 
 const companyProfileSchema = z.object({
   profile_name: z.string().min(1, "Profilname ist erforderlich"),
   is_default: z.boolean().optional(),
   profile_type: z.enum(["personal", "team"]).optional(),
-  
+
   // Basic
   company_name: z.string().min(1, "Firmenname ist erforderlich"),
   company_address: z.string().optional(),
@@ -40,31 +41,35 @@ const companyProfileSchema = z.object({
   company_postal_code: z.string().optional(),
   company_city: z.string().optional(),
   company_country: z.string().optional(),
-  
+
   // Legal
   company_tax_id: z.string().optional(),
   company_vat_id: z.string().optional(),
   company_registration_number: z.string().optional(),
-  
+
   // Contact
   company_email: z.string().email("Gültige E-Mail erforderlich"),
   company_phone: z.string().optional(),
   company_mobile: z.string().optional(),
-  company_website: z.string().url("Gültige URL erforderlich").optional().or(z.literal("")),
+  company_website: z
+    .string()
+    .url("Gültige URL erforderlich")
+    .optional()
+    .or(z.literal("")),
   contact_person_name: z.string().optional(),
   contact_person_position: z.string().optional(),
-  
+
   // Bank
   bank_name: z.string().optional(),
   bank_account_holder: z.string().optional(),
   iban: z.string().optional(),
   bic: z.string().optional(),
-  
+
   // Branding
   logo_url: z.string().url().optional().or(z.literal("")),
   primary_color: z.string().optional(),
   secondary_color: z.string().optional(),
-  
+
   // Document defaults
   default_tax_rate: z.number().min(0).max(100).optional(),
   default_payment_days: z.number().min(0).optional(),
@@ -78,7 +83,10 @@ interface CompanyProfileFormProps {
   onSuccess?: () => void;
 }
 
-export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormProps) {
+export function CompanyProfileForm({
+  profile,
+  onSuccess,
+}: CompanyProfileFormProps) {
   const [, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -89,7 +97,7 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
       profile_name: profile?.profile_name || "",
       is_default: profile?.is_default || false,
       profile_type: profile?.profile_type || "personal",
-      
+
       // Basic
       company_name: profile?.company_name || "",
       company_address: profile?.company_address || "",
@@ -97,12 +105,12 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
       company_postal_code: profile?.company_postal_code || "",
       company_city: profile?.company_city || "",
       company_country: profile?.company_country || "DE",
-      
+
       // Legal
       company_tax_id: profile?.company_tax_id || "",
       company_vat_id: profile?.company_vat_id || "",
       company_registration_number: profile?.company_registration_number || "",
-      
+
       // Contact
       company_email: profile?.company_email || "",
       company_phone: profile?.company_phone || "",
@@ -110,18 +118,18 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
       company_website: profile?.company_website || "",
       contact_person_name: profile?.contact_person_name || "",
       contact_person_position: profile?.contact_person_position || "",
-      
+
       // Bank
       bank_name: profile?.bank_name || "",
       bank_account_holder: profile?.bank_account_holder || "",
       iban: profile?.iban || "",
       bic: profile?.bic || "",
-      
+
       // Branding
       logo_url: profile?.logo_url || "",
       primary_color: profile?.primary_color || "#000000",
       secondary_color: profile?.secondary_color || "#666666",
-      
+
       // Document defaults
       default_tax_rate: profile?.default_tax_rate ?? 19,
       default_payment_days: profile?.default_payment_days ?? 14,
@@ -163,7 +171,8 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
       }
     } catch (error: any) {
       logger.error("Error saving company profile:", error);
-      const errorMessage = error?.message || "Fehler beim Speichern des Profils";
+      const errorMessage =
+        error?.message || "Fehler beim Speichern des Profils";
       toast.error("Fehler beim Speichern", {
         description: errorMessage,
         duration: 5000,
@@ -204,7 +213,11 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
       title: "Rechtliches",
       description: "Steuerdaten",
       icon: <Scale className="size-5" />,
-      fields: ["company_tax_id", "company_vat_id", "company_registration_number"],
+      fields: [
+        "company_tax_id",
+        "company_vat_id",
+        "company_registration_number",
+      ],
       component: CompanyLegalInfoStep,
     },
     {
@@ -235,7 +248,11 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
       title: "Standards",
       description: "Dokumente",
       icon: <FileText className="size-5" />,
-      fields: ["default_tax_rate", "default_payment_days", "payment_on_receipt"],
+      fields: [
+        "default_tax_rate",
+        "default_payment_days",
+        "payment_on_receipt",
+      ],
       component: CompanyDocumentDefaultsStep,
     },
   ];
@@ -256,4 +273,3 @@ export function CompanyProfileForm({ profile, onSuccess }: CompanyProfileFormPro
     </Card>
   );
 }
-

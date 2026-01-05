@@ -3,12 +3,12 @@
 import { revalidateTag } from "next/cache";
 import { auth } from "@/auth";
 
+import { supabaseAdmin } from "@/lib/db";
+import { logger } from "@/lib/logger";
+import { getUserSubscriptionPlan } from "@/lib/subscription";
+
 // Type assertion to handle Next.js 16 type requirements
 const revalidateTagSafe = revalidateTag as (tag: string) => void;
-
-import { supabaseAdmin } from "@/lib/db";
-import { getUserSubscriptionPlan } from "@/lib/subscription";
-import { logger } from "@/lib/logger";
 
 export type RefreshResult = {
   success: boolean;
@@ -41,13 +41,14 @@ export async function refreshSubscription(): Promise<RefreshResult> {
     // Subscriptions are automatically synced via webhooks
     // Just invalidate cache and return current subscription data
     revalidateTagSafe("subscription-plan");
-    
+
     // Get current subscription plan
     const updatedPlan = await getUserSubscriptionPlan(user.id);
-    
+
     return {
       success: true,
-      message: "Subscription data refreshed (synced automatically via webhooks)",
+      message:
+        "Subscription data refreshed (synced automatically via webhooks)",
       subscription: {
         plan: updatedPlan.title,
         isPaid: updatedPlan.isPaid,

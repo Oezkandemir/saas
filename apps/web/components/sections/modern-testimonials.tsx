@@ -1,9 +1,9 @@
-import { getTranslations } from "next-intl/server";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 
 import { testimonials } from "@/config/landing";
-import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { Icons } from "@/components/shared/icons";
+import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 interface ModernTestimonialsProps {}
 
@@ -21,9 +21,7 @@ export default async function ModernTestimonials({}: ModernTestimonialsProps) {
           <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
             {t("title")}
           </h2>
-          <p className="mt-6 text-xl text-muted-foreground">
-            {t("subtitle")}
-          </p>
+          <p className="mt-6 text-xl text-muted-foreground">{t("subtitle")}</p>
         </div>
 
         {/* Testimonials Grid */}
@@ -73,4 +71,3 @@ export default async function ModernTestimonials({}: ModernTestimonialsProps) {
     </section>
   );
 }
-

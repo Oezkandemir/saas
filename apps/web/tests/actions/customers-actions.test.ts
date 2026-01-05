@@ -1,15 +1,16 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
-  getCustomers,
-  getCustomer,
   createCustomer,
-  updateCustomer,
   deleteCustomer,
+  getCustomer,
+  getCustomers,
+  updateCustomer,
   type CustomerInput,
 } from "@/actions/customers-actions";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { enforcePlanLimit } from "@/lib/plan-limits";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServer } from "@/lib/supabase-server";
-import { enforcePlanLimit } from "@/lib/plan-limits";
 
 // Mock dependencies
 vi.mock("@/lib/session");
@@ -97,7 +98,10 @@ describe("Customers Actions", () => {
 
       await getCustomers("company-profile-123");
 
-      expect(mockSupabase.eq).toHaveBeenCalledWith("company_profile_id", "company-profile-123");
+      expect(mockSupabase.eq).toHaveBeenCalledWith(
+        "company_profile_id",
+        "company-profile-123",
+      );
     });
 
     it("should return empty array on error", async () => {
@@ -184,7 +188,9 @@ describe("Customers Actions", () => {
       };
       vi.mocked(getSupabaseServer).mockResolvedValue(mockSupabase as any);
 
-      await expect(createCustomer(customerInput)).rejects.toThrow("Unauthorized");
+      await expect(createCustomer(customerInput)).rejects.toThrow(
+        "Unauthorized",
+      );
     });
 
     it("should create customer successfully", async () => {
@@ -243,7 +249,9 @@ describe("Customers Actions", () => {
       };
       vi.mocked(getSupabaseServer).mockResolvedValue(mockSupabase as any);
 
-      await expect(updateCustomer("customer-123", updateInput)).rejects.toThrow("Unauthorized");
+      await expect(updateCustomer("customer-123", updateInput)).rejects.toThrow(
+        "Unauthorized",
+      );
     });
 
     it("should update customer successfully", async () => {
@@ -277,7 +285,9 @@ describe("Customers Actions", () => {
       };
       vi.mocked(getSupabaseServer).mockResolvedValue(mockSupabase as any);
 
-      await expect(deleteCustomer("customer-123")).rejects.toThrow("Unauthorized");
+      await expect(deleteCustomer("customer-123")).rejects.toThrow(
+        "Unauthorized",
+      );
     });
 
     it("should delete customer successfully", async () => {
@@ -296,7 +306,3 @@ describe("Customers Actions", () => {
     });
   });
 });
-
-
-
-

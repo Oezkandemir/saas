@@ -1,27 +1,33 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
-import { useForm } from "react-hook-form";
+import {
+  changePassword,
+  type ChangePasswordFormData,
+} from "@/actions/change-password";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, Eye, EyeOff, Lock } from "lucide-react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { Button } from '@/components/alignui/actions/button';
+import {
+  passwordSchema,
+  validatePassword,
+} from "@/lib/validations/password-policy";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { Input } from '@/components/alignui/forms/input';
-import { LabelRoot as Label } from '@/components/alignui/forms/label';
-import { changePassword, type ChangePasswordFormData } from "@/actions/change-password";
-import { validatePassword, passwordSchema } from "@/lib/validations/password-policy";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+} from "@/components/alignui/data-display/card";
+import { Input } from "@/components/alignui/forms/input";
+import { LabelRoot as Label } from "@/components/alignui/forms/label";
 
 export function ChangePassword() {
   const router = useRouter();
@@ -29,16 +35,20 @@ export function ChangePassword() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState<"weak" | "medium" | "strong" | null>(null);
+  const [passwordStrength, setPasswordStrength] = useState<
+    "weak" | "medium" | "strong" | null
+  >(null);
 
-  const changePasswordFormSchema = z.object({
-    currentPassword: z.string().min(1, "Aktuelles Passwort ist erforderlich"),
-    newPassword: passwordSchema,
-    confirmPassword: z.string(),
-  }).refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwörter stimmen nicht überein",
-    path: ["confirmPassword"],
-  });
+  const changePasswordFormSchema = z
+    .object({
+      currentPassword: z.string().min(1, "Aktuelles Passwort ist erforderlich"),
+      newPassword: passwordSchema,
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: "Passwörter stimmen nicht überein",
+      path: ["confirmPassword"],
+    });
 
   const {
     register,
@@ -184,8 +194,8 @@ export function ChangePassword() {
                           passwordStrength === "weak"
                             ? "33%"
                             : passwordStrength === "medium"
-                            ? "66%"
-                            : "100%",
+                              ? "66%"
+                              : "100%",
                       }}
                     />
                   </div>
@@ -194,8 +204,8 @@ export function ChangePassword() {
                       passwordStrength === "strong"
                         ? "default"
                         : passwordStrength === "medium"
-                        ? "outline"
-                        : "destructive"
+                          ? "outline"
+                          : "destructive"
                     }
                     className="text-xs"
                   >
@@ -265,4 +275,3 @@ export function ChangePassword() {
     </Card>
   );
 }
-

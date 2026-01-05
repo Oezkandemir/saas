@@ -1,17 +1,9 @@
 import { redirect } from "next/navigation";
 import { getRevenueAnalytics } from "@/actions/revenue-analytics-actions";
 import { DollarSign } from "lucide-react";
-import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/alignui/data-display/card';
 import {
   Table,
   TableBody,
@@ -21,7 +13,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -105,18 +105,26 @@ export default async function AdminRevenuePage(props: Props) {
               maximumFractionDigits: 0,
             })}
           </div>
-          <div className="text-sm text-muted-foreground">Monatliches wiederkehrendes Einkommen</div>
+          <div className="text-sm text-muted-foreground">
+            Monatliches wiederkehrendes Einkommen
+          </div>
         </div>
       </div>
 
       {/* Secondary KPIs - Max 3 */}
       <div className="grid gap-4 md:grid-cols-3">
         <div>
-          <div className="text-sm text-muted-foreground mb-1">Aktive Abonnenten</div>
-          <div className="text-2xl font-semibold">{metrics.active_subscribers}</div>
+          <div className="text-sm text-muted-foreground mb-1">
+            Aktive Abonnenten
+          </div>
+          <div className="text-2xl font-semibold">
+            {metrics.active_subscribers}
+          </div>
         </div>
         <div>
-          <div className="text-sm text-muted-foreground mb-1">Ø Revenue pro User</div>
+          <div className="text-sm text-muted-foreground mb-1">
+            Ø Revenue pro User
+          </div>
           <div className="text-2xl font-semibold">
             {metrics.avg_revenue_per_user.toLocaleString(locale, {
               style: "currency",
@@ -157,17 +165,22 @@ export default async function AdminRevenuePage(props: Props) {
                       <TableHead>Zeitraum</TableHead>
                       <TableHead className="text-right">Umsatz</TableHead>
                       <TableHead className="text-right">Abonnenten</TableHead>
-                      <TableHead className="text-right">Ø pro Abonnent</TableHead>
+                      <TableHead className="text-right">
+                        Ø pro Abonnent
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {revenueByPeriod.map((period, index) => (
                       <TableRow key={index}>
                         <TableCell className="font-medium">
-                          {new Date(period.period_start).toLocaleDateString(locale, {
-                            month: "short",
-                            year: "numeric",
-                          })}
+                          {new Date(period.period_start).toLocaleDateString(
+                            locale,
+                            {
+                              month: "short",
+                              year: "numeric",
+                            },
+                          )}
                         </TableCell>
                         <TableCell className="text-right font-semibold">
                           {period.total_revenue.toLocaleString(locale, {
@@ -179,10 +192,13 @@ export default async function AdminRevenuePage(props: Props) {
                           {period.subscriber_count}
                         </TableCell>
                         <TableCell className="text-right text-muted-foreground">
-                          {period.avg_revenue_per_subscriber.toLocaleString(locale, {
-                            style: "currency",
-                            currency: "EUR",
-                          })}
+                          {period.avg_revenue_per_subscriber.toLocaleString(
+                            locale,
+                            {
+                              style: "currency",
+                              currency: "EUR",
+                            },
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -202,9 +218,7 @@ export default async function AdminRevenuePage(props: Props) {
           <Card>
             <CardHeader>
               <CardTitle>{t("revenueByPlan")}</CardTitle>
-              <CardDescription>
-                Umsatz nach Abonnement-Plan
-              </CardDescription>
+              <CardDescription>Umsatz nach Abonnement-Plan</CardDescription>
             </CardHeader>
             <CardContent>
               {revenueByPlan.length > 0 ? (
@@ -214,8 +228,12 @@ export default async function AdminRevenuePage(props: Props) {
                       <TableHead>Plan</TableHead>
                       <TableHead className="text-right">Abonnenten</TableHead>
                       <TableHead className="text-right">MRR</TableHead>
-                      <TableHead className="text-right">Gesamt Umsatz</TableHead>
-                      <TableHead className="text-right">Ø pro Abonnent</TableHead>
+                      <TableHead className="text-right">
+                        Gesamt Umsatz
+                      </TableHead>
+                      <TableHead className="text-right">
+                        Ø pro Abonnent
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -224,7 +242,9 @@ export default async function AdminRevenuePage(props: Props) {
                       .map((plan, index) => (
                         <TableRow key={index}>
                           <TableCell className="font-medium">
-                            <Badge variant="outline">{plan.plan || "Kein Plan"}</Badge>
+                            <Badge variant="outline">
+                              {plan.plan || "Kein Plan"}
+                            </Badge>
                           </TableCell>
                           <TableCell className="text-right">
                             {plan.subscriber_count}
@@ -242,10 +262,13 @@ export default async function AdminRevenuePage(props: Props) {
                             })}
                           </TableCell>
                           <TableCell className="text-right text-muted-foreground">
-                            {plan.avg_revenue_per_subscriber.toLocaleString(locale, {
-                              style: "currency",
-                              currency: "EUR",
-                            })}
+                            {plan.avg_revenue_per_subscriber.toLocaleString(
+                              locale,
+                              {
+                                style: "currency",
+                                currency: "EUR",
+                              },
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -263,7 +286,3 @@ export default async function AdminRevenuePage(props: Props) {
     </UnifiedPageLayout>
   );
 }
-
-
-
-

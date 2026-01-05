@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Link } from "@/i18n/routing";
 import { Post } from "@/.contentlayer/generated";
+import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 
 import { BLOG_AUTHORS } from "@/config/blog";
@@ -79,7 +79,8 @@ export function BlogCard({
         <div className="mt-4 flex items-center space-x-3">
           <div className="flex items-center -space-x-2">
             {data.authors.map((author) => {
-              const authorData = BLOG_AUTHORS[author as keyof typeof BLOG_AUTHORS];
+              const authorData =
+                BLOG_AUTHORS[author as keyof typeof BLOG_AUTHORS];
               return (
                 <div key={author} className="relative">
                   {authorData && (

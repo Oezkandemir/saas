@@ -3,15 +3,15 @@
 import React from "react";
 import { AlertCircle, Home, RefreshCw } from "lucide-react";
 
-import { Button } from '@/components/alignui/actions/button';
+import { logger } from "@/lib/logger";
+import { Button } from "@/components/alignui/actions/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { logger } from "@/lib/logger";
+} from "@/components/alignui/data-display/card";
 
 interface ErrorBoundaryState {
   hasError: boolean;

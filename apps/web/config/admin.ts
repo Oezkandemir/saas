@@ -1,6 +1,5 @@
 import { SidebarNavItem } from "types";
 
-
 export const adminSidebarLinks: SidebarNavItem[] = [
   {
     title: "MENU",
@@ -73,4 +72,3 @@ export const adminSidebarLinks: SidebarNavItem[] = [
     ],
   },
 ];
-

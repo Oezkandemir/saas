@@ -1,7 +1,9 @@
 "use client";
 
-import { Control } from "react-hook-form";
+import { Building2, Map, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Control } from "react-hook-form";
+
 import {
   FormControl,
   FormDescription,
@@ -10,7 +12,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from '@/components/alignui/forms/input';
 import {
   Select,
   SelectContent,
@@ -18,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Building2, MapPin, Map } from "lucide-react";
+import { Input } from "@/components/alignui/forms/input";
 
 interface CompanyBasicFieldsProps {
   control: Control<any>;
@@ -26,7 +27,7 @@ interface CompanyBasicFieldsProps {
 
 export function CompanyBasicFields({ control }: CompanyBasicFieldsProps) {
   const t = useTranslations("Company.fields");
-  
+
   const countries = [
     { code: "DE", name: t("countries.germany") },
     { code: "AT", name: t("countries.austria") },
@@ -52,14 +53,9 @@ export function CompanyBasicFields({ control }: CompanyBasicFieldsProps) {
               {t("companyName")} *
             </FormLabel>
             <FormControl>
-              <Input
-                placeholder={t("companyNamePlaceholder")}
-                {...field}
-              />
+              <Input placeholder={t("companyNamePlaceholder")} {...field} />
             </FormControl>
-            <FormDescription>
-              {t("companyNameDescription")}
-            </FormDescription>
+            <FormDescription>{t("companyNameDescription")}</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -101,9 +97,7 @@ export function CompanyBasicFields({ control }: CompanyBasicFieldsProps) {
                 value={field.value || ""}
               />
             </FormControl>
-            <FormDescription>
-              {t("addressLine2Description")}
-            </FormDescription>
+            <FormDescription>{t("addressLine2Description")}</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -182,4 +176,3 @@ export function CompanyBasicFields({ control }: CompanyBasicFieldsProps) {
     </div>
   );
 }
-

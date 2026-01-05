@@ -1,7 +1,8 @@
-import { cookies } from "next/headers";
 import { createHash, randomBytes } from "crypto";
-import { getSession } from "./session";
+import { cookies } from "next/headers";
+
 import { logger } from "./logger";
+import { getSession } from "./session";
 
 const CSRF_TOKEN_COOKIE_NAME = "csrf-token";
 const CSRF_TOKEN_HEADER_NAME = "X-CSRF-Token";
@@ -135,13 +136,10 @@ export async function requireCSRFToken(
 
     return {
       valid: false,
-      response: new Response(
-        JSON.stringify({ error: "Invalid CSRF token" }),
-        {
-          status: 403,
-          headers: { "Content-Type": "application/json" },
-        },
-      ),
+      response: new Response(JSON.stringify({ error: "Invalid CSRF token" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      }),
     };
   }
 
@@ -156,4 +154,3 @@ export async function refreshCSRFToken(): Promise<string> {
   cookieStore.delete(CSRF_TOKEN_COOKIE_NAME);
   return getCSRFToken();
 }
-

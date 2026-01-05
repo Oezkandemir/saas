@@ -4,8 +4,9 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 import "server-only";
 
-import { type Database } from "./supabase";
 import { logger } from "@/lib/logger";
+
+import { type Database } from "./supabase";
 
 // Check if environment variables are set
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

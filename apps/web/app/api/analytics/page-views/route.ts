@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { supabaseAdmin } from "@/lib/supabase/admin";
-import { logger } from "@/lib/logger";
 import { applyAPIMiddleware } from "@/lib/api-middleware";
+import { logger } from "@/lib/logger";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 /**
  * GET handler to fetch the most viewed pages

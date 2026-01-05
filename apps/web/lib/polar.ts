@@ -1,8 +1,10 @@
 import { env } from "@/env.mjs";
+
 import { logger } from "./logger";
 
 // Use sandbox API if POLAR_USE_SANDBOX is enabled
-const isSandbox = env.POLAR_USE_SANDBOX === "true" || process.env.POLAR_USE_SANDBOX === "true";
+const isSandbox =
+  env.POLAR_USE_SANDBOX === "true" || process.env.POLAR_USE_SANDBOX === "true";
 const POLAR_API_BASE_URL = isSandbox
   ? "https://sandbox-api.polar.sh/v1"
   : "https://api.polar.sh/v1";
@@ -23,13 +25,13 @@ if (isSandbox) {
  */
 function getPolarHeaders() {
   const accessToken = env.POLAR_ACCESS_TOKEN || process.env.POLAR_ACCESS_TOKEN;
-  
+
   if (!accessToken) {
     throw new Error("POLAR_ACCESS_TOKEN is not configured");
   }
 
   return {
-    "Authorization": `Bearer ${accessToken}`,
+    Authorization: `Bearer ${accessToken}`,
     "Content-Type": "application/json",
   };
 }
@@ -52,7 +54,7 @@ async function getPolarOrganizationSlug(): Promise<string> {
 
     const data = await response.json();
     const organizations = data.items || data;
-    
+
     if (!organizations || organizations.length === 0) {
       throw new Error("No organizations found");
     }
@@ -76,16 +78,18 @@ async function getPolarOrganizationSlug(): Promise<string> {
  * @param customerId - The Polar customer ID
  * @returns Customer portal URL with session token
  */
-export async function generatePolarCustomerPortalLink(customerId: string): Promise<string> {
+export async function generatePolarCustomerPortalLink(
+  customerId: string,
+): Promise<string> {
   try {
     if (!customerId) {
       throw new Error("Customer ID is required");
     }
 
     const headers = getPolarHeaders();
-    
+
     logger.info(`Creating customer session for customer: ${customerId}`);
-    
+
     // Create customer session via Polar API
     const response = await fetch(`${POLAR_API_BASE_URL}/customer-sessions`, {
       method: "POST",
@@ -103,31 +107,33 @@ export async function generatePolarCustomerPortalLink(customerId: string): Promi
       } catch {
         errorData = { error: errorText || `HTTP ${response.status}` };
       }
-      
+
       logger.error("Failed to create Polar customer session", {
         status: response.status,
         statusText: response.statusText,
         error: errorData,
       });
-      
+
       throw new Error(
-        errorData.error?.message || 
-        errorData.error || 
-        errorData.detail ||
-        `HTTP ${response.status}: Failed to create customer session`
+        errorData.error?.message ||
+          errorData.error ||
+          errorData.detail ||
+          `HTTP ${response.status}: Failed to create customer session`,
       );
     }
 
     const sessionData = await response.json();
-    
+
     logger.info("Customer session created", {
       hasToken: !!sessionData.token,
       hasPortalUrl: !!sessionData.customer_portal_url,
     });
-    
+
     // Return the customer portal URL if API provides it directly
     if (sessionData.customer_portal_url) {
-      logger.info(`Generated Polar customer portal link for customer ${customerId}`);
+      logger.info(
+        `Generated Polar customer portal link for customer ${customerId}`,
+      );
       return sessionData.customer_portal_url;
     }
 
@@ -143,27 +149,33 @@ export async function generatePolarCustomerPortalLink(customerId: string): Promi
     } catch (error: any) {
       logger.warn("Failed to get organization slug, using fallback", error);
       // Fallback: try to get from env or use default
-      const envOrgSlug = env.POLAR_ORGANIZATION_SLUG || process.env.POLAR_ORGANIZATION_SLUG;
+      const envOrgSlug =
+        env.POLAR_ORGANIZATION_SLUG || process.env.POLAR_ORGANIZATION_SLUG;
       if (envOrgSlug) {
         orgSlug = envOrgSlug;
       } else {
-        throw new Error("Could not determine organization slug. Please set POLAR_ORGANIZATION_SLUG in environment variables.");
+        throw new Error(
+          "Could not determine organization slug. Please set POLAR_ORGANIZATION_SLUG in environment variables.",
+        );
       }
     }
 
     // Construct portal URL with organization slug and session token
     // Use /portal/overview to go directly to the overview page
     const portalUrl = `${POLAR_DASHBOARD_BASE_URL}/${orgSlug}/portal/overview?customer_session_token=${sessionData.token}`;
-    logger.info(`Generated Polar customer portal link (constructed) for customer ${customerId}`, {
-      orgSlug,
-      portalUrl,
-    });
-    
+    logger.info(
+      `Generated Polar customer portal link (constructed) for customer ${customerId}`,
+      {
+        orgSlug,
+        portalUrl,
+      },
+    );
+
     return portalUrl;
   } catch (error: any) {
     logger.error("Error generating Polar customer portal link", {
       error: error.message,
-      });
+    });
     throw error;
   }
 }
@@ -184,7 +196,7 @@ export function getPolarCustomerPortalUrl(_customerId?: string): string {
 export async function checkPolarPaymentSetup() {
   try {
     const headers = getPolarHeaders();
-    
+
     // Get organization info to check payment setup
     const response = await fetch(`${POLAR_API_BASE_URL}/organizations`, {
       method: "GET",
@@ -194,25 +206,25 @@ export async function checkPolarPaymentSetup() {
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       logger.error("Failed to check Polar payment setup", error);
-      return { 
-        isSetup: false, 
-        error: error.error || "Failed to check payment setup" 
+      return {
+        isSetup: false,
+        error: error.error || "Failed to check payment setup",
       };
     }
 
     const organizations = await response.json();
-    
+
     // Check if any organization has payment methods configured
     // This is a simplified check - you may need to adjust based on Polar.sh API response
-    return { 
-      isSetup: true, 
-      organizations: organizations.items || organizations 
+    return {
+      isSetup: true,
+      organizations: organizations.items || organizations,
     };
   } catch (error: any) {
     logger.error("Error checking Polar payment setup", error);
-    return { 
-      isSetup: false, 
-      error: error.message || "Unknown error" 
+    return {
+      isSetup: false,
+      error: error.message || "Unknown error",
     };
   }
 }
@@ -228,7 +240,7 @@ export async function createPolarCheckout(params: {
 }) {
   try {
     const headers = getPolarHeaders();
-    
+
     const body: any = {
       products: params.products,
       success_url: params.successUrl,
@@ -249,9 +261,13 @@ export async function createPolarCheckout(params: {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+      const errorData = await response
+        .json()
+        .catch(() => ({ error: "Unknown error" }));
       logger.error("Polar.sh checkout creation failed", errorData);
-      throw new Error(errorData.error || `HTTP ${response.status}: Failed to create checkout`);
+      throw new Error(
+        errorData.error || `HTTP ${response.status}: Failed to create checkout`,
+      );
     }
 
     const checkoutData = await response.json();
@@ -269,16 +285,23 @@ export async function createPolarCheckout(params: {
 export async function getPolarProduct(productId: string) {
   try {
     const headers = getPolarHeaders();
-    
-    const response = await fetch(`${POLAR_API_BASE_URL}/products/${productId}`, {
-      method: "GET",
-      headers,
-    });
+
+    const response = await fetch(
+      `${POLAR_API_BASE_URL}/products/${productId}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+      const errorData = await response
+        .json()
+        .catch(() => ({ error: "Unknown error" }));
       logger.error("Failed to fetch Polar product", errorData);
-      throw new Error(errorData.error || `HTTP ${response.status}: Failed to fetch product`);
+      throw new Error(
+        errorData.error || `HTTP ${response.status}: Failed to fetch product`,
+      );
     }
 
     const product = await response.json();
@@ -295,16 +318,24 @@ export async function getPolarProduct(productId: string) {
 export async function getPolarSubscription(subscriptionId: string) {
   try {
     const headers = getPolarHeaders();
-    
-    const response = await fetch(`${POLAR_API_BASE_URL}/subscriptions/${subscriptionId}`, {
-      method: "GET",
-      headers,
-    });
+
+    const response = await fetch(
+      `${POLAR_API_BASE_URL}/subscriptions/${subscriptionId}`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+      const errorData = await response
+        .json()
+        .catch(() => ({ error: "Unknown error" }));
       logger.error("Failed to fetch Polar subscription", errorData);
-      throw new Error(errorData.error || `HTTP ${response.status}: Failed to fetch subscription`);
+      throw new Error(
+        errorData.error ||
+          `HTTP ${response.status}: Failed to fetch subscription`,
+      );
     }
 
     const subscription = await response.json();
@@ -319,7 +350,9 @@ export async function getPolarSubscription(subscriptionId: string) {
  * Get customer ID from subscription ID
  * This is useful when we have a subscription but not the customer ID
  */
-export async function getCustomerIdFromSubscription(subscriptionId: string): Promise<string | null> {
+export async function getCustomerIdFromSubscription(
+  subscriptionId: string,
+): Promise<string | null> {
   try {
     const subscription = await getPolarSubscription(subscriptionId);
     return subscription.customer_id || null;
@@ -333,16 +366,21 @@ export async function getCustomerIdFromSubscription(subscriptionId: string): Pro
  * Try to find customer ID by searching subscriptions by email
  * This is a fallback when customer ID is not in database
  */
-export async function findCustomerIdByEmail(email: string): Promise<string | null> {
+export async function findCustomerIdByEmail(
+  email: string,
+): Promise<string | null> {
   try {
     const headers = getPolarHeaders();
-    
+
     // List all subscriptions and search for matching email
     // Note: Polar API might not support direct email search, so we list recent subscriptions
-    const response = await fetch(`${POLAR_API_BASE_URL}/subscriptions?limit=100`, {
-      method: "GET",
-      headers,
-    });
+    const response = await fetch(
+      `${POLAR_API_BASE_URL}/subscriptions?limit=100`,
+      {
+        method: "GET",
+        headers,
+      },
+    );
 
     if (!response.ok) {
       logger.warn("Failed to list subscriptions for email search", {
@@ -356,7 +394,10 @@ export async function findCustomerIdByEmail(email: string): Promise<string | nul
 
     // Search for subscription with matching customer email
     for (const subscription of subscriptions) {
-      if (subscription.customer?.email === email || subscription.customer_email === email) {
+      if (
+        subscription.customer?.email === email ||
+        subscription.customer_email === email
+      ) {
         logger.info("Found customer ID by email", {
           email: subscription.customer_id,
         });
@@ -375,24 +416,35 @@ export async function findCustomerIdByEmail(email: string): Promise<string | nul
 /**
  * Cancel a Polar subscription
  */
-export async function cancelPolarSubscription(subscriptionId: string, cancelAtPeriodEnd: boolean = true) {
+export async function cancelPolarSubscription(
+  subscriptionId: string,
+  cancelAtPeriodEnd: boolean = true,
+) {
   try {
     const headers = getPolarHeaders();
-    
+
     const body: any = {
       cancel_at_period_end: cancelAtPeriodEnd,
     };
 
-    const response = await fetch(`${POLAR_API_BASE_URL}/subscriptions/${subscriptionId}/cancel`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-    });
+    const response = await fetch(
+      `${POLAR_API_BASE_URL}/subscriptions/${subscriptionId}/cancel`,
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body),
+      },
+    );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+      const errorData = await response
+        .json()
+        .catch(() => ({ error: "Unknown error" }));
       logger.error("Failed to cancel Polar subscription", errorData);
-      throw new Error(errorData.error || `HTTP ${response.status}: Failed to cancel subscription`);
+      throw new Error(
+        errorData.error ||
+          `HTTP ${response.status}: Failed to cancel subscription`,
+      );
     }
 
     const subscription = await response.json();
@@ -409,16 +461,24 @@ export async function cancelPolarSubscription(subscriptionId: string, cancelAtPe
 export async function reactivatePolarSubscription(subscriptionId: string) {
   try {
     const headers = getPolarHeaders();
-    
-    const response = await fetch(`${POLAR_API_BASE_URL}/subscriptions/${subscriptionId}/reactivate`, {
-      method: "POST",
-      headers,
-    });
+
+    const response = await fetch(
+      `${POLAR_API_BASE_URL}/subscriptions/${subscriptionId}/reactivate`,
+      {
+        method: "POST",
+        headers,
+      },
+    );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+      const errorData = await response
+        .json()
+        .catch(() => ({ error: "Unknown error" }));
       logger.error("Failed to reactivate Polar subscription", errorData);
-      throw new Error(errorData.error || `HTTP ${response.status}: Failed to reactivate subscription`);
+      throw new Error(
+        errorData.error ||
+          `HTTP ${response.status}: Failed to reactivate subscription`,
+      );
     }
 
     const subscription = await response.json();
@@ -432,24 +492,35 @@ export async function reactivatePolarSubscription(subscriptionId: string) {
 /**
  * Update Polar subscription (change product/plan)
  */
-export async function updatePolarSubscription(subscriptionId: string, productId: string) {
+export async function updatePolarSubscription(
+  subscriptionId: string,
+  productId: string,
+) {
   try {
     const headers = getPolarHeaders();
-    
+
     const body: any = {
       product_id: productId,
     };
 
-    const response = await fetch(`${POLAR_API_BASE_URL}/subscriptions/${subscriptionId}`, {
-      method: "PATCH",
-      headers,
-      body: JSON.stringify(body),
-    });
+    const response = await fetch(
+      `${POLAR_API_BASE_URL}/subscriptions/${subscriptionId}`,
+      {
+        method: "PATCH",
+        headers,
+        body: JSON.stringify(body),
+      },
+    );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+      const errorData = await response
+        .json()
+        .catch(() => ({ error: "Unknown error" }));
       logger.error("Failed to update Polar subscription", errorData);
-      throw new Error(errorData.error || `HTTP ${response.status}: Failed to update subscription`);
+      throw new Error(
+        errorData.error ||
+          `HTTP ${response.status}: Failed to update subscription`,
+      );
     }
 
     const subscription = await response.json();

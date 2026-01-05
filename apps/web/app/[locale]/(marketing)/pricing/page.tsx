@@ -2,13 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { UserSubscriptionPlan } from "@/types";
 
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { constructMetadata, resolveStaticPath } from "@/lib/utils";
 import { ComparePlans } from "@/components/pricing/compare-plans";
 import { PricingCards } from "@/components/pricing/pricing-cards";
 import { PricingFaq } from "@/components/pricing/pricing-faq";
-import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -74,7 +74,8 @@ export default async function PricingPage() {
             Ein QR-Code, der immer bleibt.
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-            Angebote & Rechnungen in Minuten. Dynamische QR-Codes für Ihr Business.
+            Angebote & Rechnungen in Minuten. Dynamische QR-Codes für Ihr
+            Business.
           </p>
         </div>
       </div>

@@ -5,8 +5,12 @@ import { useRouter } from "next/navigation";
 import { createTicket } from "@/actions/support-ticket-actions";
 import { AlertCircle, Loader2 } from "lucide-react";
 
+import { logger } from "@/lib/logger";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from '@/components/alignui/actions/button';
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/alignui/actions/button";
 import {
   Card,
   CardContent,
@@ -14,12 +18,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { Input } from '@/components/alignui/forms/input';
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Textarea } from "@/components/ui/textarea";
-import { logger } from "@/lib/logger";
+} from "@/components/alignui/data-display/card";
+import { Input } from "@/components/alignui/forms/input";
 
 export function CreateTicketForm() {
   const router = useRouter();

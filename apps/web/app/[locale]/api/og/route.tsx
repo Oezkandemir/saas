@@ -21,12 +21,12 @@ export async function GET(req: Request) {
     const [fontRegular, fontBold] = await Promise.all([
       // Inter Regular from Google Fonts API (WOFF2 format, smaller size)
       loadFont(
-        "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2"
+        "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2",
       ),
       // For Cal Sans, using Poppins as a visual substitute (similar geometric sans-serif)
       // To use Cal Sans instead, host it on a CDN (Vercel Blob/Cloudflare R2) and replace this URL
       loadFont(
-        "https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLCz7Z1xlFd2JQEk.woff2"
+        "https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLCz7Z1xlFd2JQEk.woff2",
       ),
     ]);
 

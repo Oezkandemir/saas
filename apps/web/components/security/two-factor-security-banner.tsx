@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Shield, X } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from '@/components/alignui/actions/button';
 import { getTwoFactorStatus } from "@/actions/two-factor-actions";
+import { Shield, X } from "lucide-react";
+
 import { logger } from "@/lib/logger";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/alignui/actions/button";
 
 export function TwoFactorSecurityBanner() {
   const [isEnabled, setIsEnabled] = useState<boolean | null>(null);
@@ -28,7 +29,11 @@ export function TwoFactorSecurityBanner() {
         const result = await getTwoFactorStatus();
         if (result && result.success && result.data) {
           setIsEnabled(result.data.enabled ?? false);
-        } else if (result && !result.success && result.message === "User not authenticated") {
+        } else if (
+          result &&
+          !result.success &&
+          result.message === "User not authenticated"
+        ) {
           // User not authenticated - hide banner
           setIsEnabled(null);
         } else {
@@ -38,7 +43,10 @@ export function TwoFactorSecurityBanner() {
       } catch (error: any) {
         // Silently handle errors - don't show banner if we can't check status
         // Check if it's an authentication error
-        if (error?.message?.includes("not authenticated") || error?.message?.includes("unexpected response")) {
+        if (
+          error?.message?.includes("not authenticated") ||
+          error?.message?.includes("unexpected response")
+        ) {
           setIsEnabled(null); // Hide banner on auth/server errors
         } else {
           setIsEnabled(false); // Show banner on other errors (assume 2FA not enabled)
@@ -75,8 +83,9 @@ export function TwoFactorSecurityBanner() {
         Zwei-Faktor-Authentifizierung aktivieren
       </AlertTitle>
       <AlertDescription className="text-balance text-yellow-800 dark:text-yellow-200">
-        Schützen Sie Ihr Konto mit einer zusätzlichen Sicherheitsebene. Aktivieren Sie die
-        Zwei-Faktor-Authentifizierung, um Ihr Konto besser zu schützen.
+        Schützen Sie Ihr Konto mit einer zusätzlichen Sicherheitsebene.
+        Aktivieren Sie die Zwei-Faktor-Authentifizierung, um Ihr Konto besser zu
+        schützen.
       </AlertDescription>
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <Button
@@ -109,4 +118,3 @@ export function TwoFactorSecurityBanner() {
     </Alert>
   );
 }
-

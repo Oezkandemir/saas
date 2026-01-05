@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { Button } from '@/components/alignui/actions/button';
 import { Download, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+
 import { logger } from "@/lib/logger";
+import { Button } from "@/components/alignui/actions/button";
 
 interface PDFDownloadButtonProps {
   documentId: string;
@@ -28,29 +29,35 @@ export function PDFDownloadButton({
     try {
       // Always generate a fresh PDF to ensure it's valid
       // Fetch PDF from API which will generate it if needed
-      const response = await fetch(`/api/documents/${documentId}/pdf?force=true`);
-      
+      const response = await fetch(
+        `/api/documents/${documentId}/pdf?force=true`,
+      );
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
-        throw new Error(errorData.message || errorData.error || "Failed to generate PDF");
+        const errorData = await response
+          .json()
+          .catch(() => ({ error: "Unknown error" }));
+        throw new Error(
+          errorData.message || errorData.error || "Failed to generate PDF",
+        );
       }
-      
+
       const data = await response.json();
       const pdfUrlToDownload = data.pdfUrl || pdfUrl;
-      
+
       if (!pdfUrlToDownload) {
         throw new Error("PDF URL not available");
       }
-      
+
       // Fetch PDF as blob for direct download
       const pdfResponse = await fetch(pdfUrlToDownload);
       if (!pdfResponse.ok) {
         throw new Error(t("errors.loadError"));
       }
-      
+
       const blob = await pdfResponse.blob();
       const objectUrl = URL.createObjectURL(blob);
-      
+
       // Create download link
       const link = document.createElement("a");
       link.href = objectUrl;
@@ -59,21 +66,21 @@ export function PDFDownloadButton({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       // Clean up object URL after a delay
       setTimeout(() => URL.revokeObjectURL(objectUrl), 100);
-      
+
       toast.success(t("success"));
     } catch (error) {
       logger.error("Error generating PDF", error);
-      
+
       let errorMessage = t("errors.generateError");
       if (error instanceof Error) {
         errorMessage = error.message;
       } else if (typeof error === "string") {
         errorMessage = error;
       }
-      
+
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -102,4 +109,3 @@ export function PDFDownloadButton({
     </Button>
   );
 }
-

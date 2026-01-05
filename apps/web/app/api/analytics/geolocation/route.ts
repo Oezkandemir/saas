@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { logger } from "@/lib/logger";
+
 import { applyAPIMiddleware } from "@/lib/api-middleware";
+import { logger } from "@/lib/logger";
 
 /**
  * Server-side geolocation API route
@@ -39,8 +40,10 @@ export async function GET(request: NextRequest) {
     const ipToUse = ip || "";
 
     // Use free IP geolocation service with shorter timeout
-    const url = ipToUse ? `https://ipapi.co/${ipToUse}/json/` : "https://ipapi.co/json/";
-    
+    const url = ipToUse
+      ? `https://ipapi.co/${ipToUse}/json/`
+      : "https://ipapi.co/json/";
+
     // Create abort controller for better timeout handling
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
@@ -72,13 +75,13 @@ export async function GET(request: NextRequest) {
       });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
-      
+
       // Don't log timeout errors - they're expected and handled gracefully
       if (fetchError?.name === "AbortError" || fetchError?.code === 23) {
         // Timeout - return defaults silently
         return NextResponse.json(defaultResponse);
       }
-      
+
       // Re-throw other errors to be caught by outer catch
       throw fetchError;
     }
@@ -88,9 +91,8 @@ export async function GET(request: NextRequest) {
       // Log only unexpected errors
       logger.debug("Geolocation API error:", error?.message || error);
     }
-    
+
     // Return default values on any error
     return NextResponse.json(defaultResponse);
   }
 }
-

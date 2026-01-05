@@ -1,5 +1,6 @@
-import { supabaseAdmin } from "@/lib/db";
 import type { Document } from "@/actions/documents-actions";
+
+import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
 
 export interface PDFOptions {
@@ -36,11 +37,11 @@ async function generatePDFWithRetry(
   retries: number = 2,
 ): Promise<Buffer> {
   let lastError: Error | null = null;
-  
+
   for (let attempt = 0; attempt <= retries; attempt++) {
     let browser;
     let page;
-    
+
     try {
       logger.debug(`PDF generation attempt ${attempt + 1}/${retries + 1}`);
       // Launch browser in headless mode with optimized settings for stability
@@ -51,7 +52,7 @@ async function generatePDFWithRetry(
       ];
 
       logger.debug("Launching Puppeteer browser...");
-      
+
       // Special configuration for Apple Silicon
       const launchOptions: any = {
         headless: "shell", // Use shell mode which is more stable on macOS
@@ -59,14 +60,14 @@ async function generatePDFWithRetry(
         timeout: 60000, // 60 second timeout for browser launch
         protocolTimeout: 120000, // 120 seconds for protocol operations
       };
-      
+
       // On macOS, try to use system Chrome if available for better compatibility
       if (process.platform === "darwin") {
         const possibleChromePaths = [
           "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
           "/Applications/Chromium.app/Contents/MacOS/Chromium",
         ];
-        
+
         // Try to find an existing Chrome installation
         for (const chromePath of possibleChromePaths) {
           try {
@@ -81,14 +82,14 @@ async function generatePDFWithRetry(
           }
         }
       }
-      
+
       browser = await puppeteer.launch(launchOptions);
       logger.debug("Browser launched successfully");
 
       logger.debug("Creating new page...");
       page = await browser.newPage();
       logger.debug("Page created successfully");
-      
+
       // Set timeouts for page operations
       page.setDefaultTimeout(60000); // 60 seconds
       page.setDefaultNavigationTimeout(60000); // 60 seconds
@@ -116,18 +117,23 @@ async function generatePDFWithRetry(
       const pdfBuffer = await page.pdf({
         format: options.format || DEFAULT_OPTIONS.format,
         margin: options.margin || DEFAULT_OPTIONS.margin,
-        displayHeaderFooter: options.displayHeaderFooter ?? DEFAULT_OPTIONS.displayHeaderFooter,
-        printBackground: options.printBackground ?? DEFAULT_OPTIONS.printBackground,
+        displayHeaderFooter:
+          options.displayHeaderFooter ?? DEFAULT_OPTIONS.displayHeaderFooter,
+        printBackground:
+          options.printBackground ?? DEFAULT_OPTIONS.printBackground,
         timeout: 60000, // 60 second timeout for PDF generation
       });
-      logger.debug("PDF buffer generated successfully, size:", pdfBuffer.length);
+      logger.debug(
+        "PDF buffer generated successfully, size:",
+        pdfBuffer.length,
+      );
 
       // Close page and browser before returning
       logger.debug("Closing page and browser...");
       await page.close();
       await browser.close();
       logger.debug("Page and browser closed successfully");
-      
+
       return Buffer.from(pdfBuffer);
     } catch (error) {
       // Enhanced error handling to get detailed error info
@@ -139,14 +145,18 @@ async function generatePDFWithRetry(
       } else if (error && typeof error === "object") {
         // Try to extract meaningful error info from object
         const err = error as any;
-        errorMessage = err.message || err.error || err.toString?.() || JSON.stringify(error, Object.getOwnPropertyNames(error));
+        errorMessage =
+          err.message ||
+          err.error ||
+          err.toString?.() ||
+          JSON.stringify(error, Object.getOwnPropertyNames(error));
       }
-      
+
       logger.error("PDF generation attempt failed:", errorMessage);
       logger.error("Full error object:", error);
-      
+
       lastError = error instanceof Error ? error : new Error(errorMessage);
-      
+
       // Clean up browser and page on error
       try {
         if (page) {
@@ -161,7 +171,7 @@ async function generatePDFWithRetry(
 
       // Check if this is a retryable error
       const lastErrorMsg = lastError.message;
-      const isRetryable = 
+      const isRetryable =
         lastErrorMsg.includes("ECONNRESET") ||
         lastErrorMsg.includes("socket hang up") ||
         lastErrorMsg.includes("ECONNREFUSED") ||
@@ -175,7 +185,10 @@ async function generatePDFWithRetry(
 
       // Wait before retry (exponential backoff)
       const delay = Math.min(1000 * Math.pow(2, attempt), 5000);
-      logger.warn(`PDF generation failed (attempt ${attempt + 1}/${retries + 1}), retrying in ${delay}ms...`, lastErrorMsg);
+      logger.warn(
+        `PDF generation failed (attempt ${attempt + 1}/${retries + 1}), retrying in ${delay}ms...`,
+        lastErrorMsg,
+      );
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
@@ -214,8 +227,15 @@ export async function generatePDFFromHTML(
         errorMessage = err.toString();
       } else {
         try {
-          const jsonStr = JSON.stringify(error, Object.getOwnPropertyNames(error));
-          if (jsonStr && jsonStr !== "{}" && !jsonStr.includes("[object Object]")) {
+          const jsonStr = JSON.stringify(
+            error,
+            Object.getOwnPropertyNames(error),
+          );
+          if (
+            jsonStr &&
+            jsonStr !== "{}" &&
+            !jsonStr.includes("[object Object]")
+          ) {
             errorMessage = jsonStr;
           } else {
             errorMessage = `Fehler beim Laden von Puppeteer: ${err.name || "UnknownError"}`;
@@ -227,18 +247,23 @@ export async function generatePDFFromHTML(
     }
     const { logger } = await import("@/lib/logger");
     // Only log as warning if Puppeteer is not installed (expected in some environments)
-    if (errorMessage.includes("Cannot find package") || 
-        errorMessage.includes("Cannot find module") ||
-        errorMessage.includes("MODULE_NOT_FOUND")) {
-      logger.warn("Puppeteer not available (may be expected in some environments)", {
-        message: errorMessage
-      });
+    if (
+      errorMessage.includes("Cannot find package") ||
+      errorMessage.includes("Cannot find module") ||
+      errorMessage.includes("MODULE_NOT_FOUND")
+    ) {
+      logger.warn(
+        "Puppeteer not available (may be expected in some environments)",
+        {
+          message: errorMessage,
+        },
+      );
     } else {
       logger.error("Failed to load Puppeteer:", errorMessage);
     }
     throw new Error(`Failed to load Puppeteer: ${errorMessage}`);
   }
-  
+
   const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
 
   try {
@@ -250,14 +275,24 @@ export async function generatePDFFromHTML(
     if (error instanceof Error) {
       errorMessage = error.message;
       // Provide more helpful messages for common errors
-      if (errorMessage.includes("socket hang up") || errorMessage.includes("ECONNRESET")) {
-        errorMessage = "Die Verbindung zum Browser wurde unterbrochen. Bitte versuchen Sie es erneut. Falls das Problem weiterhin besteht, kontaktieren Sie den Support.";
-      } else if (errorMessage.includes("timeout") || errorMessage.includes("Timeout")) {
-        errorMessage = "Die PDF-Generierung hat zu lange gedauert. Bitte versuchen Sie es erneut oder vereinfachen Sie das Dokument.";
+      if (
+        errorMessage.includes("socket hang up") ||
+        errorMessage.includes("ECONNRESET")
+      ) {
+        errorMessage =
+          "Die Verbindung zum Browser wurde unterbrochen. Bitte versuchen Sie es erneut. Falls das Problem weiterhin besteht, kontaktieren Sie den Support.";
+      } else if (
+        errorMessage.includes("timeout") ||
+        errorMessage.includes("Timeout")
+      ) {
+        errorMessage =
+          "Die PDF-Generierung hat zu lange gedauert. Bitte versuchen Sie es erneut oder vereinfachen Sie das Dokument.";
       } else if (errorMessage.includes("Navigation timeout")) {
-        errorMessage = "Die Seite konnte nicht geladen werden. Bitte versuchen Sie es erneut.";
+        errorMessage =
+          "Die Seite konnte nicht geladen werden. Bitte versuchen Sie es erneut.";
       } else if (errorMessage.includes("Protocol error")) {
-        errorMessage = "Ein Protokollfehler ist aufgetreten. Bitte versuchen Sie es erneut.";
+        errorMessage =
+          "Ein Protokollfehler ist aufgetreten. Bitte versuchen Sie es erneut.";
       }
     } else if (typeof error === "string") {
       errorMessage = error;
@@ -273,8 +308,15 @@ export async function generatePDFFromHTML(
       } else {
         // Try JSON.stringify with error handling for circular references
         try {
-          const jsonStr = JSON.stringify(error, Object.getOwnPropertyNames(error));
-          if (jsonStr && jsonStr !== "{}" && !jsonStr.includes("[object Object]")) {
+          const jsonStr = JSON.stringify(
+            error,
+            Object.getOwnPropertyNames(error),
+          );
+          if (
+            jsonStr &&
+            jsonStr !== "{}" &&
+            !jsonStr.includes("[object Object]")
+          ) {
             errorMessage = jsonStr;
           } else {
             errorMessage = `Fehler beim Generieren des PDFs: ${err.name || "UnknownError"}`;
@@ -303,7 +345,7 @@ export async function uploadPDFToStorage(
     logger.debug("Uploading PDF to Supabase storage...", {
       fileName,
       bufferSize: pdfBuffer.length,
-      bucket: "documents"
+      bucket: "documents",
     });
 
     // Upload to Supabase Storage
@@ -320,9 +362,11 @@ export async function uploadPDFToStorage(
         error,
         errorMessage: error.message,
         errorName: error.name,
-        fileName
+        fileName,
       });
-      throw new Error(`Failed to upload PDF to storage: ${error.message || JSON.stringify(error)}`);
+      throw new Error(
+        `Failed to upload PDF to storage: ${error.message || JSON.stringify(error)}`,
+      );
     }
 
     logger.debug("PDF uploaded successfully to storage:", data);
@@ -369,10 +413,12 @@ export async function generateAndUploadPDF(
     const { logger } = await import("@/lib/logger");
     // Only log as warning if it's a known/expected error (e.g., Puppeteer not available)
     const errorMessage = error instanceof Error ? error.message : String(error);
-    if (errorMessage.includes("Failed to load Puppeteer") || 
-        errorMessage.includes("Puppeteer not available")) {
+    if (
+      errorMessage.includes("Failed to load Puppeteer") ||
+      errorMessage.includes("Puppeteer not available")
+    ) {
       logger.warn("PDF generation skipped (Puppeteer not available)", {
-        documentId: document.id
+        documentId: document.id,
       });
     } else {
       logger.error("Error generating and uploading PDF:", error);
@@ -392,7 +438,7 @@ export async function generatePDFInBackground(
 ): Promise<void> {
   try {
     const pdfUrl = await generateAndUploadPDF(document, htmlContent);
-    
+
     // Update document with PDF URL in database
     const { supabaseAdmin } = await import("@/lib/db");
     await supabaseAdmin
@@ -400,7 +446,7 @@ export async function generatePDFInBackground(
       .update({ pdf_url: pdfUrl })
       .eq("id", document.id)
       .eq("user_id", document.user_id);
-    
+
     logger.debug(`PDF generated successfully for document ${document.id}`);
   } catch (error) {
     // Log error but don't throw - we don't want to break document creation/update
@@ -415,19 +461,27 @@ export async function generatePDFInBackground(
       const err = error as any;
       errorMessage = err.message || err.error || String(error);
     }
-    
+
     // Only log as warning for background PDF generation failures (non-critical)
-    if (errorMessage.includes("Failed to load Puppeteer") || 
-        errorMessage.includes("Puppeteer not available")) {
-      logger.debug("Background PDF generation skipped (Puppeteer not available)", {
-        documentId: document.id
-      });
+    if (
+      errorMessage.includes("Failed to load Puppeteer") ||
+      errorMessage.includes("Puppeteer not available")
+    ) {
+      logger.debug(
+        "Background PDF generation skipped (Puppeteer not available)",
+        {
+          documentId: document.id,
+        },
+      );
     } else {
-      logger.warn(`Background PDF generation failed for document ${document.id}`, {
-        error: errorMessage
-      });
+      logger.warn(
+        `Background PDF generation failed for document ${document.id}`,
+        {
+          error: errorMessage,
+        },
+      );
     }
-    
+
     logger.error(`PDF generation error details: ${errorMessage}`);
     // Don't throw - let the document creation/update succeed even if PDF generation fails
   }
@@ -436,7 +490,10 @@ export async function generatePDFInBackground(
 /**
  * Formats currency for display
  */
-export function formatCurrency(amount: number, currency: string = "EUR"): string {
+export function formatCurrency(
+  amount: number,
+  currency: string = "EUR",
+): string {
   return new Intl.NumberFormat("de-DE", {
     style: "currency",
     currency,
@@ -454,4 +511,3 @@ export function formatDate(date: string | Date): string {
     day: "numeric",
   }).format(dateObj);
 }
-

@@ -1,8 +1,9 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
+
 import { logger } from "@/lib/logger";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Create a login session and log to history
@@ -16,8 +17,11 @@ export async function createLoginSession(
   try {
     const supabase = await createClient();
     const headersList = await headers();
-    
-    const ipAddress = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || null;
+
+    const ipAddress =
+      headersList.get("x-forwarded-for") ||
+      headersList.get("x-real-ip") ||
+      null;
     const userAgent = headersList.get("user-agent") || null;
 
     // Extract device info from user agent (simplified)
@@ -63,7 +67,9 @@ export async function createLoginSession(
  * Update session activity timestamp
  * @param sessionToken Session token
  */
-export async function updateSessionActivity(_sessionToken: string): Promise<void> {
+export async function updateSessionActivity(
+  _sessionToken: string,
+): Promise<void> {
   try {
     const supabase = await createClient();
     await supabase
@@ -88,8 +94,11 @@ export async function logFailedLogin(
   try {
     const supabase = await createClient();
     const headersList = await headers();
-    
-    const ipAddress = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || null;
+
+    const ipAddress =
+      headersList.get("x-forwarded-for") ||
+      headersList.get("x-real-ip") ||
+      null;
     const userAgent = headersList.get("user-agent") || null;
 
     const deviceInfo = userAgent ? { userAgent } : null;
@@ -121,7 +130,9 @@ export async function updateLoginHistoryWith2FA(
 ): Promise<void> {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return;
@@ -141,4 +152,3 @@ export async function updateLoginHistoryWith2FA(
     // Don't throw - logging failures shouldn't break login flow
   }
 }
-

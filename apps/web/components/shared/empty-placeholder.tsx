@@ -1,8 +1,8 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/alignui/actions/button";
 import { Icons } from "@/components/shared/icons";
-import { Button } from '@/components/alignui/actions/button';
 
 interface EmptyPlaceholderProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -48,7 +48,10 @@ EmptyPlaceholder.Icon = function EmptyPlaceholderIcon({
 
   return (
     <div className="flex size-20 items-center justify-center rounded-full bg-muted/50 border border-border mb-4">
-      <Icon className={cn("size-10 text-muted-foreground", className)} {...props} />
+      <Icon
+        className={cn("size-10 text-muted-foreground", className)}
+        {...props}
+      />
     </div>
   );
 };
@@ -61,10 +64,7 @@ EmptyPlaceholder.Title = function EmptyPlaceholderTitle({
   ...props
 }: EmptyPlaceholderTitleProps) {
   return (
-    <h3
-      className={cn("text-lg font-semibold mb-2", className)}
-      {...props}
-    />
+    <h3 className={cn("text-lg font-semibold mb-2", className)} {...props} />
   );
 };
 
@@ -93,7 +93,5 @@ EmptyPlaceholder.Action = function EmptyPlaceholderAction({
   className,
   ...props
 }: EmptyPlaceholderActionProps) {
-  return (
-    <Button className={cn("gap-2", className)} {...props} />
-  );
+  return <Button className={cn("gap-2", className)} {...props} />;
 };

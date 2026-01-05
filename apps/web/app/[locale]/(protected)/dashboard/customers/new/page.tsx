@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
+import { UserPlus } from "lucide-react";
+
 import { getCurrentUser } from "@/lib/session";
 import { CustomerForm } from "@/components/customers/customer-form";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { UserPlus } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -22,4 +23,3 @@ export default async function NewCustomerPage() {
     </UnifiedPageLayout>
   );
 }
-

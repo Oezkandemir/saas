@@ -12,7 +12,7 @@ export async function getPublicSystemStatus(): Promise<{
 }> {
   try {
     const supabase = await createClient();
-    
+
     // Check for unresolved critical errors (public read)
     const { data: criticalErrors } = await supabase
       .from("system_errors")
@@ -28,11 +28,11 @@ export async function getPublicSystemStatus(): Promise<{
       .limit(10);
 
     const hasErrors = (criticalErrors?.length ?? 0) > 0;
-    
+
     // Check if any component is down or degraded
     const isDown = statuses?.some((s) => s.status === "down") ?? false;
     const isDegraded = statuses?.some((s) => s.status === "degraded") ?? false;
-    
+
     let overallStatus: "operational" | "degraded" | "down" = "operational";
     if (isDown) {
       overallStatus = "down";
@@ -52,4 +52,3 @@ export async function getPublicSystemStatus(): Promise<{
     };
   }
 }
-

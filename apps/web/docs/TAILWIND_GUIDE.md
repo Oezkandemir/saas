@@ -28,10 +28,12 @@ The class order follows the official Tailwind CSS recommended ordering, which ge
 You have several options to fix class ordering issues:
 
 1. **During development**:
+
    - VS Code should automatically highlight class ordering issues with ESLint
    - Use the "Format Document" command in VS Code to automatically fix ordering
 
 2. **Command line**:
+
    - Run `npm run lint:tailwind` to check and fix Tailwind class ordering issues
 
 3. **Manually**:
@@ -59,10 +61,10 @@ You have several options to fix class ordering issues:
 The linter will suggest using shorthand classes when possible. Here are some common examples:
 
 - Use `m-4` instead of `mx-4 my-4`
-- Use `p-4` instead of `px-4 py-4` 
+- Use `p-4` instead of `px-4 py-4`
 - Use `inset-0` instead of `top-0 right-0 bottom-0 left-0`
 - Use `size-4` instead of `w-4 h-4`
 
 ## Questions?
 
-If you have questions about Tailwind CSS class ordering, refer to the [Tailwind CSS documentation](https://tailwindcss.com/) or the [eslint-plugin-tailwindcss documentation](https://github.com/francoismassart/eslint-plugin-tailwindcss). 
+If you have questions about Tailwind CSS class ordering, refer to the [Tailwind CSS documentation](https://tailwindcss.com/) or the [eslint-plugin-tailwindcss documentation](https://github.com/francoismassart/eslint-plugin-tailwindcss).

@@ -1,12 +1,19 @@
-import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/session";
-import { getDocumentTemplates } from "@/actions/document-templates-actions";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { FileText, Plus } from "lucide-react";
 import Link from "next/link";
-import { Button } from '@/components/alignui/actions/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
+import { redirect } from "next/navigation";
+import { getDocumentTemplates } from "@/actions/document-templates-actions";
+import { FileText, Plus } from "lucide-react";
+
+import { getCurrentUser } from "@/lib/session";
+import { Button } from "@/components/alignui/actions/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 import { DocumentTemplatesList } from "@/components/documents/document-templates-list";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +41,6 @@ export default async function TemplatesPage() {
       }
       contentClassName="space-y-6"
     >
-
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
@@ -85,5 +91,3 @@ export default async function TemplatesPage() {
     </UnifiedPageLayout>
   );
 }
-
-

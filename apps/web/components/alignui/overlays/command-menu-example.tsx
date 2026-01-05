@@ -1,30 +1,30 @@
 /**
  * AlignUI CommandMenu - Praktisches Beispiel
- * 
+ *
  * Diese Komponente zeigt, wie Sie das CommandMenu in Ihrem Projekt verwenden können.
  */
 
-'use client';
+"use client";
 
-import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import * as React from "react";
+import { useRouter } from "next/navigation";
 import {
   RiArrowDownLine,
   RiArrowUpLine,
   RiCloseLine,
   RiCornerDownLeftLine,
-  RiSearch2Line,
-  RiHomeLine,
-  RiUserLine,
-  RiSettingsLine,
   RiFileTextLine,
-} from '@remixicon/react';
+  RiHomeLine,
+  RiSearch2Line,
+  RiSettingsLine,
+  RiUserLine,
+} from "@remixicon/react";
 
-import { Button } from '@/components/alignui/actions/button';
-import { CommandMenu } from '@/components/alignui/overlays/command-menu';
-import { CompactButton } from '@/components/alignui/actions/compact-button';
-import { Kbd } from '@/components/alignui/actions/kbd';
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/alignui/actions/button";
+import { CompactButton } from "@/components/alignui/actions/compact-button";
+import { Kbd } from "@/components/alignui/actions/kbd";
+import { CommandMenu } from "@/components/alignui/overlays/command-menu";
 
 interface CommandMenuItem {
   id: string;
@@ -41,45 +41,43 @@ interface CommandMenuExampleProps {
   actions?: CommandMenuItem[];
 }
 
-export function CommandMenuExample({
-  actions = [],
-}: CommandMenuExampleProps) {
+export function CommandMenuExample({ actions = [] }: CommandMenuExampleProps) {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
 
   // Standard-Navigation-Items
   const defaultItems: CommandMenuItem[] = [
     {
-      id: 'dashboard',
-      title: 'Dashboard',
-      description: 'Zurück zur Übersicht',
+      id: "dashboard",
+      title: "Dashboard",
+      description: "Zurück zur Übersicht",
       icon: RiHomeLine,
-      href: '/dashboard',
-      category: 'Navigation',
+      href: "/dashboard",
+      category: "Navigation",
     },
     {
-      id: 'customers',
-      title: 'Kunden',
-      description: 'Kundenverwaltung',
+      id: "customers",
+      title: "Kunden",
+      description: "Kundenverwaltung",
       icon: RiUserLine,
-      href: '/dashboard/customers',
-      category: 'Navigation',
+      href: "/dashboard/customers",
+      category: "Navigation",
     },
     {
-      id: 'documents',
-      title: 'Dokumente',
-      description: 'Angebote und Rechnungen',
+      id: "documents",
+      title: "Dokumente",
+      description: "Angebote und Rechnungen",
       icon: RiFileTextLine,
-      href: '/dashboard/documents',
-      category: 'Navigation',
+      href: "/dashboard/documents",
+      category: "Navigation",
     },
     {
-      id: 'settings',
-      title: 'Einstellungen',
-      description: 'Account-Einstellungen',
+      id: "settings",
+      title: "Einstellungen",
+      description: "Account-Einstellungen",
       icon: RiSettingsLine,
-      href: '/dashboard/settings',
-      category: 'Navigation',
+      href: "/dashboard/settings",
+      category: "Navigation",
     },
     ...actions,
   ];
@@ -90,28 +88,28 @@ export function CommandMenuExample({
       // Überspringe, wenn ein Input-Feld fokussiert ist
       const target = e.target as HTMLElement;
       if (
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
         target.isContentEditable
       ) {
         return;
       }
 
       // CMD+K oder CTRL+K zum Öffnen
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setOpen((open) => !open);
       }
 
       // "/" zum Öffnen (optional)
-      if (e.key === '/' && !open) {
+      if (e.key === "/" && !open) {
         e.preventDefault();
         setOpen(true);
       }
     };
 
-    document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
   }, [open]);
 
   const handleSelect = (item: CommandMenuItem) => {
@@ -124,13 +122,16 @@ export function CommandMenuExample({
   };
 
   // Gruppiere Items nach Kategorie
-  const groupedItems = defaultItems.reduce((acc, item) => {
-    if (!acc[item.category]) {
-      acc[item.category] = [];
-    }
-    acc[item.category].push(item);
-    return acc;
-  }, {} as Record<string, CommandMenuItem[]>);
+  const groupedItems = defaultItems.reduce(
+    (acc, item) => {
+      if (!acc[item.category]) {
+        acc[item.category] = [];
+      }
+      acc[item.category].push(item);
+      return acc;
+    },
+    {} as Record<string, CommandMenuItem[]>,
+  );
 
   return (
     <>
@@ -155,8 +156,8 @@ export function CommandMenuExample({
             <div className="group/cmd-input flex h-12 w-full items-center gap-2 border-b px-5">
               <RiSearch2Line
                 className={cn(
-                  'size-5 shrink-0 text-muted-foreground transition-colors',
-                  'group-focus-within/cmd-input:text-primary',
+                  "size-5 shrink-0 text-muted-foreground transition-colors",
+                  "group-focus-within/cmd-input:text-primary",
                 )}
               />
               <CommandMenu.Input placeholder="Suche oder springe zu..." />
@@ -190,7 +191,7 @@ export function CommandMenuExample({
             {/* CommandMenu Liste */}
             <CommandMenu.List>
               <CommandMenu.Empty>Keine Ergebnisse gefunden.</CommandMenu.Empty>
-              
+
               {/* Gruppierte Items */}
               {Object.entries(groupedItems).map(([category, items]) => (
                 <CommandMenu.Group key={category} heading={category}>
@@ -227,13 +228,17 @@ export function CommandMenuExample({
                   <CommandMenu.FooterKeyBox>
                     <RiArrowDownLine className="size-4" />
                   </CommandMenu.FooterKeyBox>
-                  <span className="text-xs text-muted-foreground">Navigieren</span>
+                  <span className="text-xs text-muted-foreground">
+                    Navigieren
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CommandMenu.FooterKeyBox>
                     <RiCornerDownLeftLine className="size-4" />
                   </CommandMenu.FooterKeyBox>
-                  <span className="text-xs text-muted-foreground">Auswählen</span>
+                  <span className="text-xs text-muted-foreground">
+                    Auswählen
+                  </span>
                 </div>
               </div>
             </CommandMenu.Footer>
@@ -243,5 +248,3 @@ export function CommandMenuExample({
     </>
   );
 }
-
-

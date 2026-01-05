@@ -1,25 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Shield, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
-
-import { Button } from '@/components/alignui/actions/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/alignui/data-display/card';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { useToast } from "@/components/ui/use-toast";
-import {
-  getTwoFactorStatus,
   disableTwoFactor,
+  getTwoFactorStatus,
   regenerateBackupCodes,
 } from "@/actions/two-factor-actions";
-import { TwoFactorSetup } from "./two-factor-setup";
+import { AlertCircle, CheckCircle2, Loader2, Shield } from "lucide-react";
+
+import { logger } from "@/lib/logger";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,9 +21,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Input } from '@/components/alignui/forms/input';
 import { Label } from "@/components/ui/label";
-import { logger } from "@/lib/logger";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import { Input } from "@/components/alignui/forms/input";
+
+import { TwoFactorSetup } from "./two-factor-setup";
 
 export function TwoFactorAuth() {
   const { toast } = useToast();
@@ -174,7 +175,7 @@ export function TwoFactorAuth() {
         onComplete={async () => {
           setShowSetup(false);
           // Reload status after a short delay to ensure database is updated
-          await new Promise(resolve => setTimeout(resolve, 300));
+          await new Promise((resolve) => setTimeout(resolve, 300));
           await loadStatus();
           // Refresh the router to ensure server state is updated
           router.refresh();
@@ -265,7 +266,10 @@ export function TwoFactorAuth() {
               </div>
             )}
 
-            <AlertDialog open={showDisableDialog} onOpenChange={setShowDisableDialog}>
+            <AlertDialog
+              open={showDisableDialog}
+              onOpenChange={setShowDisableDialog}
+            >
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" className="w-full">
                   2FA deaktivieren
@@ -275,8 +279,8 @@ export function TwoFactorAuth() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>2FA deaktivieren?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Um 2FA zu deaktivieren, müssen Sie Ihr Passwort bestätigen. Dies
-                    reduziert die Sicherheit Ihres Kontos.
+                    Um 2FA zu deaktivieren, müssen Sie Ihr Passwort bestätigen.
+                    Dies reduziert die Sicherheit Ihres Kontos.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <div className="space-y-2">
@@ -319,7 +323,8 @@ export function TwoFactorAuth() {
                     2FA ist nicht aktiviert
                   </p>
                   <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
-                    Aktivieren Sie 2FA, um die Sicherheit Ihres Kontos zu erhöhen.
+                    Aktivieren Sie 2FA, um die Sicherheit Ihres Kontos zu
+                    erhöhen.
                   </p>
                 </div>
               </div>
@@ -335,4 +340,3 @@ export function TwoFactorAuth() {
     </Card>
   );
 }
-

@@ -1,21 +1,35 @@
 /**
  * AlignUI - Card Component (Free Base Component)
- * 
+ *
  * Based on AlignUI design system using Tailwind CSS
  * Source: alignui.com/docs/v1.2/components/data-display/card
  */
 
 import * as React from "react";
+
 import { cn } from "@/lib/utils";
 
-interface CardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'hover' | 'interactive' | 'compact'> {
+interface CardProps
+  extends Omit<
+    React.HTMLAttributes<HTMLDivElement>,
+    "hover" | "interactive" | "compact"
+  > {
   hover?: boolean;
   interactive?: boolean;
   compact?: boolean;
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, hover = false, interactive = false, compact = false, ...props }, ref) => {
+  (
+    {
+      className,
+      hover = false,
+      interactive = false,
+      compact = false,
+      ...props
+    },
+    ref,
+  ) => {
     return (
       <div
         ref={ref}
@@ -25,12 +39,12 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           interactive && "cursor-pointer transition-all",
           hover && "transition-shadow hover:shadow-md",
           compact && "p-4",
-          className
+          className,
         )}
         {...props}
       />
     );
-  }
+  },
 );
 Card.displayName = "Card";
 
@@ -55,7 +69,7 @@ const CardTitle = React.forwardRef<
     className={cn(
       // Kompakte Typography - text-base statt text-2xl
       "text-base font-semibold leading-tight tracking-tight",
-      className
+      className,
     )}
     {...props}
   />

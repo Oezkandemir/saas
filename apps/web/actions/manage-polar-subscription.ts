@@ -1,15 +1,16 @@
 "use server";
 
+import { revalidateTag } from "next/cache";
 import { auth } from "@/auth";
+
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import {
-  getPolarSubscription,
   cancelPolarSubscription,
+  getPolarSubscription,
   reactivatePolarSubscription,
   updatePolarSubscription,
 } from "@/lib/polar";
-import { revalidateTag } from "next/cache";
 
 // Type assertion to handle Next.js 16 type requirements
 const revalidateTagSafe = revalidateTag as (tag: string) => void;
@@ -171,7 +172,7 @@ export async function updateSubscriptionPlan(
 
     // If no subscription ID in users table, check subscriptions table
     let subscriptionId = userData.polar_subscription_id;
-    
+
     if (!subscriptionId) {
       const { data: subData, error: subError } = await supabaseAdmin
         .from("subscriptions")
@@ -194,7 +195,10 @@ export async function updateSubscriptionPlan(
 
     if (!subscriptionId) {
       logger.warn(`No active subscription found for user ${user.id}`);
-      return { success: false, message: "No active subscription found. Please contact support." };
+      return {
+        success: false,
+        message: "No active subscription found. Please contact support.",
+      };
     }
 
     // Update subscription via Polar API
@@ -282,4 +286,3 @@ export async function getCurrentSubscription(): Promise<ManageSubscriptionResult
     };
   }
 }
-

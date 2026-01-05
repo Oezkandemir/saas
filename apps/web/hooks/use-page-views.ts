@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useSWR from "swr";
+
 import { logger } from "@/lib/logger";
 
 // Fetcher function for SWR

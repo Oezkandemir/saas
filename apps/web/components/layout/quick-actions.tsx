@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { FileText, Plus, QrCode, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Plus, FileText, QrCode, Users } from "lucide-react";
 
-import { Button } from '@/components/alignui/actions/button';
+import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
+import { Button } from "@/components/alignui/actions/button";
 import {
   DropdownMenuRoot as DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/alignui/overlays/dropdown-menu";
-import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 
 export function QuickActions() {
   const router = useRouter();
@@ -67,4 +67,3 @@ export function QuickActions() {
     </DropdownMenu>
   );
 }
-

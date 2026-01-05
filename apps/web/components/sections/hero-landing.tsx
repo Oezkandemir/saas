@@ -3,10 +3,10 @@ import { getTranslations } from "next-intl/server";
 
 import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
-import { cn, nFormatter } from "@/lib/utils";
-import { buttonVariants } from '@/components/alignui/actions/button';
-import { Icons } from "@/components/shared/icons";
 import { logger } from "@/lib/logger";
+import { cn, nFormatter } from "@/lib/utils";
+import { buttonVariants } from "@/components/alignui/actions/button";
+import { Icons } from "@/components/shared/icons";
 
 export default async function HeroLanding() {
   let stars = 0;
@@ -75,10 +75,7 @@ export default async function HeroLanding() {
           <Link
             href="/pricing"
             prefetch={true}
-            className={cn(
-              buttonVariants({ size: "lg" }),
-              "gap-2 rounded-full",
-            )}
+            className={cn(buttonVariants({ size: "lg" }), "gap-2 rounded-full")}
           >
             <span>{t("goPricing")}</span>
             <Icons.arrowRight className="size-4" />

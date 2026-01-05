@@ -1,24 +1,24 @@
 "use client";
 
 import * as React from "react";
+import { verifyTwoFactorCodeForSignIn } from "@/actions/two-factor-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Shield } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { Shield, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { buttonVariants } from '@/components/alignui/actions/button';
-import { Input } from '@/components/alignui/forms/input';
-import { LabelRoot as Label } from "@/components/alignui/forms/label";
+import { buttonVariants } from "@/components/alignui/actions/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { verifyTwoFactorCodeForSignIn } from "@/actions/two-factor-actions";
+} from "@/components/alignui/data-display/card";
+import { Input } from "@/components/alignui/forms/input";
+import { LabelRoot as Label } from "@/components/alignui/forms/label";
 
 interface TwoFactorLoginFormProps {
   userId: string;
@@ -92,15 +92,22 @@ export function TwoFactorLoginForm({
         <div className="flex justify-center mb-2">
           <Shield className="h-12 w-12 text-primary" />
         </div>
-        <CardTitle className="text-xl md:text-2xl">Two-Factor Authentication</CardTitle>
+        <CardTitle className="text-xl md:text-2xl">
+          Two-Factor Authentication
+        </CardTitle>
         <CardDescription className="text-sm md:text-base">
           Enter the 6-digit code from your authenticator app
         </CardDescription>
       </CardHeader>
       <CardContent className="px-4 pb-6 md:px-6 md:pb-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4 md:space-y-6"
+        >
           <div className="space-y-2">
-            <Label htmlFor="code" className="text-sm md:text-base">Verification Code</Label>
+            <Label htmlFor="code" className="text-sm md:text-base">
+              Verification Code
+            </Label>
             <Input
               id="code"
               type="text"
@@ -161,4 +168,3 @@ export function TwoFactorLoginForm({
     </Card>
   );
 }
-

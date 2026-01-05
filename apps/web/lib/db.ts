@@ -2,8 +2,8 @@ import "server-only";
 
 import { createClient } from "@supabase/supabase-js";
 
-import { Database } from "./supabase";
 import { logger } from "./logger";
+import { Database } from "./supabase";
 
 // Check if environment variables are set
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -31,18 +31,25 @@ export const supabaseAdmin = createClient<Database>(
 // Test the connection only in development mode and skip if env vars are missing
 async function testConnection() {
   // Skip connection test in production or if env vars are missing
-  if (process.env.NODE_ENV === 'production' || !supabaseUrl || !supabaseServiceKey) {
+  if (
+    process.env.NODE_ENV === "production" ||
+    !supabaseUrl ||
+    !supabaseServiceKey
+  ) {
     return;
   }
 
   try {
-    const { error } = await supabaseAdmin.from("users").select("count").limit(1);
+    const { error } = await supabaseAdmin
+      .from("users")
+      .select("count")
+      .limit(1);
 
     if (error) {
       // Only log as warning in development, not as error
-      logger.warn("Supabase admin client connection test warning", { 
+      logger.warn("Supabase admin client connection test warning", {
         code: error.code,
-        message: error.message 
+        message: error.message,
       });
     } else {
       logger.debug("Supabase admin client connected successfully");
@@ -54,7 +61,7 @@ async function testConnection() {
 }
 
 // Run the test but don't block initialization - only in development
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   testConnection().catch(() => {
     // Silently fail - connection test is not critical
   });

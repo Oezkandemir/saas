@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
+import { cn } from "@/lib/utils";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
-import { cn } from "@/lib/utils";
 
 interface FAQItem {
   question: string;
@@ -51,9 +51,7 @@ export default function ModernFAQ() {
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             {t("title")}
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
-            {t("subtitle")}
-          </p>
+          <p className="mt-4 text-lg text-muted-foreground">{t("subtitle")}</p>
         </div>
 
         {/* FAQ Items */}
@@ -94,4 +92,3 @@ export default function ModernFAQ() {
     </section>
   );
 }
-

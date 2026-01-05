@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { supabaseAdmin } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
 import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
 
 const banUserSchema = z.object({
   userId: z.string().uuid(),
@@ -239,10 +239,13 @@ export async function getAllUsers() {
 
     // Fetch last_sign_in_at from auth.users for all users
     // Note: We need to use admin API to access auth.users
-    const { data: authUsers, error: authError } = await supabaseAdmin.auth.admin.listUsers();
+    const { data: authUsers, error: authError } =
+      await supabaseAdmin.auth.admin.listUsers();
 
     if (authError) {
-      logger.warn(`Error fetching auth users (last_sign_in_at may be missing): ${authError instanceof Error ? authError.message : String(authError)}`);
+      logger.warn(
+        `Error fetching auth users (last_sign_in_at may be missing): ${authError instanceof Error ? authError.message : String(authError)}`,
+      );
     }
 
     // Create a map of auth user data by ID

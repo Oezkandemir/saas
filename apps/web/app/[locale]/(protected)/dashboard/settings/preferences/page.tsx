@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
-import { getLocale, setRequestLocale } from "next-intl/server";
 import { getUserPreferences } from "@/actions/preferences-actions";
-import { PreferencesPanel } from "@/components/settings/preferences-panel";
+import { Settings } from "lucide-react";
+import { getLocale, setRequestLocale } from "next-intl/server";
+
 import { constructMetadata } from "@/lib/utils";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { Settings } from "lucide-react";
+import { PreferencesPanel } from "@/components/settings/preferences-panel";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -36,4 +37,3 @@ export default async function PreferencesPage() {
     </UnifiedPageLayout>
   );
 }
-

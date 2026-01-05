@@ -1,23 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Shield, Copy, Check, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  generateTwoFactorSecret,
+  verifyAndEnableTwoFactor,
+} from "@/actions/two-factor-actions";
+import { Check, Copy, Loader2, Shield } from "lucide-react";
 
-import { Button } from '@/components/alignui/actions/button';
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/alignui/actions/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { Input } from '@/components/alignui/forms/input';
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
-import {
-  generateTwoFactorSecret,
-  verifyAndEnableTwoFactor,
-} from "@/actions/two-factor-actions";
+} from "@/components/alignui/data-display/card";
+import { Input } from "@/components/alignui/forms/input";
 
 interface TwoFactorSetupProps {
   onComplete: () => void;
@@ -101,12 +101,13 @@ export function TwoFactorSetup({ onComplete }: TwoFactorSetupProps) {
 
       toast({
         title: "2FA aktiviert",
-        description: "Zwei-Faktor-Authentifizierung wurde erfolgreich aktiviert",
+        description:
+          "Zwei-Faktor-Authentifizierung wurde erfolgreich aktiviert",
       });
 
       // Small delay to ensure database is updated
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       onComplete();
     } catch (error) {
       toast({
@@ -154,8 +155,9 @@ export function TwoFactorSetup({ onComplete }: TwoFactorSetupProps) {
                         {qrCodeUrl}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        Verwenden Sie diese URL in Ihrer Authenticator-App oder scannen Sie
-                        den QR-Code, der von einem QR-Code-Generator erstellt wurde
+                        Verwenden Sie diese URL in Ihrer Authenticator-App oder
+                        scannen Sie den QR-Code, der von einem QR-Code-Generator
+                        erstellt wurde
                       </p>
                       <a
                         href={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrCodeUrl)}`}
@@ -172,17 +174,23 @@ export function TwoFactorSetup({ onComplete }: TwoFactorSetupProps) {
                     </div>
                   </div>
                   <p className="text-sm text-muted-foreground text-center">
-                    Scannen Sie diesen QR-Code mit Google Authenticator, Authy oder einer
-                    ähnlichen App
+                    Scannen Sie diesen QR-Code mit Google Authenticator, Authy
+                    oder einer ähnlichen App
                   </p>
                 </div>
               )}
 
               {secret && (
                 <div className="space-y-2">
-                  <Label>Manueller Schlüssel (falls QR-Code nicht funktioniert)</Label>
+                  <Label>
+                    Manueller Schlüssel (falls QR-Code nicht funktioniert)
+                  </Label>
                   <div className="flex items-center gap-2">
-                    <Input value={secret} readOnly className="font-mono text-sm" />
+                    <Input
+                      value={secret}
+                      readOnly
+                      className="font-mono text-sm"
+                    />
                     <Button
                       variant="outline"
                       size="icon"
@@ -190,7 +198,8 @@ export function TwoFactorSetup({ onComplete }: TwoFactorSetupProps) {
                         navigator.clipboard.writeText(secret);
                         toast({
                           title: "Kopiert",
-                          description: "Schlüssel wurde in die Zwischenablage kopiert",
+                          description:
+                            "Schlüssel wurde in die Zwischenablage kopiert",
                         });
                       }}
                     >
@@ -231,8 +240,9 @@ export function TwoFactorSetup({ onComplete }: TwoFactorSetupProps) {
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Speichern Sie diese Codes an einem sicheren Ort. Sie können sie
-                    verwenden, wenn Sie keinen Zugriff auf Ihre Authenticator-App haben.
+                    Speichern Sie diese Codes an einem sicheren Ort. Sie können
+                    sie verwenden, wenn Sie keinen Zugriff auf Ihre
+                    Authenticator-App haben.
                   </p>
                 </div>
               )}
@@ -273,7 +283,9 @@ export function TwoFactorSetup({ onComplete }: TwoFactorSetupProps) {
             pattern="[0-9]*"
             maxLength={6}
             value={verificationCode}
-            onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))}
+            onChange={(e) =>
+              setVerificationCode(e.target.value.replace(/\D/g, ""))
+            }
             placeholder="000000"
             className="text-center text-2xl font-mono tracking-widest"
           />
@@ -309,4 +321,3 @@ export function TwoFactorSetup({ onComplete }: TwoFactorSetupProps) {
     </Card>
   );
 }
-

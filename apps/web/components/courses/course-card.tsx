@@ -2,15 +2,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useLocale } from "next-intl";
-import { Button } from "@/components/alignui/actions/button";
-import { Clock, Euro, ArrowRight } from "lucide-react";
-import { formatDuration } from "@/lib/utils";
 import type { EventType } from "@/actions/scheduling/event-types-actions";
+import { ArrowRight, Clock, Euro } from "lucide-react";
+import { useLocale } from "next-intl";
+
 import { logger } from "@/lib/logger";
+import { formatDuration } from "@/lib/utils";
+import { Button } from "@/components/alignui/actions/button";
 
 interface CourseCardProps {
-  eventType: EventType & { owner: { name: string | null; email: string | null } };
+  eventType: EventType & {
+    owner: { name: string | null; email: string | null };
+  };
 }
 
 /**
@@ -19,13 +22,13 @@ interface CourseCardProps {
  */
 export function CourseCard({ eventType }: CourseCardProps) {
   const locale = useLocale();
-  
+
   // Format duration using the utility function
   const durationText = formatDuration(eventType.duration_minutes, "de");
 
   // Format price
-  const priceText = eventType.price_amount 
-    ? `${eventType.price_amount.toFixed(2)} ${eventType.price_currency || 'EUR'}`
+  const priceText = eventType.price_amount
+    ? `${eventType.price_amount.toFixed(2)} ${eventType.price_currency || "EUR"}`
     : "Auf Anfrage";
 
   // Booking link - ensure owner_user_id is available
@@ -33,7 +36,9 @@ export function CourseCard({ eventType }: CourseCardProps) {
   if (!ownerUserId) {
     logger.error("EventType missing owner_user_id:", eventType);
   }
-  const bookingLink = ownerUserId ? `/${locale}/book/${ownerUserId}/${eventType.slug}` : "#";
+  const bookingLink = ownerUserId
+    ? `/${locale}/book/${ownerUserId}/${eventType.slug}`
+    : "#";
 
   // Placeholder image - you can add image_url to EventType later
   const imageUrl = `/illustrations/work-from-home.jpg`;
@@ -54,7 +59,7 @@ export function CourseCard({ eventType }: CourseCardProps) {
         />
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-card/90 via-card/50 to-transparent" />
-        
+
         {/* Duration Badge */}
         <div className="absolute top-4 right-4 flex items-center gap-1.5 rounded-full bg-background/90 backdrop-blur-sm px-3 py-1.5 text-sm font-medium shadow-lg">
           <Clock className="h-4 w-4 text-primary" />
@@ -89,7 +94,10 @@ export function CourseCard({ eventType }: CourseCardProps) {
             className="w-full group/button"
             size="lg"
           >
-            <Link href={bookingLink} className="flex items-center justify-center gap-2">
+            <Link
+              href={bookingLink}
+              className="flex items-center justify-center gap-2"
+            >
               Jetzt buchen
               <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/button:translate-x-1" />
             </Link>
@@ -102,4 +110,3 @@ export function CourseCard({ eventType }: CourseCardProps) {
     </div>
   );
 }
-

@@ -1,25 +1,36 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import { RiInformationFill } from '@remixicon/react';
-import { toast } from 'sonner';
-
-import { ButtonRoot, ButtonIcon } from '@/components/alignui/actions/button';
+import * as React from "react";
+import { useRouter } from "next/navigation";
 import {
-  DrawerRoot,
-  DrawerTrigger,
-  DrawerContent,
-  DrawerHeader,
+  createCustomer,
+  type CustomerInput,
+} from "@/actions/customers-actions";
+import { RiInformationFill } from "@remixicon/react";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+
+import { ButtonIcon, ButtonRoot } from "@/components/alignui/actions/button";
+import { HintIcon, HintRoot } from "@/components/alignui/feedback/hint";
+import { Input } from "@/components/alignui/forms/input";
+import {
+  LabelAsterisk,
+  LabelRoot,
+  LabelSub,
+} from "@/components/alignui/forms/label";
+import {
+  TextareaCharCounter,
+  TextareaRoot,
+} from "@/components/alignui/forms/textarea";
+import {
   DrawerBody,
+  DrawerContent,
   DrawerFooter,
+  DrawerHeader,
+  DrawerRoot,
   DrawerTitle,
-} from '@/components/alignui/overlays/drawer';
-import { HintRoot, HintIcon } from '@/components/alignui/feedback/hint';
-import { Input } from '@/components/alignui/forms/input';
-import { LabelRoot, LabelAsterisk, LabelSub } from '@/components/alignui/forms/label';
-import { TextareaRoot, TextareaCharCounter } from '@/components/alignui/forms/textarea';
+  DrawerTrigger,
+} from "@/components/alignui/overlays/drawer";
 
 // Create namespace objects locally for AlignUI pattern
 const Button = {
@@ -52,7 +63,6 @@ const Textarea = {
   Root: TextareaRoot,
   CharCounter: TextareaCharCounter,
 };
-import { createCustomer, type CustomerInput } from '@/actions/customers-actions';
 
 interface NewCustomerDrawerProps {
   open?: boolean;
@@ -66,7 +76,7 @@ export function NewCustomerDrawer({
   trigger,
 }: NewCustomerDrawerProps) {
   const router = useRouter();
-  const t = useTranslations('Customers.form.fields');
+  const t = useTranslations("Customers.form.fields");
   const [internalOpen, setInternalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -74,40 +84,40 @@ export function NewCustomerDrawer({
   const setOpen = controlledOnOpenChange ?? setInternalOpen;
 
   const [formData, setFormData] = React.useState<CustomerInput>({
-    name: '',
-    email: '',
-    phone: '',
-    company: '',
-    notes: '',
+    name: "",
+    email: "",
+    phone: "",
+    company: "",
+    notes: "",
   });
 
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
-      toast.error('Name ist erforderlich');
+      toast.error("Name ist erforderlich");
       return;
     }
 
     setIsLoading(true);
     try {
       const newCustomer = await createCustomer(formData);
-      toast.success('Kunde erfolgreich erstellt', {
+      toast.success("Kunde erfolgreich erstellt", {
         description: `${formData.name} wurde hinzugefügt.`,
       });
       setOpen(false);
       // Reset form
       setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        notes: '',
+        name: "",
+        email: "",
+        phone: "",
+        company: "",
+        notes: "",
       });
       router.refresh();
       router.push(`/dashboard/customers/${newCustomer.id}`);
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Ein Fehler ist aufgetreten.';
-      toast.error('Fehler beim Erstellen', {
+        error instanceof Error ? error.message : "Ein Fehler ist aufgetreten.";
+      toast.error("Fehler beim Erstellen", {
         description: errorMessage,
       });
     } finally {
@@ -117,11 +127,11 @@ export function NewCustomerDrawer({
 
   const handleDiscard = () => {
     setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      company: '',
-      notes: '',
+      name: "",
+      email: "",
+      phone: "",
+      company: "",
+      notes: "",
     });
     setOpen(false);
   };
@@ -130,10 +140,7 @@ export function NewCustomerDrawer({
     <Drawer.Root open={open} onOpenChange={setOpen} direction="right">
       {trigger && <Drawer.Trigger asChild>{trigger}</Drawer.Trigger>}
 
-      <Drawer.Content
-        side="right"
-        className="mr-2 shadow-custom-md"
-      >
+      <Drawer.Content side="right" className="mr-2 shadow-custom-md">
         <div className="flex flex-col h-full bg-bg-white-0">
           <Drawer.Header className="bg-bg-white-0">
             <Drawer.Title className="text-label-lg text-text-strong-950">
@@ -151,7 +158,7 @@ export function NewCustomerDrawer({
                 <Input
                   id="name"
                   type="text"
-                  placeholder={t('namePlaceholder')}
+                  placeholder={t("namePlaceholder")}
                   value={formData.name}
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
@@ -165,7 +172,7 @@ export function NewCustomerDrawer({
                 <Input
                   id="email"
                   type="email"
-                  placeholder={t('emailPlaceholder')}
+                  placeholder={t("emailPlaceholder")}
                   value={formData.email}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
@@ -178,7 +185,7 @@ export function NewCustomerDrawer({
                 <Input
                   id="phone"
                   type="tel"
-                  placeholder={t('phonePlaceholder')}
+                  placeholder={t("phonePlaceholder")}
                   value={formData.phone}
                   onChange={(e) =>
                     setFormData({ ...formData, phone: e.target.value })
@@ -191,7 +198,7 @@ export function NewCustomerDrawer({
                 <Input
                   id="company"
                   type="text"
-                  placeholder={t('companyPlaceholder')}
+                  placeholder={t("companyPlaceholder")}
                   value={formData.company}
                   onChange={(e) =>
                     setFormData({ ...formData, company: e.target.value })
@@ -204,10 +211,10 @@ export function NewCustomerDrawer({
                   Notizen <Label.Sub>(Optional)</Label.Sub>
                 </Label.Root>
                 <Textarea.Root
-                  placeholder={t('notesPlaceholder')}
+                  placeholder={t("notesPlaceholder")}
                   className="min-h-[50px]"
                   id="notes"
-                  value={formData.notes ?? ''}
+                  value={formData.notes ?? ""}
                   onChange={(e) =>
                     setFormData({ ...formData, notes: e.target.value })
                   }
@@ -244,7 +251,7 @@ export function NewCustomerDrawer({
               onClick={handleSubmit}
               disabled={isLoading || !formData.name.trim()}
             >
-              {isLoading ? 'Wird erstellt...' : 'Kunde erstellen'}
+              {isLoading ? "Wird erstellt..." : "Kunde erstellen"}
             </Button.Root>
           </Drawer.Footer>
         </div>
@@ -252,4 +259,3 @@ export function NewCustomerDrawer({
     </Drawer.Root>
   );
 }
-

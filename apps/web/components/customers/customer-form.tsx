@@ -2,24 +2,31 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import * as z from "zod";
-import { CustomerInput, createCustomer, updateCustomer, Customer } from "@/actions/customers-actions";
-import { FormRoot as Form } from "@/components/alignui/forms/form";
-import { toast } from "sonner";
-import { Card, CardContent } from '@/components/alignui/data-display/card';
-import { LoadingOverlay } from "@/components/ui/loading-overlay";
-import { User, MapPin, FileText } from "lucide-react";
-import { MultiStepForm, Step } from "@/components/ui/multi-step-form";
 import {
-  CustomerPersonalInfoStep,
-  CustomerAddressStep,
-  CustomerAdditionalInfoStep,
-} from "./customer-form-steps";
+  createCustomer,
+  Customer,
+  CustomerInput,
+  updateCustomer,
+} from "@/actions/customers-actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FileText, MapPin, User } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+
 import { useAutoSave } from "@/lib/hooks/use-auto-save";
 import { logger } from "@/lib/logger";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { MultiStepForm, Step } from "@/components/ui/multi-step-form";
+import { Card, CardContent } from "@/components/alignui/data-display/card";
+import { FormRoot as Form } from "@/components/alignui/forms/form";
+
+import {
+  CustomerAdditionalInfoStep,
+  CustomerAddressStep,
+  CustomerPersonalInfoStep,
+} from "./customer-form-steps";
 
 interface CustomerFormProps {
   customer?: Customer;
@@ -112,15 +119,14 @@ export function CustomerForm({ customer }: CustomerFormProps) {
         router.refresh();
       }
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : t("unexpectedError");
-      
+      const errorMessage =
+        error instanceof Error ? error.message : t("unexpectedError");
+
       toast.error(t("saveError"), {
         description: errorMessage,
         duration: 5000,
       });
-      
+
       if (process.env.NODE_ENV === "development") {
         logger.error("Customer form error:", error);
       }
@@ -144,7 +150,13 @@ export function CustomerForm({ customer }: CustomerFormProps) {
       title: t("steps.address.title"),
       description: t("steps.address.description"),
       icon: <MapPin className="size-5" />,
-      fields: ["address_line1", "address_line2", "city", "postal_code", "country"],
+      fields: [
+        "address_line1",
+        "address_line2",
+        "city",
+        "postal_code",
+        "country",
+      ],
       component: CustomerAddressStep,
     },
     {

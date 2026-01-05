@@ -1,8 +1,7 @@
-
 import {
   deleteAllNotifications,
   deleteNotification,
-  } from "@/actions/user-profile-actions";
+} from "@/actions/user-profile-actions";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 

@@ -1055,7 +1055,7 @@
       "totalMembers": "Total Members",
       "totalMembersDesc": "Active team members across all teams",
       "membersDescription": "Active team members across all teams",
-      "totalProjects": "Active Projects", 
+      "totalProjects": "Active Projects",
       "totalProjectsDesc": "Projects currently in progress",
       "projectsDescription": "Projects currently in progress",
       "activeProjects": "Active Projects",
@@ -1157,7 +1157,7 @@
       "noDescription": "No description provided",
       "createdAt": "Created {time}",
       "members": "members",
-      "projects": "projects", 
+      "projects": "projects",
       "stats": {
         "members": "Members",
         "projects": "Projects",
@@ -1165,7 +1165,7 @@
       },
       "tabs": {
         "dashboard": "Dashboard",
-        "members": "Members", 
+        "members": "Members",
         "projects": "Projects",
         "activity": "Activity",
         "resources": "Resources"
@@ -1177,21 +1177,21 @@
         "dashboardDescription": "Team dashboard with charts and metrics will be available soon."
       },
       "projects": {
-        "title": "Team Projects", 
+        "title": "Team Projects",
         "description": "Manage and track team projects",
         "comingSoon": "Projects coming soon",
         "projectsDescription": "Project management features will be available soon."
       },
       "activity": {
         "title": "Team Activity",
-        "description": "Recent team actions and updates", 
+        "description": "Recent team actions and updates",
         "comingSoon": "Activity feed coming soon",
         "activityDescription": "Team activity tracking will be available soon."
       },
       "resources": {
         "title": "Team Resources",
         "description": "Shared files and documents",
-        "comingSoon": "Resources coming soon", 
+        "comingSoon": "Resources coming soon",
         "resourcesDescription": "Team resource management will be available soon."
       }
     },

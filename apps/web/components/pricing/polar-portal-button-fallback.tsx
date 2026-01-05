@@ -1,18 +1,25 @@
 "use client";
 
 import { useTransition } from "react";
-import { useTranslations } from "next-intl";
 import { openPolarPortalFallback } from "@/actions/open-polar-portal";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Button } from '@/components/alignui/actions/button';
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Icons } from "@/components/shared/icons";
-import { buttonVariants } from '@/components/alignui/actions/button';
-import { cn } from "@/lib/utils";
+
 import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Button, buttonVariants } from "@/components/alignui/actions/button";
+import { Icons } from "@/components/shared/icons";
 
 interface PolarPortalButtonFallbackProps {
-  variant?: "default" | "primary" | "secondary" | "neutral" | "ghost" | "destructive" | "outline";
+  variant?:
+    | "default"
+    | "primary"
+    | "secondary"
+    | "neutral"
+    | "ghost"
+    | "destructive"
+    | "outline";
   className?: string;
 }
 
@@ -29,11 +36,12 @@ export function PolarPortalButtonFallback({
     startTransition(async () => {
       try {
         const result = await openPolarPortalFallback();
-        
+
         if (result.status === "error") {
           // Show error with option to sync
           toast.error("Failed to open customer portal", {
-            description: result.message || "Please try syncing your subscription first.",
+            description:
+              result.message || "Please try syncing your subscription first.",
             action: {
               label: "Sync Subscription",
               onClick: () => {
@@ -46,17 +54,21 @@ export function PolarPortalButtonFallback({
         // If successful, openPolarPortalFallback will redirect, so this won't execute
       } catch (error: any) {
         // Next.js redirect() throws a special exception that we should ignore
-        const isRedirectError = 
-          error?.digest?.startsWith('NEXT_REDIRECT') || 
-          error?.message?.includes('NEXT_REDIRECT') ||
-          error?.name === 'RedirectError' ||
-          (typeof error === 'object' && 'digest' in error && typeof error.digest === 'string' && error.digest.length > 0) ||
-          (!error?.message || error?.message === 'NEXT_REDIRECT');
-        
+        const isRedirectError =
+          error?.digest?.startsWith("NEXT_REDIRECT") ||
+          error?.message?.includes("NEXT_REDIRECT") ||
+          error?.name === "RedirectError" ||
+          (typeof error === "object" &&
+            "digest" in error &&
+            typeof error.digest === "string" &&
+            error.digest.length > 0) ||
+          !error?.message ||
+          error?.message === "NEXT_REDIRECT";
+
         if (isRedirectError) {
           return;
         }
-        
+
         logger.error("Error opening customer portal:", error);
         toast.error(
           "Failed to open customer portal. Please try again or contact support.",
@@ -88,7 +100,12 @@ export function PolarPortalButtonFallback({
   }
 
   return (
-    <Button variant={mappedVariant} disabled={isPending} onClick={handleOpenPortal} className={className}>
+    <Button
+      variant={mappedVariant}
+      disabled={isPending}
+      onClick={handleOpenPortal}
+      className={className}
+    >
       {isPending ? (
         <>
           <LoadingSpinner size="sm" variant="primary" />
@@ -103,4 +120,3 @@ export function PolarPortalButtonFallback({
     </Button>
   );
 }
-

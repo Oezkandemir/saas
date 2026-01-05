@@ -1,10 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSupabaseServer, getSupabaseStatic } from "@/lib/supabase-server";
-import { getCurrentUser } from "@/lib/session";
-import { enforcePlanLimit } from "@/lib/plan-limits";
+
 import { logger } from "@/lib/logger";
+import { enforcePlanLimit } from "@/lib/plan-limits";
+import { getCurrentUser } from "@/lib/session";
+import { getSupabaseServer, getSupabaseStatic } from "@/lib/supabase-server";
 
 export type Customer = {
   id: string;
@@ -41,7 +42,9 @@ export type CustomerInput = {
   company_profile_id?: string;
 };
 
-export async function getCustomers(companyProfileId?: string): Promise<Customer[]> {
+export async function getCustomers(
+  companyProfileId?: string,
+): Promise<Customer[]> {
   try {
     const user = await getCurrentUser();
     if (!user) {
@@ -50,9 +53,12 @@ export async function getCustomers(companyProfileId?: string): Promise<Customer[
     }
 
     const supabase = await getSupabaseServer();
-    
+
     // Verify authentication before querying
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !authUser) {
       logger.error("Error fetching customers: Authentication failed", {
         authError: authError?.message || "No auth user",
@@ -72,7 +78,10 @@ export async function getCustomers(companyProfileId?: string): Promise<Customer[
         .single();
 
       if (profileError || !profile) {
-        logger.error("Error fetching company profile or no permission", { profileError, companyProfileId });
+        logger.error("Error fetching company profile or no permission", {
+          profileError,
+          companyProfileId,
+        });
         return [];
       }
 
@@ -82,11 +91,16 @@ export async function getCustomers(companyProfileId?: string): Promise<Customer[
         .from("customers")
         .select("*")
         .eq("user_id", user.id)
-        .or(`company_profile_id.eq.${companyProfileId},company_profile_id.is.null`)
+        .or(
+          `company_profile_id.eq.${companyProfileId},company_profile_id.is.null`,
+        )
         .order("created_at", { ascending: false });
-      
+
       if (error) {
-        logger.error("Error fetching customers for profile", { error, companyProfileId });
+        logger.error("Error fetching customers for profile", {
+          error,
+          companyProfileId,
+        });
         return [];
       }
 
@@ -105,74 +119,83 @@ export async function getCustomers(companyProfileId?: string): Promise<Customer[
       const errorInfo: Record<string, any> = {
         userId: user.id,
         authUserId: authUser.id,
-        errorType: 'SupabaseQueryError',
+        errorType: "SupabaseQueryError",
         timestamp: new Date().toISOString(),
       };
-      
+
       // Always include error object properties, even if they're undefined
-      errorInfo.message = error.message || '(no message)';
-      errorInfo.code = error.code || '(no code)';
+      errorInfo.message = error.message || "(no message)";
+      errorInfo.code = error.code || "(no code)";
       errorInfo.details = error.details || null;
       errorInfo.hint = error.hint || null;
-      
+
       // Check if error object has any enumerable properties
       const errorKeys = Object.keys(error);
-      errorInfo.errorKeys = errorKeys.length > 0 ? errorKeys : ['(empty object)'];
-      
+      errorInfo.errorKeys =
+        errorKeys.length > 0 ? errorKeys : ["(empty object)"];
+
       // Log the detailed error info
       logger.error("Error fetching customers", errorInfo);
-      
+
       // Also log raw error for debugging
       try {
-        logger.error("Raw Supabase error object:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+        logger.error(
+          "Raw Supabase error object:",
+          JSON.stringify(error, Object.getOwnPropertyNames(error), 2),
+        );
       } catch (e) {
         logger.error("Raw Supabase error object (stringified):", String(error));
         logger.error("Error object type:", typeof error);
         logger.error("Error object constructor:", error?.constructor?.name);
       }
-      
+
       // Return empty array instead of throwing to prevent UI breakage
       return [];
     }
-    
+
     return data || [];
   } catch (error) {
     // Log detailed error information with proper serialization
     const errorDetails: Record<string, any> = {
-      errorType: 'Exception',
+      errorType: "Exception",
       timestamp: new Date().toISOString(),
     };
-    
+
     if (error instanceof Error) {
-      errorDetails.message = error.message || '(no message)';
-      errorDetails.name = error.name || '(no name)';
+      errorDetails.message = error.message || "(no message)";
+      errorDetails.name = error.name || "(no name)";
       if (error.stack) errorDetails.stack = error.stack;
-      errorDetails.errorType = 'Error';
-    } else if (error && typeof error === 'object') {
+      errorDetails.errorType = "Error";
+    } else if (error && typeof error === "object") {
       // Try to extract properties from error object
       const errorKeys = Object.keys(error);
-      errorDetails.errorKeys = errorKeys.length > 0 ? errorKeys : ['(empty object)'];
+      errorDetails.errorKeys =
+        errorKeys.length > 0 ? errorKeys : ["(empty object)"];
       errorDetails.error = String(error);
       errorDetails.errorType = typeof error;
-      
+
       // Try to get common error properties
-      if ('message' in error) errorDetails.message = String((error as any).message);
-      if ('code' in error) errorDetails.code = String((error as any).code);
+      if ("message" in error)
+        errorDetails.message = String((error as any).message);
+      if ("code" in error) errorDetails.code = String((error as any).code);
     } else {
       errorDetails.error = String(error);
       errorDetails.errorType = typeof error;
     }
-    
+
     // Also log the raw error
     logger.error("Error in getCustomers", errorDetails);
-    
+
     try {
-      logger.error("Raw caught error:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+      logger.error(
+        "Raw caught error:",
+        JSON.stringify(error, Object.getOwnPropertyNames(error), 2),
+      );
     } catch {
       logger.error("Raw caught error (stringified):", String(error));
       logger.error("Error type:", typeof error);
     }
-    
+
     // Return empty array on any error to prevent UI breakage
     return [];
   }
@@ -200,7 +223,7 @@ export async function getCustomer(id: string): Promise<Customer | null> {
       logger.error("Error fetching customer", error);
       return null;
     }
-    
+
     return data || null;
   } catch (error) {
     logger.error("Error in getCustomer", error);
@@ -237,7 +260,7 @@ export async function createCustomer(input: CustomerInput): Promise<Customer> {
     }
 
     const supabase = await getSupabaseServer();
-    
+
     // Generate unique QR code directly (no RPC call needed - faster and safer)
     let qrCode = generateUniqueQRCode();
     let attempts = 0;
@@ -301,7 +324,9 @@ export async function createCustomer(input: CustomerInput): Promise<Customer> {
 
     // Create notification for customer creation
     try {
-      const { createCustomerNotification } = await import("@/lib/notifications");
+      const { createCustomerNotification } = await import(
+        "@/lib/notifications"
+      );
       await createCustomerNotification({
         userId: user.id,
         customerId: data.id,
@@ -318,19 +343,20 @@ export async function createCustomer(input: CustomerInput): Promise<Customer> {
     return data;
   } catch (error) {
     // Re-throw validation errors as-is
-    if (error instanceof Error && (
-      error.message.includes("erforderlich") ||
-      error.message.includes("Ungültige") ||
-      error.message.includes("Unauthorized")
-    )) {
+    if (
+      error instanceof Error &&
+      (error.message.includes("erforderlich") ||
+        error.message.includes("Ungültige") ||
+        error.message.includes("Unauthorized"))
+    ) {
       throw error;
     }
-    
+
     // Wrap other errors with user-friendly message
     throw new Error(
-      error instanceof Error 
-        ? error.message 
-        : "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+      error instanceof Error
+        ? error.message
+        : "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
     );
   }
 }
@@ -391,7 +417,9 @@ export async function updateCustomer(
 
     // Create notification for customer update
     try {
-      const { createCustomerNotification } = await import("@/lib/notifications");
+      const { createCustomerNotification } = await import(
+        "@/lib/notifications"
+      );
       await createCustomerNotification({
         userId: user.id,
         customerId: id,
@@ -409,19 +437,20 @@ export async function updateCustomer(
     return data;
   } catch (error) {
     // Re-throw validation errors as-is
-    if (error instanceof Error && (
-      error.message.includes("erforderlich") ||
-      error.message.includes("Ungültige") ||
-      error.message.includes("Unauthorized") ||
-      error.message.includes("nicht gefunden")
-    )) {
+    if (
+      error instanceof Error &&
+      (error.message.includes("erforderlich") ||
+        error.message.includes("Ungültige") ||
+        error.message.includes("Unauthorized") ||
+        error.message.includes("nicht gefunden"))
+    ) {
       throw error;
     }
-    
+
     throw new Error(
-      error instanceof Error 
-        ? error.message 
-        : "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+      error instanceof Error
+        ? error.message
+        : "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
     );
   }
 }
@@ -436,7 +465,7 @@ export async function deleteCustomer(id: string): Promise<void> {
     }
 
     const supabase = await getSupabaseServer();
-    
+
     // Get customer info before deleting for notification
     const { data: customer } = await supabase
       .from("customers")
@@ -453,7 +482,9 @@ export async function deleteCustomer(id: string): Promise<void> {
 
     if (error) {
       if (error.code === "23503") {
-        throw new Error("Kunde kann nicht gelöscht werden, da er noch verwendet wird");
+        throw new Error(
+          "Kunde kann nicht gelöscht werden, da er noch verwendet wird",
+        );
       }
       throw new Error(`Fehler beim Löschen: ${error.message}`);
     }
@@ -462,7 +493,9 @@ export async function deleteCustomer(id: string): Promise<void> {
     // Note: customerId is set to null since the customer no longer exists
     if (customer) {
       try {
-        const { createCustomerNotification } = await import("@/lib/notifications");
+        const { createCustomerNotification } = await import(
+          "@/lib/notifications"
+        );
         await createCustomerNotification({
           userId: user.id,
           customerId: null, // Customer no longer exists after deletion
@@ -472,16 +505,19 @@ export async function deleteCustomer(id: string): Promise<void> {
       } catch (notificationError) {
         // Don't fail the operation if notification fails
         const { logger } = await import("@/lib/logger");
-        logger.error("Failed to create customer notification", notificationError);
+        logger.error(
+          "Failed to create customer notification",
+          notificationError,
+        );
       }
     }
 
     revalidatePath("/dashboard/customers");
   } catch (error) {
     throw new Error(
-      error instanceof Error 
-        ? error.message 
-        : "Ein Fehler ist beim Löschen aufgetreten. Bitte versuchen Sie es erneut."
+      error instanceof Error
+        ? error.message
+        : "Ein Fehler ist beim Löschen aufgetreten. Bitte versuchen Sie es erneut.",
     );
   }
 }
@@ -502,7 +538,7 @@ export async function trackCustomerQRCodeScan(
   try {
     // Use static client for public tracking (no authentication required)
     const supabase = getSupabaseStatic();
-    
+
     // Insert scan event
     await supabase.from("customer_qr_events").insert({
       customer_id: customerId,
@@ -521,10 +557,12 @@ export async function trackCustomerQRCodeScan(
 /**
  * Get customer by QR code (public function for QR code scanning)
  */
-export async function getCustomerByQRCode(qrCode: string): Promise<Customer | null> {
+export async function getCustomerByQRCode(
+  qrCode: string,
+): Promise<Customer | null> {
   try {
     const supabase = getSupabaseStatic();
-    
+
     const { data, error } = await supabase
       .from("customers")
       .select("*")
@@ -534,11 +572,10 @@ export async function getCustomerByQRCode(qrCode: string): Promise<Customer | nu
     if (error || !data) {
       return null;
     }
-    
+
     return data;
   } catch (error) {
     logger.error("Error fetching customer by QR code", error);
     return null;
   }
 }
-

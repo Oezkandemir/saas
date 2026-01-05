@@ -1,6 +1,7 @@
 # Stripe Price IDs Setup Guide
 
 ## Problem
+
 Die Pläne zeigen "Not Available" oder die Upgrade-Buttons funktionieren nicht, weil die Stripe Price IDs nicht konfiguriert sind.
 
 ## Lösung: Stripe Price IDs konfigurieren
@@ -12,11 +13,13 @@ Die Pläne zeigen "Not Available" oder die Upgrade-Buttons funktionieren nicht, 
 3. Erstellen Sie die folgenden Produkte:
 
 #### Starter Plan
+
 - **Name**: Starter Plan
 - **Monthly Price**: €9/Monat
 - **Yearly Price**: €90/Jahr (€7.50/Monat)
 
-#### Pro Plan  
+#### Pro Plan
+
 - **Name**: Pro Plan
 - **Monthly Price**: €19/Monat
 - **Yearly Price**: €190/Jahr (€15.83/Monat)
@@ -38,6 +41,7 @@ Wenn Sie bereits Product IDs haben (z.B. `prod_SDmTZNwnYvYe4C`), folgen Sie dies
    - **NICHT** die Product ID verwenden, die mit `prod_` beginnt!
 
 **Beispiel**:
+
 - ❌ Falsch: `prod_SDmTZNwnYvYe4C` (Product ID)
 - ✅ Richtig: `price_1ABC123xyz...` (Price ID)
 
@@ -57,7 +61,8 @@ NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID=price_xxxxxxxxxxxxx
 NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID=price_xxxxxxxxxxxxx
 ```
 
-**Hinweis**: 
+**Hinweis**:
+
 - `PRO_MONTHLY_PLAN_ID` und `PRO_YEARLY_PLAN_ID` werden für den **Pro Plan** verwendet
 - `BUSINESS_MONTHLY_PLAN_ID` und `BUSINESS_YEARLY_PLAN_ID` werden für den **Starter Plan** verwendet
 
@@ -85,6 +90,7 @@ pnpm dev
 ## Test-Kreditkarten
 
 Für Tests verwenden Sie Stripe Test-Karten:
+
 - **Erfolgreich**: `4242 4242 4242 4242`
 - **Abgelehnt**: `4000 0000 0000 0002`
 - Verwenden Sie ein zukünftiges Ablaufdatum, eine beliebige 3-stellige CVC und beliebige Rechnungsdetails
@@ -92,17 +98,19 @@ Für Tests verwenden Sie Stripe Test-Karten:
 ## Troubleshooting
 
 ### "Not Available" wird angezeigt
+
 - Überprüfen Sie, ob die Environment-Variablen gesetzt sind
 - Stellen Sie sicher, dass die Price IDs mit `price_` beginnen
 - Starten Sie den Development Server neu
 
 ### "Invalid price ID" Fehler
+
 - Überprüfen Sie, ob Sie Price IDs (nicht Product IDs) verwenden
 - Price IDs beginnen mit `price_`
 - Product IDs beginnen mit `prod_` (falsch!)
 
 ### Stripe Checkout öffnet sich nicht
+
 - Überprüfen Sie Ihre `STRIPE_API_KEY`
 - Stellen Sie sicher, dass Sie Test-Keys für Development verwenden
 - Überprüfen Sie die Browser-Konsole auf Fehler
-

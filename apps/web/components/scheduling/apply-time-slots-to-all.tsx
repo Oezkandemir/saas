@@ -1,9 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import {
+  applyTimeSlotsToAllEvents,
+  getTimeSlots,
+  type TimeSlot,
+} from "@/actions/scheduling/time-slots-actions";
+import { ArrowRightLeft, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from '@/components/alignui/actions/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
+import { toast } from "sonner";
+
 import {
   Dialog,
   DialogContent,
@@ -13,16 +19,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
-import { ArrowRightLeft, Loader2 } from "lucide-react";
-import { applyTimeSlotsToAllEvents } from "@/actions/scheduling/time-slots-actions";
-import { getTimeSlots, type TimeSlot } from "@/actions/scheduling/time-slots-actions";
+import { Button } from "@/components/alignui/actions/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 
 interface ApplyTimeSlotsToAllProps {
   sourceEventTypeId: string;
 }
 
-export function ApplyTimeSlotsToAll({ sourceEventTypeId }: ApplyTimeSlotsToAllProps) {
+export function ApplyTimeSlotsToAll({
+  sourceEventTypeId,
+}: ApplyTimeSlotsToAllProps) {
   const t = useTranslations("Scheduling");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,10 +48,14 @@ export function ApplyTimeSlotsToAll({ sourceEventTypeId }: ApplyTimeSlotsToAllPr
       if (result.success && result.data) {
         setTimeSlots(result.data);
       } else {
-        toast.error(t("timeSlots.loadError") || "Fehler beim Laden der Zeitslots");
+        toast.error(
+          t("timeSlots.loadError") || "Fehler beim Laden der Zeitslots",
+        );
       }
     } catch (error) {
-      toast.error(t("timeSlots.loadError") || "Fehler beim Laden der Zeitslots");
+      toast.error(
+        t("timeSlots.loadError") || "Fehler beim Laden der Zeitslots",
+      );
     } finally {
       setIsLoadingSlots(false);
     }
@@ -70,17 +86,20 @@ export function ApplyTimeSlotsToAll({ sourceEventTypeId }: ApplyTimeSlotsToAllPr
       if (result.success && result.data) {
         toast.success(
           t("applyToAll.success", { count: result.data.created }) ||
-            `${result.data.created} Zeitslots auf alle Events angewendet`
+            `${result.data.created} Zeitslots auf alle Events angewendet`,
         );
         if (result.data.errors.length > 0) {
           toast.warning(
-            t("applyToAll.partialSuccess", { errors: result.data.errors.length }) ||
-              `${result.data.errors.length} Fehler aufgetreten`
+            t("applyToAll.partialSuccess", {
+              errors: result.data.errors.length,
+            }) || `${result.data.errors.length} Fehler aufgetreten`,
           );
         }
         setIsDialogOpen(false);
       } else {
-        toast.error(result.error || t("applyToAll.error") || "Fehler beim Anwenden");
+        toast.error(
+          result.error || t("applyToAll.error") || "Fehler beim Anwenden",
+        );
       }
     } catch (error) {
       toast.error(t("applyToAll.error") || "Fehler beim Anwenden");
@@ -115,7 +134,8 @@ export function ApplyTimeSlotsToAll({ sourceEventTypeId }: ApplyTimeSlotsToAllPr
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                {t("applyToAll.dialogTitle") || "Zeitslots auf alle Events anwenden"}
+                {t("applyToAll.dialogTitle") ||
+                  "Zeitslots auf alle Events anwenden"}
               </DialogTitle>
               <DialogDescription>
                 {t("applyToAll.dialogDescription") ||
@@ -140,17 +160,22 @@ export function ApplyTimeSlotsToAll({ sourceEventTypeId }: ApplyTimeSlotsToAllPr
                   >
                     <div>
                       <span className="font-medium">
-                        {slot.start_time.substring(0, 5)} - {slot.end_time.substring(0, 5)}
+                        {slot.start_time.substring(0, 5)} -{" "}
+                        {slot.end_time.substring(0, 5)}
                       </span>
                       {slot.day_of_week !== null && (
                         <span className="text-muted-foreground ml-2">
-                          ({t(`timeSlots.dayOfWeek.${slot.day_of_week}`) || `Tag ${slot.day_of_week}`})
+                          (
+                          {t(`timeSlots.dayOfWeek.${slot.day_of_week}`) ||
+                            `Tag ${slot.day_of_week}`}
+                          )
                         </span>
                       )}
                     </div>
                     {slot.max_participants && (
                       <span className="text-muted-foreground">
-                        {slot.max_participants} {t("timeSlots.form.maxParticipants") || "Teilnehmer"}
+                        {slot.max_participants}{" "}
+                        {t("timeSlots.form.maxParticipants") || "Teilnehmer"}
                       </span>
                     )}
                   </div>
@@ -186,4 +211,3 @@ export function ApplyTimeSlotsToAll({ sourceEventTypeId }: ApplyTimeSlotsToAllPr
     </Card>
   );
 }
-

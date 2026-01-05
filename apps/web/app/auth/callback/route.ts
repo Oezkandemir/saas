@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+
 import { createLoginSession } from "@/lib/session-tracking";
 
 export async function GET(request: Request) {
@@ -30,14 +31,11 @@ export async function GET(request: Request) {
     );
 
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    
+
     if (!error && data.session && data.user) {
       // Create login session and log to history
       const expiresAt = new Date(data.session.expires_at! * 1000);
-      await createLoginSession(
-        data.user.id,
-        expiresAt,
-      );
+      await createLoginSession(data.user.id, expiresAt);
     }
   }
 

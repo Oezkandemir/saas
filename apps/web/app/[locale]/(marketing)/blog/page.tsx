@@ -1,5 +1,5 @@
 import { allPosts } from "@/.contentlayer/generated";
-import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { constructMetadata, getBlurDataURL } from "@/lib/utils";
 import { BlogPosts } from "@/components/content/blog-posts";

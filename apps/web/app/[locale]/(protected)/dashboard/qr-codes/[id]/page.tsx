@@ -1,12 +1,23 @@
-import { redirect, notFound } from "next/navigation";
-import { getCurrentUser } from "@/lib/session";
-import { getQRCode, getQRCodeEvents, type QRCodeEvent } from "@/actions/qr-codes-actions";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Button } from '@/components/alignui/actions/button';
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { Edit, ExternalLink, QrCode } from "lucide-react";
 import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
+import {
+  getQRCode,
+  getQRCodeEvents,
+  type QRCodeEvent,
+} from "@/actions/qr-codes-actions";
+import { Edit, ExternalLink, QrCode } from "lucide-react";
+
+import { getCurrentUser } from "@/lib/session";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { QRCodeDisplay } from "@/components/qr-codes/qr-code-display";
 
 export const dynamic = "force-dynamic";
@@ -57,7 +68,9 @@ export default async function QRCodeDetailPage({
         <Card>
           <CardHeader>
             <CardTitle>QR-Code</CardTitle>
-            <CardDescription>Scannen Sie diesen Code oder teilen Sie die URL</CardDescription>
+            <CardDescription>
+              Scannen Sie diesen Code oder teilen Sie die URL
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <QRCodeDisplay qrCode={qrCode} />
@@ -71,21 +84,31 @@ export default async function QRCodeDetailPage({
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Name</label>
+              <label className="text-sm font-medium text-muted-foreground">
+                Name
+              </label>
               <p className="text-base font-medium">{qrCode.name}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Typ</label>
-              <p className="text-base">{typeLabels[qrCode.type] || qrCode.type}</p>
+              <label className="text-sm font-medium text-muted-foreground">
+                Typ
+              </label>
+              <p className="text-base">
+                {typeLabels[qrCode.type] || qrCode.type}
+              </p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Code</label>
+              <label className="text-sm font-medium text-muted-foreground">
+                Code
+              </label>
               <code className="block px-2 py-1 text-xs rounded bg-muted w-fit">
                 {qrCode.code}
               </code>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Ziel</label>
+              <label className="text-sm font-medium text-muted-foreground">
+                Ziel
+              </label>
               <div className="flex gap-2 items-center">
                 <p className="text-base break-all">{qrCode.destination}</p>
                 {qrCode.type === "url" && (
@@ -101,7 +124,9 @@ export default async function QRCodeDetailPage({
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Status</label>
+              <label className="text-sm font-medium text-muted-foreground">
+                Status
+              </label>
               <div className="mt-1">
                 <Badge variant={qrCode.is_active ? "default" : "secondary"}>
                   {qrCode.is_active ? "Aktiv" : "Inaktiv"}
@@ -109,7 +134,9 @@ export default async function QRCodeDetailPage({
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Erstellt</label>
+              <label className="text-sm font-medium text-muted-foreground">
+                Erstellt
+              </label>
               <p className="text-base">
                 {new Date(qrCode.created_at).toLocaleDateString("de-DE", {
                   year: "numeric",
@@ -122,7 +149,9 @@ export default async function QRCodeDetailPage({
             </div>
             {qrCode.updated_at !== qrCode.created_at && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Aktualisiert</label>
+                <label className="text-sm font-medium text-muted-foreground">
+                  Aktualisiert
+                </label>
                 <p className="text-base">
                   {new Date(qrCode.updated_at).toLocaleDateString("de-DE", {
                     year: "numeric",
@@ -151,22 +180,26 @@ export default async function QRCodeDetailPage({
             </div>
             <div>
               <p className="text-2xl font-bold">
-                {events.filter((e) => {
-                  const scanDate = new Date(e.scanned_at);
-                  const today = new Date();
-                  return scanDate.toDateString() === today.toDateString();
-                }).length}
+                {
+                  events.filter((e) => {
+                    const scanDate = new Date(e.scanned_at);
+                    const today = new Date();
+                    return scanDate.toDateString() === today.toDateString();
+                  }).length
+                }
               </p>
               <p className="text-sm text-muted-foreground">Heute</p>
             </div>
             <div>
               <p className="text-2xl font-bold">
-                {events.filter((e) => {
-                  const scanDate = new Date(e.scanned_at);
-                  const weekAgo = new Date();
-                  weekAgo.setDate(weekAgo.getDate() - 7);
-                  return scanDate >= weekAgo;
-                }).length}
+                {
+                  events.filter((e) => {
+                    const scanDate = new Date(e.scanned_at);
+                    const weekAgo = new Date();
+                    weekAgo.setDate(weekAgo.getDate() - 7);
+                    return scanDate >= weekAgo;
+                  }).length
+                }
               </p>
               <p className="text-sm text-muted-foreground">Letzte 7 Tage</p>
             </div>
@@ -178,7 +211,9 @@ export default async function QRCodeDetailPage({
         <Card>
           <CardHeader>
             <CardTitle>Letzte Scans</CardTitle>
-            <CardDescription>Die letzten Aktivitäten für diesen QR-Code</CardDescription>
+            <CardDescription>
+              Die letzten Aktivitäten für diesen QR-Code
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -194,7 +229,8 @@ export default async function QRCodeDetailPage({
                     {event.country && (
                       <p className="text-xs text-muted-foreground">
                         {event.country}
-                        {event.user_agent && ` • ${event.user_agent.split(" ")[0]}`}
+                        {event.user_agent &&
+                          ` • ${event.user_agent.split(" ")[0]}`}
                       </p>
                     )}
                   </div>
@@ -207,4 +243,3 @@ export default async function QRCodeDetailPage({
     </UnifiedPageLayout>
   );
 }
-

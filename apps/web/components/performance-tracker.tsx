@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+
 import { performanceMonitor } from "@/lib/performance-monitoring";
 
 /**
@@ -16,13 +17,16 @@ export function PerformanceTracker() {
     if (typeof window !== "undefined" && window.performance) {
       const handleLoad = () => {
         // Use PerformanceNavigationTiming if available (modern API)
-        const perfData = window.performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
-        
+        const perfData = window.performance.getEntriesByType(
+          "navigation",
+        )[0] as PerformanceNavigationTiming;
+
         if (perfData) {
           const loadTime = perfData.loadEventEnd - perfData.fetchStart;
           performanceMonitor.recordMetric("PageLoad", loadTime, "ms", {
             url: window.location.pathname,
-            domContentLoaded: perfData.domContentLoadedEventEnd - perfData.fetchStart,
+            domContentLoaded:
+              perfData.domContentLoadedEventEnd - perfData.fetchStart,
             firstPaint: perfData.domInteractive - perfData.fetchStart,
           });
         } else {
@@ -49,25 +53,10 @@ export function PerformanceTracker() {
         window.removeEventListener("load", handleLoad);
       };
     }
-    
+
     // Return undefined if performance API is not available
     return undefined;
   }, []);
 
   return null; // This component doesn't render anything
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

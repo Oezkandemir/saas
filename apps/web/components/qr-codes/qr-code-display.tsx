@@ -2,8 +2,9 @@
 
 import { QRCode as QRCodeType } from "@/actions/qr-codes-actions";
 import { Copy } from "lucide-react";
-import { Button } from '@/components/alignui/actions/button';
 import { toast } from "sonner";
+
+import { Button } from "@/components/alignui/actions/button";
 
 interface QRCodeDisplayProps {
   qrCode: QRCodeType;
@@ -11,15 +12,15 @@ interface QRCodeDisplayProps {
 
 export function QRCodeDisplay({ qrCode }: QRCodeDisplayProps) {
   const qrUrl = `${typeof window !== "undefined" ? window.location.origin : process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/q/${qrCode.code}`;
-  
+
   // Use a QR code API service to generate the QR code image
   const qrCodeImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${encodeURIComponent(qrUrl)}`;
-  
+
   const handleCopy = () => {
     navigator.clipboard.writeText(qrUrl);
     toast.success("URL kopiert");
   };
-  
+
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
@@ -48,4 +49,3 @@ export function QRCodeDisplay({ qrCode }: QRCodeDisplayProps) {
     </div>
   );
 }
-

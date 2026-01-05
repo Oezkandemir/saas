@@ -86,6 +86,7 @@ PDF_SERVICE_API_KEY=your_pdfshift_api_key_here
 ## ✅ Nach der Konfiguration
 
 1. **Server neu starten**: Nach dem Hinzufügen der Umgebungsvariablen müssen Sie den Server neu starten:
+
    ```bash
    # Stoppen Sie den Server (Ctrl+C)
    pnpm dev
@@ -98,26 +99,30 @@ PDF_SERVICE_API_KEY=your_pdfshift_api_key_here
 ### Fehler: "PDF_SERVICE_URL ist nicht konfiguriert"
 
 **Lösung**: Stellen Sie sicher, dass beide Umgebungsvariablen in Ihrer `.env.local` Datei gesetzt sind:
+
 - `PDF_SERVICE_URL`
 - `PDF_SERVICE_API_KEY`
 
 ### Fehler: "PDF-Service Fehler (401)" oder "(403)"
 
 **Lösung**: Überprüfen Sie Ihren API Key. Stellen Sie sicher, dass:
+
 - Der API Key korrekt kopiert wurde (keine Leerzeichen)
 - Der API Key noch gültig ist
 - Sie die richtige URL für den Service verwenden
 
 ### Fehler: "Der PDF-Service hat keine gültige PDF-Datei zurückgegeben"
 
-**Lösung**: 
+**Lösung**:
+
 - Überprüfen Sie die `PDF_SERVICE_URL` - sie muss korrekt sein
 - Bei PDFShift: Stellen Sie sicher, dass Sie die v3 API verwenden: `https://api.pdfshift.io/v3/convert/pdf`
 - Testen Sie den Service mit einem einfachen HTML-String
 
 ### PDF wird generiert, aber sieht falsch aus
 
-**Lösung**: 
+**Lösung**:
+
 - Überprüfen Sie die HTML-Templates in `apps/web/lib/pdf/templates.ts`
 - Stellen Sie sicher, dass alle CSS-Styles inline sind (für PDF-Generierung erforderlich)
 
@@ -132,4 +137,3 @@ PDF_SERVICE_API_KEY=your_pdfshift_api_key_here
 - [PDFShift Dokumentation](https://pdfshift.io/docs)
 - [Browserless Dokumentation](https://www.browserless.io/docs)
 - [DocRaptor Dokumentation](https://docraptor.com/documentation)
-

@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { refreshSubscription } from "@/actions/refresh-subscription";
+import { usePathname, useRouter } from "next/navigation";
 import { getUserPlan } from "@/actions/get-user-plan";
+import { refreshSubscription } from "@/actions/refresh-subscription";
 import { toast } from "sonner";
+
 import { logger } from "@/lib/logger";
 
 /**
@@ -53,12 +54,15 @@ export function AutoRefreshSubscription() {
 
     try {
       isRefreshingRef.current = true;
-      
+
       // First, get current plan to check if user has a paid subscription
       const currentPlan = await getUserPlan();
-      
+
       // Only refresh if user has a paid subscription
-      if (!currentPlan?.isPaid || (!currentPlan.polarCustomerId && !currentPlan.polarSubscriptionId)) {
+      if (
+        !currentPlan?.isPaid ||
+        (!currentPlan.polarCustomerId && !currentPlan.polarSubscriptionId)
+      ) {
         return;
       }
 
@@ -66,15 +70,18 @@ export function AutoRefreshSubscription() {
 
       if (result.success && result.subscription) {
         const currentProductId = result.subscription.productId;
-        
+
         // If product ID changed, refresh the page
-        if (lastProductIdRef.current && lastProductIdRef.current !== currentProductId) {
+        if (
+          lastProductIdRef.current &&
+          lastProductIdRef.current !== currentProductId
+        ) {
           toast.success("Abonnement aktualisiert", {
             description: `Ihr Plan wurde auf ${result.subscription.plan} geändert.`,
           });
           router.refresh();
         }
-        
+
         lastProductIdRef.current = currentProductId;
       }
     } catch (error) {
@@ -87,4 +94,3 @@ export function AutoRefreshSubscription() {
 
   return null;
 }
-

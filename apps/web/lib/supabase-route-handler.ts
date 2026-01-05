@@ -1,8 +1,9 @@
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
-import { type Database } from "./supabase";
 import { logger } from "@/lib/logger";
+
+import { type Database } from "./supabase";
 
 // For use in route handlers (e.g. app/api/*)
 export async function getSupabaseRouteHandlerClient() {

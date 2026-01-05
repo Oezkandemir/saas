@@ -1,22 +1,35 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { cancelBookingByToken, getBookingByToken } from "@/actions/scheduling/bookings-actions";
-import { Button } from "@/components/alignui/actions/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/alignui/data-display/card";
-import { AlertRoot as Alert, AlertDescription } from "@/components/alignui/feedback/alert";
-import { Loader2, CheckCircle2, XCircle, Calendar } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  cancelBookingByToken,
+  getBookingByToken,
+} from "@/actions/scheduling/bookings-actions";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
+import { Calendar, CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useLocale } from "next-intl";
+
+import { Button } from "@/components/alignui/actions/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import {
+  AlertRoot as Alert,
+  AlertDescription,
+} from "@/components/alignui/feedback/alert";
 
 export default function CancelBookingPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const locale = useLocale();
   const token = searchParams.get("token");
-  
+
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState<any>(null);
   const [canceling, setCanceling] = useState(false);
@@ -114,7 +127,8 @@ export default function CancelBookingPage() {
           <CardContent className="space-y-4">
             <Alert>
               <AlertDescription>
-                Ihre Buchung wurde erfolgreich storniert. Sie werden in Kürze zur Startseite weitergeleitet.
+                Ihre Buchung wurde erfolgreich storniert. Sie werden in Kürze
+                zur Startseite weitergeleitet.
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -144,10 +158,14 @@ export default function CancelBookingPage() {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="font-semibold">{booking.event_type.title}</span>
+                <span className="font-semibold">
+                  {booking.event_type.title}
+                </span>
               </div>
               <div className="text-sm text-muted-foreground">
-                {format(startDate, "EEEE, d. MMMM yyyy", { locale: dateLocale })}
+                {format(startDate, "EEEE, d. MMMM yyyy", {
+                  locale: dateLocale,
+                })}
                 <br />
                 {format(startDate, "HH:mm")} - {format(endDate, "HH:mm")} Uhr
               </div>
@@ -190,4 +208,3 @@ export default function CancelBookingPage() {
     </div>
   );
 }
-

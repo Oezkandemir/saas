@@ -1,19 +1,26 @@
 "use client";
 
 import { useTransition } from "react";
-import { useTranslations } from "next-intl";
 import { openPolarPortalFromSubscription } from "@/actions/open-polar-portal";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Button } from '@/components/alignui/actions/button';
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Icons } from "@/components/shared/icons";
-import { buttonVariants } from '@/components/alignui/actions/button';
-import { cn } from "@/lib/utils";
+
 import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Button, buttonVariants } from "@/components/alignui/actions/button";
+import { Icons } from "@/components/shared/icons";
 
 interface PolarPortalButtonWithSubscriptionProps {
   subscriptionId: string;
-  variant?: "default" | "primary" | "secondary" | "neutral" | "ghost" | "destructive" | "outline";
+  variant?:
+    | "default"
+    | "primary"
+    | "secondary"
+    | "neutral"
+    | "ghost"
+    | "destructive"
+    | "outline";
   className?: string;
 }
 
@@ -36,26 +43,31 @@ export function PolarPortalButtonWithSubscription({
     startTransition(async () => {
       try {
         const result = await openPolarPortalFromSubscription(subscriptionId);
-        
+
         if (result.status === "error") {
           toast.error("Failed to open customer portal", {
-            description: result.message || "Please try again or contact support.",
+            description:
+              result.message || "Please try again or contact support.",
           });
         }
         // If successful, openPolarPortalFromSubscription will redirect, so this won't execute
       } catch (error: any) {
         // Next.js redirect() throws a special exception that we should ignore
-        const isRedirectError = 
-          error?.digest?.startsWith('NEXT_REDIRECT') || 
-          error?.message?.includes('NEXT_REDIRECT') ||
-          error?.name === 'RedirectError' ||
-          (typeof error === 'object' && 'digest' in error && typeof error.digest === 'string' && error.digest.length > 0) ||
-          (!error?.message || error?.message === 'NEXT_REDIRECT');
-        
+        const isRedirectError =
+          error?.digest?.startsWith("NEXT_REDIRECT") ||
+          error?.message?.includes("NEXT_REDIRECT") ||
+          error?.name === "RedirectError" ||
+          (typeof error === "object" &&
+            "digest" in error &&
+            typeof error.digest === "string" &&
+            error.digest.length > 0) ||
+          !error?.message ||
+          error?.message === "NEXT_REDIRECT";
+
         if (isRedirectError) {
           return;
         }
-        
+
         logger.error("Error opening customer portal:", error);
         toast.error(
           "Failed to open customer portal. Please try again or contact support.",
@@ -87,7 +99,12 @@ export function PolarPortalButtonWithSubscription({
   }
 
   return (
-    <Button variant={mappedVariant} disabled={isPending} onClick={handleOpenPortal} className={className}>
+    <Button
+      variant={mappedVariant}
+      disabled={isPending}
+      onClick={handleOpenPortal}
+      className={className}
+    >
       {isPending ? (
         <>
           <LoadingSpinner size="sm" variant="primary" />
@@ -102,4 +119,3 @@ export function PolarPortalButtonWithSubscription({
     </Button>
   );
 }
-

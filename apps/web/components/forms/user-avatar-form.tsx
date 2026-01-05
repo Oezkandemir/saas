@@ -11,10 +11,10 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { userAvatarSchema } from "@/lib/validations/user";
-import { Button } from '@/components/alignui/actions/button';
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Button } from "@/components/alignui/actions/button";
 import { useAvatar } from "@/components/context/avatar-context";
 import { Icons } from "@/components/shared/icons";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 interface UserAvatarFormProps {
   user: Pick<User, "id"> & {

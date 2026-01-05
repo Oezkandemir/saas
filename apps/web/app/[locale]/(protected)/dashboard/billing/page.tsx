@@ -1,18 +1,18 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
+import { CreditCard } from "lucide-react";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
+import { UserSubscriptionPlan } from "types";
+import { pricingData } from "@/config/subscriptions";
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { constructMetadata } from "@/lib/utils";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { AutoSyncSubscription } from "@/components/pricing/auto-sync-subscription";
 import { BillingInfo } from "@/components/pricing/billing-info";
 import { RefreshSubscriptionButton } from "@/components/pricing/refresh-subscription-button";
-import { AutoSyncSubscription } from "@/components/pricing/auto-sync-subscription";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { CreditCard } from "lucide-react";
-import { pricingData } from "@/config/subscriptions";
-import { UserSubscriptionPlan } from "types";
-import { logger } from "@/lib/logger";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -52,7 +52,7 @@ export default async function BillingPage() {
   };
 
   let userSubscriptionPlan: UserSubscriptionPlan | undefined;
-  
+
   // Try to get subscription plan for both USER and ADMIN roles
   // Admins might not have a subscription, but should still be able to view the page
   try {
@@ -89,9 +89,11 @@ export default async function BillingPage() {
   return (
     <UnifiedPageLayout
       title={t("heading")}
-      description={userSubscriptionPlan.isPaid 
-        ? `${userSubscriptionPlan.title} • ${userSubscriptionPlan.interval === "month" ? t("monthly") : t("yearly")}`
-        : t("text")}
+      description={
+        userSubscriptionPlan.isPaid
+          ? `${userSubscriptionPlan.title} • ${userSubscriptionPlan.interval === "month" ? t("monthly") : t("yearly")}`
+          : t("text")
+      }
       icon={<CreditCard className="h-4 w-4 text-primary" />}
       actions={<RefreshSubscriptionButton />}
       contentClassName="space-y-6"
@@ -99,7 +101,6 @@ export default async function BillingPage() {
       <Suspense fallback={null}>
         <AutoSyncSubscription />
       </Suspense>
-
 
       {/* Subscription Details - Visual Center */}
       <BillingInfo userSubscriptionPlan={userSubscriptionPlan} />

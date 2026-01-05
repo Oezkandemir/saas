@@ -8,8 +8,8 @@ import {
 } from "@/actions/analytics-actions";
 import { v4 as uuidv4 } from "uuid";
 
-import { useSupabase } from "@/components/supabase-provider";
 import { logger } from "@/lib/logger";
+import { useSupabase } from "@/components/supabase-provider";
 
 // Type to store browser details
 type BrowserInfo = {
@@ -56,23 +56,28 @@ export function AnalyticsTracker() {
       const response = await fetch("/api/analytics/geolocation", {
         signal: AbortSignal.timeout(5000),
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         return {
           country: data.country || null,
           city: data.city || null,
           region: data.region || null,
-          timezone: data.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || null,
+          timezone:
+            data.timezone ||
+            Intl.DateTimeFormat().resolvedOptions().timeZone ||
+            null,
           latitude: data.latitude || null,
           longitude: data.longitude || null,
         };
       }
     } catch (error) {
       // Silent fail - return defaults
-      logger.debug(`Geolocation fetch failed: ${error instanceof Error ? error.message : String(error)}`);
+      logger.debug(
+        `Geolocation fetch failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
-    
+
     // Return defaults with timezone from browser
     return {
       country: null,
@@ -176,13 +181,18 @@ export function AnalyticsTracker() {
     }
 
     // Detect device type
-    const isMobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    const isMobile =
+      /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
     const isTablet = /iPad|Android/i.test(ua) && !isMobile;
 
     browserInfo.isMobile = isMobile;
     browserInfo.isTablet = isTablet;
     browserInfo.isDesktop = !isMobile && !isTablet;
-    browserInfo.deviceType = isMobile ? "Mobile" : isTablet ? "Tablet" : "Desktop";
+    browserInfo.deviceType = isMobile
+      ? "Mobile"
+      : isTablet
+        ? "Tablet"
+        : "Desktop";
 
     return browserInfo;
   };

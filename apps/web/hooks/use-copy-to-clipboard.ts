@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { toast } from "sonner";
 import { Check, Copy } from "lucide-react";
+import { toast } from "sonner";
 
 export function useCopyToClipboard() {
   const [copied, setCopied] = useState(false);
@@ -20,23 +20,3 @@ export function useCopyToClipboard() {
 
   return { copy, copied, CopyIcon: copied ? Check : Copy };
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

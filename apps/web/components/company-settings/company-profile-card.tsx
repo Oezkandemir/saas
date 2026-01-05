@@ -1,10 +1,26 @@
 "use client";
 
 import { CompanyProfileWithMembership } from "@/actions/company-profiles-actions";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Card, CardContent, CardHeader } from '@/components/alignui/data-display/card';
-import { Building2, CheckCircle2, MapPin, Mail, Phone, Scale, Landmark, Percent, Calendar, Shield } from "lucide-react";
+import {
+  Building2,
+  Calendar,
+  CheckCircle2,
+  Landmark,
+  Mail,
+  MapPin,
+  Percent,
+  Phone,
+  Scale,
+  Shield,
+} from "lucide-react";
+
 import { cn } from "@/lib/utils";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from "@/components/alignui/data-display/card";
 
 interface CompanyProfileCardProps {
   profile: CompanyProfileWithMembership;
@@ -21,7 +37,7 @@ export function CompanyProfileCard({
     <Card
       className={cn(
         "cursor-pointer transition-all hover:shadow-md",
-        isSelected && "ring-2 ring-primary shadow-md"
+        isSelected && "ring-2 ring-primary shadow-md",
       )}
       onClick={onClick}
     >
@@ -61,7 +77,9 @@ export function CompanyProfileCard({
       </CardHeader>
       <CardContent className="pt-0 space-y-2.5">
         {/* Address - Full address if available */}
-        {(profile.company_address || profile.company_city || profile.company_country) && (
+        {(profile.company_address ||
+          profile.company_city ||
+          profile.company_country) && (
           <div className="flex items-start gap-2 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
             <span className="truncate">
@@ -69,8 +87,10 @@ export function CompanyProfileCard({
                 profile.company_address,
                 profile.company_postal_code,
                 profile.company_city,
-                profile.company_country
-              ].filter(Boolean).join(", ")}
+                profile.company_country,
+              ]
+                .filter(Boolean)
+                .join(", ")}
             </span>
           </div>
         )}
@@ -89,7 +109,9 @@ export function CompanyProfileCard({
           {(profile.company_phone || profile.company_mobile) && (
             <div className="flex items-start gap-2 text-sm text-muted-foreground">
               <Phone className="h-4 w-4 mt-0.5 flex-shrink-0" />
-              <span className="truncate">{profile.company_phone || profile.company_mobile}</span>
+              <span className="truncate">
+                {profile.company_phone || profile.company_mobile}
+              </span>
             </div>
           )}
         </div>
@@ -99,11 +121,11 @@ export function CompanyProfileCard({
           <div className="flex items-start gap-2 text-sm text-muted-foreground">
             <Scale className="h-4 w-4 mt-0.5 flex-shrink-0" />
             <span className="truncate">
-              {profile.company_vat_id 
+              {profile.company_vat_id
                 ? `USt-IdNr: ${profile.company_vat_id}`
-                : profile.company_tax_id 
-                ? `Steuernummer: ${profile.company_tax_id}`
-                : ""}
+                : profile.company_tax_id
+                  ? `Steuernummer: ${profile.company_tax_id}`
+                  : ""}
             </span>
           </div>
         )}
@@ -119,7 +141,8 @@ export function CompanyProfileCard({
         )}
 
         {/* Document Defaults */}
-        {(profile.default_tax_rate !== null || profile.default_payment_days !== null) && (
+        {(profile.default_tax_rate !== null ||
+          profile.default_payment_days !== null) && (
           <div className="flex items-center gap-3 pt-1 text-xs text-muted-foreground">
             {profile.default_tax_rate !== null && (
               <div className="flex items-center gap-1">
@@ -139,8 +162,8 @@ export function CompanyProfileCard({
         {/* Profile Type Badge and Membership Info */}
         <div className="pt-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Badge 
-              variant="outline" 
+            <Badge
+              variant="outline"
               className="text-xs border-border bg-background text-foreground"
             >
               {profile.profile_type === "personal" ? "Persönlich" : "Team"}
@@ -151,4 +174,3 @@ export function CompanyProfileCard({
     </Card>
   );
 }
-

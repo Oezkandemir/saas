@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { performHealthCheck } from "@/lib/system-monitoring";
 
 /**
@@ -8,7 +9,7 @@ import { performHealthCheck } from "@/lib/system-monitoring";
 export async function GET() {
   try {
     await performHealthCheck();
-    
+
     return NextResponse.json(
       {
         status: "ok",
@@ -28,21 +29,3 @@ export async function GET() {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

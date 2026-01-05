@@ -1,9 +1,10 @@
 "use server";
 
-import { getCurrentUser } from "@/lib/session";
+import type { CompanyProfile } from "@/actions/company-profiles-actions";
+
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
-import type { CompanyProfile } from "@/actions/company-profiles-actions";
+import { getCurrentUser } from "@/lib/session";
 
 export interface UserWithCompanyProfile {
   user_id: string;
@@ -81,15 +82,17 @@ export async function getUsersWithCompanyProfiles(): Promise<{
     }
 
     // Get users with company profiles and their statistics
-    const { data, error } = await supabaseAdmin.rpc("get_users_with_company_profiles_stats");
+    const { data, error } = await supabaseAdmin.rpc(
+      "get_users_with_company_profiles_stats",
+    );
 
     if (error) {
       // Fallback to manual query if RPC doesn't exist
       logger.warn("RPC function not found, using fallback query");
-      
-      const { data: profiles, error: profilesError } = await supabaseAdmin
-        .from("company_profiles")
-        .select(`
+
+      const { data: profiles, error: profilesError } = await supabaseAdmin.from(
+        "company_profiles",
+      ).select(`
           id,
           user_id,
           company_name,
@@ -115,7 +118,7 @@ export async function getUsersWithCompanyProfiles(): Promise<{
       const usersWithStats = await Promise.all(
         (profiles || []).map(async (profile: any) => {
           const userId = profile.user_id;
-          
+
           // Get customer count
           const { count: customerCount } = await supabaseAdmin
             .from("customers")
@@ -143,7 +146,9 @@ export async function getUsersWithCompanyProfiles(): Promise<{
             .eq("type", "invoice")
             .in("status", ["paid"]);
 
-          const totalRevenue = invoices?.reduce((sum, inv) => sum + Number(inv.total || 0), 0) || 0;
+          const totalRevenue =
+            invoices?.reduce((sum, inv) => sum + Number(inv.total || 0), 0) ||
+            0;
 
           return {
             user_id: userId,
@@ -162,7 +167,7 @@ export async function getUsersWithCompanyProfiles(): Promise<{
             quote_count: quoteCount || 0,
             total_revenue: totalRevenue,
           };
-        })
+        }),
       );
 
       return { success: true, data: usersWithStats };
@@ -190,9 +195,7 @@ export async function getUsersWithCompanyProfiles(): Promise<{
 /**
  * Get detailed company profile information for a specific user
  */
-export async function getCompanyProfileDetails(
-  userId: string
-): Promise<{
+export async function getCompanyProfileDetails(userId: string): Promise<{
   success: boolean;
   data?: CompanyProfileDetails;
   error?: string;
@@ -282,7 +285,9 @@ export async function getCompanyProfileDetails(
       .eq("type", "invoice")
       .in("status", ["paid"]);
 
-    const totalRevenue = paidInvoicesData?.reduce((sum, inv) => sum + Number(inv.total || 0), 0) || 0;
+    const totalRevenue =
+      paidInvoicesData?.reduce((sum, inv) => sum + Number(inv.total || 0), 0) ||
+      0;
 
     // Get customers list
     const { data: customersData } = await supabaseAdmin
@@ -363,4 +368,3 @@ export async function getCompanyProfileDetails(
     };
   }
 }
-

@@ -1,23 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Loader2, RefreshCw, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  getSystemMetrics,
+  type SystemMetrics,
+} from "@/actions/admin-system-actions";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
+import { Loader2, RefreshCw, TrendingUp } from "lucide-react";
 
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { Button } from '@/components/alignui/actions/button';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { useToast } from "@/components/ui/use-toast";
-import {
-  getSystemMetrics,
-  type SystemMetrics,
-} from "@/actions/admin-system-actions";
+} from "@/components/alignui/data-display/card";
 
 export function SystemMetricsComponent() {
   const { toast } = useToast();
@@ -73,25 +73,30 @@ export function SystemMetricsComponent() {
   };
 
   // Group metrics by component
-  const metricsByComponent = metrics.reduce((acc, metric) => {
-    if (!acc[metric.component]) {
-      acc[metric.component] = [];
-    }
-    acc[metric.component].push(metric);
-    return acc;
-  }, {} as Record<string, SystemMetrics[]>);
+  const metricsByComponent = metrics.reduce(
+    (acc, metric) => {
+      if (!acc[metric.component]) {
+        acc[metric.component] = [];
+      }
+      acc[metric.component].push(metric);
+      return acc;
+    },
+    {} as Record<string, SystemMetrics[]>,
+  );
 
   // Get latest metrics for each component
-  const latestMetrics = Object.entries(metricsByComponent).map(([component, componentMetrics]) => {
-    const latest = componentMetrics[0]; // Already sorted by date desc
-    return {
-      component,
-      metric: latest.metricName,
-      value: latest.value,
-      unit: latest.unit,
-      timestamp: latest.timestamp,
-    };
-  });
+  const latestMetrics = Object.entries(metricsByComponent).map(
+    ([component, componentMetrics]) => {
+      const latest = componentMetrics[0]; // Already sorted by date desc
+      return {
+        component,
+        metric: latest.metricName,
+        value: latest.value,
+        unit: latest.unit,
+        timestamp: latest.timestamp,
+      };
+    },
+  );
 
   if (isLoading) {
     return (
@@ -163,38 +168,42 @@ export function SystemMetricsComponent() {
             <div className="space-y-2">
               <h3 className="text-sm font-semibold">Detaillierte Metriken</h3>
               <div className="space-y-2 max-h-64 overflow-y-auto">
-                {Object.entries(metricsByComponent).map(([component, componentMetrics]) => (
-                  <div
-                    key={component}
-                    className="rounded-lg border p-3"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <Badge variant="outline" className="capitalize">
-                        {component}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
-                        {format(new Date(componentMetrics[0].timestamp), "PPp", {
-                          locale: de,
-                        })}
-                      </span>
+                {Object.entries(metricsByComponent).map(
+                  ([component, componentMetrics]) => (
+                    <div key={component} className="rounded-lg border p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge variant="outline" className="capitalize">
+                          {component}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">
+                          {format(
+                            new Date(componentMetrics[0].timestamp),
+                            "PPp",
+                            {
+                              locale: de,
+                            },
+                          )}
+                        </span>
+                      </div>
+                      <div className="space-y-1">
+                        {componentMetrics.slice(0, 3).map((metric, idx) => (
+                          <div
+                            key={idx}
+                            className="flex items-center justify-between text-sm"
+                          >
+                            <span className="text-muted-foreground">
+                              {metric.metricName}
+                            </span>
+                            <span className="font-medium">
+                              {metric.value.toLocaleString("de-DE")}{" "}
+                              {metric.unit}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="space-y-1">
-                      {componentMetrics.slice(0, 3).map((metric, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between text-sm"
-                        >
-                          <span className="text-muted-foreground">
-                            {metric.metricName}
-                          </span>
-                          <span className="font-medium">
-                            {metric.value.toLocaleString("de-DE")} {metric.unit}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                  ),
+                )}
               </div>
             </div>
           </>
@@ -207,4 +216,3 @@ export function SystemMetricsComponent() {
     </div>
   );
 }
-

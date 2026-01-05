@@ -8,9 +8,9 @@ import {
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-import { Button } from '@/components/alignui/actions/button';
-import { Input } from '@/components/alignui/forms/input';
 import { Modal } from "@/components/ui/modal";
+import { Button } from "@/components/alignui/actions/button";
+import { Input } from "@/components/alignui/forms/input";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { useSupabase } from "@/components/supabase-provider";
 
@@ -103,10 +103,7 @@ function DeleteAccountModal({
           />
         </div>
 
-        <Button
-          variant="destructive"
-          disabled={deleting}
-        >
+        <Button variant="destructive" disabled={deleting}>
           {t("confirmButton")}
         </Button>
       </form>

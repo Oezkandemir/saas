@@ -1,9 +1,10 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from '@/components/alignui/actions/button';
-import { AlertTriangle, ArrowUp } from "lucide-react";
 import Link from "next/link";
 import { getPlanLimitInfo } from "@/actions/plan-limits-actions";
+import { AlertTriangle, ArrowUp } from "lucide-react";
+
 import { LimitType } from "@/lib/plan-limits";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/alignui/actions/button";
 
 interface PlanLimitWarningProps {
   limitType: LimitType;
@@ -19,7 +20,7 @@ export async function PlanLimitWarning({
   if (!limitInfo || limitInfo.limit === Infinity) {
     return null;
   }
-  
+
   const limitInfoData = limitInfo;
 
   const percentage = (limitInfoData.current / limitInfoData.limit) * 100;
@@ -80,4 +81,3 @@ export async function PlanLimitWarning({
     </Alert>
   );
 }
-

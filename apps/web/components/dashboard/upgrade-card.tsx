@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { Button } from '@/components/alignui/actions/button';
+
+import { Button } from "@/components/alignui/actions/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
+} from "@/components/alignui/data-display/card";
 
 interface UpgradeCardProps {
   isFreePlan?: boolean;

@@ -1,5 +1,6 @@
-import { cn } from "@/lib/utils";
 import * as React from "react";
+
+import { cn } from "@/lib/utils";
 
 interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "text" | "circular" | "rectangular";
@@ -31,7 +32,7 @@ function Skeleton({
         "bg-muted",
         variantClasses[variant],
         animationClasses[animation],
-        className
+        className,
       )}
       {...props}
     />

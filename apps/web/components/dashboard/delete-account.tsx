@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 
 import { siteConfig } from "@/config/site";
-import { Button } from '@/components/alignui/actions/button';
+import { Button } from "@/components/alignui/actions/button";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { useDeleteAccountModal } from "@/components/modals/delete-account-modal";
 import { Icons } from "@/components/shared/icons";

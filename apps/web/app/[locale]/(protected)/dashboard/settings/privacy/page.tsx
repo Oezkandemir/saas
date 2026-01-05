@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
-import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 import { Shield } from "lucide-react";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { ConsentManager } from "@/components/gdpr/consent-manager";
-import { DataExport } from "@/components/gdpr/data-export";
 import { CookieSettingsButton } from "@/components/gdpr/cookie-settings-button";
+import { DataExport } from "@/components/gdpr/data-export";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -19,7 +19,9 @@ export async function generateMetadata() {
 
   return constructMetadata({
     title: t("privacy.title") || "Datenschutz-Einstellungen",
-    description: t("privacy.description") || "Verwalten Sie Ihre Datenschutz-Einstellungen und Einwilligungen",
+    description:
+      t("privacy.description") ||
+      "Verwalten Sie Ihre Datenschutz-Einstellungen und Einwilligungen",
   });
 }
 
@@ -67,4 +69,3 @@ export default async function PrivacySettingsPage() {
     </UnifiedPageLayout>
   );
 }
-

@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { UseFormReturn, FieldValues, Path } from "react-hook-form";
-import { Check, ChevronRight, ChevronLeft } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from '@/components/alignui/actions/button';
-import { Progress } from "@/components/ui/progress";
+import { Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { FieldValues, Path, UseFormReturn } from "react-hook-form";
+
 import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/alignui/actions/button";
 
 export interface Step<T extends FieldValues> {
   id: string;
@@ -40,7 +41,9 @@ export function MultiStepForm<T extends FieldValues>({
   allowSkip = false,
 }: MultiStepFormProps<T>) {
   const [currentStep, setCurrentStep] = React.useState(defaultStep);
-  const [completedSteps, setCompletedSteps] = React.useState<Set<number>>(new Set());
+  const [completedSteps, setCompletedSteps] = React.useState<Set<number>>(
+    new Set(),
+  );
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const currentStepData = steps[currentStep];
@@ -57,7 +60,7 @@ export function MultiStepForm<T extends FieldValues>({
 
     const fieldsToValidate = step.fields as Path<T>[];
     const result = await form.trigger(fieldsToValidate);
-    
+
     if (result) {
       setCompletedSteps((prev) => {
         const newSet = new Set(prev);
@@ -65,7 +68,7 @@ export function MultiStepForm<T extends FieldValues>({
         return newSet;
       });
     }
-    
+
     return result;
   };
 
@@ -80,14 +83,14 @@ export function MultiStepForm<T extends FieldValues>({
       const nextStep = currentStep + 1;
       setCurrentStep(nextStep);
       onStepChange?.(nextStep);
-      
+
       // Mark current step as completed to allow navigation back
       setCompletedSteps((prev) => {
         const newSet = new Set(prev);
         newSet.add(currentStep);
         return newSet;
       });
-      
+
       // Scroll to top
       window.scrollTo({ top: 0 });
     }
@@ -98,7 +101,7 @@ export function MultiStepForm<T extends FieldValues>({
       const prevStep = currentStep - 1;
       setCurrentStep(prevStep);
       onStepChange?.(prevStep);
-      
+
       // Scroll to top
       window.scrollTo({ top: 0 });
     }
@@ -114,7 +117,7 @@ export function MultiStepForm<T extends FieldValues>({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // First validate the current step
     const currentStepValid = await validateStep(currentStep);
     if (!currentStepValid && !allowSkip) {
@@ -130,14 +133,14 @@ export function MultiStepForm<T extends FieldValues>({
     // Validate all steps before submitting
     let allValid = true;
     let firstInvalidStep = -1;
-    
+
     for (let i = 0; i < steps.length; i++) {
       const step = steps[i];
       if (!step.fields || step.fields.length === 0) {
         // Step has no fields to validate, skip it
         continue;
       }
-      
+
       const isValid = await validateStep(i);
       if (!isValid) {
         allValid = false;
@@ -151,9 +154,10 @@ export function MultiStepForm<T extends FieldValues>({
       // Jump to first invalid step
       setCurrentStep(firstInvalidStep);
       window.scrollTo({ top: 0, behavior: "smooth" });
-      
+
       // Show error toast
-      const stepTitle = steps[firstInvalidStep]?.title || `Schritt ${firstInvalidStep + 1}`;
+      const stepTitle =
+        steps[firstInvalidStep]?.title || `Schritt ${firstInvalidStep + 1}`;
       const { toast } = await import("sonner");
       toast.error("Bitte füllen Sie alle erforderlichen Felder aus", {
         description: `Bitte vervollständigen Sie: ${stepTitle}`,
@@ -170,8 +174,8 @@ export function MultiStepForm<T extends FieldValues>({
         const firstErrorField = Object.keys(errors)[0] as Path<T>;
         if (firstErrorField) {
           // Find which step contains this field
-          const errorStepIndex = steps.findIndex(step => 
-            step.fields?.some(field => field === firstErrorField)
+          const errorStepIndex = steps.findIndex((step) =>
+            step.fields?.some((field) => field === firstErrorField),
           );
           if (errorStepIndex !== -1) {
             setCurrentStep(errorStepIndex);
@@ -183,14 +187,17 @@ export function MultiStepForm<T extends FieldValues>({
         toast.error("Bitte korrigieren Sie die Fehler im Formular");
         return;
       }
-      
+
       await onSubmit(form.getValues());
     } catch (error) {
       logger.error("Form submission error:", error);
       // Don't close form on error - let user fix it
       const { toast } = await import("sonner");
       toast.error("Fehler beim Speichern", {
-        description: error instanceof Error ? error.message : "Bitte versuchen Sie es erneut",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Bitte versuchen Sie es erneut",
       });
     } finally {
       setIsSubmitting(false);
@@ -219,7 +226,8 @@ export function MultiStepForm<T extends FieldValues>({
         <div className="flex items-center justify-between gap-1 sm:gap-2 md:gap-4">
           {steps.map((step, index) => {
             const isActive = index === currentStep;
-            const isCompleted = completedSteps.has(index) || index < currentStep;
+            const isCompleted =
+              completedSteps.has(index) || index < currentStep;
 
             return (
               <React.Fragment key={step.id}>
@@ -239,7 +247,7 @@ export function MultiStepForm<T extends FieldValues>({
                       !isCompleted &&
                         !isActive &&
                         "border-muted bg-background text-muted-foreground hover:border-primary/50 hover:bg-accent",
-                      "cursor-pointer hover:scale-110 active:scale-95"
+                      "cursor-pointer hover:scale-110 active:scale-95",
                     )}
                     aria-label={`Gehe zu Schritt ${index + 1}: ${step.title}`}
                     title={`${step.title}${step.description ? ` - ${step.description}` : ""}`}
@@ -251,7 +259,9 @@ export function MultiStepForm<T extends FieldValues>({
                         {step.icon}
                       </span>
                     ) : (
-                      <span className="text-sm sm:text-base md:text-lg font-semibold">{index + 1}</span>
+                      <span className="text-sm sm:text-base md:text-lg font-semibold">
+                        {index + 1}
+                      </span>
                     )}
                   </button>
                 </div>
@@ -260,7 +270,7 @@ export function MultiStepForm<T extends FieldValues>({
                     className={cn(
                       "flex-1 h-0.5 transition-colors",
                       "mx-2 sm:mx-3 md:mx-4",
-                      isCompleted ? "bg-primary" : "bg-muted"
+                      isCompleted ? "bg-primary" : "bg-muted",
                     )}
                   />
                 )}
@@ -275,7 +285,8 @@ export function MultiStepForm<T extends FieldValues>({
         <div className="flex items-center gap-1.5">
           {steps.map((step, index) => {
             const isActive = index === currentStep;
-            const isCompleted = completedSteps.has(index) || index < currentStep;
+            const isCompleted =
+              completedSteps.has(index) || index < currentStep;
 
             return (
               <button
@@ -286,7 +297,7 @@ export function MultiStepForm<T extends FieldValues>({
                   "flex-1 h-1.5 rounded-full transition-all",
                   isActive && "bg-primary h-2",
                   isCompleted && !isActive && "bg-primary/50",
-                  !isCompleted && !isActive && "bg-muted"
+                  !isCompleted && !isActive && "bg-muted",
                 )}
                 aria-label={`Gehe zu Schritt ${index + 1}: ${step.title}`}
               />
@@ -304,12 +315,12 @@ export function MultiStepForm<T extends FieldValues>({
       </div>
 
       {/* Form Content */}
-      <form 
+      <form
         onSubmit={(e) => {
           // Always prevent default form submission
           // Form submission is handled manually via the "Speichern" button
           e.preventDefault();
-        }} 
+        }}
         className="space-y-6"
         onKeyDown={(e) => {
           // Prevent Enter key from submitting form unless on last step
@@ -339,10 +350,10 @@ export function MultiStepForm<T extends FieldValues>({
 
           <div className="flex items-center gap-2">
             {/* Speichern Button - immer sichtbar */}
-            <Button 
+            <Button
               type="button"
               size="sm"
-              disabled={isSubmitting} 
+              disabled={isSubmitting}
               className="gap-1.5 text-sm h-8"
               onClick={async (e) => {
                 e.preventDefault();
@@ -356,9 +367,12 @@ export function MultiStepForm<T extends FieldValues>({
                     form.setFocus(firstError as Path<T>);
                   }
                   const { toast } = await import("sonner");
-                  toast.error("Bitte füllen Sie alle erforderlichen Felder aus", {
-                    description: `Bitte vervollständigen Sie: ${currentStepData.title}`,
-                  });
+                  toast.error(
+                    "Bitte füllen Sie alle erforderlichen Felder aus",
+                    {
+                      description: `Bitte vervollständigen Sie: ${currentStepData.title}`,
+                    },
+                  );
                   return;
                 }
                 // Manually call handleSubmit with a synthetic event
@@ -396,4 +410,3 @@ export function MultiStepForm<T extends FieldValues>({
     </div>
   );
 }
-

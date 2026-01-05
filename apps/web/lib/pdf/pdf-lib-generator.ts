@@ -1,5 +1,6 @@
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import type { Document as DocumentType } from "@/actions/documents-actions";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+
 import type { CompanyInfo } from "./templates";
 
 /**
@@ -12,7 +13,10 @@ export async function generatePDFFromDocument(
   companyInfo: CompanyInfo,
 ): Promise<Buffer> {
   // Helper functions
-  const formatCurrency = (amount: number | null | undefined, currency: string = "EUR"): string => {
+  const formatCurrency = (
+    amount: number | null | undefined,
+    currency: string = "EUR",
+  ): string => {
     if (amount == null || isNaN(amount)) {
       return new Intl.NumberFormat("de-DE", {
         style: "currency",
@@ -61,7 +65,6 @@ export async function generatePDFFromDocument(
   const MARGIN_RIGHT = width - 30;
   const MARGIN_TOP = height - 30;
   const MARGIN_BOTTOM = 30;
-  
 
   // Track current page and Y position
   let currentPage = page;
@@ -88,7 +91,7 @@ export async function generatePDFFromDocument(
       color?: any;
       maxWidth?: number;
       align?: "left" | "center" | "right";
-    } = {}
+    } = {},
   ) => {
     // Handle null/undefined text
     const safeText = text || "";
@@ -125,13 +128,13 @@ export async function generatePDFFromDocument(
   // ============================================
   // HEADER SECTION
   // ============================================
-  
+
   // Company name (left)
   addTextToPage(companyInfo.name || "", MARGIN_LEFT, y, {
     size: 18,
     font: helveticaBoldFont,
   });
-  
+
   // Contact info (right) - align with company name
   const contactRightX = MARGIN_RIGHT;
   addTextToPage(`Tel: ${companyInfo.phone || ""}`, contactRightX, y, {
@@ -159,7 +162,7 @@ export async function generatePDFFromDocument(
     color: rgb(0.42, 0.45, 0.51),
     align: "right",
   });
-  
+
   // Reset Y for company address (left side)
   y = MARGIN_TOP - 20;
   addTextToPage(companyInfo.address || "", MARGIN_LEFT, y, {
@@ -167,10 +170,15 @@ export async function generatePDFFromDocument(
     color: rgb(0.42, 0.45, 0.51),
   });
   y -= 12;
-  addTextToPage(`${companyInfo.postalCode || ""} ${companyInfo.city || ""}`, MARGIN_LEFT, y, {
-    size: 10,
-    color: rgb(0.42, 0.45, 0.51),
-  });
+  addTextToPage(
+    `${companyInfo.postalCode || ""} ${companyInfo.city || ""}`,
+    MARGIN_LEFT,
+    y,
+    {
+      size: 10,
+      color: rgb(0.42, 0.45, 0.51),
+    },
+  );
   y -= 12;
   addTextToPage(companyInfo.country || "", MARGIN_LEFT, y, {
     size: 10,
@@ -192,9 +200,9 @@ export async function generatePDFFromDocument(
   // ============================================
   // CUSTOMER & DOCUMENT INFO SECTION
   // ============================================
-  
+
   const sectionTopY = y;
-  
+
   // Customer info (left side) - vollständige Adresse ohne Strich
   if (document.customer) {
     // Customer name
@@ -203,7 +211,7 @@ export async function generatePDFFromDocument(
       font: helveticaBoldFont,
     });
     y -= 12;
-    
+
     // Address line 1
     if (document.customer.address_line1) {
       addTextToPage(document.customer.address_line1, MARGIN_LEFT, y, {
@@ -212,7 +220,7 @@ export async function generatePDFFromDocument(
       });
       y -= 12;
     }
-    
+
     // Address line 2
     if (document.customer.address_line2) {
       addTextToPage(document.customer.address_line2, MARGIN_LEFT, y, {
@@ -221,7 +229,7 @@ export async function generatePDFFromDocument(
       });
       y -= 12;
     }
-    
+
     // Postal code and city
     if (document.customer.postal_code || document.customer.city) {
       const postalCity = [document.customer.postal_code, document.customer.city]
@@ -233,7 +241,7 @@ export async function generatePDFFromDocument(
       });
       y -= 12;
     }
-    
+
     // Country
     if (document.customer.country) {
       addTextToPage(document.customer.country, MARGIN_LEFT, y, {
@@ -242,7 +250,7 @@ export async function generatePDFFromDocument(
       });
       y -= 12;
     }
-    
+
     y -= 5; // Small spacing after customer box
   }
 
@@ -260,10 +268,15 @@ export async function generatePDFFromDocument(
     align: "right",
   });
   y -= 12;
-  addTextToPage(`Datum: ${formatDate(document.document_date)}`, docInfoRightX, y, {
-    size: 10,
-    align: "right",
-  });
+  addTextToPage(
+    `Datum: ${formatDate(document.document_date)}`,
+    docInfoRightX,
+    y,
+    {
+      size: 10,
+      align: "right",
+    },
+  );
 
   if (document.due_date && isInvoice) {
     y -= 20;
@@ -274,11 +287,16 @@ export async function generatePDFFromDocument(
       color: rgb(0.9, 0.91, 0.92), // #e5e7eb
     });
     y -= 8;
-    addTextToPage(`Fällig am: ${formatDate(document.due_date)}`, docInfoRightX, y, {
-      size: 10,
-      font: helveticaBoldFont,
-      align: "right",
-    });
+    addTextToPage(
+      `Fällig am: ${formatDate(document.due_date)}`,
+      docInfoRightX,
+      y,
+      {
+        size: 10,
+        font: helveticaBoldFont,
+        align: "right",
+      },
+    );
   }
 
   // Continue with main content - use the lower Y position
@@ -287,7 +305,7 @@ export async function generatePDFFromDocument(
   // ============================================
   // GREETING SECTION
   // ============================================
-  
+
   y -= 15;
   addTextToPage("Sehr geehrte Damen und Herren,", MARGIN_LEFT, y, {
     size: 10,
@@ -303,14 +321,14 @@ export async function generatePDFFromDocument(
     {
       size: 10,
       color: rgb(0.22, 0.25, 0.31),
-    }
+    },
   );
   y -= 20;
 
   // ============================================
   // ITEMS TABLE
   // ============================================
-  
+
   if (document.items && document.items.length > 0) {
     const tableTopY = y;
     const itemHeight = 25;
@@ -334,7 +352,7 @@ export async function generatePDFFromDocument(
       height: itemHeight,
       color: rgb(0.95, 0.96, 0.95), // #f3f4f6
     });
-    
+
     // Table header border
     currentPage.drawRectangle({
       x: MARGIN_LEFT,
@@ -377,7 +395,7 @@ export async function generatePDFFromDocument(
       // Check if we need a new page
       const pageBeforeCheck = currentPage;
       ensurePageSpace(itemHeight + 20);
-      
+
       // If we're on a new page, reset tableY and redraw header
       if (currentPage !== pageBeforeCheck) {
         tableY = MARGIN_TOP - itemHeight;
@@ -445,15 +463,25 @@ export async function generatePDFFromDocument(
         size: 11,
         align: "right",
       });
-      addTextToPage(formatCurrency(item.unit_price), colUnitPrice, tableY - 14, {
-        size: 11,
-        align: "right",
-      });
-      addTextToPage(formatCurrency(item.quantity * item.unit_price), colTotal, tableY - 14, {
-        size: 11,
-        font: helveticaBoldFont,
-        align: "right",
-      });
+      addTextToPage(
+        formatCurrency(item.unit_price),
+        colUnitPrice,
+        tableY - 14,
+        {
+          size: 11,
+          align: "right",
+        },
+      );
+      addTextToPage(
+        formatCurrency(item.quantity * item.unit_price),
+        colTotal,
+        tableY - 14,
+        {
+          size: 11,
+          font: helveticaBoldFont,
+          align: "right",
+        },
+      );
 
       tableY -= itemHeight;
     });
@@ -466,14 +494,14 @@ export async function generatePDFFromDocument(
   // ============================================
   // TOTALS SECTION
   // ============================================
-  
+
   // Ensure we have space for totals section
   ensurePageSpace(80);
-  
+
   y -= 15;
   const totalsStartX = width - 300; // Better positioning
   const totalsEndX = MARGIN_RIGHT;
-  
+
   addTextToPage("Zwischensumme (Netto):", totalsStartX, y, {
     size: 10,
     color: rgb(0.22, 0.25, 0.31),
@@ -484,7 +512,7 @@ export async function generatePDFFromDocument(
     align: "right",
   });
   y -= 12;
-  
+
   addTextToPage(`zzgl. MwSt. (${document.tax_rate}%):`, totalsStartX, y, {
     size: 10,
     color: rgb(0.22, 0.25, 0.31),
@@ -495,7 +523,7 @@ export async function generatePDFFromDocument(
     align: "right",
   });
   y -= 12;
-  
+
   // Divider line
   currentPage.drawLine({
     start: { x: totalsStartX, y },
@@ -523,7 +551,7 @@ export async function generatePDFFromDocument(
     borderColor: rgb(0.067, 0.094, 0.153),
     borderWidth: 2,
   });
-  
+
   addTextToPage("Gesamtbetrag (Brutto):", totalsStartX, y - 6, {
     size: 11,
     font: helveticaBoldFont,
@@ -539,14 +567,14 @@ export async function generatePDFFromDocument(
   // ============================================
   // PAYMENT INFO (only for invoices)
   // ============================================
-  
+
   if (isInvoice) {
     // Ensure we have space for payment box
     ensurePageSpace(70);
-    
+
     const paymentBoxHeight = 60;
     const paymentBoxY = y - paymentBoxHeight;
-    
+
     // Payment box background
     currentPage.drawRectangle({
       x: MARGIN_LEFT,
@@ -555,7 +583,7 @@ export async function generatePDFFromDocument(
       height: paymentBoxHeight,
       color: rgb(0.98, 0.98, 0.98), // #f9fafb
     });
-    
+
     // Payment box border
     currentPage.drawRectangle({
       x: MARGIN_LEFT,
@@ -589,7 +617,7 @@ export async function generatePDFFromDocument(
       {
         size: 9,
         font: helveticaBoldFont,
-      }
+      },
     );
     addTextToPage("Zahlungsweise:", 300, y - 28, {
       size: 9,
@@ -608,7 +636,7 @@ export async function generatePDFFromDocument(
         size: 8,
         color: rgb(0.42, 0.45, 0.51),
         maxWidth: MARGIN_RIGHT - MARGIN_LEFT - 40,
-      }
+      },
     );
 
     y = paymentBoxY - 20;
@@ -617,10 +645,10 @@ export async function generatePDFFromDocument(
   // ============================================
   // CLOSING SECTION
   // ============================================
-  
+
   // Ensure we have space for closing section
   ensurePageSpace(50);
-  
+
   addTextToPage(
     isInvoice
       ? "Wir bedanken uns für Ihren Auftrag und das entgegengebrachte Vertrauen."
@@ -630,7 +658,7 @@ export async function generatePDFFromDocument(
     {
       size: 10,
       color: rgb(0.22, 0.25, 0.31),
-    }
+    },
   );
   y -= 15;
   addTextToPage("Mit freundlichen Grüßen", MARGIN_LEFT, y, {
@@ -647,17 +675,17 @@ export async function generatePDFFromDocument(
   // ============================================
   // FOOTER SECTION
   // ============================================
-  
+
   // Footer always at bottom - needs about 50px of space
   const footerHeight = 50;
   const footerY = MARGIN_BOTTOM + footerHeight;
-  
+
   // Check if content would overlap with footer
   if (y < footerY + 20) {
     // Not enough space, create new page
     currentPage = pdfDoc.addPage([595.28, 841.89]);
     y = MARGIN_TOP;
-    
+
     // Footer line at bottom
     const newFooterY = MARGIN_BOTTOM + footerHeight;
     currentPage.drawLine({
@@ -666,11 +694,11 @@ export async function generatePDFFromDocument(
       thickness: 2,
       color: rgb(0.067, 0.094, 0.153),
     });
-    
+
     // Footer content - alles zentriert untereinander
     let footerYPos = newFooterY - 12;
     const footerCenterX = (MARGIN_LEFT + MARGIN_RIGHT) / 2;
-    
+
     // Bankname
     if (companyInfo.bankName) {
       addTextToPage(companyInfo.bankName, footerCenterX, footerYPos, {
@@ -681,7 +709,7 @@ export async function generatePDFFromDocument(
       });
       footerYPos -= 10;
     }
-    
+
     // IBAN
     if (companyInfo.iban) {
       addTextToPage(`IBAN: ${companyInfo.iban}`, footerCenterX, footerYPos, {
@@ -691,24 +719,34 @@ export async function generatePDFFromDocument(
       });
       footerYPos -= 10;
     }
-    
+
     // BIC/SWIFT
     if (companyInfo.bic) {
-      addTextToPage(`BIC/SWIFT: ${companyInfo.bic}`, footerCenterX, footerYPos, {
-        size: 8,
-        color: rgb(0.42, 0.45, 0.51),
-        align: "center",
-      });
+      addTextToPage(
+        `BIC/SWIFT: ${companyInfo.bic}`,
+        footerCenterX,
+        footerYPos,
+        {
+          size: 8,
+          color: rgb(0.42, 0.45, 0.51),
+          align: "center",
+        },
+      );
       footerYPos -= 10;
     }
-    
+
     // USt-IdNr.
     if (companyInfo.taxId) {
-      addTextToPage(`USt-IdNr.: ${companyInfo.taxId}`, footerCenterX, footerYPos, {
-        size: 8,
-        color: rgb(0.42, 0.45, 0.51),
-        align: "center",
-      });
+      addTextToPage(
+        `USt-IdNr.: ${companyInfo.taxId}`,
+        footerCenterX,
+        footerYPos,
+        {
+          size: 8,
+          color: rgb(0.42, 0.45, 0.51),
+          align: "center",
+        },
+      );
       footerYPos -= 12;
     }
 
@@ -722,7 +760,7 @@ export async function generatePDFFromDocument(
         color: rgb(0.61, 0.64, 0.69), // #9ca3af
         maxWidth: MARGIN_RIGHT - MARGIN_LEFT,
         align: "center",
-      }
+      },
     );
   } else {
     // Footer fits on current page - always position at bottom (footerY is already calculated)
@@ -733,11 +771,11 @@ export async function generatePDFFromDocument(
       thickness: 2,
       color: rgb(0.067, 0.094, 0.153),
     });
-    
+
     // Footer content - alles zentriert untereinander
     let footerYPos = footerY - 12;
     const footerCenterX = (MARGIN_LEFT + MARGIN_RIGHT) / 2;
-    
+
     // Bankname
     if (companyInfo.bankName) {
       addTextToPage(companyInfo.bankName, footerCenterX, footerYPos, {
@@ -748,7 +786,7 @@ export async function generatePDFFromDocument(
       });
       footerYPos -= 10;
     }
-    
+
     // IBAN
     if (companyInfo.iban) {
       addTextToPage(`IBAN: ${companyInfo.iban}`, footerCenterX, footerYPos, {
@@ -758,24 +796,34 @@ export async function generatePDFFromDocument(
       });
       footerYPos -= 10;
     }
-    
+
     // BIC/SWIFT
     if (companyInfo.bic) {
-      addTextToPage(`BIC/SWIFT: ${companyInfo.bic}`, footerCenterX, footerYPos, {
-        size: 8,
-        color: rgb(0.42, 0.45, 0.51),
-        align: "center",
-      });
+      addTextToPage(
+        `BIC/SWIFT: ${companyInfo.bic}`,
+        footerCenterX,
+        footerYPos,
+        {
+          size: 8,
+          color: rgb(0.42, 0.45, 0.51),
+          align: "center",
+        },
+      );
       footerYPos -= 10;
     }
-    
+
     // USt-IdNr.
     if (companyInfo.taxId) {
-      addTextToPage(`USt-IdNr.: ${companyInfo.taxId}`, footerCenterX, footerYPos, {
-        size: 8,
-        color: rgb(0.42, 0.45, 0.51),
-        align: "center",
-      });
+      addTextToPage(
+        `USt-IdNr.: ${companyInfo.taxId}`,
+        footerCenterX,
+        footerYPos,
+        {
+          size: 8,
+          color: rgb(0.42, 0.45, 0.51),
+          align: "center",
+        },
+      );
       footerYPos -= 12;
     }
 
@@ -789,7 +837,7 @@ export async function generatePDFFromDocument(
         color: rgb(0.61, 0.64, 0.69), // #9ca3af
         maxWidth: MARGIN_RIGHT - MARGIN_LEFT,
         align: "center",
-      }
+      },
     );
   }
 

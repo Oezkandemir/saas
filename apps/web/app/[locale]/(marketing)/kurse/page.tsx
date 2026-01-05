@@ -1,9 +1,8 @@
 import { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
-import { setRequestLocale } from "next-intl/server";
+import { getAllPublicEventTypes } from "@/actions/scheduling/event-types-actions";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
-import { getAllPublicEventTypes } from "@/actions/scheduling/event-types-actions";
 import { CourseCard } from "@/components/courses/course-card";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
@@ -42,7 +41,9 @@ export default async function KursePage({ params }: PageProps) {
 
   // Fetch all public active event types
   const eventTypesResult = await getAllPublicEventTypes();
-  const eventTypes = eventTypesResult.success ? (eventTypesResult.data || []) : [];
+  const eventTypes = eventTypesResult.success
+    ? eventTypesResult.data || []
+    : [];
 
   if (eventTypes.length === 0) {
     return (
@@ -54,7 +55,8 @@ export default async function KursePage({ params }: PageProps) {
                 Unsere Kurse
               </h1>
               <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-                Derzeit sind keine Kurse verfügbar. Bitte schauen Sie später wieder vorbei.
+                Derzeit sind keine Kurse verfügbar. Bitte schauen Sie später
+                wieder vorbei.
               </p>
             </div>
           </MaxWidthWrapper>
@@ -76,7 +78,7 @@ export default async function KursePage({ params }: PageProps) {
 
         {/* Grid pattern overlay */}
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
-        
+
         <MaxWidthWrapper className="relative flex min-h-screen items-center justify-center py-12 sm:py-16 lg:py-20">
           <div className="mx-auto max-w-5xl text-center">
             {/* Badge with glassmorphism */}
@@ -116,8 +118,18 @@ export default async function KursePage({ params }: PageProps) {
                   key={index}
                   className="flex items-center gap-2 rounded-full border border-border/50 bg-background/40 px-3 py-1.5 backdrop-blur-sm transition-all hover:border-primary/50 hover:bg-background/60 sm:gap-2.5 sm:px-4 sm:py-2"
                 >
-                  <svg className="size-3 text-emerald-500 sm:size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <svg
+                    className="size-3 text-emerald-500 sm:size-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                   <span className="font-medium text-muted-foreground">
                     {item.text}
@@ -133,7 +145,7 @@ export default async function KursePage({ params }: PageProps) {
       <section className="relative flex-1 py-16 sm:py-20">
         {/* Subtle background gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/20 to-background" />
-        
+
         <MaxWidthWrapper className="relative">
           <div className="space-y-12">
             <div className="text-center space-y-3">
@@ -141,10 +153,11 @@ export default async function KursePage({ params }: PageProps) {
                 Verfügbare Kurse
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Durchstöbern Sie unser vollständiges Kursangebot und finden Sie den perfekten Kurs für Ihre Bedürfnisse
+                Durchstöbern Sie unser vollständiges Kursangebot und finden Sie
+                den perfekten Kurs für Ihre Bedürfnisse
               </p>
             </div>
-            
+
             {eventTypes.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {eventTypes.map((eventType) => (
@@ -154,7 +167,8 @@ export default async function KursePage({ params }: PageProps) {
             ) : (
               <div className="text-center py-16">
                 <p className="text-muted-foreground">
-                  Derzeit sind keine Kurse verfügbar. Bitte schauen Sie später wieder vorbei.
+                  Derzeit sind keine Kurse verfügbar. Bitte schauen Sie später
+                  wieder vorbei.
                 </p>
               </div>
             )}
@@ -166,7 +180,7 @@ export default async function KursePage({ params }: PageProps) {
       <section className="relative border-t bg-muted/30 overflow-hidden">
         {/* Gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-purple-500/5 to-transparent" />
-        
+
         <MaxWidthWrapper className="relative py-16 sm:py-20">
           <div className="text-center space-y-6 max-w-2xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
@@ -190,4 +204,3 @@ export default async function KursePage({ params }: PageProps) {
     </div>
   );
 }
-

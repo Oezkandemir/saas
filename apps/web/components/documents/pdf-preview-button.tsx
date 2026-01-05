@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
-import { Button } from '@/components/alignui/actions/button';
+import { useEffect, useState } from "react";
 import { Eye, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+
+import { Button } from "@/components/alignui/actions/button";
 import {
   DialogRoot as Dialog,
   DialogContent,
@@ -34,7 +35,9 @@ export function PDFPreviewButton({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentPdfUrl, setCurrentPdfUrl] = useState<string | null>(pdfUrl || null);
+  const [currentPdfUrl, setCurrentPdfUrl] = useState<string | null>(
+    pdfUrl || null,
+  );
   const [directPdfUrl, setDirectPdfUrl] = useState<string | null>(null);
 
   // Load cached PDF URL on mount
@@ -72,21 +75,25 @@ export function PDFPreviewButton({
     try {
       // First, ensure PDF exists
       const response = await fetch(`/api/documents/${documentId}/pdf`);
-      
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
-        throw new Error(errorData.message || errorData.error || "Failed to generate PDF");
+        const errorData = await response
+          .json()
+          .catch(() => ({ error: "Unknown error" }));
+        throw new Error(
+          errorData.message || errorData.error || "Failed to generate PDF",
+        );
       }
-      
+
       const data = await response.json();
       if (!data || !data.pdfUrl) {
         throw new Error(t("errors.noUrlReturned"));
       }
-      
+
       // Use proxy endpoint for iframe (handles CORS and CSP)
       // Use absolute URL to avoid locale issues
       const proxyUrl = `${window.location.origin}/api/documents/${documentId}/pdf-view`;
-      
+
       // Cache the PDF URL in sessionStorage
       if (typeof window !== "undefined") {
         sessionStorage.setItem(
@@ -95,10 +102,10 @@ export function PDFPreviewButton({
             pdfUrl: data.pdfUrl,
             proxyUrl,
             timestamp: Date.now(),
-          })
+          }),
         );
       }
-      
+
       setDirectPdfUrl(data.pdfUrl);
       setCurrentPdfUrl(proxyUrl);
     } catch (err) {
@@ -127,15 +134,15 @@ export function PDFPreviewButton({
         <DialogContent className="max-w-6xl max-h-[90vh] p-0">
           <DialogHeader className="px-6 pt-6 pb-4 border-b">
             <DialogTitle>{t("title", { number: documentNumber })}</DialogTitle>
-            <DialogDescription>
-              {t("description")}
-            </DialogDescription>
+            <DialogDescription>{t("description")}</DialogDescription>
           </DialogHeader>
           <div className="overflow-auto max-h-[calc(90vh-120px)] p-6 bg-muted/30">
             {loading && !currentPdfUrl ? (
               <div className="flex items-center justify-center h-[600px]">
                 <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-                <span className="ml-2 text-muted-foreground">{t("loading")}</span>
+                <span className="ml-2 text-muted-foreground">
+                  {t("loading")}
+                </span>
               </div>
             ) : error ? (
               <div className="flex flex-col items-center justify-center h-[600px] text-center space-y-4">
@@ -167,4 +174,3 @@ export function PDFPreviewButton({
     </>
   );
 }
-

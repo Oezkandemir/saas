@@ -1,11 +1,19 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
-import { getCurrentUser } from "@/lib/session";
 import { getCustomers, type Customer } from "@/actions/customers-actions";
 import { getDocuments, type Document } from "@/actions/documents-actions";
-import Link from "next/link";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Button } from '@/components/alignui/actions/button';
+import {
+  ArrowRight,
+  Calendar,
+  FileText,
+  LayoutDashboard,
+  Plus,
+  QrCode,
+  Users,
+} from "lucide-react";
+import { getTranslations } from "next-intl/server";
+
+import { getCurrentUser } from "@/lib/session";
 import {
   Table,
   TableBody,
@@ -14,15 +22,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  FileText,
-  ArrowRight,
-  LayoutDashboard,
-  Calendar,
-  Users,
-  QrCode,
-  Plus,
-} from "lucide-react";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 // ISR: Revalidate every 60 seconds for fresh data
@@ -42,17 +43,24 @@ export default async function DashboardPage() {
 
   const quotes = documents.filter((d) => d.type === "quote");
   const invoices = documents.filter((d) => d.type === "invoice");
-  const openQuotes = quotes.filter((d) => d.status === "draft" || d.status === "sent");
+  const openQuotes = quotes.filter(
+    (d) => d.status === "draft" || d.status === "sent",
+  );
   const unpaidInvoices = invoices.filter((d) => d.status !== "paid");
   const paidInvoices = invoices.filter((d) => d.status === "paid");
-  
+
   const recentDocuments = documents
     .slice(0, 5)
-    .sort((a, b) => 
-      new Date(b.document_date).getTime() - new Date(a.document_date).getTime()
+    .sort(
+      (a, b) =>
+        new Date(b.document_date).getTime() -
+        new Date(a.document_date).getTime(),
     );
 
-  const totalRevenue = paidInvoices.reduce((sum, inv) => sum + (inv.total || 0), 0);
+  const totalRevenue = paidInvoices.reduce(
+    (sum, inv) => sum + (inv.total || 0),
+    0,
+  );
 
   // Maximal 3 KPIs: Customers, Open Quotes, Unpaid Invoices
   const kpis = [
@@ -82,7 +90,9 @@ export default async function DashboardPage() {
     >
       {/* 1. Primary Metric - Single Focus */}
       <div className="mb-8">
-        <p className="text-xs text-muted-foreground mb-2">{t("revenue.totalRevenue")}</p>
+        <p className="text-xs text-muted-foreground mb-2">
+          {t("revenue.totalRevenue")}
+        </p>
         <p className="text-4xl font-semibold tracking-tight">
           {new Intl.NumberFormat(undefined, {
             style: "currency",
@@ -107,7 +117,9 @@ export default async function DashboardPage() {
 
       {/* Quick Actions / Feature Cards */}
       <div className="mb-10 pb-8 border-b border-border">
-        <h2 className="text-sm font-semibold mb-4">{t("quickActions.title")}</h2>
+        <h2 className="text-sm font-semibold mb-4">
+          {t("quickActions.title")}
+        </h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <Link
             href="/dashboard/customers/new"
@@ -214,7 +226,9 @@ export default async function DashboardPage() {
         {recentDocuments.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <FileText className="h-6 w-6 text-muted-foreground mb-3" />
-            <p className="text-sm text-muted-foreground mb-4">{t("recent.noDocuments")}</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              {t("recent.noDocuments")}
+            </p>
             <Link href="/dashboard/documents/new">
               <Button size="sm" variant="outline" className="h-8 text-xs">
                 {t("recent.create")}
@@ -225,15 +239,26 @@ export default async function DashboardPage() {
           <Table>
             <TableHeader>
               <TableRow className="border-b border-border">
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground">{tTable("number")}</TableHead>
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground">{tTable("type")}</TableHead>
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground">{tTable("date")}</TableHead>
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground text-right">{tTable("amount")}</TableHead>
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground">
+                  {tTable("number")}
+                </TableHead>
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground">
+                  {tTable("type")}
+                </TableHead>
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground">
+                  {tTable("date")}
+                </TableHead>
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground text-right">
+                  {tTable("amount")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {recentDocuments.map((doc) => (
-                <TableRow key={doc.id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                <TableRow
+                  key={doc.id}
+                  className="border-b border-border hover:bg-muted/50 transition-colors"
+                >
                   <TableCell className="py-3">
                     <Link
                       href={`/dashboard/documents/${doc.id}`}

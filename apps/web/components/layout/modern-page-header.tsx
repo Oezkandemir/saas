@@ -1,10 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
+
 import { cn } from "@/lib/utils";
-import { Button } from '@/components/alignui/actions/button';
+import { Button } from "@/components/alignui/actions/button";
 
 interface ModernPageHeaderProps {
   title: string;
@@ -56,7 +57,7 @@ export function ModernPageHeader({
         // Kompakte Abstände: gap-2 sm:gap-3
         "flex items-center justify-between gap-2 sm:gap-3 bg-background",
         sticky && isScrolled && "shadow-sm backdrop-blur-sm bg-background/95",
-        className
+        className,
       )}
     >
       <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
@@ -97,11 +98,8 @@ export function ModernPageHeader({
 
       {/* Actions */}
       {actions && (
-        <div className="flex items-center gap-2 shrink-0">
-          {actions}
-        </div>
+        <div className="flex items-center gap-2 shrink-0">{actions}</div>
       )}
     </div>
   );
 }
-

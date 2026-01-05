@@ -1,15 +1,15 @@
 import { redirect } from "next/navigation";
+import {
+  getEmailTemplates,
+  getResendConfigStatus,
+} from "@/actions/admin-email-actions";
 import { Mail } from "lucide-react";
 import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { EmailTemplates } from "@/components/admin/email-templates";
-import {
-  getEmailTemplates,
-  getResendConfigStatus,
-} from "@/actions/admin-email-actions";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -49,7 +49,3 @@ export default async function AdminEmailsPage() {
     </UnifiedPageLayout>
   );
 }
-
-
-
-

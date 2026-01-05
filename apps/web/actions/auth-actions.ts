@@ -1,8 +1,8 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
-import { createLoginSession } from "@/lib/session-tracking";
 import { logger } from "@/lib/logger";
+import { createLoginSession } from "@/lib/session-tracking";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Track login session after successful client-side login
@@ -32,8 +32,8 @@ export async function trackLoginSession(
     logger.error("Error tracking login session:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to track session",
+      message:
+        error instanceof Error ? error.message : "Failed to track session",
     };
   }
 }
-

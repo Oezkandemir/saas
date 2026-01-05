@@ -82,10 +82,7 @@ export function applySecurityHeaders(
 
   // Apply X-Content-Type-Options
   if (config.xContentTypeOptions) {
-    response.headers.set(
-      "X-Content-Type-Options",
-      config.xContentTypeOptions,
-    );
+    response.headers.set("X-Content-Type-Options", config.xContentTypeOptions);
   }
 
   // Apply Referrer-Policy
@@ -115,4 +112,3 @@ export function applySecurityHeaders(
 export function generateNonce(): string {
   return Buffer.from(crypto.randomUUID()).toString("base64");
 }
-

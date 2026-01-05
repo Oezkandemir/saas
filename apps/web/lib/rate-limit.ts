@@ -1,7 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
-import { getCurrentUser } from "@/lib/session";
+
 import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
+import { createClient } from "@/lib/supabase/server";
 
 export interface RateLimitResult {
   allowed: boolean;
@@ -186,10 +187,5 @@ export async function rateLimitMiddleware(
   },
 ): Promise<RateLimitResult> {
   const identifierType = options?.useUserBasedLimit ? "user" : "ip";
-  return checkRateLimit(
-    endpoint,
-    options?.customIdentifier,
-    identifierType,
-  );
+  return checkRateLimit(endpoint, options?.customIdentifier, identifierType);
 }
-

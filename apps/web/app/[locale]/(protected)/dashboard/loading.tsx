@@ -1,5 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader } from '@/components/alignui/data-display/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from "@/components/alignui/data-display/card";
 
 export default function DashboardLoading() {
   return (
@@ -54,7 +58,10 @@ export default function DashboardLoading() {
           <CardContent>
             <div className="space-y-2">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center justify-between p-2.5 border rounded-md">
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-2.5 border rounded-md"
+                >
                   <div className="flex flex-col gap-2">
                     <Skeleton className="h-4 w-32" />
                     <Skeleton className="h-3 w-48" />
@@ -74,7 +81,10 @@ export default function DashboardLoading() {
           <CardContent>
             <div className="space-y-2">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-3 p-2.5 border rounded-md">
+                <div
+                  key={i}
+                  className="flex items-center gap-3 p-2.5 border rounded-md"
+                >
                   <Skeleton className="size-10 rounded-full" />
                   <div className="flex flex-col gap-2 flex-1">
                     <Skeleton className="h-4 w-32" />
@@ -89,4 +99,3 @@ export default function DashboardLoading() {
     </div>
   );
 }
-

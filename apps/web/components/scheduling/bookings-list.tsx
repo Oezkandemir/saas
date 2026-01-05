@@ -2,11 +2,21 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import type { Booking } from "@/actions/scheduling/bookings-actions";
+import type { EventType } from "@/actions/scheduling/event-types-actions";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
-import { useLocale } from "next-intl";
-import { Button } from "@/components/alignui/actions/button";
+import {
+  Calendar,
+  ChevronRight,
+  Clock,
+  Filter,
+  Mail,
+  User,
+  X,
+} from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+
 import {
   Select,
   SelectContent,
@@ -14,18 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Calendar,
-  Clock,
-  User,
-  Mail,
-  ChevronRight,
-  Filter,
-  X,
-} from "lucide-react";
-import type { Booking } from "@/actions/scheduling/bookings-actions";
-import type { EventType } from "@/actions/scheduling/event-types-actions";
+import { Button } from "@/components/alignui/actions/button";
 import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+
 import { BookingDrawer } from "./booking-drawer";
 
 interface BookingsListProps {
@@ -41,17 +42,19 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
   const dateLocale = locale === "de" ? de : enUS;
 
   const [statusFilter, setStatusFilter] = useState<string>(
-    searchParams.get("status") || "all"
+    searchParams.get("status") || "all",
   );
   const [eventTypeFilter, setEventTypeFilter] = useState<string>(
-    searchParams.get("event_type_id") || "all"
+    searchParams.get("event_type_id") || "all",
   );
-  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
+  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
+    null,
+  );
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleFilterChange = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    
+
     if (key === "status") {
       setStatusFilter(value);
       if (value === "all") {
@@ -60,7 +63,7 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
         params.set("status", value);
       }
     }
-    
+
     if (key === "event_type_id") {
       setEventTypeFilter(value);
       if (value === "all") {
@@ -88,19 +91,26 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
     if (statusFilter !== "all" && booking.status !== statusFilter) {
       return false;
     }
-    if (eventTypeFilter !== "all" && booking.event_type_id !== eventTypeFilter) {
+    if (
+      eventTypeFilter !== "all" &&
+      booking.event_type_id !== eventTypeFilter
+    ) {
       return false;
     }
     return true;
   });
 
-  const scheduledBookings = filteredBookings.filter((b) => b.status === "scheduled");
-  const canceledBookings = filteredBookings.filter((b) => b.status === "canceled");
+  const scheduledBookings = filteredBookings.filter(
+    (b) => b.status === "scheduled",
+  );
+  const canceledBookings = filteredBookings.filter(
+    (b) => b.status === "canceled",
+  );
   const upcomingBookings = scheduledBookings.filter(
-    (b) => new Date(b.start_at) > new Date()
+    (b) => new Date(b.start_at) > new Date(),
   );
   const pastBookings = scheduledBookings.filter(
-    (b) => new Date(b.start_at) <= new Date()
+    (b) => new Date(b.start_at) <= new Date(),
   );
 
   const hasActiveFilters = statusFilter !== "all" || eventTypeFilter !== "all";
@@ -111,9 +121,14 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
       <div className="flex items-center gap-3 flex-wrap">
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">{t("bookings.filter") || "Filter"}:</span>
+          <span className="text-sm font-medium">
+            {t("bookings.filter") || "Filter"}:
+          </span>
         </div>
-        <Select value={statusFilter} onValueChange={(value) => handleFilterChange("status", value)}>
+        <Select
+          value={statusFilter}
+          onValueChange={(value) => handleFilterChange("status", value)}
+        >
           <SelectTrigger className="w-[150px]">
             <SelectValue />
           </SelectTrigger>
@@ -133,10 +148,14 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
           onValueChange={(value) => handleFilterChange("event_type_id", value)}
         >
           <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder={t("bookings.allEventTypes") || "Alle Event Types"} />
+            <SelectValue
+              placeholder={t("bookings.allEventTypes") || "Alle Event Types"}
+            />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t("bookings.allEventTypes") || "Alle Event Types"}</SelectItem>
+            <SelectItem value="all">
+              {t("bookings.allEventTypes") || "Alle Event Types"}
+            </SelectItem>
             {eventTypes.map((et) => (
               <SelectItem key={et.id} value={et.id}>
                 {et.title}
@@ -165,19 +184,25 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
           <p className="text-xs text-muted-foreground mb-1">
             {t("bookings.upcoming") || "Anstehend"}
           </p>
-          <p className="text-xl font-semibold text-blue-600">{upcomingBookings.length}</p>
+          <p className="text-xl font-semibold text-blue-600">
+            {upcomingBookings.length}
+          </p>
         </div>
         <div className="p-3 rounded-lg border bg-card">
           <p className="text-xs text-muted-foreground mb-1">
             {t("bookings.past") || "Vergangen"}
           </p>
-          <p className="text-xl font-semibold text-muted-foreground">{pastBookings.length}</p>
+          <p className="text-xl font-semibold text-muted-foreground">
+            {pastBookings.length}
+          </p>
         </div>
         <div className="p-3 rounded-lg border bg-card">
           <p className="text-xs text-muted-foreground mb-1">
             {t("bookings.canceled") || "Storniert"}
           </p>
-          <p className="text-xl font-semibold text-red-600">{canceledBookings.length}</p>
+          <p className="text-xl font-semibold text-red-600">
+            {canceledBookings.length}
+          </p>
         </div>
       </div>
 
@@ -196,23 +221,26 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
             const endDate = new Date(booking.end_at);
             const isUpcoming = startDate > new Date();
 
-            const iconBgClass = booking.status === "canceled"
-              ? "bg-red-100 dark:bg-red-900/20"
-              : isUpcoming
-              ? "bg-blue-100 dark:bg-blue-900/20"
-              : "bg-muted";
+            const iconBgClass =
+              booking.status === "canceled"
+                ? "bg-red-100 dark:bg-red-900/20"
+                : isUpcoming
+                  ? "bg-blue-100 dark:bg-blue-900/20"
+                  : "bg-muted";
 
-            const iconTextClass = booking.status === "canceled"
-              ? "text-red-600 dark:text-red-400"
-              : isUpcoming
-              ? "text-blue-600 dark:text-blue-400"
-              : "text-muted-foreground";
+            const iconTextClass =
+              booking.status === "canceled"
+                ? "text-red-600 dark:text-red-400"
+                : isUpcoming
+                  ? "text-blue-600 dark:text-blue-400"
+                  : "text-muted-foreground";
 
-            const badgeVariant = booking.status === "canceled"
-              ? "destructive"
-              : isUpcoming
-              ? "default"
-              : "outline";
+            const badgeVariant =
+              booking.status === "canceled"
+                ? "destructive"
+                : isUpcoming
+                  ? "default"
+                  : "outline";
 
             return (
               <div
@@ -222,7 +250,9 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
               >
                 <div className="flex items-start gap-4 flex-1 min-w-0">
                   <div className="flex-shrink-0">
-                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${iconBgClass}`}>
+                    <div
+                      className={`w-12 h-12 rounded-lg flex items-center justify-center ${iconBgClass}`}
+                    >
                       <Calendar className={`h-6 w-6 ${iconTextClass}`} />
                     </div>
                   </div>
@@ -235,18 +265,22 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
                         {booking.status === "canceled"
                           ? t("bookings.canceled") || "Storniert"
                           : isUpcoming
-                          ? t("bookings.upcoming") || "Anstehend"
-                          : t("bookings.past") || "Vergangen"}
+                            ? t("bookings.upcoming") || "Anstehend"
+                            : t("bookings.past") || "Vergangen"}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground mb-1">
                       <div className="flex items-center gap-1">
                         <Mail className="h-3 w-3" />
-                        <span className="truncate">{booking.invitee_email}</span>
+                        <span className="truncate">
+                          {booking.invitee_email}
+                        </span>
                       </div>
                       {booking.event_type && (
                         <div className="flex items-center gap-1">
-                          <span className="truncate">{booking.event_type.title}</span>
+                          <span className="truncate">
+                            {booking.event_type.title}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -254,7 +288,10 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
                       <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
                         <Clock className="h-3 w-3" />
                         <span className="font-medium">
-                          {t("bookings.eventDate") || "Event"}: {format(startDate, "EEEE, d. MMMM yyyy", { locale: dateLocale })}
+                          {t("bookings.eventDate") || "Event"}:{" "}
+                          {format(startDate, "EEEE, d. MMMM yyyy", {
+                            locale: dateLocale,
+                          })}
                         </span>
                       </div>
                       <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
@@ -267,14 +304,22 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
                         <div className="flex items-center gap-1 text-muted-foreground">
                           <Calendar className="h-3 w-3" />
                           <span>
-                            {t("bookings.bookedAt") || "Gebucht am"}: {format(new Date(booking.created_at), "d. MMMM yyyy 'um' HH:mm", { locale: dateLocale })}
+                            {t("bookings.bookedAt") || "Gebucht am"}:{" "}
+                            {format(
+                              new Date(booking.created_at),
+                              "d. MMMM yyyy 'um' HH:mm",
+                              { locale: dateLocale },
+                            )}
                           </span>
                         </div>
                       )}
                       {booking.number_of_participants > 1 && (
                         <div className="flex items-center gap-1">
                           <User className="h-3 w-3" />
-                          <span>{booking.number_of_participants} {t("bookings.participants") || "Teilnehmer"}</span>
+                          <span>
+                            {booking.number_of_participants}{" "}
+                            {t("bookings.participants") || "Teilnehmer"}
+                          </span>
                         </div>
                       )}
                     </div>

@@ -9,11 +9,13 @@ Das **Company Settings Feature** bietet eine zentrale Verwaltung von Firmendaten
 ### ✅ Implementierte Funktionen
 
 1. **Zentrale Firmendatenverwaltung**
+
    - Mehrere Firmenprofile pro Benutzer
    - Standard-Profil-Funktionalität
    - Vollständige CRUD-Operationen
 
 2. **Umfassende Datenfelder**
+
    - **Basis**: Name, Adresse, Stadt, PLZ, Land
    - **Legal**: USt-IdNr, Steuernummer, Handelsregisternummer
    - **Kontakt**: E-Mail, Telefon, Mobil, Website, Ansprechpartner
@@ -21,6 +23,7 @@ Das **Company Settings Feature** bietet eine zentrale Verwaltung von Firmendaten
    - **Branding**: Logo, Primärfarbe, Sekundärfarbe
 
 3. **Moderne UI/UX**
+
    - Tabbed Interface für organisierte Dateneingabe
    - Profile Cards mit Quick Actions
    - Inline-Bearbeitung
@@ -79,6 +82,7 @@ Das **Company Settings Feature** bietet eine zentrale Verwaltung von Firmendaten
 **Navigation:** Dashboard → Settings → Company Settings → "Neues Profil"
 
 **Schritte:**
+
 1. Profilname eingeben (z.B. "Hauptfirma", "Zweigstelle Berlin")
 2. Optional: Als Standard-Profil markieren
 3. Daten in den Tabs eingeben:
@@ -91,6 +95,7 @@ Das **Company Settings Feature** bietet eine zentrale Verwaltung von Firmendaten
 ### 2. Profil bearbeiten
 
 **Optionen:**
+
 - Über die Profil-Karte: Drei-Punkte-Menü → "Bearbeiten"
 - Direkter Zugriff: `/dashboard/settings/company/[id]/edit`
 
@@ -99,12 +104,14 @@ Das **Company Settings Feature** bietet eine zentrale Verwaltung von Firmendaten
 Ein Standard-Profil wird automatisch in neuen Dokumenten vorausgewählt.
 
 **Optionen:**
+
 - Beim Erstellen/Bearbeiten: Checkbox "Als Standard-Profil festlegen"
 - Über das Menü: Drei-Punkte → "Als Standard festlegen"
 
 ### 4. Profil in Dokumenten verwenden
 
 Bei der Erstellung von Rechnungen/Angeboten:
+
 1. Öffnen Sie das Dokument-Formular
 2. Das Standard-Profil wird automatisch ausgewählt
 3. Ändern Sie das Profil über das Dropdown bei Bedarf
@@ -143,7 +150,10 @@ getCompanyProfileData(profileId?: string): Promise<CompanyProfile | null>
 ### Verwendung in Components
 
 ```typescript
-import { getCompanyProfiles, CompanyProfile } from "@/actions/company-profiles-actions";
+import {
+  getCompanyProfiles,
+  CompanyProfile,
+} from "@/actions/company-profiles-actions";
 
 // In Server Component
 const profiles = await getCompanyProfiles();
@@ -201,6 +211,7 @@ function MyForm() {
 ## Migration
 
 Die Migration wurde erfolgreich ausgeführt:
+
 - Datei: `apps/web/supabase/migrations/20250103_company_profiles.sql`
 - Tabelle erstellt mit allen Feldern
 - RLS Policies aktiviert
@@ -212,20 +223,24 @@ Die Migration wurde erfolgreich ausgeführt:
 ### Geplante Features
 
 1. **Team-Support**
+
    - Wenn Teams-Feature implementiert ist
    - Shared Company Profiles für Teams
    - Team-Admin Berechtigungen
 
 2. **Logo-Upload**
+
    - Integration mit File Storage
    - Bildvorschau im Profil
    - Verwendung in PDFs
 
 3. **Template-Verknüpfung**
+
    - Direkte Verknüpfung von Templates mit Profilen
    - Auto-Fill von Template-Daten aus Profil
 
 4. **Export/Import**
+
    - Profile exportieren als JSON
    - Massenimport von Profilen
    - Backup-Funktionalität
@@ -240,6 +255,7 @@ Die Migration wurde erfolgreich ausgeführt:
 ### Problem: Profile werden nicht angezeigt
 
 **Lösung:**
+
 - Prüfen Sie, ob die Migration erfolgreich war
 - Checken Sie RLS Policies in Supabase
 - Stellen Sie sicher, dass User authentifiziert ist
@@ -247,6 +263,7 @@ Die Migration wurde erfolgreich ausgeführt:
 ### Problem: Standard-Profil wird nicht gesetzt
 
 **Lösung:**
+
 - Nur ein Profil kann Standard sein
 - Beim Setzen eines neuen Standards werden alte automatisch deaktiviert
 - Prüfen Sie `is_default` in der Datenbank
@@ -254,20 +271,24 @@ Die Migration wurde erfolgreich ausgeführt:
 ### Problem: Selector zeigt keine Profile
 
 **Lösung:**
+
 - Erstellen Sie mindestens ein Profil
 - Der Selector zeigt einen "Profil erstellen"-Button, wenn keine vorhanden sind
 
 ## Best Practices
 
 1. **Immer ein Standard-Profil haben**
+
    - Erleichtert die Nutzung in neuen Dokumenten
    - Vermeidet manuelle Auswahl bei jedem Dokument
 
 2. **Aussagekräftige Profilnamen**
+
    - "Hauptfirma" statt "Profil 1"
    - "Zweigstelle München" statt "Zweigstelle"
 
 3. **Vollständige Daten**
+
    - Füllen Sie alle relevanten Felder aus
    - Besonders wichtig: Bank-Daten für Rechnungen
 
@@ -289,7 +310,7 @@ Die Migration wurde erfolgreich ausgeführt:
 ## Support
 
 Bei Fragen oder Problemen:
+
 1. Prüfen Sie diese Dokumentation
 2. Checken Sie die Supabase Logs
 3. Kontaktieren Sie das Entwicklerteam
-

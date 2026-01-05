@@ -1,38 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
-import { Button } from '@/components/alignui/actions/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
+import { useEffect, useState } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  FormRoot as Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/alignui/forms/form";
-import { Input } from '@/components/alignui/forms/input';
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Plus, Clock, Trash2, Edit, Calendar } from "lucide-react";
-import { toast } from "sonner";
-import {
+  deleteWeeklyAvailability,
   getWeeklyAvailability,
   upsertWeeklyAvailability,
-  deleteWeeklyAvailability,
   type AvailabilityRule,
 } from "@/actions/scheduling/availability-actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Calendar, Clock, Edit, Plus, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,11 +24,41 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/alignui/actions/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import {
+  FormRoot as Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/alignui/forms/form";
+import { Input } from "@/components/alignui/forms/input";
 
 const availabilitySchema = z.object({
   day_of_week: z.number().int().min(0).max(6),
-  start_time: z.string().regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, "Format: HH:MM"),
-  end_time: z.string().regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, "Format: HH:MM"),
+  start_time: z
+    .string()
+    .regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, "Format: HH:MM"),
+  end_time: z
+    .string()
+    .regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, "Format: HH:MM"),
 });
 
 type AvailabilityFormValues = z.infer<typeof availabilitySchema>;
@@ -66,13 +77,17 @@ interface AvailabilityManagerProps {
   eventTypeId?: string;
 }
 
-export function AvailabilityManager({ eventTypeId }: AvailabilityManagerProps = {}) {
+export function AvailabilityManager({
+  eventTypeId,
+}: AvailabilityManagerProps = {}) {
   const t = useTranslations("Scheduling.availability");
   const [rules, setRules] = useState<AvailabilityRule[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRule, setEditingRule] = useState<AvailabilityRule | null>(null);
-  const [deletingRule, setDeletingRule] = useState<AvailabilityRule | null>(null);
+  const [deletingRule, setDeletingRule] = useState<AvailabilityRule | null>(
+    null,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<AvailabilityFormValues>({
@@ -148,8 +163,8 @@ export function AvailabilityManager({ eventTypeId }: AvailabilityManagerProps = 
 
       toast.success(
         editingRule
-          ? (t("updated") || "Öffnungszeit aktualisiert")
-          : (t("created") || "Öffnungszeit erstellt")
+          ? t("updated") || "Öffnungszeit aktualisiert"
+          : t("created") || "Öffnungszeit erstellt",
       );
       handleCloseDialog();
       loadRules();
@@ -194,13 +209,16 @@ export function AvailabilityManager({ eventTypeId }: AvailabilityManagerProps = 
   }
 
   // Group rules by day
-  const rulesByDay = rules.reduce((acc, rule) => {
-    if (!acc[rule.day_of_week]) {
-      acc[rule.day_of_week] = [];
-    }
-    acc[rule.day_of_week].push(rule);
-    return acc;
-  }, {} as Record<number, AvailabilityRule[]>);
+  const rulesByDay = rules.reduce(
+    (acc, rule) => {
+      if (!acc[rule.day_of_week]) {
+        acc[rule.day_of_week] = [];
+      }
+      acc[rule.day_of_week].push(rule);
+      return acc;
+    },
+    {} as Record<number, AvailabilityRule[]>,
+  );
 
   return (
     <>
@@ -213,7 +231,8 @@ export function AvailabilityManager({ eventTypeId }: AvailabilityManagerProps = 
                 {t("title") || "Öffnungszeiten"}
               </CardTitle>
               <CardDescription>
-                {t("description") || "Legen Sie Ihre wöchentlichen Öffnungszeiten fest"}
+                {t("description") ||
+                  "Legen Sie Ihre wöchentlichen Öffnungszeiten fest"}
               </CardDescription>
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -227,15 +246,19 @@ export function AvailabilityManager({ eventTypeId }: AvailabilityManagerProps = 
                 <DialogHeader>
                   <DialogTitle>
                     {editingRule
-                      ? (t("edit") || "Öffnungszeit bearbeiten")
-                      : (t("add") || "Neue Öffnungszeit")}
+                      ? t("edit") || "Öffnungszeit bearbeiten"
+                      : t("add") || "Neue Öffnungszeit"}
                   </DialogTitle>
                   <DialogDescription>
-                    {t("formDescription") || "Geben Sie die Öffnungszeiten für einen Wochentag an"}
+                    {t("formDescription") ||
+                      "Geben Sie die Öffnungszeiten für einen Wochentag an"}
                   </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-4"
+                  >
                     <FormField
                       control={form.control}
                       name="day_of_week"
@@ -245,7 +268,9 @@ export function AvailabilityManager({ eventTypeId }: AvailabilityManagerProps = 
                           <FormControl>
                             <select
                               {...field}
-                              onChange={(e) => field.onChange(parseInt(e.target.value))}
+                              onChange={(e) =>
+                                field.onChange(parseInt(e.target.value))
+                              }
                               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             >
                               {dayNames.map((day, index) => (
@@ -266,7 +291,9 @@ export function AvailabilityManager({ eventTypeId }: AvailabilityManagerProps = 
                         name="start_time"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("startTime") || "Startzeit"}</FormLabel>
+                            <FormLabel>
+                              {t("startTime") || "Startzeit"}
+                            </FormLabel>
                             <FormControl>
                               <Input type="time" {...field} />
                             </FormControl>
@@ -301,10 +328,10 @@ export function AvailabilityManager({ eventTypeId }: AvailabilityManagerProps = 
                       </Button>
                       <Button type="submit" disabled={isSubmitting}>
                         {isSubmitting
-                          ? (t("saving") || "Speichern...")
+                          ? t("saving") || "Speichern..."
                           : editingRule
-                          ? (t("update") || "Aktualisieren")
-                          : (t("create") || "Erstellen")}
+                            ? t("update") || "Aktualisieren"
+                            : t("create") || "Erstellen"}
                       </Button>
                     </DialogFooter>
                   </form>
@@ -316,7 +343,8 @@ export function AvailabilityManager({ eventTypeId }: AvailabilityManagerProps = 
         <CardContent>
           {rules.length === 0 ? (
             <div className="text-center py-8 text-sm text-muted-foreground">
-              {t("noRules") || "Keine Öffnungszeiten konfiguriert. Alle Zeiten sind verfügbar."}
+              {t("noRules") ||
+                "Keine Öffnungszeiten konfiguriert. Alle Zeiten sind verfügbar."}
             </div>
           ) : (
             <div className="space-y-3">
@@ -335,7 +363,8 @@ export function AvailabilityManager({ eventTypeId }: AvailabilityManagerProps = 
                         <div className="flex items-center gap-3">
                           <Clock className="h-4 w-4 text-muted-foreground" />
                           <span className="text-sm">
-                            {rule.start_time.substring(0, 5)} - {rule.end_time.substring(0, 5)}
+                            {rule.start_time.substring(0, 5)} -{" "}
+                            {rule.end_time.substring(0, 5)}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -365,10 +394,15 @@ export function AvailabilityManager({ eventTypeId }: AvailabilityManagerProps = 
         </CardContent>
       </Card>
 
-      <AlertDialog open={!!deletingRule} onOpenChange={(open) => !open && setDeletingRule(null)}>
+      <AlertDialog
+        open={!!deletingRule}
+        onOpenChange={(open) => !open && setDeletingRule(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("deleteConfirmTitle") || "Öffnungszeit löschen?"}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t("deleteConfirmTitle") || "Öffnungszeit löschen?"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {t("deleteConfirmDescription") ||
                 "Sind Sie sicher? Diese Aktion kann nicht rückgängig gemacht werden."}
@@ -389,4 +423,3 @@ export function AvailabilityManager({ eventTypeId }: AvailabilityManagerProps = 
     </>
   );
 }
-

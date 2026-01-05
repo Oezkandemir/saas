@@ -1,11 +1,11 @@
 /**
  * AlignUI - tv (tailwind-variants) Utility
- * 
+ *
  * Similar to class-variance-authority but optimized for AlignUI patterns
  * Used for creating component variants with Tailwind classes
  */
 
-import { type ClassValue, clsx } from "clsx";
+import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 type Variants = Record<string, Record<string, ClassValue>>;
@@ -25,12 +25,16 @@ interface TVOptions {
 
 export function tv(base: ClassValue, options?: TVOptions) {
   return (props?: Record<string, any> & { className?: ClassValue }) => {
-    const { variants = {}, defaultVariants = {}, compoundVariants = [] } = options || {};
+    const {
+      variants = {},
+      defaultVariants = {},
+      compoundVariants = [],
+    } = options || {};
     const { className, ...rest } = props || {};
 
     // Get variant classes
     const variantClasses: ClassValue[] = [];
-    
+
     for (const [key, variantMap] of Object.entries(variants)) {
       const value = rest[key] || defaultVariants[key];
       if (value && variantMap[value]) {
@@ -43,11 +47,11 @@ export function tv(base: ClassValue, options?: TVOptions) {
       const { class: compoundClass, ...compoundProps } = compound;
       const matches = Object.entries(compoundProps).every(([key, values]) => {
         const propValue = rest[key] || defaultVariants[key];
-        return Array.isArray(values) 
+        return Array.isArray(values)
           ? values.includes(propValue)
           : propValue === values;
       });
-      
+
       if (matches) {
         variantClasses.push(compoundClass);
       }
@@ -56,4 +60,3 @@ export function tv(base: ClassValue, options?: TVOptions) {
     return twMerge(clsx(base, variantClasses, className));
   };
 }
-

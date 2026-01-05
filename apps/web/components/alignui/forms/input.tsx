@@ -1,16 +1,20 @@
 /**
  * AlignUI - Input Component (Free Base Component)
- * 
+ *
  * Based on AlignUI design system using Tailwind CSS
  * Source: alignui.com/docs/v1.2/components/forms/input
  */
 
 import * as React from "react";
-import { CheckCircle2, AlertCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 export interface InputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'hasError' | 'hasSuccess'> {
+  extends Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    "hasError" | "hasSuccess"
+  > {
   hasError?: boolean;
   hasSuccess?: boolean;
 }
@@ -31,12 +35,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             // Error State - Deutlich sichtbar
             hasError
               ? "border-destructive focus-visible:ring-destructive pr-10"
-              // Success State
-              : hasSuccess
-              ? "border-green-500 focus-visible:ring-green-500 pr-10"
-              // Default State - AlignUI Pro Borders
-              : "border-stroke-soft-200 focus-visible:border-stroke-soft-400 focus-visible:ring-stroke-soft-400",
-            className
+              : // Success State
+                hasSuccess
+                ? "border-green-500 focus-visible:ring-green-500 pr-10"
+                : // Default State - AlignUI Pro Borders
+                  "border-stroke-soft-200 focus-visible:border-stroke-soft-400 focus-visible:ring-stroke-soft-400",
+            className,
           )}
           ref={ref}
           {...props}
@@ -49,7 +53,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
       </div>
     );
-  }
+  },
 );
 Input.displayName = "Input";
 

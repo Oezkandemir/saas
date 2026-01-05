@@ -13,7 +13,7 @@ import "@/styles/mdx.css";
 import { Metadata } from "next";
 
 import { cn, constructMetadata } from "@/lib/utils";
-import { buttonVariants } from '@/components/alignui/actions/button';
+import { buttonVariants } from "@/components/alignui/actions/button";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 interface GuidePageProps {

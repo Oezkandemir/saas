@@ -1,22 +1,22 @@
 import { redirect } from "next/navigation";
+import { CheckCircle2, Monitor, Shield, XCircle } from "lucide-react";
 import { getLocale, setRequestLocale } from "next-intl/server";
-import { Shield, Monitor, CheckCircle2, XCircle } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { constructMetadata } from "@/lib/utils";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { TwoFactorAuth } from "@/components/security/two-factor-auth";
+} from "@/components/alignui/data-display/card";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { ActiveSessions } from "@/components/security/active-sessions";
-import { LoginHistory } from "@/components/security/login-history";
 import { ChangePassword } from "@/components/security/change-password";
+import { LoginHistory } from "@/components/security/login-history";
+import { TwoFactorAuth } from "@/components/security/two-factor-auth";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -50,7 +50,9 @@ export default async function SecuritySettingsPage() {
         <Card>
           <CardHeader className="pb-3">
             <div className="flex justify-between items-center">
-              <CardTitle className="text-sm font-medium">E-Mail-Verifizierung</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                E-Mail-Verifizierung
+              </CardTitle>
               {emailVerified ? (
                 <CheckCircle2 className="text-green-500 size-5" />
               ) : (
@@ -63,7 +65,10 @@ export default async function SecuritySettingsPage() {
               <p className="text-sm break-words text-muted-foreground overflow-wrap-anywhere">
                 {user.email}
               </p>
-              <Badge variant={emailVerified ? "default" : "destructive"} className="text-xs">
+              <Badge
+                variant={emailVerified ? "default" : "destructive"}
+                className="text-xs"
+              >
                 {emailVerified ? "Verifiziert" : "Nicht verifiziert"}
               </Badge>
             </div>
@@ -73,7 +78,9 @@ export default async function SecuritySettingsPage() {
         <Card>
           <CardHeader className="pb-3">
             <div className="flex justify-between items-center">
-              <CardTitle className="text-sm font-medium">Zwei-Faktor-Authentifizierung</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Zwei-Faktor-Authentifizierung
+              </CardTitle>
               <Shield className="size-5 text-primary" />
             </div>
           </CardHeader>
@@ -87,7 +94,9 @@ export default async function SecuritySettingsPage() {
         <Card>
           <CardHeader className="pb-3">
             <div className="flex justify-between items-center">
-              <CardTitle className="text-sm font-medium">Aktive Sessions</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Aktive Sessions
+              </CardTitle>
               <Monitor className="size-5 text-primary" />
             </div>
           </CardHeader>
@@ -121,4 +130,3 @@ export default async function SecuritySettingsPage() {
     </UnifiedPageLayout>
   );
 }
-

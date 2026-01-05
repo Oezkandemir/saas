@@ -14,6 +14,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 import { BLOG_CATEGORIES } from "@/config/blog";
+import { logger } from "@/lib/logger";
 import { getTableOfContents } from "@/lib/toc";
 import {
   cn,
@@ -22,12 +23,11 @@ import {
   getBlurDataURL,
   placeholderBlurhash,
 } from "@/lib/utils";
-import { buttonVariants } from '@/components/alignui/actions/button';
+import { buttonVariants } from "@/components/alignui/actions/button";
 import Author from "@/components/content/author";
 import { BlurImage } from "@/components/shared/blur-image";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { DashboardTableOfContents } from "@/components/shared/toc";
-import { logger } from "@/lib/logger";
 
 interface PostPageProps {
   params: Promise<{

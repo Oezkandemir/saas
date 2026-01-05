@@ -17,7 +17,7 @@ export default async function Dashboard({ children }: ProtectedLayoutProps) {
   if (!user) redirect("/login");
 
   return (
-    <SidebarLinksProvider 
+    <SidebarLinksProvider
       userRole={user.role || null}
       siteName={t("shortName")}
     >

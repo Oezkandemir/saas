@@ -1,5 +1,5 @@
-import type { Document } from "@/actions/documents-actions";
 import type { CompanyProfile } from "@/actions/company-profiles-actions";
+import type { Document } from "@/actions/documents-actions";
 
 export interface CompanyInfo {
   name?: string;
@@ -96,7 +96,7 @@ export function convertCompanyProfileToInfo(
 /**
  * Generates HTML content for an invoice/quote document
  * Professional design matching the preview
- * 
+ *
  * If companyInfo is not provided in options, it will try to load the default company profile.
  * For async loading, use generateInvoiceHTMLAsync instead.
  */
@@ -109,8 +109,11 @@ export function generateInvoiceHTML(
   const documentTitle = isInvoice ? "RECHNUNG" : "ANGEBOT";
 
   // Build items table
-  const itemsRows = document.items && document.items.length > 0
-    ? document.items.map((item, index) => `
+  const itemsRows =
+    document.items && document.items.length > 0
+      ? document.items
+          .map(
+            (item, index) => `
         <tr style="border-bottom: 1px solid #d1d5db;">
           <td style="padding: 12px; font-size: 11pt; color: #6b7280;">${index + 1}</td>
           <td style="padding: 12px; font-size: 11pt; color: #111827;">${item.description}</td>
@@ -118,8 +121,10 @@ export function generateInvoiceHTML(
           <td style="text-align: right; padding: 12px; font-size: 11pt; color: #111827;">${formatCurrency(item.unit_price)}</td>
           <td style="text-align: right; padding: 12px; font-size: 11pt; color: #111827; font-weight: 600;">${formatCurrency(item.quantity * item.unit_price)}</td>
         </tr>
-      `).join("")
-    : "";
+      `,
+          )
+          .join("")
+      : "";
 
   const html = `
     <!DOCTYPE html>
@@ -168,7 +173,9 @@ export function generateInvoiceHTML(
         <!-- Dokumentkopf -->
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px;">
           <div style="flex: 1;">
-            ${document.customer ? `
+            ${
+              document.customer
+                ? `
               <div style="margin-bottom: 24px;">
                 <div style="font-size: 8pt; color: #9ca3af; margin-bottom: 8px;">
                   ${companyInfo.name} · ${companyInfo.address} · ${companyInfo.postalCode} ${companyInfo.city}
@@ -178,7 +185,9 @@ export function generateInvoiceHTML(
                   ${document.customer.email ? `<div style="font-size: 10pt; color: #6b7280;">${document.customer.email}</div>` : ""}
                 </div>
               </div>
-            ` : ""}
+            `
+                : ""
+            }
           </div>
           
           <div style="text-align: right; margin-left: 32px;">
@@ -192,12 +201,16 @@ export function generateInvoiceHTML(
                 <span style="color: #6b7280;">Datum:</span>
                 <span style="font-weight: 600; color: #111827; margin-left: 8px;">${formatDate(document.document_date)}</span>
               </div>
-              ${document.due_date && isInvoice ? `
+              ${
+                document.due_date && isInvoice
+                  ? `
                 <div style="padding-top: 8px; border-top: 1px solid #e5e7eb; margin-top: 8px;">
                   <span style="color: #6b7280;">Fällig am:</span>
                   <span style="font-weight: bold; color: #111827; margin-left: 8px;">${formatDate(document.due_date)}</span>
                 </div>
-              ` : ""}
+              `
+                  : ""
+              }
             </div>
           </div>
         </div>
@@ -206,14 +219,18 @@ export function generateInvoiceHTML(
         <div style="margin-bottom: 30px; font-size: 10pt; color: #374151;">
           <p>Sehr geehrte Damen und Herren,</p>
           <p style="margin-top: 12px;">
-            ${isInvoice 
-              ? "hiermit stellen wir Ihnen folgende Leistungen in Rechnung:" 
-              : "hiermit unterbreiten wir Ihnen folgendes Angebot:"}
+            ${
+              isInvoice
+                ? "hiermit stellen wir Ihnen folgende Leistungen in Rechnung:"
+                : "hiermit unterbreiten wir Ihnen folgendes Angebot:"
+            }
           </p>
         </div>
 
         <!-- Leistungstabelle -->
-        ${document.items && document.items.length > 0 ? `
+        ${
+          document.items && document.items.length > 0
+            ? `
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
             <thead>
               <tr style="background-color: #f3f4f6; border-top: 2px solid #111827; border-bottom: 2px solid #111827;">
@@ -228,7 +245,9 @@ export function generateInvoiceHTML(
               ${itemsRows}
             </tbody>
           </table>
-        ` : ""}
+        `
+            : ""
+        }
 
         <!-- Summen -->
         <div style="display: flex; justify-content: flex-end; margin-bottom: 30px;">
@@ -249,7 +268,9 @@ export function generateInvoiceHTML(
         </div>
 
         <!-- Zahlungsinformationen -->
-        ${isInvoice ? `
+        ${
+          isInvoice
+            ? `
           <div style="margin-bottom: 30px; padding: 16px; background-color: #f9fafb; border-left: 4px solid #111827;">
             <div style="font-size: 10pt; font-weight: bold; color: #111827; margin-bottom: 12px;">Zahlungsinformationen</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 10pt;">
@@ -268,16 +289,19 @@ export function generateInvoiceHTML(
               </div>
             </div>
           </div>
-        ` : ""}
+        `
+            : ""
+        }
 
         <!-- Hinweise/Notizen werden absichtlich NICHT in das PDF aufgenommen -->
         <!-- Notizen sind nur im Dashboard sichtbar, nicht in der generierten PDF-Rechnung -->
 
         <!-- Abschlusstext -->
         <div style="margin-bottom: 30px; font-size: 10pt; color: #374151;">
-          <p>${isInvoice 
-            ? "Wir bedanken uns für Ihren Auftrag und das entgegengebrachte Vertrauen." 
-            : "Wir freuen uns auf Ihre Auftragserteilung und stehen für Rückfragen gerne zur Verfügung."
+          <p>${
+            isInvoice
+              ? "Wir bedanken uns für Ihren Auftrag und das entgegengebrachte Vertrauen."
+              : "Wir freuen uns auf Ihre Auftragserteilung und stehen für Rückfragen gerne zur Verfügung."
           }</p>
           <p style="margin-top: 8px;">Mit freundlichen Grüßen</p>
           <p style="margin-top: 16px; font-weight: 600;">${companyInfo.name}</p>
@@ -352,14 +376,18 @@ export async function generateInvoiceHTMLAsync(
 
   // Otherwise, try to load the default company profile
   try {
-    const { getDefaultCompanyProfile } = await import("@/actions/company-profiles-actions");
+    const { getDefaultCompanyProfile } = await import(
+      "@/actions/company-profiles-actions"
+    );
     const defaultProfile = await getDefaultCompanyProfile();
-    
+
     if (defaultProfile) {
       const companyInfo = convertCompanyProfileToInfo(defaultProfile);
       return generateInvoiceHTML(document, {
         ...options,
-        companyInfo: companyInfo ? { ...DEFAULT_COMPANY_INFO, ...companyInfo } : undefined,
+        companyInfo: companyInfo
+          ? { ...DEFAULT_COMPANY_INFO, ...companyInfo }
+          : undefined,
       });
     }
   } catch (error) {
@@ -371,4 +399,3 @@ export async function generateInvoiceHTMLAsync(
   // Fall back to default company info
   return generateInvoiceHTML(document, options);
 }
-

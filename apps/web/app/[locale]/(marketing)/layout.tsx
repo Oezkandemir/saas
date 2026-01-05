@@ -1,7 +1,7 @@
-import { NavBar } from "@/components/layout/navbar";
-import { SiteFooter } from "@/components/layout/site-footer";
 import { CookieConsent } from "@/components/gdpr/cookie-consent";
 import { MarketingCommandMenu } from "@/components/layout/marketing-command-menu";
+import { NavBar } from "@/components/layout/navbar";
+import { SiteFooter } from "@/components/layout/site-footer";
 
 interface MarketingLayoutProps {
   children: React.ReactNode;

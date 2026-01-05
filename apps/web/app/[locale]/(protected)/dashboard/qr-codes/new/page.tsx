@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/session";
-import { QRCodeForm } from "@/components/qr-codes/qr-code-form";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { QrCode } from "lucide-react";
+
+import { getCurrentUser } from "@/lib/session";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { QRCodeForm } from "@/components/qr-codes/qr-code-form";
 
 export const dynamic = "force-dynamic";
 
@@ -22,4 +23,3 @@ export default async function NewQRCodePage() {
     </UnifiedPageLayout>
   );
 }
-

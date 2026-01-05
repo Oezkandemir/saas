@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { applyAPIMiddleware } from "@/lib/api-middleware";
-import { getCurrentUser } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { getCurrentUser } from "@/lib/session";
 
 // Mock dependencies
 vi.mock("@/lib/session");
@@ -142,4 +143,3 @@ describe("API Middleware", () => {
     });
   });
 });
-

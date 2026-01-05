@@ -1,9 +1,10 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
-import { getCurrentUser } from "@/lib/session";
 import { getDocuments, type Document } from "@/actions/documents-actions";
-import { Button } from '@/components/alignui/actions/button';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
+import { FileText, Plus } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+
+import { getCurrentUser } from "@/lib/session";
 import {
   Table,
   TableBody,
@@ -12,10 +13,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, FileText } from "lucide-react";
-import Link from "next/link";
-import { PlanLimitWarning } from "@/components/plan-limit-warning";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { PlanLimitWarning } from "@/components/plan-limit-warning";
 
 export const dynamic = "force-dynamic";
 
@@ -33,15 +34,16 @@ export default async function DocumentsPage({
   const typeFilter = resolvedParams.type;
 
   const allDocuments: Document[] = await getDocuments().catch(() => []);
-  
+
   // Filter documents based on type parameter
-  const documents = typeFilter 
+  const documents = typeFilter
     ? allDocuments.filter((d) => d.type === typeFilter)
     : allDocuments;
 
   // Sort by date (newest first)
-  const sortedDocuments = documents.sort((a, b) => 
-    new Date(b.document_date).getTime() - new Date(a.document_date).getTime()
+  const sortedDocuments = documents.sort(
+    (a, b) =>
+      new Date(b.document_date).getTime() - new Date(a.document_date).getTime(),
   );
 
   return (
@@ -52,7 +54,10 @@ export default async function DocumentsPage({
       actions={
         <>
           <Link href="/dashboard/documents/new?type=quote">
-            <Button variant="outline" className="gap-1.5 text-xs sm:text-sm h-8 sm:h-9">
+            <Button
+              variant="outline"
+              className="gap-1.5 text-xs sm:text-sm h-8 sm:h-9"
+            >
               <Plus className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">{t("newQuote")}</span>
               <span className="sm:hidden">Angebot</span>
@@ -96,11 +101,21 @@ export default async function DocumentsPage({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="h-10 text-xs font-medium">Document</TableHead>
-                  <TableHead className="h-10 text-xs font-medium">Type</TableHead>
-                  <TableHead className="h-10 text-xs font-medium">Customer</TableHead>
-                  <TableHead className="h-10 text-xs font-medium">Date</TableHead>
-                  <TableHead className="h-10 text-xs font-medium text-right">Amount</TableHead>
+                  <TableHead className="h-10 text-xs font-medium">
+                    Document
+                  </TableHead>
+                  <TableHead className="h-10 text-xs font-medium">
+                    Type
+                  </TableHead>
+                  <TableHead className="h-10 text-xs font-medium">
+                    Customer
+                  </TableHead>
+                  <TableHead className="h-10 text-xs font-medium">
+                    Date
+                  </TableHead>
+                  <TableHead className="h-10 text-xs font-medium text-right">
+                    Amount
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -116,18 +131,23 @@ export default async function DocumentsPage({
                     </TableCell>
                     <TableCell className="py-2.5">
                       <Badge variant="outline" className="text-xs">
-                        {doc.type === "quote" ? tDocs("quote") : tDocs("invoice")}
+                        {doc.type === "quote"
+                          ? tDocs("quote")
+                          : tDocs("invoice")}
                       </Badge>
                     </TableCell>
                     <TableCell className="py-2.5 text-sm text-muted-foreground">
                       {doc.customer?.name || "-"}
                     </TableCell>
                     <TableCell className="py-2.5 text-xs text-muted-foreground">
-                      {new Date(doc.document_date).toLocaleDateString(undefined, {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })}
+                      {new Date(doc.document_date).toLocaleDateString(
+                        undefined,
+                        {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        },
+                      )}
                     </TableCell>
                     <TableCell className="py-2.5 text-right text-sm font-medium">
                       {doc.total
@@ -149,4 +169,3 @@ export default async function DocumentsPage({
     </UnifiedPageLayout>
   );
 }
-

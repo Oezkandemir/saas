@@ -1,7 +1,7 @@
-import { getSupabaseServer } from "@/lib/supabase-server";
 import { logger } from "@/lib/logger";
-import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { checkPlanLimit, type LimitType } from "@/lib/plan-limits";
+import { getUserSubscriptionPlan } from "@/lib/subscription";
+import { getSupabaseServer } from "@/lib/supabase-server";
 
 export interface UsageBillingConfig {
   enabled: boolean;
@@ -21,11 +21,11 @@ export interface OverageCharge {
  * Get usage billing configuration for a plan
  */
 export async function getUsageBillingConfig(
-  userId: string
+  userId: string,
 ): Promise<UsageBillingConfig | null> {
   try {
     const plan = await getUserSubscriptionPlan(userId);
-    
+
     // Only Pro and Enterprise plans support overage billing
     if (plan.title === "Free") {
       return null;
@@ -48,10 +48,16 @@ export async function getUsageBillingConfig(
  */
 export async function calculateOverageCharges(
   userId: string,
-  limitTypes: LimitType[] = ["customers", "qr_codes", "documents", "api_calls", "email_sends"]
+  limitTypes: LimitType[] = [
+    "customers",
+    "qr_codes",
+    "documents",
+    "api_calls",
+    "email_sends",
+  ],
 ): Promise<OverageCharge[]> {
   const config = await getUsageBillingConfig(userId);
-  
+
   if (!config || !config.enabled) {
     return [];
   }
@@ -60,9 +66,12 @@ export async function calculateOverageCharges(
 
   for (const limitType of limitTypes) {
     const limitCheck = await checkPlanLimit(userId, limitType);
-    
+
     // Skip if unlimited or within limit
-    if (limitCheck.limit === Infinity || limitCheck.current <= limitCheck.limit) {
+    if (
+      limitCheck.limit === Infinity ||
+      limitCheck.current <= limitCheck.limit
+    ) {
       continue;
     }
 
@@ -96,11 +105,11 @@ export async function recordUsageForBilling(
   userId: string,
   metricType: string,
   metricValue: number = 1,
-  metadata?: Record<string, any>
+  metadata?: Record<string, any>,
 ): Promise<void> {
   try {
     const supabase = await getSupabaseServer();
-    
+
     // Determine period based on metric type
     if (["documents", "api_calls", "email_sends"].includes(metricType)) {
       // Monthly metrics
@@ -130,21 +139,39 @@ export async function recordUsageForBilling(
  */
 export async function checkUsageWarnings(
   userId: string,
-  warningThreshold: number = 80 // Warn at 80% of limit
-): Promise<Array<{ limitType: LimitType; current: number; limit: number; percentage: number }>> {
-  const warnings: Array<{ limitType: LimitType; current: number; limit: number; percentage: number }> = [];
-  
-  const limitTypes: LimitType[] = ["customers", "qr_codes", "documents", "api_calls", "email_sends"];
-  
+  warningThreshold: number = 80, // Warn at 80% of limit
+): Promise<
+  Array<{
+    limitType: LimitType;
+    current: number;
+    limit: number;
+    percentage: number;
+  }>
+> {
+  const warnings: Array<{
+    limitType: LimitType;
+    current: number;
+    limit: number;
+    percentage: number;
+  }> = [];
+
+  const limitTypes: LimitType[] = [
+    "customers",
+    "qr_codes",
+    "documents",
+    "api_calls",
+    "email_sends",
+  ];
+
   for (const limitType of limitTypes) {
     const limitCheck = await checkPlanLimit(userId, limitType);
-    
+
     if (limitCheck.limit === Infinity) {
       continue;
     }
 
     const percentage = (limitCheck.current / limitCheck.limit) * 100;
-    
+
     if (percentage >= warningThreshold) {
       warnings.push({
         limitType,
@@ -157,20 +184,3 @@ export async function checkUsageWarnings(
 
   return warnings;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

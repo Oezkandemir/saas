@@ -1,10 +1,11 @@
 /**
  * AlignUI - Kbd Component (Keyboard Shortcut Display)
- * 
+ *
  * Based on AlignUI design system
  */
 
 import * as React from "react";
+
 import { cn } from "@/lib/utils";
 
 export interface KbdRootProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -30,18 +31,3 @@ KbdRoot.displayName = "KbdRoot";
 export const Kbd = {
   Root: KbdRoot,
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

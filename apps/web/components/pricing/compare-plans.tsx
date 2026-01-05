@@ -1,19 +1,20 @@
 import { PlansRow } from "@/types";
-import { Info, Check, X } from "lucide-react";
+import { Check, Info, X } from "lucide-react";
 
 import { comparePlans, plansColumns } from "@/config/subscriptions";
+import { cn } from "@/lib/utils";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { cn } from "@/lib/utils";
 
 export function ComparePlans() {
   const renderCell = (value: string | boolean | null, col: string) => {
-    if (value === null) return <span className="text-muted-foreground/50">—</span>;
+    if (value === null)
+      return <span className="text-muted-foreground/50">—</span>;
     if (typeof value === "boolean") {
       return value ? (
         <div className="flex items-center justify-center">
@@ -30,18 +31,23 @@ export function ComparePlans() {
       );
     }
     return (
-      <span className={cn(
-        "font-medium",
-        col === "pro" && "text-primary",
-        col === "enterprise" && "text-primary"
-      )}>
+      <span
+        className={cn(
+          "font-medium",
+          col === "pro" && "text-primary",
+          col === "enterprise" && "text-primary",
+        )}
+      >
         {value}
       </span>
     );
   };
 
   const getPlanBadge = (col: string) => {
-    if (col === "pro") return <Badge className="bg-primary text-primary-foreground">Beliebt</Badge>;
+    if (col === "pro")
+      return (
+        <Badge className="bg-primary text-primary-foreground">Beliebt</Badge>
+      );
     if (col === "enterprise") return <Badge variant="secondary">Premium</Badge>;
     return null;
   };
@@ -87,10 +93,7 @@ export function ComparePlans() {
             </thead>
             <tbody className="divide-y">
               {comparePlans.map((row: PlansRow, index: number) => (
-                <tr 
-                  key={index} 
-                  className="transition-colors hover:bg-muted/30"
-                >
+                <tr key={index} className="transition-colors hover:bg-muted/30">
                   <td className="sticky left-0 z-10 bg-card p-4">
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-sm font-medium lg:text-base">

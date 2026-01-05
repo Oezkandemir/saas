@@ -1,39 +1,41 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Button } from '@/components/alignui/actions/button';
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { toast } from "sonner";
-import {
-  Calendar,
-  Plus,
-  Copy,
-  Check,
-  PowerOff,
-  Settings,
-  TrendingUp,
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  Rocket,
-  Eye,
-  LayoutDashboard,
-  BookOpen,
-} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { type Booking } from "@/actions/scheduling/bookings-actions";
 import {
   toggleEventType,
   type EventType,
 } from "@/actions/scheduling/event-types-actions";
-import { type Booking } from "@/actions/scheduling/bookings-actions";
+import {
+  BookOpen,
+  Calendar,
+  Check,
+  CheckCircle2,
+  Copy,
+  Eye,
+  LayoutDashboard,
+  Loader2,
+  Plus,
+  PowerOff,
+  Rocket,
+  Settings,
+  TrendingUp,
+  XCircle,
+} from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { toast } from "sonner";
+
 import { getURL } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+
 import { BookingDrawer } from "./booking-drawer";
-import { CreateEventTypeDrawer } from "./create-event-type-drawer";
 import { BookingsList } from "./bookings-list";
+import { CreateEventTypeDrawer } from "./create-event-type-drawer";
 import { EventTypeDetailDrawer } from "./event-type-detail-drawer";
 
 interface SchedulingDashboardProps {
@@ -62,46 +64,73 @@ export function SchedulingDashboard({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [copiedLinks, setCopiedLinks] = useState<Record<string, boolean>>({});
-  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
+  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
+    null,
+  );
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [createDrawerOpen, setCreateDrawerOpen] = useState(false);
-  const [selectedEventTypeId, setSelectedEventTypeId] = useState<string | null>(null);
+  const [selectedEventTypeId, setSelectedEventTypeId] = useState<string | null>(
+    null,
+  );
   const [eventTypeDrawerOpen, setEventTypeDrawerOpen] = useState(false);
 
   const activeEventTypes = eventTypes.filter((et) => et.is_active);
   const inactiveEventTypes = eventTypes.filter((et) => !et.is_active);
-  
+
   // Get today's date range for filtering (use local time for display)
   const now = new Date();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-  const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
-  
+  const todayStart = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    0,
+    0,
+    0,
+  );
+  const todayEnd = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    23,
+    59,
+    59,
+    999,
+  );
+
   // All scheduled bookings (include bookings without status or with status "scheduled")
-  const scheduledBookings = bookings.filter((b) => !b.status || b.status === "scheduled");
-  
+  const scheduledBookings = bookings.filter(
+    (b) => !b.status || b.status === "scheduled",
+  );
+
   // Today's bookings: all bookings that start today (scheduled)
   const todayBookingsList = scheduledBookings
     .filter((b) => {
       const startDate = new Date(b.start_at);
       return startDate >= todayStart && startDate <= todayEnd;
     })
-    .sort((a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime());
-  
+    .sort(
+      (a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime(),
+    );
+
   // Upcoming bookings: all future bookings (excluding today's bookings which are shown separately)
   const upcomingBookings = scheduledBookings
     .filter((b) => {
       const startDate = new Date(b.start_at);
       return startDate > todayEnd;
     })
-    .sort((a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime());
-  
+    .sort(
+      (a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime(),
+    );
+
   // Past bookings: all past bookings
   const pastBookings = scheduledBookings
     .filter((b) => {
       const startDate = new Date(b.start_at);
       return startDate < todayStart;
     })
-    .sort((a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime());
+    .sort(
+      (a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime(),
+    );
 
   const isLive = activeEventTypes.length > 0;
 
@@ -112,7 +141,7 @@ export function SchedulingDashboard({
         toast.success(
           eventType.is_active
             ? t("eventTypes.deactivated") || "Event Type deaktiviert"
-            : t("eventTypes.activated") || "Event Type aktiviert"
+            : t("eventTypes.activated") || "Event Type aktiviert",
         );
         router.refresh();
       } else {
@@ -123,13 +152,15 @@ export function SchedulingDashboard({
 
   const handleGoLive = async () => {
     if (activeEventTypes.length === eventTypes.length) {
-      toast.info(t("dashboard.alreadyLive") || "Alle Event Types sind bereits aktiv");
+      toast.info(
+        t("dashboard.alreadyLive") || "Alle Event Types sind bereits aktiv",
+      );
       return;
     }
 
     startTransition(async () => {
       const promises = inactiveEventTypes.map((et) =>
-        toggleEventType(et.id, true)
+        toggleEventType(et.id, true),
       );
       const results = await Promise.all(promises);
       const successCount = results.filter((r) => r.success).length;
@@ -137,7 +168,7 @@ export function SchedulingDashboard({
       if (successCount > 0) {
         toast.success(
           t("dashboard.goLiveSuccess", { count: successCount }) ||
-            `${successCount} Event Type(s) aktiviert`
+            `${successCount} Event Type(s) aktiviert`,
         );
         router.refresh();
       } else {
@@ -148,13 +179,16 @@ export function SchedulingDashboard({
 
   const handlePauseAll = async () => {
     if (activeEventTypes.length === 0) {
-      toast.info(t("dashboard.alreadyPaused") || "Alle Event Types sind bereits pausiert");
+      toast.info(
+        t("dashboard.alreadyPaused") ||
+          "Alle Event Types sind bereits pausiert",
+      );
       return;
     }
 
     startTransition(async () => {
       const promises = activeEventTypes.map((et) =>
-        toggleEventType(et.id, false)
+        toggleEventType(et.id, false),
       );
       const results = await Promise.all(promises);
       const successCount = results.filter((r) => r.success).length;
@@ -162,7 +196,7 @@ export function SchedulingDashboard({
       if (successCount > 0) {
         toast.success(
           t("dashboard.pauseSuccess", { count: successCount }) ||
-            `${successCount} Event Type(s) pausiert`
+            `${successCount} Event Type(s) pausiert`,
         );
         router.refresh();
       } else {
@@ -201,7 +235,8 @@ export function SchedulingDashboard({
             <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
               <CheckCircle2 className="h-5 w-5" />
               <span className="text-sm font-medium">
-                {activeEventTypes.length} / {eventTypes.length} {t("dashboard.activeEventTypes") || "aktiv"}
+                {activeEventTypes.length} / {eventTypes.length}{" "}
+                {t("dashboard.activeEventTypes") || "aktiv"}
               </span>
             </div>
           ) : (
@@ -275,9 +310,12 @@ export function SchedulingDashboard({
                 <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">
-                      {t("dashboard.statistics.totalBookings") || "Gesamt Buchungen"}
+                      {t("dashboard.statistics.totalBookings") ||
+                        "Gesamt Buchungen"}
                     </p>
-                    <p className="text-xl font-semibold">{statistics.totalBookings}</p>
+                    <p className="text-xl font-semibold">
+                      {statistics.totalBookings}
+                    </p>
                   </div>
                   <Calendar className="h-5 w-5 text-muted-foreground" />
                 </div>
@@ -286,7 +324,9 @@ export function SchedulingDashboard({
                     <p className="text-xs text-muted-foreground mb-1">
                       {t("dashboard.statistics.todayBookings") || "Heute"}
                     </p>
-                    <p className="text-xl font-semibold">{statistics.todayBookings}</p>
+                    <p className="text-xl font-semibold">
+                      {statistics.todayBookings}
+                    </p>
                   </div>
                   <Calendar className="h-5 w-5 text-muted-foreground" />
                 </div>
@@ -295,14 +335,17 @@ export function SchedulingDashboard({
                     <p className="text-xs text-muted-foreground mb-1">
                       {t("dashboard.statistics.yesterdayBookings") || "Gestern"}
                     </p>
-                    <p className="text-xl font-semibold">{statistics.yesterdayBookings}</p>
+                    <p className="text-xl font-semibold">
+                      {statistics.yesterdayBookings}
+                    </p>
                   </div>
                   <Calendar className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">
-                      {t("dashboard.statistics.totalRevenue") || "Gesamt Umsatz"}
+                      {t("dashboard.statistics.totalRevenue") ||
+                        "Gesamt Umsatz"}
                     </p>
                     <p className="text-xl font-semibold">
                       {statistics.totalRevenue.toFixed(2)} {statistics.currency}
@@ -311,7 +354,7 @@ export function SchedulingDashboard({
                   <TrendingUp className="h-5 w-5 text-muted-foreground" />
                 </div>
               </div>
-              
+
               {/* Revenue Statistics */}
               <div className="grid gap-3 md:grid-cols-3">
                 <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
@@ -328,10 +371,12 @@ export function SchedulingDashboard({
                 <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">
-                      {t("dashboard.statistics.yesterdayRevenue") || "Umsatz Gestern"}
+                      {t("dashboard.statistics.yesterdayRevenue") ||
+                        "Umsatz Gestern"}
                     </p>
                     <p className="text-xl font-semibold">
-                      {statistics.yesterdayRevenue.toFixed(2)} {statistics.currency}
+                      {statistics.yesterdayRevenue.toFixed(2)}{" "}
+                      {statistics.currency}
                     </p>
                   </div>
                   <TrendingUp className="h-5 w-5 text-muted-foreground" />
@@ -341,259 +386,295 @@ export function SchedulingDashboard({
           )}
 
           {/* Today's Bookings */}
-      {todayBookingsList.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">
-              {t("bookings.today") || "Heutige Buchungen"}
-            </h2>
-            <Link href="/dashboard/scheduling/bookings">
-              <Button variant="ghost" size="sm">
-                {t("bookings.viewAll") || "Alle anzeigen"}
-              </Button>
-            </Link>
-          </div>
-          <div className="space-y-2">
-            {todayBookingsList.map((booking) => {
-              const startDate = new Date(booking.start_at);
-              const isPast = startDate < now;
-              
-              return (
-                <div
-                  key={booking.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    {isPast ? (
-                      <Badge variant="secondary" className="text-xs">
-                        {t("bookings.past") || "Vergangen"}
-                      </Badge>
-                    ) : (
-                      <Badge variant="default" className="text-xs">
-                        {t("bookings.today") || "Heute"}
-                      </Badge>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{booking.invitee_name}</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {booking.invitee_email}
-                      </p>
-                      {booking.created_at && (
-                        <p className="text-xs truncate mt-0.5">
-                          <span className="text-muted-foreground">{t("bookings.bookedAt") || "Gebucht am"}:</span>{" "}
-                          <span className="text-green-600 dark:text-green-400 font-medium">{new Date(booking.created_at).toLocaleDateString(undefined, {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}</span>
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 ml-4 flex-shrink-0">
-                    <div className="text-right">
-                      <p className="text-sm font-medium">
-                        {startDate.toLocaleTimeString(undefined, {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                      {booking.event_type && (
-                        <p className="text-xs text-muted-foreground truncate">
-                          {booking.event_type.title}
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0"
-                      onClick={() => {
-                        setSelectedBookingId(booking.id);
-                        setDrawerOpen(true);
-                      }}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+          {todayBookingsList.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">
+                  {t("bookings.today") || "Heutige Buchungen"}
+                </h2>
+                <Link href="/dashboard/scheduling/bookings">
+                  <Button variant="ghost" size="sm">
+                    {t("bookings.viewAll") || "Alle anzeigen"}
+                  </Button>
+                </Link>
+              </div>
+              <div className="space-y-2">
+                {todayBookingsList.map((booking) => {
+                  const startDate = new Date(booking.start_at);
+                  const isPast = startDate < now;
 
-      {/* Upcoming Bookings */}
-      {upcomingBookings.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">
-              {t("bookings.upcoming") || "Bevorstehende Buchungen"} ({upcomingBookings.length})
-            </h2>
-            <Link href="/dashboard/scheduling/bookings">
-              <Button variant="ghost" size="sm">
-                {t("bookings.viewAll") || "Alle anzeigen"}
-              </Button>
-            </Link>
-          </div>
-          <div className="space-y-2">
-            {upcomingBookings.map((booking) => {
-              const startDate = new Date(booking.start_at);
-              
-              return (
-                <div
-                  key={booking.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <Badge variant="default" className="text-xs">
-                      {t("bookings.upcoming") || "Anstehend"}
-                    </Badge>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{booking.invitee_name}</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {booking.invitee_email}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <p className="text-xs truncate">
-                          <span className="text-blue-600 dark:text-blue-400 font-medium">{t("bookings.eventDate") || "Event"}:</span>{" "}
-                          <span className="text-blue-600 dark:text-blue-400">{startDate.toLocaleDateString(undefined, {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })} {startDate.toLocaleTimeString(undefined, {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}</span>
-                        </p>
-                        {booking.created_at && (
-                          <p className="text-xs truncate">
-                            <span className="text-muted-foreground">{t("bookings.bookedAt") || "Gebucht am"}:</span>{" "}
-                            <span className="text-green-600 dark:text-green-400 font-medium">{new Date(booking.created_at).toLocaleDateString(undefined, {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
+                  return (
+                    <div
+                      key={booking.id}
+                      className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        {isPast ? (
+                          <Badge variant="secondary" className="text-xs">
+                            {t("bookings.past") || "Vergangen"}
+                          </Badge>
+                        ) : (
+                          <Badge variant="default" className="text-xs">
+                            {t("bookings.today") || "Heute"}
+                          </Badge>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">
+                            {booking.invitee_name}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {booking.invitee_email}
+                          </p>
+                          {booking.created_at && (
+                            <p className="text-xs truncate mt-0.5">
+                              <span className="text-muted-foreground">
+                                {t("bookings.bookedAt") || "Gebucht am"}:
+                              </span>{" "}
+                              <span className="text-green-600 dark:text-green-400 font-medium">
+                                {new Date(
+                                  booking.created_at,
+                                ).toLocaleDateString(undefined, {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </span>
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                        <div className="text-right">
+                          <p className="text-sm font-medium">
+                            {startDate.toLocaleTimeString(undefined, {
                               hour: "2-digit",
                               minute: "2-digit",
-                            })}</span>
+                            })}
                           </p>
-                        )}
+                          {booking.event_type && (
+                            <p className="text-xs text-muted-foreground truncate">
+                              {booking.event_type.title}
+                            </p>
+                          )}
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          onClick={() => {
+                            setSelectedBookingId(booking.id);
+                            setDrawerOpen(true);
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 ml-4 flex-shrink-0">
-                    <div className="text-right">
-                      {booking.event_type && (
-                        <p className="text-xs text-muted-foreground truncate">
-                          {booking.event_type.title}
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0"
-                      onClick={() => {
-                        setSelectedBookingId(booking.id);
-                        setDrawerOpen(true);
-                      }}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
-      {/* Past Bookings */}
-      {pastBookings.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">
-              {t("bookings.past") || "Vergangene Buchungen"} ({pastBookings.length})
-            </h2>
-            <Link href="/dashboard/scheduling/bookings">
-              <Button variant="ghost" size="sm">
-                {t("bookings.viewAll") || "Alle anzeigen"}
-              </Button>
-            </Link>
-          </div>
-          <div className="space-y-2">
-            {pastBookings.slice(0, 10).map((booking) => {
-              const startDate = new Date(booking.start_at);
-              
-              return (
-                <div
-                  key={booking.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors opacity-75"
-                >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <Badge variant="secondary" className="text-xs">
-                      {t("bookings.past") || "Vergangen"}
-                    </Badge>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{booking.invitee_name}</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {booking.invitee_email}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <p className="text-xs truncate">
-                          <span className="text-blue-600 dark:text-blue-400 font-medium">{t("bookings.eventDate") || "Event"}:</span>{" "}
-                          <span className="text-blue-600 dark:text-blue-400">{startDate.toLocaleDateString(undefined, {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })} {startDate.toLocaleTimeString(undefined, {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}</span>
-                        </p>
-                        {booking.created_at && (
-                          <p className="text-xs truncate">
-                            <span className="text-muted-foreground">{t("bookings.bookedAt") || "Gebucht am"}:</span>{" "}
-                            <span className="text-green-600 dark:text-green-400 font-medium">{new Date(booking.created_at).toLocaleDateString(undefined, {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}</span>
+          {/* Upcoming Bookings */}
+          {upcomingBookings.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">
+                  {t("bookings.upcoming") || "Bevorstehende Buchungen"} (
+                  {upcomingBookings.length})
+                </h2>
+                <Link href="/dashboard/scheduling/bookings">
+                  <Button variant="ghost" size="sm">
+                    {t("bookings.viewAll") || "Alle anzeigen"}
+                  </Button>
+                </Link>
+              </div>
+              <div className="space-y-2">
+                {upcomingBookings.map((booking) => {
+                  const startDate = new Date(booking.start_at);
+
+                  return (
+                    <div
+                      key={booking.id}
+                      className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <Badge variant="default" className="text-xs">
+                          {t("bookings.upcoming") || "Anstehend"}
+                        </Badge>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">
+                            {booking.invitee_name}
                           </p>
-                        )}
+                          <p className="text-xs text-muted-foreground truncate">
+                            {booking.invitee_email}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                            <p className="text-xs truncate">
+                              <span className="text-blue-600 dark:text-blue-400 font-medium">
+                                {t("bookings.eventDate") || "Event"}:
+                              </span>{" "}
+                              <span className="text-blue-600 dark:text-blue-400">
+                                {startDate.toLocaleDateString(undefined, {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                })}{" "}
+                                {startDate.toLocaleTimeString(undefined, {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </span>
+                            </p>
+                            {booking.created_at && (
+                              <p className="text-xs truncate">
+                                <span className="text-muted-foreground">
+                                  {t("bookings.bookedAt") || "Gebucht am"}:
+                                </span>{" "}
+                                <span className="text-green-600 dark:text-green-400 font-medium">
+                                  {new Date(
+                                    booking.created_at,
+                                  ).toLocaleDateString(undefined, {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </span>
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                        <div className="text-right">
+                          {booking.event_type && (
+                            <p className="text-xs text-muted-foreground truncate">
+                              {booking.event_type.title}
+                            </p>
+                          )}
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          onClick={() => {
+                            setSelectedBookingId(booking.id);
+                            setDrawerOpen(true);
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 ml-4 flex-shrink-0">
-                    <div className="text-right">
-                      {booking.event_type && (
-                        <p className="text-xs text-muted-foreground truncate">
-                          {booking.event_type.title}
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0"
-                      onClick={() => {
-                        setSelectedBookingId(booking.id);
-                        setDrawerOpen(true);
-                      }}
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Past Bookings */}
+          {pastBookings.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">
+                  {t("bookings.past") || "Vergangene Buchungen"} (
+                  {pastBookings.length})
+                </h2>
+                <Link href="/dashboard/scheduling/bookings">
+                  <Button variant="ghost" size="sm">
+                    {t("bookings.viewAll") || "Alle anzeigen"}
+                  </Button>
+                </Link>
+              </div>
+              <div className="space-y-2">
+                {pastBookings.slice(0, 10).map((booking) => {
+                  const startDate = new Date(booking.start_at);
+
+                  return (
+                    <div
+                      key={booking.id}
+                      className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors opacity-75"
                     >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <Badge variant="secondary" className="text-xs">
+                          {t("bookings.past") || "Vergangen"}
+                        </Badge>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">
+                            {booking.invitee_name}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {booking.invitee_email}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                            <p className="text-xs truncate">
+                              <span className="text-blue-600 dark:text-blue-400 font-medium">
+                                {t("bookings.eventDate") || "Event"}:
+                              </span>{" "}
+                              <span className="text-blue-600 dark:text-blue-400">
+                                {startDate.toLocaleDateString(undefined, {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                })}{" "}
+                                {startDate.toLocaleTimeString(undefined, {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </span>
+                            </p>
+                            {booking.created_at && (
+                              <p className="text-xs truncate">
+                                <span className="text-muted-foreground">
+                                  {t("bookings.bookedAt") || "Gebucht am"}:
+                                </span>{" "}
+                                <span className="text-green-600 dark:text-green-400 font-medium">
+                                  {new Date(
+                                    booking.created_at,
+                                  ).toLocaleDateString(undefined, {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </span>
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                        <div className="text-right">
+                          {booking.event_type && (
+                            <p className="text-xs text-muted-foreground truncate">
+                              {booking.event_type.title}
+                            </p>
+                          )}
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          onClick={() => {
+                            setSelectedBookingId(booking.id);
+                            setDrawerOpen(true);
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </TabsContent>
 
         {/* Bookings Tab */}
@@ -605,7 +686,9 @@ export function SchedulingDashboard({
         <TabsContent value="events" className="mt-6">
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">{t("eventTypes.title") || "Event Types"}</h2>
+              <h2 className="text-lg font-semibold">
+                {t("eventTypes.title") || "Event Types"}
+              </h2>
             </div>
             {eventTypes.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center border border-dashed rounded-lg">
@@ -613,7 +696,11 @@ export function SchedulingDashboard({
                 <p className="text-sm text-muted-foreground mb-4">
                   {t("eventTypes.empty") || "Noch keine Event Types erstellt"}
                 </p>
-                <Button size="sm" variant="outline" onClick={() => setCreateDrawerOpen(true)}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setCreateDrawerOpen(true)}
+                >
                   {t("eventTypes.createFirst") || "Ersten Event Type erstellen"}
                 </Button>
               </div>
@@ -632,7 +719,9 @@ export function SchedulingDashboard({
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <h3 className="text-sm font-medium truncate">{eventType.title}</h3>
+                          <h3 className="text-sm font-medium truncate">
+                            {eventType.title}
+                          </h3>
                           {eventType.is_active ? (
                             <Badge variant="default" className="text-xs">
                               {t("eventTypes.active") || "Aktiv"}
@@ -710,4 +799,3 @@ export function SchedulingDashboard({
     </div>
   );
 }
-

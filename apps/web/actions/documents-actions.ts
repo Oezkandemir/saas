@@ -1,11 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSupabaseServer } from "@/lib/supabase-server";
-import { getCurrentUser } from "@/lib/session";
-import { enforcePlanLimit } from "@/lib/plan-limits";
 import { hasCompanyProfilePermission } from "@/actions/company-profile-team-actions";
+
 import { logger } from "@/lib/logger";
+import { enforcePlanLimit } from "@/lib/plan-limits";
+import { getCurrentUser } from "@/lib/session";
+import { getSupabaseServer } from "@/lib/supabase-server";
 
 export type DocumentType = "quote" | "invoice";
 export type DocumentStatus =
@@ -82,17 +83,15 @@ export async function getDocuments(
   if (!user) throw new Error("Unauthorized");
 
   const supabase = await getSupabaseServer();
-  
+
   // If company profile is provided, check if user is owner or member
-  let query = supabase
-    .from("documents")
-    .select(
-      `
+  let query = supabase.from("documents").select(
+    `
       *,
       customer:customers(id, name, email, address_line1, address_line2, city, postal_code, country),
       document_items(*)
     `,
-    );
+  );
 
   if (companyProfileId) {
     // Get the company profile to check ownership
@@ -132,8 +131,9 @@ export async function getDocuments(
 
   // Items are already loaded via join, just need to sort them
   const documentsWithItems = (data || []).map((doc) => {
-    const items = (doc.document_items || []).sort((a: DocumentItem, b: DocumentItem) => 
-      (a.position || 0) - (b.position || 0)
+    const items = (doc.document_items || []).sort(
+      (a: DocumentItem, b: DocumentItem) =>
+        (a.position || 0) - (b.position || 0),
     );
     return { ...doc, items };
   });
@@ -150,7 +150,7 @@ async function checkDocumentPermission(
   permission: "view" | "edit_documents" | "delete_documents",
 ): Promise<boolean> {
   const supabase = await getSupabaseServer();
-  
+
   // Get document with company_profile_id
   const { data: document, error } = await supabase
     .from("documents")
@@ -190,7 +190,7 @@ export async function getDocument(id: string): Promise<Document | null> {
   }
 
   const supabase = await getSupabaseServer();
-  
+
   // Get document - check if user is owner OR member of company profile
   const { data, error } = await supabase
     .from("documents")
@@ -215,8 +215,8 @@ export async function getDocument(id: string): Promise<Document | null> {
   }
 
   // Items are already loaded via join, just need to sort them
-  const items = (data.document_items || []).sort((a: DocumentItem, b: DocumentItem) => 
-    (a.position || 0) - (b.position || 0)
+  const items = (data.document_items || []).sort(
+    (a: DocumentItem, b: DocumentItem) => (a.position || 0) - (b.position || 0),
   );
 
   return { ...data, items };
@@ -265,7 +265,8 @@ export async function createDocument(
 
   if (docNumberError) throw docNumberError;
 
-  const document_number = docNumberData || (type === "quote" ? "A1001" : "R1001");
+  const document_number =
+    docNumberData || (type === "quote" ? "A1001" : "R1001");
 
   // Create document with current user's ID
   const { data: document, error: docError } = await supabase
@@ -338,10 +339,12 @@ export async function createDocument(
         .then(({ generateInvoiceHTMLAsync }) => {
           generateInvoiceHTMLAsync(completeDoc)
             .then((htmlContent) => {
-              generatePDFInBackground(completeDoc, htmlContent).catch(async (err) => {
-                const { logger } = await import("@/lib/logger");
-                logger.error("Background PDF generation failed:", err);
-              });
+              generatePDFInBackground(completeDoc, htmlContent).catch(
+                async (err) => {
+                  const { logger } = await import("@/lib/logger");
+                  logger.error("Background PDF generation failed:", err);
+                },
+              );
             })
             .catch(async (err) => {
               const { logger } = await import("@/lib/logger");
@@ -364,13 +367,20 @@ export async function createDocument(
 
 export async function updateDocument(
   id: string,
-  input: Partial<DocumentInput> & { status?: DocumentStatus; company_profile_id?: string },
+  input: Partial<DocumentInput> & {
+    status?: DocumentStatus;
+    company_profile_id?: string;
+  },
 ): Promise<Document> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
   // Check permission
-  const hasAccess = await checkDocumentPermission(id, user.id, "edit_documents");
+  const hasAccess = await checkDocumentPermission(
+    id,
+    user.id,
+    "edit_documents",
+  );
   if (!hasAccess) {
     throw new Error("Keine Berechtigung zum Bearbeiten dieses Dokuments");
   }
@@ -379,8 +389,10 @@ export async function updateDocument(
 
   // Update document fields
   const updateData: any = {};
-  if (input.customer_id !== undefined) updateData.customer_id = input.customer_id;
-  if (input.company_profile_id !== undefined) updateData.company_profile_id = input.company_profile_id;
+  if (input.customer_id !== undefined)
+    updateData.customer_id = input.customer_id;
+  if (input.company_profile_id !== undefined)
+    updateData.company_profile_id = input.company_profile_id;
   if (input.document_date) updateData.document_date = input.document_date;
   if (input.due_date !== undefined) updateData.due_date = input.due_date;
   if (input.tax_rate !== undefined) updateData.tax_rate = input.tax_rate;
@@ -492,7 +504,9 @@ export async function updateDocument(
   return updatedDoc;
 }
 
-export async function convertQuoteToInvoice(quoteId: string): Promise<Document> {
+export async function convertQuoteToInvoice(
+  quoteId: string,
+): Promise<Document> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
@@ -564,9 +578,11 @@ export async function convertQuoteToInvoice(quoteId: string): Promise<Document> 
         .then(({ generateInvoiceHTMLAsync }) => {
           generateInvoiceHTMLAsync(completeInvoice)
             .then((htmlContent) => {
-              generatePDFInBackground(completeInvoice, htmlContent).catch((err) => {
-                logger.error("Background PDF generation failed:", err);
-              });
+              generatePDFInBackground(completeInvoice, htmlContent).catch(
+                (err) => {
+                  logger.error("Background PDF generation failed:", err);
+                },
+              );
             })
             .catch((err) => {
               logger.error("Failed to generate HTML for PDF:", err);
@@ -589,13 +605,17 @@ export async function deleteDocument(id: string): Promise<void> {
   if (!user) throw new Error("Unauthorized");
 
   // Check permission
-  const hasAccess = await checkDocumentPermission(id, user.id, "delete_documents");
+  const hasAccess = await checkDocumentPermission(
+    id,
+    user.id,
+    "delete_documents",
+  );
   if (!hasAccess) {
     throw new Error("Keine Berechtigung zum Löschen dieses Dokuments");
   }
 
   const supabase = await getSupabaseServer();
-  
+
   // Get document info before deleting for notification
   const { data: document } = await supabase
     .from("documents")
@@ -627,7 +647,9 @@ export async function deleteDocument(id: string): Promise<void> {
   // Create notification for document deletion
   if (document) {
     try {
-      const { createDocumentNotification } = await import("@/lib/notifications");
+      const { createDocumentNotification } = await import(
+        "@/lib/notifications"
+      );
       await createDocumentNotification({
         userId: user.id,
         documentId: id,
@@ -667,7 +689,8 @@ export async function duplicateDocument(id: string): Promise<Document> {
 
   if (docNumberError) throw docNumberError;
 
-  const document_number = docNumberData || (originalDoc.type === "quote" ? "A1001" : "R1001");
+  const document_number =
+    docNumberData || (originalDoc.type === "quote" ? "A1001" : "R1001");
 
   // Create duplicate document
   const { data: document, error: docError } = await supabase
@@ -742,4 +765,3 @@ export async function duplicateDocument(id: string): Promise<Document> {
   revalidatePath("/dashboard/documents");
   return completeDoc;
 }
-

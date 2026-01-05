@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
-import { getPublicEventTypeByUserId } from "@/actions/scheduling/event-types-actions";
 import { getPublicSlots } from "@/actions/scheduling/bookings-actions";
+import { getPublicEventTypeByUserId } from "@/actions/scheduling/event-types-actions";
+
 import { BookingPageClient } from "@/components/scheduling/booking-page-client";
 
 export const dynamic = "force-dynamic";
@@ -34,9 +35,3 @@ export default async function BookingPage({
     />
   );
 }
-
-
-
-
-
-

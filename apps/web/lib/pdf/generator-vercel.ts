@@ -1,5 +1,6 @@
-import { supabaseAdmin } from "@/lib/db";
 import type { Document } from "@/actions/documents-actions";
+
+import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
 
 export interface PDFOptions {
@@ -14,10 +15,9 @@ export interface PDFOptions {
   printBackground?: boolean;
 }
 
-
 /**
  * Generates a PDF using @react-pdf/renderer (no external services needed!)
- * 
+ *
  * This is a pure JavaScript solution that works without API keys or external services.
  * It uses React components to generate PDFs server-side.
  */
@@ -30,10 +30,9 @@ export async function generatePDFFromHTML(
   // We need to use the React component approach
   throw new Error(
     "generatePDFFromHTML wird nicht mehr unterstützt.\n\n" +
-    "Bitte verwenden Sie generatePDFFromDocument mit React-PDF-Komponenten."
+      "Bitte verwenden Sie generatePDFFromDocument mit React-PDF-Komponenten.",
   );
 }
-
 
 /**
  * Uploads PDF to Supabase Storage and returns public URL
@@ -49,7 +48,7 @@ export async function uploadPDFToStorage(
     logger.debug("Uploading PDF to Supabase storage...", {
       fileName,
       bufferSize: pdfBuffer.length,
-      bucket: "documents"
+      bucket: "documents",
     });
 
     // Upload to Supabase Storage
@@ -66,9 +65,11 @@ export async function uploadPDFToStorage(
         error,
         errorMessage: error.message,
         errorName: error.name,
-        fileName
+        fileName,
       });
-      throw new Error(`Failed to upload PDF to storage: ${error.message || JSON.stringify(error)}`);
+      throw new Error(
+        `Failed to upload PDF to storage: ${error.message || JSON.stringify(error)}`,
+      );
     }
 
     logger.debug("PDF uploaded successfully to storage:", data);
@@ -102,23 +103,27 @@ export async function generateAndUploadPDF(
 ): Promise<string> {
   try {
     logger.debug("Starting PDF generation for document:", document.id);
-    
+
     // Import pdf-lib generator
     const { generatePDFFromDocument } = await import("./pdf-lib-generator");
-    const { convertCompanyProfileToInfo, DEFAULT_COMPANY_INFO } = await import("./templates");
-    
+    const { convertCompanyProfileToInfo, DEFAULT_COMPANY_INFO } = await import(
+      "./templates"
+    );
+
     // Get company info from the document (we need it for the PDF)
     // Try to load company profile
     let companyInfo;
     try {
-      const { getDefaultCompanyProfile } = await import("@/actions/company-profiles-actions");
+      const { getDefaultCompanyProfile } = await import(
+        "@/actions/company-profiles-actions"
+      );
       const defaultProfile = await getDefaultCompanyProfile();
       companyInfo = convertCompanyProfileToInfo(defaultProfile);
       logger.debug("Loaded company profile:", companyInfo?.name || "none");
     } catch (error) {
       logger.warn("Could not load company profile, using defaults:", error);
     }
-    
+
     // Use default company info if none found
     if (!companyInfo) {
       companyInfo = DEFAULT_COMPANY_INFO;
@@ -128,19 +133,27 @@ export async function generateAndUploadPDF(
     logger.debug("Generating PDF buffer with pdf-lib...");
     // Generate PDF buffer using pdf-lib
     const pdfBuffer = await generatePDFFromDocument(document, companyInfo);
-    
+
     // Validate PDF buffer
     if (!pdfBuffer || pdfBuffer.length === 0) {
       throw new Error("PDF buffer is empty");
     }
-    
+
     // Check if it's a valid PDF (starts with %PDF)
-    const pdfHeader = pdfBuffer.toString("ascii", 0, Math.min(4, pdfBuffer.length));
+    const pdfHeader = pdfBuffer.toString(
+      "ascii",
+      0,
+      Math.min(4, pdfBuffer.length),
+    );
     if (pdfHeader !== "%PDF") {
-      throw new Error(`Invalid PDF generated. Header: ${pdfHeader}, Buffer length: ${pdfBuffer.length}`);
+      throw new Error(
+        `Invalid PDF generated. Header: ${pdfHeader}, Buffer length: ${pdfBuffer.length}`,
+      );
     }
-    
-    logger.debug("PDF generated successfully", { size: `${pdfBuffer.length} bytes` });
+
+    logger.debug("PDF generated successfully", {
+      size: `${pdfBuffer.length} bytes`,
+    });
 
     // Upload to storage
     logger.debug("Uploading PDF to storage...");
@@ -156,10 +169,12 @@ export async function generateAndUploadPDF(
     const errorMessage = error instanceof Error ? error.message : String(error);
     const errorStack = error instanceof Error ? error.stack : undefined;
     // Only log as warning if it's a known/expected error
-    if (errorMessage.includes("Failed to load Puppeteer") || 
-        errorMessage.includes("Puppeteer not available")) {
+    if (
+      errorMessage.includes("Failed to load Puppeteer") ||
+      errorMessage.includes("Puppeteer not available")
+    ) {
       logger.warn("PDF generation skipped (Puppeteer not available)", {
-        documentId: document.id
+        documentId: document.id,
       });
     } else {
       logger.error("Error generating and uploading PDF:", {
@@ -183,14 +198,14 @@ export async function generatePDFInBackground(
 ): Promise<void> {
   try {
     const pdfUrl = await generateAndUploadPDF(document, htmlContent);
-    
+
     // Update document with PDF URL in database
     await supabaseAdmin
       .from("documents")
       .update({ pdf_url: pdfUrl })
       .eq("id", document.id)
       .eq("user_id", document.user_id);
-    
+
     logger.debug(`PDF generated successfully for document ${document.id}`);
   } catch (error) {
     // Log error but don't throw - we don't want to break document creation/update
@@ -204,13 +219,20 @@ export async function generatePDFInBackground(
       const err = error as any;
       errorMessage = err.message || err.error || String(error);
     }
-    
+
     // Only log as warning for background PDF generation failures (non-critical)
-    if (errorMessage.includes("Failed to load Puppeteer") || 
-        errorMessage.includes("Puppeteer not available")) {
-      logger.debug(`Background PDF generation skipped (Puppeteer not available) for document ${document.id}`);
+    if (
+      errorMessage.includes("Failed to load Puppeteer") ||
+      errorMessage.includes("Puppeteer not available")
+    ) {
+      logger.debug(
+        `Background PDF generation skipped (Puppeteer not available) for document ${document.id}`,
+      );
     } else {
-      logger.warn(`Background PDF generation failed for document ${document.id}:`, errorMessage);
+      logger.warn(
+        `Background PDF generation failed for document ${document.id}:`,
+        errorMessage,
+      );
     }
     // Don't throw - let the document creation/update succeed even if PDF generation fails
   }
@@ -219,7 +241,10 @@ export async function generatePDFInBackground(
 /**
  * Formats currency for display
  */
-export function formatCurrency(amount: number, currency: string = "EUR"): string {
+export function formatCurrency(
+  amount: number,
+  currency: string = "EUR",
+): string {
   return new Intl.NumberFormat("de-DE", {
     style: "currency",
     currency,
@@ -237,4 +262,3 @@ export function formatDate(date: string | Date): string {
     day: "numeric",
   }).format(dateObj);
 }
-

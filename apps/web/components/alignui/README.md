@@ -18,6 +18,7 @@ alignui/
 ## Status
 
 ### ✅ Basis-Komponenten implementiert (AlignUI Free)
+
 - [x] Button (`actions/button.tsx`) - ✅ Implementiert
 - [x] Card (`data-display/card.tsx`) - ✅ Implementiert
 - [x] Input (`forms/input.tsx`) - ✅ Implementiert
@@ -25,7 +26,9 @@ alignui/
 - [x] Avatar (`data-display/avatar.tsx`) - ✅ Implementiert
 
 ### 📝 Komponenten-Details
+
 Alle Basis-Komponenten sind implementiert basierend auf:
+
 - AlignUI Design System
 - Radix UI Primitives (wo zutreffend)
 - Tailwind CSS für Styling
@@ -35,31 +38,40 @@ Alle Basis-Komponenten sind implementiert basierend auf:
 ## Verwendung
 
 ### ✅ Migration abgeschlossen!
+
 ```tsx
-import { Button } from '@/components/alignui/actions/button';
-import { Card } from '@/components/alignui/data-display/card';
-import { Input } from '@/components/alignui/forms/input';
-import { Badge } from '@/components/alignui/data-display/badge';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/alignui/data-display/avatar';
+import { Button } from "@/components/alignui/actions/button";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/alignui/data-display/avatar";
+import { Badge } from "@/components/alignui/data-display/badge";
+import { Card } from "@/components/alignui/data-display/card";
+import { Input } from "@/components/alignui/forms/input";
 ```
 
 ## Migrations-Schritte
 
 1. **Komponente von AlignUI Pro kopieren**
+
    - Besuche [pro.alignui.com](https://pro.alignui.com)
    - Navigiere zur Komponente
    - Kopiere den vollständigen Code
 
 2. **Komponente einfügen**
+
    - Öffne die entsprechende `.tsx` Datei
    - Ersetze den Platzhalter-Code mit dem AlignUI-Code
    - Passe Imports an (`@/lib/utils` statt relative Pfade)
 
 3. **Export prüfen**
+
    - Export ist bereits in `index.ts` vorhanden
    - Prüfe ob alle Exports korrekt sind
 
 4. **Imports aktualisieren**
+
    - Finde alle Verwendungen der alten Komponente
    - Ersetze Import-Pfad
    - Teste Funktionalität
@@ -77,6 +89,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/alignui/data-d
 ## Testing Checklist
 
 Für jede migrierte Komponente:
+
 - [ ] Visuell identisch (oder verbessert)
 - [ ] Alle Props funktionieren
 - [ ] Dark Mode funktioniert

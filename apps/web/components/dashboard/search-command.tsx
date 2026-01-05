@@ -2,28 +2,28 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { SidebarNavItem } from "@/types";
 import {
   RiArrowDownLine,
   RiArrowUpLine,
+  RiBankCardLine,
   RiCloseLine,
   RiCornerDownLeftLine,
-  RiSearch2Line,
-  RiHomeLine,
-  RiUserLine,
   RiFileTextLine,
+  RiHomeLine,
   RiQrCodeLine,
-  RiSettingsLine,
-  RiBankCardLine,
   RiQuestionLine,
+  RiSearch2Line,
+  RiSettingsLine,
+  RiUserLine,
 } from "@remixicon/react";
-import { SidebarNavItem } from "@/types";
+import { useTranslations } from "next-intl";
 
-import { cn } from "@/lib/utils";
-import { CommandMenu } from '@/components/alignui/overlays/command-menu';
-import { CompactButton } from '@/components/alignui/actions/compact-button';
-import { Kbd } from '@/components/alignui/actions/kbd';
 import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
+import { CompactButton } from "@/components/alignui/actions/compact-button";
+import { Kbd } from "@/components/alignui/actions/kbd";
+import { CommandMenu } from "@/components/alignui/overlays/command-menu";
 
 // Icon mapping von Icons-Namen zu Remix Icons
 const iconMap: Record<string, React.ElementType> = {
@@ -45,7 +45,13 @@ const fallbackTranslations = {
   noResults: "No results found.",
 };
 
-function SearchCommandContent({ links, t }: { links: SidebarNavItem[]; t: (key: string) => string }) {
+function SearchCommandContent({
+  links,
+  t,
+}: {
+  links: SidebarNavItem[];
+  t: (key: string) => string;
+}) {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
 
@@ -133,7 +139,8 @@ function SearchCommandContent({ links, t }: { links: SidebarNavItem[]; t: (key: 
                   {section.items
                     .filter((item) => !item.disabled)
                     .map((item) => {
-                      const Icon = iconMap[item.icon || "arrowRight"] || RiArrowDownLine;
+                      const Icon =
+                        iconMap[item.icon || "arrowRight"] || RiArrowDownLine;
                       return (
                         <CommandMenu.Item
                           key={item.title}
@@ -158,13 +165,17 @@ function SearchCommandContent({ links, t }: { links: SidebarNavItem[]; t: (key: 
                   <CommandMenu.FooterKeyBox>
                     <RiArrowDownLine className="size-4" />
                   </CommandMenu.FooterKeyBox>
-                  <span className="text-xs text-muted-foreground">Navigieren</span>
+                  <span className="text-xs text-muted-foreground">
+                    Navigieren
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CommandMenu.FooterKeyBox>
                     <RiCornerDownLeftLine className="size-4" />
                   </CommandMenu.FooterKeyBox>
-                  <span className="text-xs text-muted-foreground">Auswählen</span>
+                  <span className="text-xs text-muted-foreground">
+                    Auswählen
+                  </span>
                 </div>
               </div>
             </CommandMenu.Footer>
@@ -222,7 +233,9 @@ function SearchCommandFallback({ links }: { links: SidebarNavItem[] }) {
           <CommandMenu.Command>
             <div className="group/cmd-input flex h-12 w-full items-center gap-2 border-b px-5">
               <RiSearch2Line className="size-5 shrink-0 text-muted-foreground" />
-              <CommandMenu.Input placeholder={fallbackTranslations.inputPlaceholder} />
+              <CommandMenu.Input
+                placeholder={fallbackTranslations.inputPlaceholder}
+              />
               <CompactButton.Root
                 size="medium"
                 variant="ghost"
@@ -233,13 +246,16 @@ function SearchCommandFallback({ links }: { links: SidebarNavItem[] }) {
               </CompactButton.Root>
             </div>
             <CommandMenu.List>
-              <CommandMenu.Empty>{fallbackTranslations.noResults}</CommandMenu.Empty>
+              <CommandMenu.Empty>
+                {fallbackTranslations.noResults}
+              </CommandMenu.Empty>
               {links.map((section) => (
                 <CommandMenu.Group key={section.title} heading={section.title}>
                   {section.items
                     .filter((item) => !item.disabled)
                     .map((item) => {
-                      const Icon = iconMap[item.icon || "arrowRight"] || RiArrowDownLine;
+                      const Icon =
+                        iconMap[item.icon || "arrowRight"] || RiArrowDownLine;
                       return (
                         <CommandMenu.Item
                           key={item.title}
@@ -271,11 +287,11 @@ class TranslationErrorBoundary extends React.Component<
   }
 
   static getDerivedStateFromError(error: Error) {
-    const isNextIntlError = 
+    const isNextIntlError =
       error.message?.includes("NextIntlClientProvider") ||
       error.message?.includes("useTranslations") ||
       error.message?.includes("context");
-    
+
     if (isNextIntlError) {
       return { hasError: true, error };
     }
@@ -297,7 +313,9 @@ class TranslationErrorBoundary extends React.Component<
 // Main export with error boundary
 export function SearchCommand({ links }: { links: SidebarNavItem[] }) {
   return (
-    <TranslationErrorBoundary fallback={<SearchCommandFallback links={links} />}>
+    <TranslationErrorBoundary
+      fallback={<SearchCommandFallback links={links} />}
+    >
       <SearchCommandWithTranslations links={links} />
     </TranslationErrorBoundary>
   );

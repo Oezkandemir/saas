@@ -1,10 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useTranslations, useLocale } from "next-intl";
-import { getEventType, type EventType } from "@/actions/scheduling/event-types-actions";
-import { listBookings, type Booking } from "@/actions/scheduling/bookings-actions";
-import { Button } from '@/components/alignui/actions/button';
+import { useEffect, useState } from "react";
+import {
+  listBookings,
+  type Booking,
+} from "@/actions/scheduling/bookings-actions";
+import {
+  getEventType,
+  type EventType,
+} from "@/actions/scheduling/event-types-actions";
+import {
+  BarChart3,
+  CheckCircle2,
+  Clock,
+  Copy,
+  Edit,
+  Link as LinkIcon,
+  Loader2,
+  MapPin,
+  Users,
+  XCircle,
+} from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { toast } from "sonner";
+
+import { logger } from "@/lib/logger";
+import { getURL } from "@/lib/utils";
 import {
   Sheet,
   SheetContent,
@@ -12,29 +33,22 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import {
-  Clock,
-  MapPin,
-  Users,
-  BarChart3,
-  CheckCircle2,
-  XCircle,
-  Edit,
-  Copy,
-  Link as LinkIcon,
-  Loader2,
-} from "lucide-react";
-import { EditEventTypeForm } from "./edit-event-type-form";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
+import { Input } from "@/components/alignui/forms/input";
+
 import { CopyBookingLinkButton } from "./copy-booking-link-button";
+import { EditEventTypeForm } from "./edit-event-type-form";
 import { EventTypeActions } from "./event-type-actions";
-import { Input } from '@/components/alignui/forms/input';
-import { toast } from "sonner";
-import { getURL } from "@/lib/utils";
-import { logger } from "@/lib/logger";
 
 interface EventTypeDetailDrawerProps {
   eventTypeId: string | null;
@@ -107,32 +121,42 @@ export function EventTypeDetailDrawer({
   const canceledBookings = bookings.filter((b) => b.status === "canceled");
   const upcomingBookings = scheduledBookings
     .filter((b) => new Date(b.start_at) > new Date())
-    .sort((a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime());
+    .sort(
+      (a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime(),
+    );
   const pastBookings = scheduledBookings
     .filter((b) => new Date(b.start_at) <= new Date())
-    .sort((a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime());
+    .sort(
+      (a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime(),
+    );
 
-  const bookingUrl = eventType && eventType.owner_user_id
-    ? `${getURL()}/${locale}/book/${eventType.owner_user_id}/${eventType.slug}`
-    : "";
+  const bookingUrl =
+    eventType && eventType.owner_user_id
+      ? `${getURL()}/${locale}/book/${eventType.owner_user_id}/${eventType.slug}`
+      : "";
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-4xl overflow-y-auto">
+      <SheetContent
+        side="right"
+        className="w-full sm:max-w-4xl overflow-y-auto"
+      >
         <SheetHeader>
           <SheetTitle className="text-xl">
-            {isLoading 
-              ? t("loading") || "Loading..." 
-              : eventType 
-              ? eventType.title 
-              : t("title") || "Event Type Details"}
+            {isLoading
+              ? t("loading") || "Loading..."
+              : eventType
+                ? eventType.title
+                : t("title") || "Event Type Details"}
           </SheetTitle>
           <SheetDescription className="mt-1">
-            {isLoading 
-              ? "" 
-              : eventType 
-              ? (eventType.description || t("description") || "Event Type Details")
-              : t("error") || "Failed to load event type"}
+            {isLoading
+              ? ""
+              : eventType
+                ? eventType.description ||
+                  t("description") ||
+                  "Event Type Details"
+                : t("error") || "Failed to load event type"}
           </SheetDescription>
         </SheetHeader>
         {isLoading ? (
@@ -147,28 +171,49 @@ export function EventTypeDetailDrawer({
             </div>
 
             <div className="mt-6">
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className="w-full"
+              >
                 <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="overview" className="flex items-center gap-2">
+                  <TabsTrigger
+                    value="overview"
+                    className="flex items-center gap-2"
+                  >
                     <BarChart3 className="h-4 w-4" />
-                    <span className="hidden sm:inline">{t("tabs.overview") || "Overview"}</span>
+                    <span className="hidden sm:inline">
+                      {t("tabs.overview") || "Overview"}
+                    </span>
                   </TabsTrigger>
                   <TabsTrigger value="edit" className="flex items-center gap-2">
                     <Edit className="h-4 w-4" />
-                    <span className="hidden sm:inline">{t("tabs.edit") || "Edit"}</span>
+                    <span className="hidden sm:inline">
+                      {t("tabs.edit") || "Edit"}
+                    </span>
                   </TabsTrigger>
-                  <TabsTrigger value="bookings" className="flex items-center gap-2">
+                  <TabsTrigger
+                    value="bookings"
+                    className="flex items-center gap-2"
+                  >
                     <Users className="h-4 w-4" />
-                    <span className="hidden sm:inline">{t("tabs.bookings") || "Bookings"}</span>
+                    <span className="hidden sm:inline">
+                      {t("tabs.bookings") || "Bookings"}
+                    </span>
                     {bookings.length > 0 && (
                       <Badge variant="secondary" className="ml-1 text-xs">
                         {bookings.length}
                       </Badge>
                     )}
                   </TabsTrigger>
-                  <TabsTrigger value="share" className="flex items-center gap-2">
+                  <TabsTrigger
+                    value="share"
+                    className="flex items-center gap-2"
+                  >
                     <LinkIcon className="h-4 w-4" />
-                    <span className="hidden sm:inline">{t("tabs.share") || "Share"}</span>
+                    <span className="hidden sm:inline">
+                      {t("tabs.share") || "Share"}
+                    </span>
                   </TabsTrigger>
                 </TabsList>
 
@@ -183,7 +228,9 @@ export function EventTypeDetailDrawer({
                             <p className="text-xs text-muted-foreground mb-1">
                               {t("stats.totalBookings") || "Total Bookings"}
                             </p>
-                            <p className="text-2xl font-semibold">{bookings.length}</p>
+                            <p className="text-2xl font-semibold">
+                              {bookings.length}
+                            </p>
                           </div>
                           <Users className="h-8 w-8 text-muted-foreground opacity-50" />
                         </div>
@@ -211,7 +258,9 @@ export function EventTypeDetailDrawer({
                             <p className="text-xs text-muted-foreground mb-1">
                               {t("stats.completed") || "Completed"}
                             </p>
-                            <p className="text-2xl font-semibold">{pastBookings.length}</p>
+                            <p className="text-2xl font-semibold">
+                              {pastBookings.length}
+                            </p>
                           </div>
                           <BarChart3 className="h-8 w-8 text-muted-foreground opacity-50" />
                         </div>
@@ -238,7 +287,9 @@ export function EventTypeDetailDrawer({
                   <div className="grid gap-6 md:grid-cols-2">
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-base">{t("details.title") || "Event Details"}</CardTitle>
+                        <CardTitle className="text-base">
+                          {t("details.title") || "Event Details"}
+                        </CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="flex items-start justify-between">
@@ -252,7 +303,11 @@ export function EventTypeDetailDrawer({
                               {t("details.minutes") || "minutes"}
                             </p>
                           </div>
-                          <Badge variant={eventType.is_active ? "default" : "outline"}>
+                          <Badge
+                            variant={
+                              eventType.is_active ? "default" : "outline"
+                            }
+                          >
                             {eventType.is_active
                               ? t("details.active") || "Active"
                               : t("details.inactive") || "Inactive"}
@@ -296,7 +351,8 @@ export function EventTypeDetailDrawer({
                                 {t("details.price") || "Price"}
                               </p>
                               <p className="text-sm font-medium">
-                                {eventType.price_amount.toFixed(2)} {eventType.price_currency || "EUR"}
+                                {eventType.price_amount.toFixed(2)}{" "}
+                                {eventType.price_currency || "EUR"}
                               </p>
                             </div>
                           </>
@@ -316,7 +372,8 @@ export function EventTypeDetailDrawer({
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        {upcomingBookings.length === 0 && pastBookings.length === 0 ? (
+                        {upcomingBookings.length === 0 &&
+                        pastBookings.length === 0 ? (
                           <div className="flex flex-col items-center justify-center py-8 text-center">
                             <Users className="h-6 w-6 text-muted-foreground mb-2" />
                             <p className="text-sm text-muted-foreground">
@@ -331,20 +388,26 @@ export function EventTypeDetailDrawer({
                                 className="flex items-center justify-between p-3 border rounded-lg"
                               >
                                 <div>
-                                  <p className="text-sm font-medium">{booking.invitee_name}</p>
+                                  <p className="text-sm font-medium">
+                                    {booking.invitee_name}
+                                  </p>
                                   <p className="text-xs text-muted-foreground">
                                     {booking.invitee_email}
                                   </p>
                                 </div>
                                 <div className="text-right">
                                   <p className="text-xs font-medium">
-                                    {new Date(booking.start_at).toLocaleDateString(undefined, {
+                                    {new Date(
+                                      booking.start_at,
+                                    ).toLocaleDateString(undefined, {
                                       day: "2-digit",
                                       month: "short",
                                     })}
                                   </p>
                                   <p className="text-xs text-muted-foreground">
-                                    {new Date(booking.start_at).toLocaleTimeString(undefined, {
+                                    {new Date(
+                                      booking.start_at,
+                                    ).toLocaleTimeString(undefined, {
                                       hour: "2-digit",
                                       minute: "2-digit",
                                     })}
@@ -394,7 +457,8 @@ export function EventTypeDetailDrawer({
                         {upcomingBookings.length > 0 && (
                           <div>
                             <h3 className="text-sm font-semibold mb-3">
-                              {t("bookings.upcoming") || "Upcoming"} ({upcomingBookings.length})
+                              {t("bookings.upcoming") || "Upcoming"} (
+                              {upcomingBookings.length})
                             </h3>
                             <div className="space-y-2">
                               {upcomingBookings.map((booking) => (
@@ -403,21 +467,27 @@ export function EventTypeDetailDrawer({
                                   className="flex items-center justify-between p-3 border rounded-lg"
                                 >
                                   <div>
-                                    <p className="text-sm font-medium">{booking.invitee_name}</p>
+                                    <p className="text-sm font-medium">
+                                      {booking.invitee_name}
+                                    </p>
                                     <p className="text-xs text-muted-foreground">
                                       {booking.invitee_email}
                                     </p>
                                   </div>
                                   <div className="text-right">
                                     <p className="text-xs font-medium">
-                                      {new Date(booking.start_at).toLocaleDateString(undefined, {
+                                      {new Date(
+                                        booking.start_at,
+                                      ).toLocaleDateString(undefined, {
                                         day: "2-digit",
                                         month: "short",
                                         year: "numeric",
                                       })}
                                     </p>
                                     <p className="text-xs text-muted-foreground">
-                                      {new Date(booking.start_at).toLocaleTimeString(undefined, {
+                                      {new Date(
+                                        booking.start_at,
+                                      ).toLocaleTimeString(undefined, {
                                         hour: "2-digit",
                                         minute: "2-digit",
                                       })}
@@ -431,7 +501,8 @@ export function EventTypeDetailDrawer({
                         {pastBookings.length > 0 && (
                           <div>
                             <h3 className="text-sm font-semibold mb-3">
-                              {t("bookings.past") || "Past"} ({pastBookings.length})
+                              {t("bookings.past") || "Past"} (
+                              {pastBookings.length})
                             </h3>
                             <div className="space-y-2">
                               {pastBookings.slice(0, 10).map((booking) => (
@@ -440,21 +511,27 @@ export function EventTypeDetailDrawer({
                                   className="flex items-center justify-between p-3 border rounded-lg opacity-75"
                                 >
                                   <div>
-                                    <p className="text-sm font-medium">{booking.invitee_name}</p>
+                                    <p className="text-sm font-medium">
+                                      {booking.invitee_name}
+                                    </p>
                                     <p className="text-xs text-muted-foreground">
                                       {booking.invitee_email}
                                     </p>
                                   </div>
                                   <div className="text-right">
                                     <p className="text-xs font-medium">
-                                      {new Date(booking.start_at).toLocaleDateString(undefined, {
+                                      {new Date(
+                                        booking.start_at,
+                                      ).toLocaleDateString(undefined, {
                                         day: "2-digit",
                                         month: "short",
                                         year: "numeric",
                                       })}
                                     </p>
                                     <p className="text-xs text-muted-foreground">
-                                      {new Date(booking.start_at).toLocaleTimeString(undefined, {
+                                      {new Date(
+                                        booking.start_at,
+                                      ).toLocaleTimeString(undefined, {
                                         hour: "2-digit",
                                         minute: "2-digit",
                                       })}
@@ -474,7 +551,9 @@ export function EventTypeDetailDrawer({
                 <TabsContent value="share" className="mt-6">
                   <Card>
                     <CardHeader>
-                      <CardTitle>{t("share.title") || "Share Event Type"}</CardTitle>
+                      <CardTitle>
+                        {t("share.title") || "Share Event Type"}
+                      </CardTitle>
                       <CardDescription>
                         {t("share.description") ||
                           "Share this link to allow others to book this event type"}
@@ -514,7 +593,8 @@ export function EventTypeDetailDrawer({
               {t("error") || "Failed to load event type"}
             </p>
             <p className="text-xs text-muted-foreground">
-              {t("errorDescription") || "The event type could not be loaded. Please try again."}
+              {t("errorDescription") ||
+                "The event type could not be loaded. Please try again."}
             </p>
           </div>
         )}
@@ -522,4 +602,3 @@ export function EventTypeDetailDrawer({
     </Sheet>
   );
 }
-

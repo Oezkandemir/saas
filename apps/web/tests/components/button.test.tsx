@@ -1,21 +1,24 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+
 import { Button } from "@/components/ui/button";
 
 describe("Button Component", () => {
   it("should render button with text", () => {
     render(<Button>Click me</Button>);
-    expect(screen.getByRole("button", { name: /click me/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /click me/i }),
+    ).toBeInTheDocument();
   });
 
   it("should handle click events", async () => {
     const handleClick = vi.fn();
     const user = userEvent.setup();
-    
+
     render(<Button onClick={handleClick}>Click me</Button>);
     const button = screen.getByRole("button", { name: /click me/i });
-    
+
     await user.click(button);
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
@@ -42,7 +45,7 @@ describe("Button Component", () => {
     render(
       <Button asChild>
         <a href="/test">Link Button</a>
-      </Button>
+      </Button>,
     );
     const link = screen.getByRole("link", { name: /link button/i });
     expect(link).toBeInTheDocument();
@@ -58,16 +61,12 @@ describe("Button Component", () => {
   it("should support keyboard navigation", async () => {
     const handleClick = vi.fn();
     const user = userEvent.setup();
-    
+
     render(<Button onClick={handleClick}>Press Enter</Button>);
     const button = screen.getByRole("button", { name: /press enter/i });
-    
+
     button.focus();
     await user.keyboard("{Enter}");
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 });
-
-
-
-

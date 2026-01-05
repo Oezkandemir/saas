@@ -1,17 +1,22 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
+
 import { adminSidebarLinks } from "@/config/admin";
 import { sidebarLinks } from "@/config/dashboard";
-import { DashboardSidebar, MobileSheetSidebar } from "./dashboard-sidebar-wrapper";
 import { SearchCommand } from "@/components/dashboard/search-command";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { UserAccountNav } from "./user-account-nav";
-import Link from "next/link";
+import { TwoFactorSecurityBanner } from "@/components/security/two-factor-security-banner";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
-import { TwoFactorSecurityBanner } from "@/components/security/two-factor-security-banner";
+
+import {
+  DashboardSidebar,
+  MobileSheetSidebar,
+} from "./dashboard-sidebar-wrapper";
 import { ScrollToTop } from "./scroll-to-top";
+import { UserAccountNav } from "./user-account-nav";
 
 interface SidebarLinksProviderProps {
   userRole?: string | null;
@@ -19,19 +24,21 @@ interface SidebarLinksProviderProps {
   children: React.ReactNode;
 }
 
-export function SidebarLinksProvider({ 
-  userRole, 
+export function SidebarLinksProvider({
+  userRole,
   siteName,
-  children 
+  children,
 }: SidebarLinksProviderProps) {
   const pathname = usePathname();
   // Check if we're on an admin route (handles both /admin and /locale/admin)
   // Matches: /admin, /admin/, /en/admin, /de/admin, /en/admin/users, etc.
-  const isAdminRoute = pathname?.includes("/admin") || pathname?.match(/\/[a-z]{2}\/admin/);
-  
+  const isAdminRoute =
+    pathname?.includes("/admin") || pathname?.match(/\/[a-z]{2}\/admin/);
+
   // Use admin sidebar links if on admin route and user is admin, otherwise use dashboard links
-  const baseLinks = isAdminRoute && userRole === "ADMIN" ? adminSidebarLinks : sidebarLinks;
-  
+  const baseLinks =
+    isAdminRoute && userRole === "ADMIN" ? adminSidebarLinks : sidebarLinks;
+
   // Filter sidebar links based on user role
   const filteredLinks = baseLinks.map((section) => ({
     ...section,
@@ -66,9 +73,7 @@ export function SidebarLinksProvider({
             <MobileSheetSidebar links={filteredLinks} />
             <Link href="/" className="flex items-center space-x-1.5">
               <Icons.logo />
-              <span className="font-urban text-xl font-bold">
-                {siteName}
-              </span>
+              <span className="font-urban text-xl font-bold">{siteName}</span>
             </Link>
 
             <div className="w-full flex-1" />
@@ -97,4 +102,3 @@ export function SidebarLinksProvider({
     </div>
   );
 }
-

@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { refreshSubscription } from "@/actions/refresh-subscription";
 import { toast } from "sonner";
 
-import { Button } from '@/components/alignui/actions/button';
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Icons } from "@/components/shared/icons";
 import { logger } from "@/lib/logger";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Button } from "@/components/alignui/actions/button";
+import { Icons } from "@/components/shared/icons";
 
 export function RefreshSubscriptionButton() {
   const [isLoading, setIsLoading] = useState(false);

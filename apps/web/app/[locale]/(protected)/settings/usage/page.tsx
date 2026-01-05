@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
-import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
 import { BarChart3 } from "lucide-react";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
-import { getCurrentUser } from "@/lib/session";
 import { getAllPlanFeatures } from "@/lib/plan-features";
+import { getCurrentUser } from "@/lib/session";
 import { checkUsageWarnings } from "@/lib/usage-billing";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { UsageDashboard } from "@/components/plan/usage-dashboard/usage-dashboard";
@@ -47,7 +47,3 @@ export default async function UsagePage() {
     </UnifiedPageLayout>
   );
 }
-
-
-
-

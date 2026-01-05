@@ -1,9 +1,10 @@
 "use server";
 
 import { auth } from "@/auth";
-import { getPolarProduct } from "@/lib/polar";
-import { logger } from "@/lib/logger";
+
 import { supabaseAdmin } from "@/lib/db";
+import { logger } from "@/lib/logger";
+import { getPolarProduct } from "@/lib/polar";
 
 /**
  * Verify which Polar product ID corresponds to which plan
@@ -81,4 +82,3 @@ export async function verifyPolarProduct(productId?: string): Promise<{
     };
   }
 }
-

@@ -1,25 +1,31 @@
 import * as React from "react";
 import Link from "next/link";
+import {
+  Calendar,
+  CheckCircle2,
+  Clock,
+  CreditCard,
+  XCircle,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Calendar, CreditCard, CheckCircle2, XCircle, Clock } from "lucide-react";
 
 import { UserSubscriptionPlan } from "types";
+import { pricingData } from "@/config/subscriptions";
 import { cn, formatDate } from "@/lib/utils";
-import { buttonVariants } from '@/components/alignui/actions/button';
+import { buttonVariants } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 import { Icons } from "@/components/shared/icons";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/alignui/data-display/card';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 
 import { PolarPortalButton } from "./polar-portal-button";
-import { PolarPortalButtonWithSubscription } from "./polar-portal-button-subscription";
 import { PolarPortalButtonFallback } from "./polar-portal-button-fallback";
-import { pricingData } from "@/config/subscriptions";
+import { PolarPortalButtonWithSubscription } from "./polar-portal-button-subscription";
 
 // Default free plan as fallback
 const DEFAULT_FREE_PLAN: UserSubscriptionPlan = {
@@ -43,7 +49,9 @@ interface BillingInfoProps extends React.HTMLAttributes<HTMLFormElement> {
   userSubscriptionPlan?: UserSubscriptionPlan;
 }
 
-export function BillingInfo({ userSubscriptionPlan = DEFAULT_FREE_PLAN }: BillingInfoProps) {
+export function BillingInfo({
+  userSubscriptionPlan = DEFAULT_FREE_PLAN,
+}: BillingInfoProps) {
   const t = useTranslations("Billing");
   const {
     title,
@@ -73,11 +81,12 @@ export function BillingInfo({ userSubscriptionPlan = DEFAULT_FREE_PLAN }: Billin
               <CardTitle className="text-2xl">{title} Plan</CardTitle>
               <CardDescription className="mt-1">{description}</CardDescription>
             </div>
-            <Badge 
-              variant={isPaid ? "default" : "outline"} 
+            <Badge
+              variant={isPaid ? "default" : "outline"}
               className={cn(
                 "text-sm px-3 py-1",
-                isPaid && "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20"
+                isPaid &&
+                  "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20",
               )}
             >
               {isPaid ? (
@@ -116,7 +125,10 @@ export function BillingInfo({ userSubscriptionPlan = DEFAULT_FREE_PLAN }: Billin
                       <span>Current Period</span>
                     </div>
                     <p className="text-sm font-medium">
-                      {currentPeriodStart ? formatDate(currentPeriodStart) : 'N/A'} - {formatDate(currentPeriodEnd)}
+                      {currentPeriodStart
+                        ? formatDate(currentPeriodStart)
+                        : "N/A"}{" "}
+                      - {formatDate(currentPeriodEnd)}
                     </p>
                   </div>
                 )}
@@ -128,7 +140,9 @@ export function BillingInfo({ userSubscriptionPlan = DEFAULT_FREE_PLAN }: Billin
                       <span>Subscribed Since</span>
                     </div>
                     <p className="text-sm font-medium">
-                      {subscriptionStart ? formatDate(subscriptionStart) : 'N/A'}
+                      {subscriptionStart
+                        ? formatDate(subscriptionStart)
+                        : "N/A"}
                     </p>
                   </div>
                 )}
@@ -161,23 +175,24 @@ export function BillingInfo({ userSubscriptionPlan = DEFAULT_FREE_PLAN }: Billin
                         {t("manageSubscription") || "Manage Subscription"}
                       </h3>
                       <p className="text-xs text-muted-foreground">
-                        {t("manageSubscriptionDescription") || "Update or cancel your subscription"}
+                        {t("manageSubscriptionDescription") ||
+                          "Update or cancel your subscription"}
                       </p>
                     </div>
                     {polarCustomerId ? (
-                      <PolarPortalButton 
+                      <PolarPortalButton
                         customerId={polarCustomerId}
                         variant="default"
                         className="w-full sm:w-auto"
                       />
                     ) : polarSubscriptionId ? (
-                      <PolarPortalButtonWithSubscription 
+                      <PolarPortalButtonWithSubscription
                         subscriptionId={polarSubscriptionId}
                         variant="default"
                         className="w-full sm:w-auto"
                       />
                     ) : (
-                      <PolarPortalButtonFallback 
+                      <PolarPortalButtonFallback
                         variant="default"
                         className="w-full sm:w-auto"
                       />
@@ -192,7 +207,8 @@ export function BillingInfo({ userSubscriptionPlan = DEFAULT_FREE_PLAN }: Billin
                   {isCanceled ? (
                     <p className="flex items-center gap-2">
                       <XCircle className="size-4 text-amber-600 dark:text-amber-400" />
-                      Your subscription will be canceled on {formatDate(currentPeriodEnd)}
+                      Your subscription will be canceled on{" "}
+                      {formatDate(currentPeriodEnd)}
                     </p>
                   ) : (
                     <p className="flex items-center gap-2">
@@ -209,7 +225,8 @@ export function BillingInfo({ userSubscriptionPlan = DEFAULT_FREE_PLAN }: Billin
               <div className="space-y-4">
                 <div className="p-4 rounded-lg border bg-muted/30">
                   <p className="text-sm text-muted-foreground mb-2">
-                    You&apos;re currently on the free plan with limited features.
+                    You&apos;re currently on the free plan with limited
+                    features.
                   </p>
                   <p className="text-sm text-muted-foreground">
                     Upgrade to unlock all features and get unlimited access.
@@ -219,7 +236,9 @@ export function BillingInfo({ userSubscriptionPlan = DEFAULT_FREE_PLAN }: Billin
                 {/* Upgrade CTA */}
                 <div className="flex items-center justify-between pt-4 border-t">
                   <div>
-                    <p className="text-sm font-medium mb-1">Ready to upgrade?</p>
+                    <p className="text-sm font-medium mb-1">
+                      Ready to upgrade?
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       Choose a plan that fits your needs
                     </p>
@@ -240,8 +259,10 @@ export function BillingInfo({ userSubscriptionPlan = DEFAULT_FREE_PLAN }: Billin
                         Subscription Not Detected
                       </h3>
                       <p className="text-sm text-amber-700 dark:text-amber-300 mb-3">
-                        If you&apos;ve recently upgraded but don&apos;t see your subscription, 
-                        it will be synced automatically via webhooks. Please wait a few moments and refresh the page.
+                        If you&apos;ve recently upgraded but don&apos;t see your
+                        subscription, it will be synced automatically via
+                        webhooks. Please wait a few moments and refresh the
+                        page.
                       </p>
                     </div>
                   </div>

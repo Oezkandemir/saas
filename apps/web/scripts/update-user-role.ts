@@ -11,7 +11,9 @@ const newRole = process.argv[3];
 
 if (!userId || !newRole) {
   logger.error("Usage: npx tsx scripts/update-user-role.ts <userId> <role>");
-  logger.error("Example: npx tsx scripts/update-user-role.ts bfe22e7b-05a2-48c8-ab53-dc4542dc9367 ADMIN");
+  logger.error(
+    "Example: npx tsx scripts/update-user-role.ts bfe22e7b-05a2-48c8-ab53-dc4542dc9367 ADMIN",
+  );
   process.exit(1);
 }
 
@@ -70,19 +72,3 @@ async function updateUserRole() {
 }
 
 updateUserRole();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

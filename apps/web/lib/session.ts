@@ -1,8 +1,8 @@
 import { cache } from "react";
 import { type Session } from "@supabase/supabase-js";
 
-import { getSupabaseServer } from "@/lib/supabase-server";
 import { logger } from "@/lib/logger";
+import { getSupabaseServer } from "@/lib/supabase-server";
 
 import "server-only";
 
@@ -32,7 +32,7 @@ async function _getCurrentUserInternal() {
       .select("role")
       .eq("id", user.id)
       .single();
-    
+
     // If database query fails, log error but don't fail the whole request
     if (roleError) {
       logger.error("Error fetching user role from database:", roleError);

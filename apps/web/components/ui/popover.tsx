@@ -29,11 +29,12 @@ const PopoverContent = React.forwardRef<
 PopoverContent.displayName = PopoverPrimitive.Content.displayName;
 
 // Export a Modal version of Popover that enhances mouse interaction
-const PopoverModal = ({ modal = true, ...props }: React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Root> & {
+const PopoverModal = ({
+  modal = true,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Root> & {
   modal?: boolean;
-}) => (
-  <PopoverPrimitive.Root modal={modal} {...props} />
-);
+}) => <PopoverPrimitive.Root modal={modal} {...props} />;
 PopoverModal.displayName = "PopoverModal";
 
 export { Popover, PopoverTrigger, PopoverContent, PopoverModal };

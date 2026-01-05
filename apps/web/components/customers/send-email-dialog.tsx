@@ -1,11 +1,19 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
+import { Customer } from "@/actions/customers-actions";
+import { sendCustomerEmail } from "@/actions/send-customer-email";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Mail, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
-import { Mail, Send, Loader2 } from "lucide-react";
+
+import { Button } from "@/components/alignui/actions/button";
+import { Input } from "@/components/alignui/forms/input";
+import { LabelRoot as Label } from "@/components/alignui/forms/label";
+import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
 import {
   DialogRoot as Dialog,
   DialogContent,
@@ -15,13 +23,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/alignui/overlays/dialog";
-import { Button } from '@/components/alignui/actions/button';
-import { Input } from '@/components/alignui/forms/input';
-import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
-import { LabelRoot as Label } from "@/components/alignui/forms/label";
-import { sendCustomerEmail } from "@/actions/send-customer-email";
-import { toast } from "sonner";
-import { Customer } from "@/actions/customers-actions";
 
 type EmailFormValues = {
   subject: string;
@@ -40,8 +41,14 @@ export function SendEmailDialog({ customer, trigger }: SendEmailDialogProps) {
   const [isPending, startTransition] = useTransition();
 
   const emailSchema = z.object({
-    subject: z.string().min(1, tValidation("subjectRequired")).max(200, tValidation("subjectMax")),
-    body: z.string().min(1, tValidation("bodyRequired")).max(5000, tValidation("bodyMax")),
+    subject: z
+      .string()
+      .min(1, tValidation("subjectRequired"))
+      .max(200, tValidation("subjectMax")),
+    body: z
+      .string()
+      .min(1, tValidation("bodyRequired"))
+      .max(5000, tValidation("bodyMax")),
   });
 
   const {
@@ -75,9 +82,7 @@ export function SendEmailDialog({ customer, trigger }: SendEmailDialogProps) {
         reset();
         setOpen(false);
       } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : t("toast.error")
-        );
+        toast.error(error instanceof Error ? error.message : t("toast.error"));
       }
     });
   };
@@ -117,7 +122,9 @@ export function SendEmailDialog({ customer, trigger }: SendEmailDialogProps) {
               disabled={isPending}
             />
             {errors.subject && (
-              <p className="text-sm text-destructive">{errors.subject.message}</p>
+              <p className="text-sm text-destructive">
+                {errors.subject.message}
+              </p>
             )}
           </div>
 
@@ -163,9 +170,3 @@ export function SendEmailDialog({ customer, trigger }: SendEmailDialogProps) {
     </Dialog>
   );
 }
-
-
-
-
-
-

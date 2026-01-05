@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { cn } from '@/lib/utils';
+import * as React from "react";
+
+import { cn } from "@/lib/utils";
 
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
@@ -12,8 +13,8 @@ const TextareaRoot = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       <div className="relative">
         <textarea
           className={cn(
-            'flex min-h-20 w-full rounded-md border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 text-label-sm text-text-strong-950 ring-offset-bg-white-0 placeholder:text-text-sub-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stroke-soft-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
-            className
+            "flex min-h-20 w-full rounded-md border border-stroke-soft-200 bg-bg-white-0 px-3 py-2 text-label-sm text-text-strong-950 ring-offset-bg-white-0 placeholder:text-text-sub-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stroke-soft-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+            className,
           )}
           ref={ref}
           {...props}
@@ -21,9 +22,9 @@ const TextareaRoot = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         {children}
       </div>
     );
-  }
+  },
 );
-TextareaRoot.displayName = 'Textarea.Root';
+TextareaRoot.displayName = "Textarea.Root";
 
 interface TextareaCharCounterProps {
   current: number;
@@ -38,15 +39,15 @@ const TextareaCharCounter = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'absolute bottom-2 right-2 text-label-xs text-text-sub-600',
-      className
+      "absolute bottom-2 right-2 text-label-xs text-text-sub-600",
+      className,
     )}
     {...props}
   >
     {current}/{max}
   </div>
 ));
-TextareaCharCounter.displayName = 'Textarea.CharCounter';
+TextareaCharCounter.displayName = "Textarea.CharCounter";
 
 // Export individual components
 export { TextareaRoot, TextareaCharCounter };
@@ -56,4 +57,3 @@ export const Textarea = {
   Root: TextareaRoot,
   CharCounter: TextareaCharCounter,
 };
-

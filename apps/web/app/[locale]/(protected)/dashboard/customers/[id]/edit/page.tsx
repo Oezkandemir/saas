@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/session";
 import { getCustomer } from "@/actions/customers-actions";
+import { User } from "lucide-react";
+
+import { getCurrentUser } from "@/lib/session";
 import { CustomerForm } from "@/components/customers/customer-form";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { User } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -31,4 +32,3 @@ export default async function EditCustomerPage({
     </UnifiedPageLayout>
   );
 }
-

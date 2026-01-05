@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
 import { InfoLdg } from "@/types";
+import { getTranslations } from "next-intl/server";
 
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/shared/icons";
@@ -10,7 +10,6 @@ interface InfoLandingProps {
   data: InfoLdg;
   reverse?: boolean;
   infoKey: "empower" | "integration";
-  
 }
 
 export default async function InfoLanding({

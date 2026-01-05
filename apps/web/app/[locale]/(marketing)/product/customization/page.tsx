@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
+} from "@/components/alignui/data-display/card";
 
 export const metadata: Metadata = constructMetadata({
   title: "Customization",

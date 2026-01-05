@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+
+import { logger } from "./logger";
 import { checkRateLimit } from "./rate-limit";
 import { getCurrentUser } from "./session";
-import { logger } from "./logger";
 
 /**
  * API Middleware for common security checks
@@ -108,4 +109,3 @@ export async function applyAPIMiddleware(
 
   return { valid: true };
 }
-

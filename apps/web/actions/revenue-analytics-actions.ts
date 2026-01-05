@@ -1,8 +1,8 @@
 "use server";
 
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
-import { logger } from "@/lib/logger";
 
 type ActionResult<T> = {
   success: boolean;
@@ -58,7 +58,8 @@ export async function getRevenueAnalytics(
     }
 
     const end = endDate || new Date();
-    const start = startDate || new Date(end.getTime() - 12 * 30 * 24 * 60 * 60 * 1000);
+    const start =
+      startDate || new Date(end.getTime() - 12 * 30 * 24 * 60 * 60 * 1000);
 
     const [byPeriod, byPlan, metrics] = await Promise.all([
       getRevenueByPeriod(start, end),
@@ -132,21 +133,23 @@ export async function getRevenueByPeriod(
 
     return {
       success: true,
-      data: (data || []).map((item: {
-        period_start: string;
-        period_end: string;
-        total_revenue: string | number;
-        subscriber_count: string | number;
-        avg_revenue_per_subscriber: string | number;
-      }) => ({
-        period_start: item.period_start,
-        period_end: item.period_end,
-        total_revenue: parseFloat(String(item.total_revenue || "0")),
-        subscriber_count: parseInt(String(item.subscriber_count || "0"), 10),
-        avg_revenue_per_subscriber: parseFloat(
-          String(item.avg_revenue_per_subscriber || "0"),
-        ),
-      })) as RevenueByPeriod[],
+      data: (data || []).map(
+        (item: {
+          period_start: string;
+          period_end: string;
+          total_revenue: string | number;
+          subscriber_count: string | number;
+          avg_revenue_per_subscriber: string | number;
+        }) => ({
+          period_start: item.period_start,
+          period_end: item.period_end,
+          total_revenue: parseFloat(String(item.total_revenue || "0")),
+          subscriber_count: parseInt(String(item.subscriber_count || "0"), 10),
+          avg_revenue_per_subscriber: parseFloat(
+            String(item.avg_revenue_per_subscriber || "0"),
+          ),
+        }),
+      ) as RevenueByPeriod[],
     };
   } catch (error) {
     logger.error("Error in getRevenueByPeriod:", error);
@@ -190,21 +193,23 @@ export async function getRevenueByPlan(
 
     return {
       success: true,
-      data: (data || []).map((item: {
-        plan: string;
-        subscriber_count: string | number;
-        total_revenue: string | number;
-        avg_revenue_per_subscriber: string | number;
-        mrr: string | number;
-      }) => ({
-        plan: item.plan,
-        subscriber_count: parseInt(String(item.subscriber_count || "0"), 10),
-        total_revenue: parseFloat(String(item.total_revenue || "0")),
-        avg_revenue_per_subscriber: parseFloat(
-          String(item.avg_revenue_per_subscriber || "0"),
-        ),
-        mrr: parseFloat(String(item.mrr || "0")),
-      })) as RevenueByPlan[],
+      data: (data || []).map(
+        (item: {
+          plan: string;
+          subscriber_count: string | number;
+          total_revenue: string | number;
+          avg_revenue_per_subscriber: string | number;
+          mrr: string | number;
+        }) => ({
+          plan: item.plan,
+          subscriber_count: parseInt(String(item.subscriber_count || "0"), 10),
+          total_revenue: parseFloat(String(item.total_revenue || "0")),
+          avg_revenue_per_subscriber: parseFloat(
+            String(item.avg_revenue_per_subscriber || "0"),
+          ),
+          mrr: parseFloat(String(item.mrr || "0")),
+        }),
+      ) as RevenueByPlan[],
     };
   } catch (error) {
     logger.error("Error in getRevenueByPlan:", error);
@@ -280,20 +285,3 @@ export async function getSubscriptionMetrics(): Promise<
     };
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

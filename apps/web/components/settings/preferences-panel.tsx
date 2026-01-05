@@ -1,30 +1,46 @@
 "use client";
 
-import { useTransition, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useTransition } from "react";
+import {
+  updateUserPreferences,
+  type ExtendedPreferences,
+} from "@/actions/preferences-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useTheme } from "next-themes";
-import { useTranslations } from "next-intl";
-import { updateUserPreferences, type ExtendedPreferences } from "@/actions/preferences-actions";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { Button } from '@/components/alignui/actions/button';
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
-import { 
-  Bell, 
-  Globe, 
-  Calendar, 
-  DollarSign, 
-  Mail, 
-  Moon, 
-  Sun, 
+import {
+  Bell,
+  Calendar,
+  DollarSign,
+  Globe,
+  Loader2,
+  Mail,
   Monitor,
-  Loader2
+  Moon,
+  Sun,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/alignui/actions/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 
 const preferencesSchema = z.object({
   theme_preference: z.enum(["system", "light", "dark"]),
@@ -85,61 +101,147 @@ interface PreferencesPanelProps {
   initialPreferences: ExtendedPreferences;
 }
 
-export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) {
+export function PreferencesPanel({
+  initialPreferences,
+}: PreferencesPanelProps) {
   const t = useTranslations("Preferences");
   const [isPending, startTransition] = useTransition();
   const { theme, setTheme } = useTheme();
-  const { handleSubmit, watch, setValue, formState: { isDirty } } = useForm<PreferencesFormData>({
+  const {
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { isDirty },
+  } = useForm<PreferencesFormData>({
     resolver: zodResolver(preferencesSchema),
     defaultValues: {
-      theme_preference: initialPreferences.theme_preference as "system" | "light" | "dark",
+      theme_preference: initialPreferences.theme_preference as
+        | "system"
+        | "light"
+        | "dark",
       language_preference: initialPreferences.language_preference,
       locale: initialPreferences.locale,
       timezone: initialPreferences.timezone,
-      date_format: initialPreferences.date_format as "DD.MM.YYYY" | "MM/DD/YYYY" | "YYYY-MM-DD" | "DD/MM/YYYY",
+      date_format: initialPreferences.date_format as
+        | "DD.MM.YYYY"
+        | "MM/DD/YYYY"
+        | "YYYY-MM-DD"
+        | "DD/MM/YYYY",
       time_format: initialPreferences.time_format as "12h" | "24h",
       currency: initialPreferences.currency,
-      number_format: initialPreferences.number_format as "european" | "american",
-      email_digest_frequency: initialPreferences.email_digest_frequency as "never" | "daily" | "weekly" | "monthly",
+      number_format: initialPreferences.number_format as
+        | "european"
+        | "american",
+      email_digest_frequency: initialPreferences.email_digest_frequency as
+        | "never"
+        | "daily"
+        | "weekly"
+        | "monthly",
       notification_preferences_granular: {
         email: {
-          system: initialPreferences.notification_preferences_granular?.email?.system ?? true,
-          billing: initialPreferences.notification_preferences_granular?.email?.billing ?? true,
-          security: initialPreferences.notification_preferences_granular?.email?.security ?? true,
-          marketing: initialPreferences.notification_preferences_granular?.email?.marketing ?? false,
-          support: initialPreferences.notification_preferences_granular?.email?.support ?? true,
-          newsletter: initialPreferences.notification_preferences_granular?.email?.newsletter ?? false,
-          customer: initialPreferences.notification_preferences_granular?.email?.customer ?? true,
-          document: initialPreferences.notification_preferences_granular?.email?.document ?? true,
-          subscription: initialPreferences.notification_preferences_granular?.email?.subscription ?? true,
-          invoice: initialPreferences.notification_preferences_granular?.email?.invoice ?? true,
-          payment: initialPreferences.notification_preferences_granular?.email?.payment ?? true,
+          system:
+            initialPreferences.notification_preferences_granular?.email
+              ?.system ?? true,
+          billing:
+            initialPreferences.notification_preferences_granular?.email
+              ?.billing ?? true,
+          security:
+            initialPreferences.notification_preferences_granular?.email
+              ?.security ?? true,
+          marketing:
+            initialPreferences.notification_preferences_granular?.email
+              ?.marketing ?? false,
+          support:
+            initialPreferences.notification_preferences_granular?.email
+              ?.support ?? true,
+          newsletter:
+            initialPreferences.notification_preferences_granular?.email
+              ?.newsletter ?? false,
+          customer:
+            initialPreferences.notification_preferences_granular?.email
+              ?.customer ?? true,
+          document:
+            initialPreferences.notification_preferences_granular?.email
+              ?.document ?? true,
+          subscription:
+            initialPreferences.notification_preferences_granular?.email
+              ?.subscription ?? true,
+          invoice:
+            initialPreferences.notification_preferences_granular?.email
+              ?.invoice ?? true,
+          payment:
+            initialPreferences.notification_preferences_granular?.email
+              ?.payment ?? true,
         },
         push: {
-          system: initialPreferences.notification_preferences_granular?.push?.system ?? true,
-          billing: initialPreferences.notification_preferences_granular?.push?.billing ?? true,
-          security: initialPreferences.notification_preferences_granular?.push?.security ?? true,
-          marketing: initialPreferences.notification_preferences_granular?.push?.marketing ?? false,
-          support: initialPreferences.notification_preferences_granular?.push?.support ?? true,
-          newsletter: initialPreferences.notification_preferences_granular?.push?.newsletter ?? false,
-          customer: initialPreferences.notification_preferences_granular?.push?.customer ?? true,
-          document: initialPreferences.notification_preferences_granular?.push?.document ?? true,
-          subscription: initialPreferences.notification_preferences_granular?.push?.subscription ?? true,
-          invoice: initialPreferences.notification_preferences_granular?.push?.invoice ?? true,
-          payment: initialPreferences.notification_preferences_granular?.push?.payment ?? true,
+          system:
+            initialPreferences.notification_preferences_granular?.push
+              ?.system ?? true,
+          billing:
+            initialPreferences.notification_preferences_granular?.push
+              ?.billing ?? true,
+          security:
+            initialPreferences.notification_preferences_granular?.push
+              ?.security ?? true,
+          marketing:
+            initialPreferences.notification_preferences_granular?.push
+              ?.marketing ?? false,
+          support:
+            initialPreferences.notification_preferences_granular?.push
+              ?.support ?? true,
+          newsletter:
+            initialPreferences.notification_preferences_granular?.push
+              ?.newsletter ?? false,
+          customer:
+            initialPreferences.notification_preferences_granular?.push
+              ?.customer ?? true,
+          document:
+            initialPreferences.notification_preferences_granular?.push
+              ?.document ?? true,
+          subscription:
+            initialPreferences.notification_preferences_granular?.push
+              ?.subscription ?? true,
+          invoice:
+            initialPreferences.notification_preferences_granular?.push
+              ?.invoice ?? true,
+          payment:
+            initialPreferences.notification_preferences_granular?.push
+              ?.payment ?? true,
         },
         in_app: {
-          system: initialPreferences.notification_preferences_granular?.in_app?.system ?? true,
-          billing: initialPreferences.notification_preferences_granular?.in_app?.billing ?? true,
-          security: initialPreferences.notification_preferences_granular?.in_app?.security ?? true,
-          marketing: initialPreferences.notification_preferences_granular?.in_app?.marketing ?? false,
-          support: initialPreferences.notification_preferences_granular?.in_app?.support ?? true,
-          newsletter: initialPreferences.notification_preferences_granular?.in_app?.newsletter ?? false,
-          customer: initialPreferences.notification_preferences_granular?.in_app?.customer ?? true,
-          document: initialPreferences.notification_preferences_granular?.in_app?.document ?? true,
-          subscription: initialPreferences.notification_preferences_granular?.in_app?.subscription ?? true,
-          invoice: initialPreferences.notification_preferences_granular?.in_app?.invoice ?? true,
-          payment: initialPreferences.notification_preferences_granular?.in_app?.payment ?? true,
+          system:
+            initialPreferences.notification_preferences_granular?.in_app
+              ?.system ?? true,
+          billing:
+            initialPreferences.notification_preferences_granular?.in_app
+              ?.billing ?? true,
+          security:
+            initialPreferences.notification_preferences_granular?.in_app
+              ?.security ?? true,
+          marketing:
+            initialPreferences.notification_preferences_granular?.in_app
+              ?.marketing ?? false,
+          support:
+            initialPreferences.notification_preferences_granular?.in_app
+              ?.support ?? true,
+          newsletter:
+            initialPreferences.notification_preferences_granular?.in_app
+              ?.newsletter ?? false,
+          customer:
+            initialPreferences.notification_preferences_granular?.in_app
+              ?.customer ?? true,
+          document:
+            initialPreferences.notification_preferences_granular?.in_app
+              ?.document ?? true,
+          subscription:
+            initialPreferences.notification_preferences_granular?.in_app
+              ?.subscription ?? true,
+          invoice:
+            initialPreferences.notification_preferences_granular?.in_app
+              ?.invoice ?? true,
+          payment:
+            initialPreferences.notification_preferences_granular?.in_app
+              ?.payment ?? true,
         },
       },
     },
@@ -149,7 +251,10 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
 
   // Sync theme preference with ThemeProvider when it changes
   useEffect(() => {
-    if (watchedPreferences.theme_preference && watchedPreferences.theme_preference !== theme) {
+    if (
+      watchedPreferences.theme_preference &&
+      watchedPreferences.theme_preference !== theme
+    ) {
       setTheme(watchedPreferences.theme_preference);
     }
   }, [watchedPreferences.theme_preference, theme, setTheme]);
@@ -157,7 +262,7 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
   const onSubmit = async (data: PreferencesFormData) => {
     startTransition(async () => {
       const formData = new FormData();
-      
+
       Object.entries(data).forEach(([key, value]) => {
         if (key === "notification_preferences_granular") {
           formData.append(key, JSON.stringify(value));
@@ -178,8 +283,19 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
 
   const updateNotificationPreference = (
     channel: "email" | "push" | "in_app",
-    type: "system" | "billing" | "security" | "marketing" | "support" | "newsletter" | "customer" | "document" | "subscription" | "invoice" | "payment",
-    value: boolean
+    type:
+      | "system"
+      | "billing"
+      | "security"
+      | "marketing"
+      | "support"
+      | "newsletter"
+      | "customer"
+      | "document"
+      | "subscription"
+      | "invoice"
+      | "payment",
+    value: boolean,
   ) => {
     const current = watchedPreferences.notification_preferences_granular;
     setValue(
@@ -191,7 +307,7 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
           [type]: value,
         },
       },
-      { shouldDirty: true }
+      { shouldDirty: true },
     );
   };
 
@@ -257,7 +373,9 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-between items-center">
-            <Label htmlFor="language_preference">{t("languageRegion.language")}</Label>
+            <Label htmlFor="language_preference">
+              {t("languageRegion.language")}
+            </Label>
             <Select
               value={watchedPreferences.language_preference}
               onValueChange={(value) => setValue("language_preference", value)}
@@ -266,10 +384,18 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="en">{t("languageRegion.languages.english")}</SelectItem>
-                <SelectItem value="de">{t("languageRegion.languages.german")}</SelectItem>
-                <SelectItem value="fr">{t("languageRegion.languages.french")}</SelectItem>
-                <SelectItem value="es">{t("languageRegion.languages.spanish")}</SelectItem>
+                <SelectItem value="en">
+                  {t("languageRegion.languages.english")}
+                </SelectItem>
+                <SelectItem value="de">
+                  {t("languageRegion.languages.german")}
+                </SelectItem>
+                <SelectItem value="fr">
+                  {t("languageRegion.languages.french")}
+                </SelectItem>
+                <SelectItem value="es">
+                  {t("languageRegion.languages.spanish")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -303,8 +429,12 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
               <SelectContent>
                 <SelectItem value="UTC">UTC</SelectItem>
                 <SelectItem value="Europe/Berlin">Europe/Berlin</SelectItem>
-                <SelectItem value="America/New_York">America/New_York</SelectItem>
-                <SelectItem value="America/Los_Angeles">America/Los_Angeles</SelectItem>
+                <SelectItem value="America/New_York">
+                  America/New_York
+                </SelectItem>
+                <SelectItem value="America/Los_Angeles">
+                  America/Los_Angeles
+                </SelectItem>
                 <SelectItem value="Asia/Tokyo">Asia/Tokyo</SelectItem>
               </SelectContent>
             </Select>
@@ -343,7 +473,9 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
             <Label htmlFor="time_format">{t("dateTime.timeFormat")}</Label>
             <Select
               value={watchedPreferences.time_format}
-              onValueChange={(value) => setValue("time_format", value as "12h" | "24h")}
+              onValueChange={(value) =>
+                setValue("time_format", value as "12h" | "24h")
+              }
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
@@ -388,14 +520,20 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
             <Label htmlFor="number_format">{t("payment.numberFormat")}</Label>
             <Select
               value={watchedPreferences.number_format}
-              onValueChange={(value) => setValue("number_format", value as "european" | "american")}
+              onValueChange={(value) =>
+                setValue("number_format", value as "european" | "american")
+              }
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="european">{t("payment.european")}</SelectItem>
-                <SelectItem value="american">{t("payment.american")}</SelectItem>
+                <SelectItem value="european">
+                  {t("payment.european")}
+                </SelectItem>
+                <SelectItem value="american">
+                  {t("payment.american")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -413,10 +551,14 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-between items-center">
-            <Label htmlFor="email_digest_frequency">{t("emailDigest.frequency")}</Label>
+            <Label htmlFor="email_digest_frequency">
+              {t("emailDigest.frequency")}
+            </Label>
             <Select
               value={watchedPreferences.email_digest_frequency}
-              onValueChange={(value) => setValue("email_digest_frequency", value as any)}
+              onValueChange={(value) =>
+                setValue("email_digest_frequency", value as any)
+              }
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
@@ -424,8 +566,12 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
               <SelectContent>
                 <SelectItem value="never">{t("emailDigest.never")}</SelectItem>
                 <SelectItem value="daily">{t("emailDigest.daily")}</SelectItem>
-                <SelectItem value="weekly">{t("emailDigest.weekly")}</SelectItem>
-                <SelectItem value="monthly">{t("emailDigest.monthly")}</SelectItem>
+                <SelectItem value="weekly">
+                  {t("emailDigest.weekly")}
+                </SelectItem>
+                <SelectItem value="monthly">
+                  {t("emailDigest.monthly")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -444,27 +590,38 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
         <CardContent className="space-y-6">
           {(["email", "push", "in_app"] as const).map((channel) => (
             <div key={channel} className="space-y-4">
-              <h4 className="text-sm font-semibold capitalize">{t(`notifications.channels.${channel}`)}</h4>
+              <h4 className="text-sm font-semibold capitalize">
+                {t(`notifications.channels.${channel}`)}
+              </h4>
               <div className="pl-4 space-y-3">
-                {([
-                  "system", 
-                  "billing", 
-                  "security", 
-                  "support", 
-                  "marketing", 
-                  "newsletter",
-                  "customer",
-                  "document",
-                  "subscription",
-                  "invoice",
-                  "payment"
-                ] as const).map((type) => (
+                {(
+                  [
+                    "system",
+                    "billing",
+                    "security",
+                    "support",
+                    "marketing",
+                    "newsletter",
+                    "customer",
+                    "document",
+                    "subscription",
+                    "invoice",
+                    "payment",
+                  ] as const
+                ).map((type) => (
                   <div key={type} className="flex justify-between items-center">
-                    <Label htmlFor={`${channel}-${type}`} className="capitalize">
+                    <Label
+                      htmlFor={`${channel}-${type}`}
+                      className="capitalize"
+                    >
                       {t(`notifications.types.${type}`, { defaultValue: type })}
                     </Label>
                     <Switch
-                      checked={watchedPreferences.notification_preferences_granular[channel][type] ?? true}
+                      checked={
+                        watchedPreferences.notification_preferences_granular[
+                          channel
+                        ][type] ?? true
+                      }
                       onCheckedChange={(checked) =>
                         updateNotificationPreference(channel, type, checked)
                       }
@@ -488,4 +645,3 @@ export function PreferencesPanel({ initialPreferences }: PreferencesPanelProps) 
     </form>
   );
 }
-

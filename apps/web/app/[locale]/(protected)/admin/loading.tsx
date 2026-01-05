@@ -1,6 +1,7 @@
+import { Shield } from "lucide-react";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { Shield } from "lucide-react";
 
 export default function AdminPanelLoading() {
   return (
@@ -16,7 +17,7 @@ export default function AdminPanelLoading() {
           <Skeleton key={i} className="h-32 w-full rounded-lg" />
         ))}
       </div>
-      
+
       {/* Main Admin Modules */}
       <div className="grid gap-4 md:grid-cols-2">
         <Skeleton className="h-[500px] w-full rounded-lg" />

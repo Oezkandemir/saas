@@ -2,15 +2,13 @@ import { Link } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 
 import { cn } from "@/lib/utils";
-import { buttonVariants } from '@/components/alignui/actions/button';
+import { buttonVariants } from "@/components/alignui/actions/button";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
-interface ModernCTAProps {
-  
-}
+interface ModernCTAProps {}
 
-export default async function ModernCTA({ }: ModernCTAProps) {
+export default async function ModernCTA({}: ModernCTAProps) {
   const t = await getTranslations("CTA");
 
   return (
@@ -64,4 +62,3 @@ export default async function ModernCTA({ }: ModernCTAProps) {
     </section>
   );
 }
-

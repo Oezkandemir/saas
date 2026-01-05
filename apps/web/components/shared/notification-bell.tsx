@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 import { useNotifications } from "@/hooks/use-notifications";
-import { Button } from '@/components/alignui/actions/button';
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
@@ -13,6 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Button } from "@/components/alignui/actions/button";
 import { NotificationsPopover } from "@/components/shared/notifications-popover";
 
 interface NotificationBellProps {

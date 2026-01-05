@@ -1,29 +1,36 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, CheckCircle2, XCircle, AlertCircle, Send, Loader2 } from "lucide-react";
-import { Button } from '@/components/alignui/actions/button';
+import type {
+  EmailTemplate,
+  ResendConfigStatus,
+} from "@/actions/admin-email-actions";
+import {
+  sendTestEmail,
+  testResendConnection,
+} from "@/actions/admin-email-actions";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Loader2,
+  Mail,
+  Send,
+  XCircle,
+} from "lucide-react";
+import { toast } from "sonner";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Input } from '@/components/alignui/forms/input';
-import { Label } from "@/components/ui/label";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
-import { toast } from "sonner";
-import type { EmailTemplate, ResendConfigStatus } from "@/actions/admin-email-actions";
-import {
-  testResendConnection,
-  sendTestEmail,
-} from "@/actions/admin-email-actions";
+} from "@/components/alignui/data-display/card";
+import { Input } from "@/components/alignui/forms/input";
 
 type EmailTemplatesProps = {
   templates: EmailTemplate[];
@@ -132,12 +139,18 @@ export function EmailTemplates({
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">RESEND_API_KEY</span>
               {configStatus.apiKeyConfigured ? (
-                <Badge variant="outline" className="bg-green-500/10 text-green-700 dark:text-green-400">
+                <Badge
+                  variant="outline"
+                  className="bg-green-500/10 text-green-700 dark:text-green-400"
+                >
                   <CheckCircle2 className="mr-1 h-3 w-3" />
                   Gesetzt
                 </Badge>
               ) : (
-                <Badge variant="outline" className="bg-red-500/10 text-red-700 dark:text-red-400">
+                <Badge
+                  variant="outline"
+                  className="bg-red-500/10 text-red-700 dark:text-red-400"
+                >
                   <XCircle className="mr-1 h-3 w-3" />
                   Nicht gesetzt
                 </Badge>
@@ -146,12 +159,18 @@ export function EmailTemplates({
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">EMAIL_FROM</span>
               {configStatus.emailFromConfigured ? (
-                <Badge variant="outline" className="bg-green-500/10 text-green-700 dark:text-green-400">
+                <Badge
+                  variant="outline"
+                  className="bg-green-500/10 text-green-700 dark:text-green-400"
+                >
                   <CheckCircle2 className="mr-1 h-3 w-3" />
                   Gesetzt
                 </Badge>
               ) : (
-                <Badge variant="outline" className="bg-red-500/10 text-red-700 dark:text-red-400">
+                <Badge
+                  variant="outline"
+                  className="bg-red-500/10 text-red-700 dark:text-red-400"
+                >
                   <XCircle className="mr-1 h-3 w-3" />
                   Nicht gesetzt
                 </Badge>
@@ -181,13 +200,17 @@ export function EmailTemplates({
                   ? "Verbindung erfolgreich"
                   : "Verbindung fehlgeschlagen"}
               </AlertTitle>
-              <AlertDescription>{connectionTestResult.message}</AlertDescription>
+              <AlertDescription>
+                {connectionTestResult.message}
+              </AlertDescription>
             </Alert>
           )}
 
           <Button
             onClick={handleTestConnection}
-            disabled={testingConnection || configStatus.status === "not_configured"}
+            disabled={
+              testingConnection || configStatus.status === "not_configured"
+            }
             className="w-full"
           >
             {testingConnection ? (
@@ -224,7 +247,8 @@ export function EmailTemplates({
               onChange={(e) => setTestEmailAddress(e.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-              In der Entwicklung werden E-Mails automatisch an delivered@resend.dev weitergeleitet
+              In der Entwicklung werden E-Mails automatisch an
+              delivered@resend.dev weitergeleitet
             </p>
           </div>
         </CardContent>
@@ -286,8 +310,3 @@ export function EmailTemplates({
     </div>
   );
 }
-
-
-
-
-

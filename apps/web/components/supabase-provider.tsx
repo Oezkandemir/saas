@@ -4,8 +4,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { type Session } from "@supabase/supabase-js";
 
-import { type Database } from "@/lib/supabase";
 import { logger } from "@/lib/logger";
+import { type Database } from "@/lib/supabase";
 
 type SupabaseContextType = {
   supabase: ReturnType<typeof createBrowserClient<Database>>;

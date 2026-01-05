@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from '@/components/alignui/actions/button';
+import { Button } from "@/components/alignui/actions/button";
 
 export default function Error({ reset }: { reset: () => void }) {
   return (

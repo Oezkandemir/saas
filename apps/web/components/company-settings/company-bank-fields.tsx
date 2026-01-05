@@ -1,6 +1,8 @@
 "use client";
 
+import { CreditCard, Hash, Landmark, User } from "lucide-react";
 import { Control } from "react-hook-form";
+
 import {
   FormControl,
   FormDescription,
@@ -9,8 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from '@/components/alignui/forms/input';
-import { Landmark, CreditCard, User, Hash } from "lucide-react";
+import { Input } from "@/components/alignui/forms/input";
 
 interface CompanyBankFieldsProps {
   control: Control<any>;
@@ -36,9 +37,7 @@ export function CompanyBankFields({ control }: CompanyBankFieldsProps) {
                 value={field.value || ""}
               />
             </FormControl>
-            <FormDescription>
-              Name Ihrer Bank oder Sparkasse
-            </FormDescription>
+            <FormDescription>Name Ihrer Bank oder Sparkasse</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -92,9 +91,7 @@ export function CompanyBankFields({ control }: CompanyBankFieldsProps) {
                 }}
               />
             </FormControl>
-            <FormDescription>
-              Internationale Bankkontonummer
-            </FormDescription>
+            <FormDescription>Internationale Bankkontonummer</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -134,8 +131,8 @@ export function CompanyBankFields({ control }: CompanyBankFieldsProps) {
               Bankdaten für Rechnungen
             </p>
             <p className="text-sm text-blue-700 dark:text-blue-300">
-              Diese Informationen werden auf Ihren Rechnungen angezeigt, damit Kunden 
-              Zahlungen direkt auf Ihr Konto überweisen können.
+              Diese Informationen werden auf Ihren Rechnungen angezeigt, damit
+              Kunden Zahlungen direkt auf Ihr Konto überweisen können.
             </p>
           </div>
         </div>
@@ -144,11 +141,10 @@ export function CompanyBankFields({ control }: CompanyBankFieldsProps) {
       {/* Security Note */}
       <div className="rounded-lg bg-muted/50 p-4 border border-border/50">
         <p className="text-xs text-muted-foreground">
-          🔒 Ihre Bankdaten werden sicher in der Datenbank gespeichert und nur für 
-          die Generierung von Rechnungen und Angeboten verwendet.
+          🔒 Ihre Bankdaten werden sicher in der Datenbank gespeichert und nur
+          für die Generierung von Rechnungen und Angeboten verwendet.
         </p>
       </div>
     </div>
   );
 }
-

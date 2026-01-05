@@ -1,33 +1,40 @@
-import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/session";
+import { notFound, redirect } from "next/navigation";
 import { getCompanyProfile } from "@/actions/company-profiles-actions";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { Button } from '@/components/alignui/actions/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Separator } from "@/components/ui/separator";
-import { CopyButton } from "@/components/company-settings/copy-button";
-import { CompanyProfileTeamManagement } from "@/components/company-settings/company-profile-team-management";
 import {
   Building2,
-  MapPin,
-  Mail,
-  Phone,
-  Smartphone,
-  Globe,
-  FileText,
-  Scale,
-  Landmark,
+  Calendar,
+  CheckCircle2,
   CreditCard,
   Edit,
-  CheckCircle2,
-  User,
-  Percent,
-  Calendar,
   ExternalLink,
+  FileText,
+  Globe,
+  Landmark,
+  Mail,
+  MapPin,
+  Percent,
+  Phone,
+  Scale,
+  Smartphone,
+  User,
   UserPlus,
 } from "lucide-react";
+
+import { getCurrentUser } from "@/lib/session";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import { CompanyProfileTeamManagement } from "@/components/company-settings/company-profile-team-management";
+import { CopyButton } from "@/components/company-settings/copy-button";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +58,9 @@ export default async function ViewCompanyProfilePage({
           <Icon className="h-4 w-4" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium text-muted-foreground mb-1">{label}</p>
+          <p className="text-xs font-medium text-muted-foreground mb-1">
+            {label}
+          </p>
           <div className="flex items-center gap-2">
             {link ? (
               <a
@@ -111,8 +120,12 @@ export default async function ViewCompanyProfilePage({
                 <Building2 className="h-8 w-8 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <h1 className="text-2xl font-bold mb-1">{profile.profile_name}</h1>
-                <p className="text-muted-foreground mb-3">{profile.company_name}</p>
+                <h1 className="text-2xl font-bold mb-1">
+                  {profile.profile_name}
+                </h1>
+                <p className="text-muted-foreground mb-3">
+                  {profile.company_name}
+                </p>
                 <div className="flex flex-wrap items-center gap-2">
                   {profile.is_default && profile.is_owner !== false && (
                     <Badge className="bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/30">
@@ -127,14 +140,22 @@ export default async function ViewCompanyProfilePage({
                     </Badge>
                   )}
                   <Badge variant="outline">
-                    {profile.profile_type === "personal" ? "Persönlich" : "Team"}
+                    {profile.profile_type === "personal"
+                      ? "Persönlich"
+                      : "Team"}
                   </Badge>
                   {profile.is_owner === false && profile.membership_role && (
-                    <Badge variant="outline" className="border-blue-500/30 text-blue-600 dark:text-blue-400">
-                      {profile.membership_role === "admin" ? "Administrator" :
-                       profile.membership_role === "editor" ? "Bearbeiter" :
-                       profile.membership_role === "viewer" ? "Betrachter" :
-                       profile.membership_role}
+                    <Badge
+                      variant="outline"
+                      className="border-blue-500/30 text-blue-600 dark:text-blue-400"
+                    >
+                      {profile.membership_role === "admin"
+                        ? "Administrator"
+                        : profile.membership_role === "editor"
+                          ? "Bearbeiter"
+                          : profile.membership_role === "viewer"
+                            ? "Betrachter"
+                            : profile.membership_role}
                     </Badge>
                   )}
                 </div>
@@ -156,17 +177,36 @@ export default async function ViewCompanyProfilePage({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-1">
-            <InfoRow icon={Building2} label="Firmenname" value={profile.company_name} copyable />
+            <InfoRow
+              icon={Building2}
+              label="Firmenname"
+              value={profile.company_name}
+              copyable
+            />
             {fullAddress && (
-              <InfoRow icon={MapPin} label="Vollständige Adresse" value={fullAddress} copyable />
+              <InfoRow
+                icon={MapPin}
+                label="Vollständige Adresse"
+                value={fullAddress}
+                copyable
+              />
             )}
             {!fullAddress && (
               <>
                 {profile.company_address && (
-                  <InfoRow icon={MapPin} label="Adresse" value={profile.company_address} copyable />
+                  <InfoRow
+                    icon={MapPin}
+                    label="Adresse"
+                    value={profile.company_address}
+                    copyable
+                  />
                 )}
                 {profile.company_address_line2 && (
-                  <InfoRow icon={MapPin} label="Adresszusatz" value={profile.company_address_line2} />
+                  <InfoRow
+                    icon={MapPin}
+                    label="Adresszusatz"
+                    value={profile.company_address_line2}
+                  />
                 )}
                 {(profile.company_postal_code || profile.company_city) && (
                   <InfoRow
@@ -176,7 +216,11 @@ export default async function ViewCompanyProfilePage({
                   />
                 )}
                 {profile.company_country && (
-                  <InfoRow icon={MapPin} label="Land" value={profile.company_country} />
+                  <InfoRow
+                    icon={MapPin}
+                    label="Land"
+                    value={profile.company_country}
+                  />
                 )}
               </>
             )}
@@ -194,27 +238,67 @@ export default async function ViewCompanyProfilePage({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-1">
-            <InfoRow icon={Mail} label="E-Mail" value={profile.company_email} copyable link={`mailto:${profile.company_email}`} />
-            <InfoRow icon={Phone} label="Telefon" value={profile.company_phone} copyable link={profile.company_phone ? `tel:${profile.company_phone}` : undefined} />
-            <InfoRow icon={Smartphone} label="Mobil" value={profile.company_mobile} copyable link={profile.company_mobile ? `tel:${profile.company_mobile}` : undefined} />
+            <InfoRow
+              icon={Mail}
+              label="E-Mail"
+              value={profile.company_email}
+              copyable
+              link={`mailto:${profile.company_email}`}
+            />
+            <InfoRow
+              icon={Phone}
+              label="Telefon"
+              value={profile.company_phone}
+              copyable
+              link={
+                profile.company_phone
+                  ? `tel:${profile.company_phone}`
+                  : undefined
+              }
+            />
+            <InfoRow
+              icon={Smartphone}
+              label="Mobil"
+              value={profile.company_mobile}
+              copyable
+              link={
+                profile.company_mobile
+                  ? `tel:${profile.company_mobile}`
+                  : undefined
+              }
+            />
             {profile.company_website && (
-              <InfoRow 
-                icon={Globe} 
-                label="Website" 
-                value={profile.company_website.replace(/^https?:\/\//, '')} 
-                copyable 
-                link={profile.company_website.startsWith('http') ? profile.company_website : `https://${profile.company_website}`}
+              <InfoRow
+                icon={Globe}
+                label="Website"
+                value={profile.company_website.replace(/^https?:\/\//, "")}
+                copyable
+                link={
+                  profile.company_website.startsWith("http")
+                    ? profile.company_website
+                    : `https://${profile.company_website}`
+                }
               />
             )}
             {profile.contact_person_name && (
               <>
                 <Separator className="my-3" />
                 <div className="px-3 py-1">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Ansprechpartner</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                    Ansprechpartner
+                  </p>
                 </div>
-                <InfoRow icon={User} label="Name" value={profile.contact_person_name} />
+                <InfoRow
+                  icon={User}
+                  label="Name"
+                  value={profile.contact_person_name}
+                />
                 {profile.contact_person_position && (
-                  <InfoRow icon={FileText} label="Position" value={profile.contact_person_position} />
+                  <InfoRow
+                    icon={FileText}
+                    label="Position"
+                    value={profile.contact_person_position}
+                  />
                 )}
               </>
             )}
@@ -232,8 +316,18 @@ export default async function ViewCompanyProfilePage({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-1">
-            <InfoRow icon={FileText} label="USt-IdNr." value={profile.company_vat_id} copyable />
-            <InfoRow icon={Scale} label="Steuernummer" value={profile.company_tax_id} copyable />
+            <InfoRow
+              icon={FileText}
+              label="USt-IdNr."
+              value={profile.company_vat_id}
+              copyable
+            />
+            <InfoRow
+              icon={Scale}
+              label="Steuernummer"
+              value={profile.company_tax_id}
+              copyable
+            />
             <InfoRow
               icon={Building2}
               label="Handelsregisternummer"
@@ -265,13 +359,17 @@ export default async function ViewCompanyProfilePage({
           </CardHeader>
           <CardContent className="space-y-1">
             <InfoRow icon={Landmark} label="Bank" value={profile.bank_name} />
-            <InfoRow icon={User} label="Kontoinhaber" value={profile.bank_account_holder} />
+            <InfoRow
+              icon={User}
+              label="Kontoinhaber"
+              value={profile.bank_account_holder}
+            />
             {profile.iban && (
-              <InfoRow 
-                icon={CreditCard} 
-                label="IBAN" 
-                value={profile.iban.replace(/(.{4})/g, "$1 ").trim()} 
-                copyable 
+              <InfoRow
+                icon={CreditCard}
+                label="IBAN"
+                value={profile.iban.replace(/(.{4})/g, "$1 ").trim()}
+                copyable
               />
             )}
             <InfoRow icon={FileText} label="BIC" value={profile.bic} copyable />
@@ -296,7 +394,8 @@ export default async function ViewCompanyProfilePage({
               Dokument-Standards
             </CardTitle>
             <CardDescription>
-              Diese Werte werden automatisch für neue Rechnungen und Angebote verwendet
+              Diese Werte werden automatisch für neue Rechnungen und Angebote
+              verwendet
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -307,8 +406,12 @@ export default async function ViewCompanyProfilePage({
                     <Percent className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground mb-0.5">Mehrwertsteuer</p>
-                    <p className="text-lg font-bold">{profile.default_tax_rate}%</p>
+                    <p className="text-xs font-medium text-muted-foreground mb-0.5">
+                      Mehrwertsteuer
+                    </p>
+                    <p className="text-lg font-bold">
+                      {profile.default_tax_rate}%
+                    </p>
                   </div>
                 </div>
               )}
@@ -318,8 +421,12 @@ export default async function ViewCompanyProfilePage({
                     <Calendar className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground mb-0.5">Zahlungsfrist</p>
-                    <p className="text-lg font-bold">{profile.default_payment_days} Tage</p>
+                    <p className="text-xs font-medium text-muted-foreground mb-0.5">
+                      Zahlungsfrist
+                    </p>
+                    <p className="text-lg font-bold">
+                      {profile.default_payment_days} Tage
+                    </p>
                   </div>
                 </div>
               )}
@@ -329,23 +436,27 @@ export default async function ViewCompanyProfilePage({
                     <CreditCard className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground mb-0.5">Zahlungsart</p>
+                    <p className="text-xs font-medium text-muted-foreground mb-0.5">
+                      Zahlungsart
+                    </p>
                     <p className="text-lg font-bold">
-                      {profile.payment_on_receipt ? "Bei Erhalt" : "Fälligkeitsdatum"}
+                      {profile.payment_on_receipt
+                        ? "Bei Erhalt"
+                        : "Fälligkeitsdatum"}
                     </p>
                   </div>
                 </div>
               )}
-              {profile.default_tax_rate === null && 
-               profile.default_payment_days === null && 
-               profile.payment_on_receipt === null && (
-                <div className="col-span-full py-8 text-center">
-                  <FileText className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
-                  <p className="text-sm text-muted-foreground">
-                    Keine Dokument-Standards konfiguriert
-                  </p>
-                </div>
-              )}
+              {profile.default_tax_rate === null &&
+                profile.default_payment_days === null &&
+                profile.payment_on_receipt === null && (
+                  <div className="col-span-full py-8 text-center">
+                    <FileText className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+                    <p className="text-sm text-muted-foreground">
+                      Keine Dokument-Standards konfiguriert
+                    </p>
+                  </div>
+                )}
             </div>
           </CardContent>
         </Card>
@@ -361,4 +472,3 @@ export default async function ViewCompanyProfilePage({
     </UnifiedPageLayout>
   );
 }
-

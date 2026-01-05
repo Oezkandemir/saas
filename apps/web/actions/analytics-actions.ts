@@ -1,9 +1,9 @@
 "use server";
 
 import { supabaseAdmin } from "@/lib/db-admin";
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
-import { logger } from "@/lib/logger";
 
 // Types for tracking data
 export interface PageViewData {
@@ -74,11 +74,15 @@ export async function getAnalyticsData() {
 
     const getUserStats = async () => {
       // Use optimized SQL aggregation instead of fetching all users
-      const { data, error } = await supabaseAdmin.rpc("get_user_stats_aggregated");
+      const { data, error } = await supabaseAdmin.rpc(
+        "get_user_stats_aggregated",
+      );
 
       if (error) {
         // Fallback to basic query if function doesn't exist
-        logger.warn("get_user_stats_aggregated function not found, using fallback");
+        logger.warn(
+          "get_user_stats_aggregated function not found, using fallback",
+        );
         const { data: users, error: usersError } = await supabaseAdmin
           .from("users")
           .select("role, status, polar_subscription_id");
@@ -87,7 +91,9 @@ export async function getAnalyticsData() {
 
         const totalUsers = users.length;
         const adminCount = users.filter((user) => user.role === "ADMIN").length;
-        const bannedCount = users.filter((user) => user.status === "banned").length;
+        const bannedCount = users.filter(
+          (user) => user.status === "banned",
+        ).length;
         const subscribersCount = users.filter(
           (user) => user.polar_subscription_id !== null,
         ).length;
@@ -120,11 +126,15 @@ export async function getAnalyticsData() {
 
     const getUserGrowth = async () => {
       // Use SQL aggregation for better performance
-      const { data, error } = await supabaseAdmin.rpc("get_user_growth_by_month");
+      const { data, error } = await supabaseAdmin.rpc(
+        "get_user_growth_by_month",
+      );
 
       if (error) {
         // Fallback to basic query if function doesn't exist
-        logger.warn("get_user_growth_by_month function not found, using fallback");
+        logger.warn(
+          "get_user_growth_by_month function not found, using fallback",
+        );
         const { data: users, error: usersError } = await supabaseAdmin
           .from("users")
           .select("created_at");
@@ -161,17 +171,23 @@ export async function getAnalyticsData() {
     const getTicketStats = async () => {
       try {
         // Use optimized SQL aggregation
-        const { data, error } = await supabaseAdmin.rpc("get_ticket_stats_aggregated");
+        const { data, error } = await supabaseAdmin.rpc(
+          "get_ticket_stats_aggregated",
+        );
 
         if (error) {
           // Fallback to basic query if function doesn't exist
-          logger.warn("get_ticket_stats_aggregated function not found, using fallback");
+          logger.warn(
+            "get_ticket_stats_aggregated function not found, using fallback",
+          );
           const { data: tickets, error: ticketsError } = await supabaseAdmin
             .from("support_tickets")
             .select("status");
 
           if (ticketsError) {
-            logger.warn(`Error fetching ticket stats: ${ticketsError instanceof Error ? ticketsError.message : String(ticketsError)}`);
+            logger.warn(
+              `Error fetching ticket stats: ${ticketsError instanceof Error ? ticketsError.message : String(ticketsError)}`,
+            );
             return {
               open: 0,
               in_progress: 0,
@@ -214,7 +230,9 @@ export async function getAnalyticsData() {
           closed: Number(stats.closed) || 0,
         };
       } catch (error) {
-        logger.warn(`Error in getTicketStats: ${error instanceof Error ? error.message : String(error)}`);
+        logger.warn(
+          `Error in getTicketStats: ${error instanceof Error ? error.message : String(error)}`,
+        );
         return {
           open: 0,
           in_progress: 0,
@@ -234,7 +252,9 @@ export async function getAnalyticsData() {
           .limit(10);
 
         if (error) {
-          logger.warn(`Error fetching login history (table may not exist): ${error instanceof Error ? error.message : String(error)}`);
+          logger.warn(
+            `Error fetching login history (table may not exist): ${error instanceof Error ? error.message : String(error)}`,
+          );
           return [];
         }
 
@@ -250,7 +270,9 @@ export async function getAnalyticsData() {
           .in("id", userIds);
 
         if (usersError) {
-          logger.warn(`Error fetching user emails: ${usersError instanceof Error ? usersError.message : String(usersError)}`);
+          logger.warn(
+            `Error fetching user emails: ${usersError instanceof Error ? usersError.message : String(usersError)}`,
+          );
           return data.map((login) => ({
             type: "login",
             userId: login.user_id,
@@ -274,7 +296,9 @@ export async function getAnalyticsData() {
           timestamp: login.created_at,
         }));
       } catch (error) {
-        logger.warn(`Error in getRecentLogins: ${error instanceof Error ? error.message : String(error)}`);
+        logger.warn(
+          `Error in getRecentLogins: ${error instanceof Error ? error.message : String(error)}`,
+        );
         return [];
       }
     };
@@ -306,22 +330,30 @@ export async function getAnalyticsData() {
         if (!error && data && Array.isArray(data) && data.length > 0) {
           logger.debug(`Found ${data.length} popular pages from RPC function`);
           const result = data
-            .filter((page: any) => page.page_path && page.page_path.trim() !== "")
+            .filter(
+              (page: any) => page.page_path && page.page_path.trim() !== "",
+            )
             .map((page: any) => ({
               page_path: String(page.page_path || "").trim(),
               view_count: Number(page.view_count) || 0,
               unique_visitors: Number(page.unique_visitors) || 0,
-              avg_duration: page.avg_duration ? Number(page.avg_duration) : null,
+              avg_duration: page.avg_duration
+                ? Number(page.avg_duration)
+                : null,
             }));
-          
+
           if (result.length > 0) {
-            logger.debug(`Returning ${result.length} filtered popular pages from RPC`);
+            logger.debug(
+              `Returning ${result.length} filtered popular pages from RPC`,
+            );
             return result;
           }
         }
 
         if (error) {
-          logger.warn(`RPC function error, falling back: ${error instanceof Error ? error.message : String(error)}`);
+          logger.warn(
+            `RPC function error, falling back: ${error instanceof Error ? error.message : String(error)}`,
+          );
         }
 
         // Fallback: Use direct SQL query if RPC function doesn't exist or returns empty
@@ -334,7 +366,9 @@ export async function getAnalyticsData() {
           .limit(10000); // Increase limit for better aggregation
 
         if (sqlError) {
-          logger.warn(`Error fetching page views: ${sqlError instanceof Error ? sqlError.message : String(sqlError)}`);
+          logger.warn(
+            `Error fetching page views: ${sqlError instanceof Error ? sqlError.message : String(sqlError)}`,
+          );
           return [];
         }
 
@@ -343,7 +377,9 @@ export async function getAnalyticsData() {
           return [];
         }
 
-        logger.debug(`Found ${sqlData.length} page view records for aggregation`);
+        logger.debug(
+          `Found ${sqlData.length} page view records for aggregation`,
+        );
 
         // Aggregate manually
         const pageMap = new Map<
@@ -389,10 +425,14 @@ export async function getAnalyticsData() {
           .sort((a, b) => b.view_count - a.view_count)
           .slice(0, 50);
 
-        logger.debug(`Returning ${result.length} popular pages from manual aggregation`);
+        logger.debug(
+          `Returning ${result.length} popular pages from manual aggregation`,
+        );
         return result;
       } catch (error) {
-        logger.error("Error in getPopularPages:", { error: error instanceof Error ? error.message : String(error) });
+        logger.error("Error in getPopularPages:", {
+          error: error instanceof Error ? error.message : String(error),
+        });
         return [];
       }
     };
@@ -436,7 +476,9 @@ export async function getAnalyticsData() {
           referrer_stats: [],
         };
 
-    logger.debug(`Enhanced analytics has ${enhancedDetailedAnalytics.popular_pages.length} popular pages`);
+    logger.debug(
+      `Enhanced analytics has ${enhancedDetailedAnalytics.popular_pages.length} popular pages`,
+    );
 
     return {
       success: true,
@@ -450,7 +492,9 @@ export async function getAnalyticsData() {
       },
     };
   } catch (error) {
-    logger.error("Error in getAnalyticsData:", { error: error instanceof Error ? error.message : String(error) });
+    logger.error("Error in getAnalyticsData:", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return {
       success: false,
       error: "Failed to fetch analytics data",
@@ -477,7 +521,9 @@ export async function getDetailedAnalytics(daysRange = 30) {
     });
 
     if (error) {
-      logger.warn(`Error calling get_detailed_analytics function: ${error instanceof Error ? error.message : String(error)}`);
+      logger.warn(
+        `Error calling get_detailed_analytics function: ${error instanceof Error ? error.message : String(error)}`,
+      );
       // Return default empty data instead of error
       return {
         success: true,
@@ -509,8 +555,8 @@ export async function getDetailedAnalytics(daysRange = 30) {
     return {
       success: true,
       data: {
-        page_view_stats: Array.isArray(result.page_view_stats) 
-          ? result.page_view_stats 
+        page_view_stats: Array.isArray(result.page_view_stats)
+          ? result.page_view_stats
           : [],
         user_engagement: Array.isArray(result.user_engagement)
           ? result.user_engagement
@@ -527,7 +573,9 @@ export async function getDetailedAnalytics(daysRange = 30) {
       },
     };
   } catch (error) {
-    logger.error("Error in getDetailedAnalytics:", { error: error instanceof Error ? error.message : String(error) });
+    logger.error("Error in getDetailedAnalytics:", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     // Return success with empty data to prevent UI from breaking
     return {
       success: true,
@@ -589,7 +637,9 @@ export async function recordPageView(pageViewData: PageViewData) {
 
     return { success: true };
   } catch (error) {
-    logger.error("Error recording page view:", { error: error instanceof Error ? error.message : String(error) });
+    logger.error("Error recording page view:", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return { success: false, error: "Failed to record page view" };
   }
 }
@@ -603,7 +653,7 @@ export async function trackUserInteraction(
   try {
     const supabase = await createClient();
 
-    const coordinates = 
+    const coordinates =
       interactionData.latitude && interactionData.longitude
         ? `(${interactionData.longitude},${interactionData.latitude})`
         : null;
@@ -631,7 +681,9 @@ export async function trackUserInteraction(
 
     return { success: true };
   } catch (error) {
-    logger.error("Error tracking user interaction:", { error: error instanceof Error ? error.message : String(error) });
+    logger.error("Error tracking user interaction:", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return { success: false, error: "Failed to track user interaction" };
   }
 }
@@ -649,16 +701,22 @@ export async function getRealtimeActiveUsers() {
       };
     }
 
-    const { data, error } = await supabaseAdmin.rpc("get_realtime_active_users");
+    const { data, error } = await supabaseAdmin.rpc(
+      "get_realtime_active_users",
+    );
 
     if (error) {
-      logger.warn(`Error fetching realtime active users: ${error instanceof Error ? error.message : String(error)}`);
+      logger.warn(
+        `Error fetching realtime active users: ${error instanceof Error ? error.message : String(error)}`,
+      );
       return { success: true, data: [] };
     }
 
     return { success: true, data: data || [] };
   } catch (error) {
-    logger.error("Error in getRealtimeActiveUsers:", { error: error instanceof Error ? error.message : String(error) });
+    logger.error("Error in getRealtimeActiveUsers:", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return { success: false, error: "Failed to fetch active users" };
   }
 }
@@ -679,13 +737,17 @@ export async function getRealtimePageViews() {
     const { data, error } = await supabaseAdmin.rpc("get_realtime_page_views");
 
     if (error) {
-      logger.warn(`Error fetching realtime page views: ${error instanceof Error ? error.message : String(error)}`);
+      logger.warn(
+        `Error fetching realtime page views: ${error instanceof Error ? error.message : String(error)}`,
+      );
       return { success: true, data: [] };
     }
 
     return { success: true, data: data || [] };
   } catch (error) {
-    logger.error("Error in getRealtimePageViews:", { error: error instanceof Error ? error.message : String(error) });
+    logger.error("Error in getRealtimePageViews:", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return { success: false, error: "Failed to fetch page views" };
   }
 }
@@ -708,13 +770,17 @@ export async function getGeolocationStats(days = 30) {
     });
 
     if (error) {
-      logger.warn(`Error fetching geolocation stats: ${error instanceof Error ? error.message : String(error)}`);
+      logger.warn(
+        `Error fetching geolocation stats: ${error instanceof Error ? error.message : String(error)}`,
+      );
       return { success: true, data: [] };
     }
 
     return { success: true, data: data || [] };
   } catch (error) {
-    logger.error("Error in getGeolocationStats:", { error: error instanceof Error ? error.message : String(error) });
+    logger.error("Error in getGeolocationStats:", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return { success: false, error: "Failed to fetch geolocation stats" };
   }
 }
@@ -737,13 +803,17 @@ export async function getDeviceStatistics(days = 30) {
     });
 
     if (error) {
-      logger.warn(`Error fetching device statistics: ${error instanceof Error ? error.message : String(error)}`);
+      logger.warn(
+        `Error fetching device statistics: ${error instanceof Error ? error.message : String(error)}`,
+      );
       return { success: true, data: [] };
     }
 
     return { success: true, data: data || [] };
   } catch (error) {
-    logger.error("Error in getDeviceStatistics:", { error: error instanceof Error ? error.message : String(error) });
+    logger.error("Error in getDeviceStatistics:", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return { success: false, error: "Failed to fetch device statistics" };
   }
 }
@@ -761,18 +831,25 @@ export async function getUserActivityTimeline(hours = 24) {
       };
     }
 
-    const { data, error } = await supabaseAdmin.rpc("get_user_activity_timeline", {
-      p_hours: hours,
-    });
+    const { data, error } = await supabaseAdmin.rpc(
+      "get_user_activity_timeline",
+      {
+        p_hours: hours,
+      },
+    );
 
     if (error) {
-      logger.warn(`Error fetching user activity timeline: ${error instanceof Error ? error.message : String(error)}`);
+      logger.warn(
+        `Error fetching user activity timeline: ${error instanceof Error ? error.message : String(error)}`,
+      );
       return { success: true, data: [] };
     }
 
     return { success: true, data: data || [] };
   } catch (error) {
-    logger.error("Error in getUserActivityTimeline:", { error: error instanceof Error ? error.message : String(error) });
+    logger.error("Error in getUserActivityTimeline:", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return { success: false, error: "Failed to fetch activity timeline" };
   }
 }

@@ -1,11 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import {
+  createRole,
+  deleteRole,
+  Role,
+  updateRole,
+} from "@/actions/role-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Edit, Loader2, Trash2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
-import { Loader2, Trash2, Edit } from "lucide-react";
-import { Button } from '@/components/alignui/actions/button';
+
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -15,16 +23,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from '@/components/alignui/forms/input';
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  createRole,
-  updateRole,
-  deleteRole,
-  Role,
-} from "@/actions/role-actions";
-import { toast } from "sonner";
+import { Button } from "@/components/alignui/actions/button";
+import { Input } from "@/components/alignui/forms/input";
 
 const roleFormSchema = z.object({
   name: z.string().min(1, "Name ist erforderlich").max(100),
@@ -91,7 +92,9 @@ export function RoleForm({
 
       if (result.success && result.data) {
         toast.success(
-          role ? "Rolle erfolgreich aktualisiert" : "Rolle erfolgreich erstellt",
+          role
+            ? "Rolle erfolgreich aktualisiert"
+            : "Rolle erfolgreich erstellt",
         );
         onSuccess(result.data);
         if (role) {
@@ -171,7 +174,11 @@ export function RoleForm({
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Rollenname" {...field} disabled={role?.is_system_role} />
+                <Input
+                  placeholder="Rollenname"
+                  {...field}
+                  disabled={role?.is_system_role}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -317,7 +324,10 @@ export function RoleForm({
                 Abbrechen
               </Button>
             )}
-            <Button type="submit" disabled={isSubmitting || role?.is_system_role}>
+            <Button
+              type="submit"
+              disabled={isSubmitting || role?.is_system_role}
+            >
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
@@ -329,4 +339,3 @@ export function RoleForm({
     </Form>
   );
 }
-

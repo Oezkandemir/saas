@@ -1,9 +1,10 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+
 import { logger } from "@/lib/logger";
+import { createClient } from "@/lib/supabase/server";
 
 export interface ActiveSession {
   id: string;
@@ -69,11 +70,8 @@ export async function getActiveSessions(): Promise<
     if ((!data || data.length === 0) && currentSession) {
       const { createLoginSession } = await import("@/lib/session-tracking");
       const expiresAt = new Date(currentSession.expires_at! * 1000);
-      await createLoginSession(
-        user.id,
-        expiresAt,
-      );
-      
+      await createLoginSession(user.id, expiresAt);
+
       // Fetch again after creating
       const { data: newData } = await supabase
         .from("login_sessions")
@@ -81,7 +79,7 @@ export async function getActiveSessions(): Promise<
         .eq("user_id", user.id)
         .gte("expires_at", new Date().toISOString())
         .order("last_activity", { ascending: false });
-      
+
       if (newData && newData.length > 0) {
         return {
           success: true,
@@ -122,7 +120,8 @@ export async function getActiveSessions(): Promise<
     logger.error("Error getting active sessions:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to get sessions",
+      message:
+        error instanceof Error ? error.message : "Failed to get sessions",
     };
   }
 }
@@ -186,7 +185,8 @@ export async function revokeSession(
     logger.error("Error revoking session:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to revoke session",
+      message:
+        error instanceof Error ? error.message : "Failed to revoke session",
     };
   }
 }
@@ -229,12 +229,16 @@ export async function revokeAllOtherSessions(): Promise<{
     });
 
     revalidatePath("/dashboard/settings/security");
-    return { success: true, message: "All other sessions revoked successfully" };
+    return {
+      success: true,
+      message: "All other sessions revoked successfully",
+    };
   } catch (error) {
     logger.error("Error revoking all sessions:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to revoke sessions",
+      message:
+        error instanceof Error ? error.message : "Failed to revoke sessions",
     };
   }
 }
@@ -285,7 +289,8 @@ export async function clearAllSessions(): Promise<{
     logger.error("Error clearing all sessions:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to clear sessions",
+      message:
+        error instanceof Error ? error.message : "Failed to clear sessions",
     };
   }
 }
@@ -341,7 +346,8 @@ export async function getLoginHistory(
     logger.error("Error getting login history:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to get login history",
+      message:
+        error instanceof Error ? error.message : "Failed to get login history",
     };
   }
 }
@@ -366,7 +372,10 @@ export async function logLoginAttempt(
     if (!user) return;
 
     const headersList = await headers();
-    const ipAddress = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || null;
+    const ipAddress =
+      headersList.get("x-forwarded-for") ||
+      headersList.get("x-real-ip") ||
+      null;
     const userAgent = headersList.get("user-agent") || null;
 
     // Extract device info from user agent (simplified)
@@ -391,4 +400,3 @@ export async function logLoginAttempt(
     // Don't throw - logging failures shouldn't break login flow
   }
 }
-

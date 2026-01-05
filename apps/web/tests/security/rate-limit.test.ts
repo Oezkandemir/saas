@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { headers } from "next/headers";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { checkRateLimit, getRateLimitConfig } from "@/lib/rate-limit";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
@@ -25,9 +26,7 @@ describe("Rate Limiting", () => {
               })),
             })),
             like: vi.fn(() => ({
-              eq: vi.fn(() =>
-                Promise.resolve({ data: null }),
-              ),
+              eq: vi.fn(() => Promise.resolve({ data: null })),
             })),
           })),
         })),
@@ -220,4 +219,3 @@ describe("Rate Limiting", () => {
     });
   });
 });
-

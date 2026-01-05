@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server";
 
+import { applyAPIMiddleware } from "@/lib/api-middleware";
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
-import { applyAPIMiddleware } from "@/lib/api-middleware";
 
 export async function DELETE(req: NextRequest) {
   // SECURITY: Apply middleware (auth + rate limiting)

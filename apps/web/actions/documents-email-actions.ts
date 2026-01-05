@@ -2,15 +2,17 @@
 
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { getTranslations } from "next-intl/server";
-import { getCurrentUser } from "@/lib/session";
-import { getDocument } from "./documents-actions";
-import { resend } from "@/lib/email";
-import { siteConfig } from "@/config/site";
-import { logger } from "@/lib/logger";
-import { getSupabaseServer } from "@/lib/supabase-server";
-import { generateAndUploadPDF } from "@/lib/pdf/generator-vercel";
 import { routing } from "@/i18n/routing";
+import { getTranslations } from "next-intl/server";
+
+import { siteConfig } from "@/config/site";
+import { resend } from "@/lib/email";
+import { logger } from "@/lib/logger";
+import { generateAndUploadPDF } from "@/lib/pdf/generator-vercel";
+import { getCurrentUser } from "@/lib/session";
+import { getSupabaseServer } from "@/lib/supabase-server";
+
+import { getDocument } from "./documents-actions";
 
 export interface SendDocumentEmailInput {
   documentId: string;
@@ -32,10 +34,11 @@ export async function sendDocumentEmail(
     // Get locale from cookie or default
     const cookieStore = await cookies();
     const savedLocale = cookieStore.get("NEXT_LOCALE")?.value;
-    const locale = (savedLocale && routing.locales.includes(savedLocale as any))
-      ? savedLocale
-      : routing.defaultLocale;
-    
+    const locale =
+      savedLocale && routing.locales.includes(savedLocale as any)
+        ? savedLocale
+        : routing.defaultLocale;
+
     const t = await getTranslations({ locale, namespace: "Documents" });
 
     // Get document
@@ -49,7 +52,7 @@ export async function sendDocumentEmail(
       try {
         // Generate and upload PDF directly (pdf-lib doesn't need HTML)
         const pdfUrl = await generateAndUploadPDF(document, "");
-        
+
         // Update document with PDF URL in database
         const supabase = await getSupabaseServer();
         await supabase
@@ -57,7 +60,7 @@ export async function sendDocumentEmail(
           .update({ pdf_url: pdfUrl })
           .eq("id", document.id)
           .eq("user_id", user.id);
-        
+
         // Reload document to get updated pdf_url
         const updatedDocument = await getDocument(input.documentId);
         if (!updatedDocument?.pdf_url) {
@@ -69,7 +72,7 @@ export async function sendDocumentEmail(
         throw new Error(
           error instanceof Error
             ? `Error generating PDF: ${error.message}`
-            : "Error generating PDF"
+            : "Error generating PDF",
         );
       }
     }
@@ -80,12 +83,14 @@ export async function sendDocumentEmail(
       throw new Error("Failed to fetch PDF");
     }
     let pdfBuffer = await pdfResponse.arrayBuffer();
-    
+
     // Validate that we got a PDF (starts with %PDF)
     const buffer = Buffer.from(pdfBuffer);
     if (buffer.length < 4 || buffer.toString("ascii", 0, 4) !== "%PDF") {
       // PDF is invalid (probably old HTML format), regenerate it
-      logger.warn("Invalid PDF detected (possibly old HTML format), regenerating with pdf-lib...");
+      logger.warn(
+        "Invalid PDF detected (possibly old HTML format), regenerating with pdf-lib...",
+      );
       const pdfUrl = await generateAndUploadPDF(document, "");
       const supabase = await getSupabaseServer();
       await supabase
@@ -93,31 +98,42 @@ export async function sendDocumentEmail(
         .update({ pdf_url: pdfUrl })
         .eq("id", document.id)
         .eq("user_id", user.id);
-      
+
       // Fetch the new PDF
       pdfResponse = await fetch(pdfUrl);
       if (!pdfResponse.ok) {
         throw new Error("Failed to fetch regenerated PDF");
       }
       pdfBuffer = await pdfResponse.arrayBuffer();
-      
+
       // Validate the new PDF
       const newBuffer = Buffer.from(pdfBuffer);
-      if (newBuffer.length < 4 || newBuffer.toString("ascii", 0, 4) !== "%PDF") {
+      if (
+        newBuffer.length < 4 ||
+        newBuffer.toString("ascii", 0, 4) !== "%PDF"
+      ) {
         throw new Error("Regenerated PDF is still invalid");
       }
     }
 
-    const documentType = document.type === "invoice" ? t("invoice") : t("quote");
+    const documentType =
+      document.type === "invoice" ? t("invoice") : t("quote");
     const subject =
       input.subject ||
-      (document.type === "invoice" 
+      (document.type === "invoice"
         ? t("email.invoiceSubject", { number: document.document_number })
         : t("email.quoteSubject", { number: document.document_number }));
 
-    const defaultMessage = document.type === "invoice"
-      ? t("email.invoiceBody", { number: document.document_number, name: user.name || siteConfig.name })
-      : t("email.quoteBody", { number: document.document_number, name: user.name || siteConfig.name });
+    const defaultMessage =
+      document.type === "invoice"
+        ? t("email.invoiceBody", {
+            number: document.document_number,
+            name: user.name || siteConfig.name,
+          })
+        : t("email.quoteBody", {
+            number: document.document_number,
+            name: user.name || siteConfig.name,
+          });
 
     const message = input.message || defaultMessage;
 
@@ -189,7 +205,9 @@ export async function sendDocumentEmail(
 
     // Create notification for document sent
     try {
-      const { createDocumentNotification } = await import("@/lib/notifications");
+      const { createDocumentNotification } = await import(
+        "@/lib/notifications"
+      );
       await createDocumentNotification({
         userId: user.id,
         documentId: document.id,
@@ -229,5 +247,3 @@ export async function getDocumentEmailHistory(_documentId: string) {
   // For now, return empty array
   return [];
 }
-
-

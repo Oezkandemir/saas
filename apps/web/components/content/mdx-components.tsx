@@ -6,11 +6,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
 
+import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
 import { Callout } from "@/components/callout";
 import { BlurImage } from "@/components/shared/blur-image";
 import { MdxCard } from "@/components/shared/mdx-card";
-import { logger } from "@/lib/logger";
 
 // Add Steps component for MDX
 const Steps = ({ children }: { children: React.ReactNode }) => {
@@ -76,7 +76,11 @@ const components = {
       {...props}
     />
   ),
-  a: ({ className, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+  a: ({
+    className,
+    href,
+    ...props
+  }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <Link
       className={cn("font-medium underline underline-offset-4", className)}
       href={href || "#"}
@@ -98,7 +102,10 @@ const components = {
   li: ({ className, ...props }: React.HTMLAttributes<HTMLLIElement>) => (
     <li className={cn("mt-2", className)} {...props} />
   ),
-  blockquote: ({ className, ...props }: React.HTMLAttributes<HTMLQuoteElement>) => (
+  blockquote: ({
+    className,
+    ...props
+  }: React.HTMLAttributes<HTMLQuoteElement>) => (
     <blockquote
       className={cn(
         "mt-6 border-l-2 pl-6 italic [&>*]:text-muted-foreground",
@@ -115,7 +122,9 @@ const components = {
     // eslint-disable-next-line @next/next/no-img-element
     <img className={cn("rounded-md border", className)} alt={alt} {...props} />
   ),
-  hr: ({ ...props }: React.HTMLAttributes<HTMLHRElement>) => <hr className="my-4 md:my-8" {...props} />,
+  hr: ({ ...props }: React.HTMLAttributes<HTMLHRElement>) => (
+    <hr className="my-4 md:my-8" {...props} />
+  ),
   table: ({ className, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
     <div className="my-6 w-full overflow-y-auto">
       <table className={cn("w-full", className)} {...props} />
@@ -127,7 +136,10 @@ const components = {
       {...props}
     />
   ),
-  th: ({ className, ...props }: React.HTMLAttributes<HTMLTableHeaderCellElement>) => (
+  th: ({
+    className,
+    ...props
+  }: React.HTMLAttributes<HTMLTableHeaderCellElement>) => (
     <th
       className={cn(
         "border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right",
@@ -136,7 +148,10 @@ const components = {
       {...props}
     />
   ),
-  td: ({ className, ...props }: React.HTMLAttributes<HTMLTableDataCellElement>) => (
+  td: ({
+    className,
+    ...props
+  }: React.HTMLAttributes<HTMLTableDataCellElement>) => (
     <td
       className={cn(
         "border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right",
@@ -170,14 +185,14 @@ const components = {
 };
 
 // Custom component for handling images with blur effect
-const MDXImage = ({ 
-  src, 
-  alt, 
-  blurDataURL 
-}: { 
-  src?: string; 
-  alt?: string; 
-  blurDataURL?: string; 
+const MDXImage = ({
+  src,
+  alt,
+  blurDataURL,
+}: {
+  src?: string;
+  alt?: string;
+  blurDataURL?: string;
 }) => {
   if (!src) return null;
 

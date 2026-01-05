@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { deleteCustomer } from "@/actions/customers-actions";
-import { Button } from '@/components/alignui/actions/button';
-import { Trash2, Loader2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+
+import { Button } from "@/components/alignui/actions/button";
 import {
   AlertDialogRoot as AlertDialog,
   AlertDialogAction,
@@ -22,7 +23,13 @@ import {
 interface DeleteCustomerButtonProps {
   customerId: string;
   customerName: string;
-  variant?: "primary" | "secondary" | "neutral" | "destructive" | "outline" | "ghost";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "neutral"
+    | "destructive"
+    | "outline"
+    | "ghost";
   size?: "default" | "sm" | "lg" | "icon";
 }
 
@@ -49,9 +56,10 @@ export function DeleteCustomerButton({
       router.refresh();
     } catch (error) {
       toast.error(t("table.toast.deleteError"), {
-        description: error instanceof Error 
-          ? error.message 
-          : t("table.toast.deleteErrorDescription"),
+        description:
+          error instanceof Error
+            ? error.message
+            : t("table.toast.deleteErrorDescription"),
       });
     } finally {
       setIsDeleting(false);
@@ -105,5 +113,3 @@ export function DeleteCustomerButton({
     </AlertDialog>
   );
 }
-
-

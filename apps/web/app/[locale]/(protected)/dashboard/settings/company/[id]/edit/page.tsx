@@ -1,10 +1,11 @@
-import { redirect, notFound } from "next/navigation";
-import { getCurrentUser } from "@/lib/session";
+import { notFound, redirect } from "next/navigation";
 import { getCompanyProfile } from "@/actions/company-profiles-actions";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Building2 } from "lucide-react";
-import { Card, CardContent } from '@/components/alignui/data-display/card';
+
+import { getCurrentUser } from "@/lib/session";
+import { Card, CardContent } from "@/components/alignui/data-display/card";
 import { CompanyProfileForm } from "@/components/company-settings/company-profile-form";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export const dynamic = "force-dynamic";
 
@@ -36,4 +37,3 @@ export default async function EditCompanyProfilePage({
     </UnifiedPageLayout>
   );
 }
-

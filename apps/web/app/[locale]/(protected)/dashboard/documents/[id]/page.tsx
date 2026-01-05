@@ -1,19 +1,28 @@
-import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
-import { getCurrentUser } from "@/lib/session";
-import { getDocument, type Document } from "@/actions/documents-actions";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { Button } from '@/components/alignui/actions/button';
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { Edit, FileText } from "lucide-react";
 import Link from "next/link";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { DocumentStatusTimeline } from "@/components/documents/document-status-timeline";
-import { PDFActionButtons } from "@/components/documents/document-pdf-components";
-import { DocumentDeleteButton } from "@/components/documents/document-delete-button";
-import { InvoiceFullPreview } from "@/components/documents/invoice-full-preview";
-import { getCompanyProfile, getDefaultCompanyProfile } from "@/actions/company-profiles-actions";
+import { redirect } from "next/navigation";
+import {
+  getCompanyProfile,
+  getDefaultCompanyProfile,
+} from "@/actions/company-profiles-actions";
+import { getDocument, type Document } from "@/actions/documents-actions";
+import { Edit, FileText } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+
 import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
+import { Button } from "@/components/alignui/actions/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import { DocumentDeleteButton } from "@/components/documents/document-delete-button";
+import { PDFActionButtons } from "@/components/documents/document-pdf-components";
+import { DocumentStatusTimeline } from "@/components/documents/document-status-timeline";
+import { InvoiceFullPreview } from "@/components/documents/invoice-full-preview";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { StatusBadge } from "@/components/shared/status-badge";
 
 export const dynamic = "force-dynamic";
 
@@ -35,12 +44,17 @@ export default async function DocumentDetailPage({
   }
 
   // Get company profile - try document's profile first, then default
-  let companyProfile: Awaited<ReturnType<typeof getDefaultCompanyProfile>> = null;
+  let companyProfile: Awaited<ReturnType<typeof getDefaultCompanyProfile>> =
+    null;
   try {
     // Check if document has company_profile_id (might exist in database but not in type)
-    const documentWithProfileId = document as Document & { company_profile_id?: string };
+    const documentWithProfileId = document as Document & {
+      company_profile_id?: string;
+    };
     if (documentWithProfileId.company_profile_id) {
-      companyProfile = await getCompanyProfile(documentWithProfileId.company_profile_id);
+      companyProfile = await getCompanyProfile(
+        documentWithProfileId.company_profile_id,
+      );
     }
     if (!companyProfile) {
       companyProfile = await getDefaultCompanyProfile();
@@ -50,17 +64,23 @@ export default async function DocumentDetailPage({
     // Continue without company profile - will use defaults
   }
 
-
   return (
     <UnifiedPageLayout
       title={document.document_number}
-      description={document.type === "quote" ? t("description.quote") : t("description.invoice")}
+      description={
+        document.type === "quote"
+          ? t("description.quote")
+          : t("description.invoice")
+      }
       icon={<FileText className="h-4 w-4 text-primary" />}
       showBackButton
       backHref="/dashboard/documents"
       actions={
         <>
-          <StatusBadge status={document.status as any} className="text-xs px-2 py-0.5" />
+          <StatusBadge
+            status={document.status as any}
+            className="text-xs px-2 py-0.5"
+          />
           <Link href={`/dashboard/documents/${document.id}/edit`}>
             <Button variant="outline" size="sm" className="gap-1.5 h-8">
               <Edit className="h-3.5 w-3.5" />
@@ -84,15 +104,20 @@ export default async function DocumentDetailPage({
       contentClassName="space-y-6"
     >
       {/* Versteckte vollständige Preview für PDF-Generierung */}
-      <div className="fixed -left-[9999px] top-0 w-[210mm] opacity-0 pointer-events-none" data-pdf-preview>
-        <InvoiceFullPreview document={document} companyProfile={companyProfile} />
+      <div
+        className="fixed -left-[9999px] top-0 w-[210mm] opacity-0 pointer-events-none"
+        data-pdf-preview
+      >
+        <InvoiceFullPreview
+          document={document}
+          companyProfile={companyProfile}
+        />
       </div>
 
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left Column - Main Content */}
         <div className="lg:col-span-2 space-y-6">
-
           {/* Document Details */}
           <Card>
             <CardHeader>
@@ -100,14 +125,18 @@ export default async function DocumentDetailPage({
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-sm text-muted-foreground">{t("fields.date")}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("fields.date")}
+                </p>
                 <p className="font-medium">
                   {new Date(document.document_date).toLocaleDateString("de-DE")}
                 </p>
               </div>
               {document.due_date && (
                 <div>
-                  <p className="text-sm text-muted-foreground">{t("fields.dueDate")}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t("fields.dueDate")}
+                  </p>
                   <p className="font-medium">
                     {new Date(document.due_date).toLocaleDateString("de-DE")}
                   </p>
@@ -115,7 +144,9 @@ export default async function DocumentDetailPage({
               )}
               {document.customer && (
                 <div>
-                  <p className="text-sm text-muted-foreground">{t("fields.customer")}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t("fields.customer")}
+                  </p>
                   <Link
                     href={`/dashboard/customers/${document.customer.id}`}
                     className="font-medium hover:underline"
@@ -157,10 +188,13 @@ export default async function DocumentDetailPage({
                           </p>
                         </div>
                         <p className="font-medium">
-                          {(item.quantity * item.unit_price).toLocaleString("de-DE", {
-                            style: "currency",
-                            currency: "EUR",
-                          })}
+                          {(item.quantity * item.unit_price).toLocaleString(
+                            "de-DE",
+                            {
+                              style: "currency",
+                              currency: "EUR",
+                            },
+                          )}
                         </p>
                       </div>
                     ))}
@@ -196,7 +230,9 @@ export default async function DocumentDetailPage({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between">
-                <p className="text-sm text-muted-foreground">{t("fields.subtotal")}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("fields.subtotal")}
+                </p>
                 <p className="font-medium">
                   {document.subtotal.toLocaleString("de-DE", {
                     style: "currency",
@@ -240,4 +276,3 @@ export default async function DocumentDetailPage({
     </UnifiedPageLayout>
   );
 }
-

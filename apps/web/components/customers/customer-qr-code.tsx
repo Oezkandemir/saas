@@ -1,12 +1,19 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Customer } from "@/actions/customers-actions";
-import { Copy, Download, QrCode, CheckCircle2 } from "lucide-react";
-import { Button } from '@/components/alignui/actions/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
+import { CheckCircle2, Copy, Download, QrCode } from "lucide-react";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
+
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Button } from "@/components/alignui/actions/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 
 interface CustomerQRCodeProps {
   customer: Customer;
@@ -16,14 +23,18 @@ export function CustomerQRCode({ customer }: CustomerQRCodeProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [qrUrl, setQrUrl] = useState<string>("");
   const [isMounted, setIsMounted] = useState(false);
-  
+
   useEffect(() => {
     setIsMounted(true);
     // Use NEXT_PUBLIC_APP_URL for consistent server/client rendering
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== "undefined" ? window.location.origin : "http://localhost:3000");
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (typeof window !== "undefined"
+        ? window.location.origin
+        : "http://localhost:3000");
     setQrUrl(`${baseUrl}/c/${customer.qr_code}`);
   }, [customer.qr_code]);
-  
+
   if (!customer.qr_code) {
     return (
       <Card className="border-2 transition-all duration-300 hover:shadow-lg animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -41,8 +52,10 @@ export function CustomerQRCode({ customer }: CustomerQRCodeProps) {
   }
 
   // Use QR code API service to generate the QR code image
-  const qrCodeImageUrl = qrUrl ? `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(qrUrl)}` : "";
-  
+  const qrCodeImageUrl = qrUrl
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(qrUrl)}`
+    : "";
+
   const [isCopying, setIsCopying] = useState(false);
 
   const handleCopy = async () => {
@@ -85,7 +98,7 @@ export function CustomerQRCode({ customer }: CustomerQRCodeProps) {
       setIsDownloading(false);
     }
   };
-  
+
   return (
     <Card className="border-2 shadow-lg transition-all duration-300 hover:shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
       <CardHeader>
@@ -94,7 +107,8 @@ export function CustomerQRCode({ customer }: CustomerQRCodeProps) {
           QR-Code
         </CardTitle>
         <CardDescription className="animate-in fade-in slide-in-from-left-4 duration-700">
-          Scannen Sie diesen QR-Code, um schnell auf die Kundendaten zuzugreifen.
+          Scannen Sie diesen QR-Code, um schnell auf die Kundendaten
+          zuzugreifen.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -113,7 +127,7 @@ export function CustomerQRCode({ customer }: CustomerQRCodeProps) {
                   loading="lazy"
                 />
               </div>
-              
+
               <div className="text-center w-full max-w-md space-y-3">
                 <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 delay-300">
                   <p className="text-sm font-medium text-muted-foreground mb-2">
@@ -139,7 +153,7 @@ export function CustomerQRCode({ customer }: CustomerQRCodeProps) {
                     </Button>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-2 justify-center animate-in fade-in slide-in-from-bottom-2 duration-500 delay-400">
                   <Button
                     variant="outline"
@@ -168,4 +182,3 @@ export function CustomerQRCode({ customer }: CustomerQRCodeProps) {
     </Card>
   );
 }
-

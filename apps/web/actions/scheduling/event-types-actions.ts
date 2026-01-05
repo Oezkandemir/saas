@@ -3,21 +3,30 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { getCurrentUser } from "@/lib/session";
-import { createClient } from "@/lib/supabase/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
+import { supabaseAdmin } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 
 // ============================================
 // ZOD SCHEMAS
 // ============================================
 
 const eventTypeSchema = z.object({
-  slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens"),
+  slug: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(
+      /^[a-z0-9-]+$/,
+      "Slug must contain only lowercase letters, numbers, and hyphens",
+    ),
   title: z.string().min(1).max(200),
   description: z.string().max(1000).optional(),
   duration_minutes: z.number().int().min(5).max(480).default(30),
-  location_type: z.enum(["google_meet", "zoom", "custom_link", "phone", "in_person"]).default("google_meet"),
+  location_type: z
+    .enum(["google_meet", "zoom", "custom_link", "phone", "in_person"])
+    .default("google_meet"),
   location_value: z.string().max(500).optional(),
   is_active: z.boolean().default(true),
   company_profile_id: z.string().uuid().optional(),
@@ -52,7 +61,7 @@ export type EventType = {
   is_active: boolean;
   price_amount: number | null;
   price_currency: string | null;
-  price_type?: 'hourly' | 'fixed';
+  price_type?: "hourly" | "fixed";
   created_at: string;
   updated_at: string;
 };
@@ -65,7 +74,7 @@ export type EventType = {
  * Create a new event type
  */
 export async function createEventType(
-  input: z.infer<typeof eventTypeSchema>
+  input: z.infer<typeof eventTypeSchema>,
 ): Promise<ActionResult<EventType>> {
   const user = await getCurrentUser();
 
@@ -139,7 +148,8 @@ export async function createEventType(
   } catch (error) {
     if (error instanceof z.ZodError) {
       const fieldErrors = error.flatten().fieldErrors;
-      const firstError = Object.values(fieldErrors)[0]?.[0] || "Validation error";
+      const firstError =
+        Object.values(fieldErrors)[0]?.[0] || "Validation error";
       return {
         success: false,
         error: firstError,
@@ -158,7 +168,7 @@ export async function createEventType(
  * Update an existing event type
  */
 export async function updateEventType(
-  input: z.infer<typeof eventTypeUpdateSchema>
+  input: z.infer<typeof eventTypeUpdateSchema>,
 ): Promise<ActionResult<EventType>> {
   const user = await getCurrentUser();
 
@@ -231,7 +241,8 @@ export async function updateEventType(
   } catch (error) {
     if (error instanceof z.ZodError) {
       const fieldErrors = error.flatten().fieldErrors;
-      const firstError = Object.values(fieldErrors)[0]?.[0] || "Validation error";
+      const firstError =
+        Object.values(fieldErrors)[0]?.[0] || "Validation error";
       return {
         success: false,
         error: firstError,
@@ -249,9 +260,7 @@ export async function updateEventType(
 /**
  * Delete an event type
  */
-export async function deleteEventType(
-  id: string
-): Promise<ActionResult<null>> {
+export async function deleteEventType(id: string): Promise<ActionResult<null>> {
   const user = await getCurrentUser();
 
   if (!user?.id) {
@@ -313,7 +322,7 @@ export async function deleteEventType(
  */
 export async function toggleEventType(
   id: string,
-  isActive: boolean
+  isActive: boolean,
 ): Promise<ActionResult<EventType>> {
   const user = await getCurrentUser();
 
@@ -370,7 +379,7 @@ export async function toggleEventType(
  * Duplicate an event type
  */
 export async function duplicateEventType(
-  id: string
+  id: string,
 ): Promise<ActionResult<EventType>> {
   const user = await getCurrentUser();
 
@@ -402,7 +411,7 @@ export async function duplicateEventType(
     // Generate a unique slug by appending "-copy" and a number if needed
     let newSlug = `${original.slug}-copy`;
     let slugCounter = 1;
-    
+
     // Check if slug exists and increment counter until we find a unique one
     while (true) {
       const { data: existing } = await supabase
@@ -415,7 +424,7 @@ export async function duplicateEventType(
       if (!existing) {
         break; // Slug is unique
       }
-      
+
       slugCounter++;
       newSlug = `${original.slug}-copy-${slugCounter}`;
     }
@@ -518,7 +527,7 @@ export async function getEventTypes(): Promise<ActionResult<EventType[]>> {
  * Get a single event type by ID
  */
 export async function getEventType(
-  id: string
+  id: string,
 ): Promise<ActionResult<EventType>> {
   const user = await getCurrentUser();
 
@@ -534,10 +543,7 @@ export async function getEventType(
     const isAdmin = user.role === "ADMIN";
     const supabase = isAdmin ? supabaseAdmin : await createClient();
 
-    let query = supabase
-      .from("event_types")
-      .select("*")
-      .eq("id", id);
+    let query = supabase.from("event_types").select("*").eq("id", id);
 
     // Only filter by owner_user_id if user is not an admin
     if (!isAdmin) {
@@ -579,17 +585,23 @@ export async function getEventType(
  */
 export async function getPublicEventTypeByUserId(
   ownerUserId: string,
-  eventSlug: string
-): Promise<ActionResult<EventType & { owner: { name: string | null; email: string | null } }>> {
+  eventSlug: string,
+): Promise<
+  ActionResult<
+    EventType & { owner: { name: string | null; email: string | null } }
+  >
+> {
   try {
     const supabase = await createClient();
 
     const { data: eventType, error: eventError } = await supabase
       .from("event_types")
-      .select(`
+      .select(
+        `
         *,
         owner:users!event_types_owner_user_id_fkey(id, name, email)
-      `)
+      `,
+      )
       .eq("owner_user_id", ownerUserId)
       .eq("slug", eventSlug)
       .eq("is_active", true)
@@ -604,7 +616,9 @@ export async function getPublicEventTypeByUserId(
 
     return {
       success: true,
-      data: eventType as EventType & { owner: { name: string | null; email: string | null } },
+      data: eventType as EventType & {
+        owner: { name: string | null; email: string | null };
+      },
     };
   } catch (error) {
     logger.error("Error fetching public event type", error);
@@ -620,8 +634,12 @@ export async function getPublicEventTypeByUserId(
  */
 export async function getPublicEventType(
   _ownerSlug: string,
-  eventSlug: string
-): Promise<ActionResult<EventType & { owner: { name: string | null; email: string | null } }>> {
+  eventSlug: string,
+): Promise<
+  ActionResult<
+    EventType & { owner: { name: string | null; email: string | null } }
+  >
+> {
   try {
     const supabase = await createClient();
 
@@ -629,10 +647,12 @@ export async function getPublicEventType(
     // For now, we'll search by event slug and check if it's active
     const { data: eventType, error: eventError } = await supabase
       .from("event_types")
-      .select(`
+      .select(
+        `
         *,
         owner:users!event_types_owner_user_id_fkey(id, name, email)
-      `)
+      `,
+      )
       .eq("slug", eventSlug)
       .eq("is_active", true)
       .single();
@@ -649,7 +669,9 @@ export async function getPublicEventType(
 
     return {
       success: true,
-      data: eventType as EventType & { owner: { name: string | null; email: string | null } },
+      data: eventType as EventType & {
+        owner: { name: string | null; email: string | null };
+      },
     };
   } catch (error) {
     logger.error("Error fetching public event type", error);
@@ -664,16 +686,22 @@ export async function getPublicEventType(
  * Get all public active event types (for courses page)
  * No authentication required - uses RLS policy
  */
-export async function getAllPublicEventTypes(): Promise<ActionResult<Array<EventType & { owner: { name: string | null; email: string | null } }>>> {
+export async function getAllPublicEventTypes(): Promise<
+  ActionResult<
+    Array<EventType & { owner: { name: string | null; email: string | null } }>
+  >
+> {
   try {
     const supabase = await createClient();
 
     const { data, error } = await supabase
       .from("event_types")
-      .select(`
+      .select(
+        `
         *,
         owner:users!event_types_owner_user_id_fkey(id, name, email)
-      `)
+      `,
+      )
       .eq("is_active", true)
       .order("created_at", { ascending: false });
 
@@ -687,7 +715,9 @@ export async function getAllPublicEventTypes(): Promise<ActionResult<Array<Event
 
     return {
       success: true,
-      data: (data || []) as Array<EventType & { owner: { name: string | null; email: string | null } }>,
+      data: (data || []) as Array<
+        EventType & { owner: { name: string | null; email: string | null } }
+      >,
     };
   } catch (error) {
     logger.error("Error fetching public event types", error);
@@ -697,4 +727,3 @@ export async function getAllPublicEventTypes(): Promise<ActionResult<Array<Event
     };
   }
 }
-

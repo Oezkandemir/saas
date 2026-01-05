@@ -7,17 +7,17 @@ import { unsubscribeFromNewsletter } from "@/actions/newsletter";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-import { Button } from '@/components/alignui/actions/button';
+import { logger } from "@/lib/logger";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Button } from "@/components/alignui/actions/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
+} from "@/components/alignui/data-display/card";
 import { Icons } from "@/components/shared/icons";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { logger } from "@/lib/logger";
 
 export default function NewsletterUnsubscribe() {
   const t = useTranslations("Newsletter");
@@ -37,7 +37,9 @@ export default function NewsletterUnsubscribe() {
         const email = searchParams.get("email");
         const token = searchParams.get("token");
 
-        logger.debug(`Unsubscribe attempt - email: ${email}, token: ${token ? 'provided' : 'missing'}`);
+        logger.debug(
+          `Unsubscribe attempt - email: ${email}, token: ${token ? "provided" : "missing"}`,
+        );
         setDebugInfo(`Attempting to unsubscribe: ${email}`);
 
         if (!email || !token) {

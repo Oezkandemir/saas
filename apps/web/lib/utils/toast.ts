@@ -29,12 +29,13 @@ export const toast = {
             onClick: options.action.onClick,
           }
         : undefined,
-      cancel: options?.cancel && options.cancel.onClick
-        ? {
-            label: options.cancel.label,
-            onClick: options.cancel.onClick,
-          }
-        : undefined,
+      cancel:
+        options?.cancel && options.cancel.onClick
+          ? {
+              label: options.cancel.label,
+              onClick: options.cancel.onClick,
+            }
+          : undefined,
     });
   },
 
@@ -48,12 +49,13 @@ export const toast = {
             onClick: options.action.onClick,
           }
         : undefined,
-      cancel: options?.cancel && options.cancel.onClick
-        ? {
-            label: options.cancel.label,
-            onClick: options.cancel.onClick,
-          }
-        : undefined,
+      cancel:
+        options?.cancel && options.cancel.onClick
+          ? {
+              label: options.cancel.label,
+              onClick: options.cancel.onClick,
+            }
+          : undefined,
     });
   },
 
@@ -67,12 +69,13 @@ export const toast = {
             onClick: options.action.onClick,
           }
         : undefined,
-      cancel: options?.cancel && options.cancel.onClick
-        ? {
-            label: options.cancel.label,
-            onClick: options.cancel.onClick,
-          }
-        : undefined,
+      cancel:
+        options?.cancel && options.cancel.onClick
+          ? {
+              label: options.cancel.label,
+              onClick: options.cancel.onClick,
+            }
+          : undefined,
     });
   },
 
@@ -86,12 +89,13 @@ export const toast = {
             onClick: options.action.onClick,
           }
         : undefined,
-      cancel: options?.cancel && options.cancel.onClick
-        ? {
-            label: options.cancel.label,
-            onClick: options.cancel.onClick,
-          }
-        : undefined,
+      cancel:
+        options?.cancel && options.cancel.onClick
+          ? {
+              label: options.cancel.label,
+              onClick: options.cancel.onClick,
+            }
+          : undefined,
     });
   },
 
@@ -101,7 +105,7 @@ export const toast = {
   withUndo: (
     message: string,
     onUndo: () => void,
-    options?: Omit<ToastOptions, "action">
+    options?: Omit<ToastOptions, "action">,
   ) => {
     return sonnerToast.success(message, {
       description: options?.description,
@@ -125,13 +129,13 @@ export const toast = {
   /**
    * Promise toast - automatically shows loading, success, or error
    */
-  promise: <T,>(
+  promise: <T>(
     promise: Promise<T>,
     messages: {
       loading: string;
       success: string | ((data: T) => string);
       error: string | ((error: Error) => string);
-    }
+    },
   ) => {
     return sonnerToast.promise(promise, {
       loading: messages.loading,
@@ -140,4 +144,3 @@ export const toast = {
     });
   },
 };
-

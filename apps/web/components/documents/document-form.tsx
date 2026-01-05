@@ -1,37 +1,51 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { useForm, useFieldArray, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import {
-  DocumentInput,
-  createDocument,
-  updateDocument,
-  Document,
-  DocumentType,
-} from "@/actions/documents-actions";
 import { CompanyProfile } from "@/actions/company-profiles-actions";
-import { CompanyProfileSelector } from "@/components/company-settings/company-profile-selector";
-import { CustomerSelector } from "@/components/documents/customer-selector";
-import { Button } from '@/components/alignui/actions/button';
+import {
+  createDocument,
+  Document,
+  DocumentInput,
+  DocumentType,
+  updateDocument,
+} from "@/actions/documents-actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  FileText,
+  Loader2,
+  Plus,
+  Receipt,
+  ShoppingCart,
+  Trash2,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+
+import { Button } from "@/components/alignui/actions/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
 import {
   FormRoot as Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/alignui/forms/form";
-import { Input } from '@/components/alignui/forms/input';
+import { Input } from "@/components/alignui/forms/input";
 import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
-import { Plus, Trash2, FileText, ShoppingCart, Receipt, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { CompanyProfileSelector } from "@/components/company-settings/company-profile-selector";
+import { CustomerSelector } from "@/components/documents/customer-selector";
 
 // Schema will be created inside component to access translations
 
@@ -41,12 +55,18 @@ interface DocumentFormProps {
   defaultCustomerId?: string;
 }
 
-export function DocumentForm({ document, type, defaultCustomerId }: DocumentFormProps) {
+export function DocumentForm({
+  document,
+  type,
+  defaultCustomerId,
+}: DocumentFormProps) {
   const t = useTranslations("Documents.form");
   const tValidation = useTranslations("Documents.form.validation");
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedProfile, setSelectedProfile] = useState<CompanyProfile | null>(null);
+  const [selectedProfile, setSelectedProfile] = useState<CompanyProfile | null>(
+    null,
+  );
   const [selectedProfileId, setSelectedProfileId] = useState<string>("");
 
   const documentSchema = z.object({
@@ -65,9 +85,12 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
       )
       .min(1, tValidation("atLeastOneItem")),
   });
-  
+
   // Calculate due date based on document date and payment days from profile
-  const calculateDueDate = (docDate: string, paymentDays?: number | null): string => {
+  const calculateDueDate = (
+    docDate: string,
+    paymentDays?: number | null,
+  ): string => {
     if (!docDate || !paymentDays) return "";
     const date = new Date(docDate);
     date.setDate(date.getDate() + (paymentDays || 14));
@@ -78,10 +101,10 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
   const normalizedDocument = document
     ? {
         customer_id: document.customer_id || "",
-        document_date: document.document_date 
+        document_date: document.document_date
           ? new Date(document.document_date).toISOString().split("T")[0]
           : new Date().toISOString().split("T")[0],
-        due_date: document.due_date 
+        due_date: document.due_date
           ? new Date(document.due_date).toISOString().split("T")[0]
           : "",
         tax_rate: document.tax_rate,
@@ -125,7 +148,7 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
     if (selectedProfile && !document) {
       const taxRate = selectedProfile.default_tax_rate ?? 19;
       const paymentDays = selectedProfile.default_payment_days ?? 14;
-      const dueDate = documentDate 
+      const dueDate = documentDate
         ? calculateDueDate(documentDate, paymentDays)
         : "";
 
@@ -146,18 +169,20 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
     control: form.control,
     name: "items",
   });
-  const taxRate = useWatch({
-    control: form.control,
-    name: "tax_rate",
-  }) || 19;
+  const taxRate =
+    useWatch({
+      control: form.control,
+      name: "tax_rate",
+    }) || 19;
 
   // Calculate totals
   const totals = useMemo(() => {
-    const subtotal = items?.reduce((sum, item) => {
-      const quantity = item.quantity || 0;
-      const unitPrice = item.unit_price || 0;
-      return sum + quantity * unitPrice;
-    }, 0) || 0;
+    const subtotal =
+      items?.reduce((sum, item) => {
+        const quantity = item.quantity || 0;
+        const unitPrice = item.unit_price || 0;
+        return sum + quantity * unitPrice;
+      }, 0) || 0;
 
     const tax = (subtotal * taxRate) / 100;
     const total = subtotal + tax;
@@ -172,14 +197,14 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
 
   const onSubmit = async (data: DocumentInput) => {
     if (isLoading) return; // Prevent double submission
-    
+
     setIsLoading(true);
     try {
       const documentData: DocumentInput = {
         ...data,
         company_profile_id: selectedProfileId,
       };
-      
+
       if (document) {
         await updateDocument(document.id, documentData);
         toast.success(t("toast.updated"));
@@ -212,34 +237,32 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
             </div>
             <div>
               <CardTitle className="text-xl">
-                {document
-                  ? t(`title.edit.${type}`)
-                  : t(`title.new.${type}`)}
+                {document ? t(`title.edit.${type}`) : t(`title.new.${type}`)}
               </CardTitle>
               <CardDescription className="mt-1">
-                {document
-                  ? t("description.edit")
-                  : t("description.new")}
+                {document ? t("description.edit") : t("description.new")}
               </CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form 
+            <form
               onSubmit={(e) => {
                 e.preventDefault();
                 if (!isLoading) {
                   form.handleSubmit(onSubmit)(e);
                 }
-              }} 
+              }}
               className="space-y-8"
             >
               {/* Company Profile Section */}
               <div className="space-y-3">
                 <div className="flex gap-2 items-center">
                   <Receipt className="w-4 h-4 text-muted-foreground" />
-                  <FormLabel className="text-base font-semibold">{t("companyProfile.label")}</FormLabel>
+                  <FormLabel className="text-base font-semibold">
+                    {t("companyProfile.label")}
+                  </FormLabel>
                 </div>
                 <CompanyProfileSelector
                   value={selectedProfileId}
@@ -289,16 +312,20 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                   render={({ field }) => (
                     <FormItem className="sm:w-[200px]">
                       <FormControl>
-                        <Input 
-                          type="date" 
-                          {...field} 
+                        <Input
+                          type="date"
+                          {...field}
                           className="h-11"
                           onChange={(e) => {
                             field.onChange(e);
                             // Auto-update due date when document date changes
                             if (selectedProfile && !document) {
-                              const paymentDays = selectedProfile.default_payment_days ?? 14;
-                              const dueDate = calculateDueDate(e.target.value, paymentDays);
+                              const paymentDays =
+                                selectedProfile.default_payment_days ?? 14;
+                              const dueDate = calculateDueDate(
+                                e.target.value,
+                                paymentDays,
+                              );
                               if (dueDate) {
                                 form.setValue("due_date", dueDate);
                               }
@@ -315,16 +342,12 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
               <FormField
                 control={form.control}
                 name="tax_rate"
-                render={({ field }) => (
-                  <input type="hidden" {...field} />
-                )}
+                render={({ field }) => <input type="hidden" {...field} />}
               />
               <FormField
                 control={form.control}
                 name="due_date"
-                render={({ field }) => (
-                  <input type="hidden" {...field} />
-                )}
+                render={({ field }) => <input type="hidden" {...field} />}
               />
 
               <Separator />
@@ -334,7 +357,9 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                 <div className="flex justify-between items-center">
                   <div className="flex gap-2 items-center">
                     <ShoppingCart className="w-4 h-4 text-muted-foreground" />
-                    <FormLabel className="text-base font-semibold">{t("items.label")}</FormLabel>
+                    <FormLabel className="text-base font-semibold">
+                      {t("items.label")}
+                    </FormLabel>
                   </div>
                   <Button
                     type="button"
@@ -351,8 +376,10 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                 <div className="space-y-3">
                   {fields.map((field, index) => {
                     const item = items?.[index];
-                    const itemTotal = ((item?.quantity || 0) * (item?.unit_price || 0)).toFixed(2);
-                    
+                    const itemTotal = (
+                      (item?.quantity || 0) * (item?.unit_price || 0)
+                    ).toFixed(2);
+
                     return (
                       <Card key={field.id} className="border-2">
                         <CardContent className="p-4">
@@ -367,7 +394,13 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                                       {t("items.fields.description")}
                                     </FormLabel>
                                     <FormControl>
-                                      <Input placeholder={t("itemDescriptionPlaceholder")} {...field} className="h-10" />
+                                      <Input
+                                        placeholder={t(
+                                          "itemDescriptionPlaceholder",
+                                        )}
+                                        {...field}
+                                        className="h-10"
+                                      />
                                     </FormControl>
                                     <FormMessage />
                                   </FormItem>
@@ -388,7 +421,9 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                                         placeholder="1"
                                         {...field}
                                         onChange={(e) =>
-                                          field.onChange(parseFloat(e.target.value) || 0)
+                                          field.onChange(
+                                            parseFloat(e.target.value) || 0,
+                                          )
                                         }
                                         className="h-10"
                                       />
@@ -412,7 +447,9 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                                         placeholder="0.00"
                                         {...field}
                                         onChange={(e) =>
-                                          field.onChange(parseFloat(e.target.value) || 0)
+                                          field.onChange(
+                                            parseFloat(e.target.value) || 0,
+                                          )
                                         }
                                         className="h-10"
                                       />
@@ -425,10 +462,13 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                             <div className="flex gap-3 items-start pt-8">
                               <div className="text-right min-w-[100px]">
                                 <div className="text-base font-semibold">
-                                  {parseFloat(itemTotal).toLocaleString("de-DE", {
-                                    style: "currency",
-                                    currency: "EUR",
-                                  })}
+                                  {parseFloat(itemTotal).toLocaleString(
+                                    "de-DE",
+                                    {
+                                      style: "currency",
+                                      currency: "EUR",
+                                    },
+                                  )}
                                 </div>
                                 <div className="text-xs text-muted-foreground">
                                   {t("items.fields.total")}
@@ -457,12 +497,16 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
 
               {/* Summary Section */}
               <div className="space-y-4">
-                <FormLabel className="text-base font-semibold">{t("summary.label")}</FormLabel>
+                <FormLabel className="text-base font-semibold">
+                  {t("summary.label")}
+                </FormLabel>
                 <Card className="bg-gradient-to-br border-2 from-muted/50 to-muted/30">
                   <CardContent className="p-6">
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">{t("summary.subtotal")}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {t("summary.subtotal")}
+                        </span>
                         <span className="text-base font-semibold">
                           {totals.subtotal.toLocaleString("de-DE", {
                             style: "currency",
@@ -483,7 +527,9 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
                       </div>
                       <Separator />
                       <div className="flex justify-between items-center pt-1">
-                        <span className="text-lg font-bold">{t("summary.total")}</span>
+                        <span className="text-lg font-bold">
+                          {t("summary.total")}
+                        </span>
                         <span className="text-2xl font-bold text-primary">
                           {totals.total.toLocaleString("de-DE", {
                             style: "currency",
@@ -500,16 +546,18 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
 
               {/* Notes Section */}
               <div className="space-y-3">
-                <FormLabel className="text-base font-semibold">{t("notes.label")}</FormLabel>
+                <FormLabel className="text-base font-semibold">
+                  {t("notes.label")}
+                </FormLabel>
                 <FormField
                   control={form.control}
                   name="notes"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <Textarea 
-                          {...field} 
-                          value={field.value || ""} 
+                        <Textarea
+                          {...field}
+                          value={field.value || ""}
                           rows={4}
                           placeholder={t("notes.placeholder")}
                           className="resize-none"
@@ -526,16 +574,16 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
 
               {/* Action Buttons */}
               <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row">
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => router.back()}
                   className="w-full sm:w-auto"
                 >
                   {t("cancel")}
                 </Button>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={isLoading}
                   className="w-full sm:w-auto"
                   size="lg"
@@ -567,4 +615,3 @@ export function DocumentForm({ document, type, defaultCustomerId }: DocumentForm
     </div>
   );
 }
-

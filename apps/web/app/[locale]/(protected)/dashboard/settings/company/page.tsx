@@ -1,11 +1,12 @@
-import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/session";
-import { getCompanyProfiles } from "@/actions/company-profiles-actions";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { Building2, Plus } from "lucide-react";
 import Link from "next/link";
-import { Button } from '@/components/alignui/actions/button';
+import { redirect } from "next/navigation";
+import { getCompanyProfiles } from "@/actions/company-profiles-actions";
+import { Building2, Plus } from "lucide-react";
+
+import { getCurrentUser } from "@/lib/session";
+import { Button } from "@/components/alignui/actions/button";
 import { CompanyProfilesList } from "@/components/company-settings/company-profiles-list";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export const dynamic = "force-dynamic";
 
@@ -41,8 +42,8 @@ export default async function CompanySettingsPage() {
             </div>
             <h3 className="text-lg font-semibold">Noch keine Firmenprofile</h3>
             <p className="text-sm text-muted-foreground">
-              Erstellen Sie Ihr erstes Firmenprofil, um Ihre Daten zentral für Rechnungen, 
-              Angebote und andere Features zu verwalten.
+              Erstellen Sie Ihr erstes Firmenprofil, um Ihre Daten zentral für
+              Rechnungen, Angebote und andere Features zu verwalten.
             </p>
             <div className="pt-4">
               <Link href="/dashboard/settings/company/new">
@@ -58,4 +59,3 @@ export default async function CompanySettingsPage() {
     </UnifiedPageLayout>
   );
 }
-

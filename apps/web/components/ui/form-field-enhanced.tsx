@@ -1,8 +1,20 @@
 "use client";
 
 import * as React from "react";
-import { useFormContext, Controller, FieldPath, FieldValues } from "react-hook-form";
-import { FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "./form";
+import {
+  Controller,
+  FieldPath,
+  FieldValues,
+  useFormContext,
+} from "react-hook-form";
+
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./form";
 import { Input } from "./input";
 
 interface FormFieldEnhancedProps<
@@ -40,12 +52,15 @@ export function FormFieldEnhanced<
   const form = useFormContext<TFieldValues>();
   const formControl = control || form.control;
   const [isValidating, setIsValidating] = React.useState(false);
-  
+
   const fieldState = form.getFieldState(name);
   const fieldValue = form.watch(name);
-  const isDirty = Boolean((form.formState.dirtyFields as Record<string, boolean>)[name as string]);
+  const isDirty = Boolean(
+    (form.formState.dirtyFields as Record<string, boolean>)[name as string],
+  );
   const hasError = !!fieldState.error;
-  const hasSuccess = !hasError && isDirty && fieldValue !== undefined && fieldValue !== "";
+  const hasSuccess =
+    !hasError && isDirty && fieldValue !== undefined && fieldValue !== "";
 
   const handleBlur = async (onBlur: () => void) => {
     if (validateOnBlur) {
@@ -89,11 +104,14 @@ export function FormFieldEnhanced<
             <FormItem className={className}>
               {label && <FormLabel>{label}</FormLabel>}
               <FormControl>
-                {React.cloneElement(children as React.ReactElement<any>, {
-                  ...enhancedField,
-                  hasError,
-                  hasSuccess,
-                } as any)}
+                {React.cloneElement(
+                  children as React.ReactElement<any>,
+                  {
+                    ...enhancedField,
+                    hasError,
+                    hasSuccess,
+                  } as any,
+                )}
               </FormControl>
               {description && <FormDescription>{description}</FormDescription>}
               <FormMessage />
@@ -116,4 +134,3 @@ export function FormFieldEnhanced<
     />
   );
 }
-

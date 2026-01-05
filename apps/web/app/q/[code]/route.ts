@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseStatic } from "@/lib/supabase-server";
 import { trackQRCodeScan } from "@/actions/qr-codes-actions";
+
 import { logger } from "@/lib/logger";
+import { getSupabaseStatic } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
 
@@ -92,15 +93,17 @@ export async function GET(
           headers: {
             "Content-Type": "text/html; charset=utf-8",
           },
-        }
+        },
       );
     }
 
     // Track scan (async, don't wait)
     const userAgent = request.headers.get("user-agent") || undefined;
     const referrer = request.headers.get("referer") || undefined;
-    const ipAddress = request.headers.get("x-forwarded-for")?.split(",")[0] || 
-                     request.headers.get("x-real-ip") || undefined;
+    const ipAddress =
+      request.headers.get("x-forwarded-for")?.split(",")[0] ||
+      request.headers.get("x-real-ip") ||
+      undefined;
 
     trackQRCodeScan(qrCode.code, {
       user_agent: userAgent,
@@ -138,7 +141,7 @@ export async function GET(
           .replace(/>/g, "&gt;")
           .replace(/"/g, "&quot;")
           .replace(/'/g, "&#039;");
-        
+
         return new NextResponse(
           `<!DOCTYPE html>
 <html lang="de">
@@ -297,7 +300,7 @@ export async function GET(
         headers: {
           "Content-Type": "text/html; charset=utf-8",
         },
-      }
+      },
     );
   }
 }
@@ -312,4 +315,3 @@ function escapeHtml(text: string): string {
   };
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
-

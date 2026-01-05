@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
+import { NextRequest, NextResponse } from "next/server";
+
 import { env } from "@/env.mjs";
+import { supabaseAdmin } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 // Type assertion to handle Next.js 16 type requirements
 const revalidateTagSafe = revalidateTag as (tag: string) => void;
-import { supabaseAdmin } from "@/lib/db";
-import { logger } from "@/lib/logger";
 
 /**
  * Polar.sh Webhook Route
@@ -22,23 +23,25 @@ export async function POST(req: NextRequest) {
     // For now, we'll process the webhook (you should add signature verification in production)
 
     const event = JSON.parse(body);
-    
-    logger.info(`Processing Polar webhook event: ${event.type}, eventId: ${event.id}, eventType: ${event.type}`);
+
+    logger.info(
+      `Processing Polar webhook event: ${event.type}, eventId: ${event.id}, eventType: ${event.type}`,
+    );
 
     switch (event.type) {
       case "checkout.succeeded":
         await handleCheckoutSucceeded(event.data);
         break;
-      
+
       case "subscription.created":
       case "subscription.updated":
         await handleSubscriptionUpdated(event.data);
         break;
-      
+
       case "subscription.canceled":
         await handleSubscriptionCanceled(event.data);
         break;
-      
+
       default:
         logger.info(`Unhandled Polar webhook event type: ${event.type}`);
     }
@@ -48,7 +51,7 @@ export async function POST(req: NextRequest) {
     logger.error("Error processing Polar webhook", error);
     return NextResponse.json(
       { error: "Webhook processing failed", message: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -63,7 +66,9 @@ async function handleCheckoutSucceeded(data: any) {
     const subscriptionId = checkout.subscription_id;
     const productId = checkout.product_id;
 
-    logger.info(`Checkout succeeded for ${customerEmail}, subscriptionId: ${subscriptionId}, productId: ${productId}`);
+    logger.info(
+      `Checkout succeeded for ${customerEmail}, subscriptionId: ${subscriptionId}, productId: ${productId}`,
+    );
 
     if (!customerEmail) {
       logger.error("No customer email in checkout event");
@@ -108,7 +113,9 @@ async function handleSubscriptionUpdated(data: any) {
     const customerId = subscription.customer_id;
     const productId = subscription.product_id;
 
-    logger.info(`Subscription updated: ${subscriptionId}, customerId: ${customerId}, productId: ${productId}, status: ${subscription.status}`);
+    logger.info(
+      `Subscription updated: ${subscriptionId}, customerId: ${customerId}, productId: ${productId}, status: ${subscription.status}`,
+    );
 
     let userData: { id: string } | null = null;
     let userError: any = null;
@@ -120,47 +127,54 @@ async function handleSubscriptionUpdated(data: any) {
         .select("id")
         .eq("polar_customer_id", customerId)
         .single();
-      
+
       userData = result.data;
       userError = result.error;
     }
 
     // If not found by customer ID, try to find by subscription ID
     if ((userError || !userData) && subscriptionId) {
-      logger.info(`User not found by customer ID, trying subscription ID: ${subscriptionId}`);
+      logger.info(
+        `User not found by customer ID, trying subscription ID: ${subscriptionId}`,
+      );
       const result = await supabaseAdmin
         .from("users")
         .select("id")
         .eq("polar_subscription_id", subscriptionId)
         .single();
-      
+
       userData = result.data;
       userError = result.error;
     }
 
     // If still not found, try subscriptions table
     if ((userError || !userData) && subscriptionId) {
-      logger.info(`User not found in users table, trying subscriptions table: ${subscriptionId}`);
+      logger.info(
+        `User not found in users table, trying subscriptions table: ${subscriptionId}`,
+      );
       const result = await supabaseAdmin
         .from("subscriptions")
         .select("user_id")
         .eq("polar_subscription_id", subscriptionId)
         .single();
-      
+
       if (result.data) {
         const userResult = await supabaseAdmin
           .from("users")
           .select("id")
           .eq("id", result.data.user_id)
           .single();
-        
+
         userData = userResult.data;
         userError = userResult.error;
       }
     }
 
     if (userError || !userData) {
-      logger.error(`User not found for subscription: ${subscriptionId}`, userError);
+      logger.error(
+        `User not found for subscription: ${subscriptionId}`,
+        userError,
+      );
       return;
     }
 
@@ -169,8 +183,10 @@ async function handleSubscriptionUpdated(data: any) {
 
     // Invalidate cache to force refresh on next request
     revalidateTagSafe("subscription-plan");
-    
-    logger.info(`Successfully synced subscription ${subscriptionId} for user ${userData.id} and invalidated cache`);
+
+    logger.info(
+      `Successfully synced subscription ${subscriptionId} for user ${userData.id} and invalidated cache`,
+    );
   } catch (error: any) {
     logger.error("Error handling subscription updated", error);
     throw error;
@@ -195,7 +211,10 @@ async function handleSubscriptionCanceled(data: any) {
       .single();
 
     if (userError || !userData) {
-      logger.error(`User not found for subscription: ${subscriptionId}`, userError);
+      logger.error(
+        `User not found for subscription: ${subscriptionId}`,
+        userError,
+      );
       return;
     }
 
@@ -227,13 +246,18 @@ async function handleSubscriptionCanceled(data: any) {
 async function syncPolarSubscription(userId: string, subscriptionId: string) {
   try {
     // Fetch subscription details from Polar API
-    const isSandbox = env.POLAR_USE_SANDBOX === "true" || process.env.POLAR_USE_SANDBOX === "true";
-    const apiUrl = isSandbox ? "https://sandbox-api.polar.sh/v1" : "https://api.polar.sh/v1";
-    const accessToken = env.POLAR_ACCESS_TOKEN || process.env.POLAR_ACCESS_TOKEN;
+    const isSandbox =
+      env.POLAR_USE_SANDBOX === "true" ||
+      process.env.POLAR_USE_SANDBOX === "true";
+    const apiUrl = isSandbox
+      ? "https://sandbox-api.polar.sh/v1"
+      : "https://api.polar.sh/v1";
+    const accessToken =
+      env.POLAR_ACCESS_TOKEN || process.env.POLAR_ACCESS_TOKEN;
 
     const response = await fetch(`${apiUrl}/subscriptions/${subscriptionId}`, {
       headers: {
-        "Authorization": `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
     });
@@ -248,7 +272,7 @@ async function syncPolarSubscription(userId: string, subscriptionId: string) {
     const productId = subscription.product_id;
     const customerId = subscription.customer_id;
     const status = subscription.status; // active, canceled, etc.
-    const currentPeriodEnd = subscription.current_period_end 
+    const currentPeriodEnd = subscription.current_period_end
       ? new Date(subscription.current_period_end * 1000).toISOString()
       : null;
     const currentPeriodStart = subscription.current_period_start
@@ -276,7 +300,12 @@ async function syncPolarSubscription(userId: string, subscriptionId: string) {
       polar_subscription_id: subscriptionId,
       polar_customer_id: customerId,
       polar_product_id: productId,
-      status: status === "active" ? "active" : status === "canceled" ? "canceled" : "past_due",
+      status:
+        status === "active"
+          ? "active"
+          : status === "canceled"
+            ? "canceled"
+            : "past_due",
       current_period_start: currentPeriodStart,
       current_period_end: currentPeriodEnd,
       payment_provider: "polar",
@@ -289,12 +318,12 @@ async function syncPolarSubscription(userId: string, subscriptionId: string) {
         .update(subscriptionData)
         .eq("id", existingSub.id);
     } else {
-      await supabaseAdmin
-        .from("subscriptions")
-        .insert(subscriptionData);
+      await supabaseAdmin.from("subscriptions").insert(subscriptionData);
     }
 
-    logger.info(`Synced Polar subscription ${subscriptionId} for user ${userId}, productId: ${productId}, customerId: ${customerId}, status: ${status}`);
+    logger.info(
+      `Synced Polar subscription ${subscriptionId} for user ${userId}, productId: ${productId}, customerId: ${customerId}, status: ${status}`,
+    );
   } catch (error: any) {
     logger.error("Error syncing Polar subscription", error);
     throw error;
@@ -304,13 +333,16 @@ async function syncPolarSubscription(userId: string, subscriptionId: string) {
 /**
  * Update user Polar data
  */
-async function updateUserPolarData(userId: string, data: {
-  polar_customer_id?: string;
-  polar_subscription_id?: string | null;
-  polar_product_id?: string | null;
-  polar_current_period_end?: string | null;
-  payment_provider?: string;
-}) {
+async function updateUserPolarData(
+  userId: string,
+  data: {
+    polar_customer_id?: string;
+    polar_subscription_id?: string | null;
+    polar_product_id?: string | null;
+    polar_current_period_end?: string | null;
+    payment_provider?: string;
+  },
+) {
   const { error } = await supabaseAdmin
     .from("users")
     .update(data)
@@ -321,4 +353,3 @@ async function updateUserPolarData(userId: string, data: {
     throw error;
   }
 }
-

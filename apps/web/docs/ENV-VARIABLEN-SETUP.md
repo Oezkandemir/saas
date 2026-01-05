@@ -86,6 +86,3 @@ pnpm dev
 
 - Stellen Sie sicher, dass die IDs mit `price_` beginnen (nicht `prod_`)
 - Kopieren Sie die IDs direkt aus Stripe Dashboard
-
-
-

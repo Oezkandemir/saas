@@ -2,8 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { deleteDocument } from "@/actions/documents-actions";
+import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from '@/components/alignui/actions/button';
+import { toast } from "sonner";
+
+import { Button } from "@/components/alignui/actions/button";
 import {
   AlertDialogRoot as AlertDialog,
   AlertDialogAction,
@@ -15,9 +19,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/alignui/overlays/alert-dialog";
-import { Trash2 } from "lucide-react";
-import { deleteDocument } from "@/actions/documents-actions";
-import { toast } from "sonner";
 
 interface DocumentDeleteButtonProps {
   documentId: string;
@@ -64,9 +65,13 @@ export function DocumentDeleteButton({
       </AlertDialogTrigger>
       <AlertDialogContent className="bg-background border-border">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-foreground">{t("title")}</AlertDialogTitle>
+          <AlertDialogTitle className="text-foreground">
+            {t("title")}
+          </AlertDialogTitle>
           <AlertDialogDescription className="text-muted-foreground">
-            {t(`description.${documentType}`)} <strong className="text-foreground">{documentNumber}</strong> {t("confirmText")}
+            {t(`description.${documentType}`)}{" "}
+            <strong className="text-foreground">{documentNumber}</strong>{" "}
+            {t("confirmText")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="gap-2 sm:flex-row sm:justify-end">
@@ -94,4 +99,3 @@ export function DocumentDeleteButton({
     </AlertDialog>
   );
 }
-

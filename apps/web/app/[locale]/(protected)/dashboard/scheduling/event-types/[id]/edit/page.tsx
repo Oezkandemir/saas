@@ -1,9 +1,10 @@
-import { redirect, notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
-import { getCurrentUser } from "@/lib/session";
+import { notFound, redirect } from "next/navigation";
 import { getEventType } from "@/actions/scheduling/event-types-actions";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Edit } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+
+import { getCurrentUser } from "@/lib/session";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { EditEventTypeForm } from "@/components/scheduling/edit-event-type-form";
 
 export const dynamic = "force-dynamic";
@@ -38,4 +39,3 @@ export default async function EditEventTypePage({
     </UnifiedPageLayout>
   );
 }
-

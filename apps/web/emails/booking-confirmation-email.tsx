@@ -11,9 +11,10 @@ import {
   Text,
 } from "@react-email/components";
 
-import { Icons } from "../components/shared/icons";
-import { siteConfig } from "@/config/site";
 import { env } from "@/env.mjs";
+import { siteConfig } from "@/config/site";
+
+import { Icons } from "../components/shared/icons";
 
 type BookingConfirmationEmailProps = {
   inviteeName: string;
@@ -22,7 +23,13 @@ type BookingConfirmationEmailProps = {
   startAt: string; // ISO datetime string
   endAt: string; // ISO datetime string
   durationMinutes: number;
-  locationType?: "google_meet" | "zoom" | "custom_link" | "phone" | "in_person" | null;
+  locationType?:
+    | "google_meet"
+    | "zoom"
+    | "custom_link"
+    | "phone"
+    | "in_person"
+    | null;
   locationValue?: string | null;
   hostName?: string | null;
   hostEmail?: string | null;
@@ -42,7 +49,7 @@ export const BookingConfirmationEmail = ({
   eventDescription,
   startAt,
   endAt,
-  
+
   locationType,
   locationValue,
   hostName,
@@ -58,7 +65,7 @@ export const BookingConfirmationEmail = ({
 }: BookingConfirmationEmailProps) => {
   const startDate = new Date(startAt);
   const endDate = new Date(endAt);
-  
+
   // Format date and time (German format)
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("de-DE", {
@@ -77,7 +84,7 @@ export const BookingConfirmationEmail = ({
   };
 
   const cancelUrl = `${env.NEXT_PUBLIC_APP_URL}/booking/cancel?token=${cancelToken}`;
-  const rescheduleUrl = rescheduleToken 
+  const rescheduleUrl = rescheduleToken
     ? `${env.NEXT_PUBLIC_APP_URL}/booking/reschedule?token=${rescheduleToken}`
     : null;
 
@@ -90,7 +97,7 @@ export const BookingConfirmationEmail = ({
 
   const getLocationDisplay = () => {
     if (!locationType || !locationValue) return null;
-    
+
     switch (locationType) {
       case "google_meet":
         return { label: "Google Meet", link: locationValue };
@@ -113,29 +120,36 @@ export const BookingConfirmationEmail = ({
     <Html>
       <Head />
       <Preview>
-        Ihre Buchung für "{eventTitle}" am {formatDate(startDate)} um {formatTime(startDate)} Uhr wurde bestätigt.
+        Ihre Buchung für "{eventTitle}" am {formatDate(startDate)} um{" "}
+        {formatTime(startDate)} Uhr wurde bestätigt.
       </Preview>
       <Tailwind>
         <Body className="bg-white font-sans">
           <Container className="mx-auto py-5 pb-12">
             <Icons.logo className="m-auto block size-10" />
-            
+
             <Text className="text-base">Hallo {inviteeName},</Text>
-            
+
             <Text className="text-base">
-              Ihre Buchung wurde erfolgreich bestätigt! Hier sind alle wichtigen Informationen zu Ihrer Terminbuchung:
+              Ihre Buchung wurde erfolgreich bestätigt! Hier sind alle wichtigen
+              Informationen zu Ihrer Terminbuchung:
             </Text>
 
             <Section className="my-6 rounded-lg border border-gray-200 bg-gray-50 p-6">
               <Text className="mb-4 text-lg font-semibold">{eventTitle}</Text>
-              
+
               {eventDescription && (
-                <Text className="mb-4 text-sm text-gray-600">{eventDescription}</Text>
+                <Text className="mb-4 text-sm text-gray-600">
+                  {eventDescription}
+                </Text>
               )}
 
-              <Text className="mb-2 text-sm font-semibold">Datum & Uhrzeit:</Text>
+              <Text className="mb-2 text-sm font-semibold">
+                Datum & Uhrzeit:
+              </Text>
               <Text className="mb-4 text-sm">
-                {formatDate(startDate)}<br />
+                {formatDate(startDate)}
+                <br />
                 {formatTime(startDate)} - {formatTime(endDate)} Uhr
               </Text>
 
@@ -144,7 +158,10 @@ export const BookingConfirmationEmail = ({
                   <Text className="mb-2 text-sm font-semibold">Ort:</Text>
                   {location.link ? (
                     <Text className="mb-4 text-sm">
-                      <a href={location.link} className="text-blue-600 underline">
+                      <a
+                        href={location.link}
+                        className="text-blue-600 underline"
+                      >
                         {location.label}
                       </a>
                     </Text>
@@ -158,7 +175,9 @@ export const BookingConfirmationEmail = ({
 
               {hostName && (
                 <>
-                  <Text className="mb-2 text-sm font-semibold">Ihr Gastgeber:</Text>
+                  <Text className="mb-2 text-sm font-semibold">
+                    Ihr Gastgeber:
+                  </Text>
                   <Text className="mb-4 text-sm">
                     {hostName}
                     {hostEmail && ` (${hostEmail})`}
@@ -168,9 +187,12 @@ export const BookingConfirmationEmail = ({
 
               {numberOfParticipants > 1 && (
                 <>
-                  <Text className="mb-2 text-sm font-semibold">Teilnehmer:</Text>
+                  <Text className="mb-2 text-sm font-semibold">
+                    Teilnehmer:
+                  </Text>
                   <Text className="mb-4 text-sm">
-                    {numberOfParticipants} Person{numberOfParticipants > 1 ? "en" : ""}
+                    {numberOfParticipants} Person
+                    {numberOfParticipants > 1 ? "en" : ""}
                     {participantNames && participantNames.length > 0 && (
                       <>
                         <br />
@@ -192,8 +214,12 @@ export const BookingConfirmationEmail = ({
 
               {inviteeNotes && (
                 <>
-                  <Text className="mb-2 text-sm font-semibold">Ihre Notizen:</Text>
-                  <Text className="mb-4 text-sm text-gray-600">{inviteeNotes}</Text>
+                  <Text className="mb-2 text-sm font-semibold">
+                    Ihre Notizen:
+                  </Text>
+                  <Text className="mb-4 text-sm text-gray-600">
+                    {inviteeNotes}
+                  </Text>
                 </>
               )}
             </Section>
@@ -209,7 +235,7 @@ export const BookingConfirmationEmail = ({
                   </Button>
                 </div>
               )}
-              
+
               <div className="text-center">
                 <Button
                   className="inline-block rounded-md bg-zinc-900 px-6 py-3 text-base text-white no-underline"
@@ -241,15 +267,18 @@ export const BookingConfirmationEmail = ({
             </Section>
 
             <Text className="text-sm text-gray-600">
-              Falls Sie Fragen haben oder den Termin ändern möchten, können Sie die obigen Links verwenden oder direkt mit {hostName || "dem Gastgeber"} Kontakt aufnehmen.
+              Falls Sie Fragen haben oder den Termin ändern möchten, können Sie
+              die obigen Links verwenden oder direkt mit{" "}
+              {hostName || "dem Gastgeber"} Kontakt aufnehmen.
             </Text>
 
             <Hr className="my-4 border-t-2 border-gray-300" />
-            
+
             <Text className="text-xs text-gray-500">
-              Diese E-Mail wurde automatisch generiert. Bitte antworten Sie nicht direkt auf diese E-Mail.
+              Diese E-Mail wurde automatisch generiert. Bitte antworten Sie
+              nicht direkt auf diese E-Mail.
             </Text>
-            
+
             <Text className="text-xs text-gray-500">
               {siteConfig.name} - {siteConfig.url}
             </Text>
@@ -259,4 +288,3 @@ export const BookingConfirmationEmail = ({
     </Html>
   );
 };
-

@@ -1,11 +1,11 @@
+import { supabaseAdmin } from "@/lib/db";
+import { logger } from "@/lib/logger";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { getSupabaseServer } from "@/lib/supabase-server";
-import { logger } from "@/lib/logger";
-import { supabaseAdmin } from "@/lib/db";
 
-export type LimitType = 
-  | "customers" 
-  | "qr_codes" 
+export type LimitType =
+  | "customers"
+  | "qr_codes"
   | "documents"
   | "api_calls"
   | "storage"
@@ -25,7 +25,10 @@ export interface LimitCheckResult {
 /**
  * Get the limit for a specific resource based on the user's plan from database
  */
-async function getPlanLimitFromDB(planId: string, limitType: LimitType): Promise<number | null> {
+async function getPlanLimitFromDB(
+  planId: string,
+  limitType: LimitType,
+): Promise<number | null> {
   try {
     const { data, error } = await supabaseAdmin
       .from("plan_limits")
@@ -71,7 +74,11 @@ async function getPlanIdFromKey(planKey: string): Promise<string | null> {
  * Get the limit for a specific resource based on the user's plan
  * Falls back to hardcoded limits if database lookup fails
  */
-async function getPlanLimit(planTitle: string, planKey: string, limitType: LimitType): Promise<number> {
+async function getPlanLimit(
+  planTitle: string,
+  planKey: string,
+  limitType: LimitType,
+): Promise<number> {
   // Try to get from database first
   const planId = await getPlanIdFromKey(planKey);
   if (planId) {
@@ -141,8 +148,12 @@ export async function checkPlanLimit(
   try {
     const subscriptionPlan = await getUserSubscriptionPlan(userId);
     const planKey = subscriptionPlan.title.toLowerCase() as string;
-    const limit = await getPlanLimit(subscriptionPlan.title, planKey, limitType);
-    
+    const limit = await getPlanLimit(
+      subscriptionPlan.title,
+      planKey,
+      limitType,
+    );
+
     // Unlimited plans don't need checking
     if (limit === Infinity) {
       return {
@@ -152,17 +163,17 @@ export async function checkPlanLimit(
         limitType,
       };
     }
-    
+
     const supabase = await getSupabaseServer();
     let current = 0;
-    
+
     switch (limitType) {
       case "customers": {
         const { count, error } = await supabase
           .from("customers")
           .select("*", { count: "exact", head: true })
           .eq("user_id", userId);
-        
+
         if (error) {
           logger.error("Error counting customers", error);
           // Allow creation if we can't count (fail open)
@@ -173,11 +184,11 @@ export async function checkPlanLimit(
             limitType,
           };
         }
-        
+
         current = count || 0;
         break;
       }
-      
+
       case "qr_codes": {
         // QR codes are the same as customers (each customer has one QR code)
         const { count, error } = await supabase
@@ -185,7 +196,7 @@ export async function checkPlanLimit(
           .select("*", { count: "exact", head: true })
           .eq("user_id", userId)
           .not("qr_code", "is", null);
-        
+
         if (error) {
           logger.error("Error counting QR codes", error);
           return {
@@ -195,22 +206,22 @@ export async function checkPlanLimit(
             limitType,
           };
         }
-        
+
         current = count || 0;
         break;
       }
-      
+
       case "documents": {
         // Count documents created this month
         const now = new Date();
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        
+
         const { count, error } = await supabase
           .from("documents")
           .select("*", { count: "exact", head: true })
           .eq("user_id", userId)
           .gte("created_at", startOfMonth.toISOString());
-        
+
         if (error) {
           logger.error("Error counting documents", error);
           return {
@@ -220,17 +231,17 @@ export async function checkPlanLimit(
             limitType,
           };
         }
-        
+
         current = count || 0;
         break;
       }
-      
+
       case "api_calls": {
         // Get API calls from usage_metrics for current month
         const now = new Date();
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-        
+
         const { data, error } = await supabase
           .from("usage_metrics")
           .select("metric_value")
@@ -238,7 +249,7 @@ export async function checkPlanLimit(
           .eq("metric_type", "api_calls")
           .gte("metric_period_start", startOfMonth.toISOString())
           .lt("metric_period_end", endOfMonth.toISOString());
-        
+
         if (error) {
           logger.error("Error counting API calls", error);
           return {
@@ -248,11 +259,12 @@ export async function checkPlanLimit(
             limitType,
           };
         }
-        
-        current = data?.reduce((sum, m) => sum + Number(m.metric_value || 0), 0) || 0;
+
+        current =
+          data?.reduce((sum, m) => sum + Number(m.metric_value || 0), 0) || 0;
         break;
       }
-      
+
       case "storage": {
         // Get storage usage from usage_metrics (lifetime)
         const { data, error } = await supabase
@@ -260,7 +272,7 @@ export async function checkPlanLimit(
           .select("metric_value")
           .eq("user_id", userId)
           .eq("metric_type", "storage");
-        
+
         if (error) {
           logger.error("Error counting storage", error);
           return {
@@ -270,25 +282,26 @@ export async function checkPlanLimit(
             limitType,
           };
         }
-        
-        current = data?.reduce((sum, m) => sum + Number(m.metric_value || 0), 0) || 0;
+
+        current =
+          data?.reduce((sum, m) => sum + Number(m.metric_value || 0), 0) || 0;
         break;
       }
-      
+
       case "team_members": {
         // Count team members (if teams table exists)
         // For now, return 1 as default
         current = 1;
         break;
       }
-      
+
       case "webhooks": {
         // Count webhooks (if webhooks table exists)
         const { count, error } = await supabase
           .from("webhooks")
           .select("*", { count: "exact", head: true })
           .eq("user_id", userId);
-        
+
         if (error) {
           // Table might not exist, default to 0
           current = 0;
@@ -297,13 +310,13 @@ export async function checkPlanLimit(
         }
         break;
       }
-      
+
       case "email_sends": {
         // Get email sends from usage_metrics for current month
         const now = new Date();
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-        
+
         const { data, error } = await supabase
           .from("usage_metrics")
           .select("metric_value")
@@ -311,7 +324,7 @@ export async function checkPlanLimit(
           .eq("metric_type", "email_sends")
           .gte("metric_period_start", startOfMonth.toISOString())
           .lt("metric_period_end", endOfMonth.toISOString());
-        
+
         if (error) {
           logger.error("Error counting email sends", error);
           return {
@@ -321,14 +334,15 @@ export async function checkPlanLimit(
             limitType,
           };
         }
-        
-        current = data?.reduce((sum, m) => sum + Number(m.metric_value || 0), 0) || 0;
+
+        current =
+          data?.reduce((sum, m) => sum + Number(m.metric_value || 0), 0) || 0;
         break;
       }
     }
-    
+
     const allowed = current < limit;
-    
+
     let message: string | undefined;
     if (!allowed) {
       switch (limitType) {
@@ -343,7 +357,7 @@ export async function checkPlanLimit(
           break;
       }
     }
-    
+
     return {
       allowed,
       current,
@@ -371,11 +385,8 @@ export async function enforcePlanLimit(
   limitType: LimitType,
 ): Promise<void> {
   const result = await checkPlanLimit(userId, limitType);
-  
+
   if (!result.allowed && result.message) {
     throw new Error(result.message);
   }
 }
-
-
-

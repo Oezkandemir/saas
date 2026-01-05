@@ -1,9 +1,10 @@
 "use client";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
-import { Button } from '@/components/alignui/actions/button';
 import Link from "next/link";
+import { AlertTriangle } from "lucide-react";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/alignui/actions/button";
 
 interface UsageWarning {
   limitType: string;
@@ -40,7 +41,8 @@ export function UsageWarnings({ warnings, locale = "en" }: UsageWarningsProps) {
         <ul className="list-disc list-inside space-y-1">
           {warnings.map((warning) => (
             <li key={warning.limitType}>
-              <strong>{getLimitTypeLabel(warning.limitType)}</strong>: {warning.current} / {warning.limit} ({warning.percentage}%)
+              <strong>{getLimitTypeLabel(warning.limitType)}</strong>:{" "}
+              {warning.current} / {warning.limit} ({warning.percentage}%)
             </li>
           ))}
         </ul>
@@ -55,21 +57,3 @@ export function UsageWarnings({ warnings, locale = "en" }: UsageWarningsProps) {
     </Alert>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

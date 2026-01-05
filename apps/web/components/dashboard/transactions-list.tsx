@@ -1,15 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Button } from '@/components/alignui/actions/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/alignui/data-display/card';
 import {
   Table,
   TableBody,
@@ -18,6 +9,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 
 export default function TransactionsList() {
   return (
@@ -30,7 +30,10 @@ export default function TransactionsList() {
           </CardDescription>
         </div>
         <Button size="sm" className="ml-auto shrink-0 gap-1 px-4" disabled>
-          <Link href="/dashboard/documents" className="flex items-center gap-2 pointer-events-none">
+          <Link
+            href="/dashboard/documents"
+            className="flex items-center gap-2 pointer-events-none"
+          >
             <span>View All</span>
             <ArrowUpRight className="hidden size-4 sm:block" />
           </Link>

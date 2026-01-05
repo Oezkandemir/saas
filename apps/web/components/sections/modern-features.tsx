@@ -5,7 +5,6 @@ import { features } from "@/config/landing";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
-
 interface ModernFeaturesProps {}
 
 export default async function ModernFeatures({}: ModernFeaturesProps) {
@@ -22,9 +21,7 @@ export default async function ModernFeatures({}: ModernFeaturesProps) {
           <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
             {t("title")}
           </h2>
-          <p className="mt-6 text-xl text-muted-foreground">
-            {t("subtitle")}
-          </p>
+          <p className="mt-6 text-xl text-muted-foreground">{t("subtitle")}</p>
         </div>
 
         {/* Features Grid with modern cards */}
@@ -78,4 +75,3 @@ export default async function ModernFeatures({}: ModernFeaturesProps) {
     </section>
   );
 }
-

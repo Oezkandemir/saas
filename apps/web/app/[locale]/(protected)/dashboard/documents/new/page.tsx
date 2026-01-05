@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
+import { DocumentType } from "@/actions/documents-actions";
+import { FileText } from "lucide-react";
+
 import { getCurrentUser } from "@/lib/session";
 import { DocumentForm } from "@/components/documents/document-form";
-import { DocumentType } from "@/actions/documents-actions";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { FileText } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -31,4 +32,3 @@ export default async function NewDocumentPage({
     </UnifiedPageLayout>
   );
 }
-

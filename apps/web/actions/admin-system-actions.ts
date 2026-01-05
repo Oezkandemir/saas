@@ -1,8 +1,8 @@
 "use server";
 
 import { supabaseAdmin } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
 import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
 
 export interface DatabaseTableStats {
   tableName: string;
@@ -127,7 +127,10 @@ export async function getSystemMetrics(): Promise<{
     const { data, error } = await supabaseAdmin
       .from("system_metrics")
       .select("*")
-      .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+      .gte(
+        "created_at",
+        new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      )
       .order("created_at", { ascending: false })
       .limit(100);
 
@@ -203,7 +206,9 @@ export async function getDatabaseInfo(): Promise<{
 /**
  * Clear old system errors
  */
-export async function clearOldErrors(daysOld: number = 30): Promise<QuickActionResult> {
+export async function clearOldErrors(
+  daysOld: number = 30,
+): Promise<QuickActionResult> {
   try {
     const user = await getCurrentUser();
     if (!user || user.role !== "ADMIN") {
@@ -240,7 +245,8 @@ export async function clearOldErrors(daysOld: number = 30): Promise<QuickActionR
     logger.error("Error in clearOldErrors:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to clear errors",
+      message:
+        error instanceof Error ? error.message : "Failed to clear errors",
     };
   }
 }
@@ -266,7 +272,8 @@ export async function optimizeDatabase(): Promise<QuickActionResult> {
       // ANALYZE might not be available via RPC, return info message
       return {
         success: true,
-        message: "Database optimization recommended. Please run VACUUM ANALYZE via Supabase dashboard.",
+        message:
+          "Database optimization recommended. Please run VACUUM ANALYZE via Supabase dashboard.",
       };
     }
 
@@ -278,7 +285,8 @@ export async function optimizeDatabase(): Promise<QuickActionResult> {
     logger.error("Error in optimizeDatabase:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to optimize database",
+      message:
+        error instanceof Error ? error.message : "Failed to optimize database",
     };
   }
 }
@@ -321,19 +329,21 @@ export async function getStorageStats(): Promise<{
           .from(bucket.name)
           .list(undefined, { limit: 1000 });
 
-        const totalSize = files?.reduce((sum, file) => sum + (file.metadata?.size || 0), 0) || 0;
+        const totalSize =
+          files?.reduce((sum, file) => sum + (file.metadata?.size || 0), 0) ||
+          0;
 
         return {
           name: bucket.name,
           size: formatBytes(totalSize),
           fileCount: files?.length || 0,
         };
-      })
+      }),
     );
 
     const totalSize = bucketStats.reduce(
       (sum, bucket) => sum + parseBytes(bucket.size),
-      0
+      0,
     );
 
     return {
@@ -409,4 +419,3 @@ function parseBytes(sizeStr: string): number {
   };
   return value * (multipliers[unit] || 1);
 }
-

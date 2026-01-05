@@ -1,13 +1,14 @@
 "use client";
 
-import { HelpCircle, ExternalLink } from "lucide-react";
+import { ExternalLink, HelpCircle } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
 
 interface FormHelpProps {
   content: string;
@@ -28,7 +29,7 @@ export function FormHelp({ content, example, link, className }: FormHelpProps) {
             type="button"
             className={cn(
               "inline-flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground transition-colors",
-              className
+              className,
             )}
             aria-label="Hilfe anzeigen"
           >
@@ -100,20 +101,3 @@ export function FormHelpInline({
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

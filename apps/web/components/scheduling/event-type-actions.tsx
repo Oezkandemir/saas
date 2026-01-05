@@ -2,11 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  deleteEventType,
+  duplicateEventType,
+  toggleEventType,
+  type EventType,
+} from "@/actions/scheduling/event-types-actions";
+import { Copy, Power, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from '@/components/alignui/actions/button';
-import { Power, Trash2, Copy } from "lucide-react";
 import { toast } from "sonner";
-import { toggleEventType, deleteEventType, duplicateEventType, type EventType } from "@/actions/scheduling/event-types-actions";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/alignui/actions/button";
 
 interface EventTypeActionsProps {
   eventType: EventType;
@@ -34,7 +40,7 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
     setIsToggling(true);
     try {
       const result = await toggleEventType(eventType.id, !eventType.is_active);
-      
+
       if (!result.success) {
         toast.error(t("toggleError") || "Failed to update event type", {
           description: result.error,
@@ -43,11 +49,11 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
       }
 
       toast.success(
-        eventType.is_active 
-          ? (t("deactivated") || "Event type deactivated")
-          : (t("activated") || "Event type activated")
+        eventType.is_active
+          ? t("deactivated") || "Event type deactivated"
+          : t("activated") || "Event type activated",
       );
-      
+
       router.refresh();
     } catch (error) {
       toast.error(t("toggleError") || "Failed to update event type");
@@ -60,7 +66,7 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
     setIsDuplicating(true);
     try {
       const result = await duplicateEventType(eventType.id);
-      
+
       if (!result.success) {
         toast.error(t("duplicateError") || "Failed to duplicate event type", {
           description: result.error,
@@ -69,9 +75,11 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
       }
 
       toast.success(t("duplicated") || "Event type duplicated", {
-        description: t("duplicatedDescription") || "The event type has been duplicated successfully",
+        description:
+          t("duplicatedDescription") ||
+          "The event type has been duplicated successfully",
       });
-      
+
       router.push(`/dashboard/scheduling/event-types/${result.data?.id}`);
       router.refresh();
     } catch (error) {
@@ -85,7 +93,7 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
     setIsDeleting(true);
     try {
       const result = await deleteEventType(eventType.id);
-      
+
       if (!result.success) {
         toast.error(t("deleteError") || "Failed to delete event type", {
           description: result.error,
@@ -116,10 +124,9 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
         >
           <Power className="h-4 w-4" />
           <span className="hidden sm:inline">
-            {eventType.is_active 
-              ? (t("deactivate") || "Deactivate")
-              : (t("activate") || "Activate")
-            }
+            {eventType.is_active
+              ? t("deactivate") || "Deactivate"
+              : t("activate") || "Activate"}
           </span>
         </Button>
         <Button
@@ -130,7 +137,9 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
           className="gap-2"
         >
           <Copy className="h-4 w-4" />
-          <span className="hidden sm:inline">{t("duplicate") || "Duplicate"}</span>
+          <span className="hidden sm:inline">
+            {t("duplicate") || "Duplicate"}
+          </span>
         </Button>
         <Button
           variant="outline"
@@ -146,9 +155,12 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("deleteConfirmTitle") || "Delete Event Type?"}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t("deleteConfirmTitle") || "Delete Event Type?"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              {t("deleteConfirmDescription") || `Are you sure you want to delete "${eventType.title}"? This action cannot be undone and all associated bookings will be affected.`}
+              {t("deleteConfirmDescription") ||
+                `Are you sure you want to delete "${eventType.title}"? This action cannot be undone and all associated bookings will be affected.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -158,7 +170,9 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? (t("deleting") || "Deleting...") : (t("delete") || "Delete")}
+              {isDeleting
+                ? t("deleting") || "Deleting..."
+                : t("delete") || "Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -166,4 +180,3 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
     </>
   );
 }
-

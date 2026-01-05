@@ -2,21 +2,27 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations, useLocale } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { StatusBadge, DocumentStatus } from "@/components/shared/status-badge";
-import { Button } from '@/components/alignui/actions/button';
+import { updateDocument } from "@/actions/documents-actions";
+import { format } from "date-fns";
+import { de, enUS } from "date-fns/locale";
+import { ChevronDown, Clock } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { toast } from "sonner";
+
+import { Button } from "@/components/alignui/actions/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 import {
   DropdownMenuRoot as DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/alignui/overlays/dropdown-menu";
-import { Clock, ChevronDown } from "lucide-react";
-import { format } from "date-fns";
-import { de, enUS } from "date-fns/locale";
-import { updateDocument } from "@/actions/documents-actions";
-import { toast } from "sonner";
+import { DocumentStatus, StatusBadge } from "@/components/shared/status-badge";
 
 interface DocumentStatusTimelineProps {
   documentId: string;
@@ -26,7 +32,14 @@ interface DocumentStatusTimelineProps {
   updatedAt: string;
 }
 
-const statusOrder: DocumentStatus[] = ["draft", "sent", "accepted", "declined", "paid", "overdue"];
+const statusOrder: DocumentStatus[] = [
+  "draft",
+  "sent",
+  "accepted",
+  "declined",
+  "paid",
+  "overdue",
+];
 
 export function DocumentStatusTimeline({
   documentId,
@@ -41,7 +54,10 @@ export function DocumentStatusTimeline({
   const router = useRouter();
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const statusOptions: Record<DocumentStatus, { label: string; availableFor: ("quote" | "invoice")[] }> = {
+  const statusOptions: Record<
+    DocumentStatus,
+    { label: string; availableFor: ("quote" | "invoice")[] }
+  > = {
     draft: { label: t("labels.draft"), availableFor: ["quote", "invoice"] },
     sent: { label: t("labels.sent"), availableFor: ["quote", "invoice"] },
     accepted: { label: t("labels.accepted"), availableFor: ["quote"] },
@@ -49,16 +65,16 @@ export function DocumentStatusTimeline({
     paid: { label: t("labels.paid"), availableFor: ["invoice"] },
     overdue: { label: t("labels.overdue"), availableFor: ["invoice"] },
   };
-  
+
   const currentIndex = statusOrder.indexOf(currentStatus);
-  
+
   // Nur erreichte Status anzeigen (inklusive aktueller)
   const reachedStatuses = statusOrder.slice(0, currentIndex + 1);
-  
+
   // Verfügbare nächste Status für Dropdown
-  const availableStatuses = Object.entries(statusOptions).filter(([_, option]) =>
-    option.availableFor.includes(type)
-  ) as [DocumentStatus, typeof statusOptions[DocumentStatus]][];
+  const availableStatuses = Object.entries(statusOptions).filter(
+    ([_, option]) => option.availableFor.includes(type),
+  ) as [DocumentStatus, (typeof statusOptions)[DocumentStatus]][];
 
   const handleStatusChange = async (newStatus: DocumentStatus) => {
     if (newStatus === currentStatus) return;
@@ -66,7 +82,9 @@ export function DocumentStatusTimeline({
     setIsUpdating(true);
     try {
       await updateDocument(documentId, { status: newStatus });
-      toast.success(t("toast.statusChanged", { status: statusOptions[newStatus].label }));
+      toast.success(
+        t("toast.statusChanged", { status: statusOptions[newStatus].label }),
+      );
       router.refresh();
     } catch (error) {
       toast.error(t("toast.changeError"));
@@ -90,7 +108,7 @@ export function DocumentStatusTimeline({
             {reachedStatuses.map((status, index) => {
               const isCurrent = status === currentStatus;
               const isLast = index === reachedStatuses.length - 1;
-              
+
               return (
                 <div key={status} className="flex gap-3 items-start">
                   <div className="flex flex-col items-center pt-0.5">
@@ -113,15 +131,23 @@ export function DocumentStatusTimeline({
                     <div className="flex flex-wrap gap-2 items-center">
                       <StatusBadge status={status} />
                       {isCurrent && (
-                        <span className="text-xs font-medium text-muted-foreground">{t("current")}</span>
+                        <span className="text-xs font-medium text-muted-foreground">
+                          {t("current")}
+                        </span>
                       )}
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {isCurrent && index === reachedStatuses.length - 1
-                        ? format(new Date(updatedAt), "d. MMMM yyyy, HH:mm", { locale: dateLocale })
+                        ? format(new Date(updatedAt), "d. MMMM yyyy, HH:mm", {
+                            locale: dateLocale,
+                          })
                         : index === 0
-                        ? format(new Date(createdAt), "d. MMMM yyyy, HH:mm", { locale: dateLocale })
-                        : format(new Date(updatedAt), "d. MMMM yyyy, HH:mm", { locale: dateLocale })}
+                          ? format(new Date(createdAt), "d. MMMM yyyy, HH:mm", {
+                              locale: dateLocale,
+                            })
+                          : format(new Date(updatedAt), "d. MMMM yyyy, HH:mm", {
+                              locale: dateLocale,
+                            })}
                     </p>
                   </div>
                 </div>
@@ -136,9 +162,9 @@ export function DocumentStatusTimeline({
         <div className="pt-3 border-t">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                disabled={isUpdating} 
+              <Button
+                variant="outline"
+                disabled={isUpdating}
                 className="gap-2 justify-between w-full h-9"
                 size="sm"
               >
@@ -156,7 +182,9 @@ export function DocumentStatusTimeline({
                 >
                   <StatusBadge status={status} />
                   {status === currentStatus && (
-                    <span className="ml-2 text-xs text-muted-foreground">{t("current")}</span>
+                    <span className="ml-2 text-xs text-muted-foreground">
+                      {t("current")}
+                    </span>
                   )}
                 </DropdownMenuItem>
               ))}

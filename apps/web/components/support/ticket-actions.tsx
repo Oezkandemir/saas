@@ -3,7 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Ticket, updateTicketStatus, deleteTicket } from "@/actions/support-ticket-actions";
+import {
+  deleteTicket,
+  Ticket,
+  updateTicketStatus,
+} from "@/actions/support-ticket-actions";
 import {
   AlertCircle,
   CheckCircle2,
@@ -15,8 +19,8 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
-import { Button } from '@/components/alignui/actions/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +33,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { logger } from "@/lib/logger";
+import { Button } from "@/components/alignui/actions/button";
 
 interface TicketActionsProps {
   ticket: Ticket;
@@ -264,7 +268,8 @@ export function TicketActions({
                 {t("actions.deleteConfirmTitle") || "Delete Ticket"}
               </AlertDialogTitle>
               <AlertDialogDescription>
-                {t("actions.deleteConfirmDescription") || "Are you sure you want to delete this ticket? This action cannot be undone."}
+                {t("actions.deleteConfirmDescription") ||
+                  "Are you sure you want to delete this ticket? This action cannot be undone."}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -366,7 +371,8 @@ export function TicketActions({
               {t("actions.deleteConfirmTitle") || "Delete Ticket"}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {t("actions.deleteConfirmDescription") || "Are you sure you want to delete this ticket? This action cannot be undone."}
+              {t("actions.deleteConfirmDescription") ||
+                "Are you sure you want to delete this ticket? This action cannot be undone."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -4,8 +4,7 @@ import { useState } from "react";
 import { updateTicketStatus } from "@/actions/support-ticket-actions";
 import { CheckCircle2, ChevronDown, Loader2 } from "lucide-react";
 
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Button } from '@/components/alignui/actions/button';
+import { logger } from "@/lib/logger";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { logger } from "@/lib/logger";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 
 interface TicketStatusUpdaterProps {
   ticketId: string;

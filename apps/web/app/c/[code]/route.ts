@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { trackCustomerQRCodeScan, getCustomerByQRCode } from "@/actions/customers-actions";
+import {
+  getCustomerByQRCode,
+  trackCustomerQRCodeScan,
+} from "@/actions/customers-actions";
+
 import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ code: string }> }
+  { params }: { params: Promise<{ code: string }> },
 ) {
   try {
     const { code } = await params;
-    
+
     if (!code) {
       return new NextResponse("QR-Code nicht gefunden", { status: 404 });
     }
@@ -75,15 +79,17 @@ export async function GET(
           headers: {
             "Content-Type": "text/html; charset=utf-8",
           },
-        }
+        },
       );
     }
 
     // Track scan (async, don't wait)
     const userAgent = request.headers.get("user-agent") || undefined;
     const referrer = request.headers.get("referer") || undefined;
-    const ipAddress = request.headers.get("x-forwarded-for")?.split(",")[0] || 
-                     request.headers.get("x-real-ip") || undefined;
+    const ipAddress =
+      request.headers.get("x-forwarded-for")?.split(",")[0] ||
+      request.headers.get("x-real-ip") ||
+      undefined;
 
     trackCustomerQRCodeScan(customer.qr_code!, customer.id, {
       user_agent: userAgent,
@@ -97,7 +103,7 @@ export async function GET(
     const addressParts = [
       customer.address_line1,
       customer.address_line2,
-      customer.postal_code && customer.city 
+      customer.postal_code && customer.city
         ? `${customer.postal_code} ${customer.city}`
         : customer.city || customer.postal_code,
       customer.country,
@@ -233,7 +239,9 @@ export async function GET(
       ${customer.company ? `<div class="company">${escapeHtml(customer.company)}</div>` : ""}
     </div>
     <div class="content">
-      ${customer.email ? `
+      ${
+        customer.email
+          ? `
       <div class="info-section">
         <div class="info-item">
           <div class="info-icon">📧</div>
@@ -243,8 +251,12 @@ export async function GET(
           </div>
         </div>
       </div>
-      ` : ""}
-      ${customer.phone ? `
+      `
+          : ""
+      }
+      ${
+        customer.phone
+          ? `
       <div class="info-section">
         <div class="info-item">
           <div class="info-icon">📱</div>
@@ -254,8 +266,12 @@ export async function GET(
           </div>
         </div>
       </div>
-      ` : ""}
-      ${address ? `
+      `
+          : ""
+      }
+      ${
+        address
+          ? `
       <div class="info-section">
         <div class="info-item">
           <div class="info-icon">📍</div>
@@ -265,8 +281,12 @@ export async function GET(
           </div>
         </div>
       </div>
-      ` : ""}
-      ${customer.tax_id ? `
+      `
+          : ""
+      }
+      ${
+        customer.tax_id
+          ? `
       <div class="info-section">
         <div class="info-item">
           <div class="info-icon">🏢</div>
@@ -276,7 +296,9 @@ export async function GET(
           </div>
         </div>
       </div>
-      ` : ""}
+      `
+          : ""
+      }
     </div>
     <div class="footer">
       <div class="footer-text">Gescannt via Cenety QR-Code</div>
@@ -288,7 +310,7 @@ export async function GET(
         headers: {
           "Content-Type": "text/html; charset=utf-8",
         },
-      }
+      },
     );
   } catch (error) {
     logger.error("QR redirect error:", error);
@@ -348,7 +370,7 @@ export async function GET(
         headers: {
           "Content-Type": "text/html; charset=utf-8",
         },
-      }
+      },
     );
   }
 }

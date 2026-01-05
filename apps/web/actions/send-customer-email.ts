@@ -1,10 +1,11 @@
 "use server";
 
-import { resend } from "@/lib/email";
-import { getCurrentUser } from "@/lib/session";
-import { getCustomer } from "./customers-actions";
 import { siteConfig } from "@/config/site";
+import { resend } from "@/lib/email";
 import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
+
+import { getCustomer } from "./customers-actions";
 
 export interface SendCustomerEmailInput {
   customerId: string;
@@ -30,7 +31,9 @@ export async function sendCustomerEmail(input: SendCustomerEmailInput) {
     }
 
     // Prepare email content
-    const htmlContent = input.htmlBody || `
+    const htmlContent =
+      input.htmlBody ||
+      `
       <!DOCTYPE html>
       <html>
         <head>
@@ -58,16 +61,21 @@ export async function sendCustomerEmail(input: SendCustomerEmailInput) {
     // Check if RESEND_API_KEY is configured
     if (!process.env.RESEND_API_KEY) {
       logger.warn("RESEND_API_KEY is not configured");
-      throw new Error("E-Mail-Dienst ist nicht konfiguriert. Bitte kontaktieren Sie den Administrator.");
+      throw new Error(
+        "E-Mail-Dienst ist nicht konfiguriert. Bitte kontaktieren Sie den Administrator.",
+      );
     }
 
     // Determine recipient email
     // In development, send to delivered@resend.dev for testing, but also log the actual recipient
-    const recipientEmail = process.env.NODE_ENV === "development" 
-      ? "delivered@resend.dev" 
-      : customer.email;
-    
-    logger.info(`Sending email to ${customer.email} (actual recipient: ${recipientEmail})`);
+    const recipientEmail =
+      process.env.NODE_ENV === "development"
+        ? "delivered@resend.dev"
+        : customer.email;
+
+    logger.info(
+      `Sending email to ${customer.email} (actual recipient: ${recipientEmail})`,
+    );
 
     // Send email via Resend
     const { data, error } = await resend.emails.send({
@@ -97,8 +105,7 @@ export async function sendCustomerEmail(input: SendCustomerEmailInput) {
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Ein Fehler ist beim Senden der E-Mail aufgetreten."
+        : "Ein Fehler ist beim Senden der E-Mail aufgetreten.",
     );
   }
 }
-

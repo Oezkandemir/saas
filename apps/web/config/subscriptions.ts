@@ -48,12 +48,16 @@ export const pricingData: SubscriptionPlan[] = [
       yearly: 100,
     },
     stripeIds: {
-      monthly: (env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID && env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID.startsWith("price_")) 
-        ? env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID 
-        : null,
-      yearly: (env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID && env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID.startsWith("price_")) 
-        ? env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID 
-        : null,
+      monthly:
+        env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID &&
+        env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID.startsWith("price_")
+          ? env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID
+          : null,
+      yearly:
+        env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID &&
+        env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID.startsWith("price_")
+          ? env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID
+          : null,
     },
     polarIds: {
       monthly: "77c6e131-56bc-46cf-8c5b-d8e6814a356b", // Sandbox Pro Monthly
@@ -84,12 +88,16 @@ export const pricingData: SubscriptionPlan[] = [
     },
     stripeIds: {
       // Use BUSINESS plan IDs for Enterprise plan
-      monthly: (env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID && env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID.startsWith("price_")) 
-        ? env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID 
-        : null,
-      yearly: (env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID && env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID.startsWith("price_")) 
-        ? env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID 
-        : null,
+      monthly:
+        env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID &&
+        env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID.startsWith("price_")
+          ? env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID
+          : null,
+      yearly:
+        env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID &&
+        env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID.startsWith("price_")
+          ? env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID
+          : null,
     },
     polarIds: {
       monthly: "2a37d4e2-e513-4c3b-b463-9c79372a0e4f", // Sandbox Enterprise Monthly
@@ -98,11 +106,7 @@ export const pricingData: SubscriptionPlan[] = [
   },
 ];
 
-export const plansColumns = [
-  "free",
-  "pro",
-  "enterprise",
-] as const;
+export const plansColumns = ["free", "pro", "enterprise"] as const;
 
 export const comparePlans: PlansRow[] = [
   {
@@ -124,7 +128,8 @@ export const comparePlans: PlansRow[] = [
     free: "3",
     pro: "Unbegrenzt",
     enterprise: "Unbegrenzt",
-    tooltip: "Anzahl der Angebote und Rechnungen, die Sie pro Monat erstellen können.",
+    tooltip:
+      "Anzahl der Angebote und Rechnungen, die Sie pro Monat erstellen können.",
   },
   {
     feature: "PDF-Export",
@@ -138,7 +143,8 @@ export const comparePlans: PlansRow[] = [
     free: true,
     pro: true,
     enterprise: true,
-    tooltip: "Status von Dokumenten verwalten (Entwurf, Gesendet, Bezahlt, etc.).",
+    tooltip:
+      "Status von Dokumenten verwalten (Entwurf, Gesendet, Bezahlt, etc.).",
   },
   {
     feature: "Angebot zu Rechnung",

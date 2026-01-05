@@ -1,20 +1,21 @@
-'use client';
+"use client";
 
-import { NewCustomerDrawer } from './new-customer-drawer';
-import { ButtonRoot } from '@/components/alignui/actions/button';
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
+
+import { ButtonRoot } from "@/components/alignui/actions/button";
+
+import { NewCustomerDrawer } from "./new-customer-drawer";
 
 export function NewCustomerDrawerEmptyState() {
-  const t = useTranslations('Customers');
+  const t = useTranslations("Customers");
 
   return (
     <NewCustomerDrawer
       trigger={
         <ButtonRoot size="sm" variant="outline" className="mt-3 h-8 text-xs">
-          {t('empty.createFirst')}
+          {t("empty.createFirst")}
         </ButtonRoot>
       }
     />
   );
 }
-

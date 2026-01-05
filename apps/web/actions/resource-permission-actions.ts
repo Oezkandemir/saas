@@ -3,9 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
-import { logger } from "@/lib/logger";
 
 const permissionSchema = z.object({
   resource_type: z.enum(["document", "qr_code", "customer"]),
@@ -60,7 +60,8 @@ export async function grantPermission(
     if (!isOwner && user.role !== "ADMIN") {
       return {
         success: false,
-        error: "Unauthorized: You can only grant permissions for resources you own",
+        error:
+          "Unauthorized: You can only grant permissions for resources you own",
       };
     }
 
@@ -134,7 +135,8 @@ export async function revokePermission(
     if (!isOwner && user.role !== "ADMIN") {
       return {
         success: false,
-        error: "Unauthorized: You can only revoke permissions for resources you own",
+        error:
+          "Unauthorized: You can only revoke permissions for resources you own",
       };
     }
 
@@ -195,7 +197,8 @@ export async function getResourcePermissions(
     if (!isOwner && user.role !== "ADMIN") {
       return {
         success: false,
-        error: "Unauthorized: You can only view permissions for resources you own",
+        error:
+          "Unauthorized: You can only view permissions for resources you own",
       };
     }
 
@@ -287,15 +290,17 @@ export async function checkResourceAccess(
     }
 
     // Check permission level hierarchy: delete > write > read
-    const levelHierarchy: Record<"read" | "write" | "delete", number> = { 
-      read: 1, 
-      write: 2, 
-      delete: 3 
+    const levelHierarchy: Record<"read" | "write" | "delete", number> = {
+      read: 1,
+      write: 2,
+      delete: 3,
     };
-    const permissionLevel = permission.permission_level as "read" | "write" | "delete";
+    const permissionLevel = permission.permission_level as
+      | "read"
+      | "write"
+      | "delete";
     const hasAccess =
-      levelHierarchy[permissionLevel] >=
-      levelHierarchy[requiredLevel];
+      levelHierarchy[permissionLevel] >= levelHierarchy[requiredLevel];
 
     return {
       success: true,
@@ -370,20 +375,3 @@ async function checkResourceOwnership(
     return false;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

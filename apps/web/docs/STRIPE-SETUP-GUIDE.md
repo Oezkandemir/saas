@@ -57,6 +57,7 @@ npm run dev
 When testing subscriptions:
 
 1. Use Stripe's [test card numbers](https://stripe.com/docs/testing#cards):
+
    - Success: `4242 4242 4242 4242`
    - Decline: `4000 0000 0000 0002`
 
@@ -71,4 +72,4 @@ If you continue to have issues:
 3. Make sure your Stripe API key is valid and has the correct permissions
 4. Check if your Stripe webhook is properly configured if testing webhooks
 
-For more information, refer to the [Stripe API Documentation](https://stripe.com/docs/api). 
+For more information, refer to the [Stripe API Documentation](https://stripe.com/docs/api).

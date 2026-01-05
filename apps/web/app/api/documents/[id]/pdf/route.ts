@@ -1,10 +1,11 @@
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { getDocument } from "@/actions/documents-actions";
-import { generateAndUploadPDF } from "@/lib/pdf/generator-vercel";
-import { getSupabaseServer } from "@/lib/supabase-server";
-import { revalidatePath } from "next/cache";
+
 import { applyAPIMiddleware } from "@/lib/api-middleware";
 import { logger } from "@/lib/logger";
+import { generateAndUploadPDF } from "@/lib/pdf/generator-vercel";
+import { getSupabaseServer } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60; // 60 seconds - needed for PDF generation
@@ -37,7 +38,10 @@ export async function GET(
     const document = await getDocument(id);
 
     if (!document) {
-      return NextResponse.json({ error: "Document not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Document not found" },
+        { status: 404 },
+      );
     }
 
     // Check if PDF already exists - validate it first
@@ -52,7 +56,10 @@ export async function GET(
             const pdfBuffer = await pdfResponse.arrayBuffer();
             const buffer = Buffer.from(pdfBuffer);
             // Check if it's a valid PDF (starts with %PDF)
-            if (buffer.length >= 4 && buffer.toString("ascii", 0, 4) === "%PDF") {
+            if (
+              buffer.length >= 4 &&
+              buffer.toString("ascii", 0, 4) === "%PDF"
+            ) {
               // Valid PDF, return it
               return NextResponse.json({ pdfUrl: document.pdf_url });
             } else {
@@ -62,7 +69,9 @@ export async function GET(
           }
         } catch (error) {
           // Error fetching PDF, regenerate it
-          logger.warn(`Error validating PDF, regenerating: ${error instanceof Error ? error.message : String(error)}`);
+          logger.warn(
+            `Error validating PDF, regenerating: ${error instanceof Error ? error.message : String(error)}`,
+          );
         }
       }
     }
@@ -84,26 +93,28 @@ export async function GET(
     return NextResponse.json({ pdfUrl });
   } catch (error) {
     logger.error("Error generating PDF:", error);
-    
+
     // Always provide detailed error in development, simplified in production
     let errorMessage = "Fehler beim Generieren des PDFs";
-    
+
     if (error instanceof Error) {
       errorMessage = error.message;
     } else if (typeof error === "string") {
       errorMessage = error;
     } else if (error && typeof error === "object") {
-      errorMessage = (error as any).message || 
-                     (error as any).error || 
-                     (error as any).toString?.() ||
-                     "Unbekannter Fehler beim Generieren des PDFs";
+      errorMessage =
+        (error as any).message ||
+        (error as any).error ||
+        (error as any).toString?.() ||
+        "Unbekannter Fehler beim Generieren des PDFs";
     }
-    
+
     return NextResponse.json(
-      { 
+      {
         error: "Failed to generate PDF",
         message: errorMessage,
-        details: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+        details:
+          process.env.NODE_ENV === "development" ? errorMessage : undefined,
       },
       { status: 500 },
     );
@@ -138,7 +149,10 @@ export async function POST(
     const document = await getDocument(id);
 
     if (!document) {
-      return NextResponse.json({ error: "Document not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Document not found" },
+        { status: 404 },
+      );
     }
 
     // Generate and upload PDF using pdf-lib (force regeneration)
@@ -157,29 +171,30 @@ export async function POST(
     return NextResponse.json({ pdfUrl });
   } catch (error) {
     logger.error("Error regenerating PDF:", error);
-    
+
     // Always provide detailed error in development, simplified in production
     let errorMessage = "Fehler beim Regenerieren des PDFs";
-    
+
     if (error instanceof Error) {
       errorMessage = error.message;
     } else if (typeof error === "string") {
       errorMessage = error;
     } else if (error && typeof error === "object") {
-      errorMessage = (error as any).message || 
-                     (error as any).error || 
-                     (error as any).toString?.() ||
-                     "Unbekannter Fehler beim Regenerieren des PDFs";
+      errorMessage =
+        (error as any).message ||
+        (error as any).error ||
+        (error as any).toString?.() ||
+        "Unbekannter Fehler beim Regenerieren des PDFs";
     }
-    
+
     return NextResponse.json(
-      { 
+      {
         error: "Failed to regenerate PDF",
         message: errorMessage,
-        details: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+        details:
+          process.env.NODE_ENV === "development" ? errorMessage : undefined,
       },
       { status: 500 },
     );
   }
 }
-

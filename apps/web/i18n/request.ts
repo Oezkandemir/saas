@@ -1,5 +1,5 @@
-import { getRequestConfig } from "next-intl/server";
 import { cookies } from "next/headers";
+import { getRequestConfig } from "next-intl/server";
 
 import { routing } from "./routing";
 
@@ -19,7 +19,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
   if (!locale || !routing.locales.includes(locale as any)) {
     const cookieStore = await cookies();
     const savedLocale = cookieStore.get("NEXT_LOCALE")?.value;
-    
+
     // Use saved locale if valid
     if (savedLocale && routing.locales.includes(savedLocale as any)) {
       locale = savedLocale;

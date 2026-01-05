@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SidebarNavItem } from "@/types";
-import { DashboardSidebar as DashboardSidebarComponent, MobileSheetSidebar as MobileSheetSidebarComponent } from "./dashboard-sidebar";
+
+import {
+  DashboardSidebar as DashboardSidebarComponent,
+  MobileSheetSidebar as MobileSheetSidebarComponent,
+} from "./dashboard-sidebar";
 
 interface DashboardSidebarWrapperProps {
   links: SidebarNavItem[];
@@ -42,4 +46,3 @@ export function MobileSheetSidebar({ links }: DashboardSidebarWrapperProps) {
 
   return <MobileSheetSidebarComponent links={links} />;
 }
-

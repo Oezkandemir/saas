@@ -8,87 +8,92 @@
     /* Background & Foreground */
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
-    
+
     /* Card & Popover */
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    
+
     /* Primary Color - 1 Hauptfarbe */
     --primary: 0 0% 9%;
     --primary-foreground: 0 0% 98%;
-    
+
     /* Secondary - Neutrale Grautöne */
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
-    
+
     /* Muted - Neutrale Grautöne für Text */
     --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;
-    
+
     /* Accent - Subtile Hervorhebung */
     --accent: 0 0% 98%;
     --accent-foreground: 0 0% 9%;
-    
+
     /* Semantic Colors - Nur zur Bedeutung */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    
+
     /* Borders & Inputs - Neutrale Grautöne */
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
     --ring: 0 0% 3.9%;
-    
+
     /* Border Radius */
     --radius: 0.5rem;
-    
+
     /* AlignUI Design System - Neutrale Grautöne für Text/Hintergründe */
     --bg-white-0: 0 0% 100%;
     --bg-white-50: 0 0% 99%;
     --bg-white-100: 0 0% 98%;
-    
+
     /* Text Colors - Neutrale Grautöne */
-    --text-strong-950: 0 0% 9%;   /* Haupttext */
-    --text-strong-900: 0 0% 12%;   /* Sekundärtext */
-    --text-sub-600: 0 0% 45%;     /* Tertiärtext */
-    --text-sub-500: 0 0% 55%;     /* Placeholder */
-    
+    --text-strong-950: 0 0% 9%; /* Haupttext */
+    --text-strong-900: 0 0% 12%; /* Sekundärtext */
+    --text-sub-600: 0 0% 45%; /* Tertiärtext */
+    --text-sub-500: 0 0% 55%; /* Placeholder */
+
     /* Borders - Subtile Grautöne (20% Opacity) */
-    --stroke-soft-200: 0 0% 90%;  /* Subtile Borders */
-    --stroke-soft-300: 0 0% 85%;  /* Standard Borders */
-    --stroke-soft-400: 0 0% 80%;  /* Stärkere Borders */
-    
+    --stroke-soft-200: 0 0% 90%; /* Subtile Borders */
+    --stroke-soft-300: 0 0% 85%; /* Standard Borders */
+    --stroke-soft-400: 0 0% 80%; /* Stärkere Borders */
+
     /* Opacity Values - Konsistent */
-    --opacity-subtle: 0.2;   /* Für Borders, Dividers */
-    --opacity-muted: 0.5;    /* Für disabled States */
-    --opacity-strong: 0.9;   /* Für Hover States */
-    
+    --opacity-subtle: 0.2; /* Für Borders, Dividers */
+    --opacity-muted: 0.5; /* Für disabled States */
+    --opacity-strong: 0.9; /* Für Hover States */
+
     /* Typography System - Inter für optimale Lesbarkeit */
-    --font-sans: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --font-heading: var(--font-heading), var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    
+    --font-sans:
+      var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-heading:
+      var(--font-heading), var(--font-sans), system-ui, -apple-system,
+      BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+      sans-serif;
+
     /* Font Weights - Konsistent */
     --font-weight-normal: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
-    
+
     /* Shadows - AlignUI Style */
     --shadow-regular-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-regular-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1);
     --shadow-regular-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
     --shadow-regular-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-    
+
     /* Spacing System - 8px Grid */
-    --spacing-xs: 0.25rem;   /* 4px */
-    --spacing-sm: 0.5rem;   /* 8px - Basis-Einheit */
-    --spacing-md: 1rem;     /* 16px */
-    --spacing-lg: 1.5rem;   /* 24px */
-    --spacing-xl: 2rem;     /* 32px */
-    --spacing-2xl: 3rem;    /* 48px */
-    --spacing-3xl: 4rem;    /* 64px */
-    
+    --spacing-xs: 0.25rem; /* 4px */
+    --spacing-sm: 0.5rem; /* 8px - Basis-Einheit */
+    --spacing-md: 1rem; /* 16px */
+    --spacing-lg: 1.5rem; /* 24px */
+    --spacing-xl: 2rem; /* 32px */
+    --spacing-2xl: 3rem; /* 48px */
+    --spacing-3xl: 4rem; /* 64px */
+
     --chart-1: 271.5 81.3% 55.9%;
     --chart-2: 270 95% 75%;
     --chart-3: 270 91% 65%;
@@ -100,33 +105,33 @@
     /* Dark Mode - Konsistente Farben */
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
-    
+
     /* Card & Popover */
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
-    
+
     /* Primary Color */
     --primary: 0 0% 98%;
     --primary-foreground: 0 0% 9%;
-    
+
     /* Secondary - Neutrale Grautöne */
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
-    
+
     /* Muted - Neutrale Grautöne */
     --muted: 0 0% 14.9%;
     --muted-foreground: 0 0% 63.9%;
-    
+
     /* Accent */
     --accent: 0 0% 8%;
     --accent-foreground: 0 0% 98%;
-    
+
     /* Semantic Colors */
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    
+
     /* Borders & Inputs */
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
@@ -136,17 +141,17 @@
     --bg-white-0: 0 0% 4%;
     --bg-white-50: 0 0% 5%;
     --bg-white-100: 0 0% 6%;
-    
+
     /* Text Colors - Dark Mode */
-    --text-strong-950: 0 0% 98%;  /* Haupttext */
-    --text-strong-900: 0 0% 95%;   /* Sekundärtext */
-    --text-sub-600: 0 0% 65%;      /* Tertiärtext */
-    --text-sub-500: 0 0% 55%;      /* Placeholder */
-    
+    --text-strong-950: 0 0% 98%; /* Haupttext */
+    --text-strong-900: 0 0% 95%; /* Sekundärtext */
+    --text-sub-600: 0 0% 65%; /* Tertiärtext */
+    --text-sub-500: 0 0% 55%; /* Placeholder */
+
     /* Borders - Dark Mode */
-    --stroke-soft-200: 0 0% 15%;   /* Subtile Borders */
-    --stroke-soft-300: 0 0% 20%;  /* Standard Borders */
-    --stroke-soft-400: 0 0% 25%;  /* Stärkere Borders */
+    --stroke-soft-200: 0 0% 15%; /* Subtile Borders */
+    --stroke-soft-300: 0 0% 20%; /* Standard Borders */
+    --stroke-soft-400: 0 0% 25%; /* Stärkere Borders */
 
     --chart-1: 271.5 81.3% 55.9%;
     --chart-2: 270 95% 75%;
@@ -169,7 +174,10 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     /* Font-Features für bessere Lesbarkeit */
-    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    font-feature-settings:
+      "kern" 1,
+      "liga" 1,
+      "calt" 1;
     font-kerning: normal;
     /* Verhindert kursive Schrift */
     font-style: normal;
@@ -180,56 +188,77 @@
     -ms-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
-  
+
   /* Sicherstellen, dass keine kursive Schrift verwendet wird (außer für <em> und <i>) */
-  body, p, span, div, h1, h2, h3, h4, h5, h6, a, button, input, textarea, select, label {
+  body,
+  p,
+  span,
+  div,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  label {
     font-style: normal;
   }
-  
+
   /* Erlaube kursive Schrift nur für semantische Elemente */
-  em, i {
+  em,
+  i {
     font-style: italic;
   }
-  
+
   /* Headings verwenden Inter Bold */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-heading);
     font-weight: 700;
     font-style: normal;
     letter-spacing: -0.02em; /* Leicht kompakter für Headings */
   }
-  
+
   /* AlignUI Typography Scale */
   .text-label-sm {
     font-size: 0.875rem;
     line-height: 1.25rem;
     font-weight: 500;
   }
-  
+
   .text-label-md {
     font-size: 1rem;
     line-height: 1.5rem;
     font-weight: 500;
   }
-  
+
   .text-label-lg {
     font-size: 1.125rem;
     line-height: 1.75rem;
     font-weight: 500;
   }
-  
+
   .text-paragraph-xs {
     font-size: 0.75rem;
     line-height: 1rem;
     font-weight: 400;
   }
-  
+
   .text-paragraph-sm {
     font-size: 0.875rem;
     line-height: 1.25rem;
     font-weight: 400;
   }
-  
+
   .text-paragraph-md {
     font-size: 1rem;
     line-height: 1.5rem;
@@ -237,7 +266,9 @@
   }
 
   /* Better touch targets for mobile */
-  button, a, [role="button"] {
+  button,
+  a,
+  [role="button"] {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
@@ -248,12 +279,16 @@
   }
 
   /* Better input styling on mobile */
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     font-size: 16px; /* Prevents zoom on iOS */
   }
 
   /* Remove default mobile button styles */
-  button, input[type="submit"], input[type="button"] {
+  button,
+  input[type="submit"],
+  input[type="button"] {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -266,7 +301,7 @@
   }
 
   .step:before {
-    @apply absolute w-9 h-9 bg-muted rounded-full font-mono font-medium text-center text-base inline-flex items-center justify-center -indent-px border-4 border-background;
+    @apply absolute inline-flex h-9 w-9 items-center justify-center rounded-full border-4 border-background bg-muted text-center -indent-px font-mono text-base font-medium;
     @apply ml-[-50px] mt-[-4px];
     content: counter(step);
   }
@@ -284,7 +319,9 @@
 
   /* Hover Effects - Subtle & Professional */
   .hover-lift {
-    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+    transition:
+      transform 0.15s ease-out,
+      box-shadow 0.15s ease-out;
   }
 
   .hover-lift:hover {
@@ -335,7 +372,9 @@
 
   /* Smooth transitions for mobile interactions */
   .mobile-tap {
-    transition: background-color 0.15s ease, transform 0.1s ease;
+    transition:
+      background-color 0.15s ease,
+      transform 0.1s ease;
   }
 
   .mobile-tap:active {

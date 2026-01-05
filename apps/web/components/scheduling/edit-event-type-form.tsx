@@ -2,26 +2,26 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
   updateEventType,
   type EventType,
 } from "@/actions/scheduling/event-types-actions";
-import { Button } from '@/components/alignui/actions/button';
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  FormRoot as Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "@/components/alignui/forms/form";
-import { Input } from '@/components/alignui/forms/input';
-import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
+  Calendar,
+  Check,
+  Clock,
+  Code,
+  Copy,
+  MapPin,
+  Settings,
+} from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+
+import { getURL } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -30,18 +30,41 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { toast } from "sonner";
-import { Calendar, Clock, MapPin, Settings, Code, Copy, Check } from "lucide-react";
-import { getURL } from "@/lib/utils";
-import { useLocale } from "next-intl";
+import { Button } from "@/components/alignui/actions/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import {
+  FormRoot as Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/alignui/forms/form";
+import { Input } from "@/components/alignui/forms/input";
+import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
 
 const eventTypeSchema = z.object({
-  slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens"),
+  slug: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(
+      /^[a-z0-9-]+$/,
+      "Slug must contain only lowercase letters, numbers, and hyphens",
+    ),
   title: z.string().min(1).max(200),
   description: z.string().max(1000).optional(),
   duration_minutes: z.number().int().min(5).max(480).default(30),
-  location_type: z.enum(["google_meet", "zoom", "custom_link", "phone", "in_person"]).default("google_meet"),
+  location_type: z
+    .enum(["google_meet", "zoom", "custom_link", "phone", "in_person"])
+    .default("google_meet"),
   location_value: z.string().max(500).optional(),
   is_active: z.boolean().default(true),
   price_amount: z.number().min(0).optional(),
@@ -56,22 +79,33 @@ interface EditEventTypeFormProps {
   onSuccess?: () => void;
 }
 
-export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTypeFormProps) {
+export function EditEventTypeForm({
+  eventType,
+  userId,
+  onSuccess,
+}: EditEventTypeFormProps) {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("Scheduling.eventTypes.form");
   const [isLoading, setIsLoading] = useState(false);
-  const [embedType, setEmbedType] = useState<"button" | "script" | "link">("button");
+  const [embedType, setEmbedType] = useState<"button" | "script" | "link">(
+    "button",
+  );
   const [copiedEmbed, setCopiedEmbed] = useState(false);
 
   // Use userId prop or fallback to eventType.owner_user_id
   const ownerUserId = userId || eventType.owner_user_id;
 
   // Function to generate embed code based on type
-  const getEmbedCode = (userId: string, slug: string, locale: string, type: "button" | "script" | "link"): string => {
+  const getEmbedCode = (
+    userId: string,
+    slug: string,
+    locale: string,
+    type: "button" | "script" | "link",
+  ): string => {
     const baseUrl = getURL();
     const bookingUrl = `${baseUrl}/${locale}/book/${userId}/${slug}`;
-    
+
     switch (type) {
       case "button":
         // Simple HTML button with link
@@ -79,7 +113,7 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
         return `<a href="${bookingUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 24px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 6px; font-weight: 500; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; transition: background-color 0.2s;">
   ${buttonText}
 </a>`;
-      
+
       case "script":
         // JavaScript widget that opens a modal/popup
         const widgetButtonText = t("bookButton") || "Termin buchen";
@@ -96,12 +130,12 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
   })();
 </script>
 <div id="booking-widget-${slug}"></div>`;
-      
+
       case "link":
         // Simple direct link
         const linkText = t("bookLink") || "Termin buchen";
         return `<a href="${bookingUrl}" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
-      
+
       default:
         return "";
     }
@@ -130,7 +164,7 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
         id: eventType.id,
         ...data,
       });
-      
+
       if (!result.success) {
         toast.error(t("updateError") || "Failed to update event type", {
           description: result.error,
@@ -139,16 +173,19 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
       }
 
       toast.success(t("updateSuccess") || "Event type updated", {
-        description: t("updateSuccessDescription") || "Your event type has been updated successfully",
+        description:
+          t("updateSuccessDescription") ||
+          "Your event type has been updated successfully",
       });
-      
+
       router.refresh();
       onSuccess?.();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : t("unexpectedError") || "An unexpected error occurred";
-      
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : t("unexpectedError") || "An unexpected error occurred";
+
       toast.error(t("updateError") || "Failed to update event type", {
         description: errorMessage,
       });
@@ -168,7 +205,8 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
               {t("basicInfo") || "Basic Information"}
             </CardTitle>
             <CardDescription>
-              {t("basicInfoDescription") || "Set up the basic details for your event type"}
+              {t("basicInfoDescription") ||
+                "Set up the basic details for your event type"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -179,10 +217,16 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
                 <FormItem>
                   <FormLabel>{t("title") || "Title"}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("titlePlaceholder") || "e.g., 30-Minute Meeting"} {...field} />
+                    <Input
+                      placeholder={
+                        t("titlePlaceholder") || "e.g., 30-Minute Meeting"
+                      }
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
-                    {t("titleDescription") || "A descriptive name for this event type"}
+                    {t("titleDescription") ||
+                      "A descriptive name for this event type"}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -196,10 +240,16 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
                 <FormItem>
                   <FormLabel>{t("slug") || "URL Slug"}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("slugPlaceholder") || "e.g., 30-minute-meeting"} {...field} />
+                    <Input
+                      placeholder={
+                        t("slugPlaceholder") || "e.g., 30-minute-meeting"
+                      }
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
-                    {t("slugDescription") || "Used in the booking URL. Only lowercase letters, numbers, and hyphens."}
+                    {t("slugDescription") ||
+                      "Used in the booking URL. Only lowercase letters, numbers, and hyphens."}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -213,9 +263,12 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
                 <FormItem>
                   <FormLabel>{t("description") || "Description"}</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder={t("descriptionPlaceholder") || "Optional description for this event type"} 
-                      {...field} 
+                    <Textarea
+                      placeholder={
+                        t("descriptionPlaceholder") ||
+                        "Optional description for this event type"
+                      }
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -233,7 +286,8 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
               {t("duration") || "Duration"}
             </CardTitle>
             <CardDescription>
-              {t("durationDescription") || "Configure the duration of the event"}
+              {t("durationDescription") ||
+                "Configure the duration of the event"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -242,18 +296,23 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
               name="duration_minutes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("durationMinutes") || "Duration (minutes)"}</FormLabel>
+                  <FormLabel>
+                    {t("durationMinutes") || "Duration (minutes)"}
+                  </FormLabel>
                   <FormControl>
-                    <Input 
-                      type="number" 
-                      min={5} 
-                      max={480} 
+                    <Input
+                      type="number"
+                      min={5}
+                      max={480}
                       {...field}
-                      onChange={(e) => field.onChange(parseInt(e.target.value) || 30)}
+                      onChange={(e) =>
+                        field.onChange(parseInt(e.target.value) || 30)
+                      }
                     />
                   </FormControl>
                   <FormDescription>
-                    {t("durationDescription") || "How long is this event? (5-480 minutes)"}
+                    {t("durationDescription") ||
+                      "How long is this event? (5-480 minutes)"}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -280,10 +339,17 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("locationType") || "Location Type"}</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t("selectLocationType") || "Select location type"} />
+                        <SelectValue
+                          placeholder={
+                            t("selectLocationType") || "Select location type"
+                          }
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -304,15 +370,21 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
               name="location_value"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("locationValue") || "Location Details"}</FormLabel>
+                  <FormLabel>
+                    {t("locationValue") || "Location Details"}
+                  </FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder={t("locationValuePlaceholder") || "URL, address, or phone number"} 
-                      {...field} 
+                    <Input
+                      placeholder={
+                        t("locationValuePlaceholder") ||
+                        "URL, address, or phone number"
+                      }
+                      {...field}
                     />
                   </FormControl>
                   <FormDescription>
-                    {t("locationValueDescription") || "Optional: Meeting link, address, or phone number"}
+                    {t("locationValueDescription") ||
+                      "Optional: Meeting link, address, or phone number"}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -340,7 +412,8 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
                       {t("isActive") || "Active"}
                     </FormLabel>
                     <FormDescription>
-                      {t("isActiveDescription") || "Inactive event types won't appear on booking pages"}
+                      {t("isActiveDescription") ||
+                        "Inactive event types won't appear on booking pages"}
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -363,7 +436,8 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
               {t("pricing") || "Pricing"}
             </CardTitle>
             <CardDescription>
-              {t("pricingDescription") || "Set a price per person for this event type (optional)"}
+              {t("pricingDescription") ||
+                "Set a price per person for this event type (optional)"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -373,20 +447,29 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
                 name="price_amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("pricePerPerson") || "Price per Person"}</FormLabel>
+                    <FormLabel>
+                      {t("pricePerPerson") || "Price per Person"}
+                    </FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
+                      <Input
+                        type="number"
                         step="0.01"
                         min={0}
-                        placeholder={t("pricePlaceholder") || "0.00"} 
+                        placeholder={t("pricePlaceholder") || "0.00"}
                         {...field}
-                        onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value
+                              ? parseFloat(e.target.value)
+                              : undefined,
+                          )
+                        }
                         value={field.value || ""}
                       />
                     </FormControl>
                     <FormDescription>
-                      {t("priceDescription") || "Price per person (will be multiplied by number of participants)"}
+                      {t("priceDescription") ||
+                        "Price per person (will be multiplied by number of participants)"}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -399,10 +482,17 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t("currency") || "Currency"}</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value || "EUR"}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value || "EUR"}
+                    >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder={t("selectCurrency") || "Select currency"} />
+                          <SelectValue
+                            placeholder={
+                              t("selectCurrency") || "Select currency"
+                            }
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -428,13 +518,16 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
               {t("embed") || "Einbettungscode"}
             </CardTitle>
             <CardDescription>
-              {t("embedDescription") || "Betten Sie diesen Event Type auf Ihrer Website ein - ohne iframe-Probleme"}
+              {t("embedDescription") ||
+                "Betten Sie diesen Event Type auf Ihrer Website ein - ohne iframe-Probleme"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Embed Type Selection */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t("embedType") || "Einbettungstyp"}</label>
+              <label className="text-sm font-medium">
+                {t("embedType") || "Einbettungstyp"}
+              </label>
               <div className="flex flex-wrap gap-2">
                 <Button
                   type="button"
@@ -462,19 +555,32 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                {embedType === "button" && (t("buttonWidgetDescription") || "Einfacher HTML-Button mit Link")}
-                {embedType === "script" && (t("scriptWidgetDescription") || "JavaScript Widget öffnet Modal/Popup")}
-                {embedType === "link" && (t("directLinkDescription") || "Einfacher Link zur Buchungsseite")}
+                {embedType === "button" &&
+                  (t("buttonWidgetDescription") ||
+                    "Einfacher HTML-Button mit Link")}
+                {embedType === "script" &&
+                  (t("scriptWidgetDescription") ||
+                    "JavaScript Widget öffnet Modal/Popup")}
+                {embedType === "link" &&
+                  (t("directLinkDescription") ||
+                    "Einfacher Link zur Buchungsseite")}
               </p>
             </div>
 
             {/* Embed Code */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t("embedCode") || "Einbettungscode"}</label>
+              <label className="text-sm font-medium">
+                {t("embedCode") || "Einbettungscode"}
+              </label>
               <div className="relative">
                 <textarea
                   readOnly
-                  value={getEmbedCode(ownerUserId, eventType.slug, locale, embedType)}
+                  value={getEmbedCode(
+                    ownerUserId,
+                    eventType.slug,
+                    locale,
+                    embedType,
+                  )}
                   className="w-full min-h-[120px] p-3 pr-10 font-mono text-sm bg-muted rounded-md border resize-none"
                   onClick={(e) => (e.target as HTMLTextAreaElement).select()}
                 />
@@ -484,14 +590,23 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
                   size="sm"
                   className="absolute top-2 right-2"
                   onClick={async () => {
-                    const embedCode = getEmbedCode(ownerUserId, eventType.slug, locale, embedType);
+                    const embedCode = getEmbedCode(
+                      ownerUserId,
+                      eventType.slug,
+                      locale,
+                      embedType,
+                    );
                     try {
                       await navigator.clipboard.writeText(embedCode);
                       setCopiedEmbed(true);
-                      toast.success(t("embedCopied") || "Einbettungscode kopiert");
+                      toast.success(
+                        t("embedCopied") || "Einbettungscode kopiert",
+                      );
                       setTimeout(() => setCopiedEmbed(false), 2000);
                     } catch (error) {
-                      toast.error(t("embedCopyError") || "Fehler beim Kopieren");
+                      toast.error(
+                        t("embedCopyError") || "Fehler beim Kopieren",
+                      );
                     }
                   }}
                 >
@@ -509,16 +624,19 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                {t("embedInstructions") || "Kopieren Sie diesen Code und fügen Sie ihn in das HTML Ihrer Website ein"}
+                {t("embedInstructions") ||
+                  "Kopieren Sie diesen Code und fügen Sie ihn in das HTML Ihrer Website ein"}
               </p>
             </div>
 
             {/* Preview */}
             {embedType === "button" && (
               <div className="space-y-2">
-                <label className="text-sm font-medium">{t("preview") || "Vorschau"}</label>
+                <label className="text-sm font-medium">
+                  {t("preview") || "Vorschau"}
+                </label>
                 <div className="border rounded-md p-4 bg-muted/50 flex items-center justify-center">
-                  <a 
+                  <a
                     href={`${getURL()}/${locale}/book/${ownerUserId}/${eventType.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -531,9 +649,11 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
             )}
             {embedType === "link" && (
               <div className="space-y-2">
-                <label className="text-sm font-medium">{t("preview") || "Vorschau"}</label>
+                <label className="text-sm font-medium">
+                  {t("preview") || "Vorschau"}
+                </label>
                 <div className="border rounded-md p-4 bg-muted/50">
-                  <a 
+                  <a
                     href={`${getURL()}/${locale}/book/${ownerUserId}/${eventType.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -546,10 +666,13 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
             )}
             {embedType === "script" && (
               <div className="space-y-2">
-                <label className="text-sm font-medium">{t("preview") || "Vorschau"}</label>
+                <label className="text-sm font-medium">
+                  {t("preview") || "Vorschau"}
+                </label>
                 <div className="border rounded-md p-4 bg-muted/50">
                   <p className="text-sm text-muted-foreground">
-                    {t("scriptWidgetPreview") || "Das JavaScript Widget wird einen Button rendern, der beim Klick ein Modal mit der Buchungsseite öffnet."}
+                    {t("scriptWidgetPreview") ||
+                      "Das JavaScript Widget wird einen Button rendern, der beim Klick ein Modal mit der Buchungsseite öffnet."}
                   </p>
                 </div>
               </div>
@@ -581,4 +704,3 @@ export function EditEventTypeForm({ eventType, userId, onSuccess }: EditEventTyp
     </Form>
   );
 }
-

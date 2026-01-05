@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
-import { getCurrentUser } from "@/lib/session";
 import { listBookings } from "@/actions/scheduling/bookings-actions";
 import { getEventTypes } from "@/actions/scheduling/event-types-actions";
 import { Calendar } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+
+import { getCurrentUser } from "@/lib/session";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { BookingsList } from "@/components/scheduling/bookings-list";
 
@@ -24,25 +25,29 @@ export default async function BookingsPage({
     event_type_id: params.event_type_id,
   };
 
-  const bookingsResult = await listBookings(filters).catch(() => ({ 
-    success: false as const, 
+  const bookingsResult = await listBookings(filters).catch(() => ({
+    success: false as const,
     error: "Failed to load" as const,
-    data: undefined as undefined
+    data: undefined as undefined,
   }));
-  
-  const eventTypesResult = await getEventTypes().catch(() => ({ 
-    success: false as const, 
+
+  const eventTypesResult = await getEventTypes().catch(() => ({
+    success: false as const,
     error: "Failed to load" as const,
-    data: undefined as undefined
+    data: undefined as undefined,
   }));
 
   const bookings = bookingsResult.success ? (bookingsResult.data ?? []) : [];
-  const eventTypes = eventTypesResult.success ? (eventTypesResult.data ?? []) : [];
+  const eventTypes = eventTypesResult.success
+    ? (eventTypesResult.data ?? [])
+    : [];
 
   return (
     <UnifiedPageLayout
       title={t("bookings.title") || "Buchungen"}
-      description={t("bookings.description") || "Verwalten Sie alle Ihre Buchungen"}
+      description={
+        t("bookings.description") || "Verwalten Sie alle Ihre Buchungen"
+      }
       icon={<Calendar className="h-4 w-4 text-primary" />}
       contentClassName=""
     >
@@ -50,5 +55,3 @@ export default async function BookingsPage({
     </UnifiedPageLayout>
   );
 }
-
-

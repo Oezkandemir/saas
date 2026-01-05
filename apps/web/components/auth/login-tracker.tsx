@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { trackUserLogin } from "@/actions/user-profile-actions";
+
 import { logger } from "@/lib/logger";
 
 export function LoginTracker() {

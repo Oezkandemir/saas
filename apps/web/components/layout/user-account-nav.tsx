@@ -1,37 +1,39 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
-  LogOut,
-  LayoutDashboard,
-  User as UserIcon,
-  Building2,
-  Settings,
-  Lock,
-  Home,
-  FileText,
-  Crown,
+  Bell,
   BookOpen,
+  Building2,
+  CreditCard,
+  Crown,
+  FileText,
+  Home,
+  LayoutDashboard,
+  Lock,
+  LogOut,
+  Settings,
+  User as UserIcon,
   X,
 } from "lucide-react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Bell, CreditCard } from "lucide-react";
+
+import { logger } from "@/lib/logger";
+import { ButtonIcon, ButtonRoot } from "@/components/alignui/actions/button";
 import {
-  DrawerRoot,
-  DrawerTrigger,
-  DrawerContent,
-  DrawerHeader,
   DrawerBody,
-  DrawerFooter,
-  DrawerTitle,
   DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerRoot,
+  DrawerTitle,
+  DrawerTrigger,
 } from "@/components/alignui/overlays/drawer";
-import { ButtonRoot, ButtonIcon } from "@/components/alignui/actions/button";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { useSupabase } from "@/components/supabase-provider";
-import { logger } from "@/lib/logger";
 
 // Create namespace objects locally for AlignUI pattern
 const Button = {
@@ -125,8 +127,8 @@ export function UserAccountNav() {
     <>
       <div className="flex items-center gap-1">
         {/* User Account Drawer */}
-        <Drawer.Root 
-          open={drawerOpen} 
+        <Drawer.Root
+          open={drawerOpen}
           onOpenChange={setDrawerOpen}
           direction="right"
         >
@@ -162,7 +164,11 @@ export function UserAccountNav() {
                     {t("account")}
                   </Drawer.Title>
                   <Drawer.Close asChild>
-                    <Button.Root variant="ghost" size="icon" className="h-8 w-8">
+                    <Button.Root
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                    >
                       <X className="h-4 w-4" />
                     </Button.Root>
                   </Drawer.Close>
@@ -182,8 +188,12 @@ export function UserAccountNav() {
                       className="border size-12 shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-semibold truncate">{displayName}</h3>
-                      <p className="text-sm text-text-sub-600 truncate">{user.email}</p>
+                      <h3 className="text-base font-semibold truncate">
+                        {displayName}
+                      </h3>
+                      <p className="text-sm text-text-sub-600 truncate">
+                        {user.email}
+                      </p>
                       {userRole === "ADMIN" && (
                         <span className="inline-block mt-1 px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-md">
                           Admin
@@ -328,7 +338,6 @@ export function UserAccountNav() {
             </div>
           </Drawer.Content>
         </Drawer.Root>
-
       </div>
     </>
   );

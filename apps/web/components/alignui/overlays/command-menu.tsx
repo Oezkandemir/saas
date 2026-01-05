@@ -1,6 +1,6 @@
 /**
  * AlignUI - CommandMenu Component
- * 
+ *
  * Based on AlignUI design system using Radix UI and Tailwind CSS
  * Source: AlignUI Pro Command Menu
  */
@@ -236,10 +236,3 @@ export const CommandMenu = {
   Footer: CommandMenuFooter,
   FooterKeyBox: CommandMenuFooterKeyBox,
 };
-
-
-
-
-
-
-

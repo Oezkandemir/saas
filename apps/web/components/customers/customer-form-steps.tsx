@@ -1,18 +1,27 @@
 "use client";
 
-import { UseFormReturn, useFormContext } from "react-hook-form";
-import { useTranslations } from "next-intl";
 import { CustomerInput } from "@/actions/customers-actions";
 import {
+  Building2,
+  FileText,
+  Globe,
+  Mail,
+  MapPin,
+  Phone,
+  User,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useFormContext, UseFormReturn } from "react-hook-form";
+
+import {
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
-  FormDescription,
   FormMessage,
 } from "@/components/alignui/forms/form";
-import { Input } from '@/components/alignui/forms/input';
-import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
+import { Input } from "@/components/alignui/forms/input";
 import {
   SelectRoot as Select,
   SelectContent,
@@ -20,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/alignui/forms/select";
-import { User, Mail, Phone, Building2, MapPin, FileText, Globe } from "lucide-react";
+import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
 
 // Step 1: Personal Information
 export function CustomerPersonalInfoStep({
@@ -36,7 +45,8 @@ export function CustomerPersonalInfoStep({
     const fieldValue = watch(fieldName);
     const isDirty = formState.dirtyFields[fieldName];
     const hasError = !!fieldState.error;
-    const hasSuccess = !hasError && isDirty && fieldValue !== undefined && fieldValue !== "";
+    const hasSuccess =
+      !hasError && isDirty && fieldValue !== undefined && fieldValue !== "";
     return { hasError, hasSuccess };
   };
 
@@ -179,7 +189,9 @@ export function CustomerAddressStep({
           name="address_line1"
           render={({ field }) => (
             <FormItem className="md:col-span-2">
-              <FormLabel className="text-base font-medium">{t("street")}</FormLabel>
+              <FormLabel className="text-base font-medium">
+                {t("street")}
+              </FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -196,7 +208,9 @@ export function CustomerAddressStep({
           name="address_line2"
           render={({ field }) => (
             <FormItem className="md:col-span-2">
-              <FormLabel className="text-base font-medium">{t("addressLine2")}</FormLabel>
+              <FormLabel className="text-base font-medium">
+                {t("addressLine2")}
+              </FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -213,7 +227,9 @@ export function CustomerAddressStep({
           name="postal_code"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-base font-medium">{t("postalCode")}</FormLabel>
+              <FormLabel className="text-base font-medium">
+                {t("postalCode")}
+              </FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -230,7 +246,9 @@ export function CustomerAddressStep({
           name="city"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-base font-medium">{t("city")}</FormLabel>
+              <FormLabel className="text-base font-medium">
+                {t("city")}
+              </FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -251,10 +269,7 @@ export function CustomerAddressStep({
                 <Globe className="h-4 w-4" />
                 {t("country")}
               </FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                value={field.value}
-              >
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger className="h-11 text-base">
                     <SelectValue placeholder={t("countryPlaceholder")} />
@@ -297,7 +312,9 @@ export function CustomerAdditionalInfoStep({
           name="tax_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-base font-medium">{t("taxId")}</FormLabel>
+              <FormLabel className="text-base font-medium">
+                {t("taxId")}
+              </FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -316,7 +333,9 @@ export function CustomerAdditionalInfoStep({
         name="notes"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-base font-medium">{t("notes")}</FormLabel>
+            <FormLabel className="text-base font-medium">
+              {t("notes")}
+            </FormLabel>
             <FormControl>
               <Textarea
                 {...field}
@@ -333,4 +352,3 @@ export function CustomerAdditionalInfoStep({
     </div>
   );
 }
-

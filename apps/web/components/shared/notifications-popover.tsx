@@ -21,9 +21,9 @@ import {
   Loader2,
   Trash2,
 } from "lucide-react";
+
+import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Button } from '@/components/alignui/actions/button';
 import {
   Popover,
   PopoverContent,
@@ -32,8 +32,9 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import { useNotificationsContext } from "@/components/context/notifications-context";
-import { logger } from "@/lib/logger";
 
 interface NotificationsPopoverProps {
   children: React.ReactNode;

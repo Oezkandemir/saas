@@ -34,7 +34,7 @@ ${entries
     <lastmod>${entry.lastModified}</lastmod>
     <changefreq>${entry.changeFrequency}</changefreq>
     <priority>${entry.priority}</priority>
-  </url>`
+  </url>`,
   )
   .join("\n")}
 </urlset>`;
@@ -46,4 +46,3 @@ ${entries
     },
   });
 }
-

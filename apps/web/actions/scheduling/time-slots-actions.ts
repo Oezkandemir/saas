@@ -3,9 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
-import { logger } from "@/lib/logger";
 
 // ============================================
 // ZOD SCHEMAS
@@ -52,7 +52,7 @@ export type TimeSlot = {
  * Create a new time slot
  */
 export async function createTimeSlot(
-  input: z.infer<typeof timeSlotSchema>
+  input: z.infer<typeof timeSlotSchema>,
 ): Promise<ActionResult<TimeSlot>> {
   const user = await getCurrentUser();
 
@@ -116,7 +116,8 @@ export async function createTimeSlot(
   } catch (error) {
     if (error instanceof z.ZodError) {
       const fieldErrors = error.flatten().fieldErrors;
-      const firstError = Object.values(fieldErrors)[0]?.[0] || "Validation error";
+      const firstError =
+        Object.values(fieldErrors)[0]?.[0] || "Validation error";
       return {
         success: false,
         error: firstError,
@@ -135,7 +136,7 @@ export async function createTimeSlot(
  * Update a time slot
  */
 export async function updateTimeSlot(
-  input: z.infer<typeof timeSlotUpdateSchema>
+  input: z.infer<typeof timeSlotUpdateSchema>,
 ): Promise<ActionResult<TimeSlot>> {
   const user = await getCurrentUser();
 
@@ -180,7 +181,9 @@ export async function updateTimeSlot(
     }
 
     revalidatePath("/scheduling");
-    revalidatePath(`/scheduling/event-types/${(timeSlot as any).event_type_id}`);
+    revalidatePath(
+      `/scheduling/event-types/${(timeSlot as any).event_type_id}`,
+    );
 
     return {
       success: true,
@@ -189,7 +192,8 @@ export async function updateTimeSlot(
   } catch (error) {
     if (error instanceof z.ZodError) {
       const fieldErrors = error.flatten().fieldErrors;
-      const firstError = Object.values(fieldErrors)[0]?.[0] || "Validation error";
+      const firstError =
+        Object.values(fieldErrors)[0]?.[0] || "Validation error";
       return {
         success: false,
         error: firstError,
@@ -207,9 +211,7 @@ export async function updateTimeSlot(
 /**
  * Delete a time slot
  */
-export async function deleteTimeSlot(
-  id: string
-): Promise<ActionResult<null>> {
+export async function deleteTimeSlot(id: string): Promise<ActionResult<null>> {
   const user = await getCurrentUser();
 
   if (!user?.id) {
@@ -250,7 +252,9 @@ export async function deleteTimeSlot(
     }
 
     revalidatePath("/scheduling");
-    revalidatePath(`/scheduling/event-types/${(timeSlot as any).event_type_id}`);
+    revalidatePath(
+      `/scheduling/event-types/${(timeSlot as any).event_type_id}`,
+    );
 
     return {
       success: true,
@@ -269,7 +273,7 @@ export async function deleteTimeSlot(
  * Get all time slots for an event type
  */
 export async function getTimeSlots(
-  eventTypeId: string
+  eventTypeId: string,
 ): Promise<ActionResult<TimeSlot[]>> {
   const user = await getCurrentUser();
 
@@ -335,7 +339,7 @@ export async function applyTimeSlotsToAllEvents(
     end_time: string;
     day_of_week: number | null;
     max_participants: number | null;
-  }>
+  }>,
 ): Promise<ActionResult<{ created: number; errors: string[] }>> {
   const user = await getCurrentUser();
 
@@ -377,22 +381,24 @@ export async function applyTimeSlotsToAllEvents(
       for (const timeSlot of timeSlots) {
         // Validate time range
         if (timeSlot.start_time >= timeSlot.end_time) {
-          errors.push(`Invalid time range for event ${eventType.id}: ${timeSlot.start_time} - ${timeSlot.end_time}`);
+          errors.push(
+            `Invalid time range for event ${eventType.id}: ${timeSlot.start_time} - ${timeSlot.end_time}`,
+          );
           continue;
         }
 
-        const { error } = await supabase
-          .from("event_type_time_slots")
-          .insert({
-            event_type_id: eventType.id,
-            start_time: timeSlot.start_time,
-            end_time: timeSlot.end_time,
-            day_of_week: timeSlot.day_of_week,
-            max_participants: timeSlot.max_participants,
-          });
+        const { error } = await supabase.from("event_type_time_slots").insert({
+          event_type_id: eventType.id,
+          start_time: timeSlot.start_time,
+          end_time: timeSlot.end_time,
+          day_of_week: timeSlot.day_of_week,
+          max_participants: timeSlot.max_participants,
+        });
 
         if (error) {
-          errors.push(`Failed to create slot for event ${eventType.id}: ${error.message}`);
+          errors.push(
+            `Failed to create slot for event ${eventType.id}: ${error.message}`,
+          );
         } else {
           created++;
         }
@@ -425,17 +431,20 @@ export async function getBookedParticipantsCount(
   timeSlotId: string,
   date: string, // YYYY-MM-DD format
   startTime: string, // HH:MM:SS format
-  endTime: string // HH:MM:SS format
+  endTime: string, // HH:MM:SS format
 ): Promise<ActionResult<number>> {
   try {
     const supabase = await createClient();
 
-    const { data, error } = await supabase.rpc("get_booked_participants_count", {
-      p_time_slot_id: timeSlotId,
-      p_date: date,
-      p_start_time: startTime,
-      p_end_time: endTime,
-    });
+    const { data, error } = await supabase.rpc(
+      "get_booked_participants_count",
+      {
+        p_time_slot_id: timeSlotId,
+        p_date: date,
+        p_start_time: startTime,
+        p_end_time: endTime,
+      },
+    );
 
     if (error) {
       logger.error("Error getting booked participants count", error);
@@ -457,4 +466,3 @@ export async function getBookedParticipantsCount(
     };
   }
 }
-

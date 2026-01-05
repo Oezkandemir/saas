@@ -1,9 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
-import { POST } from "@/app/api/admin/update-user-role/route";
-import { getCurrentUser } from "@/lib/session";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { requireCSRFToken } from "@/lib/csrf";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { getCurrentUser } from "@/lib/session";
+import { POST } from "@/app/api/admin/update-user-role/route";
 
 // Mock dependencies
 vi.mock("@/lib/session");
@@ -46,10 +47,13 @@ describe("Admin Route - Update User Role", () => {
     vi.mocked(requireCSRFToken).mockResolvedValue({ valid: true });
     vi.mocked(getCurrentUser).mockResolvedValue(null);
 
-    const request = new NextRequest("http://localhost/api/admin/update-user-role", {
-      method: "POST",
-      body: JSON.stringify({ userId: "user-123", role: "USER" }),
-    });
+    const request = new NextRequest(
+      "http://localhost/api/admin/update-user-role",
+      {
+        method: "POST",
+        body: JSON.stringify({ userId: "user-123", role: "USER" }),
+      },
+    );
 
     const response = await POST(request);
     expect(response.status).toBe(401);
@@ -63,10 +67,13 @@ describe("Admin Route - Update User Role", () => {
       email: "user@example.com",
     } as any);
 
-    const request = new NextRequest("http://localhost/api/admin/update-user-role", {
-      method: "POST",
-      body: JSON.stringify({ userId: "user-456", role: "USER" }),
-    });
+    const request = new NextRequest(
+      "http://localhost/api/admin/update-user-role",
+      {
+        method: "POST",
+        body: JSON.stringify({ userId: "user-456", role: "USER" }),
+      },
+    );
 
     const response = await POST(request);
     expect(response.status).toBe(403);
@@ -80,10 +87,13 @@ describe("Admin Route - Update User Role", () => {
       }),
     });
 
-    const request = new NextRequest("http://localhost/api/admin/update-user-role", {
-      method: "POST",
-      body: JSON.stringify({ userId: "user-123", role: "USER" }),
-    });
+    const request = new NextRequest(
+      "http://localhost/api/admin/update-user-role",
+      {
+        method: "POST",
+        body: JSON.stringify({ userId: "user-123", role: "USER" }),
+      },
+    );
 
     const response = await POST(request);
     expect(response.status).toBe(403);
@@ -103,10 +113,13 @@ describe("Admin Route - Update User Role", () => {
       blocked: false,
     });
 
-    const request = new NextRequest("http://localhost/api/admin/update-user-role", {
-      method: "POST",
-      body: JSON.stringify({ userId: "user-123", role: "USER" }),
-    });
+    const request = new NextRequest(
+      "http://localhost/api/admin/update-user-role",
+      {
+        method: "POST",
+        body: JSON.stringify({ userId: "user-123", role: "USER" }),
+      },
+    );
 
     const response = await POST(request);
     expect(response.status).toBe(429);
@@ -126,10 +139,13 @@ describe("Admin Route - Update User Role", () => {
       blocked: false,
     });
 
-    const request = new NextRequest("http://localhost/api/admin/update-user-role", {
-      method: "POST",
-      body: JSON.stringify({ userId: "invalid-uuid", role: "USER" }),
-    });
+    const request = new NextRequest(
+      "http://localhost/api/admin/update-user-role",
+      {
+        method: "POST",
+        body: JSON.stringify({ userId: "invalid-uuid", role: "USER" }),
+      },
+    );
 
     const response = await POST(request);
     expect(response.status).toBe(400);
@@ -149,10 +165,13 @@ describe("Admin Route - Update User Role", () => {
       blocked: false,
     });
 
-    const request = new NextRequest("http://localhost/api/admin/update-user-role", {
-      method: "POST",
-      body: JSON.stringify({ userId: "admin-123", role: "USER" }),
-    });
+    const request = new NextRequest(
+      "http://localhost/api/admin/update-user-role",
+      {
+        method: "POST",
+        body: JSON.stringify({ userId: "admin-123", role: "USER" }),
+      },
+    );
 
     const response = await POST(request);
     expect(response.status).toBe(400);
@@ -174,13 +193,16 @@ describe("Admin Route - Update User Role", () => {
       blocked: false,
     });
 
-    const request = new NextRequest("http://localhost/api/admin/update-user-role", {
-      method: "POST",
-      body: JSON.stringify({
-        userId: "550e8400-e29b-41d4-a716-446655440000",
-        role: "USER",
-      }),
-    });
+    const request = new NextRequest(
+      "http://localhost/api/admin/update-user-role",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          userId: "550e8400-e29b-41d4-a716-446655440000",
+          role: "USER",
+        }),
+      },
+    );
 
     const response = await POST(request);
     // Note: This will fail in test environment due to database mocks,
@@ -188,4 +210,3 @@ describe("Admin Route - Update User Role", () => {
     expect([200, 500]).toContain(response.status);
   });
 });
-

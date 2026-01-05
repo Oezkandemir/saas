@@ -11,12 +11,14 @@ This document describes the security measures implemented in the API to protect 
 All protected API routes require authentication. The system uses Supabase Auth for session management.
 
 **How it works:**
+
 - Users authenticate via `/api/auth/signin` or `/api/auth/signup`
 - Session tokens are stored in HTTP-only cookies
 - Each request includes the session token automatically
 - The `getCurrentUser()` function validates the session and returns user data
 
 **Example:**
+
 ```typescript
 const user = await getCurrentUser();
 if (!user) {
@@ -27,19 +29,22 @@ if (!user) {
 ### Authorization
 
 Authorization is role-based:
+
 - **USER**: Standard user with access to own resources
 - **ADMIN**: Administrator with access to all resources
 
 **Admin-only routes:**
+
 - `/api/admin/update-user-role` - Requires ADMIN role
 - Admin dashboard routes - Requires ADMIN role
 
 **Example:**
+
 ```typescript
 if (user.role !== "ADMIN") {
   return NextResponse.json(
     { error: "Forbidden: Admin access required" },
-    { status: 403 }
+    { status: 403 },
   );
 }
 ```
@@ -59,22 +64,24 @@ Cross-Site Request Forgery (CSRF) protection is implemented for all state-changi
 ### Implementation
 
 **Client-side:**
+
 ```typescript
 // Get CSRF token
 const token = await getCSRFToken();
 
 // Include in request headers
-fetch('/api/endpoint', {
-  method: 'POST',
+fetch("/api/endpoint", {
+  method: "POST",
   headers: {
-    'X-CSRF-Token': token,
-    'Content-Type': 'application/json',
+    "X-CSRF-Token": token,
+    "Content-Type": "application/json",
   },
   body: JSON.stringify(data),
 });
 ```
 
 **Server-side:**
+
 ```typescript
 import { requireCSRFToken } from "@/lib/csrf";
 
@@ -107,6 +114,7 @@ Rate limits are configured per endpoint in the `rate_limit_configs` table:
 ### Implementation
 
 **Using API Middleware:**
+
 ```typescript
 import { applyAPIMiddleware } from "@/lib/api-middleware";
 
@@ -124,20 +132,18 @@ if (!middleware.valid) {
 ```
 
 **Direct usage:**
+
 ```typescript
 import { checkRateLimit } from "@/lib/rate-limit";
 
 const rateLimit = await checkRateLimit(
   "/api/endpoint",
   user?.id,
-  "user" // or "ip"
+  "user", // or "ip"
 );
 
 if (!rateLimit.allowed) {
-  return NextResponse.json(
-    { error: "Rate limit exceeded" },
-    { status: 429 }
-  );
+  return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
 }
 ```
 
@@ -149,6 +155,7 @@ if (!rateLimit.allowed) {
 ### Response Headers
 
 When rate limit is exceeded:
+
 - `Retry-After`: Seconds until the rate limit resets
 - Status: `429 Too Many Requests`
 
@@ -161,6 +168,7 @@ All inputs are validated using Zod schemas to prevent injection attacks and ensu
 ### Implementation
 
 **Schema Definition:**
+
 ```typescript
 import { z } from "zod";
 
@@ -173,6 +181,7 @@ const updateRoleSchema = z.object({
 ```
 
 **Validation:**
+
 ```typescript
 const body = await request.json();
 const validationResult = updateRoleSchema.safeParse(body);
@@ -183,7 +192,7 @@ if (!validationResult.success) {
       error: "Invalid input",
       details: validationResult.error.errors,
     },
-    { status: 400 }
+    { status: 400 },
   );
 }
 
@@ -289,6 +298,7 @@ if (isAllowedOrigin) {
 ### Row Level Security (RLS)
 
 All tables have RLS enabled. Policies ensure:
+
 - Users can only access their own data
 - Admins can access all data
 - Public data is accessible to all
@@ -296,6 +306,7 @@ All tables have RLS enabled. Policies ensure:
 ### SECURITY DEFINER Functions
 
 Database functions with `SECURITY DEFINER` are secured with:
+
 - Authentication checks (`auth.uid()`)
 - Authorization checks (role verification)
 - Input validation (UUID format, not null)
@@ -355,4 +366,3 @@ Before deploying to production:
 ## Reporting Security Issues
 
 If you discover a security vulnerability, please report it to the security team immediately. Do not create a public issue.
-

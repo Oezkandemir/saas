@@ -1,15 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import {
+  getDatabaseInfo,
+  getDatabaseTableStats,
+  type DatabaseTableStats,
+} from "@/actions/admin-system-actions";
 import { Database, Loader2, RefreshCw } from "lucide-react";
 
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/alignui/data-display/card';
-import { Button } from '@/components/alignui/actions/button';
 import {
   Table,
   TableBody,
@@ -19,11 +17,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/alignui/actions/button";
 import {
-  getDatabaseTableStats,
-  getDatabaseInfo,
-  type DatabaseTableStats,
-} from "@/actions/admin-system-actions";
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 
 export function DatabaseStats() {
   const { toast } = useToast();
@@ -53,7 +53,9 @@ export function DatabaseStats() {
         toast({
           variant: "destructive",
           title: "Fehler",
-          description: statsResult.error || "Datenbank-Statistiken konnten nicht geladen werden",
+          description:
+            statsResult.error ||
+            "Datenbank-Statistiken konnten nicht geladen werden",
         });
       }
 
@@ -148,9 +150,13 @@ export function DatabaseStats() {
               <p className="text-lg font-semibold">{tableStats.length}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Gesamt Zeilen</p>
+              <p className="text-sm text-muted-foreground mb-1">
+                Gesamt Zeilen
+              </p>
               <p className="text-lg font-semibold">
-                {tableStats.reduce((sum, stat) => sum + stat.rowCount, 0).toLocaleString("de-DE")}
+                {tableStats
+                  .reduce((sum, stat) => sum + stat.rowCount, 0)
+                  .toLocaleString("de-DE")}
               </p>
             </div>
           </div>
@@ -174,7 +180,9 @@ export function DatabaseStats() {
                   {tableStats.map((stat) => (
                     <TableRow key={stat.tableName}>
                       <TableCell className="font-medium">
-                        <span className="font-mono text-sm">{stat.tableName}</span>
+                        <span className="font-mono text-sm">
+                          {stat.tableName}
+                        </span>
                       </TableCell>
                       <TableCell className="text-right">
                         <span className="font-semibold">
@@ -200,11 +208,12 @@ export function DatabaseStats() {
           <div className="text-center py-12 text-muted-foreground border rounded-lg">
             <Database className="h-12 w-12 mx-auto mb-3 opacity-50" />
             <p className="font-medium">Keine Statistiken verfügbar</p>
-            <p className="text-sm mt-1">Die Datenbank-Statistiken werden geladen...</p>
+            <p className="text-sm mt-1">
+              Die Datenbank-Statistiken werden geladen...
+            </p>
           </div>
         )}
       </div>
     </div>
   );
 }
-

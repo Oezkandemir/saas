@@ -4,26 +4,60 @@ import dynamic from "next/dynamic";
 import type { Document } from "@/actions/documents-actions";
 
 // Dynamic imports for heavy PDF components with SSR disabled
-const PDFDownloadButton = dynamic(() => import("@/components/documents/pdf-download-button").then(mod => ({ default: mod.PDFDownloadButton })), {
-  ssr: false,
-});
+const PDFDownloadButton = dynamic(
+  () =>
+    import("@/components/documents/pdf-download-button").then((mod) => ({
+      default: mod.PDFDownloadButton,
+    })),
+  {
+    ssr: false,
+  },
+);
 
-const PDFPreviewButton = dynamic(() => import("@/components/documents/pdf-preview-button").then(mod => ({ default: mod.PDFPreviewButton })), {
-  ssr: false,
-});
+const PDFPreviewButton = dynamic(
+  () =>
+    import("@/components/documents/pdf-preview-button").then((mod) => ({
+      default: mod.PDFPreviewButton,
+    })),
+  {
+    ssr: false,
+  },
+);
 
-const DocumentEmailButton = dynamic(() => import("@/components/documents/document-email-button").then(mod => ({ default: mod.DocumentEmailButton })), {
-  ssr: false,
-});
+const DocumentEmailButton = dynamic(
+  () =>
+    import("@/components/documents/document-email-button").then((mod) => ({
+      default: mod.DocumentEmailButton,
+    })),
+  {
+    ssr: false,
+  },
+);
 
-const InvoiceCompactPreview = dynamic(() => import("@/components/documents/invoice-compact-preview").then(mod => ({ default: mod.InvoiceCompactPreview })), {
-  loading: () => <div className="p-4 text-center text-muted-foreground">Loading preview...</div>,
-  ssr: false,
-});
+const InvoiceCompactPreview = dynamic(
+  () =>
+    import("@/components/documents/invoice-compact-preview").then((mod) => ({
+      default: mod.InvoiceCompactPreview,
+    })),
+  {
+    loading: () => (
+      <div className="p-4 text-center text-muted-foreground">
+        Loading preview...
+      </div>
+    ),
+    ssr: false,
+  },
+);
 
-const InvoiceFullscreenButton = dynamic(() => import("@/components/documents/invoice-fullscreen-button").then(mod => ({ default: mod.InvoiceFullscreenButton })), {
-  ssr: false,
-});
+const InvoiceFullscreenButton = dynamic(
+  () =>
+    import("@/components/documents/invoice-fullscreen-button").then((mod) => ({
+      default: mod.InvoiceFullscreenButton,
+    })),
+  {
+    ssr: false,
+  },
+);
 
 interface PDFActionButtonsProps {
   documentId: string;
@@ -73,7 +107,8 @@ interface InvoicePreviewContentProps {
   document: Document;
 }
 
-export function InvoicePreviewContent({ document }: InvoicePreviewContentProps) {
+export function InvoicePreviewContent({
+  document,
+}: InvoicePreviewContentProps) {
   return <InvoiceCompactPreview document={document} />;
 }
-

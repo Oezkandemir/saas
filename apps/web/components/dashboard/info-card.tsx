@@ -1,6 +1,11 @@
 import { Users } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 
 export default function InfoCard() {
   return (

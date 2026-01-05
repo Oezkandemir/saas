@@ -10,32 +10,29 @@ import {
 import { formatDistance } from "date-fns";
 import { de } from "date-fns/locale";
 import {
-  Plus,
-  Edit,
-  Trash2,
+  ArrowRight,
+  Bell,
   CheckCircle2,
   Clock,
   CreditCard,
+  Edit,
+  FileText,
   Gift,
   Info,
-  Users,
-  FileText,
-  Bell,
-  ArrowRight,
+  Plus,
   Sparkles,
+  Trash2,
+  Users,
 } from "lucide-react";
 
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Button } from '@/components/alignui/actions/button';
-import {
-  Card,
-  CardContent,
-} from '@/components/alignui/data-display/card';
-import { useToast } from "@/components/ui/use-toast";
+import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Card, CardContent } from "@/components/alignui/data-display/card";
 
 import { DeleteNotificationButton } from "./delete-notification-button";
-import { logger } from "@/lib/logger";
 
 interface NotificationsListProps {
   notifications: UserNotification[];
@@ -91,7 +88,7 @@ const getActionIcon = (action?: string, type?: string) => {
 // Get action color based on action type
 const getActionColor = (action?: string) => {
   if (!action) return "text-muted-foreground";
-  
+
   switch (action.toLowerCase()) {
     case "created":
       return "text-green-600 dark:text-green-400";
@@ -113,7 +110,7 @@ const getActionColor = (action?: string) => {
 // Get action label in German
 const getActionLabel = (action?: string) => {
   if (!action) return "";
-  
+
   switch (action.toLowerCase()) {
     case "created":
       return "erstellt";
@@ -178,7 +175,8 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
       logger.error("Error marking notification as read:", error);
       toast({
         title: "Fehler",
-        description: "Benachrichtigung konnte nicht als gelesen markiert werden",
+        description:
+          "Benachrichtigung konnte nicht als gelesen markiert werden",
         variant: "destructive",
       });
     } finally {
@@ -201,19 +199,21 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
               key={notification.id}
               className={cn(
                 "group transition-all duration-200 hover:shadow-md",
-                notification.read 
-                  ? "bg-muted/20 border-muted" 
-                  : "bg-background border-border shadow-sm"
+                notification.read
+                  ? "bg-muted/20 border-muted"
+                  : "bg-background border-border shadow-sm",
               )}
             >
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
                   {/* Action Icon */}
-                  <div className={cn(
-                    "mt-0.5 shrink-0 rounded-md p-1.5",
-                    getActionColor(action),
-                    !notification.read && "bg-muted/50"
-                  )}>
+                  <div
+                    className={cn(
+                      "mt-0.5 shrink-0 rounded-md p-1.5",
+                      getActionColor(action),
+                      !notification.read && "bg-muted/50",
+                    )}
+                  >
                     {getActionIcon(action, notification.type)}
                   </div>
 
@@ -223,15 +223,17 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className={cn(
-                            "text-sm font-medium leading-tight",
-                            !notification.read && "font-semibold"
-                          )}>
+                          <h3
+                            className={cn(
+                              "text-sm font-medium leading-tight",
+                              !notification.read && "font-semibold",
+                            )}
+                          >
                             {notification.title}
                           </h3>
                           {!notification.read && (
-                            <Badge 
-                              variant="default" 
+                            <Badge
+                              variant="default"
                               className="h-4 px-1.5 text-[10px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
                             >
                               Neu
@@ -264,7 +266,9 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
                         {documentNumber && (
                           <div className="flex items-center gap-1 text-muted-foreground">
                             <span className="font-medium">Dokument:</span>
-                            <span className="font-medium">{documentNumber}</span>
+                            <span className="font-medium">
+                              {documentNumber}
+                            </span>
                             {documentType && (
                               <span className="text-muted-foreground/70">
                                 ({documentType})
@@ -283,11 +287,11 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
                           {formatDistance(
                             new Date(notification.created_at),
                             new Date(),
-                            { addSuffix: true, locale: de }
+                            { addSuffix: true, locale: de },
                           )}
                         </span>
-                        <Badge 
-                          variant="secondary" 
+                        <Badge
+                          variant="secondary"
                           className="h-4 px-1.5 text-[10px] font-normal bg-muted/50"
                         >
                           {getTypeLabel(notification.type)}
@@ -297,9 +301,9 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
                       <div className="flex items-center gap-1">
                         {notification.action_url && (
                           <Link href={notification.action_url}>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               className="h-7 px-2 text-xs"
                             >
                               Öffnen
@@ -323,8 +327,8 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
                             )}
                           </Button>
                         )}
-                        <DeleteNotificationButton 
-                          notificationId={notification.id} 
+                        <DeleteNotificationButton
+                          notificationId={notification.id}
                           isUnread={!notification.read}
                         />
                       </div>
@@ -341,9 +345,12 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted mb-4">
               <Bell className="h-8 w-8 text-muted-foreground" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold">Keine Benachrichtigungen</h3>
+            <h3 className="mb-2 text-lg font-semibold">
+              Keine Benachrichtigungen
+            </h3>
             <p className="text-center text-sm text-muted-foreground max-w-md">
-              Sie haben derzeit keine Benachrichtigungen. Neue Benachrichtigungen werden hier angezeigt, sobald sie eintreffen.
+              Sie haben derzeit keine Benachrichtigungen. Neue
+              Benachrichtigungen werden hier angezeigt, sobald sie eintreffen.
             </p>
           </CardContent>
         </Card>

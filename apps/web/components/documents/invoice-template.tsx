@@ -1,7 +1,8 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import type { Document } from "@/actions/documents-actions";
+import { useTranslations } from "next-intl";
+
 import { formatCurrency, formatDate } from "@/lib/pdf/generator-vercel";
 
 interface InvoiceTemplateProps {
@@ -47,16 +48,18 @@ export function InvoiceTemplate({
   };
 
   return (
-    <div className="invoice-template bg-white p-8 print:p-0" style={{ fontFamily: "Arial, sans-serif" }}>
+    <div
+      className="invoice-template bg-white p-8 print:p-0"
+      style={{ fontFamily: "Arial, sans-serif" }}
+    >
       {/* Header */}
-      <div className="flex justify-between items-start mb-10 pb-6 border-b-4" style={{ borderColor: primaryColor }}>
+      <div
+        className="flex justify-between items-start mb-10 pb-6 border-b-4"
+        style={{ borderColor: primaryColor }}
+      >
         <div>
           {showLogo && logoUrl && (
-            <img
-              src={logoUrl}
-              alt="Logo"
-              className="max-h-20 mb-5"
-            />
+            <img src={logoUrl} alt="Logo" className="max-h-20 mb-5" />
           )}
           <div className="space-y-1">
             {defaultCompanyInfo.name && (
@@ -76,7 +79,10 @@ export function InvoiceTemplate({
           </div>
         </div>
         <div className="text-right">
-          <div className="text-3xl font-bold mb-2" style={{ color: primaryColor }}>
+          <div
+            className="text-3xl font-bold mb-2"
+            style={{ color: primaryColor }}
+          >
             {documentTitle}
           </div>
           <div className="text-sm text-muted-foreground">
@@ -100,9 +106,7 @@ export function InvoiceTemplate({
             {isInvoice ? t("template.invoiceAddress") : t("template.quoteFor")}
           </div>
           <div>{document.customer.name}</div>
-          {document.customer.email && (
-            <div>{document.customer.email}</div>
-          )}
+          {document.customer.email && <div>{document.customer.email}</div>}
         </div>
       )}
 
@@ -111,10 +115,17 @@ export function InvoiceTemplate({
         <div className="mb-8">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-muted border-b-2" style={{ borderColor: primaryColor }}>
+              <tr
+                className="bg-muted border-b-2"
+                style={{ borderColor: primaryColor }}
+              >
                 <th className="text-left p-3 font-bold">{t("description")}</th>
-                <th className="text-right p-3 font-bold w-24">{t("quantity")}</th>
-                <th className="text-right p-3 font-bold w-32">{t("unitPrice")}</th>
+                <th className="text-right p-3 font-bold w-24">
+                  {t("quantity")}
+                </th>
+                <th className="text-right p-3 font-bold w-32">
+                  {t("unitPrice")}
+                </th>
                 <th className="text-right p-3 font-bold w-32">{t("total")}</th>
               </tr>
             </thead>
@@ -123,7 +134,9 @@ export function InvoiceTemplate({
                 <tr key={index} className="border-b border-border">
                   <td className="p-3">{item.description}</td>
                   <td className="text-right p-3">{item.quantity}</td>
-                  <td className="text-right p-3">{formatCurrency(item.unit_price)}</td>
+                  <td className="text-right p-3">
+                    {formatCurrency(item.unit_price)}
+                  </td>
                   <td className="text-right p-3 font-bold">
                     {formatCurrency(item.quantity * item.unit_price)}
                   </td>
@@ -140,7 +153,9 @@ export function InvoiceTemplate({
           <table className="w-full border-collapse">
             <tbody>
               <tr>
-                <td className="p-2 text-right border-b border-border">{t("subtotal")}</td>
+                <td className="p-2 text-right border-b border-border">
+                  {t("subtotal")}
+                </td>
                 <td className="p-2 text-right border-b border-border font-bold">
                   {formatCurrency(document.subtotal)}
                 </td>
@@ -168,16 +183,19 @@ export function InvoiceTemplate({
 
       {/* Payment Info */}
       {isInvoice && defaultCompanyInfo.iban && (
-        <div className="mb-8 p-5 bg-muted border-l-4" style={{ borderColor: primaryColor }}>
+        <div
+          className="mb-8 p-5 bg-muted border-l-4"
+          style={{ borderColor: primaryColor }}
+        >
           <div className="font-bold mb-2">{t("template.paymentInfo")}</div>
           {defaultCompanyInfo.iban && (
             <div>IBAN: {defaultCompanyInfo.iban}</div>
           )}
-          {defaultCompanyInfo.bic && (
-            <div>BIC: {defaultCompanyInfo.bic}</div>
-          )}
+          {defaultCompanyInfo.bic && <div>BIC: {defaultCompanyInfo.bic}</div>}
           {defaultCompanyInfo.bankName && (
-            <div>{t("template.bank")}: {defaultCompanyInfo.bankName}</div>
+            <div>
+              {t("template.bank")}: {defaultCompanyInfo.bankName}
+            </div>
           )}
           {document.due_date && (
             <div className="mt-2 font-bold">
@@ -198,16 +216,24 @@ export function InvoiceTemplate({
       {/* Footer */}
       <div className="mt-12 pt-5 border-t border-border text-xs text-muted-foreground">
         {defaultCompanyInfo.email && (
-          <div>{t("template.email")}: {defaultCompanyInfo.email}</div>
+          <div>
+            {t("template.email")}: {defaultCompanyInfo.email}
+          </div>
         )}
         {defaultCompanyInfo.phone && (
-          <div>{t("template.phone")}: {defaultCompanyInfo.phone}</div>
+          <div>
+            {t("template.phone")}: {defaultCompanyInfo.phone}
+          </div>
         )}
         {defaultCompanyInfo.website && (
-          <div>{t("template.website")}: {defaultCompanyInfo.website}</div>
+          <div>
+            {t("template.website")}: {defaultCompanyInfo.website}
+          </div>
         )}
         {defaultCompanyInfo.taxId && (
-          <div className="mt-2">{t("template.vatId")}: {defaultCompanyInfo.taxId}</div>
+          <div className="mt-2">
+            {t("template.vatId")}: {defaultCompanyInfo.taxId}
+          </div>
         )}
       </div>
 
@@ -222,5 +248,3 @@ export function InvoiceTemplate({
     </div>
   );
 }
-
-

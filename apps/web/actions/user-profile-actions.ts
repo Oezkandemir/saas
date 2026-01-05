@@ -3,9 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
-import { logger } from "@/lib/logger";
 
 // Define profile schema for validation
 const profileSchema = z.object({
@@ -305,7 +305,10 @@ export async function getUserNotifications(
     logger.error("Error fetching user notifications", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch notifications",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch notifications",
     };
   }
 }

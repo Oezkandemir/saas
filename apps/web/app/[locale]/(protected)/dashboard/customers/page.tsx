@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
-import { getCurrentUser } from "@/lib/session";
 import { getCustomers, type Customer } from "@/actions/customers-actions";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
+import { Building2, Mail, Phone, Users } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+
+import { getCurrentUser } from "@/lib/session";
 import {
   Table,
   TableBody,
@@ -11,12 +13,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Users, Mail, Phone, Building2 } from "lucide-react";
-import Link from "next/link";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { NewCustomerDrawerEmptyState } from "@/components/customers/new-customer-drawer-empty-state";
+import { NewCustomerDrawerWrapper } from "@/components/customers/new-customer-drawer-wrapper";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { PlanLimitWarning } from "@/components/plan-limit-warning";
-import { NewCustomerDrawerWrapper } from "@/components/customers/new-customer-drawer-wrapper";
-import { NewCustomerDrawerEmptyState } from "@/components/customers/new-customer-drawer-empty-state";
 
 // ISR: Revalidate every 60 seconds for fresh customer data
 export const revalidate = 60;
@@ -52,10 +53,18 @@ export default async function CustomersPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="h-10 text-xs font-medium">Name</TableHead>
-                  <TableHead className="h-10 text-xs font-medium">Contact</TableHead>
-                  <TableHead className="h-10 text-xs font-medium">Company</TableHead>
-                  <TableHead className="h-10 text-xs font-medium">QR Code</TableHead>
+                  <TableHead className="h-10 text-xs font-medium">
+                    Name
+                  </TableHead>
+                  <TableHead className="h-10 text-xs font-medium">
+                    Contact
+                  </TableHead>
+                  <TableHead className="h-10 text-xs font-medium">
+                    Company
+                  </TableHead>
+                  <TableHead className="h-10 text-xs font-medium">
+                    QR Code
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -74,7 +83,9 @@ export default async function CustomersPage() {
                         {customer.email && (
                           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                             <Mail className="h-3 w-3" />
-                            <span className="truncate max-w-[200px]">{customer.email}</span>
+                            <span className="truncate max-w-[200px]">
+                              {customer.email}
+                            </span>
                           </div>
                         )}
                         {customer.phone && (
@@ -84,7 +95,9 @@ export default async function CustomersPage() {
                           </div>
                         )}
                         {!customer.email && !customer.phone && (
-                          <span className="text-xs text-muted-foreground">-</span>
+                          <span className="text-xs text-muted-foreground">
+                            -
+                          </span>
                         )}
                       </div>
                     </TableCell>
@@ -100,7 +113,10 @@ export default async function CustomersPage() {
                     </TableCell>
                     <TableCell className="py-2.5">
                       {customer.qr_code ? (
-                        <Badge variant="secondary" className="text-xs font-mono">
+                        <Badge
+                          variant="secondary"
+                          className="text-xs font-mono"
+                        >
                           {customer.qr_code}
                         </Badge>
                       ) : (

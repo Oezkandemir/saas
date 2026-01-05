@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { routing } from "@/i18n/routing";
 
-import { getSupabaseServer } from "@/lib/supabase-server";
 import { logger } from "@/lib/logger";
+import { getSupabaseServer } from "@/lib/supabase-server";
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
@@ -24,7 +24,9 @@ export async function GET(request: NextRequest) {
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
-        logger.error("Error exchanging code for session", { message: error.message });
+        logger.error("Error exchanging code for session", {
+          message: error.message,
+        });
         return NextResponse.redirect(
           new URL(
             `/${locale}/login?error=${encodeURIComponent(error.message)}`,
@@ -37,10 +39,7 @@ export async function GET(request: NextRequest) {
       if (data.session && data.user) {
         const { createLoginSession } = await import("@/lib/session-tracking");
         const expiresAt = new Date(data.session.expires_at! * 1000);
-        await createLoginSession(
-          data.user.id,
-          expiresAt,
-        );
+        await createLoginSession(data.user.id, expiresAt);
       }
 
       // Redirect to dashboard after successful authentication

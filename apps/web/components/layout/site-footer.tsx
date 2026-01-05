@@ -5,10 +5,10 @@ import { useTranslations } from "next-intl";
 import { footerLinks, siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "@/components/layout/mode-toggle";
-import { SystemStatusLink } from "./system-status-link";
 
 import { NewsletterForm } from "../forms/newsletter-form";
 import { Icons } from "../shared/icons";
+import { SystemStatusLink } from "./system-status-link";
 
 export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
   const t = useTranslations("Footer");

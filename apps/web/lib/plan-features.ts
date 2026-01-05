@@ -1,6 +1,5 @@
-import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { checkPlanLimit, LimitType } from "@/lib/plan-limits";
-
+import { getUserSubscriptionPlan } from "@/lib/subscription";
 
 export interface PlanFeature {
   name: string;
@@ -23,7 +22,9 @@ export interface PlanFeaturesInfo {
 /**
  * Get all features and limits for the current user's plan
  */
-export async function getAllPlanFeatures(userId: string): Promise<PlanFeaturesInfo> {
+export async function getAllPlanFeatures(
+  userId: string,
+): Promise<PlanFeaturesInfo> {
   const subscriptionPlan = await getUserSubscriptionPlan(userId);
   const isPaid = subscriptionPlan.isPaid;
   const planTitle = subscriptionPlan.title;
@@ -44,7 +45,10 @@ export async function getAllPlanFeatures(userId: string): Promise<PlanFeaturesIn
       enabled: true,
       limit: {
         current: customersLimit.current,
-        max: customersLimit.limit === Infinity ? "unlimited" : customersLimit.limit,
+        max:
+          customersLimit.limit === Infinity
+            ? "unlimited"
+            : customersLimit.limit,
         type: "customers",
       },
     },
@@ -66,7 +70,10 @@ export async function getAllPlanFeatures(userId: string): Promise<PlanFeaturesIn
       enabled: true,
       limit: {
         current: documentsLimit.current,
-        max: documentsLimit.limit === Infinity ? "unlimited" : documentsLimit.limit,
+        max:
+          documentsLimit.limit === Infinity
+            ? "unlimited"
+            : documentsLimit.limit,
         type: "documents",
       },
     },
@@ -120,21 +127,3 @@ export async function getAllPlanFeatures(userId: string): Promise<PlanFeaturesIn
     features,
   };
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
+
 import { cn } from "@/lib/utils";
 
 const SegmentedControlRoot = React.forwardRef<
@@ -36,7 +37,7 @@ const SegmentedControlTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       "inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
-      className
+      className,
     )}
     {...props}
   />
@@ -48,4 +49,3 @@ export const SegmentedControl = {
   List: SegmentedControlList,
   Trigger: SegmentedControlTrigger,
 };
-

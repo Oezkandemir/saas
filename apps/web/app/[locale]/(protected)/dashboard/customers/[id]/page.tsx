@@ -1,17 +1,35 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
-import { getCurrentUser } from "@/lib/session";
 import { getCustomer } from "@/actions/customers-actions";
 import { getDocuments, type Document } from "@/actions/documents-actions";
-import { Button } from '@/components/alignui/actions/button';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { EditCustomerDrawer } from "@/components/customers/edit-customer-drawer";
+import {
+  ArrowRight,
+  Building2,
+  Edit,
+  FileText,
+  Mail,
+  MapPin,
+  Phone,
+  Plus,
+  User,
+} from "lucide-react";
+import { getTranslations } from "next-intl/server";
+
+import { getCurrentUser } from "@/lib/session";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import { DeleteCustomerButton } from "@/components/customers/delete-customer-button";
-import Link from "next/link";
-import { Edit, Mail, Phone, Building2, MapPin, FileText, Plus, User, ArrowRight } from "lucide-react";
+import { EditCustomerDrawer } from "@/components/customers/edit-customer-drawer";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { StatusBadge } from "@/components/shared/status-badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +51,9 @@ export default async function CustomerDetailPage({
   const tTypes = await getTranslations("Customers.detail.documents.types");
 
   // Get documents for this customer
-  const customerDocuments: Document[] = await getDocuments(undefined, id).catch(() => []);
+  const customerDocuments: Document[] = await getDocuments(undefined, id).catch(
+    () => [],
+  );
 
   return (
     <UnifiedPageLayout
@@ -94,7 +114,9 @@ export default async function CustomerDetailPage({
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <MapPin className="h-3.5 w-3.5" />
               <span>
-                {[customer.address_line1, customer.postal_code, customer.city].filter(Boolean).join(", ")}
+                {[customer.address_line1, customer.postal_code, customer.city]
+                  .filter(Boolean)
+                  .join(", ")}
               </span>
             </div>
           )}
@@ -109,13 +131,21 @@ export default async function CustomerDetailPage({
               {tDocuments("title", { count: customerDocuments.length })}
             </h2>
             <div className="flex gap-2">
-              <Link href={`/dashboard/documents/new?type=quote&customer_id=${customer.id}`}>
-                <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs">
+              <Link
+                href={`/dashboard/documents/new?type=quote&customer_id=${customer.id}`}
+              >
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 h-8 text-xs"
+                >
                   <Plus className="h-3.5 w-3.5" />
                   {tDocuments("newQuote")}
                 </Button>
               </Link>
-              <Link href={`/dashboard/documents/new?type=invoice&customer_id=${customer.id}`}>
+              <Link
+                href={`/dashboard/documents/new?type=invoice&customer_id=${customer.id}`}
+              >
                 <Button size="sm" className="gap-1.5 h-8 text-xs">
                   <Plus className="h-3.5 w-3.5" />
                   {tDocuments("newInvoice")}
@@ -128,12 +158,24 @@ export default async function CustomerDetailPage({
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/30">
-                  <TableHead className="h-9 text-xs font-medium">{tTable("number")}</TableHead>
-                  <TableHead className="h-9 text-xs font-medium">{tTable("type")}</TableHead>
-                  <TableHead className="h-9 text-xs font-medium">{tTable("date")}</TableHead>
-                  <TableHead className="h-9 text-xs font-medium">{tTable("status")}</TableHead>
-                  <TableHead className="h-9 text-xs font-medium text-right">{tTable("amount")}</TableHead>
-                  <TableHead className="h-9 text-xs font-medium text-right">{tTable("actions")}</TableHead>
+                  <TableHead className="h-9 text-xs font-medium">
+                    {tTable("number")}
+                  </TableHead>
+                  <TableHead className="h-9 text-xs font-medium">
+                    {tTable("type")}
+                  </TableHead>
+                  <TableHead className="h-9 text-xs font-medium">
+                    {tTable("date")}
+                  </TableHead>
+                  <TableHead className="h-9 text-xs font-medium">
+                    {tTable("status")}
+                  </TableHead>
+                  <TableHead className="h-9 text-xs font-medium text-right">
+                    {tTable("amount")}
+                  </TableHead>
+                  <TableHead className="h-9 text-xs font-medium text-right">
+                    {tTable("actions")}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -148,8 +190,13 @@ export default async function CustomerDetailPage({
                       </Link>
                     </TableCell>
                     <TableCell className="py-3">
-                      <Badge variant={doc.type === "quote" ? "secondary" : "default"} className="text-xs">
-                        {doc.type === "quote" ? tTypes("quote") : tTypes("invoice")}
+                      <Badge
+                        variant={doc.type === "quote" ? "secondary" : "default"}
+                        className="text-xs"
+                      >
+                        {doc.type === "quote"
+                          ? tTypes("quote")
+                          : tTypes("invoice")}
                       </Badge>
                     </TableCell>
                     <TableCell className="py-3 text-xs text-muted-foreground">
@@ -166,7 +213,11 @@ export default async function CustomerDetailPage({
                     </TableCell>
                     <TableCell className="py-3 text-right">
                       <Link href={`/dashboard/documents/${doc.id}`}>
-                        <Button variant="ghost" size="sm" className="h-7 text-xs">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 text-xs"
+                        >
                           {tTable("open")}
                           <ArrowRight className="ml-1 h-3 w-3" />
                         </Button>
@@ -181,15 +232,25 @@ export default async function CustomerDetailPage({
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <FileText className="h-8 w-8 text-muted-foreground mb-3 opacity-50" />
-          <h3 className="text-sm font-semibold mb-1">{tDocuments("empty.title")}</h3>
+          <h3 className="text-sm font-semibold mb-1">
+            {tDocuments("empty.title")}
+          </h3>
           <div className="flex gap-2 mt-4">
-            <Link href={`/dashboard/documents/new?type=quote&customer_id=${customer.id}`}>
-              <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs">
+            <Link
+              href={`/dashboard/documents/new?type=quote&customer_id=${customer.id}`}
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 h-8 text-xs"
+              >
                 <Plus className="h-3.5 w-3.5" />
                 {tDocuments("newQuote")}
               </Button>
             </Link>
-            <Link href={`/dashboard/documents/new?type=invoice&customer_id=${customer.id}`}>
+            <Link
+              href={`/dashboard/documents/new?type=invoice&customer_id=${customer.id}`}
+            >
               <Button size="sm" className="gap-1.5 h-8 text-xs">
                 <Plus className="h-3.5 w-3.5" />
                 {tDocuments("newInvoice")}
@@ -201,4 +262,3 @@ export default async function CustomerDetailPage({
     </UnifiedPageLayout>
   );
 }
-

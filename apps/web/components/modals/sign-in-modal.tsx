@@ -9,11 +9,11 @@ import {
 } from "react";
 
 import { siteConfig } from "@/config/site";
-import { Modal } from "@/components/ui/modal";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { DialogDescription } from "@/components/ui/dialog";
+import { Modal } from "@/components/ui/modal";
 import { UserAuthForm } from "@/components/forms/user-auth-form";
 import { Icons } from "@/components/shared/icons";
-import { useMediaQuery } from "@/hooks/use-media-query";
 
 function SignInModal({
   showSignInModal,

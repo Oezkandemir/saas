@@ -1,13 +1,20 @@
 import Link from "next/link";
 import { getUserTickets } from "@/actions/support-ticket-actions";
-import { Plus, HelpCircle, Mail, MessageCircle, Phone, ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  HelpCircle,
+  Mail,
+  MessageCircle,
+  Phone,
+  Plus,
+} from "lucide-react";
 import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { siteConfig } from "@/config/site";
 import { constructMetadata } from "@/lib/utils";
-import { Button } from '@/components/alignui/actions/button';
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/alignui/actions/button";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { UserTicketAccordion } from "@/components/support/user-ticket-accordion";
 
@@ -18,8 +25,10 @@ export async function generateMetadata() {
   setRequestLocale(locale);
 
   return constructMetadata({
-    title: "Support Center - Get Help & Submit Tickets | Professional Customer Support",
-    description: "Access our comprehensive support center. Submit tickets, get instant help, browse FAQs, and connect with our expert support team. Fast response times guaranteed.",
+    title:
+      "Support Center - Get Help & Submit Tickets | Professional Customer Support",
+    description:
+      "Access our comprehensive support center. Submit tickets, get instant help, browse FAQs, and connect with our expert support team. Fast response times guaranteed.",
   });
 }
 
@@ -29,13 +38,16 @@ export default async function SupportPage() {
   const tickets = ticketsResult.success ? ticketsResult.data || [] : [];
 
   // Calculate ticket stats
-  const openTickets = tickets.filter(t => t.status === 'open').length;
-  const inProgressTickets = tickets.filter(t => t.status === 'in_progress').length;
+  const openTickets = tickets.filter((t) => t.status === "open").length;
+  const inProgressTickets = tickets.filter(
+    (t) => t.status === "in_progress",
+  ).length;
 
   // Contextual description with ticket counts
-  const description = tickets.length > 0 
-    ? `${tickets.length} tickets • ${openTickets} open • ${inProgressTickets} in progress`
-    : "Get expert help when you need it. Our support team is here to assist you with any questions or issues.";
+  const description =
+    tickets.length > 0
+      ? `${tickets.length} tickets • ${openTickets} open • ${inProgressTickets} in progress`
+      : "Get expert help when you need it. Our support team is here to assist you with any questions or issues.";
 
   return (
     <UnifiedPageLayout
@@ -55,9 +67,15 @@ export default async function SupportPage() {
     >
       <Tabs defaultValue="tickets" className="w-full">
         <TabsList className="w-full sm:w-auto">
-          <TabsTrigger value="tickets" className="flex-1 sm:flex-none">My Tickets</TabsTrigger>
-          <TabsTrigger value="contact" className="flex-1 sm:flex-none">Contact</TabsTrigger>
-          <TabsTrigger value="faq" className="flex-1 sm:flex-none">FAQ</TabsTrigger>
+          <TabsTrigger value="tickets" className="flex-1 sm:flex-none">
+            My Tickets
+          </TabsTrigger>
+          <TabsTrigger value="contact" className="flex-1 sm:flex-none">
+            Contact
+          </TabsTrigger>
+          <TabsTrigger value="faq" className="flex-1 sm:flex-none">
+            FAQ
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="tickets" className="mt-6">
@@ -66,9 +84,12 @@ export default async function SupportPage() {
               <div className="flex size-12 items-center justify-center rounded-full bg-muted/50 border border-border mb-3">
                 <HelpCircle className="size-6 text-muted-foreground" />
               </div>
-              <h3 className="mb-1 text-base font-semibold">No Support Tickets Yet</h3>
+              <h3 className="mb-1 text-base font-semibold">
+                No Support Tickets Yet
+              </h3>
               <p className="mb-6 text-center text-sm text-muted-foreground max-w-md">
-                Need help? Our support team is ready to assist you. Create your first ticket and we'll respond within 2-4 hours.
+                Need help? Our support team is ready to assist you. Create your
+                first ticket and we'll respond within 2-4 hours.
               </p>
               <Link href="/dashboard/support/new">
                 <Button size="sm" className="gap-2">
@@ -146,7 +167,10 @@ export default async function SupportPage() {
                   How do I upgrade my subscription plan?
                 </h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Navigate to Settings → Billing, select your desired plan, and complete the payment process. Your upgrade takes effect immediately, and you'll have access to all premium features right away. No downtime required.
+                  Navigate to Settings → Billing, select your desired plan, and
+                  complete the payment process. Your upgrade takes effect
+                  immediately, and you'll have access to all premium features
+                  right away. No downtime required.
                 </p>
               </div>
               <Separator />
@@ -155,7 +179,11 @@ export default async function SupportPage() {
                   Can I cancel my subscription anytime?
                 </h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Yes, you can cancel anytime without penalties. Your subscription remains active until the end of your billing period. Go to Settings → Billing → Manage Subscription to cancel. All your data is preserved for 30 days after cancellation.
+                  Yes, you can cancel anytime without penalties. Your
+                  subscription remains active until the end of your billing
+                  period. Go to Settings → Billing → Manage Subscription to
+                  cancel. All your data is preserved for 30 days after
+                  cancellation.
                 </p>
               </div>
               <Separator />
@@ -164,7 +192,9 @@ export default async function SupportPage() {
                   What payment methods do you accept?
                 </h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  We accept all major credit cards (Visa, Mastercard, American Express), PayPal, and bank transfers for enterprise plans. All payments are processed securely through Stripe.
+                  We accept all major credit cards (Visa, Mastercard, American
+                  Express), PayPal, and bank transfers for enterprise plans. All
+                  payments are processed securely through Stripe.
                 </p>
               </div>
             </TabsContent>
@@ -174,7 +204,9 @@ export default async function SupportPage() {
                   How do I reset my password?
                 </h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Click "Forgot Password" on the login page, enter your email address, and follow the instructions sent to your inbox. Password reset links expire after 1 hour for security reasons.
+                  Click "Forgot Password" on the login page, enter your email
+                  address, and follow the instructions sent to your inbox.
+                  Password reset links expire after 1 hour for security reasons.
                 </p>
               </div>
               <Separator />
@@ -183,7 +215,9 @@ export default async function SupportPage() {
                   How do I update my profile information?
                 </h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Go to Settings → Profile to update your name, email, avatar, and other personal details. Changes are saved automatically and sync across all your devices instantly.
+                  Go to Settings → Profile to update your name, email, avatar,
+                  and other personal details. Changes are saved automatically
+                  and sync across all your devices instantly.
                 </p>
               </div>
               <Separator />
@@ -192,7 +226,9 @@ export default async function SupportPage() {
                   Can I use the same account on multiple devices?
                 </h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Yes! Your account works seamlessly across all devices. Log in from your computer, tablet, or phone - your data stays synced in real-time across all platforms.
+                  Yes! Your account works seamlessly across all devices. Log in
+                  from your computer, tablet, or phone - your data stays synced
+                  in real-time across all platforms.
                 </p>
               </div>
             </TabsContent>
@@ -202,7 +238,11 @@ export default async function SupportPage() {
                   What features are included in my plan?
                 </h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Each plan includes document management, QR code generation, customer tracking, and analytics. Premium plans add unlimited storage, priority support, API access, and advanced customization options. Check our pricing page for detailed comparisons.
+                  Each plan includes document management, QR code generation,
+                  customer tracking, and analytics. Premium plans add unlimited
+                  storage, priority support, API access, and advanced
+                  customization options. Check our pricing page for detailed
+                  comparisons.
                 </p>
               </div>
               <Separator />
@@ -211,7 +251,10 @@ export default async function SupportPage() {
                   Do you offer API access?
                 </h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Yes, API access is available on Business and Enterprise plans. Our REST API includes comprehensive documentation, SDKs for popular languages, and webhook support for real-time integrations. Rate limits vary by plan.
+                  Yes, API access is available on Business and Enterprise plans.
+                  Our REST API includes comprehensive documentation, SDKs for
+                  popular languages, and webhook support for real-time
+                  integrations. Rate limits vary by plan.
                 </p>
               </div>
               <Separator />
@@ -220,7 +263,10 @@ export default async function SupportPage() {
                   Is there a mobile app available?
                 </h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Our platform is fully responsive and works beautifully on mobile browsers. Native iOS and Android apps are currently in development and will be launched in Q2 2025 with offline capabilities.
+                  Our platform is fully responsive and works beautifully on
+                  mobile browsers. Native iOS and Android apps are currently in
+                  development and will be launched in Q2 2025 with offline
+                  capabilities.
                 </p>
               </div>
             </TabsContent>
@@ -230,4 +276,3 @@ export default async function SupportPage() {
     </UnifiedPageLayout>
   );
 }
-

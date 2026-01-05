@@ -1,24 +1,23 @@
-import { redirect, notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { formatDistance } from "date-fns";
-import {
-  Calendar,
-  Mail,
-  Shield,
-  User,
-} from "lucide-react";
+import { Calendar, Mail, Shield, User } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { constructMetadata } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/alignui/data-display/avatar";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
+} from "@/components/alignui/data-display/card";
 import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
 
 interface UserProfilePageProps {
@@ -30,11 +29,11 @@ interface UserProfilePageProps {
 
 async function getUserProfile(userId: string) {
   const supabase = await createClient();
-  
+
   const { data: user, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', userId)
+    .from("users")
+    .select("*")
+    .eq("id", userId)
     .single();
 
   if (error || !user) {
@@ -55,7 +54,9 @@ export async function generateMetadata({ params }: UserProfilePageProps) {
   });
 }
 
-export default async function UserProfilePage({ params }: UserProfilePageProps) {
+export default async function UserProfilePage({
+  params,
+}: UserProfilePageProps) {
   const { userId } = await params;
   const currentUser = await getCurrentUser();
   const t = await getTranslations("Profile");
@@ -70,7 +71,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
   }
 
   const user = await getUserProfile(userId);
-  
+
   if (!user) {
     notFound();
   }
@@ -105,14 +106,14 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
               </CardDescription>
             </div>
           </CardHeader>
-          
+
           <CardContent className="space-y-4">
             {/* User Info */}
             <div className="space-y-1">
               <p className="text-sm font-medium text-muted-foreground">
                 {t("accountInfo")}
               </p>
-              
+
               <div className="flex justify-between items-center">
                 <span className="flex gap-1 items-center text-sm">
                   <Calendar className="size-3" />
@@ -127,7 +128,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                 </span>
               </div>
 
-              {user.role === 'ADMIN' && (
+              {user.role === "ADMIN" && (
                 <div className="flex justify-between items-center">
                   <span className="flex gap-1 items-center text-sm">
                     <Shield className="size-3" />
@@ -158,11 +159,9 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
               <User className="size-5" />
               About {user.name || user.email}
             </CardTitle>
-            <CardDescription>
-              User information and activity
-            </CardDescription>
+            <CardDescription>User information and activity</CardDescription>
           </CardHeader>
-          
+
           <CardContent className="space-y-6">
             {/* Basic Info */}
             <div className="grid gap-4 md:grid-cols-2">
@@ -175,7 +174,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                   {user.email}
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <h4 className="text-sm font-medium text-muted-foreground">
                   Account Details
@@ -184,7 +183,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                   <div className="flex justify-between">
                     <span>Account Type:</span>
                     <span className="font-medium">
-                      {user.role === 'ADMIN' ? 'Administrator' : 'User'}
+                      {user.role === "ADMIN" ? "Administrator" : "User"}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -213,4 +212,4 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
       </div>
     </>
   );
-} 
+}

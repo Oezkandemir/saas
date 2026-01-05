@@ -1,7 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
-import { Database } from "./supabase";
 import { logger } from "@/lib/logger";
+
+import { Database } from "./supabase";
 
 // Create a client-safe Supabase client function
 // This uses the anon key which is safe for client-side usage

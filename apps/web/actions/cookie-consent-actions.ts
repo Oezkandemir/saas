@@ -1,8 +1,9 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+
 import { logger } from "@/lib/logger";
+import { createClient } from "@/lib/supabase/server";
 
 export interface CookieConsentData {
   necessary: boolean;
@@ -21,10 +22,13 @@ export interface CookieConsentData {
 export async function saveCookieConsent(consent: CookieConsentData) {
   try {
     const supabase = await createClient();
-    
+
     // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user) {
       // For non-authenticated users, store in localStorage only
       return { success: true, message: "Consent saved locally" };
@@ -70,7 +74,8 @@ export async function saveCookieConsent(consent: CookieConsentData) {
     logger.error("Error saving cookie consent:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to save consent",
+      message:
+        error instanceof Error ? error.message : "Failed to save consent",
     };
   }
 }
@@ -82,9 +87,12 @@ export async function saveCookieConsent(consent: CookieConsentData) {
 export async function getCookieConsent() {
   try {
     const supabase = await createClient();
-    
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user) {
       return { success: true, data: null };
     }
@@ -120,9 +128,12 @@ export async function getCookieConsent() {
 export async function withdrawCookieConsent() {
   try {
     const supabase = await createClient();
-    
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user) {
       return { success: false, message: "User not authenticated" };
     }
@@ -144,8 +155,8 @@ export async function withdrawCookieConsent() {
     logger.error("Error withdrawing cookie consent:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to withdraw consent",
+      message:
+        error instanceof Error ? error.message : "Failed to withdraw consent",
     };
   }
 }
-

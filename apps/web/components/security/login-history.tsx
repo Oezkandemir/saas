@@ -1,20 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { CheckCircle2, XCircle, MapPin, Calendar, Shield } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  getLoginHistory,
+  type LoginHistoryEntry,
+} from "@/actions/security-actions";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
+import { Calendar, CheckCircle2, MapPin, Shield, XCircle } from "lucide-react";
 
+import { logger } from "@/lib/logger";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { getLoginHistory, type LoginHistoryEntry } from "@/actions/security-actions";
-import { logger } from "@/lib/logger";
+} from "@/components/alignui/data-display/card";
 
 export function LoginHistory() {
   const [history, setHistory] = useState<LoginHistoryEntry[]>([]);
@@ -104,7 +107,9 @@ export function LoginHistory() {
                 <div className="flex-1 min-w-0 space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-medium break-words">
-                      {entry.success ? "Erfolgreicher Login" : "Fehlgeschlagener Login"}
+                      {entry.success
+                        ? "Erfolgreicher Login"
+                        : "Fehlgeschlagener Login"}
                     </span>
                     {entry.twoFactorUsed && (
                       <Badge variant="outline" className="text-xs shrink-0">
@@ -116,12 +121,16 @@ export function LoginHistory() {
                   <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1 shrink-0">
                       <MapPin className="size-3" />
-                      <span className="break-words">{getLocationInfo(entry)}</span>
+                      <span className="break-words">
+                        {getLocationInfo(entry)}
+                      </span>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                       <Calendar className="size-3" />
                       <span className="break-words">
-                        {format(new Date(entry.createdAt), "PPp", { locale: de })}
+                        {format(new Date(entry.createdAt), "PPp", {
+                          locale: de,
+                        })}
                       </span>
                     </div>
                     {entry.userAgent && (
@@ -144,4 +153,3 @@ export function LoginHistory() {
     </Card>
   );
 }
-

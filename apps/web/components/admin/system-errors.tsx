@@ -1,34 +1,40 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { AlertCircle, CheckCircle2, XCircle, Info, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  deleteAllErrors,
+  getRecentErrors,
+  resolveError,
+  type SystemErrorRecord,
+} from "@/actions/system-monitoring-actions";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Info,
+  Loader2,
+  XCircle,
+} from "lucide-react";
 
+import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/use-toast";
+import { Button, buttonVariants } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Button, buttonVariants } from '@/components/alignui/actions/button';
-import { cn } from '@/lib/utils';
+} from "@/components/alignui/data-display/card";
 import {
-  getRecentErrors,
-  resolveError,
-  deleteAllErrors,
-  type SystemErrorRecord,
-} from "@/actions/system-monitoring-actions";
-import { useToast } from "@/components/ui/use-toast";
-import {
-  AlertDialogRoot,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogRoot,
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/alignui/overlays/alert-dialog";
@@ -170,7 +176,9 @@ export function SystemErrors() {
   }
 
   const unresolvedErrors = errors.filter((e) => !e.resolved);
-  const criticalErrors = unresolvedErrors.filter((e) => e.errorType === "critical");
+  const criticalErrors = unresolvedErrors.filter(
+    (e) => e.errorType === "critical",
+  );
 
   return (
     <div className="space-y-6">
@@ -181,43 +189,39 @@ export function SystemErrors() {
           </h4>
         </div>
         {errors.length > 0 && (
-            <AlertDialogRoot>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  disabled={isDeletingAll}
+          <AlertDialogRoot>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm" disabled={isDeletingAll}>
+                {isDeletingAll ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    Löschen...
+                  </>
+                ) : (
+                  "Alle löschen"
+                )}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Alle Systemfehler löschen?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Diese Aktion löscht alle Systemfehler permanent aus der
+                  Datenbank. Diese Aktion kann nicht rückgängig gemacht werden.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteAll}
+                  className={cn(buttonVariants({ variant: "destructive" }))}
                 >
-                  {isDeletingAll ? (
-                    <>
-                      <Loader2 className="mr-2 size-4 animate-spin" />
-                      Löschen...
-                    </>
-                  ) : (
-                    "Alle löschen"
-                  )}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Alle Systemfehler löschen?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Diese Aktion löscht alle Systemfehler permanent aus der Datenbank. 
-                    Diese Aktion kann nicht rückgängig gemacht werden.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDeleteAll}
-                    className={cn(buttonVariants({ variant: "destructive" }))}
-                  >
-                    Alle löschen
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialogRoot>
-          )}
+                  Alle löschen
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogRoot>
+        )}
       </div>
       <div className="space-y-4">
         {/* Summary */}
@@ -315,10 +319,13 @@ export function SystemErrors() {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Fehler als behoben markieren?</AlertDialogTitle>
+                        <AlertDialogTitle>
+                          Fehler als behoben markieren?
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
-                          Dieser Fehler wird als behoben markiert. Sie können ihn später
-                          wieder öffnen, falls das Problem erneut auftritt.
+                          Dieser Fehler wird als behoben markiert. Sie können
+                          ihn später wieder öffnen, falls das Problem erneut
+                          auftritt.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -340,8 +347,3 @@ export function SystemErrors() {
     </div>
   );
 }
-
-
-
-
-

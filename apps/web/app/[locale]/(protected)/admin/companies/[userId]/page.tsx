@@ -1,21 +1,18 @@
-import { redirect } from "next/navigation";
-import { Building2, Users, FileText, DollarSign, ArrowLeft, Mail } from "lucide-react";
-import { getLocale, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getCompanyProfileDetails } from "@/actions/admin-company-profiles-actions";
+import {
+  ArrowLeft,
+  Building2,
+  DollarSign,
+  FileText,
+  Mail,
+  Users,
+} from "lucide-react";
+import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { getCompanyProfileDetails } from "@/actions/admin-company-profiles-actions";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/alignui/data-display/card';
-import { Button } from '@/components/alignui/actions/button';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import {
   Table,
   TableBody,
@@ -24,6 +21,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -85,7 +92,13 @@ export default async function CompanyProfileDetailsPage(props: Props) {
     );
   }
 
-  const { user: userData, companyProfile, statistics, customers, invoices } = result.data;
+  const {
+    user: userData,
+    companyProfile,
+    statistics,
+    customers,
+    invoices,
+  } = result.data;
 
   // Calculate total invoice amount (all invoices, not just paid)
   const totalInvoiceAmount = invoices.reduce((sum, inv) => sum + inv.total, 0);
@@ -123,11 +136,15 @@ export default async function CompanyProfileDetailsPage(props: Props) {
       <div className="grid gap-4 md:grid-cols-3">
         <div>
           <div className="text-sm text-muted-foreground mb-1">Kunden</div>
-          <div className="text-2xl font-semibold">{statistics.customerCount}</div>
+          <div className="text-2xl font-semibold">
+            {statistics.customerCount}
+          </div>
         </div>
         <div>
           <div className="text-sm text-muted-foreground mb-1">Rechnungen</div>
-          <div className="text-2xl font-semibold">{statistics.invoiceCount}</div>
+          <div className="text-2xl font-semibold">
+            {statistics.invoiceCount}
+          </div>
         </div>
         <div>
           <div className="text-sm text-muted-foreground mb-1">Angebote</div>
@@ -154,11 +171,13 @@ export default async function CompanyProfileDetailsPage(props: Props) {
                   {companyProfile.company_address_line2 && (
                     <div>{companyProfile.company_address_line2}</div>
                   )}
-                  {companyProfile.company_postal_code && companyProfile.company_city && (
-                    <div>
-                      {companyProfile.company_postal_code} {companyProfile.company_city}
-                    </div>
-                  )}
+                  {companyProfile.company_postal_code &&
+                    companyProfile.company_city && (
+                      <div>
+                        {companyProfile.company_postal_code}{" "}
+                        {companyProfile.company_city}
+                      </div>
+                    )}
                   {companyProfile.company_country && (
                     <div>{companyProfile.company_country}</div>
                   )}
@@ -172,7 +191,9 @@ export default async function CompanyProfileDetailsPage(props: Props) {
             {companyProfile.company_phone && (
               <div>
                 <div className="text-sm text-muted-foreground">Telefon</div>
-                <div className="font-medium">{companyProfile.company_phone}</div>
+                <div className="font-medium">
+                  {companyProfile.company_phone}
+                </div>
               </div>
             )}
             {companyProfile.company_website && (
@@ -201,19 +222,29 @@ export default async function CompanyProfileDetailsPage(props: Props) {
             {companyProfile.company_vat_id && (
               <div>
                 <div className="text-sm text-muted-foreground">USt-IdNr.</div>
-                <div className="font-medium">{companyProfile.company_vat_id}</div>
+                <div className="font-medium">
+                  {companyProfile.company_vat_id}
+                </div>
               </div>
             )}
             {companyProfile.company_tax_id && (
               <div>
-                <div className="text-sm text-muted-foreground">Steuernummer</div>
-                <div className="font-medium">{companyProfile.company_tax_id}</div>
+                <div className="text-sm text-muted-foreground">
+                  Steuernummer
+                </div>
+                <div className="font-medium">
+                  {companyProfile.company_tax_id}
+                </div>
               </div>
             )}
             {companyProfile.company_registration_number && (
               <div>
-                <div className="text-sm text-muted-foreground">Handelsregisternummer</div>
-                <div className="font-medium">{companyProfile.company_registration_number}</div>
+                <div className="text-sm text-muted-foreground">
+                  Handelsregisternummer
+                </div>
+                <div className="font-medium">
+                  {companyProfile.company_registration_number}
+                </div>
               </div>
             )}
             {companyProfile.iban && (
@@ -253,19 +284,25 @@ export default async function CompanyProfileDetailsPage(props: Props) {
                 <Users className="h-4 w-4 text-muted-foreground" />
                 <div className="text-sm text-muted-foreground">Kunden</div>
               </div>
-              <div className="text-2xl font-semibold">{statistics.customerCount}</div>
+              <div className="text-2xl font-semibold">
+                {statistics.customerCount}
+              </div>
             </div>
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <FileText className="h-4 w-4 text-muted-foreground" />
                 <div className="text-sm text-muted-foreground">Rechnungen</div>
               </div>
-              <div className="text-2xl font-semibold">{statistics.invoiceCount}</div>
+              <div className="text-2xl font-semibold">
+                {statistics.invoiceCount}
+              </div>
               <div className="text-xs text-muted-foreground mt-1">
-                {statistics.paidInvoices} bezahlt, {statistics.unpaidInvoices} offen
+                {statistics.paidInvoices} bezahlt, {statistics.unpaidInvoices}{" "}
+                offen
               </div>
               <div className="text-sm font-medium mt-1">
-                €{totalInvoiceAmount.toLocaleString(locale, {
+                €
+                {totalInvoiceAmount.toLocaleString(locale, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
@@ -276,9 +313,12 @@ export default async function CompanyProfileDetailsPage(props: Props) {
                 <FileText className="h-4 w-4 text-muted-foreground" />
                 <div className="text-sm text-muted-foreground">Angebote</div>
               </div>
-              <div className="text-2xl font-semibold">{statistics.quoteCount}</div>
+              <div className="text-2xl font-semibold">
+                {statistics.quoteCount}
+              </div>
               <div className="text-xs text-muted-foreground mt-1">
-                {statistics.acceptedQuotes} angenommen, {statistics.declinedQuotes} abgelehnt
+                {statistics.acceptedQuotes} angenommen,{" "}
+                {statistics.declinedQuotes} abgelehnt
               </div>
             </div>
             <div>
@@ -287,7 +327,8 @@ export default async function CompanyProfileDetailsPage(props: Props) {
                 <div className="text-sm text-muted-foreground">Umsatz</div>
               </div>
               <div className="text-2xl font-semibold">
-                €{statistics.totalRevenue.toLocaleString(locale, {
+                €
+                {statistics.totalRevenue.toLocaleString(locale, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
@@ -301,9 +342,7 @@ export default async function CompanyProfileDetailsPage(props: Props) {
       <Card>
         <CardHeader>
           <CardTitle>Kundenliste</CardTitle>
-          <CardDescription>
-            Alle Kunden dieses Firmenprofils
-          </CardDescription>
+          <CardDescription>Alle Kunden dieses Firmenprofils</CardDescription>
         </CardHeader>
         <CardContent>
           {customers.length === 0 ? (
@@ -331,11 +370,15 @@ export default async function CompanyProfileDetailsPage(props: Props) {
                         {customer.email && (
                           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                             <Mail className="h-3 w-3" />
-                            <span className="truncate max-w-[200px]">{customer.email}</span>
+                            <span className="truncate max-w-[200px]">
+                              {customer.email}
+                            </span>
                           </div>
                         )}
                         {!customer.email && (
-                          <span className="text-xs text-muted-foreground">-</span>
+                          <span className="text-xs text-muted-foreground">
+                            -
+                          </span>
                         )}
                       </div>
                     </TableCell>
@@ -380,7 +423,9 @@ export default async function CompanyProfileDetailsPage(props: Props) {
               <Badge variant="outline">{userData.role}</Badge>
             </div>
             <div>
-              <div className="text-sm text-muted-foreground">Registriert am</div>
+              <div className="text-sm text-muted-foreground">
+                Registriert am
+              </div>
               <div className="font-medium">
                 {new Date(userData.created_at).toLocaleDateString(locale)}
               </div>
@@ -391,4 +436,3 @@ export default async function CompanyProfileDetailsPage(props: Props) {
     </UnifiedPageLayout>
   );
 }
-

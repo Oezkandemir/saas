@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/session";
 import { getDocument } from "@/actions/documents-actions";
+
 import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,10 @@ export async function GET(
     const document = await getDocument(id);
 
     if (!document) {
-      return NextResponse.json({ error: "Document not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Document not found" },
+        { status: 404 },
+      );
     }
 
     if (!document.pdf_url) {
@@ -35,7 +39,7 @@ export async function GET(
     try {
       pdfResponse = await fetch(document.pdf_url, {
         headers: {
-          "Accept": "application/pdf",
+          Accept: "application/pdf",
         },
       });
     } catch (fetchError) {
@@ -45,14 +49,16 @@ export async function GET(
         { status: 500 },
       );
     }
-    
+
     if (!pdfResponse.ok) {
       logger.error("PDF fetch failed", {
         status: pdfResponse.status,
         statusText: pdfResponse.statusText,
       });
       return NextResponse.json(
-        { error: `Failed to fetch PDF: ${pdfResponse.status} ${pdfResponse.statusText}` },
+        {
+          error: `Failed to fetch PDF: ${pdfResponse.status} ${pdfResponse.statusText}`,
+        },
         { status: pdfResponse.status },
       );
     }
@@ -95,10 +101,6 @@ export async function GET(
     });
   } catch (error) {
     logger.error("Error proxying PDF:", error);
-    return NextResponse.json(
-      { error: "Failed to load PDF" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Failed to load PDF" }, { status: 500 });
   }
 }
-

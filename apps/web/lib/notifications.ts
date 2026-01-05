@@ -3,8 +3,8 @@
  * Provides helper functions for creating notifications throughout the application
  */
 
-import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
+import { createClient } from "@/lib/supabase/server";
 
 export type NotificationType =
   | "WELCOME"
@@ -85,7 +85,7 @@ export interface TeamInvitationNotificationParams {
  * Create a notification using the database function
  */
 export async function createNotification(
-  params: CreateNotificationParams
+  params: CreateNotificationParams,
 ): Promise<string | null> {
   try {
     const supabase = await createClient();
@@ -102,7 +102,11 @@ export async function createNotification(
       let errorObj: Error;
       if (error instanceof Error) {
         errorObj = error;
-      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+      } else if (
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error
+      ) {
         errorObj = new Error(String((error as { message: unknown }).message));
       } else {
         errorObj = new Error(String(error));
@@ -113,11 +117,12 @@ export async function createNotification(
 
     return data;
   } catch (error) {
-    const errorObj = error instanceof Error 
-      ? error 
-      : error && typeof error === 'object' && 'message' in error
-        ? new Error(String(error.message))
-        : new Error(String(error || 'Unknown error'));
+    const errorObj =
+      error instanceof Error
+        ? error
+        : error && typeof error === "object" && "message" in error
+          ? new Error(String(error.message))
+          : new Error(String(error || "Unknown error"));
     logger.error("Failed to create notification", errorObj);
     return null;
   }
@@ -127,7 +132,7 @@ export async function createNotification(
  * Create a document notification
  */
 export async function createDocumentNotification(
-  params: DocumentNotificationParams
+  params: DocumentNotificationParams,
 ): Promise<string | null> {
   try {
     const supabase = await createClient();
@@ -142,18 +147,24 @@ export async function createDocumentNotification(
     if (error) {
       // Only log as warning if it's a non-critical error (e.g., RPC function doesn't exist)
       // Don't log as error if it's just a missing function or permission issue
-      if (error.code === '42883' || error.code === 'P0001') {
-        logger.warn("Document notification function not available", { 
+      if (error.code === "42883" || error.code === "P0001") {
+        logger.warn("Document notification function not available", {
           code: error.code,
-          message: error.message || String(error)
+          message: error.message || String(error),
         });
       } else {
         // Extract error details properly
         let errorDetails: Error;
         if (error instanceof Error) {
           errorDetails = error;
-        } else if (typeof error === 'object' && error !== null && 'message' in error) {
-          errorDetails = new Error(String((error as { message: unknown }).message));
+        } else if (
+          typeof error === "object" &&
+          error !== null &&
+          "message" in error
+        ) {
+          errorDetails = new Error(
+            String((error as { message: unknown }).message),
+          );
         } else {
           errorDetails = new Error(String(error));
         }
@@ -165,10 +176,18 @@ export async function createDocumentNotification(
     return data;
   } catch (error) {
     // Only log unexpected errors, not expected failures
-    if (error instanceof Error && !error.message.includes('RPC')) {
+    if (error instanceof Error && !error.message.includes("RPC")) {
       logger.error("Failed to create document notification", error);
-    } else if (error && typeof error === 'object' && 'message' in error && !String(error.message).includes('RPC')) {
-      const errorObj = error instanceof Error ? error : new Error(String(error.message || error));
+    } else if (
+      error &&
+      typeof error === "object" &&
+      "message" in error &&
+      !String(error.message).includes("RPC")
+    ) {
+      const errorObj =
+        error instanceof Error
+          ? error
+          : new Error(String(error.message || error));
       logger.error("Failed to create document notification", errorObj);
     }
     return null;
@@ -179,7 +198,7 @@ export async function createDocumentNotification(
  * Create a customer notification
  */
 export async function createCustomerNotification(
-  params: CustomerNotificationParams
+  params: CustomerNotificationParams,
 ): Promise<string | null> {
   try {
     const supabase = await createClient();
@@ -193,17 +212,23 @@ export async function createCustomerNotification(
     if (error) {
       // Only log as warning if it's a non-critical error (e.g., RPC function doesn't exist)
       // Don't log as error if it's just a missing function or permission issue
-      if (error.code === '42883' || error.code === 'P0001') {
-        logger.warn("Customer notification function not available", { 
+      if (error.code === "42883" || error.code === "P0001") {
+        logger.warn("Customer notification function not available", {
           code: error.code,
-          message: error.message || String(error)
+          message: error.message || String(error),
         });
       } else {
         let errorDetails: Error;
         if (error instanceof Error) {
           errorDetails = error;
-        } else if (typeof error === 'object' && error !== null && 'message' in error) {
-          errorDetails = new Error(String((error as { message: unknown }).message));
+        } else if (
+          typeof error === "object" &&
+          error !== null &&
+          "message" in error
+        ) {
+          errorDetails = new Error(
+            String((error as { message: unknown }).message),
+          );
         } else {
           errorDetails = new Error(String(error));
         }
@@ -215,10 +240,18 @@ export async function createCustomerNotification(
     return data;
   } catch (error) {
     // Only log unexpected errors, not expected failures
-    if (error instanceof Error && !error.message.includes('RPC')) {
+    if (error instanceof Error && !error.message.includes("RPC")) {
       logger.error("Failed to create customer notification", error);
-    } else if (error && typeof error === 'object' && 'message' in error && !String(error.message).includes('RPC')) {
-      const errorObj = error instanceof Error ? error : new Error(String(error.message || error));
+    } else if (
+      error &&
+      typeof error === "object" &&
+      "message" in error &&
+      !String(error.message).includes("RPC")
+    ) {
+      const errorObj =
+        error instanceof Error
+          ? error
+          : new Error(String(error.message || error));
       logger.error("Failed to create customer notification", errorObj);
     }
     return null;
@@ -229,7 +262,7 @@ export async function createCustomerNotification(
  * Create a subscription notification
  */
 export async function createSubscriptionNotification(
-  params: SubscriptionNotificationParams
+  params: SubscriptionNotificationParams,
 ): Promise<string | null> {
   try {
     const supabase = await createClient();
@@ -240,14 +273,18 @@ export async function createSubscriptionNotification(
         p_action: params.action,
         p_plan_name: params.planName || null,
         p_details: params.details || null,
-      }
+      },
     );
 
     if (error) {
       let errorObj: Error;
       if (error instanceof Error) {
         errorObj = error;
-      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+      } else if (
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error
+      ) {
         errorObj = new Error(String((error as { message: unknown }).message));
       } else {
         errorObj = new Error(String(error));
@@ -258,11 +295,12 @@ export async function createSubscriptionNotification(
 
     return data;
   } catch (error) {
-    const errorObj = error instanceof Error 
-      ? error 
-      : error && typeof error === 'object' && 'message' in error
-        ? new Error(String(error.message))
-        : new Error(String(error || 'Unknown error'));
+    const errorObj =
+      error instanceof Error
+        ? error
+        : error && typeof error === "object" && "message" in error
+          ? new Error(String(error.message))
+          : new Error(String(error || "Unknown error"));
     logger.error("Failed to create subscription notification", errorObj);
     return null;
   }
@@ -272,7 +310,7 @@ export async function createSubscriptionNotification(
  * Create a security notification
  */
 export async function createSecurityNotification(
-  params: SecurityNotificationParams
+  params: SecurityNotificationParams,
 ): Promise<string | null> {
   try {
     const supabase = await createClient();
@@ -286,7 +324,11 @@ export async function createSecurityNotification(
       let errorObj: Error;
       if (error instanceof Error) {
         errorObj = error;
-      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+      } else if (
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error
+      ) {
         errorObj = new Error(String((error as { message: unknown }).message));
       } else {
         errorObj = new Error(String(error));
@@ -297,11 +339,12 @@ export async function createSecurityNotification(
 
     return data;
   } catch (error) {
-    const errorObj = error instanceof Error 
-      ? error 
-      : error && typeof error === 'object' && 'message' in error
-        ? new Error(String(error.message))
-        : new Error(String(error || 'Unknown error'));
+    const errorObj =
+      error instanceof Error
+        ? error
+        : error && typeof error === "object" && "message" in error
+          ? new Error(String(error.message))
+          : new Error(String(error || "Unknown error"));
     logger.error("Failed to create security notification", errorObj);
     return null;
   }
@@ -311,7 +354,7 @@ export async function createSecurityNotification(
  * Create a welcome notification for new users
  */
 export async function createWelcomeNotification(
-  userId: string
+  userId: string,
 ): Promise<string | null> {
   try {
     const supabase = await createClient();
@@ -323,7 +366,11 @@ export async function createWelcomeNotification(
       let errorObj: Error;
       if (error instanceof Error) {
         errorObj = error;
-      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+      } else if (
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error
+      ) {
         errorObj = new Error(String((error as { message: unknown }).message));
       } else {
         errorObj = new Error(String(error));
@@ -334,11 +381,12 @@ export async function createWelcomeNotification(
 
     return data;
   } catch (error) {
-    const errorObj = error instanceof Error 
-      ? error 
-      : error && typeof error === 'object' && 'message' in error
-        ? new Error(String(error.message))
-        : new Error(String(error || 'Unknown error'));
+    const errorObj =
+      error instanceof Error
+        ? error
+        : error && typeof error === "object" && "message" in error
+          ? new Error(String(error.message))
+          : new Error(String(error || "Unknown error"));
     logger.error("Failed to create welcome notification", errorObj);
     return null;
   }
@@ -348,7 +396,7 @@ export async function createWelcomeNotification(
  * Create a team invitation notification
  */
 export async function createTeamInvitationNotification(
-  params: TeamInvitationNotificationParams
+  params: TeamInvitationNotificationParams,
 ): Promise<string | null> {
   try {
     const roleLabels: Record<string, string> = {
@@ -376,11 +424,12 @@ export async function createTeamInvitationNotification(
       },
     });
   } catch (error) {
-    const errorObj = error instanceof Error 
-      ? error 
-      : error && typeof error === 'object' && 'message' in error
-        ? new Error(String(error.message))
-        : new Error(String(error || 'Unknown error'));
+    const errorObj =
+      error instanceof Error
+        ? error
+        : error && typeof error === "object" && "message" in error
+          ? new Error(String(error.message))
+          : new Error(String(error || "Unknown error"));
     logger.error("Failed to create team invitation notification", errorObj);
     return null;
   }
@@ -393,7 +442,7 @@ export async function createBillingNotification(
   userId: string,
   title: string,
   content: string,
-  actionUrl?: string
+  actionUrl?: string,
 ): Promise<string | null> {
   return createNotification({
     userId,
@@ -411,7 +460,7 @@ export async function createSupportNotification(
   userId: string,
   title: string,
   content: string,
-  actionUrl?: string
+  actionUrl?: string,
 ): Promise<string | null> {
   return createNotification({
     userId,
@@ -429,7 +478,7 @@ export async function createSuccessNotification(
   userId: string,
   title: string,
   content: string,
-  actionUrl?: string
+  actionUrl?: string,
 ): Promise<string | null> {
   return createNotification({
     userId,
@@ -447,7 +496,7 @@ export async function createSystemNotification(
   userId: string,
   title: string,
   content: string,
-  actionUrl?: string
+  actionUrl?: string,
 ): Promise<string | null> {
   return createNotification({
     userId,
@@ -457,8 +506,3 @@ export async function createSystemNotification(
     actionUrl,
   });
 }
-
-
-
-
-

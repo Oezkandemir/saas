@@ -2,25 +2,25 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
 import {
   RiArrowDownLine,
   RiArrowUpLine,
+  RiBookOpenLine,
   RiCloseLine,
   RiCornerDownLeftLine,
-  RiSearch2Line,
-  RiHomeLine,
   RiFileTextLine,
+  RiHomeLine,
   RiPriceTagLine,
-  RiBookOpenLine,
+  RiSearch2Line,
 } from "@remixicon/react";
+import { useTranslations } from "next-intl";
 
-import { cn } from "@/lib/utils";
-import { CommandMenu } from '@/components/alignui/overlays/command-menu';
-import { CompactButton } from '@/components/alignui/actions/compact-button';
-import { Kbd } from '@/components/alignui/actions/kbd';
-import { marketingConfig } from "@/config/marketing";
 import { docsConfig } from "@/config/docs";
+import { marketingConfig } from "@/config/marketing";
+import { cn } from "@/lib/utils";
+import { CompactButton } from "@/components/alignui/actions/compact-button";
+import { Kbd } from "@/components/alignui/actions/kbd";
+import { CommandMenu } from "@/components/alignui/overlays/command-menu";
 
 interface MarketingCommandMenuItem {
   title: string;
@@ -63,13 +63,14 @@ export function MarketingCommandMenu() {
       category: "Documentation",
     })) || []),
     // Docs Sidebar Links
-    ...(docsConfig.sidebarNav?.flatMap((section) =>
-      section.items?.map((item) => ({
-        title: item.title,
-        href: item.href,
-        icon: RiBookOpenLine,
-        category: "Documentation",
-      })) || [],
+    ...(docsConfig.sidebarNav?.flatMap(
+      (section) =>
+        section.items?.map((item) => ({
+          title: item.title,
+          href: item.href,
+          icon: RiBookOpenLine,
+          category: "Documentation",
+        })) || [],
     ) || []),
   ];
 
@@ -107,13 +108,16 @@ export function MarketingCommandMenu() {
   );
 
   // Gruppiere Items nach Kategorie
-  const groupedItems = menuItems.reduce((acc, item) => {
-    if (!acc[item.category]) {
-      acc[item.category] = [];
-    }
-    acc[item.category].push(item);
-    return acc;
-  }, {} as Record<string, MarketingCommandMenuItem[]>);
+  const groupedItems = menuItems.reduce(
+    (acc, item) => {
+      if (!acc[item.category]) {
+        acc[item.category] = [];
+      }
+      acc[item.category].push(item);
+      return acc;
+    },
+    {} as Record<string, MarketingCommandMenuItem[]>,
+  );
 
   return (
     <>
@@ -161,7 +165,7 @@ export function MarketingCommandMenu() {
             {/* CommandMenu Liste */}
             <CommandMenu.List>
               <CommandMenu.Empty>Keine Ergebnisse gefunden.</CommandMenu.Empty>
-              
+
               {/* Gruppierte Items */}
               {Object.entries(groupedItems).map(([category, items]) => (
                 <CommandMenu.Group key={category} heading={category}>
@@ -191,13 +195,17 @@ export function MarketingCommandMenu() {
                   <CommandMenu.FooterKeyBox>
                     <RiArrowDownLine className="size-4" />
                   </CommandMenu.FooterKeyBox>
-                  <span className="text-xs text-muted-foreground">Navigieren</span>
+                  <span className="text-xs text-muted-foreground">
+                    Navigieren
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CommandMenu.FooterKeyBox>
                     <RiCornerDownLeftLine className="size-4" />
                   </CommandMenu.FooterKeyBox>
-                  <span className="text-xs text-muted-foreground">Auswählen</span>
+                  <span className="text-xs text-muted-foreground">
+                    Auswählen
+                  </span>
                 </div>
               </div>
             </CommandMenu.Footer>
@@ -207,4 +215,3 @@ export function MarketingCommandMenu() {
     </>
   );
 }
-

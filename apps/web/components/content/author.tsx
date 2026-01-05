@@ -50,9 +50,7 @@ export default async function Author({
         <p className="font-semibold text-foreground max-md:text-sm">
           {author.name}
         </p>
-        <p className="text-sm text-muted-foreground">
-          @{author.twitter}
-        </p>
+        <p className="text-sm text-muted-foreground">@{author.twitter}</p>
       </div>
     </Link>
   );

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getAllUsers } from "@/actions/admin-user-actions";
 import { formatDistance } from "date-fns";
 import { Users } from "lucide-react";
-import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { columns } from "@/components/admin/users/columns";
@@ -105,7 +105,9 @@ export default async function AdminUsersPage(props: Props) {
         {/* Primary Metric */}
         <div className="flex-1">
           <div className="space-y-1">
-            <div className="text-4xl font-semibold tracking-tight">{totalUsers}</div>
+            <div className="text-4xl font-semibold tracking-tight">
+              {totalUsers}
+            </div>
             <div className="text-sm text-muted-foreground">
               {tUsers("totalUsers")}
             </div>

@@ -1,8 +1,12 @@
 import { Metadata } from "next";
 
 import { constructMetadata } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/alignui/data-display/avatar";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import {
   Card,
   CardContent,
@@ -10,7 +14,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
+} from "@/components/alignui/data-display/card";
 
 export const metadata: Metadata = constructMetadata({
   title: "Customers",

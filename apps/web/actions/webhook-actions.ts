@@ -1,12 +1,12 @@
 "use server";
 
+import crypto from "crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import crypto from "crypto";
 
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
-import { logger } from "@/lib/logger";
 
 const webhookSchema = z.object({
   name: z.string().min(1).max(255),
@@ -173,9 +173,7 @@ export async function updateWebhook(
 /**
  * Delete a webhook
  */
-export async function deleteWebhook(
-  id: string,
-): Promise<ActionResult<void>> {
+export async function deleteWebhook(id: string): Promise<ActionResult<void>> {
   try {
     const user = await getCurrentUser();
     if (!user || user.role !== "ADMIN") {
@@ -361,4 +359,3 @@ export async function triggerWebhook(
 export async function generateWebhookSecret(): Promise<string> {
   return crypto.randomBytes(32).toString("hex");
 }
-

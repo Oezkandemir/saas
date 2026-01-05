@@ -20,4 +20,3 @@ export function PlanLimitWarningClient({
   // This file exists to satisfy Tailwind's content scanner.
   return null;
 }
-

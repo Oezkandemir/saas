@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
+
 import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +20,9 @@ async function loadMessages(locale: string) {
   } catch (error) {
     // Fallback to default locale if locale file doesn't exist
     logger.error(`Failed to load messages for locale ${locale}:`, error);
-    const fallbackMessages = await import(`../../messages/${routing.defaultLocale}.json`);
+    const fallbackMessages = await import(
+      `../../messages/${routing.defaultLocale}.json`
+    );
     return fallbackMessages.default;
   }
 }

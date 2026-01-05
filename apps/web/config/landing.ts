@@ -43,8 +43,7 @@ export const infos: InfoLdg[] = [
       },
       {
         title: "Flexibel",
-        description:
-          "Dynamische QR-Codes, die Sie jederzeit anpassen können.",
+        description: "Dynamische QR-Codes, die Sie jederzeit anpassen können.",
         icon: "qrCode",
       },
     ],

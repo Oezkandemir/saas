@@ -2,8 +2,12 @@
 
 import { useMemo } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
-import { validatePassword, type PasswordPolicy } from "@/lib/validations/password-policy";
+
 import { cn } from "@/lib/utils";
+import {
+  validatePassword,
+  type PasswordPolicy,
+} from "@/lib/validations/password-policy";
 
 interface PasswordPolicyIndicatorProps {
   password: string;
@@ -70,7 +74,10 @@ export function PasswordPolicyIndicator({
       {validation.errors.length > 0 && (
         <div className="space-y-1">
           {validation.errors.map((error, index) => (
-            <div key={index} className="flex items-center gap-2 text-xs text-destructive">
+            <div
+              key={index}
+              className="flex items-center gap-2 text-xs text-destructive"
+            >
               <XCircle className="size-3 shrink-0" />
               <span>{error}</span>
             </div>
@@ -87,4 +94,3 @@ export function PasswordPolicyIndicator({
     </div>
   );
 }
-

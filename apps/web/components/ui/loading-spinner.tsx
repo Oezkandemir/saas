@@ -1,6 +1,7 @@
-import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
 import * as React from "react";
+import { Loader2 } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 
 interface LoadingSpinnerProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: "sm" | "md" | "lg" | "xl";
@@ -32,7 +33,7 @@ export function LoadingSpinner({
     <div
       className={cn(
         "flex flex-col items-center justify-center gap-2",
-        className
+        className,
       )}
       {...props}
     >
@@ -40,7 +41,7 @@ export function LoadingSpinner({
         className={cn(
           "animate-spin",
           sizeClasses[size],
-          variantClasses[variant]
+          variantClasses[variant],
         )}
       />
       {text && (
@@ -51,23 +52,3 @@ export function LoadingSpinner({
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

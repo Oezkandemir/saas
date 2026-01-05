@@ -1,5 +1,6 @@
 import * as React from "react";
-import { CheckCircle2, AlertCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 export interface InputProps
@@ -11,7 +12,11 @@ export interface InputProps
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, hasError, hasSuccess, ...props }, ref) => {
     // Ensure proper ARIA attributes
-    const { "aria-invalid": _, "aria-describedby": ariaDescribedBy, ...restProps } = props;
+    const {
+      "aria-invalid": _,
+      "aria-describedby": ariaDescribedBy,
+      ...restProps
+    } = props;
     const ariaProps: {
       "aria-invalid"?: "true" | "false";
       "aria-describedby"?: string;
@@ -29,8 +34,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             hasError
               ? "pr-10 border-destructive focus-visible:ring-destructive"
               : hasSuccess
-              ? "pr-10 border-green-500 focus-visible:ring-green-500"
-              : "border-subtle focus-visible:border-border",
+                ? "pr-10 border-green-500 focus-visible:ring-green-500"
+                : "border-subtle focus-visible:border-border",
             className,
           )}
           ref={ref}

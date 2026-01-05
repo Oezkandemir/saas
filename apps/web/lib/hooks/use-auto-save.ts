@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { UseFormReturn, FieldValues, DeepPartial } from "react-hook-form";
+import { DeepPartial, FieldValues, UseFormReturn } from "react-hook-form";
+
 import { logger } from "@/lib/logger";
 
 interface UseAutoSaveOptions<T extends FieldValues> {
@@ -92,4 +93,3 @@ export function useAutoSave<T extends FieldValues>({
     },
   };
 }
-

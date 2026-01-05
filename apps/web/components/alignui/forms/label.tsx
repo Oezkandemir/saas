@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import * as LabelPrimitive from '@radix-ui/react-label';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
+import * as React from "react";
+import * as LabelPrimitive from "@radix-ui/react-label";
+import { cva, type VariantProps } from "class-variance-authority";
+
+import { cn } from "@/lib/utils";
 
 const labelVariants = cva(
-  'text-label-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-text-strong-950'
+  "text-label-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-text-strong-950",
 );
 
 const LabelRoot = React.forwardRef<
@@ -20,7 +21,7 @@ const LabelRoot = React.forwardRef<
     {...props}
   />
 ));
-LabelRoot.displayName = 'Label.Root';
+LabelRoot.displayName = "Label.Root";
 
 const LabelAsterisk = React.forwardRef<
   HTMLSpanElement,
@@ -28,13 +29,13 @@ const LabelAsterisk = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <span
     ref={ref}
-    className={cn('text-destructive ml-0.5', className)}
+    className={cn("text-destructive ml-0.5", className)}
     {...props}
   >
     *
   </span>
 ));
-LabelAsterisk.displayName = 'Label.Asterisk';
+LabelAsterisk.displayName = "Label.Asterisk";
 
 const LabelSub = React.forwardRef<
   HTMLSpanElement,
@@ -42,11 +43,11 @@ const LabelSub = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <span
     ref={ref}
-    className={cn('text-text-sub-600 font-normal ml-1', className)}
+    className={cn("text-text-sub-600 font-normal ml-1", className)}
     {...props}
   />
 ));
-LabelSub.displayName = 'Label.Sub';
+LabelSub.displayName = "Label.Sub";
 
 // Export individual components
 export { LabelRoot, LabelAsterisk, LabelSub, labelVariants };
@@ -61,4 +62,3 @@ export const Label: {
   Asterisk: LabelAsterisk,
   Sub: LabelSub,
 };
-

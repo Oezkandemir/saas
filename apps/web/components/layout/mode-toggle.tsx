@@ -2,7 +2,7 @@
 
 import { useTheme } from "next-themes";
 
-import { Button } from '@/components/alignui/actions/button';
+import { Button } from "@/components/alignui/actions/button";
 import { Icons } from "@/components/shared/icons";
 
 export function ModeToggle() {
@@ -18,10 +18,10 @@ export function ModeToggle() {
   };
 
   return (
-    <Button 
-      variant="ghost" 
-      size="sm" 
-      className="size-8 px-0" 
+    <Button
+      variant="ghost"
+      size="sm"
+      className="size-8 px-0"
       onClick={toggleTheme}
       aria-label="Toggle theme"
     >

@@ -2,8 +2,22 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Customer, deleteCustomer } from "@/actions/customers-actions";
+import {
+  Building2,
+  ChevronRight,
+  Eye,
+  Mail,
+  MoreVertical,
+  Pencil,
+  Phone,
+  QrCode,
+  Trash2,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Customer } from "@/actions/customers-actions";
+import { toast } from "sonner";
+
 import {
   Table,
   TableBody,
@@ -12,20 +26,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from '@/components/alignui/actions/button';
-import {
-  DropdownMenuRoot as DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/alignui/overlays/dropdown-menu";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Card, CardContent } from '@/components/alignui/data-display/card';
-import { MoreVertical, Pencil, Trash2, Eye, QrCode, Mail, Phone, Building2, ChevronRight } from "lucide-react";
-import { deleteCustomer } from "@/actions/customers-actions";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Card, CardContent } from "@/components/alignui/data-display/card";
 import {
   AlertDialogRoot as AlertDialog,
   AlertDialogAction,
@@ -36,6 +39,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/alignui/overlays/alert-dialog";
+import {
+  DropdownMenuRoot as DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/alignui/overlays/dropdown-menu";
 
 interface CustomersTableProps {
   customers: Customer[];
@@ -83,7 +93,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
       {/* Mobile Card View - Hidden on desktop */}
       <div className="md:hidden space-y-3">
         {customers.map((customer) => (
-          <Card 
+          <Card
             key={customer.id}
             className="overflow-hidden hover interactive touch-manipulation"
           >
@@ -112,7 +122,10 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                       </Badge>
                     )}
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
+                      <DropdownMenuTrigger
+                        asChild
+                        onClick={(e) => e.preventDefault()}
+                      >
                         <Button
                           variant="ghost"
                           size="icon"
@@ -130,7 +143,9 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link href={`/dashboard/customers/${customer.id}/edit`}>
+                          <Link
+                            href={`/dashboard/customers/${customer.id}/edit`}
+                          >
                             <Pencil className="mr-2 h-4 w-4" />
                             {t("edit")}
                           </Link>
@@ -153,24 +168,32 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                   {customer.email && (
                     <div className="flex items-center gap-2 text-sm">
                       <Mail className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                      <span className="text-muted-foreground truncate">{customer.email}</span>
+                      <span className="text-muted-foreground truncate">
+                        {customer.email}
+                      </span>
                     </div>
                   )}
                   {customer.phone && (
                     <div className="flex items-center gap-2 text-sm">
                       <Phone className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                      <span className="text-muted-foreground truncate">{customer.phone}</span>
+                      <span className="text-muted-foreground truncate">
+                        {customer.phone}
+                      </span>
                     </div>
                   )}
-                  
+
                   {/* Date */}
                   <div className="flex items-center justify-between pt-2 border-t">
                     <span className="text-xs text-muted-foreground">
-                      {t("createdLabel")} {new Date(customer.created_at).toLocaleDateString("de-DE", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
+                      {t("createdLabel")}{" "}
+                      {new Date(customer.created_at).toLocaleDateString(
+                        "de-DE",
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        },
+                      )}
                     </span>
                     <ChevronRight className="h-4 w-4 text-muted-foreground" />
                   </div>
@@ -185,120 +208,136 @@ export function CustomersTable({ customers }: CustomersTableProps) {
       <div className="hidden md:block border border-border rounded-lg overflow-hidden bg-card">
         <div className="overflow-x-auto">
           <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/30 border-subtle">
-              <TableHead>{t("name")}</TableHead>
-              <TableHead>{t("contact")}</TableHead>
-              <TableHead>{t("company")}</TableHead>
-              <TableHead>{t("qrCode")}</TableHead>
-              <TableHead>{t("created")}</TableHead>
-              <TableHead className="w-[70px] text-right">{t("actions")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {customers.map((customer) => (
-              <TableRow
-                key={customer.id}
-                className="cursor-pointer transition-subtle"
-                onClick={() => router.push(`/dashboard/customers/${customer.id}`)}
-              >
-                <TableCell className="font-medium">
-                  <Link
-                    href={`/dashboard/customers/${customer.id}`}
-                    className="hover:underline flex items-center gap-2"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {customer.name}
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <div className="flex flex-col gap-1">
-                    {customer.email && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className="text-muted-foreground">{customer.email}</span>
+            <TableHeader>
+              <TableRow className="bg-muted/30 border-subtle">
+                <TableHead>{t("name")}</TableHead>
+                <TableHead>{t("contact")}</TableHead>
+                <TableHead>{t("company")}</TableHead>
+                <TableHead>{t("qrCode")}</TableHead>
+                <TableHead>{t("created")}</TableHead>
+                <TableHead className="w-[70px] text-right">
+                  {t("actions")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {customers.map((customer) => (
+                <TableRow
+                  key={customer.id}
+                  className="cursor-pointer transition-subtle"
+                  onClick={() =>
+                    router.push(`/dashboard/customers/${customer.id}`)
+                  }
+                >
+                  <TableCell className="font-medium">
+                    <Link
+                      href={`/dashboard/customers/${customer.id}`}
+                      className="hover:underline flex items-center gap-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {customer.name}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col gap-1">
+                      {customer.email && (
+                        <div className="flex items-center gap-2 text-sm">
+                          <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                          <span className="text-muted-foreground">
+                            {customer.email}
+                          </span>
+                        </div>
+                      )}
+                      {customer.phone && (
+                        <div className="flex items-center gap-2 text-sm">
+                          <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                          <span className="text-muted-foreground">
+                            {customer.phone}
+                          </span>
+                        </div>
+                      )}
+                      {!customer.email && !customer.phone && (
+                        <span className="text-muted-foreground text-sm">-</span>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {customer.company ? (
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-4 w-4 text-muted-foreground" />
+                        <span>{customer.company}</span>
                       </div>
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
                     )}
-                    {customer.phone && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className="text-muted-foreground">{customer.phone}</span>
-                      </div>
-                    )}
-                    {!customer.email && !customer.phone && (
+                  </TableCell>
+                  <TableCell>
+                    {customer.qr_code ? (
+                      <Badge variant="secondary" className="font-mono text-xs">
+                        <QrCode className="h-3 w-3 mr-1" />
+                        {customer.qr_code}
+                      </Badge>
+                    ) : (
                       <span className="text-muted-foreground text-sm">-</span>
                     )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {customer.company ? (
-                    <div className="flex items-center gap-2">
-                      <Building2 className="h-4 w-4 text-muted-foreground" />
-                      <span>{customer.company}</span>
-                    </div>
-                  ) : (
-                    <span className="text-muted-foreground">-</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  {customer.qr_code ? (
-                    <Badge variant="secondary" className="font-mono text-xs">
-                      <QrCode className="h-3 w-3 mr-1" />
-                      {customer.qr_code}
-                    </Badge>
-                  ) : (
-                    <span className="text-muted-foreground text-sm">-</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">
-                    {new Date(customer.created_at).toLocaleDateString("de-DE", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </span>
-                </TableCell>
-                <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        disabled={deletingId === customer.id}
-                        className="h-8 w-8"
-                      >
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuItem asChild>
-                        <Link href={`/dashboard/customers/${customer.id}`}>
-                          <Eye className="mr-2 h-4 w-4" />
-                          {t("viewDetails")}
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/dashboard/customers/${customer.id}/edit`}>
-                          <Pencil className="mr-2 h-4 w-4" />
-                          {t("edit")}
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => handleDeleteClick(customer.id)}
-                        className="text-destructive focus:text-destructive"
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        {t("delete")}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">
+                      {new Date(customer.created_at).toLocaleDateString(
+                        "de-DE",
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        },
+                      )}
+                    </span>
+                  </TableCell>
+                  <TableCell
+                    className="text-right"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={deletingId === customer.id}
+                          className="h-8 w-8"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem asChild>
+                          <Link href={`/dashboard/customers/${customer.id}`}>
+                            <Eye className="mr-2 h-4 w-4" />
+                            {t("viewDetails")}
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link
+                            href={`/dashboard/customers/${customer.id}/edit`}
+                          >
+                            <Pencil className="mr-2 h-4 w-4" />
+                            {t("edit")}
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => handleDeleteClick(customer.id)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          {t("delete")}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </div>
 

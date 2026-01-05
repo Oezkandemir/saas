@@ -1,43 +1,32 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
+import { useEffect, useState } from "react";
 import {
-  Users,
-  UserPlus,
-  Trash2,
+  addCompanyProfileTeamMember,
+  AddTeamMemberInput,
+  CompanyProfileMember,
+  CompanyProfileRole,
+  getCompanyProfileTeamMembers,
+  removeCompanyProfileTeamMember,
+  updateCompanyProfileTeamMember,
+  UpdateTeamMemberInput,
+} from "@/actions/company-profile-team-actions";
+import {
   Edit,
-  Shield,
   FileEdit,
   FileX,
-  UserCheck,
-  UserX,
-  Settings,
   Loader2,
+  Settings,
+  Shield,
+  Trash2,
+  UserCheck,
+  UserPlus,
+  Users,
+  UserX,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/alignui/data-display/card";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/alignui/data-display/avatar";
-import {
-  DrawerRoot,
-  DrawerTrigger,
-  DrawerContent,
-  DrawerHeader,
-  DrawerBody,
-  DrawerFooter,
-  DrawerTitle,
-} from "@/components/alignui/overlays/drawer";
+import { toast } from "sonner";
+
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -45,19 +34,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/alignui/actions/button";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/alignui/data-display/avatar";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 import { Input } from "@/components/alignui/forms/input";
 import { LabelRoot } from "@/components/alignui/forms/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
-  CompanyProfileMember,
-  CompanyProfileRole,
-  getCompanyProfileTeamMembers,
-  addCompanyProfileTeamMember,
-  updateCompanyProfileTeamMember,
-  removeCompanyProfileTeamMember,
-  AddTeamMemberInput,
-  UpdateTeamMemberInput,
-} from "@/actions/company-profile-team-actions";
+  DrawerBody,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerRoot,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/alignui/overlays/drawer";
 
 interface CompanyProfileTeamManagementProps {
   companyProfileId: string;
@@ -289,7 +290,11 @@ export function CompanyProfileTeamManagement({
               Firmenprofil
             </CardDescription>
           </div>
-          <DrawerRoot open={addDrawerOpen} onOpenChange={setAddDrawerOpen} direction="right">
+          <DrawerRoot
+            open={addDrawerOpen}
+            onOpenChange={setAddDrawerOpen}
+            direction="right"
+          >
             <DrawerTrigger asChild>
               <Button size="sm" className="gap-2">
                 <UserPlus className="h-4 w-4" />
@@ -303,15 +308,14 @@ export function CompanyProfileTeamManagement({
                     Teammitglied hinzufügen
                   </DrawerTitle>
                   <p className="text-paragraph-sm text-text-sub-600 mt-1.5">
-                    Fügen Sie ein neues Teammitglied zu diesem Firmenprofil hinzu.
+                    Fügen Sie ein neues Teammitglied zu diesem Firmenprofil
+                    hinzu.
                   </p>
                 </DrawerHeader>
                 <DrawerBody className="overflow-y-auto flex-1 bg-bg-white-0">
                   <div className="p-5 space-y-4">
                     <div className="flex flex-col gap-1">
-                      <LabelRoot htmlFor="email">
-                        E-Mail-Adresse
-                      </LabelRoot>
+                      <LabelRoot htmlFor="email">E-Mail-Adresse</LabelRoot>
                       <Input
                         id="email"
                         type="email"
@@ -361,7 +365,10 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot htmlFor="edit-docs" className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950">
+                          <LabelRoot
+                            htmlFor="edit-docs"
+                            className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
+                          >
                             <FileEdit className="h-4 w-4 text-text-sub-600" />
                             Dokumente bearbeiten
                           </LabelRoot>
@@ -377,7 +384,10 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot htmlFor="delete-docs" className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950">
+                          <LabelRoot
+                            htmlFor="delete-docs"
+                            className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
+                          >
                             <FileX className="h-4 w-4 text-text-sub-600" />
                             Dokumente löschen
                           </LabelRoot>
@@ -393,7 +403,10 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot htmlFor="edit-customers" className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950">
+                          <LabelRoot
+                            htmlFor="edit-customers"
+                            className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
+                          >
                             <UserCheck className="h-4 w-4 text-text-sub-600" />
                             Kunden bearbeiten
                           </LabelRoot>
@@ -409,7 +422,10 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot htmlFor="delete-customers" className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950">
+                          <LabelRoot
+                            htmlFor="delete-customers"
+                            className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
+                          >
                             <UserX className="h-4 w-4 text-text-sub-600" />
                             Kunden löschen
                           </LabelRoot>
@@ -425,7 +441,10 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot htmlFor="manage-team" className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950">
+                          <LabelRoot
+                            htmlFor="manage-team"
+                            className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
+                          >
                             <Settings className="h-4 w-4 text-text-sub-600" />
                             Team verwalten
                           </LabelRoot>
@@ -442,8 +461,8 @@ export function CompanyProfileTeamManagement({
                   >
                     Abbrechen
                   </Button>
-                  <Button 
-                    onClick={handleAddMember} 
+                  <Button
+                    onClick={handleAddMember}
                     disabled={addingMember}
                     className="flex-1 px-6 h-12 text-base font-semibold"
                   >
@@ -499,9 +518,7 @@ export function CompanyProfileTeamManagement({
                       alt={member.user?.name || "User"}
                     />
                     <AvatarFallback>
-                      {member.user?.name?.[0] ||
-                        member.user?.email?.[0] ||
-                        "U"}
+                      {member.user?.name?.[0] || member.user?.email?.[0] || "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
@@ -513,9 +530,7 @@ export function CompanyProfileTeamManagement({
                     </p>
                   </div>
                   <Badge variant="outline" className="flex items-center gap-1">
-                    {member.role === "owner" && (
-                      <Shield className="h-3 w-3" />
-                    )}
+                    {member.role === "owner" && <Shield className="h-3 w-3" />}
                     {roleLabels[member.role]}
                   </Badge>
                 </div>
@@ -548,7 +563,11 @@ export function CompanyProfileTeamManagement({
         )}
 
         {/* Edit Drawer */}
-        <DrawerRoot open={editDrawerOpen} onOpenChange={setEditDrawerOpen} direction="right">
+        <DrawerRoot
+          open={editDrawerOpen}
+          onOpenChange={setEditDrawerOpen}
+          direction="right"
+        >
           <DrawerContent side="right" className="mr-2 shadow-custom-md">
             <div className="flex flex-col h-full bg-bg-white-0">
               <DrawerHeader className="bg-bg-white-0">
@@ -603,7 +622,10 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot htmlFor="edit-docs-edit" className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950">
+                          <LabelRoot
+                            htmlFor="edit-docs-edit"
+                            className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
+                          >
                             <FileEdit className="h-4 w-4 text-text-sub-600" />
                             Dokumente bearbeiten
                           </LabelRoot>
@@ -619,7 +641,10 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot htmlFor="delete-docs-edit" className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950">
+                          <LabelRoot
+                            htmlFor="delete-docs-edit"
+                            className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
+                          >
                             <FileX className="h-4 w-4 text-text-sub-600" />
                             Dokumente löschen
                           </LabelRoot>
@@ -635,7 +660,10 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot htmlFor="edit-customers-edit" className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950">
+                          <LabelRoot
+                            htmlFor="edit-customers-edit"
+                            className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
+                          >
                             <UserCheck className="h-4 w-4 text-text-sub-600" />
                             Kunden bearbeiten
                           </LabelRoot>
@@ -651,7 +679,10 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot htmlFor="delete-customers-edit" className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950">
+                          <LabelRoot
+                            htmlFor="delete-customers-edit"
+                            className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
+                          >
                             <UserX className="h-4 w-4 text-text-sub-600" />
                             Kunden löschen
                           </LabelRoot>
@@ -667,7 +698,10 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot htmlFor="manage-team-edit" className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950">
+                          <LabelRoot
+                            htmlFor="manage-team-edit"
+                            className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
+                          >
                             <Settings className="h-4 w-4 text-text-sub-600" />
                             Team verwalten
                           </LabelRoot>
@@ -710,4 +744,3 @@ export function CompanyProfileTeamManagement({
     </Card>
   );
 }
-

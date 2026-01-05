@@ -17,7 +17,10 @@ export function cn(...inputs: ClassValue[]) {
 // Re-export AlignUI utilities for convenience
 export { tv } from "./tv";
 export { recursiveCloneChildren } from "./recursive-clone-children";
-export { createPolymorphicComponent, type PolymorphicComponent } from "./polymorphic";
+export {
+  createPolymorphicComponent,
+  type PolymorphicComponent,
+} from "./polymorphic";
 
 export function constructMetadata({
   title = siteConfig.name,
@@ -124,17 +127,22 @@ export function formatDuration(minutes: number, locale: string = "de"): string {
   const hours = minutes / 60;
   // Round to nearest half hour
   const roundedHours = Math.round(hours * 2) / 2;
-  
+
   if (roundedHours === 0) {
     return locale === "de" ? "0 Stunden" : "0 hours";
   }
-  
+
   // Check if it's a whole number or half hour
   if (roundedHours % 1 === 0) {
     // Whole hours
-    const hoursText = locale === "de" 
-      ? roundedHours === 1 ? "Stunde" : "Stunden"
-      : roundedHours === 1 ? "hour" : "hours";
+    const hoursText =
+      locale === "de"
+        ? roundedHours === 1
+          ? "Stunde"
+          : "Stunden"
+        : roundedHours === 1
+          ? "hour"
+          : "hours";
     return `${roundedHours} ${hoursText}`;
   } else {
     // Half hours - format as "X.5 Stunden" or "X Stunden 30 Minuten"
@@ -157,20 +165,28 @@ export function formatDuration(minutes: number, locale: string = "de"): string {
  * Format duration hours (decimal) to a human-readable string
  * Rounds to nearest half hour
  */
-export function formatDurationHours(hours: number, locale: string = "de"): string {
+export function formatDurationHours(
+  hours: number,
+  locale: string = "de",
+): string {
   // Round to nearest half hour
   const roundedHours = Math.round(hours * 2) / 2;
-  
+
   if (roundedHours === 0) {
     return locale === "de" ? "0 Stunden" : "0 hours";
   }
-  
+
   // Check if it's a whole number or half hour
   if (roundedHours % 1 === 0) {
     // Whole hours
-    const hoursText = locale === "de" 
-      ? roundedHours === 1 ? "Stunde" : "Stunden"
-      : roundedHours === 1 ? "hour" : "hours";
+    const hoursText =
+      locale === "de"
+        ? roundedHours === 1
+          ? "Stunde"
+          : "Stunden"
+        : roundedHours === 1
+          ? "hour"
+          : "hours";
     return `${roundedHours} ${hoursText}`;
   } else {
     // Half hours

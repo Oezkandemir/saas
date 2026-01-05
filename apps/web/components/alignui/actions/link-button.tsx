@@ -1,6 +1,6 @@
 /**
  * AlignUI - LinkButton Component
- * 
+ *
  * Based on AlignUI design system using Radix UI and Tailwind CSS
  */
 
@@ -30,7 +30,7 @@ const linkButtonVariants = cva(
       variant: "default",
       size: "medium",
     },
-  }
+  },
 );
 
 export interface LinkButtonRootProps
@@ -40,14 +40,8 @@ export interface LinkButtonRootProps
   underline?: boolean;
 }
 
-const LinkButtonRoot = React.forwardRef<
-  HTMLAnchorElement,
-  LinkButtonRootProps
->(
-  (
-    { className, variant, size, asChild = false, underline, ...props },
-    ref,
-  ) => {
+const LinkButtonRoot = React.forwardRef<HTMLAnchorElement, LinkButtonRootProps>(
+  ({ className, variant, size, asChild = false, underline, ...props }, ref) => {
     const Comp = asChild ? Slot : "a";
     return (
       <Comp
@@ -67,18 +61,3 @@ LinkButtonRoot.displayName = "LinkButtonRoot";
 export const LinkButton = {
   Root: LinkButtonRoot,
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

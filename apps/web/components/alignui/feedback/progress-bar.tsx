@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import * as ProgressPrimitive from '@radix-ui/react-progress';
-import { cn } from '@/lib/utils';
+import * as React from "react";
+import * as ProgressPrimitive from "@radix-ui/react-progress";
+
+import { cn } from "@/lib/utils";
 
 const ProgressBarRoot = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
@@ -11,18 +12,18 @@ const ProgressBarRoot = React.forwardRef<
   <ProgressPrimitive.Root
     ref={ref}
     className={cn(
-      'relative h-4 w-full overflow-hidden rounded-full bg-bg-white-50',
-      className
+      "relative h-4 w-full overflow-hidden rounded-full bg-bg-white-50",
+      className,
     )}
     {...props}
   >
     <ProgressPrimitive.Indicator
-      className='size-full flex-1 bg-primary transition-all'
+      className="size-full flex-1 bg-primary transition-all"
       style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
     />
   </ProgressPrimitive.Root>
 ));
-ProgressBarRoot.displayName = 'ProgressBar.Root';
+ProgressBarRoot.displayName = "ProgressBar.Root";
 
 // Export individual components
 export { ProgressBarRoot };
@@ -35,4 +36,3 @@ export const ProgressBar = {
 export const Progress = {
   Root: ProgressBarRoot,
 };
-

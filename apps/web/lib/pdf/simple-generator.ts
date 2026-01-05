@@ -19,7 +19,7 @@ export interface SimplePDFOptions {
  */
 export async function generatePDFFromElement(
   element: HTMLElement,
-  options: SimplePDFOptions = {}
+  options: SimplePDFOptions = {},
 ): Promise<void> {
   // Store original styles
   const originalStyles: {
@@ -82,7 +82,9 @@ export async function generatePDFFromElement(
 
     // Validate canvas
     if (!canvas || canvas.width === 0 || canvas.height === 0) {
-      throw new Error("Canvas konnte nicht erstellt werden. Das Element ist möglicherweise nicht sichtbar.");
+      throw new Error(
+        "Canvas konnte nicht erstellt werden. Das Element ist möglicherweise nicht sichtbar.",
+      );
     }
 
     // Validate image data
@@ -107,28 +109,14 @@ export async function generatePDFFromElement(
     let position = 0;
 
     // Add first page
-    pdf.addImage(
-      imageData,
-      "PNG",
-      0,
-      position,
-      imgWidth,
-      imgHeight
-    );
+    pdf.addImage(imageData, "PNG", 0, position, imgWidth, imgHeight);
     heightLeft -= pageHeight;
 
     // Add additional pages if needed
     while (heightLeft >= 0) {
       position = heightLeft - imgHeight;
       pdf.addPage();
-      pdf.addImage(
-        imageData,
-        "PNG",
-        0,
-        position,
-        imgWidth,
-        imgHeight
-      );
+      pdf.addImage(imageData, "PNG", 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
     }
 
@@ -137,7 +125,7 @@ export async function generatePDFFromElement(
   } catch (error) {
     logger.error("Error generating PDF:", error);
     throw new Error(
-      `Failed to generate PDF: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to generate PDF: ${error instanceof Error ? error.message : String(error)}`,
     );
   } finally {
     // Restore original styles
@@ -157,7 +145,7 @@ export async function generatePDFFromElement(
  */
 export async function generatePDFFromHTML(
   html: string,
-  options: SimplePDFOptions = {}
+  options: SimplePDFOptions = {},
 ): Promise<void> {
   // Create a temporary container
   const container = document.createElement("div");
@@ -177,4 +165,3 @@ export async function generatePDFFromHTML(
     document.body.removeChild(container);
   }
 }
-

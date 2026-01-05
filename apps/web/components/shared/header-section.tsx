@@ -4,11 +4,7 @@ interface HeaderSectionProps {
   subtitle?: string;
 }
 
-export function HeaderSection({
-  label,
-  title,
-  subtitle,
-}: HeaderSectionProps) {
+export function HeaderSection({ label, title, subtitle }: HeaderSectionProps) {
   // Parent components already pass translated strings, so just use them directly
   const localizedContent = { label, title, subtitle };
 

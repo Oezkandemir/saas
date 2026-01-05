@@ -1,6 +1,8 @@
 "use client";
 
+import { Building, FileText, Scale } from "lucide-react";
 import { Control } from "react-hook-form";
+
 import {
   FormControl,
   FormDescription,
@@ -9,8 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from '@/components/alignui/forms/input';
-import { FileText, Building, Scale } from "lucide-react";
+import { Input } from "@/components/alignui/forms/input";
 
 interface CompanyLegalFieldsProps {
   control: Control<any>;
@@ -97,12 +98,11 @@ export function CompanyLegalFields({ control }: CompanyLegalFieldsProps) {
       {/* Info Box */}
       <div className="rounded-lg bg-muted/50 p-4 border border-border/50">
         <p className="text-sm text-muted-foreground">
-          <strong className="text-foreground">Hinweis:</strong> Diese Angaben werden auf Rechnungen 
-          und anderen offiziellen Dokumenten angezeigt. Stellen Sie sicher, dass alle Informationen 
-          korrekt und aktuell sind.
+          <strong className="text-foreground">Hinweis:</strong> Diese Angaben
+          werden auf Rechnungen und anderen offiziellen Dokumenten angezeigt.
+          Stellen Sie sicher, dass alle Informationen korrekt und aktuell sind.
         </p>
       </div>
     </div>
   );
 }
-

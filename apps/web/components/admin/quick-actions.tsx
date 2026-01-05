@@ -2,26 +2,22 @@
 
 import { useState } from "react";
 import {
-  Trash2,
-  Zap,
-  Loader2,
-} from "lucide-react";
-
-import { Button } from '@/components/alignui/actions/button';
-import { useToast } from "@/components/ui/use-toast";
-import {
   clearOldErrors,
   optimizeDatabase,
   type QuickActionResult,
 } from "@/actions/admin-system-actions";
+import { Loader2, Trash2, Zap } from "lucide-react";
+
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/alignui/actions/button";
 import {
-  AlertDialogRoot,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogRoot,
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/alignui/overlays/alert-dialog";
@@ -81,7 +77,8 @@ export function QuickActions() {
       toast({
         variant: "destructive",
         title: "Fehler",
-        description: error instanceof Error ? error.message : "Aktion fehlgeschlagen",
+        description:
+          error instanceof Error ? error.message : "Aktion fehlgeschlagen",
       });
     } finally {
       setLoadingAction(null);
@@ -90,105 +87,114 @@ export function QuickActions() {
 
   return (
     <div className="space-y-4">
-        <div className="space-y-2">
-          {actions.map((action) => {
-            const isLoading = loadingAction === action.id;
+      <div className="space-y-2">
+        {actions.map((action) => {
+          const isLoading = loadingAction === action.id;
 
-            if (action.requiresConfirmation) {
-              return (
-                <AlertDialogRoot key={action.id}>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant={action.variant}
-                      className="justify-start py-3 w-full h-auto"
-                      disabled={isLoading}
-                    >
-                      <div className="flex gap-3 items-center w-full">
-                        <div className={`p-2 rounded-md ${
-                          action.variant === "destructive" 
-                            ? "bg-destructive/10 text-destructive" 
-                            : "bg-primary/10 text-primary"
-                        }`}>
-                          {action.icon}
-                        </div>
-                        <div className="flex-1 text-left">
-                          <div className="font-medium">{action.title}</div>
-                          <div className="text-xs opacity-70 mt-0.5">
-                            {action.description}
-                          </div>
-                        </div>
-                        {isLoading && (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        )}
-                      </div>
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle className="flex gap-2 items-center">
-                        {action.icon}
-                        {action.title}
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {action.description}
-                        <br />
-                        <br />
-                        <strong>Möchten Sie diese Aktion wirklich ausführen?</strong>
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleAction(action)}
-                        disabled={isLoading}
-                        className={action.variant === "destructive" ? "bg-destructive hover:bg-destructive/90" : ""}
-                      >
-                        {isLoading ? (
-                          <>
-                            <Loader2 className="mr-2 w-4 h-4 animate-spin" />
-                            Wird ausgeführt...
-                          </>
-                        ) : (
-                          "Bestätigen"
-                        )}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialogRoot>
-              );
-            }
-
+          if (action.requiresConfirmation) {
             return (
-              <Button
-                key={action.id}
-                variant={action.variant}
-                className="justify-start py-3 w-full h-auto"
-                onClick={() => handleAction(action)}
-                disabled={isLoading}
-              >
-                <div className="flex gap-3 items-center w-full">
-                  <div className={`p-2 rounded-md ${
-                    action.variant === "destructive" 
-                      ? "bg-destructive/10 text-destructive" 
-                      : "bg-primary/10 text-primary"
-                  }`}>
-                    {action.icon}
-                  </div>
-                  <div className="flex-1 text-left">
-                    <div className="font-medium">{action.title}</div>
-                    <div className="text-xs opacity-70 mt-0.5">
-                      {action.description}
+              <AlertDialogRoot key={action.id}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant={action.variant}
+                    className="justify-start py-3 w-full h-auto"
+                    disabled={isLoading}
+                  >
+                    <div className="flex gap-3 items-center w-full">
+                      <div
+                        className={`p-2 rounded-md ${
+                          action.variant === "destructive"
+                            ? "bg-destructive/10 text-destructive"
+                            : "bg-primary/10 text-primary"
+                        }`}
+                      >
+                        {action.icon}
+                      </div>
+                      <div className="flex-1 text-left">
+                        <div className="font-medium">{action.title}</div>
+                        <div className="text-xs opacity-70 mt-0.5">
+                          {action.description}
+                        </div>
+                      </div>
+                      {isLoading && (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      )}
                     </div>
-                  </div>
-                  {isLoading && loadingAction === action.id && (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  )}
-                </div>
-              </Button>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="flex gap-2 items-center">
+                      {action.icon}
+                      {action.title}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {action.description}
+                      <br />
+                      <br />
+                      <strong>
+                        Möchten Sie diese Aktion wirklich ausführen?
+                      </strong>
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleAction(action)}
+                      disabled={isLoading}
+                      className={
+                        action.variant === "destructive"
+                          ? "bg-destructive hover:bg-destructive/90"
+                          : ""
+                      }
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                          Wird ausgeführt...
+                        </>
+                      ) : (
+                        "Bestätigen"
+                      )}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogRoot>
             );
-          })}
-        </div>
+          }
+
+          return (
+            <Button
+              key={action.id}
+              variant={action.variant}
+              className="justify-start py-3 w-full h-auto"
+              onClick={() => handleAction(action)}
+              disabled={isLoading}
+            >
+              <div className="flex gap-3 items-center w-full">
+                <div
+                  className={`p-2 rounded-md ${
+                    action.variant === "destructive"
+                      ? "bg-destructive/10 text-destructive"
+                      : "bg-primary/10 text-primary"
+                  }`}
+                >
+                  {action.icon}
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="font-medium">{action.title}</div>
+                  <div className="text-xs opacity-70 mt-0.5">
+                    {action.description}
+                  </div>
+                </div>
+                {isLoading && loadingAction === action.id && (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                )}
+              </div>
+            </Button>
+          );
+        })}
+      </div>
     </div>
   );
 }
-

@@ -1,7 +1,12 @@
-import { Card, CardContent, CardHeader } from '@/components/alignui/data-display/card';
-import { Skeleton } from "@/components/ui/skeleton";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TrendingUp } from "lucide-react";
+
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from "@/components/alignui/data-display/card";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export default function AnalyticsLoading() {
   return (

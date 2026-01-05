@@ -1,8 +1,8 @@
 "use server";
 
 import { supabaseAdmin } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
 import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
 
 export type AdminStats = {
   totalUsers: number;
@@ -74,21 +74,3 @@ export async function getAdminStats(): Promise<{
     return { success: false, error: "An unexpected error occurred" };
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

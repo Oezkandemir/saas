@@ -16,8 +16,8 @@ import "@/styles/mdx.css";
 
 import { Metadata } from "next";
 
-import { constructMetadata, getBlurDataURL } from "@/lib/utils";
 import { logger } from "@/lib/logger";
+import { constructMetadata, getBlurDataURL } from "@/lib/utils";
 
 interface DocPageProps {
   params: Promise<{

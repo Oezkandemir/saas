@@ -1,22 +1,29 @@
 import { redirect } from "next/navigation";
-import { Activity, Database, AlertTriangle, BarChart3, Settings, Zap } from "lucide-react";
+import {
+  Activity,
+  AlertTriangle,
+  BarChart3,
+  Database,
+  Settings,
+  Zap,
+} from "lucide-react";
 import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { SystemStatus } from "@/components/admin/system-status";
-import { SystemErrors } from "@/components/admin/system-errors";
 import { DatabaseStats } from "@/components/admin/database-stats";
-import { QuickActions } from "@/components/admin/quick-actions";
-import { SystemMetricsComponent } from "@/components/admin/system-metrics";
 import { EnvironmentInfo } from "@/components/admin/environment-info";
+import { QuickActions } from "@/components/admin/quick-actions";
+import { SystemErrors } from "@/components/admin/system-errors";
+import { SystemMetricsComponent } from "@/components/admin/system-metrics";
+import { SystemStatus } from "@/components/admin/system-status";
 import {
-  AccordionRoot,
-  AccordionItem,
-  AccordionTrigger,
   AccordionContent,
+  AccordionItem,
+  AccordionRoot,
+  AccordionTrigger,
 } from "@/components/alignui/layout/accordion";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -50,9 +57,16 @@ export default async function SystemMonitoringPage() {
       contentClassName="pb-10"
     >
       <div className="max-w-7xl mx-auto">
-        <AccordionRoot type="multiple" defaultValue={["system-status", "database-stats"]} className="w-full space-y-4">
+        <AccordionRoot
+          type="multiple"
+          defaultValue={["system-status", "database-stats"]}
+          className="w-full space-y-4"
+        >
           {/* System Status */}
-          <AccordionItem value="system-status" className="border rounded-lg px-6 bg-card shadow-sm">
+          <AccordionItem
+            value="system-status"
+            className="border rounded-lg px-6 bg-card shadow-sm"
+          >
             <AccordionTrigger className="hover:no-underline py-6 -mx-6 px-6">
               <div className="flex items-center gap-3">
                 <Activity className="h-5 w-5 text-primary" />
@@ -72,12 +86,17 @@ export default async function SystemMonitoringPage() {
           </AccordionItem>
 
           {/* Database Statistics */}
-          <AccordionItem value="database-stats" className="border rounded-lg px-6 bg-card shadow-sm">
+          <AccordionItem
+            value="database-stats"
+            className="border rounded-lg px-6 bg-card shadow-sm"
+          >
             <AccordionTrigger className="hover:no-underline py-6 -mx-6 px-6">
               <div className="flex items-center gap-3">
                 <Database className="h-5 w-5 text-primary" />
                 <div className="text-left">
-                  <h3 className="text-lg font-semibold">Datenbank-Statistiken</h3>
+                  <h3 className="text-lg font-semibold">
+                    Datenbank-Statistiken
+                  </h3>
                   <p className="text-sm text-muted-foreground font-normal">
                     Tabellengrößen, Zeilenanzahl und Datenbank-Informationen
                   </p>
@@ -92,7 +111,10 @@ export default async function SystemMonitoringPage() {
           </AccordionItem>
 
           {/* Quick Actions */}
-          <AccordionItem value="quick-actions" className="border rounded-lg px-6 bg-card shadow-sm">
+          <AccordionItem
+            value="quick-actions"
+            className="border rounded-lg px-6 bg-card shadow-sm"
+          >
             <AccordionTrigger className="hover:no-underline py-6 -mx-6 px-6">
               <div className="flex items-center gap-3">
                 <Zap className="h-5 w-5 text-primary" />
@@ -112,7 +134,10 @@ export default async function SystemMonitoringPage() {
           </AccordionItem>
 
           {/* System Errors */}
-          <AccordionItem value="system-errors" className="border rounded-lg px-6 bg-card shadow-sm">
+          <AccordionItem
+            value="system-errors"
+            className="border rounded-lg px-6 bg-card shadow-sm"
+          >
             <AccordionTrigger className="hover:no-underline py-6 -mx-6 px-6">
               <div className="flex items-center gap-3">
                 <AlertTriangle className="h-5 w-5 text-primary" />
@@ -132,7 +157,10 @@ export default async function SystemMonitoringPage() {
           </AccordionItem>
 
           {/* System Metrics */}
-          <AccordionItem value="system-metrics" className="border rounded-lg px-6 bg-card shadow-sm">
+          <AccordionItem
+            value="system-metrics"
+            className="border rounded-lg px-6 bg-card shadow-sm"
+          >
             <AccordionTrigger className="hover:no-underline py-6 -mx-6 px-6">
               <div className="flex items-center gap-3">
                 <BarChart3 className="h-5 w-5 text-primary" />
@@ -152,12 +180,17 @@ export default async function SystemMonitoringPage() {
           </AccordionItem>
 
           {/* Environment Info */}
-          <AccordionItem value="environment-info" className="border rounded-lg px-6 bg-card shadow-sm">
+          <AccordionItem
+            value="environment-info"
+            className="border rounded-lg px-6 bg-card shadow-sm"
+          >
             <AccordionTrigger className="hover:no-underline py-6 -mx-6 px-6">
               <div className="flex items-center gap-3">
                 <Settings className="h-5 w-5 text-primary" />
                 <div className="text-left">
-                  <h3 className="text-lg font-semibold">Umgebungsinformationen</h3>
+                  <h3 className="text-lg font-semibold">
+                    Umgebungsinformationen
+                  </h3>
                   <p className="text-sm text-muted-foreground font-normal">
                     Systemkonfiguration und Speicher-Statistiken
                   </p>
@@ -175,7 +208,3 @@ export default async function SystemMonitoringPage() {
     </UnifiedPageLayout>
   );
 }
-
-
-
-

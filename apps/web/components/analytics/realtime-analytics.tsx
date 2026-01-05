@@ -1,21 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSupabase } from "@/components/supabase-provider";
 import {
+  getDeviceStatistics,
+  getGeolocationStats,
   getRealtimeActiveUsers,
   getRealtimePageViews,
-  getGeolocationStats,
-  getDeviceStatistics,
 } from "@/actions/analytics-actions";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/alignui/data-display/card';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
+import { formatDistanceToNow } from "date-fns";
+import { Activity, Globe, MapPin, Monitor, Users } from "lucide-react";
+
+import { logger } from "@/lib/logger";
 import {
   Table,
   TableBody,
@@ -24,9 +19,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Users, Globe, Monitor, Activity, MapPin } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { logger } from "@/lib/logger";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import { useSupabase } from "@/components/supabase-provider";
 
 interface ActiveUser {
   user_id: string | null;
@@ -74,7 +75,9 @@ export function RealtimeAnalytics() {
   const { supabase } = useSupabase();
   const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([]);
   const [pageViews, setPageViews] = useState<PageView[]>([]);
-  const [geolocationStats, setGeolocationStats] = useState<GeolocationStat[]>([]);
+  const [geolocationStats, setGeolocationStats] = useState<GeolocationStat[]>(
+    [],
+  );
   const [deviceStats, setDeviceStats] = useState<DeviceStat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -83,12 +86,13 @@ export function RealtimeAnalytics() {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [usersResult, viewsResult, geoResult, deviceResult] = await Promise.allSettled([
-          getRealtimeActiveUsers(),
-          getRealtimePageViews(),
-          getGeolocationStats(7),
-          getDeviceStatistics(7),
-        ]);
+        const [usersResult, viewsResult, geoResult, deviceResult] =
+          await Promise.allSettled([
+            getRealtimeActiveUsers(),
+            getRealtimePageViews(),
+            getGeolocationStats(7),
+            getDeviceStatistics(7),
+          ]);
 
         if (usersResult.status === "fulfilled" && usersResult.value.success) {
           setActiveUsers(usersResult.value.data || []);
@@ -144,10 +148,16 @@ export function RealtimeAnalytics() {
                   getRealtimeActiveUsers(),
                   getRealtimePageViews(),
                 ]);
-                if (usersResult.status === "fulfilled" && usersResult.value.success) {
+                if (
+                  usersResult.status === "fulfilled" &&
+                  usersResult.value.success
+                ) {
                   setActiveUsers(usersResult.value.data || []);
                 }
-                if (viewsResult.status === "fulfilled" && viewsResult.value.success) {
+                if (
+                  viewsResult.status === "fulfilled" &&
+                  viewsResult.value.success
+                ) {
                   setPageViews(viewsResult.value.data || []);
                 }
               } catch (error) {
@@ -204,9 +214,7 @@ export function RealtimeAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{activeUsers.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Letzte 5 Minuten
-            </p>
+            <p className="text-xs text-muted-foreground">Letzte 5 Minuten</p>
           </CardContent>
         </Card>
 
@@ -219,9 +227,7 @@ export function RealtimeAnalytics() {
             <div className="text-2xl font-bold">
               {pageViews.reduce((sum, pv) => sum + pv.view_count, 0)}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Letzte Stunde
-            </p>
+            <p className="text-xs text-muted-foreground">Letzte Stunde</p>
           </CardContent>
         </Card>
 
@@ -232,9 +238,7 @@ export function RealtimeAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{geolocationStats.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Letzte 7 Tage
-            </p>
+            <p className="text-xs text-muted-foreground">Letzte 7 Tage</p>
           </CardContent>
         </Card>
 
@@ -247,9 +251,7 @@ export function RealtimeAnalytics() {
             <div className="text-2xl font-bold">
               {new Set(deviceStats.map((d) => d.device_type)).size}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Verschiedene Geräte
-            </p>
+            <p className="text-xs text-muted-foreground">Verschiedene Geräte</p>
           </CardContent>
         </Card>
       </div>
@@ -309,7 +311,8 @@ export function RealtimeAnalytics() {
                       })}
                     </TableCell>
                     <TableCell className="text-xs">
-                      {Math.floor(user.duration_seconds / 60)}m {user.duration_seconds % 60}s
+                      {Math.floor(user.duration_seconds / 60)}m{" "}
+                      {user.duration_seconds % 60}s
                     </TableCell>
                   </TableRow>
                 ))}
@@ -432,13 +435,17 @@ export function RealtimeAnalytics() {
                     </TableCell>
                     <TableCell className="text-xs">
                       {device.browser}
-                      {device.browser_version ? ` ${device.browser_version}` : ""}
+                      {device.browser_version
+                        ? ` ${device.browser_version}`
+                        : ""}
                     </TableCell>
                     <TableCell className="text-xs">
                       {device.os}
                       {device.os_version ? ` ${device.os_version}` : ""}
                     </TableCell>
-                    <TableCell className="text-xs">{device.screen_resolution}</TableCell>
+                    <TableCell className="text-xs">
+                      {device.screen_resolution}
+                    </TableCell>
                     <TableCell>{device.user_count}</TableCell>
                     <TableCell>{device.page_views}</TableCell>
                   </TableRow>
@@ -455,4 +462,3 @@ export function RealtimeAnalytics() {
     </div>
   );
 }
-

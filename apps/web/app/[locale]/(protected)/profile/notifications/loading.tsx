@@ -3,7 +3,7 @@ import {
   Card,
   CardContent,
   CardHeader,
-} from '@/components/alignui/data-display/card';
+} from "@/components/alignui/data-display/card";
 
 export default function NotificationsLoading() {
   return (
@@ -46,10 +46,3 @@ export default function NotificationsLoading() {
     </div>
   );
 }
-
-
-
-
-
-
-

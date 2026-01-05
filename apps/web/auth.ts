@@ -2,8 +2,8 @@ import { cache } from "react";
 import { NextRequest, NextResponse } from "next/server";
 
 import { syncUserWithDatabase } from "@/lib/auth-sync";
-import { getSupabaseServer } from "@/lib/supabase-server";
 import { logger } from "@/lib/logger";
+import { getSupabaseServer } from "@/lib/supabase-server";
 
 export const auth = cache(async () => {
   try {

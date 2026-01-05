@@ -1,5 +1,7 @@
 "use client";
 
+import type { PlanStatistics } from "@/actions/admin-plan-actions";
+
 import {
   Table,
   TableBody,
@@ -8,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { PlanStatistics } from "@/actions/admin-plan-actions";
 
 interface PlanStatisticsTableProps {
   statistics: PlanStatistics[];
@@ -45,23 +46,24 @@ export function PlanStatisticsTable({ statistics }: PlanStatisticsTableProps) {
                 </span>
               </div>
             </TableCell>
-            <TableCell className="text-right">
-              {stat.user_count}
-            </TableCell>
+            <TableCell className="text-right">{stat.user_count}</TableCell>
             <TableCell className="text-right font-semibold">
-              €{Number(stat.mrr || 0).toLocaleString("de-DE", {
+              €
+              {Number(stat.mrr || 0).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
             </TableCell>
             <TableCell className="text-right font-semibold">
-              €{Number(stat.arr || 0).toLocaleString("de-DE", {
+              €
+              {Number(stat.arr || 0).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
             </TableCell>
             <TableCell className="text-right font-semibold">
-              €{Number(stat.total_revenue || 0).toLocaleString("de-DE", {
+              €
+              {Number(stat.total_revenue || 0).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
@@ -72,8 +74,3 @@ export function PlanStatisticsTable({ statistics }: PlanStatisticsTableProps) {
     </Table>
   );
 }
-
-
-
-
-

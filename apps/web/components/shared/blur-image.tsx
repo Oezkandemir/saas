@@ -77,7 +77,9 @@ export function BlurImage({
         onError={handleError}
         priority={priority}
         loading={priority ? undefined : "lazy"}
-        sizes={sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
+        sizes={
+          sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        }
         {...props}
       />
     </div>

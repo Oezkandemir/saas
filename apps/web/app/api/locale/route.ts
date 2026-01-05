@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-
+import { NextRequest, NextResponse } from "next/server";
 import { routing } from "@/i18n/routing";
-import { logger } from "@/lib/logger";
+
 import { applyAPIMiddleware } from "@/lib/api-middleware";
+import { logger } from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   // SECURITY: Apply rate limiting
@@ -22,10 +22,7 @@ export async function POST(request: NextRequest) {
 
     // Validate locale
     if (!locale || !routing.locales.includes(locale)) {
-      return NextResponse.json(
-        { error: "Invalid locale" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Invalid locale" }, { status: 400 });
     }
 
     // Save locale preference to cookie (expires in 1 year)
@@ -46,20 +43,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

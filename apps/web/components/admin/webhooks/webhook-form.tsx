@@ -1,11 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import {
+  createWebhook,
+  deleteWebhook,
+  updateWebhook,
+  Webhook,
+} from "@/actions/webhook-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Loader2, Trash2 } from "lucide-react";
-import { Button } from '@/components/alignui/actions/button';
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -15,15 +23,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from '@/components/alignui/forms/input';
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  createWebhook,
-  updateWebhook,
-  deleteWebhook,
-  Webhook,
-} from "@/actions/webhook-actions";
-import { toast } from "sonner";
+import { Button } from "@/components/alignui/actions/button";
+import { Input } from "@/components/alignui/forms/input";
 
 // Client-side secret generator (not a server action)
 function generateClientSecret(): string {
@@ -97,7 +98,9 @@ export function WebhookForm({
 
       if (result.success && result.data) {
         toast.success(
-          webhook ? "Webhook updated successfully" : "Webhook created successfully",
+          webhook
+            ? "Webhook updated successfully"
+            : "Webhook created successfully",
         );
         onSuccess(result.data);
       } else {
@@ -308,4 +311,3 @@ export function WebhookForm({
     </Form>
   );
 }
-

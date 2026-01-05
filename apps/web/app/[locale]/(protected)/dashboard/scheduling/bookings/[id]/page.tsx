@@ -1,15 +1,30 @@
-import { redirect, notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
-import { getCurrentUser } from "@/lib/session";
+import { notFound, redirect } from "next/navigation";
 import { getBooking } from "@/actions/scheduling/bookings-actions";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { formatDurationHours } from "@/lib/utils";
-import { Calendar, Clock, User, Mail, MessageSquare, XCircle, CheckCircle2, Users } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
+import {
+  Calendar,
+  CheckCircle2,
+  Clock,
+  Mail,
+  MessageSquare,
+  User,
+  Users,
+  XCircle,
+} from "lucide-react";
+import { getTranslations } from "next-intl/server";
+
+import { getCurrentUser } from "@/lib/session";
+import { formatDurationHours } from "@/lib/utils";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { BookingActions } from "@/components/scheduling/booking-actions";
 
 export const dynamic = "force-dynamic";
@@ -68,12 +83,18 @@ export default async function BookingDetailPage({
         {/* Booking Information */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">{t("bookingInfo") || "Booking Information"}</CardTitle>
+            <CardTitle className="text-base">
+              {t("bookingInfo") || "Booking Information"}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">{t("eventType") || "Event Type"}</p>
-              <p className="text-sm font-medium">{booking.event_type?.title || "-"}</p>
+              <p className="text-xs text-muted-foreground">
+                {t("eventType") || "Event Type"}
+              </p>
+              <p className="text-sm font-medium">
+                {booking.event_type?.title || "-"}
+              </p>
             </div>
 
             <Separator />
@@ -84,7 +105,9 @@ export default async function BookingDetailPage({
                 {t("date") || "Date"}
               </p>
               <p className="text-sm font-medium">
-                {format(startDate, "EEEE, MMMM d, yyyy", { locale: dateLocale })}
+                {format(startDate, "EEEE, MMMM d, yyyy", {
+                  locale: dateLocale,
+                })}
               </p>
             </div>
 
@@ -92,13 +115,17 @@ export default async function BookingDetailPage({
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">{t("startTime") || "Start Time"}</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("startTime") || "Start Time"}
+                </p>
                 <p className="text-sm font-medium">
                   {format(startDate, "HH:mm", { locale: dateLocale })}
                 </p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">{t("endTime") || "End Time"}</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("endTime") || "End Time"}
+                </p>
                 <p className="text-sm font-medium">
                   {format(endDate, "HH:mm", { locale: dateLocale })}
                 </p>
@@ -109,7 +136,9 @@ export default async function BookingDetailPage({
               <>
                 <Separator />
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">{t("duration") || "Duration"}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("duration") || "Duration"}
+                  </p>
                   <p className="text-sm font-medium">
                     {formatDurationHours(booking.duration_hours, locale)}
                   </p>
@@ -121,12 +150,17 @@ export default async function BookingDetailPage({
               <>
                 <Separator />
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">{t("price") || "Price"}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("price") || "Price"}
+                  </p>
                   <p className="text-sm font-medium">
-                    {new Intl.NumberFormat(locale === "de" ? "de-DE" : "en-US", {
-                      style: "currency",
-                      currency: booking.price_currency || "EUR",
-                    }).format(booking.price_amount)}
+                    {new Intl.NumberFormat(
+                      locale === "de" ? "de-DE" : "en-US",
+                      {
+                        style: "currency",
+                        currency: booking.price_currency || "EUR",
+                      },
+                    ).format(booking.price_amount)}
                   </p>
                 </div>
               </>
@@ -137,7 +171,9 @@ export default async function BookingDetailPage({
         {/* Invitee Information */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">{t("inviteeInfo") || "Invitee Information"}</CardTitle>
+            <CardTitle className="text-base">
+              {t("inviteeInfo") || "Invitee Information"}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1">
@@ -177,21 +213,23 @@ export default async function BookingDetailPage({
                 <div className="space-y-2">
                   <p className="text-xs text-muted-foreground flex items-center gap-2">
                     <Users className="h-3 w-3" />
-                    {t("participants") || "Participants"} ({booking.number_of_participants})
+                    {t("participants") || "Participants"} (
+                    {booking.number_of_participants})
                   </p>
                   <div className="space-y-1">
                     <p className="text-sm font-medium">
                       1. {booking.invitee_name}
                     </p>
-                    {booking.participant_names && booking.participant_names.length > 0 && (
-                      <>
-                        {booking.participant_names.map((name, index) => (
-                          <p key={index} className="text-sm font-medium">
-                            {index + 2}. {name}
-                          </p>
-                        ))}
-                      </>
-                    )}
+                    {booking.participant_names &&
+                      booking.participant_names.length > 0 && (
+                        <>
+                          {booking.participant_names.map((name, index) => (
+                            <p key={index} className="text-sm font-medium">
+                              {index + 2}. {name}
+                            </p>
+                          ))}
+                        </>
+                      )}
                   </div>
                 </div>
               </>
@@ -203,20 +241,30 @@ export default async function BookingDetailPage({
       {/* Additional Details */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">{t("additionalDetails") || "Additional Details"}</CardTitle>
+          <CardTitle className="text-base">
+            {t("additionalDetails") || "Additional Details"}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">{t("createdAt") || "Created At"}</p>
+              <p className="text-xs text-muted-foreground">
+                {t("createdAt") || "Created At"}
+              </p>
               <p className="text-sm">
-                {format(new Date(booking.created_at), "PPpp", { locale: dateLocale })}
+                {format(new Date(booking.created_at), "PPpp", {
+                  locale: dateLocale,
+                })}
               </p>
             </div>
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">{t("updatedAt") || "Updated At"}</p>
+              <p className="text-xs text-muted-foreground">
+                {t("updatedAt") || "Updated At"}
+              </p>
               <p className="text-sm">
-                {format(new Date(booking.updated_at), "PPpp", { locale: dateLocale })}
+                {format(new Date(booking.updated_at), "PPpp", {
+                  locale: dateLocale,
+                })}
               </p>
             </div>
           </div>
@@ -225,7 +273,9 @@ export default async function BookingDetailPage({
             <>
               <Separator />
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">{t("cancelReason") || "Cancel Reason"}</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("cancelReason") || "Cancel Reason"}
+                </p>
                 <p className="text-sm">{booking.cancel_reason}</p>
               </div>
             </>
@@ -235,4 +285,3 @@ export default async function BookingDetailPage({
     </UnifiedPageLayout>
   );
 }
-

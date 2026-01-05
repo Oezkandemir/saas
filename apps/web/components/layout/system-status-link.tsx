@@ -1,12 +1,13 @@
-import { Link } from "@/i18n/routing";
-import { CheckCircle2, AlertCircle } from "lucide-react";
 import { getPublicSystemStatus } from "@/actions/public-system-status";
+import { Link } from "@/i18n/routing";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 export async function SystemStatusLink() {
   try {
     const status = await getPublicSystemStatus();
-    
-    const hasSystemIssues = status.hasErrors || status.overallStatus !== "operational";
+
+    const hasSystemIssues =
+      status.hasErrors || status.overallStatus !== "operational";
 
     return (
       <Link
@@ -39,4 +40,3 @@ export async function SystemStatusLink() {
     );
   }
 }
-

@@ -87,7 +87,7 @@ BEGIN
   SET stripe_customer_id = customer_id,
       updated_at = NOW()
   WHERE id = user_id;
-  
+
   RETURN FOUND;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -107,7 +107,7 @@ BEGIN
       stripe_current_period_end = current_period_end,
       updated_at = NOW()
   WHERE id = user_id;
-  
+
   RETURN FOUND;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -123,7 +123,7 @@ BEGIN
       stripe_price_id = NULL,
       updated_at = NOW()
   WHERE id = user_id;
-  
+
   RETURN FOUND;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -139,7 +139,7 @@ BEGIN
   SELECT id INTO user_id
   FROM public.users
   WHERE stripe_customer_id = customer_id;
-  
+
   RETURN user_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -149,9 +149,9 @@ CREATE OR REPLACE FUNCTION public.describe_table(table_name TEXT)
 RETURNS TABLE (column_name TEXT, data_type TEXT) AS $$
 BEGIN
   RETURN QUERY EXECUTE format('
-    SELECT column_name::TEXT, data_type::TEXT 
-    FROM information_schema.columns 
-    WHERE table_schema = ''public'' 
+    SELECT column_name::TEXT, data_type::TEXT
+    FROM information_schema.columns
+    WHERE table_schema = ''public''
     AND table_name = %L', table_name);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -175,13 +175,13 @@ DECLARE
   auth_user RECORD;
   counter INTEGER := 0;
 BEGIN
-  FOR auth_user IN 
+  FOR auth_user IN
     SELECT id, email, raw_user_meta_data FROM auth.users
   LOOP
     INSERT INTO public.users (
-      id, 
-      email, 
-      name, 
+      id,
+      email,
+      name,
       role,
       created_at,
       updated_at
@@ -194,12 +194,12 @@ BEGIN
       NOW()
     )
     ON CONFLICT (id) DO NOTHING;
-    
+
     IF FOUND THEN
       counter := counter + 1;
     END IF;
   END LOOP;
-  
+
   RETURN counter;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -242,4 +242,4 @@ If you encounter issues with the Stripe integration, check:
 2. The RLS policies are properly configured
 3. The trigger is correctly set up for new user creation
 4. Your webhook endpoint is correct and receiving events
-5. The Stripe API keys and webhook secret are correctly set in your environment variables 
+5. The Stripe API keys and webhook secret are correctly set in your environment variables

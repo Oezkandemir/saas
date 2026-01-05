@@ -1,24 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import {
+  createCustomer,
+  Customer,
+  CustomerInput,
+  getCustomers,
+} from "@/actions/customers-actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Plus, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { getCustomers, Customer, createCustomer, CustomerInput } from "@/actions/customers-actions";
-import {
-  SelectRoot as Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/alignui/forms/select";
-import { Button } from '@/components/alignui/actions/button';
-import {
-  DialogRoot as Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/alignui/overlays/dialog";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+
+import { Button } from "@/components/alignui/actions/button";
 import {
   FormRoot as Form,
   FormControl,
@@ -27,12 +23,22 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/alignui/forms/form";
-import { Input } from '@/components/alignui/forms/input';
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Plus, UserPlus, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { Input } from "@/components/alignui/forms/input";
+import {
+  SelectRoot as Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/alignui/forms/select";
+import {
+  DialogRoot as Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/alignui/overlays/dialog";
 
 interface CustomerSelectorProps {
   value?: string;
@@ -41,10 +47,17 @@ interface CustomerSelectorProps {
   companyProfileId?: string;
 }
 
-export function CustomerSelector({ value, onValueChange, disabled, companyProfileId }: CustomerSelectorProps) {
+export function CustomerSelector({
+  value,
+  onValueChange,
+  disabled,
+  companyProfileId,
+}: CustomerSelectorProps) {
   const t = useTranslations("Documents.customerSelector");
   const tDialog = useTranslations("Documents.customerSelector.dialog");
-  const tValidation = useTranslations("Documents.customerSelector.dialog.validation");
+  const tValidation = useTranslations(
+    "Documents.customerSelector.dialog.validation",
+  );
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -52,7 +65,11 @@ export function CustomerSelector({ value, onValueChange, disabled, companyProfil
 
   const quickCustomerSchema = z.object({
     name: z.string().min(1, tValidation("nameRequired")),
-    email: z.string().email(tValidation("invalidEmail")).optional().or(z.literal("")),
+    email: z
+      .string()
+      .email(tValidation("invalidEmail"))
+      .optional()
+      .or(z.literal("")),
     phone: z.string().optional(),
     company: z.string().optional(),
   });
@@ -66,9 +83,9 @@ export function CustomerSelector({ value, onValueChange, disabled, companyProfil
       setIsLoading(true);
       const data = await getCustomers(companyProfileId);
       setCustomers(data);
-      
+
       // If a customer is selected but not in the new list, clear selection
-      if (value && !data.find(c => c.id === value)) {
+      if (value && !data.find((c) => c.id === value)) {
         onValueChange("");
       }
     } catch (error) {
@@ -101,11 +118,13 @@ export function CustomerSelector({ value, onValueChange, disabled, companyProfil
       setIsDialogOpen(false);
       form.reset();
       toast.success(tDialog("toast.success"), {
-        description: tDialog("toast.successDescription", { name: newCustomer.name }),
+        description: tDialog("toast.successDescription", {
+          name: newCustomer.name,
+        }),
       });
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : tDialog("toast.error")
+        error instanceof Error ? error.message : tDialog("toast.error"),
       );
     } finally {
       setIsCreating(false);
@@ -128,12 +147,22 @@ export function CustomerSelector({ value, onValueChange, disabled, companyProfil
         disabled={disabled || isLoading}
       >
         <SelectTrigger className="h-11">
-          <SelectValue placeholder={isLoading ? t("loading") : selectedCustomer ? selectedCustomer.name : t("selectCustomer")}>
+          <SelectValue
+            placeholder={
+              isLoading
+                ? t("loading")
+                : selectedCustomer
+                  ? selectedCustomer.name
+                  : t("selectCustomer")
+            }
+          >
             {selectedCustomer ? (
               <div className="flex items-center gap-2">
                 <span className="font-medium">{selectedCustomer.name}</span>
                 {selectedCustomer.company && (
-                  <span className="text-xs text-muted-foreground">• {selectedCustomer.company}</span>
+                  <span className="text-xs text-muted-foreground">
+                    • {selectedCustomer.company}
+                  </span>
                 )}
               </div>
             ) : (
@@ -156,14 +185,19 @@ export function CustomerSelector({ value, onValueChange, disabled, companyProfil
               <div className="flex items-center gap-2">
                 <span className="font-medium">{customer.name}</span>
                 {customer.company && (
-                  <span className="text-xs text-muted-foreground">• {customer.company}</span>
+                  <span className="text-xs text-muted-foreground">
+                    • {customer.company}
+                  </span>
                 )}
               </div>
             </SelectItem>
           ))}
           {customers.length > 0 && (
             <div className="border-t pt-1 mt-1">
-              <SelectItem value="create-new" className="text-primary font-medium">
+              <SelectItem
+                value="create-new"
+                className="text-primary font-medium"
+              >
                 <div className="flex items-center gap-2">
                   <Plus className="h-4 w-4" />
                   {t("createNew")}
@@ -181,12 +215,13 @@ export function CustomerSelector({ value, onValueChange, disabled, companyProfil
               <UserPlus className="h-5 w-5 text-primary" />
               {tDialog("title")}
             </DialogTitle>
-            <DialogDescription>
-              {tDialog("description")}
-            </DialogDescription>
+            <DialogDescription>{tDialog("description")}</DialogDescription>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleCreateCustomer)} className="space-y-4">
+            <form
+              onSubmit={form.handleSubmit(handleCreateCustomer)}
+              className="space-y-4"
+            >
               <FormField
                 control={form.control}
                 name="name"
@@ -194,7 +229,10 @@ export function CustomerSelector({ value, onValueChange, disabled, companyProfil
                   <FormItem>
                     <FormLabel>{tDialog("fields.name")}</FormLabel>
                     <FormControl>
-                      <Input placeholder={tDialog("fields.namePlaceholder")} {...field} />
+                      <Input
+                        placeholder={tDialog("fields.namePlaceholder")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -208,7 +246,11 @@ export function CustomerSelector({ value, onValueChange, disabled, companyProfil
                     <FormItem>
                       <FormLabel>{tDialog("fields.email")}</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder={tDialog("fields.emailPlaceholder")} {...field} />
+                        <Input
+                          type="email"
+                          placeholder={tDialog("fields.emailPlaceholder")}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -221,7 +263,11 @@ export function CustomerSelector({ value, onValueChange, disabled, companyProfil
                     <FormItem>
                       <FormLabel>{tDialog("fields.phone")}</FormLabel>
                       <FormControl>
-                        <Input type="tel" placeholder={tDialog("fields.phonePlaceholder")} {...field} />
+                        <Input
+                          type="tel"
+                          placeholder={tDialog("fields.phonePlaceholder")}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -235,7 +281,10 @@ export function CustomerSelector({ value, onValueChange, disabled, companyProfil
                   <FormItem>
                     <FormLabel>{tDialog("fields.company")}</FormLabel>
                     <FormControl>
-                      <Input placeholder={tDialog("fields.companyPlaceholder")} {...field} />
+                      <Input
+                        placeholder={tDialog("fields.companyPlaceholder")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -274,4 +323,3 @@ export function CustomerSelector({ value, onValueChange, disabled, companyProfil
     </>
   );
 }
-

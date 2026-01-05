@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getSupabaseRouteHandlerClient } from "@/lib/supabase-route-handler";
 import { logger } from "@/lib/logger";
 import { createLoginSession } from "@/lib/session-tracking";
+import { getSupabaseRouteHandlerClient } from "@/lib/supabase-route-handler";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,14 +13,11 @@ export async function GET(request: NextRequest) {
     if (code) {
       const supabase = await getSupabaseRouteHandlerClient();
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-      
+
       if (!error && data.session && data.user) {
         // Create login session and log to history
         const expiresAt = new Date(data.session.expires_at! * 1000);
-        await createLoginSession(
-          data.user.id,
-          expiresAt,
-        );
+        await createLoginSession(data.user.id, expiresAt);
       }
     }
 

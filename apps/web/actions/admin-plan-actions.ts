@@ -1,8 +1,8 @@
 "use server";
 
 import { supabaseAdmin } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
 import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
 
 export interface Plan {
   id: string;
@@ -235,7 +235,7 @@ export async function getPlanFeatures(planId: string): Promise<{
  */
 export async function updatePlan(
   planId: string,
-  updates: Partial<Plan>
+  updates: Partial<Plan>,
 ): Promise<{
   success: boolean;
   data?: Plan;
@@ -281,9 +281,7 @@ export async function updatePlan(
 /**
  * Get plan migrations
  */
-export async function getPlanMigrations(
-  limit: number = 100
-): Promise<{
+export async function getPlanMigrations(limit: number = 100): Promise<{
   success: boolean;
   data?: PlanMigration[];
   error?: string;
@@ -329,7 +327,9 @@ export async function getUsersByPlan(): Promise<{
     // First get all users with Polar subscriptions (Stripe removed)
     const { data: usersData, error: usersError } = await supabaseAdmin
       .from("users")
-      .select("id, email, name, role, polar_product_id, polar_subscription_id, polar_current_period_end")
+      .select(
+        "id, email, name, role, polar_product_id, polar_subscription_id, polar_current_period_end",
+      )
       .not("polar_subscription_id", "is", null)
       .order("created_at", { ascending: false });
 
@@ -341,7 +341,9 @@ export async function getUsersByPlan(): Promise<{
     // Then get all plans (Polar only)
     const { data: plansData, error: plansError } = await supabaseAdmin
       .from("plans")
-      .select("id, title, plan_key, polar_product_id_monthly, polar_product_id_yearly");
+      .select(
+        "id, title, plan_key, polar_product_id_monthly, polar_product_id_yearly",
+      );
 
     if (plansError) {
       logger.error("Error fetching plans:", plansError);
@@ -353,10 +355,9 @@ export async function getUsersByPlan(): Promise<{
       // Find matching plan by polar_product_id
       const matchingPlan = (plansData || []).find(
         (plan) =>
-          user.polar_product_id && (
-            user.polar_product_id === plan.polar_product_id_monthly ||
-            user.polar_product_id === plan.polar_product_id_yearly
-          )
+          user.polar_product_id &&
+          (user.polar_product_id === plan.polar_product_id_monthly ||
+            user.polar_product_id === plan.polar_product_id_yearly),
       );
 
       return {
@@ -382,6 +383,3 @@ export async function getUsersByPlan(): Promise<{
     return { success: false, error: "An unexpected error occurred" };
   }
 }
-
-
-

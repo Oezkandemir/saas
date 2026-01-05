@@ -1,10 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
+
 import {
-  handleAPIError,
-  successResponse,
   errorResponse,
   ErrorType,
+  handleAPIError,
+  successResponse,
 } from "@/lib/error-handler";
 
 describe("Error Handler", () => {
@@ -79,11 +80,14 @@ describe("Error Handler", () => {
     });
 
     it("should handle unknown error types", () => {
-      const result = handleAPIError({ unknown: "error" }, {
-        defaultMessage: "Default error",
-        logError: false,
-        includeDetails: true,
-      });
+      const result = handleAPIError(
+        { unknown: "error" },
+        {
+          defaultMessage: "Default error",
+          logError: false,
+          includeDetails: true,
+        },
+      );
 
       expect(result.status).toBe(500);
       const json = JSON.parse(result.body as string);
@@ -154,4 +158,3 @@ describe("Error Handler", () => {
     });
   });
 });
-

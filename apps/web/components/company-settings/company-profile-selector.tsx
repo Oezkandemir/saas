@@ -1,7 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { CompanyProfileWithMembership, getCompanyProfiles } from "@/actions/company-profiles-actions";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import {
+  CompanyProfileWithMembership,
+  getCompanyProfiles,
+} from "@/actions/company-profiles-actions";
+import { Building2, CheckCircle2, Shield } from "lucide-react";
+
+import { logger } from "@/lib/logger";
 import {
   Select,
   SelectContent,
@@ -9,11 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Building2, CheckCircle2, Shield } from "lucide-react";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Button } from '@/components/alignui/actions/button';
-import Link from "next/link";
-import { logger } from "@/lib/logger";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 
 interface CompanyProfileSelectorProps {
   value?: string;
@@ -62,7 +66,7 @@ export function CompanyProfileSelector({
 
   const handleValueChange = (profileId: string) => {
     if (onValueChange) onValueChange(profileId);
-    
+
     // Also pass the full profile object if handler is provided
     if (onProfileSelect) {
       const profile = profiles.find((p) => p.id === profileId) || null;
@@ -138,4 +142,3 @@ export function CompanyProfileSelector({
     </Select>
   );
 }
-

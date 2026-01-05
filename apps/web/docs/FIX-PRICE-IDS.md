@@ -1,6 +1,7 @@
 # 🔧 Price IDs Fehler beheben
 
 ## Problem
+
 Fehler: "No such price: 'price_1OzOf5FTOWjKsUdc2O52dOaS'"
 
 Dies bedeutet, dass die Price ID nicht in Ihrem Stripe Account existiert.
@@ -35,7 +36,8 @@ NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID=price_1GHI789xyz...  # ← Neue Pric
 NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID=price_1JKL012xyz...   # ← Neue Price ID hier
 ```
 
-**WICHTIG**: 
+**WICHTIG**:
+
 - Kopieren Sie die **komplette** Price ID (nicht nur den Anfang)
 - Stellen Sie sicher, dass keine Leerzeichen oder Zeilenumbrüche in der ID sind
 - Die IDs müssen mit `price_` beginnen
@@ -63,9 +65,7 @@ pnpm dev
 ## Hilfe
 
 Falls das Problem weiterhin besteht:
+
 1. Führen Sie aus: `node scripts/validate-stripe-prices.js` (prüft alle Price IDs)
 2. Überprüfen Sie, ob Sie den richtigen Stripe Account verwenden
 3. Stellen Sie sicher, dass die Price IDs aktiv sind (nicht archiviert)
-
-
-

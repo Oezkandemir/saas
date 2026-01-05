@@ -8,7 +8,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { Button } from '@/components/alignui/actions/button';
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Button } from "@/components/alignui/actions/button";
 import {
   FormRoot as Form,
   FormControl,
@@ -17,9 +18,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/alignui/forms/form";
-import { Input } from '@/components/alignui/forms/input';
+import { Input } from "@/components/alignui/forms/input";
 import { useNotificationsContext } from "@/components/context/notifications-context";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSupabase } from "@/components/supabase-provider";
 
 export function NewsletterForm() {

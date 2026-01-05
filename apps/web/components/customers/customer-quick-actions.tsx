@@ -1,13 +1,15 @@
 "use client";
 
-import { Phone, Mail, FileText, Copy, Check } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { Button } from '@/components/alignui/actions/button';
-import { Customer } from "@/actions/customers-actions";
-import { SendEmailDialog } from "./send-email-dialog";
-import Link from "next/link";
-import { toast } from "sonner";
 import { useState } from "react";
+import Link from "next/link";
+import { Customer } from "@/actions/customers-actions";
+import { Check, Copy, FileText, Mail, Phone } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+
+import { Button } from "@/components/alignui/actions/button";
+
+import { SendEmailDialog } from "./send-email-dialog";
 
 interface CustomerQuickActionsProps {
   customer: Customer;
@@ -80,14 +82,18 @@ export function CustomerQuickActions({ customer }: CustomerQuickActionsProps) {
         </Button>
       )}
 
-      <Link href={`/dashboard/documents/new?type=quote&customer_id=${customer.id}`}>
+      <Link
+        href={`/dashboard/documents/new?type=quote&customer_id=${customer.id}`}
+      >
         <Button variant="outline" size="sm" className="gap-2">
           <FileText className="h-4 w-4" />
           {t("newQuote")}
         </Button>
       </Link>
 
-      <Link href={`/dashboard/documents/new?type=invoice&customer_id=${customer.id}`}>
+      <Link
+        href={`/dashboard/documents/new?type=invoice&customer_id=${customer.id}`}
+      >
         <Button variant="outline" size="sm" className="gap-2">
           <FileText className="h-4 w-4" />
           {t("newInvoice")}
@@ -96,9 +102,3 @@ export function CustomerQuickActions({ customer }: CustomerQuickActionsProps) {
     </div>
   );
 }
-
-
-
-
-
-

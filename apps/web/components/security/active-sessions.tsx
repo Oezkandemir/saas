@@ -1,28 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Monitor, MapPin, Calendar, Trash2, AlertTriangle, LogOut } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { de } from "date-fns/locale";
-
-import { Button } from '@/components/alignui/actions/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/alignui/data-display/card';
-import { useToast } from "@/components/ui/use-toast";
-import {
-  getActiveSessions,
-  revokeSession,
-  revokeAllOtherSessions,
   clearAllSessions,
+  getActiveSessions,
+  revokeAllOtherSessions,
+  revokeSession,
   type ActiveSession,
 } from "@/actions/security-actions";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
+import { formatDistanceToNow } from "date-fns";
+import { de } from "date-fns/locale";
+import {
+  AlertTriangle,
+  Calendar,
+  LogOut,
+  MapPin,
+  Monitor,
+  Trash2,
+} from "lucide-react";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,6 +31,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 
 export function ActiveSessions() {
   const { toast } = useToast();
@@ -125,7 +132,8 @@ export function ActiveSessions() {
       if (result.success) {
         toast({
           title: "Alle Sessions gelöscht",
-          description: "Sie werden jetzt abgemeldet. Bitte melden Sie sich erneut an, um das 2FA-System zu testen.",
+          description:
+            "Sie werden jetzt abgemeldet. Bitte melden Sie sich erneut an, um das 2FA-System zu testen.",
         });
         // Redirect to login page after a short delay
         setTimeout(() => {
@@ -208,8 +216,9 @@ export function ActiveSessions() {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Alle Sessions beenden?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Dies beendet alle anderen aktiven Sessions außer der aktuellen.
-                      Sie müssen sich auf diesen Geräten erneut anmelden.
+                      Dies beendet alle anderen aktiven Sessions außer der
+                      aktuellen. Sie müssen sich auf diesen Geräten erneut
+                      anmelden.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -235,14 +244,17 @@ export function ActiveSessions() {
                     Alle Sessions löschen?
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Dies löscht ALLE Sessions inklusive der aktuellen. Sie werden
-                    abgemeldet und müssen sich erneut anmelden. Dies ist nützlich zum
-                    Testen des 2FA-Systems.
+                    Dies löscht ALLE Sessions inklusive der aktuellen. Sie
+                    werden abgemeldet und müssen sich erneut anmelden. Dies ist
+                    nützlich zum Testen des 2FA-Systems.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleClearAllSessions} className="bg-destructive hover:bg-destructive/90">
+                  <AlertDialogAction
+                    onClick={handleClearAllSessions}
+                    className="bg-destructive hover:bg-destructive/90"
+                  >
                     Alle löschen & Abmelden
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -266,7 +278,9 @@ export function ActiveSessions() {
                 <div className="flex-1 min-w-0 space-y-2">
                   <div className="flex items-center gap-2 flex-wrap">
                     <Monitor className="size-4 text-muted-foreground shrink-0" />
-                    <span className="font-medium break-words">{getDeviceInfo(session)}</span>
+                    <span className="font-medium break-words">
+                      {getDeviceInfo(session)}
+                    </span>
                     {session.isCurrent && (
                       <Badge variant="default" className="text-xs shrink-0">
                         Aktuell
@@ -276,7 +290,9 @@ export function ActiveSessions() {
                   <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
                     <div className="flex items-center gap-1 shrink-0">
                       <MapPin className="size-3" />
-                      <span className="break-words">{getLocationInfo(session)}</span>
+                      <span className="break-words">
+                        {getLocationInfo(session)}
+                      </span>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                       <Calendar className="size-3" />
@@ -305,8 +321,8 @@ export function ActiveSessions() {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Session beenden?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Diese Session wird beendet und der Benutzer muss sich erneut
-                          anmelden.
+                          Diese Session wird beendet und der Benutzer muss sich
+                          erneut anmelden.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -328,4 +344,3 @@ export function ActiveSessions() {
     </Card>
   );
 }
-

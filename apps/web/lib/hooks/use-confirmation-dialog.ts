@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useState } from "react";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
+
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -28,7 +29,9 @@ interface ConfirmationOptions {
 export function useConfirmationDialog() {
   const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState<ConfirmationOptions | null>(null);
-  const [resolvePromise, setResolvePromise] = useState<((value: boolean) => void) | null>(null);
+  const [resolvePromise, setResolvePromise] = useState<
+    ((value: boolean) => void) | null
+  >(null);
   const [neverAskAgain, setNeverAskAgain] = useState(false);
 
   const confirm = (opts: ConfirmationOptions): Promise<boolean> => {
@@ -80,7 +83,11 @@ export function useConfirmationDialog() {
           AlertDialogHeader,
           null,
           React.createElement(AlertDialogTitle, null, options.title),
-          React.createElement(AlertDialogDescription, null, options.description)
+          React.createElement(
+            AlertDialogDescription,
+            null,
+            options.description,
+          ),
         ),
         options.showNeverAskAgain &&
           React.createElement(
@@ -89,7 +96,8 @@ export function useConfirmationDialog() {
             React.createElement(Checkbox, {
               id: "never-ask-again",
               checked: neverAskAgain,
-              onCheckedChange: (checked: boolean | string) => setNeverAskAgain(!!checked),
+              onCheckedChange: (checked: boolean | string) =>
+                setNeverAskAgain(!!checked),
             }),
             React.createElement(
               Label,
@@ -97,8 +105,8 @@ export function useConfirmationDialog() {
                 htmlFor: "never-ask-again",
                 className: "text-sm font-normal cursor-pointer",
               },
-              "Nie wieder fragen"
-            )
+              "Nie wieder fragen",
+            ),
           ),
         React.createElement(
           AlertDialogFooter,
@@ -106,7 +114,7 @@ export function useConfirmationDialog() {
           React.createElement(
             AlertDialogCancel,
             { onClick: handleCancel },
-            options.cancelText || "Abbrechen"
+            options.cancelText || "Abbrechen",
           ),
           React.createElement(
             AlertDialogAction,
@@ -117,10 +125,10 @@ export function useConfirmationDialog() {
                   ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   : "",
             },
-            options.confirmText || "Bestätigen"
-          )
-        )
-      )
+            options.confirmText || "Bestätigen",
+          ),
+        ),
+      ),
     );
   };
 

@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 import { constructMetadata } from "@/lib/utils";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Separator } from "@/components/ui/separator";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 
 export const metadata: Metadata = constructMetadata({
   title: "Changelog",

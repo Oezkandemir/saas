@@ -1,12 +1,17 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+
 import { logger } from "@/lib/logger";
+import { createClient } from "@/lib/supabase/server";
 
 export interface PaymentReminderData {
   documentId: string;
-  reminderType: "reminder" | "first_dunning" | "second_dunning" | "final_notice";
+  reminderType:
+    | "reminder"
+    | "first_dunning"
+    | "second_dunning"
+    | "final_notice";
   reminderLevel: number;
   scheduledDate: string;
   feeAmount?: number;
@@ -18,8 +23,11 @@ export interface PaymentReminderData {
 export async function createPaymentReminder(data: PaymentReminderData) {
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user) {
       return { success: false, message: "User not authenticated" };
     }
@@ -47,7 +55,8 @@ export async function createPaymentReminder(data: PaymentReminderData) {
     logger.error("Error creating payment reminder:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to create reminder",
+      message:
+        error instanceof Error ? error.message : "Failed to create reminder",
     };
   }
 }
@@ -58,8 +67,11 @@ export async function createPaymentReminder(data: PaymentReminderData) {
 export async function sendPaymentReminder(reminderId: string) {
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user) {
       return { success: false, message: "User not authenticated" };
     }
@@ -67,13 +79,15 @@ export async function sendPaymentReminder(reminderId: string) {
     // Get reminder with document details
     const { data: reminder, error: reminderError } = await supabase
       .from("payment_reminders")
-      .select(`
+      .select(
+        `
         *,
         documents (
           *,
           customers (*)
         )
-      `)
+      `,
+      )
       .eq("id", reminderId)
       .single();
 
@@ -116,7 +130,8 @@ export async function sendPaymentReminder(reminderId: string) {
     logger.error("Error sending payment reminder:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to send reminder",
+      message:
+        error instanceof Error ? error.message : "Failed to send reminder",
     };
   }
 }
@@ -127,7 +142,7 @@ export async function sendPaymentReminder(reminderId: string) {
 export async function getPaymentReminders(documentId: string) {
   try {
     const supabase = await createClient();
-    
+
     const { data, error } = await supabase
       .from("payment_reminders")
       .select("*")
@@ -142,7 +157,8 @@ export async function getPaymentReminders(documentId: string) {
     return {
       success: false,
       data: [],
-      message: error instanceof Error ? error.message : "Failed to get reminders",
+      message:
+        error instanceof Error ? error.message : "Failed to get reminders",
     };
   }
 }
@@ -153,8 +169,11 @@ export async function getPaymentReminders(documentId: string) {
 export async function cancelPaymentReminder(reminderId: string) {
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user) {
       return { success: false, message: "User not authenticated" };
     }
@@ -173,7 +192,8 @@ export async function cancelPaymentReminder(reminderId: string) {
     logger.error("Error cancelling payment reminder:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to cancel reminder",
+      message:
+        error instanceof Error ? error.message : "Failed to cancel reminder",
     };
   }
 }
@@ -184,7 +204,7 @@ export async function cancelPaymentReminder(reminderId: string) {
 export async function autoCreateRemindersForOverdue() {
   try {
     const supabase = await createClient();
-    
+
     // Find overdue documents without reminders
     const { data: overdueDocuments, error } = await supabase
       .from("documents")
@@ -196,7 +216,8 @@ export async function autoCreateRemindersForOverdue() {
 
     if (error) throw error;
 
-    const results: Array<{ success: boolean; data?: any; message?: string }> = [];
+    const results: Array<{ success: boolean; data?: any; message?: string }> =
+      [];
 
     for (const doc of overdueDocuments || []) {
       // Check if reminder already exists
@@ -209,7 +230,8 @@ export async function autoCreateRemindersForOverdue() {
       if (!existing) {
         // Create first reminder
         const daysOverdue = Math.floor(
-          (new Date().getTime() - new Date(doc.due_date).getTime()) / (1000 * 60 * 60 * 24)
+          (new Date().getTime() - new Date(doc.due_date).getTime()) /
+            (1000 * 60 * 60 * 24),
         );
 
         let reminderType: PaymentReminderData["reminderType"] = "reminder";
@@ -231,7 +253,7 @@ export async function autoCreateRemindersForOverdue() {
           reminderType,
           reminderLevel,
           scheduledDate: new Date().toISOString().split("T")[0],
-          feeAmount: reminderLevel > 1 ? 5.00 : 0,
+          feeAmount: reminderLevel > 1 ? 5.0 : 0,
         });
 
         if (result.success) {
@@ -245,8 +267,8 @@ export async function autoCreateRemindersForOverdue() {
     logger.error("Error auto-creating reminders:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to create reminders",
+      message:
+        error instanceof Error ? error.message : "Failed to create reminders",
     };
   }
 }
-

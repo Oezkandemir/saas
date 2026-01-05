@@ -1,10 +1,10 @@
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from '@/components/alignui/data-display/card';
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@/components/alignui/data-display/card";
 
 export function CardSkeleton() {
   return (

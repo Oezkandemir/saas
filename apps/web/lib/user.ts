@@ -2,11 +2,11 @@ import {
   getUserByEmail as getServerUserByEmail,
   getUserById as getServerUserById,
 } from "@/lib/db-client";
+import { logger } from "@/lib/logger";
 
 import { syncUserWithDatabase } from "./auth-sync";
 import { sendSignupConfirmationEmail } from "./email-client";
 import { getSupabaseClient } from "./supabase";
-import { logger } from "@/lib/logger";
 
 // Reexport client-safe versions of these functions
 export const getUserByEmail = getServerUserByEmail;
@@ -72,7 +72,10 @@ export const signUpWithEmailConfirmation = async (
     logger.error("Error signing up user:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "An error occurred during sign up",
+      error:
+        error instanceof Error
+          ? error.message
+          : "An error occurred during sign up",
     };
   }
 };

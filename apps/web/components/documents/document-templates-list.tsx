@@ -1,11 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
-import { Button } from '@/components/alignui/actions/button';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Edit, Trash2, Eye } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type { DocumentTemplate } from "@/actions/document-templates-actions";
+import { deleteDocumentTemplate } from "@/actions/document-templates-actions";
+import { Edit, Eye, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+
+import { logger } from "@/lib/logger";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import {
   AlertDialogRoot as AlertDialog,
   AlertDialogAction,
@@ -17,11 +23,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/alignui/overlays/alert-dialog";
-import { deleteDocumentTemplate } from "@/actions/document-templates-actions";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
-import { logger } from "@/lib/logger";
 
 interface DocumentTemplatesListProps {
   templates: DocumentTemplate[];
@@ -110,8 +111,3 @@ export function DocumentTemplatesList({
     </div>
   );
 }
-
-
-
-
-

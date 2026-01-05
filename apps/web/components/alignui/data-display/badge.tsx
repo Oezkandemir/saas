@@ -1,6 +1,6 @@
 /**
  * AlignUI - Badge Component (Free Base Component)
- * 
+ *
  * Based on AlignUI design system using class-variance-authority
  * Source: alignui.com/docs/v1.2/components/data-display/badge
  */
@@ -27,7 +27,7 @@ const badgeVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
 export interface BadgeProps
@@ -43,7 +43,7 @@ const BadgeRoot = React.forwardRef<HTMLDivElement, BadgeProps>(
         {...props}
       />
     );
-  }
+  },
 );
 BadgeRoot.displayName = "Badge.Root";
 

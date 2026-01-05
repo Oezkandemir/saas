@@ -3,12 +3,12 @@ import {
   defineDocumentType,
   makeSource,
 } from "contentlayer2/source-files";
+import type { Element } from "hast";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import { visit } from "unist-util-visit";
-import type { Element } from "hast";
 
 const defaultComputedFields: ComputedFields = {
   slug: {

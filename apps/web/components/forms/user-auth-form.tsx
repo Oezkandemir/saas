@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { checkTwoFactorEnabledByEmail } from "@/actions/two-factor-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -11,15 +12,15 @@ import {
   sendSignupConfirmationEmail,
   sendWelcomeEmail,
 } from "@/lib/email-client";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from '@/components/alignui/actions/button';
-import { Input } from '@/components/alignui/forms/input';
-import { LabelRoot as Label } from "@/components/alignui/forms/label";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { useSupabase } from "@/components/supabase-provider";
-import { checkTwoFactorEnabledByEmail } from "@/actions/two-factor-actions";
-import { TwoFactorLoginForm } from "./two-factor-login-form";
 import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { buttonVariants } from "@/components/alignui/actions/button";
+import { Input } from "@/components/alignui/forms/input";
+import { LabelRoot as Label } from "@/components/alignui/forms/label";
+import { useSupabase } from "@/components/supabase-provider";
+
+import { TwoFactorLoginForm } from "./two-factor-login-form";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   type?: string;
@@ -52,7 +53,9 @@ export function UserAuthForm({
   });
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [showTwoFactor, setShowTwoFactor] = React.useState<boolean>(false);
-  const [twoFactorUserId, setTwoFactorUserId] = React.useState<string | null>(null);
+  const [twoFactorUserId, setTwoFactorUserId] = React.useState<string | null>(
+    null,
+  );
   const [userEmail, setUserEmail] = React.useState<string>("");
   const [storedPassword, setStoredPassword] = React.useState<string>(""); // Temporarily store password for 2FA flow
   const { supabase } = useSupabase();
@@ -68,13 +71,12 @@ export function UserAuthForm({
     if (session) {
       const { trackLoginSession } = await import("@/actions/auth-actions");
       // Don't await - let it run in background for faster login
-      trackLoginSession(
-        session.access_token,
-        session.expires_at!,
-      ).catch((error) => {
-        // Silently fail - session tracking shouldn't block login
-        logger.error("Failed to track login session:", error);
-      });
+      trackLoginSession(session.access_token, session.expires_at!).catch(
+        (error) => {
+          // Silently fail - session tracking shouldn't block login
+          logger.error("Failed to track login session:", error);
+        },
+      );
     }
 
     toast.success("Successfully signed in", {
@@ -87,9 +89,9 @@ export function UserAuthForm({
     }
 
     // Determine redirect URL - check for redirectTo param or default to dashboard
-    const finalRedirect = 
-      redirectTo && redirectTo !== "/" && redirectTo !== "/login" 
-        ? redirectTo 
+    const finalRedirect =
+      redirectTo && redirectTo !== "/" && redirectTo !== "/login"
+        ? redirectTo
         : "/dashboard";
 
     // Use window.location for immediate redirect (faster than router.push)
@@ -182,11 +184,15 @@ export function UserAuthForm({
           throw signInResult.error;
         }
 
-        if (twoFactorCheck.success && twoFactorCheck.enabled && twoFactorCheck.userId) {
+        if (
+          twoFactorCheck.success &&
+          twoFactorCheck.enabled &&
+          twoFactorCheck.userId
+        ) {
           // User has 2FA enabled - SECURITY: Delete session immediately
           // User must verify 2FA before being logged in
           await supabase.auth.signOut();
-          
+
           // Store credentials temporarily for 2FA flow (in memory only)
           setTwoFactorUserId(twoFactorCheck.userId);
           setUserEmail(email);
@@ -206,18 +212,25 @@ export function UserAuthForm({
       }
       toast.error("Authentication failed", {
         description:
-          error instanceof Error ? error.message : "Please check your credentials and try again.",
+          error instanceof Error
+            ? error.message
+            : "Please check your credentials and try again.",
       });
     } finally {
       setIsLoading(false);
     }
   }
 
-
   // Show 2FA form if 2FA is required
   if (showTwoFactor && twoFactorUserId && storedPassword) {
     return (
-      <div className={cn("grid gap-6 w-full flex-1 justify-center items-center", className)} {...props}>
+      <div
+        className={cn(
+          "grid gap-6 w-full flex-1 justify-center items-center",
+          className,
+        )}
+        {...props}
+      >
         <TwoFactorLoginForm
           userId={twoFactorUserId}
           onSuccess={async () => {
@@ -236,8 +249,12 @@ export function UserAuthForm({
 
               // Update login history to mark 2FA as used
               try {
-                const { updateLoginHistoryWith2FA } = await import("@/lib/session-tracking");
-                await updateLoginHistoryWith2FA(signInResult.data.session.access_token);
+                const { updateLoginHistoryWith2FA } = await import(
+                  "@/lib/session-tracking"
+                );
+                await updateLoginHistoryWith2FA(
+                  signInResult.data.session.access_token,
+                );
               } catch (error) {
                 // Silently fail - logging shouldn't block login
                 logger.error("Failed to update login history:", error);

@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
 import { getAllTickets } from "@/actions/support-ticket-actions";
 import { MessageSquare } from "lucide-react";
-import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TicketAccordionTable } from "@/components/support/ticket-accordion-table";
-import { logger } from "@/lib/logger";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -88,7 +88,9 @@ export default async function AdminSupportPage(props: Props) {
         {/* Primary Metric */}
         <div className="flex-1">
           <div className="space-y-1">
-            <div className="text-4xl font-semibold tracking-tight">{openTickets}</div>
+            <div className="text-4xl font-semibold tracking-tight">
+              {openTickets}
+            </div>
             <div className="text-sm text-muted-foreground">
               {tSupport("openTickets")}
             </div>

@@ -1,10 +1,11 @@
+import { HelpCircle } from "lucide-react";
+
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { HelpCircle } from "lucide-react";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 const pricingFaqData = [
@@ -54,7 +55,8 @@ export function PricingFaq() {
             Häufig gestellte Fragen
           </h2>
           <p className="max-w-2xl mx-auto text-lg text-muted-foreground">
-            Finden Sie schnelle Antworten auf häufige Fragen. Bei weiteren Fragen kontaktieren Sie uns gerne.
+            Finden Sie schnelle Antworten auf häufige Fragen. Bei weiteren
+            Fragen kontaktieren Sie uns gerne.
           </p>
         </div>
 
@@ -62,8 +64,8 @@ export function PricingFaq() {
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
           <Accordion type="single" collapsible className="w-full space-y-2">
             {pricingFaqData.map((faqItem) => (
-              <AccordionItem 
-                key={faqItem.id} 
+              <AccordionItem
+                key={faqItem.id}
                 value={faqItem.id}
                 className="rounded-lg border bg-card px-4 transition-all hover:bg-muted/50"
               >

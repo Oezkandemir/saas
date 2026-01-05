@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
-import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
+import { MessageSquarePlus } from "lucide-react";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
+import { Card, CardContent } from "@/components/alignui/data-display/card";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { CreateTicketForm } from "@/components/support/create-ticket-form";
-import { MessageSquarePlus } from "lucide-react";
-import { Card, CardContent } from '@/components/alignui/data-display/card';
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -16,8 +16,12 @@ export async function generateMetadata() {
   const t = await getTranslations("Support");
 
   return constructMetadata({
-    title: t("createTicket.title") || "Create Support Ticket - Get Expert Help | Professional Support",
-    description: t("createTicket.description") || "Submit a support ticket and get help from our expert team. Fast response times, detailed tracking, and priority support for your business needs. Available 24/7.",
+    title:
+      t("createTicket.title") ||
+      "Create Support Ticket - Get Expert Help | Professional Support",
+    description:
+      t("createTicket.description") ||
+      "Submit a support ticket and get help from our expert team. Fast response times, detailed tracking, and priority support for your business needs. Available 24/7.",
   });
 }
 

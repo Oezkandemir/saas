@@ -5,8 +5,12 @@ import { formatDistance } from "date-fns";
 import { ShieldCheck } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/alignui/data-display/avatar";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 
 interface TicketMessageProps {
   message: TicketMessage;

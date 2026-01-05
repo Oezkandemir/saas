@@ -1,21 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getBookingByToken } from "@/actions/scheduling/bookings-actions";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/alignui/data-display/card";
-import { AlertRoot as Alert, AlertDescription } from "@/components/alignui/feedback/alert";
-import { Loader2, XCircle, Calendar, Info } from "lucide-react";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
+import { Calendar, Info, Loader2, XCircle } from "lucide-react";
 import { useLocale } from "next-intl";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import {
+  AlertRoot as Alert,
+  AlertDescription,
+} from "@/components/alignui/feedback/alert";
 
 export default function RescheduleBookingPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const locale = useLocale();
   const token = searchParams.get("token");
-  
+
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +44,9 @@ export default function RescheduleBookingPage() {
           setBooking(result.data);
           // Redirect to booking page to reschedule
           if (result.data.event_type) {
-            router.push(`/book/${result.data.host_user_id}/${result.data.event_type.slug}`);
+            router.push(
+              `/book/${result.data.host_user_id}/${result.data.event_type.slug}`,
+            );
           }
         } else {
           setError("Buchung nicht gefunden");
@@ -100,10 +112,15 @@ export default function RescheduleBookingPage() {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="font-semibold">{booking.event_type.title}</span>
+                <span className="font-semibold">
+                  {booking.event_type.title}
+                </span>
               </div>
               <div className="text-sm text-muted-foreground">
-                Aktueller Termin: {format(startDate, "EEEE, d. MMMM yyyy", { locale: dateLocale })}
+                Aktueller Termin:{" "}
+                {format(startDate, "EEEE, d. MMMM yyyy", {
+                  locale: dateLocale,
+                })}
                 <br />
                 {format(startDate, "HH:mm")} - {format(endDate, "HH:mm")} Uhr
               </div>
@@ -113,7 +130,8 @@ export default function RescheduleBookingPage() {
           <Alert>
             <Info className="h-4 w-4" />
             <AlertDescription>
-              Bitte stornieren Sie zuerst die aktuelle Buchung, bevor Sie einen neuen Termin buchen.
+              Bitte stornieren Sie zuerst die aktuelle Buchung, bevor Sie einen
+              neuen Termin buchen.
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -121,4 +139,3 @@ export default function RescheduleBookingPage() {
     </div>
   );
 }
-

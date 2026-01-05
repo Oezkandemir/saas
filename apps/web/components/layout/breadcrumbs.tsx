@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight, Home } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 interface BreadcrumbItem {
@@ -18,7 +19,11 @@ interface BreadcrumbsProps {
   sticky?: boolean;
 }
 
-export function Breadcrumbs({ items, className, sticky = false }: BreadcrumbsProps) {
+export function Breadcrumbs({
+  items,
+  className,
+  sticky = false,
+}: BreadcrumbsProps) {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = React.useState(false);
 
@@ -32,20 +37,24 @@ export function Breadcrumbs({ items, className, sticky = false }: BreadcrumbsPro
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [sticky]);
-  
+
   // Auto-generate breadcrumbs from pathname if items not provided
   const breadcrumbItems = React.useMemo(() => {
     if (items) return items;
 
     const paths = pathname.split("/").filter(Boolean);
     const breadcrumbs: BreadcrumbItem[] = [
-      { label: "Dashboard", href: "/dashboard", icon: <Home className="size-4" /> },
+      {
+        label: "Dashboard",
+        href: "/dashboard",
+        icon: <Home className="size-4" />,
+      },
     ];
 
     let currentPath = "";
     paths.forEach((path, index) => {
       currentPath += `/${path}`;
-      
+
       // Skip locale if present
       if (index === 0 && (path === "en" || path === "de")) {
         return;
@@ -81,7 +90,7 @@ export function Breadcrumbs({ items, className, sticky = false }: BreadcrumbsPro
       className={cn(
         "flex items-center space-x-1 text-sm text-muted-foreground py-2",
         sticky && isScrolled && "shadow-sm backdrop-blur-sm bg-background/95",
-        className
+        className,
       )}
     >
       <ol className="flex items-center space-x-1">
@@ -105,7 +114,7 @@ export function Breadcrumbs({ items, className, sticky = false }: BreadcrumbsPro
                 <span
                   className={cn(
                     "flex items-center gap-1",
-                    isLast && "text-foreground font-medium"
+                    isLast && "text-foreground font-medium",
                   )}
                   aria-current={isLast ? "page" : undefined}
                 >

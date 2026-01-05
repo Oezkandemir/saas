@@ -1,19 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { exportUserData, exportUserDataCSV } from "@/actions/gdpr-actions";
 import { Download, FileJson, FileSpreadsheet, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-import { Button } from '@/components/alignui/actions/button';
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/alignui/actions/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { useToast } from "@/components/ui/use-toast";
-import { exportUserData, exportUserDataCSV } from "@/actions/gdpr-actions";
+} from "@/components/alignui/data-display/card";
 
 export function DataExport() {
   const t = useTranslations("GDPR.dataExport");
@@ -24,7 +24,7 @@ export function DataExport() {
     setIsExporting(true);
     try {
       const result = await exportUserData();
-      
+
       if (!result.success || !result.data) {
         toast({
           variant: "destructive",
@@ -64,7 +64,7 @@ export function DataExport() {
     setIsExporting(true);
     try {
       const result = await exportUserDataCSV();
-      
+
       if (!result.success || !result.data) {
         toast({
           variant: "destructive",
@@ -118,15 +118,11 @@ export function DataExport() {
           <Download className="h-5 w-5" />
           {t("title")}
         </CardTitle>
-        <CardDescription>
-          {t("description")}
-        </CardDescription>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">
-            {t("intro")}
-          </p>
+          <p className="text-sm text-muted-foreground">{t("intro")}</p>
           <ul className="list-disc space-y-1 pl-6 text-sm text-muted-foreground">
             <li>{t("includes.profile")}</li>
             <li>{t("includes.customers")}</li>
@@ -186,4 +182,3 @@ export function DataExport() {
     </Card>
   );
 }
-

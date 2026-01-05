@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import {
   Select,
   SelectContent,
@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ResponsiveNotificationsTabsProps {
   totalCount: number;
@@ -64,11 +65,21 @@ export function ResponsiveNotificationsTabs({
       {/* Desktop: Tabs */}
       <div className="mb-4 hidden sm:block">
         <TabsList className="w-full md:w-auto">
-          <TabsTrigger value="all" className="text-xs md:text-sm">All ({totalCount})</TabsTrigger>
-          <TabsTrigger value="unread" className="text-xs md:text-sm">Unread ({unreadCount})</TabsTrigger>
-          <TabsTrigger value="welcome" className="text-xs md:text-sm">Welcome ({welcomeCount})</TabsTrigger>
-          <TabsTrigger value="system" className="text-xs md:text-sm">System ({systemCount})</TabsTrigger>
-          <TabsTrigger value="team" className="text-xs md:text-sm">Team ({teamCount})</TabsTrigger>
+          <TabsTrigger value="all" className="text-xs md:text-sm">
+            All ({totalCount})
+          </TabsTrigger>
+          <TabsTrigger value="unread" className="text-xs md:text-sm">
+            Unread ({unreadCount})
+          </TabsTrigger>
+          <TabsTrigger value="welcome" className="text-xs md:text-sm">
+            Welcome ({welcomeCount})
+          </TabsTrigger>
+          <TabsTrigger value="system" className="text-xs md:text-sm">
+            System ({systemCount})
+          </TabsTrigger>
+          <TabsTrigger value="team" className="text-xs md:text-sm">
+            Team ({teamCount})
+          </TabsTrigger>
         </TabsList>
       </div>
 
@@ -80,4 +91,3 @@ export function ResponsiveNotificationsTabs({
     </Tabs>
   );
 }
-

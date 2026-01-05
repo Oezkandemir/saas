@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { cn } from '@/lib/utils';
+import * as React from "react";
+
+import { cn } from "@/lib/utils";
 
 interface HintRootProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -12,16 +13,16 @@ const HintRoot = React.forwardRef<HTMLDivElement, HintRootProps>(
     <div
       ref={ref}
       className={cn(
-        'flex items-start gap-2 text-paragraph-sm text-text-sub-600',
-        className
+        "flex items-start gap-2 text-paragraph-sm text-text-sub-600",
+        className,
       )}
       {...props}
     >
       {children}
     </div>
-  )
+  ),
 );
-HintRoot.displayName = 'Hint.Root';
+HintRoot.displayName = "Hint.Root";
 
 interface HintIconProps extends React.HTMLAttributes<HTMLDivElement> {
   as?: React.ElementType;
@@ -34,7 +35,7 @@ const HintIcon = React.forwardRef<HTMLDivElement, HintIconProps>(
       return (
         <Component
           ref={ref}
-          className={cn('size-4 shrink-0 mt-0.5 text-text-sub-600', className)}
+          className={cn("size-4 shrink-0 mt-0.5 text-text-sub-600", className)}
           {...props}
         />
       );
@@ -42,15 +43,15 @@ const HintIcon = React.forwardRef<HTMLDivElement, HintIconProps>(
     return (
       <div
         ref={ref}
-        className={cn('size-4 shrink-0 mt-0.5', className)}
+        className={cn("size-4 shrink-0 mt-0.5", className)}
         {...props}
       >
         {children}
       </div>
     );
-  }
+  },
 );
-HintIcon.displayName = 'Hint.Icon';
+HintIcon.displayName = "Hint.Icon";
 
 // Export individual components
 export { HintRoot, HintIcon };
@@ -60,4 +61,3 @@ export const Hint = {
   Root: HintRoot,
   Icon: HintIcon,
 };
-

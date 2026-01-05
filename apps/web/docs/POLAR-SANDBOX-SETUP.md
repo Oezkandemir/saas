@@ -35,6 +35,7 @@ NEXT_PUBLIC_PAYMENT_PROVIDER=polar
 1. Gehen Sie zu Ihrem Sandbox-Dashboard
 2. Navigieren Sie zu **Products** > **Create Product**
 3. Erstellen Sie Ihre Test-Produkte:
+
    - **Pro Monthly**: Erstellen Sie ein Produkt mit monatlichem Abonnement
    - **Pro Yearly**: Erstellen Sie ein Produkt mit jährlichem Abonnement
    - **Enterprise Monthly**: Erstellen Sie ein Produkt mit monatlichem Abonnement
@@ -61,6 +62,7 @@ polarIds: {
 ## Schritt 6: Testen
 
 1. Starten Sie Ihren Development-Server neu:
+
    ```bash
    cd apps/web
    pnpm dev
@@ -90,14 +92,17 @@ Um zurück zur Production-Umgebung zu wechseln:
 ## Troubleshooting
 
 ### "Payments are currently unavailable"
+
 - Stellen Sie sicher, dass Sie eine Payment-Methode im Sandbox-Dashboard verbunden haben
 - Gehen Sie zu Settings > Payment Methods und verbinden Sie Stripe
 
 ### "Invalid access token"
+
 - Überprüfen Sie, ob Sie den Sandbox-Token verwenden (nicht den Production-Token)
 - Stellen Sie sicher, dass `POLAR_USE_SANDBOX=true` gesetzt ist
 
 ### "Product not found"
+
 - Überprüfen Sie, ob die Product IDs in `config/subscriptions.ts` korrekt sind
 - Stellen Sie sicher, dass die Produkte im Sandbox-Dashboard erstellt wurden
 
@@ -106,13 +111,3 @@ Um zurück zur Production-Umgebung zu wechseln:
 - [Polar.sh Sandbox Dokumentation](https://polar.sh/docs/integrate/sandbox)
 - [Polar.sh API Referenz](https://polar.sh/docs/api-reference)
 - [Stripe Test Cards](https://stripe.com/docs/testing#cards)
-
-
-
-
-
-
-
-
-
-

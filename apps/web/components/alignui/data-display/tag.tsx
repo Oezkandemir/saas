@@ -1,6 +1,6 @@
 /**
  * AlignUI - Tag Component
- * 
+ *
  * Based on AlignUI design system using Radix UI and Tailwind CSS
  */
 
@@ -26,7 +26,7 @@ const tagVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
 export interface TagRootProps
@@ -73,18 +73,3 @@ export const Tag = {
   Root: TagRoot,
   DismissButton: TagDismissButton,
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

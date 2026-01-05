@@ -3,7 +3,6 @@ import { getTranslations } from "next-intl/server";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
-
 export default async function ModernOfferings() {
   const t = await getTranslations("Offerings");
 
@@ -61,15 +60,14 @@ export default async function ModernOfferings() {
           <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
             {t("title")}
           </h2>
-          <p className="mt-6 text-xl text-muted-foreground">
-            {t("subtitle")}
-          </p>
+          <p className="mt-6 text-xl text-muted-foreground">{t("subtitle")}</p>
         </div>
 
         {/* Offerings Grid */}
         <div className="mt-20 grid gap-8 sm:grid-cols-2">
           {offerings.map((offering, index) => {
-            const Icon = Icons[offering.icon as keyof typeof Icons] || Icons.check;
+            const Icon =
+              Icons[offering.icon as keyof typeof Icons] || Icons.check;
 
             return (
               <div
@@ -119,4 +117,3 @@ export default async function ModernOfferings() {
     </section>
   );
 }
-

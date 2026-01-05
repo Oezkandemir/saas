@@ -1,19 +1,11 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getUsersWithCompanyProfiles } from "@/actions/admin-company-profiles-actions";
 import { Building2 } from "lucide-react";
 import { getLocale, setRequestLocale } from "next-intl/server";
-import Link from "next/link";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { getUsersWithCompanyProfiles } from "@/actions/admin-company-profiles-actions";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/alignui/data-display/card';
 import {
   Table,
   TableBody,
@@ -22,6 +14,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -80,8 +80,14 @@ export default async function AdminCompaniesPage(props: Props) {
 
   // Calculate totals
   const totalCompanies = companies.length;
-  const totalCustomers = companies.reduce((sum, c) => sum + (c.customer_count || 0), 0);
-  const totalRevenue = companies.reduce((sum, c) => sum + (c.total_revenue || 0), 0);
+  const totalCustomers = companies.reduce(
+    (sum, c) => sum + (c.customer_count || 0),
+    0,
+  );
+  const totalRevenue = companies.reduce(
+    (sum, c) => sum + (c.total_revenue || 0),
+    0,
+  );
 
   return (
     <UnifiedPageLayout
@@ -103,20 +109,27 @@ export default async function AdminCompaniesPage(props: Props) {
       {/* Secondary KPIs - Max 3 */}
       <div className="grid gap-4 md:grid-cols-3">
         <div>
-          <div className="text-sm text-muted-foreground mb-1">Gesamt Kunden</div>
+          <div className="text-sm text-muted-foreground mb-1">
+            Gesamt Kunden
+          </div>
           <div className="text-2xl font-semibold">{totalCustomers}</div>
         </div>
         <div>
-          <div className="text-sm text-muted-foreground mb-1">Gesamt Umsatz</div>
+          <div className="text-sm text-muted-foreground mb-1">
+            Gesamt Umsatz
+          </div>
           <div className="text-2xl font-semibold">
-            €{(totalRevenue || 0).toLocaleString(locale, {
+            €
+            {(totalRevenue || 0).toLocaleString(locale, {
               minimumFractionDigits: 0,
               maximumFractionDigits: 0,
             })}
           </div>
         </div>
         <div>
-          <div className="text-sm text-muted-foreground mb-1">Durchschnitt pro Firma</div>
+          <div className="text-sm text-muted-foreground mb-1">
+            Durchschnitt pro Firma
+          </div>
           <div className="text-2xl font-semibold">
             {totalCompanies > 0
               ? Math.round(totalCustomers / totalCompanies)
@@ -168,8 +181,12 @@ export default async function AdminCompaniesPage(props: Props) {
                     </TableCell>
                     <TableCell>
                       <div>
-                        <div className="font-medium">{company.user_name || company.user_email}</div>
-                        <div className="text-xs text-muted-foreground">{company.user_email}</div>
+                        <div className="font-medium">
+                          {company.user_name || company.user_email}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {company.user_email}
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
@@ -182,7 +199,8 @@ export default async function AdminCompaniesPage(props: Props) {
                       {company.quote_count}
                     </TableCell>
                     <TableCell className="text-right font-semibold">
-                      €{(company.total_revenue || 0).toLocaleString(locale, {
+                      €
+                      {(company.total_revenue || 0).toLocaleString(locale, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
@@ -197,4 +215,3 @@ export default async function AdminCompaniesPage(props: Props) {
     </UnifiedPageLayout>
   );
 }
-

@@ -1,7 +1,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-import { corsHeaders } from "../_shared/cors.ts";
 import { logger } from "@/lib/logger";
+
+import { corsHeaders } from "../_shared/cors.ts";
 
 // Load environment variables
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "";
@@ -207,11 +208,16 @@ const generateEmailTemplate = (type: string, data: any) => {
     case "team-invitation":
       const getRoleDisplayName = (role: string) => {
         switch (role) {
-          case "OWNER": return "Owner";
-          case "ADMIN": return "Administrator";
-          case "MEMBER": return "Member";
-          case "GUEST": return "Guest";
-          default: return "Member";
+          case "OWNER":
+            return "Owner";
+          case "ADMIN":
+            return "Administrator";
+          case "MEMBER":
+            return "Member";
+          case "GUEST":
+            return "Guest";
+          default:
+            return "Member";
         }
       };
       return `
@@ -268,8 +274,19 @@ Deno.serve(async (req) => {
   try {
     const requestBody = await req.json();
     logger.debug("Request body:", JSON.stringify(requestBody)); // Debug log
-    
-    const { type, email, name, actionUrl, emailType, inviterName, inviterEmail, teamName, teamSlug, role } = requestBody;
+
+    const {
+      type,
+      email,
+      name,
+      actionUrl,
+      emailType,
+      inviterName,
+      inviterEmail,
+      teamName,
+      teamSlug,
+      role,
+    } = requestBody;
 
     // Create Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
@@ -339,15 +356,25 @@ Deno.serve(async (req) => {
     } else if (type === "team-invitation") {
       // For team invitations
       if (!inviterName || !inviterEmail || !teamName || !role) {
-        logger.error("Missing team invitation data:", { inviterName, inviterEmail, teamName, role });
-        return new Response(JSON.stringify({ error: "Missing required team invitation data" }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        logger.error("Missing team invitation data:", {
+          inviterName,
+          inviterEmail,
+          teamName,
+          role,
         });
+        return new Response(
+          JSON.stringify({ error: "Missing required team invitation data" }),
+          {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
+        );
       }
-      
-      logger.debug(`Sending team invitation email: ${teamName} to ${email} as ${role}`);
-      
+
+      logger.debug(
+        `Sending team invitation email: ${teamName} to ${email} as ${role}`,
+      );
+
       subject = `You've been invited to join ${teamName} on ${SITE_NAME}`;
       htmlContent = generateEmailTemplate("team-invitation", {
         inviterName,
@@ -355,7 +382,9 @@ Deno.serve(async (req) => {
         teamName,
         teamSlug,
         role,
-        actionUrl: actionUrl || `${SITE_URL}/teams/join?token=${encodeURIComponent(email)}`,
+        actionUrl:
+          actionUrl ||
+          `${SITE_URL}/teams/join?token=${encodeURIComponent(email)}`,
         siteName: SITE_NAME,
         siteUrl: SITE_URL,
       });
@@ -369,12 +398,12 @@ Deno.serve(async (req) => {
     // Send email using Resend
     const isDevMode = Deno.env.get("NODE_ENV") === "development";
     const finalEmail = isDevMode ? "delivered@resend.dev" : email;
-    
+
     logger.debug(`Environment: ${Deno.env.get("NODE_ENV") || "production"}`);
     logger.debug(`Sending email to: ${finalEmail} (original: ${email})`);
     logger.debug(`From: ${SITE_NAME} <${EMAIL_FROM}>`);
     logger.debug(`Subject: ${subject}`);
-    
+
     const emailPayload = {
       from: `${SITE_NAME} <${EMAIL_FROM}>`,
       to: finalEmail,
@@ -384,9 +413,9 @@ Deno.serve(async (req) => {
         "X-Entity-Ref-ID": new Date().getTime() + "",
       },
     };
-    
+
     logger.debug("Email payload:", JSON.stringify(emailPayload, null, 2));
-    
+
     const resendResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -397,7 +426,7 @@ Deno.serve(async (req) => {
     });
 
     const resendData = await resendResponse.json();
-    
+
     logger.debug(`Resend API Response Status: ${resendResponse.status}`);
     logger.debug("Resend API Response:", JSON.stringify(resendData, null, 2));
 

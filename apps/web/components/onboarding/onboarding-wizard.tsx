@@ -3,17 +3,20 @@
 import * as React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { 
-  Building2, 
-  FileText, 
-  QrCode, 
-  Check, 
-  ArrowRight, 
+import {
   ArrowLeft,
-  Sparkles 
+  ArrowRight,
+  Building2,
+  Check,
+  FileText,
+  QrCode,
+  Sparkles,
 } from "lucide-react";
 
-import { Button } from '@/components/alignui/actions/button';
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/alignui/actions/button";
 import {
   Card,
   CardContent,
@@ -21,18 +24,18 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { Input } from '@/components/alignui/forms/input';
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/components/ui/use-toast";
+} from "@/components/alignui/data-display/card";
+import { Input } from "@/components/alignui/forms/input";
 
 interface OnboardingWizardProps {
   onComplete: () => void;
   onSkip?: () => void;
 }
 
-export function OnboardingWizard({ onComplete, onSkip }: OnboardingWizardProps) {
+export function OnboardingWizard({
+  onComplete,
+  onSkip,
+}: OnboardingWizardProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
@@ -59,12 +62,14 @@ export function OnboardingWizard({ onComplete, onSkip }: OnboardingWizardProps) 
   const steps = [
     {
       title: "Willkommen bei Cenety",
-      description: "Lassen Sie uns Ihr Konto in 3 einfachen Schritten einrichten",
+      description:
+        "Lassen Sie uns Ihr Konto in 3 einfachen Schritten einrichten",
       icon: Sparkles,
     },
     {
       title: "Unternehmensdaten",
-      description: "Diese Informationen erscheinen auf Ihren Rechnungen und Angeboten",
+      description:
+        "Diese Informationen erscheinen auf Ihren Rechnungen und Angeboten",
       icon: Building2,
     },
     {
@@ -118,7 +123,8 @@ export function OnboardingWizard({ onComplete, onSkip }: OnboardingWizardProps) 
       toast({
         variant: "destructive",
         title: "Fehler",
-        description: "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+        description:
+          "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
       });
     } finally {
       setIsSubmitting(false);
@@ -183,7 +189,10 @@ export function OnboardingWizard({ onComplete, onSkip }: OnboardingWizardProps) 
                   id="companyName"
                   value={companyData.companyName}
                   onChange={(e) =>
-                    setCompanyData({ ...companyData, companyName: e.target.value })
+                    setCompanyData({
+                      ...companyData,
+                      companyName: e.target.value,
+                    })
                   }
                   placeholder="Ihre Firma GmbH"
                 />
@@ -221,7 +230,10 @@ export function OnboardingWizard({ onComplete, onSkip }: OnboardingWizardProps) 
                   id="postalCode"
                   value={companyData.postalCode}
                   onChange={(e) =>
-                    setCompanyData({ ...companyData, postalCode: e.target.value })
+                    setCompanyData({
+                      ...companyData,
+                      postalCode: e.target.value,
+                    })
                   }
                   placeholder="12345"
                 />
@@ -281,7 +293,8 @@ export function OnboardingWizard({ onComplete, onSkip }: OnboardingWizardProps) 
         return (
           <div className="space-y-4 py-6">
             <p className="text-sm text-muted-foreground">
-              Fügen Sie optional Ihren ersten Kunden hinzu. Sie können dies auch später tun.
+              Fügen Sie optional Ihren ersten Kunden hinzu. Sie können dies auch
+              später tun.
             </p>
             <div className="space-y-4">
               <div className="space-y-2">
@@ -302,7 +315,10 @@ export function OnboardingWizard({ onComplete, onSkip }: OnboardingWizardProps) 
                   type="email"
                   value={firstCustomer.email}
                   onChange={(e) =>
-                    setFirstCustomer({ ...firstCustomer, email: e.target.value })
+                    setFirstCustomer({
+                      ...firstCustomer,
+                      email: e.target.value,
+                    })
                   }
                   placeholder="kunde@beispiel.de"
                 />
@@ -313,7 +329,10 @@ export function OnboardingWizard({ onComplete, onSkip }: OnboardingWizardProps) 
                   id="customerCompany"
                   value={firstCustomer.company}
                   onChange={(e) =>
-                    setFirstCustomer({ ...firstCustomer, company: e.target.value })
+                    setFirstCustomer({
+                      ...firstCustomer,
+                      company: e.target.value,
+                    })
                   }
                   placeholder="Kunden GmbH"
                 />
@@ -368,13 +387,16 @@ export function OnboardingWizard({ onComplete, onSkip }: OnboardingWizardProps) 
           </div>
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20">
-              {steps[currentStep].icon && React.createElement(steps[currentStep].icon, {
-                className: "h-6 w-6 text-blue-600 dark:text-blue-400"
-              })}
+              {steps[currentStep].icon &&
+                React.createElement(steps[currentStep].icon, {
+                  className: "h-6 w-6 text-blue-600 dark:text-blue-400",
+                })}
             </div>
             <div>
               <CardTitle>{steps[currentStep].title}</CardTitle>
-              <CardDescription>{steps[currentStep].description}</CardDescription>
+              <CardDescription>
+                {steps[currentStep].description}
+              </CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -412,4 +434,3 @@ export function OnboardingWizard({ onComplete, onSkip }: OnboardingWizardProps) 
     </div>
   );
 }
-

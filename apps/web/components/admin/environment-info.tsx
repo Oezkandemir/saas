@@ -1,21 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Loader2, RefreshCw, CheckCircle2, XCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  getEnvironmentInfo,
+  getStorageStats,
+} from "@/actions/admin-system-actions";
+import { CheckCircle2, Loader2, RefreshCw, XCircle } from "lucide-react";
 
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { Button } from '@/components/alignui/actions/button';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { useToast } from "@/components/ui/use-toast";
-import {
-  getEnvironmentInfo,
-  getStorageStats,
-} from "@/actions/admin-system-actions";
+} from "@/components/alignui/data-display/card";
 
 export function EnvironmentInfo() {
   const { toast } = useToast();
@@ -132,10 +132,14 @@ export function EnvironmentInfo() {
             <h3 className="text-sm font-semibold">Umgebung</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="p-3 rounded-lg border">
-                <p className="text-sm text-muted-foreground">Node Environment</p>
+                <p className="text-sm text-muted-foreground">
+                  Node Environment
+                </p>
                 <div className="flex gap-2 items-center mt-1">
                   <Badge
-                    variant={envInfo.nodeEnv === "production" ? "default" : "outline"}
+                    variant={
+                      envInfo.nodeEnv === "production" ? "default" : "outline"
+                    }
                   >
                     {envInfo.nodeEnv}
                   </Badge>
@@ -161,7 +165,9 @@ export function EnvironmentInfo() {
                   ) : (
                     <>
                       <XCircle className="w-4 h-4 text-red-500" />
-                      <span className="text-sm text-red-500">Nicht gesetzt</span>
+                      <span className="text-sm text-red-500">
+                        Nicht gesetzt
+                      </span>
                     </>
                   )}
                 </div>
@@ -177,7 +183,9 @@ export function EnvironmentInfo() {
                   ) : (
                     <>
                       <XCircle className="w-4 h-4 text-red-500" />
-                      <span className="text-sm text-red-500">Nicht gesetzt</span>
+                      <span className="text-sm text-red-500">
+                        Nicht gesetzt
+                      </span>
                     </>
                   )}
                 </div>
@@ -198,7 +206,9 @@ export function EnvironmentInfo() {
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-muted-foreground">Buckets</p>
-                  <p className="text-2xl font-bold">{storageStats.bucketCount}</p>
+                  <p className="text-2xl font-bold">
+                    {storageStats.bucketCount}
+                  </p>
                 </div>
               </div>
               {storageStats.buckets.length > 0 && (
@@ -226,4 +236,3 @@ export function EnvironmentInfo() {
     </div>
   );
 }
-

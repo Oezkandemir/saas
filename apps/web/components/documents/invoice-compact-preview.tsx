@@ -1,7 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { Document } from "@/actions/documents-actions";
+import { useTranslations } from "next-intl";
 
 interface InvoiceCompactPreviewProps {
   document: Document;
@@ -11,7 +11,9 @@ interface InvoiceCompactPreviewProps {
  * Kompakte Rechnungsvorschau - nur die wichtigsten Informationen
  * Wird im normalen View angezeigt
  */
-export function InvoiceCompactPreview({ document }: InvoiceCompactPreviewProps) {
+export function InvoiceCompactPreview({
+  document,
+}: InvoiceCompactPreviewProps) {
   const t = useTranslations("Documents");
   const isInvoice = document.type === "invoice";
   const documentTitle = isInvoice ? t("invoice") : t("quote");
@@ -21,7 +23,9 @@ export function InvoiceCompactPreview({ document }: InvoiceCompactPreviewProps) 
       {/* Kompakter Header */}
       <div className="flex justify-between items-start mb-6 pb-4 border-b-2 border-gray-900">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">{documentTitle}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">
+            {documentTitle}
+          </h1>
           <p className="text-sm text-gray-600">{document.document_number}</p>
         </div>
         <div className="text-right text-sm">
@@ -30,7 +34,8 @@ export function InvoiceCompactPreview({ document }: InvoiceCompactPreviewProps) 
           </p>
           {document.due_date && isInvoice && (
             <p className="text-gray-900 font-semibold mt-1">
-              {t("dueDate")}: {new Date(document.due_date).toLocaleDateString("de-DE")}
+              {t("dueDate")}:{" "}
+              {new Date(document.due_date).toLocaleDateString("de-DE")}
             </p>
           )}
         </div>
@@ -39,8 +44,12 @@ export function InvoiceCompactPreview({ document }: InvoiceCompactPreviewProps) 
       {/* Kunde */}
       {document.customer && (
         <div className="mb-6">
-          <p className="text-xs text-gray-500 mb-1">{t("detail.fields.customer")}</p>
-          <p className="text-sm font-semibold text-gray-900">{document.customer.name}</p>
+          <p className="text-xs text-gray-500 mb-1">
+            {t("detail.fields.customer")}
+          </p>
+          <p className="text-sm font-semibold text-gray-900">
+            {document.customer.name}
+          </p>
           {document.customer.email && (
             <p className="text-sm text-gray-600">{document.customer.email}</p>
           )}
@@ -53,10 +62,18 @@ export function InvoiceCompactPreview({ document }: InvoiceCompactPreviewProps) 
           <table className="w-full">
             <thead>
               <tr className="bg-gray-100 border-b-2 border-gray-900">
-                <th className="text-left p-3 font-semibold text-sm">{t("description")}</th>
-                <th className="text-right p-3 font-semibold text-sm w-24">{t("quantity")}</th>
-                <th className="text-right p-3 font-semibold text-sm w-32">{t("unitPrice")}</th>
-                <th className="text-right p-3 font-semibold text-sm w-32">{t("total")}</th>
+                <th className="text-left p-3 font-semibold text-sm">
+                  {t("description")}
+                </th>
+                <th className="text-right p-3 font-semibold text-sm w-24">
+                  {t("quantity")}
+                </th>
+                <th className="text-right p-3 font-semibold text-sm w-32">
+                  {t("unitPrice")}
+                </th>
+                <th className="text-right p-3 font-semibold text-sm w-32">
+                  {t("total")}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -96,7 +113,9 @@ export function InvoiceCompactPreview({ document }: InvoiceCompactPreviewProps) 
             </span>
           </div>
           <div className="flex justify-between py-2 border-b border-gray-200">
-            <span className="text-sm text-gray-600">{t("taxIncluded", { rate: document.tax_rate })}</span>
+            <span className="text-sm text-gray-600">
+              {t("taxIncluded", { rate: document.tax_rate })}
+            </span>
             <span className="text-sm font-semibold">
               {document.tax_amount.toLocaleString("de-DE", {
                 style: "currency",
@@ -119,8 +138,12 @@ export function InvoiceCompactPreview({ document }: InvoiceCompactPreviewProps) 
       {/* Hinweise (falls vorhanden) */}
       {document.notes && (
         <div className="mt-6 p-3 bg-blue-50 border-l-4 border-blue-600 rounded-r">
-          <p className="text-xs font-semibold text-gray-900 mb-1">{t("preview.notes")}</p>
-          <p className="text-sm text-gray-700 whitespace-pre-wrap line-clamp-3">{document.notes}</p>
+          <p className="text-xs font-semibold text-gray-900 mb-1">
+            {t("preview.notes")}
+          </p>
+          <p className="text-sm text-gray-700 whitespace-pre-wrap line-clamp-3">
+            {document.notes}
+          </p>
         </div>
       )}
     </div>

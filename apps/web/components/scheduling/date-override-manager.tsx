@@ -1,44 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
-import { Button } from '@/components/alignui/actions/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  FormRoot as Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/alignui/forms/form";
-import { Input } from '@/components/alignui/forms/input';
-import { Switch } from "@/components/ui/switch";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Plus, Calendar, Trash2, Edit, Clock } from "lucide-react";
-import { toast } from "sonner";
-import { format } from "date-fns";
-import { de, enUS } from "date-fns/locale";
-import { useLocale } from "next-intl";
+import { useEffect, useState } from "react";
 import {
   createAvailabilityOverride,
-  updateAvailabilityOverride,
   deleteAvailabilityOverride,
   getAvailabilityOverrides,
+  updateAvailabilityOverride,
   type AvailabilityOverride,
 } from "@/actions/scheduling/availability-actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { de, enUS } from "date-fns/locale";
+import { Calendar, Clock, Edit, Plus, Trash2 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,25 +27,74 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import {
+  FormRoot as Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/alignui/forms/form";
+import { Input } from "@/components/alignui/forms/input";
 
-const dateOverrideSchema = z.object({
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format: YYYY-MM-DD"),
-  is_unavailable: z.boolean().default(false),
-  start_time: z.string().regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/).optional().or(z.literal("")),
-  end_time: z.string().regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/).optional().or(z.literal("")),
-}).refine((data) => {
-  // If both times are provided, start must be before end
-  if (data.start_time && data.end_time && data.start_time >= data.end_time) {
-    return false;
-  }
-  // If one time is provided, both must be provided
-  if ((data.start_time && !data.end_time) || (!data.start_time && data.end_time)) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Start time must be before end time, and both times must be provided together",
-});
+const dateOverrideSchema = z
+  .object({
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format: YYYY-MM-DD"),
+    is_unavailable: z.boolean().default(false),
+    start_time: z
+      .string()
+      .regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/)
+      .optional()
+      .or(z.literal("")),
+    end_time: z
+      .string()
+      .regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/)
+      .optional()
+      .or(z.literal("")),
+  })
+  .refine(
+    (data) => {
+      // If both times are provided, start must be before end
+      if (
+        data.start_time &&
+        data.end_time &&
+        data.start_time >= data.end_time
+      ) {
+        return false;
+      }
+      // If one time is provided, both must be provided
+      if (
+        (data.start_time && !data.end_time) ||
+        (!data.start_time && data.end_time)
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message:
+        "Start time must be before end time, and both times must be provided together",
+    },
+  );
 
 type DateOverrideFormValues = z.infer<typeof dateOverrideSchema>;
 
@@ -82,8 +109,10 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
   const [overrides, setOverrides] = useState<AvailabilityOverride[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingOverride, setEditingOverride] = useState<AvailabilityOverride | null>(null);
-  const [deletingOverride, setDeletingOverride] = useState<AvailabilityOverride | null>(null);
+  const [editingOverride, setEditingOverride] =
+    useState<AvailabilityOverride | null>(null);
+  const [deletingOverride, setDeletingOverride] =
+    useState<AvailabilityOverride | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<DateOverrideFormValues>({
@@ -104,7 +133,9 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
         setOverrides(result.data);
       }
     } catch (error) {
-      toast.error(t("loadError") || "Fehler beim Laden der Datumsüberschreibungen");
+      toast.error(
+        t("loadError") || "Fehler beim Laden der Datumsüberschreibungen",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -174,8 +205,8 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
 
       toast.success(
         editingOverride
-          ? (t("updated") || "Datumsüberschreibung aktualisiert")
-          : (t("created") || "Datumsüberschreibung erstellt")
+          ? t("updated") || "Datumsüberschreibung aktualisiert"
+          : t("created") || "Datumsüberschreibung erstellt",
       );
       handleCloseDialog();
       loadOverrides();
@@ -220,23 +251,30 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
   }
 
   // Sort overrides by date (ascending)
-  const sortedOverrides = [...overrides].sort((a, b) => 
-    new Date(a.date).getTime() - new Date(b.date).getTime()
+  const sortedOverrides = [...overrides].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
 
   return (
     <>
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">{t("title") || "Datumsüberschreibungen"}</CardTitle>
+          <CardTitle className="text-base">
+            {t("title") || "Datumsüberschreibungen"}
+          </CardTitle>
           <CardDescription>
-            {t("description") || "Überschreiben Sie die Verfügbarkeit für spezifische Daten"}
+            {t("description") ||
+              "Überschreiben Sie die Verfügbarkeit für spezifische Daten"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={() => handleOpenDialog()} size="sm" className="gap-2">
+              <Button
+                onClick={() => handleOpenDialog()}
+                size="sm"
+                className="gap-2"
+              >
                 <Plus className="h-4 w-4" />
                 {t("add") || "Datumsüberschreibung hinzufügen"}
               </Button>
@@ -244,17 +282,20 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>
-                  {editingOverride 
-                    ? (t("edit") || "Datumsüberschreibung bearbeiten")
-                    : (t("add") || "Datumsüberschreibung hinzufügen")
-                  }
+                  {editingOverride
+                    ? t("edit") || "Datumsüberschreibung bearbeiten"
+                    : t("add") || "Datumsüberschreibung hinzufügen"}
                 </DialogTitle>
                 <DialogDescription>
-                  {t("form.description") || "Legen Sie eine Überschreibung für einen spezifischen Tag fest"}
+                  {t("form.description") ||
+                    "Legen Sie eine Überschreibung für einen spezifischen Tag fest"}
                 </DialogDescription>
               </DialogHeader>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
+                >
                   <FormField
                     control={form.control}
                     name="date"
@@ -275,9 +316,12 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
                     render={({ field }) => (
                       <FormItem className="flex items-center justify-between rounded-lg border p-3">
                         <div className="space-y-0.5">
-                          <FormLabel>{t("form.unavailable") || "Nicht verfügbar"}</FormLabel>
+                          <FormLabel>
+                            {t("form.unavailable") || "Nicht verfügbar"}
+                          </FormLabel>
                           <p className="text-xs text-muted-foreground">
-                            {t("form.unavailableDescription") || "Wenn aktiviert, ist dieser Tag komplett nicht verfügbar"}
+                            {t("form.unavailableDescription") ||
+                              "Wenn aktiviert, ist dieser Tag komplett nicht verfügbar"}
                           </p>
                         </div>
                         <FormControl>
@@ -297,7 +341,9 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
                         name="start_time"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("form.startTime") || "Startzeit (optional)"}</FormLabel>
+                            <FormLabel>
+                              {t("form.startTime") || "Startzeit (optional)"}
+                            </FormLabel>
                             <FormControl>
                               <Input type="time" {...field} />
                             </FormControl>
@@ -311,7 +357,9 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
                         name="end_time"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("form.endTime") || "Endzeit (optional)"}</FormLabel>
+                            <FormLabel>
+                              {t("form.endTime") || "Endzeit (optional)"}
+                            </FormLabel>
                             <FormControl>
                               <Input type="time" {...field} />
                             </FormControl>
@@ -333,11 +381,10 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
                     </Button>
                     <Button type="submit" disabled={isSubmitting}>
                       {isSubmitting
-                        ? (t("form.saving") || "Speichern...")
+                        ? t("form.saving") || "Speichern..."
                         : editingOverride
-                        ? (t("form.update") || "Aktualisieren")
-                        : (t("form.create") || "Erstellen")
-                      }
+                          ? t("form.update") || "Aktualisieren"
+                          : t("form.create") || "Erstellen"}
                     </Button>
                   </DialogFooter>
                 </form>
@@ -361,20 +408,28 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium">
-                          {format(new Date(override.date), "EEEE, d. MMMM yyyy", { locale: dateLocale })}
+                          {format(
+                            new Date(override.date),
+                            "EEEE, d. MMMM yyyy",
+                            { locale: dateLocale },
+                          )}
                         </span>
-                        <Badge variant={override.is_unavailable ? "destructive" : "default"}>
-                          {override.is_unavailable
-                            ? (t("unavailable") || "Nicht verfügbar")
-                            : (t("available") || "Verfügbar")
+                        <Badge
+                          variant={
+                            override.is_unavailable ? "destructive" : "default"
                           }
+                        >
+                          {override.is_unavailable
+                            ? t("unavailable") || "Nicht verfügbar"
+                            : t("available") || "Verfügbar"}
                         </Badge>
                       </div>
                       {override.start_time && override.end_time && (
                         <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
                           <Clock className="h-3 w-3" />
                           <span>
-                            {override.start_time.substring(0, 5)} - {override.end_time.substring(0, 5)}
+                            {override.start_time.substring(0, 5)} -{" "}
+                            {override.end_time.substring(0, 5)}
                           </span>
                         </div>
                       )}
@@ -405,12 +460,18 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
         </CardContent>
       </Card>
 
-      <AlertDialog open={!!deletingOverride} onOpenChange={(open) => !open && setDeletingOverride(null)}>
+      <AlertDialog
+        open={!!deletingOverride}
+        onOpenChange={(open) => !open && setDeletingOverride(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("deleteConfirmTitle") || "Datumsüberschreibung löschen?"}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t("deleteConfirmTitle") || "Datumsüberschreibung löschen?"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              {t("deleteConfirmDescription") || "Sind Sie sicher? Diese Aktion kann nicht rückgängig gemacht werden."}
+              {t("deleteConfirmDescription") ||
+                "Sind Sie sicher? Diese Aktion kann nicht rückgängig gemacht werden."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -430,4 +491,3 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
     </>
   );
 }
-

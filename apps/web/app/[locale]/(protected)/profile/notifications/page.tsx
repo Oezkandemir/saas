@@ -1,19 +1,16 @@
 import { redirect } from "next/navigation";
 import { getUserNotifications } from "@/actions/user-profile-actions";
-import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
+import { Bell } from "lucide-react";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import {
-  Card,
-  CardContent,
-} from '@/components/alignui/data-display/card';
+import { Card, CardContent } from "@/components/alignui/data-display/card";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { ClearAllNotificationsButton } from "@/components/profile/clear-all-notifications-button";
 import { MarkAllAsReadButton } from "@/components/profile/mark-all-as-read-button";
 import { NotificationsList } from "@/components/profile/notifications-list";
 import { ResponsiveNotificationsTabs } from "@/components/profile/responsive-notifications-tabs";
-import { Bell } from "lucide-react";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -35,10 +32,9 @@ export default async function NotificationsPage() {
   }
 
   // Fetch notifications in parallel with reasonable limits for better performance
-  const [allNotificationsResult, unreadNotificationsResult] = await Promise.all([
-    getUserNotifications(false, 100),
-    getUserNotifications(true, 100),
-  ]);
+  const [allNotificationsResult, unreadNotificationsResult] = await Promise.all(
+    [getUserNotifications(false, 100), getUserNotifications(true, 100)],
+  );
 
   const allNotifications = allNotificationsResult.success
     ? allNotificationsResult.data || []
@@ -88,21 +84,15 @@ export default async function NotificationsPage() {
         {/* Stats - Matching Dashboard Design: Simple Links */}
         <div className="flex gap-8 pb-6 mb-6 border-b border-border">
           <div>
-            <p className="mb-1 text-xs text-muted-foreground">
-              Gesamt
-            </p>
+            <p className="mb-1 text-xs text-muted-foreground">Gesamt</p>
             <p className="text-lg font-semibold">{totalCount}</p>
           </div>
           <div>
-            <p className="mb-1 text-xs text-muted-foreground">
-              Ungelesen
-            </p>
+            <p className="mb-1 text-xs text-muted-foreground">Ungelesen</p>
             <p className="text-lg font-semibold">{unreadCount}</p>
           </div>
           <div>
-            <p className="mb-1 text-xs text-muted-foreground">
-              Gelesen
-            </p>
+            <p className="mb-1 text-xs text-muted-foreground">Gelesen</p>
             <p className="text-lg font-semibold">{readCount}</p>
           </div>
         </div>
@@ -114,9 +104,12 @@ export default async function NotificationsPage() {
               <div className="flex justify-center items-center mb-4 w-16 h-16 rounded-full bg-muted">
                 <Bell className="w-8 h-8 text-muted-foreground" />
               </div>
-              <h3 className="mb-2 text-lg font-semibold">Keine Benachrichtigungen</h3>
+              <h3 className="mb-2 text-lg font-semibold">
+                Keine Benachrichtigungen
+              </h3>
               <p className="max-w-md text-sm text-center text-muted-foreground">
-                Sie haben derzeit keine Benachrichtigungen. Neue Benachrichtigungen werden hier angezeigt, sobald sie eintreffen.
+                Sie haben derzeit keine Benachrichtigungen. Neue
+                Benachrichtigungen werden hier angezeigt, sobald sie eintreffen.
               </p>
             </CardContent>
           </Card>
@@ -128,10 +121,18 @@ export default async function NotificationsPage() {
             systemCount={systemNotifications.length}
             teamCount={teamNotifications.length}
             allContent={<NotificationsList notifications={allNotifications} />}
-            unreadContent={<NotificationsList notifications={unreadNotifications} />}
-            welcomeContent={<NotificationsList notifications={welcomeNotifications} />}
-            systemContent={<NotificationsList notifications={systemNotifications} />}
-            teamContent={<NotificationsList notifications={teamNotifications} />}
+            unreadContent={
+              <NotificationsList notifications={unreadNotifications} />
+            }
+            welcomeContent={
+              <NotificationsList notifications={welcomeNotifications} />
+            }
+            systemContent={
+              <NotificationsList notifications={systemNotifications} />
+            }
+            teamContent={
+              <NotificationsList notifications={teamNotifications} />
+            }
           />
         )}
       </div>

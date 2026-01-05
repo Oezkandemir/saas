@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
+
 import { env } from "@/env.mjs";
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
@@ -27,13 +28,18 @@ export async function syncPolarSubscriptionFromCheckout(
     logger.info(`Syncing Polar subscription for checkout: ${checkoutId}`);
 
     // Fetch checkout details from Polar API
-    const isSandbox = env.POLAR_USE_SANDBOX === "true" || process.env.POLAR_USE_SANDBOX === "true";
-    const apiUrl = isSandbox ? "https://sandbox-api.polar.sh/v1" : "https://api.polar.sh/v1";
-    const accessToken = env.POLAR_ACCESS_TOKEN || process.env.POLAR_ACCESS_TOKEN;
+    const isSandbox =
+      env.POLAR_USE_SANDBOX === "true" ||
+      process.env.POLAR_USE_SANDBOX === "true";
+    const apiUrl = isSandbox
+      ? "https://sandbox-api.polar.sh/v1"
+      : "https://api.polar.sh/v1";
+    const accessToken =
+      env.POLAR_ACCESS_TOKEN || process.env.POLAR_ACCESS_TOKEN;
 
     const checkoutResponse = await fetch(`${apiUrl}/checkouts/${checkoutId}`, {
       headers: {
-        "Authorization": `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
     });
@@ -71,16 +77,19 @@ export async function syncPolarSubscriptionFromCheckout(
 
     // If we have a subscription ID, fetch full subscription details
     if (subscriptionId) {
-      const subscriptionResponse = await fetch(`${apiUrl}/subscriptions/${subscriptionId}`, {
-        headers: {
-          "Authorization": `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
+      const subscriptionResponse = await fetch(
+        `${apiUrl}/subscriptions/${subscriptionId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
 
       if (subscriptionResponse.ok) {
         const subscription = await subscriptionResponse.json();
-        
+
         // Update user with Polar subscription data
         const currentPeriodEnd = subscription.current_period_end
           ? new Date(subscription.current_period_end * 1000).toISOString()
@@ -134,23 +143,29 @@ export async function syncPolarSubscriptionFromCheckout(
             .update(subscriptionData)
             .eq("id", existingSub.id);
         } else {
-          await supabaseAdmin
-            .from("subscriptions")
-            .insert(subscriptionData);
+          await supabaseAdmin.from("subscriptions").insert(subscriptionData);
         }
 
-        logger.info(`Successfully synced Polar subscription ${subscriptionId} for user ${user.id}`);
-        
+        logger.info(
+          `Successfully synced Polar subscription ${subscriptionId} for user ${user.id}`,
+        );
+
         // Generate customer portal link after successful subscription
         if (subscription.customer_id || customerId) {
           try {
-            const { generatePolarCustomerPortalLink } = await import("@/lib/polar");
-            const portalUrl = await generatePolarCustomerPortalLink(subscription.customer_id || customerId);
-            
+            const { generatePolarCustomerPortalLink } = await import(
+              "@/lib/polar"
+            );
+            const portalUrl = await generatePolarCustomerPortalLink(
+              subscription.customer_id || customerId,
+            );
+
             // Optionally store the portal URL in the database
             // You could add a column like 'polar_portal_url' to the users table
-            logger.info(`Generated customer portal link for user ${user.id}: ${portalUrl}`);
-            
+            logger.info(
+              `Generated customer portal link for user ${user.id}: ${portalUrl}`,
+            );
+
             // TODO: Store portal URL in database or send via email/notification
             // Example: await supabaseAdmin.from("users").update({ polar_portal_url: portalUrl }).eq("id", user.id);
           } catch (portalError: any) {
@@ -158,7 +173,7 @@ export async function syncPolarSubscriptionFromCheckout(
             logger.warn("Failed to generate customer portal link", portalError);
           }
         }
-        
+
         return {
           success: true,
           message: "Subscription synced successfully",
@@ -185,7 +200,9 @@ export async function syncPolarSubscriptionFromCheckout(
         };
       }
 
-      logger.info(`Successfully synced Polar product ${productId} for user ${user.id}`);
+      logger.info(
+        `Successfully synced Polar product ${productId} for user ${user.id}`,
+      );
       return {
         success: true,
         message: "Purchase synced successfully",
@@ -204,4 +221,3 @@ export async function syncPolarSubscriptionFromCheckout(
     };
   }
 }
-

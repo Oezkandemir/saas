@@ -1,7 +1,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-import { corsHeaders } from "../_shared/cors.ts";
 import { logger } from "@/lib/logger";
+
+import { corsHeaders } from "../_shared/cors.ts";
 
 // Load environment variables
 const SITE_URL = Deno.env.get("SITE_URL") || "http://localhost:3000";

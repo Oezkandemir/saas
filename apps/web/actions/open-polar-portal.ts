@@ -2,8 +2,9 @@
 
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { generatePolarCustomerPortalLink } from "@/lib/polar";
+
 import { logger } from "@/lib/logger";
+import { generatePolarCustomerPortalLink } from "@/lib/polar";
 
 export type responseAction = {
   status: "success" | "error";
@@ -44,7 +45,7 @@ export async function openPolarPortal(
     logger.info(`Redirecting to Polar portal: ${portalUrl}`);
   } catch (error: any) {
     logger.error("Error opening Polar customer portal", error);
-    
+
     // Return error instead of throwing to allow client-side handling
     return {
       status: "error",
@@ -77,24 +78,27 @@ export async function openPolarPortalFromSubscription(
       throw new Error("No subscription ID provided");
     }
 
-    logger.info(
-      `Getting customer ID from subscription: ${subscriptionId}`,
-    );
+    logger.info(`Getting customer ID from subscription: ${subscriptionId}`);
 
     // Get customer ID from subscription
     const { getCustomerIdFromSubscription } = await import("@/lib/polar");
     const customerId = await getCustomerIdFromSubscription(subscriptionId);
 
     if (!customerId) {
-      logger.error("Cannot open Polar portal: No customer ID found in subscription");
+      logger.error(
+        "Cannot open Polar portal: No customer ID found in subscription",
+      );
       throw new Error("No customer ID found in subscription");
     }
 
     // Now open portal with the customer ID
     return await openPolarPortal(customerId);
   } catch (error: any) {
-    logger.error("Error opening Polar customer portal from subscription", error);
-    
+    logger.error(
+      "Error opening Polar customer portal from subscription",
+      error,
+    );
+
     return {
       status: "error",
       message: error.message || "Failed to open customer portal",
@@ -117,7 +121,7 @@ export async function openPolarPortalFallback(): Promise<responseAction> {
 
     // Try to get customer ID from database
     const { supabaseAdmin } = await import("@/lib/db");
-    
+
     // First, try to get from users table
     const { data: userData, error: userError } = await supabaseAdmin
       .from("users")
@@ -142,7 +146,9 @@ export async function openPolarPortalFallback(): Promise<responseAction> {
     // Try subscription ID from users table
     if (userData?.polar_subscription_id) {
       logger.info("Fallback: Found subscription ID in users table");
-      return await openPolarPortalFromSubscription(userData.polar_subscription_id);
+      return await openPolarPortalFromSubscription(
+        userData.polar_subscription_id,
+      );
     }
 
     // If not found in users table, try subscriptions table
@@ -180,38 +186,49 @@ export async function openPolarPortalFallback(): Promise<responseAction> {
         // Update users table with subscription ID for future use
         await supabaseAdmin
           .from("users")
-          .update({ polar_subscription_id: subscriptionData.polar_subscription_id })
+          .update({
+            polar_subscription_id: subscriptionData.polar_subscription_id,
+          })
           .eq("id", session.user.id);
-        return await openPolarPortalFromSubscription(subscriptionData.polar_subscription_id);
+        return await openPolarPortalFromSubscription(
+          subscriptionData.polar_subscription_id,
+        );
       }
     }
 
     // If still not found, try to find customer ID by email from Polar API
     if (session.user.email) {
-      logger.info("Fallback: No Polar data found, attempting to find customer by email");
-      
+      logger.info(
+        "Fallback: No Polar data found, attempting to find customer by email",
+      );
+
       try {
         const { findCustomerIdByEmail } = await import("@/lib/polar");
         const foundCustomerId = await findCustomerIdByEmail(session.user.email);
-        
+
         if (foundCustomerId) {
           // Update database with found customer ID
           await supabaseAdmin
             .from("users")
             .update({ polar_customer_id: foundCustomerId })
             .eq("id", session.user.id);
-          
+
           logger.info("Fallback: Found customer ID by email, opening portal");
           return await openPolarPortal(foundCustomerId);
         }
       } catch (emailSearchError: any) {
-        logger.error("Fallback: Error searching for customer by email", emailSearchError);
+        logger.error(
+          "Fallback: Error searching for customer by email",
+          emailSearchError,
+        );
       }
     }
 
     // If still not found, subscriptions will be synced automatically via webhooks
-    logger.info("No Polar data found - subscription will be synced automatically via webhooks");
-    
+    logger.info(
+      "No Polar data found - subscription will be synced automatically via webhooks",
+    );
+
     // Return error - user needs to wait for webhook or complete checkout
     logger.error("No Polar data found after all attempts", {
       userId: session.user.id,
@@ -223,15 +240,15 @@ export async function openPolarPortalFallback(): Promise<responseAction> {
     // Return error with helpful message
     return {
       status: "error",
-      message: "No Polar subscription found. Please ensure you have completed a purchase through Polar.sh. Subscriptions are synced automatically via webhooks.",
+      message:
+        "No Polar subscription found. Please ensure you have completed a purchase through Polar.sh. Subscriptions are synced automatically via webhooks.",
     };
   } catch (error: any) {
     logger.error("Error opening Polar customer portal (fallback)", error);
-    
+
     return {
       status: "error",
       message: error.message || "Failed to open customer portal",
     };
   }
 }
-

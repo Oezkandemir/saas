@@ -1,5 +1,5 @@
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { cn } from "@/lib/utils";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 
 export type DocumentStatus =
   | "draft"
@@ -9,7 +9,10 @@ export type DocumentStatus =
   | "paid"
   | "overdue";
 
-const statusColors: Record<DocumentStatus, "default" | "secondary" | "destructive"> = {
+const statusColors: Record<
+  DocumentStatus,
+  "default" | "secondary" | "destructive"
+> = {
   draft: "secondary",
   sent: "default",
   accepted: "default",
@@ -39,10 +42,3 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
     </Badge>
   );
 }
-
-
-
-
-
-
-

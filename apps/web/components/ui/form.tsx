@@ -47,7 +47,11 @@ const useFormField = () => {
   const fieldState = getFieldState(fieldContext.name, formState);
   const fieldValue = watch(fieldContext.name);
   const isDirty = formState.dirtyFields[fieldContext.name];
-  const isValid = !fieldState.error && isDirty && fieldValue !== undefined && fieldValue !== "";
+  const isValid =
+    !fieldState.error &&
+    isDirty &&
+    fieldValue !== undefined &&
+    fieldValue !== "";
 
   if (!fieldContext) {
     throw new Error("useFormField should be used within <FormField>");
@@ -84,11 +88,7 @@ const FormItem = React.forwardRef<
 
   return (
     <FormItemContext.Provider value={{ id }}>
-      <div
-        ref={ref}
-        className={cn("space-y-2 relative", className)}
-        {...props}
-      >
+      <div ref={ref} className={cn("space-y-2 relative", className)} {...props}>
         {children}
       </div>
     </FormItemContext.Provider>

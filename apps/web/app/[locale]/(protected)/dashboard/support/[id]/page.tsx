@@ -1,11 +1,14 @@
 import { notFound, redirect } from "next/navigation";
 import { getTicketWithMessages } from "@/actions/support-ticket-actions";
 import { formatDistance } from "date-fns";
+import { MessageSquare } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
+import { Separator } from "@/components/ui/separator";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import {
   Card,
   CardContent,
@@ -13,13 +16,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { Separator } from "@/components/ui/separator";
+} from "@/components/alignui/data-display/card";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TicketMessageItem } from "@/components/support/ticket-message";
 import { TicketReplyForm } from "@/components/support/ticket-reply-form";
-import { MessageSquare } from "lucide-react";
-import { logger } from "@/lib/logger";
 
 // Helper function to get status badge color
 const getStatusColor = (status: string) => {
@@ -63,8 +63,10 @@ export async function generateMetadata({
   const ticket = ticketResult.success ? ticketResult.data?.ticket : null;
 
   return constructMetadata({
-    title: ticket ? `Support Ticket: ${ticket.subject} | Professional Support` : "Support Ticket Details",
-    description: ticket 
+    title: ticket
+      ? `Support Ticket: ${ticket.subject} | Professional Support`
+      : "Support Ticket Details",
+    description: ticket
       ? `Track and manage your support ticket. Status: ${ticket.status}. Get real-time updates and communicate directly with our support team.`
       : "View and respond to your support ticket with real-time updates and expert assistance.",
   });
@@ -131,11 +133,16 @@ export default async function TicketPage({
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">Priority:</span>
-                <Badge variant="outline" className={
-                  ticket.priority === 'high' ? 'border-red-500 text-red-600' :
-                  ticket.priority === 'medium' ? 'border-orange-500 text-orange-600' :
-                  'border-blue-500 text-blue-600'
-                }>
+                <Badge
+                  variant="outline"
+                  className={
+                    ticket.priority === "high"
+                      ? "border-red-500 text-red-600"
+                      : ticket.priority === "medium"
+                        ? "border-orange-500 text-orange-600"
+                        : "border-blue-500 text-blue-600"
+                  }
+                >
                   {ticket.priority.toUpperCase()}
                 </Badge>
               </div>
@@ -165,7 +172,9 @@ export default async function TicketPage({
                 <div className="flex size-16 items-center justify-center rounded-full bg-muted/50 mx-auto mb-3">
                   <MessageSquare className="size-8 text-muted-foreground" />
                 </div>
-                <p className="text-muted-foreground font-medium">No messages yet</p>
+                <p className="text-muted-foreground font-medium">
+                  No messages yet
+                </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   Our support team will respond within 2-4 hours
                 </p>

@@ -17,7 +17,5 @@ export function DashboardHeaderWithLanguageSwitcher({
 }: DashboardHeaderWithLanguageSwitcherProps) {
   // Note: Language switcher is now available in the navbar for all pages
   // This component now just renders the regular DashboardHeader
-  return (
-    <DashboardHeader heading={heading} text={text} actions={actions} />
-  );
+  return <DashboardHeader heading={heading} text={text} actions={actions} />;
 }

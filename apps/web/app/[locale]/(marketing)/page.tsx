@@ -1,17 +1,16 @@
 import { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { constructMetadata } from "@/lib/utils";
-import ModernHero from "@/components/sections/modern-hero";
-import ModernFeatures from "@/components/sections/modern-features";
-import ModernStats from "@/components/sections/modern-stats";
-import ModernOfferings from "@/components/sections/modern-offerings";
-import ModernHowItWorks from "@/components/sections/modern-how-it-works";
 import ModernBenefits from "@/components/sections/modern-benefits";
-import ModernTestimonials from "@/components/sections/modern-testimonials";
-import ModernFAQ from "@/components/sections/modern-faq";
 import ModernCTA from "@/components/sections/modern-cta";
+import ModernFAQ from "@/components/sections/modern-faq";
+import ModernFeatures from "@/components/sections/modern-features";
+import ModernHero from "@/components/sections/modern-hero";
+import ModernHowItWorks from "@/components/sections/modern-how-it-works";
+import ModernOfferings from "@/components/sections/modern-offerings";
+import ModernStats from "@/components/sections/modern-stats";
+import ModernTestimonials from "@/components/sections/modern-testimonials";
 
 interface PageProps {
   params: Promise<{
@@ -24,11 +23,11 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const { locale } = resolvedParams;
-  
+
   // CRITICAL FIX: Set locale before getting translations
   // This ensures the correct language is used during client-side navigation
   setRequestLocale(locale);
-  
+
   const t = await getTranslations("Index");
 
   return constructMetadata({

@@ -1,6 +1,8 @@
 "use client";
 
+import { Briefcase, Globe, Mail, Phone, Smartphone, User } from "lucide-react";
 import { Control } from "react-hook-form";
+
 import {
   FormControl,
   FormDescription,
@@ -9,8 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from '@/components/alignui/forms/input';
-import { Mail, Phone, Smartphone, Globe, User, Briefcase } from "lucide-react";
+import { Input } from "@/components/alignui/forms/input";
 
 interface CompanyContactFieldsProps {
   control: Control<any>;
@@ -181,4 +182,3 @@ export function CompanyContactFields({ control }: CompanyContactFieldsProps) {
     </div>
   );
 }
-

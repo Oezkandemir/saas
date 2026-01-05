@@ -2,9 +2,10 @@
 
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+
 import { env } from "@/env.mjs";
-import { absoluteUrl } from "@/lib/utils";
 import { logger } from "@/lib/logger";
+import { absoluteUrl } from "@/lib/utils";
 
 export type responseAction = {
   status: "success" | "error";
@@ -14,7 +15,7 @@ export type responseAction = {
 /**
  * Generate Polar checkout session for user
  * This redirects the user to Polar's checkout page with the specified product
- * 
+ *
  * @param productId - The Polar product ID to checkout
  * @returns Promise that redirects to Polar checkout
  */
@@ -34,7 +35,9 @@ export async function generateUserPolar(
 
     if (!env.POLAR_ACCESS_TOKEN || env.POLAR_ACCESS_TOKEN.length === 0) {
       logger.error("Polar access token is not set or is empty");
-      throw new Error("Polar is not configured. Please set POLAR_ACCESS_TOKEN in your environment variables.");
+      throw new Error(
+        "Polar is not configured. Please set POLAR_ACCESS_TOKEN in your environment variables.",
+      );
     }
 
     if (!productId) {
@@ -52,12 +55,12 @@ export async function generateUserPolar(
       products: productId,
       customer_email: user.email,
     });
-    
+
     // Add customer name if available
     if (user.name) {
       params.append("customer_name", user.name);
     }
-    
+
     checkoutUrl = `${absoluteUrl("/api/checkout/polar")}?${params.toString()}`;
 
     logger.info(`Redirecting to Polar checkout: ${checkoutUrl}`);
@@ -68,14 +71,18 @@ export async function generateUserPolar(
     });
 
     // If error message already contains helpful information, use it
-    if (error.message?.includes("not configured") || error.message?.includes("Invalid")) {
+    if (
+      error.message?.includes("not configured") ||
+      error.message?.includes("Invalid")
+    ) {
       throw error;
     }
 
-    throw new Error(error.message || "Failed to generate Polar checkout session");
+    throw new Error(
+      error.message || "Failed to generate Polar checkout session",
+    );
   }
 
   // Call redirect outside of try-catch to allow Next.js to handle the redirect exception properly
   redirect(checkoutUrl);
 }
-

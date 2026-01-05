@@ -1,6 +1,7 @@
+import { Settings } from "lucide-react";
+
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { SkeletonSection } from "@/components/shared/section-skeleton";
-import { Settings } from "lucide-react";
 
 export default function DashboardSettingsLoading() {
   return (

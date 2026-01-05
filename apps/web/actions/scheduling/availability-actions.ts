@@ -3,9 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
-import { logger } from "@/lib/logger";
 
 // ============================================
 // ZOD SCHEMAS
@@ -23,8 +23,14 @@ const weeklyAvailabilitySchema = z.object({
 const availabilityOverrideSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // YYYY-MM-DD format
   is_unavailable: z.boolean().default(false),
-  start_time: z.string().regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/).optional(),
-  end_time: z.string().regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/).optional(),
+  start_time: z
+    .string()
+    .regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/)
+    .optional(),
+  end_time: z
+    .string()
+    .regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/)
+    .optional(),
   timezone: z.string().default("Europe/Berlin"),
   company_profile_id: z.string().uuid().optional(),
   event_type_id: z.string().uuid().optional(), // Per-event-type override
@@ -73,7 +79,7 @@ export type AvailabilityOverride = {
  * Upsert weekly availability rule (create or update)
  */
 export async function upsertWeeklyAvailability(
-  input: z.infer<typeof weeklyAvailabilitySchema>
+  input: z.infer<typeof weeklyAvailabilitySchema>,
 ): Promise<ActionResult<AvailabilityRule>> {
   const user = await getCurrentUser();
 
@@ -185,7 +191,8 @@ export async function upsertWeeklyAvailability(
   } catch (error) {
     if (error instanceof z.ZodError) {
       const fieldErrors = error.flatten().fieldErrors;
-      const firstError = Object.values(fieldErrors)[0]?.[0] || "Validation error";
+      const firstError =
+        Object.values(fieldErrors)[0]?.[0] || "Validation error";
       return {
         success: false,
         error: firstError,
@@ -204,7 +211,7 @@ export async function upsertWeeklyAvailability(
  * Delete a weekly availability rule
  */
 export async function deleteWeeklyAvailability(
-  id: string
+  id: string,
 ): Promise<ActionResult<null>> {
   const user = await getCurrentUser();
 
@@ -251,7 +258,9 @@ export async function deleteWeeklyAvailability(
 /**
  * Get all weekly availability rules for the current user
  */
-export async function getWeeklyAvailability(eventTypeId?: string): Promise<ActionResult<AvailabilityRule[]>> {
+export async function getWeeklyAvailability(
+  eventTypeId?: string,
+): Promise<ActionResult<AvailabilityRule[]>> {
   const user = await getCurrentUser();
 
   if (!user?.id) {
@@ -277,7 +286,9 @@ export async function getWeeklyAvailability(eventTypeId?: string): Promise<Actio
       query = query.is("event_type_id", null);
     }
 
-    const { data, error } = await query.order("day_of_week", { ascending: true });
+    const { data, error } = await query.order("day_of_week", {
+      ascending: true,
+    });
 
     if (error) {
       logger.error("Error fetching weekly availability", error);
@@ -308,7 +319,7 @@ export async function getWeeklyAvailability(eventTypeId?: string): Promise<Actio
  * Create an availability override (holiday, special day, etc.)
  */
 export async function createAvailabilityOverride(
-  input: z.infer<typeof availabilityOverrideSchema>
+  input: z.infer<typeof availabilityOverrideSchema>,
 ): Promise<ActionResult<AvailabilityOverride>> {
   const user = await getCurrentUser();
 
@@ -411,7 +422,8 @@ export async function createAvailabilityOverride(
   } catch (error) {
     if (error instanceof z.ZodError) {
       const fieldErrors = error.flatten().fieldErrors;
-      const firstError = Object.values(fieldErrors)[0]?.[0] || "Validation error";
+      const firstError =
+        Object.values(fieldErrors)[0]?.[0] || "Validation error";
       return {
         success: false,
         error: firstError,
@@ -431,7 +443,7 @@ export async function createAvailabilityOverride(
  */
 export async function updateAvailabilityOverride(
   id: string,
-  input: z.infer<typeof availabilityOverrideSchema>
+  input: z.infer<typeof availabilityOverrideSchema>,
 ): Promise<ActionResult<AvailabilityOverride>> {
   const user = await getCurrentUser();
 
@@ -519,7 +531,8 @@ export async function updateAvailabilityOverride(
   } catch (error) {
     if (error instanceof z.ZodError) {
       const fieldErrors = error.flatten().fieldErrors;
-      const firstError = Object.values(fieldErrors)[0]?.[0] || "Validation error";
+      const firstError =
+        Object.values(fieldErrors)[0]?.[0] || "Validation error";
       return {
         success: false,
         error: firstError,
@@ -538,7 +551,7 @@ export async function updateAvailabilityOverride(
  * Delete an availability override
  */
 export async function deleteAvailabilityOverride(
-  id: string
+  id: string,
 ): Promise<ActionResult<null>> {
   const user = await getCurrentUser();
 
@@ -585,7 +598,9 @@ export async function deleteAvailabilityOverride(
 /**
  * Get all availability overrides for the current user, optionally filtered by event_type_id
  */
-export async function getAvailabilityOverrides(eventTypeId?: string): Promise<ActionResult<AvailabilityOverride[]>> {
+export async function getAvailabilityOverrides(
+  eventTypeId?: string,
+): Promise<ActionResult<AvailabilityOverride[]>> {
   const user = await getCurrentUser();
 
   if (!user?.id) {
@@ -633,4 +648,3 @@ export async function getAvailabilityOverrides(eventTypeId?: string): Promise<Ac
     };
   }
 }
-

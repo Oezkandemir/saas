@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTheme } from "next-themes";
-import { useSupabase } from "@/components/supabase-provider";
 import { getUserPreferences } from "@/actions/preferences-actions";
+import { useTheme } from "next-themes";
+
 import { logger } from "@/lib/logger";
+import { useSupabase } from "@/components/supabase-provider";
 
 /**
  * ThemeSyncProvider synchronizes the theme preference from the database
@@ -33,7 +34,10 @@ export function ThemeSyncProvider({ children }: { children: React.ReactNode }) {
 
         const result = await getUserPreferences();
         if (result.success && result.data?.theme_preference) {
-          const savedTheme = result.data.theme_preference as "system" | "light" | "dark";
+          const savedTheme = result.data.theme_preference as
+            | "system"
+            | "light"
+            | "dark";
           // Only set if different from current theme
           if (savedTheme !== theme) {
             setTheme(savedTheme);
@@ -52,4 +56,3 @@ export function ThemeSyncProvider({ children }: { children: React.ReactNode }) {
 
   return <>{children}</>;
 }
-

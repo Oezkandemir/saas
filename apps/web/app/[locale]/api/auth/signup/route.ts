@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { getSupabaseServer } from "@/lib/supabase-server";
 import { logger } from "@/lib/logger";
+import { getSupabaseServer } from "@/lib/supabase-server";
 
 // Validation schema for signup
 const signupSchema = z.object({

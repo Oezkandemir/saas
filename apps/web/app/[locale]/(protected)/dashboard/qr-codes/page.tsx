@@ -1,14 +1,15 @@
-import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
-import { getCurrentUser } from "@/lib/session";
-import { getQRCodes, type QRCode } from "@/actions/qr-codes-actions";
-import { getCustomers, type Customer } from "@/actions/customers-actions";
-import { Button } from '@/components/alignui/actions/button';
-import { Plus, QrCode } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getCustomers, type Customer } from "@/actions/customers-actions";
+import { getQRCodes, type QRCode } from "@/actions/qr-codes-actions";
+import { Plus, QrCode } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+
+import { getCurrentUser } from "@/lib/session";
+import { Button } from "@/components/alignui/actions/button";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { QRCodesTable } from "@/components/qr-codes/qr-codes-table";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export const dynamic = "force-dynamic";
 
@@ -26,9 +27,10 @@ export default async function QRCodesPage() {
   const totalQRCodes = qrCodes.length + customerQRCodes;
 
   // Contextual description with QR code counts
-  const description = totalQRCodes > 0 
-    ? `${totalQRCodes} ${t("stats.total").toLowerCase()} • ${qrCodes.length} Standalone • ${customerQRCodes} Kunden`
-    : t("description");
+  const description =
+    totalQRCodes > 0
+      ? `${totalQRCodes} ${t("stats.total").toLowerCase()} • ${qrCodes.length} Standalone • ${customerQRCodes} Kunden`
+      : t("description");
 
   return (
     <UnifiedPageLayout
@@ -71,4 +73,3 @@ export default async function QRCodesPage() {
     </UnifiedPageLayout>
   );
 }
-

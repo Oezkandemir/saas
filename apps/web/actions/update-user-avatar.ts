@@ -3,9 +3,9 @@
 import { revalidatePath } from "next/cache";
 
 import { supabaseAdmin } from "@/lib/db";
+import { logger } from "@/lib/logger";
 import { getSession } from "@/lib/session";
 import { getSupabaseServer } from "@/lib/supabase-server";
-import { logger } from "@/lib/logger";
 
 export async function updateUserAvatar(userId: string, formData: FormData) {
   try {

@@ -1,10 +1,17 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 import { Check, X } from "lucide-react";
-import { cn } from "@/lib/utils";
+
 import type { PlanFeaturesInfo } from "@/lib/plan-features";
+import { cn } from "@/lib/utils";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 
 interface PlanFeaturesDisplayProps {
   planInfo: PlanFeaturesInfo;
@@ -157,4 +164,3 @@ export function PlanFeaturesDisplay({ planInfo }: PlanFeaturesDisplayProps) {
     </Card>
   );
 }
-

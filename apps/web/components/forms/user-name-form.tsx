@@ -10,10 +10,10 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { userNameSchema } from "@/lib/validations/user";
-import { Button } from '@/components/alignui/actions/button';
-import { Input } from '@/components/alignui/forms/input';
-import { LabelRoot as Label } from "@/components/alignui/forms/label";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Button } from "@/components/alignui/actions/button";
+import { Input } from "@/components/alignui/forms/input";
+import { LabelRoot as Label } from "@/components/alignui/forms/label";
 
 interface UserNameFormProps {
   user: Pick<User, "id" | "name">;
@@ -80,18 +80,12 @@ export function UserNameForm({ user }: UserNameFormProps) {
           className="h-8 text-xs shrink-0"
           disabled={isPending || !updated}
         >
-          {isPending ? (
-            <LoadingSpinner size="sm" variant="primary" />
-          ) : (
-            "Save"
-          )}
+          {isPending ? <LoadingSpinner size="sm" variant="primary" /> : "Save"}
         </Button>
       </div>
       <div className="mt-1">
         {errors?.name && (
-          <p className="text-xs text-red-600">
-            {errors.name.message}
-          </p>
+          <p className="text-xs text-red-600">{errors.name.message}</p>
         )}
         <p className="text-xs text-muted-foreground">{t("maxChars")}</p>
       </div>

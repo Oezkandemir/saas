@@ -1,25 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations, useLocale } from "next-intl";
-import { useForm, useFieldArray, type Control, type FieldArrayPath } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { createBooking, type AvailableSlot } from "@/actions/scheduling/bookings-actions";
-import type { EventType } from "@/actions/scheduling/event-types-actions";
-import { Button } from '@/components/alignui/actions/button';
 import {
-  FormRoot as Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "@/components/alignui/forms/form";
-import { Input } from '@/components/alignui/forms/input';
-import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
+  createBooking,
+  type AvailableSlot,
+} from "@/actions/scheduling/bookings-actions";
+import type { EventType } from "@/actions/scheduling/event-types-actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { de, enUS } from "date-fns/locale";
+import { Mail, MessageSquare, Minus, Plus, User, Users } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import {
+  useFieldArray,
+  useForm,
+  type Control,
+  type FieldArrayPath,
+} from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+
 import {
   Sheet,
   SheetContent,
@@ -27,10 +28,18 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { toast } from "sonner";
-import { User, Mail, MessageSquare, Users, Plus, Minus } from "lucide-react";
-import { format } from "date-fns";
-import { de, enUS } from "date-fns/locale";
+import { Button } from "@/components/alignui/actions/button";
+import {
+  FormRoot as Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/alignui/forms/form";
+import { Input } from "@/components/alignui/forms/input";
+import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
 
 const bookingSchema = z.object({
   invitee_name: z.string().min(1, "Name is required").max(200),
@@ -38,26 +47,28 @@ const bookingSchema = z.object({
   invitee_notes: z.string().max(1000).optional(),
   start_at: z.string().datetime(),
   number_of_participants: z.number().int().min(1).default(1),
-  participant_names: z.array(z.string().min(1, "Name is required").max(200)).default([]),
+  participant_names: z
+    .array(z.string().min(1, "Name is required").max(200))
+    .default([]),
 });
 
 type BookingFormValues = z.infer<typeof bookingSchema>;
 
 interface BookingFormDrawerProps {
-  eventType: EventType & { 
+  eventType: EventType & {
     owner: { name: string | null; email: string | null };
-    price_type?: 'hourly' | 'fixed';
+    price_type?: "hourly" | "fixed";
   };
   selectedSlot: AvailableSlot | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function BookingFormDrawer({ 
-  eventType, 
-  selectedSlot, 
-  open, 
-  onOpenChange 
+export function BookingFormDrawer({
+  eventType,
+  selectedSlot,
+  open,
+  onOpenChange,
 }: BookingFormDrawerProps) {
   const router = useRouter();
   const locale = useLocale();
@@ -85,7 +96,7 @@ export function BookingFormDrawer({
 
   // Watch number_of_participants to sync participant_names array
   const numberOfParticipants = form.watch("number_of_participants") || 1;
-  
+
   // Reset form when drawer opens/closes or slot changes
   useEffect(() => {
     if (open && selectedSlot) {
@@ -151,15 +162,21 @@ export function BookingFormDrawer({
       // Show success toast
       if (emailSent) {
         toast.success(t("bookingSuccess") || "Booking confirmed!", {
-          description: t("bookingSuccessDescription") || "Your booking has been confirmed. Check your email for details.",
+          description:
+            t("bookingSuccessDescription") ||
+            "Your booking has been confirmed. Check your email for details.",
         });
       } else {
         // Booking succeeded but email failed
         toast.success(t("bookingSuccess") || "Booking confirmed!", {
-          description: t("bookingSuccessDescription") || "Your booking has been confirmed.",
+          description:
+            t("bookingSuccessDescription") ||
+            "Your booking has been confirmed.",
         });
         toast.warning("E-Mail konnte nicht gesendet werden", {
-          description: emailError || "Die Buchung wurde erfolgreich erstellt, aber die Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte kontaktieren Sie uns direkt.",
+          description:
+            emailError ||
+            "Die Buchung wurde erfolgreich erstellt, aber die Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte kontaktieren Sie uns direkt.",
         });
       }
 
@@ -171,10 +188,11 @@ export function BookingFormDrawer({
         router.push(`/${locale}/dashboard/scheduling`);
       }, 1500);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : t("unexpectedError") || "An unexpected error occurred";
-      
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : t("unexpectedError") || "An unexpected error occurred";
+
       toast.error(t("bookingError") || "Failed to create booking", {
         description: errorMessage,
       });
@@ -196,7 +214,8 @@ export function BookingFormDrawer({
         <SheetHeader>
           <SheetTitle>{t("yourDetails") || "Your Details"}</SheetTitle>
           <SheetDescription>
-            {t("yourDetailsDescription") || "Please provide your information to complete the booking"}
+            {t("yourDetailsDescription") ||
+              "Please provide your information to complete the booking"}
           </SheetDescription>
         </SheetHeader>
 
@@ -207,7 +226,9 @@ export function BookingFormDrawer({
               {t("selectedSlot") || "Selected Slot"}
             </div>
             <div className="text-sm text-muted-foreground">
-              {format(slotStart, "EEEE, d. MMMM yyyy 'um' HH:mm", { locale: dateLocale })}
+              {format(slotStart, "EEEE, d. MMMM yyyy 'um' HH:mm", {
+                locale: dateLocale,
+              })}
             </div>
             {totalPrice !== null && (
               <div className="mt-2 flex items-center justify-between">
@@ -215,7 +236,7 @@ export function BookingFormDrawer({
                   {t("totalPrice") || "Total Price"}:
                 </span>
                 <span className="text-lg font-bold text-primary">
-                  {totalPrice.toFixed(2)} {eventType.price_currency || 'EUR'}
+                  {totalPrice.toFixed(2)} {eventType.price_currency || "EUR"}
                 </span>
               </div>
             )}
@@ -233,7 +254,10 @@ export function BookingFormDrawer({
                       {t("name") || "Name"}
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder={t("namePlaceholder") || "Your name"} {...field} />
+                      <Input
+                        placeholder={t("namePlaceholder") || "Your name"}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -250,7 +274,11 @@ export function BookingFormDrawer({
                       {t("email") || "Email"}
                     </FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder={t("emailPlaceholder") || "your@email.com"} {...field} />
+                      <Input
+                        type="email"
+                        placeholder={t("emailPlaceholder") || "your@email.com"}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -262,9 +290,10 @@ export function BookingFormDrawer({
                 name="number_of_participants"
                 render={({ field }) => {
                   const maxParticipants = selectedSlot?.max_participants || 999;
-                  const availablePlaces = selectedSlot?.available_places ?? maxParticipants;
+                  const availablePlaces =
+                    selectedSlot?.available_places ?? maxParticipants;
                   const currentValue = field.value || 1;
-                  
+
                   return (
                     <FormItem>
                       <FormLabel className="flex items-center gap-2">
@@ -309,11 +338,15 @@ export function BookingFormDrawer({
                         </div>
                       </FormControl>
                       <FormDescription>
-                        {selectedSlot?.max_participants && selectedSlot.available_places !== undefined && (
-                          <span className="text-sm text-muted-foreground">
-                            {t("availablePlaces", { places: selectedSlot.available_places }) || `${selectedSlot.available_places} places available`}
-                          </span>
-                        )}
+                        {selectedSlot?.max_participants &&
+                          selectedSlot.available_places !== undefined && (
+                            <span className="text-sm text-muted-foreground">
+                              {t("availablePlaces", {
+                                places: selectedSlot.available_places,
+                              }) ||
+                                `${selectedSlot.available_places} places available`}
+                            </span>
+                          )}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -331,12 +364,17 @@ export function BookingFormDrawer({
                     <FormItem>
                       <FormLabel className="flex items-center gap-2">
                         <User className="h-4 w-4" />
-                        {t("participantName", { number: index + 2 }) || `Teilnehmer ${index + 2}`}
+                        {t("participantName", { number: index + 2 }) ||
+                          `Teilnehmer ${index + 2}`}
                       </FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder={t("participantNamePlaceholder", { number: index + 2 }) || `Name des Teilnehmers ${index + 2}`} 
-                          {...nameField} 
+                        <Input
+                          placeholder={
+                            t("participantNamePlaceholder", {
+                              number: index + 2,
+                            }) || `Name des Teilnehmers ${index + 2}`
+                          }
+                          {...nameField}
                         />
                       </FormControl>
                       <FormMessage />
@@ -355,9 +393,12 @@ export function BookingFormDrawer({
                       {t("notes") || "Notes (Optional)"}
                     </FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder={t("notesPlaceholder") || "Any additional information..."} 
-                        {...field} 
+                      <Textarea
+                        placeholder={
+                          t("notesPlaceholder") ||
+                          "Any additional information..."
+                        }
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -366,11 +407,14 @@ export function BookingFormDrawer({
               />
 
               <div className="pt-4">
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting 
-                    ? (t("booking") || "Booking...")
-                    : (t("confirmBooking") || "Confirm Booking")
-                  }
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting
+                    ? t("booking") || "Booking..."
+                    : t("confirmBooking") || "Confirm Booking"}
                 </Button>
               </div>
             </form>
@@ -380,4 +424,3 @@ export function BookingFormDrawer({
     </Sheet>
   );
 }
-

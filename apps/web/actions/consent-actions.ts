@@ -1,11 +1,16 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { logger } from "@/lib/logger";
 
-export type ConsentType = "marketing" | "analytics" | "functional" | "necessary";
+import { logger } from "@/lib/logger";
+import { createClient } from "@/lib/supabase/server";
+
+export type ConsentType =
+  | "marketing"
+  | "analytics"
+  | "functional"
+  | "necessary";
 
 export interface ConsentRecord {
   id: string;
@@ -49,7 +54,11 @@ export async function getUserConsents(): Promise<
     const latestConsents = new Map<ConsentType, ConsentRecord>();
     (data || []).forEach((record) => {
       const type = record.consent_type as ConsentType;
-      if (!latestConsents.has(type) || new Date(record.created_at) > new Date(latestConsents.get(type)!.createdAt)) {
+      if (
+        !latestConsents.has(type) ||
+        new Date(record.created_at) >
+          new Date(latestConsents.get(type)!.createdAt)
+      ) {
         latestConsents.set(type, {
           id: record.id,
           consentType: type,
@@ -69,7 +78,8 @@ export async function getUserConsents(): Promise<
     logger.error("Error getting user consents:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to get consents",
+      message:
+        error instanceof Error ? error.message : "Failed to get consents",
     };
   }
 }
@@ -98,20 +108,25 @@ export async function updateConsent(
     }
 
     const headersList = await headers();
-    const ipAddress = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || null;
+    const ipAddress =
+      headersList.get("x-forwarded-for") ||
+      headersList.get("x-real-ip") ||
+      null;
     const userAgent = headersList.get("user-agent") || null;
     const consentVersion = "1.0"; // Update when consent terms change
 
     // Insert new consent record (keeping history)
-    const { error: insertError } = await supabase.from("consent_records").insert({
-      user_id: user.id,
-      consent_type: consentType,
-      granted,
-      consent_version: consentVersion,
-      ip_address: ipAddress,
-      user_agent: userAgent,
-      source,
-    });
+    const { error: insertError } = await supabase
+      .from("consent_records")
+      .insert({
+        user_id: user.id,
+        consent_type: consentType,
+        granted,
+        consent_version: consentVersion,
+        ip_address: ipAddress,
+        user_agent: userAgent,
+        source,
+      });
 
     if (insertError) {
       return { success: false, message: "Failed to update consent" };
@@ -134,7 +149,8 @@ export async function updateConsent(
     logger.error("Error updating consent:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to update consent",
+      message:
+        error instanceof Error ? error.message : "Failed to update consent",
     };
   }
 }
@@ -187,8 +203,10 @@ export async function getConsentHistory(
     logger.error("Error getting consent history:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to get consent history",
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to get consent history",
     };
   }
 }
-

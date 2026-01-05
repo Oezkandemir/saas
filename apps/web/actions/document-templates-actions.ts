@@ -1,8 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSupabaseServer } from "@/lib/supabase-server";
+
 import { getCurrentUser } from "@/lib/session";
+import { getSupabaseServer } from "@/lib/supabase-server";
+
 import type { DocumentType } from "./documents-actions";
 
 export type DocumentTemplate = {
@@ -229,14 +231,19 @@ export async function updateDocumentTemplate(
     updateData.company_bic = input.company_bic?.trim() || null;
   if (input.company_bank_name !== undefined)
     updateData.company_bank_name = input.company_bank_name?.trim() || null;
-  if (input.logo_url !== undefined) updateData.logo_url = input.logo_url?.trim() || null;
-  if (input.primary_color !== undefined) updateData.primary_color = input.primary_color;
-  if (input.secondary_color !== undefined) updateData.secondary_color = input.secondary_color;
-  if (input.font_family !== undefined) updateData.font_family = input.font_family;
+  if (input.logo_url !== undefined)
+    updateData.logo_url = input.logo_url?.trim() || null;
+  if (input.primary_color !== undefined)
+    updateData.primary_color = input.primary_color;
+  if (input.secondary_color !== undefined)
+    updateData.secondary_color = input.secondary_color;
+  if (input.font_family !== undefined)
+    updateData.font_family = input.font_family;
   if (input.show_logo !== undefined) updateData.show_logo = input.show_logo;
   if (input.show_payment_info !== undefined)
     updateData.show_payment_info = input.show_payment_info;
-  if (input.show_footer !== undefined) updateData.show_footer = input.show_footer;
+  if (input.show_footer !== undefined)
+    updateData.show_footer = input.show_footer;
 
   const { data, error } = await supabase
     .from("document_templates")
@@ -265,9 +272,3 @@ export async function deleteDocumentTemplate(id: string): Promise<void> {
   if (error) throw error;
   revalidatePath("/dashboard/settings/templates");
 }
-
-
-
-
-
-

@@ -1,20 +1,26 @@
 import { redirect } from "next/navigation";
-import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
-import { CreditCard } from "lucide-react";
-
-import { getCurrentUser } from "@/lib/session";
 import {
   getAllPlans,
-  getPlanStatistics,
   getPlanMigrations,
+  getPlanStatistics,
   getUsersByPlan,
 } from "@/actions/admin-plan-actions";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { PlanStatisticsTable } from "@/components/admin/plans/plan-statistics-table";
-import { PlanMigrationsTable } from "@/components/admin/plans/plan-migrations-table";
-import { PlanUsersTable } from "@/components/admin/plans/plan-users-table";
+import { CreditCard } from "lucide-react";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
+
+import { getCurrentUser } from "@/lib/session";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PlanMigrationsTable } from "@/components/admin/plans/plan-migrations-table";
+import { PlanStatisticsTable } from "@/components/admin/plans/plan-statistics-table";
+import { PlanUsersTable } from "@/components/admin/plans/plan-users-table";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -51,22 +57,34 @@ export default async function AdminPlansPage(props: Props) {
   }
 
   // Fetch data
-  const [plansResult, statsResult, migrationsResult, usersResult] = await Promise.all([
-    getAllPlans(),
-    getPlanStatistics(),
-    getPlanMigrations(50),
-    getUsersByPlan(),
-  ]);
+  const [plansResult, statsResult, migrationsResult, usersResult] =
+    await Promise.all([
+      getAllPlans(),
+      getPlanStatistics(),
+      getPlanMigrations(50),
+      getUsersByPlan(),
+    ]);
 
   const plans = plansResult.success ? plansResult.data || [] : [];
   const statistics = statsResult.success ? statsResult.data || [] : [];
-  const migrations = migrationsResult.success ? migrationsResult.data || [] : [];
+  const migrations = migrationsResult.success
+    ? migrationsResult.data || []
+    : [];
   const planUsers = usersResult.success ? usersResult.data || [] : [];
 
   // Calculate totals
-  const totalMRR = statistics.reduce((sum, stat) => sum + Number(stat.mrr || 0), 0);
-  const totalARR = statistics.reduce((sum, stat) => sum + Number(stat.arr || 0), 0);
-  const totalUsers = statistics.reduce((sum, stat) => sum + Number(stat.user_count || 0), 0);
+  const totalMRR = statistics.reduce(
+    (sum, stat) => sum + Number(stat.mrr || 0),
+    0,
+  );
+  const totalARR = statistics.reduce(
+    (sum, stat) => sum + Number(stat.arr || 0),
+    0,
+  );
+  const totalUsers = statistics.reduce(
+    (sum, stat) => sum + Number(stat.user_count || 0),
+    0,
+  );
 
   return (
     <UnifiedPageLayout
@@ -79,28 +97,36 @@ export default async function AdminPlansPage(props: Props) {
       <div className="border-b pb-6">
         <div className="flex items-baseline gap-2">
           <div className="text-5xl font-semibold tracking-tight">
-            €{totalMRR.toLocaleString(locale, {
+            €
+            {totalMRR.toLocaleString(locale, {
               minimumFractionDigits: 0,
               maximumFractionDigits: 0,
             })}
           </div>
-          <div className="text-sm text-muted-foreground">Monatliches wiederkehrendes Einkommen</div>
+          <div className="text-sm text-muted-foreground">
+            Monatliches wiederkehrendes Einkommen
+          </div>
         </div>
       </div>
 
       {/* Secondary KPIs - Max 3 */}
       <div className="grid gap-4 md:grid-cols-3">
         <div>
-          <div className="text-sm text-muted-foreground mb-1">Jährliches wiederkehrendes Einkommen</div>
+          <div className="text-sm text-muted-foreground mb-1">
+            Jährliches wiederkehrendes Einkommen
+          </div>
           <div className="text-2xl font-semibold">
-            €{totalARR.toLocaleString(locale, {
+            €
+            {totalARR.toLocaleString(locale, {
               minimumFractionDigits: 0,
               maximumFractionDigits: 0,
             })}
           </div>
         </div>
         <div>
-          <div className="text-sm text-muted-foreground mb-1">Aktive Abonnenten</div>
+          <div className="text-sm text-muted-foreground mb-1">
+            Aktive Abonnenten
+          </div>
           <div className="text-2xl font-semibold">{totalUsers}</div>
         </div>
         <div>
@@ -166,6 +192,3 @@ export default async function AdminPlansPage(props: Props) {
     </UnifiedPageLayout>
   );
 }
-
-
-

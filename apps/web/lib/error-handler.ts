@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { logger } from "./logger";
 import { ZodError } from "zod";
+
+import { logger } from "./logger";
 
 /**
  * Standardized error response format
@@ -136,4 +137,3 @@ export function errorResponse(
     { status },
   );
 }
-

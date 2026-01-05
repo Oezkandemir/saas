@@ -1,21 +1,23 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { cn } from '@/lib/utils';
-import { SeparatorRoot } from '../data-display/separator';
+import * as React from "react";
+
+import { cn } from "@/lib/utils";
+
+import { SeparatorRoot } from "../data-display/separator";
 
 interface DividerRootProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'solid' | 'solid-text';
+  variant?: "solid" | "solid-text";
   children?: React.ReactNode;
 }
 
 const DividerRoot = React.forwardRef<HTMLDivElement, DividerRootProps>(
-  ({ className, variant = 'solid', children, ...props }, ref) => {
-    if (variant === 'solid-text' && children) {
+  ({ className, variant = "solid", children, ...props }, ref) => {
+    if (variant === "solid-text" && children) {
       return (
         <div
           ref={ref}
-          className={cn('flex items-center gap-3 px-5 py-3', className)}
+          className={cn("flex items-center gap-3 px-5 py-3", className)}
           {...props}
         >
           <SeparatorRoot className="flex-1" />
@@ -27,9 +29,9 @@ const DividerRoot = React.forwardRef<HTMLDivElement, DividerRootProps>(
       );
     }
     return <SeparatorRoot ref={ref} className={className} {...props} />;
-  }
+  },
 );
-DividerRoot.displayName = 'Divider.Root';
+DividerRoot.displayName = "Divider.Root";
 
 // Export individual components
 export { DividerRoot };
@@ -38,4 +40,3 @@ export { DividerRoot };
 export const Divider = {
   Root: DividerRoot,
 };
-

@@ -1,6 +1,7 @@
+import { Users } from "lucide-react";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { Users } from "lucide-react";
 
 export default function UsersLoading() {
   return (

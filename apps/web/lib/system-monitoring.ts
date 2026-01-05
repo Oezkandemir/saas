@@ -1,12 +1,19 @@
 "use server";
 
-import { supabaseAdmin } from "@/lib/db";
-import { logger } from "@/lib/logger";
 import { Resend } from "resend";
+
 import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
+import { supabaseAdmin } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
-export type SystemComponent = "database" | "api" | "auth" | "email" | "storage" | "payment";
+export type SystemComponent =
+  | "database"
+  | "api"
+  | "auth"
+  | "email"
+  | "storage"
+  | "payment";
 export type SystemStatus = "operational" | "degraded" | "down" | "maintenance";
 export type ErrorType = "critical" | "warning" | "info";
 
@@ -27,13 +34,16 @@ export async function logSystemError(error: SystemError): Promise<void> {
   try {
     // Use supabaseAdmin instead of createClient() to avoid cookies() issues
     // This allows logging from within cached functions (unstable_cache)
-    
+
     // Skip logging if error is about cookies() in cached functions to prevent loops
-    const errorMessage = error.errorMessage || '';
-    if (errorMessage.includes('cookies()') && errorMessage.includes('unstable_cache')) {
+    const errorMessage = error.errorMessage || "";
+    if (
+      errorMessage.includes("cookies()") &&
+      errorMessage.includes("unstable_cache")
+    ) {
       return;
     }
-    
+
     // Insert error into database
     const { data: errorRecord, error: insertError } = await supabaseAdmin
       .from("system_errors")
@@ -50,9 +60,12 @@ export async function logSystemError(error: SystemError): Promise<void> {
 
     if (insertError) {
       // Don't log RLS errors or cookies() errors to prevent infinite loops
-      if (insertError.code !== '42501') {
+      if (insertError.code !== "42501") {
         const insertErrorMessage = insertError.message || String(insertError);
-        if (!insertErrorMessage.includes('cookies()') && !insertErrorMessage.includes('unstable_cache')) {
+        if (
+          !insertErrorMessage.includes("cookies()") &&
+          !insertErrorMessage.includes("unstable_cache")
+        ) {
           logger.error("Failed to log system error:", insertError);
         }
       }
@@ -66,12 +79,22 @@ export async function logSystemError(error: SystemError): Promise<void> {
 
     // Update component status if critical
     if (error.errorType === "critical") {
-      await updateComponentStatus(error.component, "degraded", error.errorMessage);
+      await updateComponentStatus(
+        error.component,
+        "degraded",
+        error.errorMessage,
+      );
     }
   } catch (err) {
     // Don't log errors about cookies() in cached functions to prevent loops
-    const errMessage = err && typeof err === 'object' && 'message' in err ? String(err.message) : String(err || '');
-    if (!errMessage.includes('cookies()') && !errMessage.includes('unstable_cache')) {
+    const errMessage =
+      err && typeof err === "object" && "message" in err
+        ? String(err.message)
+        : String(err || "");
+    if (
+      !errMessage.includes("cookies()") &&
+      !errMessage.includes("unstable_cache")
+    ) {
       logger.error("Error in logSystemError:", err);
     }
   }
@@ -87,19 +110,17 @@ export async function updateComponentStatus(
 ): Promise<void> {
   try {
     // Use supabaseAdmin to avoid cookies() issues
-    await supabaseAdmin
-      .from("system_status")
-      .upsert(
-        {
-          component,
-          status,
-          message: message || `Component ${status}`,
-          last_check: new Date().toISOString(),
-        },
-        {
-          onConflict: "component",
-        },
-      );
+    await supabaseAdmin.from("system_status").upsert(
+      {
+        component,
+        status,
+        message: message || `Component ${status}`,
+        last_check: new Date().toISOString(),
+      },
+      {
+        onConflict: "component",
+      },
+    );
   } catch (error) {
     // Don't use logger.error here to avoid infinite loops
     logger.error("Error updating component status:", error);
@@ -110,7 +131,15 @@ export async function updateComponentStatus(
  * Get current system status
  */
 export async function getSystemStatus(): Promise<
-  | { success: true; statuses: Array<{ component: string; status: string; message: string | null; lastCheck: string }> }
+  | {
+      success: true;
+      statuses: Array<{
+        component: string;
+        status: string;
+        message: string | null;
+        lastCheck: string;
+      }>;
+    }
   | { success: false; message: string }
 > {
   try {
@@ -137,7 +166,8 @@ export async function getSystemStatus(): Promise<
     logger.error("Error getting system status:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to get system status",
+      message:
+        error instanceof Error ? error.message : "Failed to get system status",
     };
   }
 }
@@ -227,7 +257,10 @@ async function notifyAdminsOfCriticalError(
 
         logger.info(`System error notification sent to ${admin.email}`);
       } catch (emailError) {
-        logger.error(`Failed to send error notification to ${admin.email}:`, emailError);
+        logger.error(
+          `Failed to send error notification to ${admin.email}:`,
+          emailError,
+        );
       }
     }
   } catch (error) {
@@ -267,11 +300,16 @@ export async function performHealthCheck(): Promise<void> {
   try {
     // Use supabaseAdmin to avoid cookies() issues
     // Check database
-    const { error: dbError } = await supabaseAdmin.from("users").select("id").limit(1);
+    const { error: dbError } = await supabaseAdmin
+      .from("users")
+      .select("id")
+      .limit(1);
     await updateComponentStatus(
       "database",
       dbError ? "degraded" : "operational",
-      dbError ? `Database error: ${dbError.message}` : "Database connection healthy",
+      dbError
+        ? `Database error: ${dbError.message}`
+        : "Database connection healthy",
     );
 
     // Check auth - use supabaseAdmin for health check (no user context needed)
@@ -283,7 +321,11 @@ export async function performHealthCheck(): Promise<void> {
     );
 
     // Check API (if we got here, API is working)
-    await updateComponentStatus("api", "operational", "API responding normally");
+    await updateComponentStatus(
+      "api",
+      "operational",
+      "API responding normally",
+    );
   } catch (error) {
     logger.error("Error performing health check:", error);
     await logSystemError({
@@ -293,4 +335,3 @@ export async function performHealthCheck(): Promise<void> {
     });
   }
 }
-

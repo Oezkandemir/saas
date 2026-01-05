@@ -1,5 +1,9 @@
 "use client";
 
+import type { PlanMigration } from "@/actions/admin-plan-actions";
+import { formatDistance } from "date-fns";
+import { de } from "date-fns/locale";
+
 import {
   Table,
   TableBody,
@@ -8,10 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { formatDistance } from "date-fns";
-import { de } from "date-fns/locale";
-import type { PlanMigration } from "@/actions/admin-plan-actions";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 
 interface PlanMigrationsTableProps {
   migrations: PlanMigration[];
@@ -57,7 +58,9 @@ export function PlanMigrationsTable({ migrations }: PlanMigrationsTableProps) {
               <TableCell className="font-mono text-xs">
                 {migration.user_id.substring(0, 8)}...
               </TableCell>
-              <TableCell>{getMigrationTypeBadge(migration.migration_type)}</TableCell>
+              <TableCell>
+                {getMigrationTypeBadge(migration.migration_type)}
+              </TableCell>
               <TableCell className="text-muted-foreground">
                 {migration.from_plan_id ? (
                   <span className="font-mono text-xs">
@@ -85,8 +88,3 @@ export function PlanMigrationsTable({ migrations }: PlanMigrationsTableProps) {
     </div>
   );
 }
-
-
-
-
-

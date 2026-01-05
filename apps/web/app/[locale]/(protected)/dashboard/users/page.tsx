@@ -1,15 +1,16 @@
-import { Suspense } from 'react';
-import { Metadata } from 'next';
-import { UserSearch } from './user-search';
+import { Suspense } from "react";
+import { Metadata } from "next";
+import { Users } from "lucide-react";
+
 import { Skeleton } from "@/components/ui/skeleton";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+
+import { UserSearch } from "./user-search";
 
 export const metadata: Metadata = {
-  title: 'Users - Dashboard',
-  description: 'Search and discover users',
+  title: "Users - Dashboard",
+  description: "Search and discover users",
 };
-
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { Users } from "lucide-react";
 
 function UserSearchSkeleton() {
   return (
@@ -20,7 +21,7 @@ function UserSearchSkeleton() {
           <Skeleton key={i} className="h-32 w-full rounded-lg" />
         ))}
       </div>
-      
+
       {/* Search bar skeleton */}
       <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         <Skeleton className="h-10 w-64" />
@@ -67,4 +68,4 @@ export default function UsersPage() {
       </Suspense>
     </UnifiedPageLayout>
   );
-} 
+}

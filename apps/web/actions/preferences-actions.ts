@@ -1,76 +1,88 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { headers } from "next/headers";
+import { z } from "zod";
 
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
-import { logger } from "@/lib/logger";
 
 // Extended preferences schema
 const extendedPreferencesSchema = z.object({
   // Theme preferences
   theme_preference: z.enum(["system", "light", "dark"]).optional(),
-  
+
   // Language & Region
   language_preference: z.string().max(10).optional(),
   locale: z.string().max(20).optional(),
   timezone: z.string().max(50).optional(),
-  
+
   // Date/Time Format
-  date_format: z.enum(["DD.MM.YYYY", "MM/DD/YYYY", "YYYY-MM-DD", "DD/MM/YYYY"]).optional(),
+  date_format: z
+    .enum(["DD.MM.YYYY", "MM/DD/YYYY", "YYYY-MM-DD", "DD/MM/YYYY"])
+    .optional(),
   time_format: z.enum(["12h", "24h"]).optional(),
-  
+
   // Payment Format
   currency: z.string().max(3).optional(), // Changed from length(3) to max(3) for flexibility
   number_format: z.enum(["european", "american"]).optional(),
-  
+
   // Email Digest
-  email_digest_frequency: z.enum(["never", "daily", "weekly", "monthly"]).optional(),
-  
+  email_digest_frequency: z
+    .enum(["never", "daily", "weekly", "monthly"])
+    .optional(),
+
   // Granular Notification Preferences
-  notification_preferences_granular: z.object({
-    email: z.object({
-      system: z.boolean().optional(),
-      billing: z.boolean().optional(),
-      security: z.boolean().optional(),
-      marketing: z.boolean().optional(),
-      support: z.boolean().optional(),
-      newsletter: z.boolean().optional(),
-      customer: z.boolean().optional(),
-      document: z.boolean().optional(),
-      subscription: z.boolean().optional(),
-      invoice: z.boolean().optional(),
-      payment: z.boolean().optional(),
-    }).optional(),
-    push: z.object({
-      system: z.boolean().optional(),
-      billing: z.boolean().optional(),
-      security: z.boolean().optional(),
-      marketing: z.boolean().optional(),
-      support: z.boolean().optional(),
-      newsletter: z.boolean().optional(),
-      customer: z.boolean().optional(),
-      document: z.boolean().optional(),
-      subscription: z.boolean().optional(),
-      invoice: z.boolean().optional(),
-      payment: z.boolean().optional(),
-    }).optional(),
-    in_app: z.object({
-      system: z.boolean().optional(),
-      billing: z.boolean().optional(),
-      security: z.boolean().optional(),
-      marketing: z.boolean().optional(),
-      support: z.boolean().optional(),
-      newsletter: z.boolean().optional(),
-      customer: z.boolean().optional(),
-      document: z.boolean().optional(),
-      subscription: z.boolean().optional(),
-      invoice: z.boolean().optional(),
-      payment: z.boolean().optional(),
-    }).optional(),
-  }).optional(),
+  notification_preferences_granular: z
+    .object({
+      email: z
+        .object({
+          system: z.boolean().optional(),
+          billing: z.boolean().optional(),
+          security: z.boolean().optional(),
+          marketing: z.boolean().optional(),
+          support: z.boolean().optional(),
+          newsletter: z.boolean().optional(),
+          customer: z.boolean().optional(),
+          document: z.boolean().optional(),
+          subscription: z.boolean().optional(),
+          invoice: z.boolean().optional(),
+          payment: z.boolean().optional(),
+        })
+        .optional(),
+      push: z
+        .object({
+          system: z.boolean().optional(),
+          billing: z.boolean().optional(),
+          security: z.boolean().optional(),
+          marketing: z.boolean().optional(),
+          support: z.boolean().optional(),
+          newsletter: z.boolean().optional(),
+          customer: z.boolean().optional(),
+          document: z.boolean().optional(),
+          subscription: z.boolean().optional(),
+          invoice: z.boolean().optional(),
+          payment: z.boolean().optional(),
+        })
+        .optional(),
+      in_app: z
+        .object({
+          system: z.boolean().optional(),
+          billing: z.boolean().optional(),
+          security: z.boolean().optional(),
+          marketing: z.boolean().optional(),
+          support: z.boolean().optional(),
+          newsletter: z.boolean().optional(),
+          customer: z.boolean().optional(),
+          document: z.boolean().optional(),
+          subscription: z.boolean().optional(),
+          invoice: z.boolean().optional(),
+          payment: z.boolean().optional(),
+        })
+        .optional(),
+    })
+    .optional(),
 });
 
 export type ExtendedPreferences = {
@@ -135,7 +147,9 @@ type ActionResult<T> = {
 /**
  * Get user preferences
  */
-export async function getUserPreferences(): Promise<ActionResult<ExtendedPreferences>> {
+export async function getUserPreferences(): Promise<
+  ActionResult<ExtendedPreferences>
+> {
   const user = await getCurrentUser();
 
   if (!user?.email) {
@@ -160,56 +174,69 @@ export async function getUserPreferences(): Promise<ActionResult<ExtendedPrefere
 
     // Default preferences
     const defaultPreferences: ExtendedPreferences = {
-      theme_preference: (data?.theme_preference as "system" | "light" | "dark") || "system",
+      theme_preference:
+        (data?.theme_preference as "system" | "light" | "dark") || "system",
       language_preference: data?.language_preference || "en",
       locale: data?.locale || "de-DE",
       timezone: data?.timezone || "UTC",
-      date_format: (data?.date_format as "DD.MM.YYYY" | "MM/DD/YYYY" | "YYYY-MM-DD" | "DD/MM/YYYY") || "DD.MM.YYYY",
+      date_format:
+        (data?.date_format as
+          | "DD.MM.YYYY"
+          | "MM/DD/YYYY"
+          | "YYYY-MM-DD"
+          | "DD/MM/YYYY") || "DD.MM.YYYY",
       time_format: (data?.time_format as "12h" | "24h") || "24h",
       currency: data?.currency || "EUR",
-      number_format: (data?.number_format as "european" | "american") || "european",
-      email_digest_frequency: (data?.email_digest_frequency as "never" | "daily" | "weekly" | "monthly") || "daily",
-      notification_preferences_granular: (data?.notification_preferences_granular as ExtendedPreferences["notification_preferences_granular"]) || {
-        email: {
-          system: true,
-          billing: true,
-          security: true,
-          marketing: false,
-          support: true,
-          newsletter: false,
-          customer: true,
-          document: true,
-          subscription: true,
-          invoice: true,
-          payment: true,
+      number_format:
+        (data?.number_format as "european" | "american") || "european",
+      email_digest_frequency:
+        (data?.email_digest_frequency as
+          | "never"
+          | "daily"
+          | "weekly"
+          | "monthly") || "daily",
+      notification_preferences_granular:
+        (data?.notification_preferences_granular as ExtendedPreferences["notification_preferences_granular"]) || {
+          email: {
+            system: true,
+            billing: true,
+            security: true,
+            marketing: false,
+            support: true,
+            newsletter: false,
+            customer: true,
+            document: true,
+            subscription: true,
+            invoice: true,
+            payment: true,
+          },
+          push: {
+            system: true,
+            billing: true,
+            security: true,
+            marketing: false,
+            support: true,
+            newsletter: false,
+            customer: true,
+            document: true,
+            subscription: true,
+            invoice: true,
+            payment: true,
+          },
+          in_app: {
+            system: true,
+            billing: true,
+            security: true,
+            marketing: false,
+            support: true,
+            newsletter: false,
+            customer: true,
+            document: true,
+            subscription: true,
+            invoice: true,
+            payment: true,
+          },
         },
-        push: {
-          system: true,
-          billing: true,
-          security: true,
-          marketing: false,
-          support: true,
-          newsletter: false,
-          customer: true,
-          document: true,
-          subscription: true,
-          invoice: true,
-          payment: true,
-        },
-        in_app: {
-          system: true,
-          billing: true,
-          security: true,
-          marketing: false,
-          support: true,
-          newsletter: false,
-          customer: true,
-          document: true,
-          subscription: true,
-          invoice: true,
-          payment: true,
-        },
-      },
     };
 
     return {
@@ -261,7 +288,10 @@ export async function updateUserPreferences(
 
     const supabase = await createClient();
     const headersList = await headers();
-    const ipAddress = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || null;
+    const ipAddress =
+      headersList.get("x-forwarded-for") ||
+      headersList.get("x-real-ip") ||
+      null;
     const userAgent = headersList.get("user-agent") || null;
 
     // Get the current preferences first
@@ -321,49 +351,62 @@ export async function updateUserPreferences(
     return {
       success: true,
       data: {
-        theme_preference: (data.theme_preference as "system" | "light" | "dark") || "system",
+        theme_preference:
+          (data.theme_preference as "system" | "light" | "dark") || "system",
         language_preference: data.language_preference || "en",
         locale: data.locale || "de-DE",
         timezone: data.timezone || "UTC",
-        date_format: (data.date_format as "DD.MM.YYYY" | "MM/DD/YYYY" | "YYYY-MM-DD" | "DD/MM/YYYY") || "DD.MM.YYYY",
+        date_format:
+          (data.date_format as
+            | "DD.MM.YYYY"
+            | "MM/DD/YYYY"
+            | "YYYY-MM-DD"
+            | "DD/MM/YYYY") || "DD.MM.YYYY",
         time_format: (data.time_format as "12h" | "24h") || "24h",
         currency: data.currency || "EUR",
-        number_format: (data.number_format as "european" | "american") || "european",
-        email_digest_frequency: (data.email_digest_frequency as "never" | "daily" | "weekly" | "monthly") || "daily",
-        notification_preferences_granular: (data.notification_preferences_granular as ExtendedPreferences["notification_preferences_granular"]) || {
-          email: {
-            system: true,
-            billing: true,
-            security: true,
-            marketing: false,
-            support: true,
-            newsletter: false,
+        number_format:
+          (data.number_format as "european" | "american") || "european",
+        email_digest_frequency:
+          (data.email_digest_frequency as
+            | "never"
+            | "daily"
+            | "weekly"
+            | "monthly") || "daily",
+        notification_preferences_granular:
+          (data.notification_preferences_granular as ExtendedPreferences["notification_preferences_granular"]) || {
+            email: {
+              system: true,
+              billing: true,
+              security: true,
+              marketing: false,
+              support: true,
+              newsletter: false,
+            },
+            push: {
+              system: true,
+              billing: true,
+              security: true,
+              marketing: false,
+              support: true,
+              newsletter: false,
+            },
+            in_app: {
+              system: true,
+              billing: true,
+              security: true,
+              marketing: false,
+              support: true,
+              newsletter: false,
+            },
           },
-          push: {
-            system: true,
-            billing: true,
-            security: true,
-            marketing: false,
-            support: true,
-            newsletter: false,
-          },
-          in_app: {
-            system: true,
-            billing: true,
-            security: true,
-            marketing: false,
-            support: true,
-            newsletter: false,
-          },
-        },
       },
     };
   } catch (error) {
     logger.error("Error updating user preferences", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to update preferences",
+      error:
+        error instanceof Error ? error.message : "Failed to update preferences",
     };
   }
 }
-

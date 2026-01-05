@@ -3,35 +3,35 @@
 import { useContext, useState } from "react";
 import Link from "next/link";
 import { UserSubscriptionPlan } from "@/types";
-import { 
-  Check, 
-  X, 
-  Sparkles, 
-  Zap, 
-  Crown, 
+import {
   ArrowRight,
-  Users,
-  QrCode,
-  FileText,
-  Download,
   BarChart3,
-  Link2,
-  Image as ImageIcon,
-  Shield,
-  RefreshCw,
+  Check,
   Code,
-  Headphones
+  Crown,
+  Download,
+  FileText,
+  Headphones,
+  Image as ImageIcon,
+  Link2,
+  QrCode,
+  RefreshCw,
+  Shield,
+  Sparkles,
+  Users,
+  X,
+  Zap,
 } from "lucide-react";
 
 import { SubscriptionPlan } from "@/types/index";
 import { pricingData } from "@/config/subscriptions";
 import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from '@/components/alignui/actions/button';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Button, buttonVariants } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import { BillingFormButton } from "@/components/forms/billing-form-button";
 import { ModalContext } from "@/components/modals/providers";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
 
 interface PricingCardsProps {
   userId?: string;
@@ -51,14 +51,22 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
     const lowerFeature = feature.toLowerCase();
     if (lowerFeature.includes("kunden")) return <Users className="h-4 w-4" />;
     if (lowerFeature.includes("qr")) return <QrCode className="h-4 w-4" />;
-    if (lowerFeature.includes("dokument")) return <FileText className="h-4 w-4" />;
-    if (lowerFeature.includes("pdf") || lowerFeature.includes("export")) return <Download className="h-4 w-4" />;
-    if (lowerFeature.includes("tracking") || lowerFeature.includes("scan")) return <BarChart3 className="h-4 w-4" />;
-    if (lowerFeature.includes("alias") || lowerFeature.includes("link")) return <Link2 className="h-4 w-4" />;
-    if (lowerFeature.includes("logo") || lowerFeature.includes("footer")) return <ImageIcon className="h-4 w-4" />;
-    if (lowerFeature.includes("branding")) return <Shield className="h-4 w-4" />;
-    if (lowerFeature.includes("status")) return <RefreshCw className="h-4 w-4" />;
-    if (lowerFeature.includes("support")) return <Headphones className="h-4 w-4" />;
+    if (lowerFeature.includes("dokument"))
+      return <FileText className="h-4 w-4" />;
+    if (lowerFeature.includes("pdf") || lowerFeature.includes("export"))
+      return <Download className="h-4 w-4" />;
+    if (lowerFeature.includes("tracking") || lowerFeature.includes("scan"))
+      return <BarChart3 className="h-4 w-4" />;
+    if (lowerFeature.includes("alias") || lowerFeature.includes("link"))
+      return <Link2 className="h-4 w-4" />;
+    if (lowerFeature.includes("logo") || lowerFeature.includes("footer"))
+      return <ImageIcon className="h-4 w-4" />;
+    if (lowerFeature.includes("branding"))
+      return <Shield className="h-4 w-4" />;
+    if (lowerFeature.includes("status"))
+      return <RefreshCw className="h-4 w-4" />;
+    if (lowerFeature.includes("support"))
+      return <Headphones className="h-4 w-4" />;
     if (lowerFeature.includes("api")) return <Code className="h-4 w-4" />;
     return <Check className="h-4 w-4" />;
   };
@@ -74,19 +82,22 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
   const PricingCard = ({ offer }: { offer: SubscriptionPlan }) => {
     const isPro = offer.title.toLocaleLowerCase() === "pro";
     const isEnterprise = offer.title.toLocaleLowerCase() === "enterprise";
-    const isCurrentPlan = userId && subscriptionPlan && offer.title.toLowerCase() === subscriptionPlan.title.toLowerCase();
+    const isCurrentPlan =
+      userId &&
+      subscriptionPlan &&
+      offer.title.toLowerCase() === subscriptionPlan.title.toLowerCase();
 
     return (
       <div
         className={cn(
           "group relative flex flex-col overflow-hidden rounded-2xl border-2 transition-all duration-300",
           "hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1",
-          isPro 
-            ? "border-primary bg-gradient-to-br from-primary/5 via-background to-primary/5 shadow-lg shadow-primary/10" 
+          isPro
+            ? "border-primary bg-gradient-to-br from-primary/5 via-background to-primary/5 shadow-lg shadow-primary/10"
             : isEnterprise
-            ? "border-primary/60 bg-gradient-to-br from-primary/10 via-background to-primary/10 shadow-lg shadow-primary/10"
-            : "border-border bg-card hover:border-primary/20",
-          isCurrentPlan && "ring-2 ring-primary ring-offset-2"
+              ? "border-primary/60 bg-gradient-to-br from-primary/10 via-background to-primary/10 shadow-lg shadow-primary/10"
+              : "border-border bg-card hover:border-primary/20",
+          isCurrentPlan && "ring-2 ring-primary ring-offset-2",
         )}
         key={offer.title}
       >
@@ -114,13 +125,19 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
         {/* Header */}
         <div className="relative overflow-hidden border-b bg-gradient-to-br from-muted/50 to-muted/20 p-6">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_0%,rgba(255,255,255,0.1)_50%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-          
+
           <div className="relative flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className={cn(
-                "flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300",
-                isPro ? "bg-primary/10 text-primary" : isEnterprise ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
-              )}>
+              <div
+                className={cn(
+                  "flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300",
+                  isPro
+                    ? "bg-primary/10 text-primary"
+                    : isEnterprise
+                      ? "bg-primary/20 text-primary"
+                      : "bg-muted text-muted-foreground",
+                )}
+              >
                 {getPlanIcon(offer.title)}
               </div>
               <div>
@@ -149,12 +166,14 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                       €{(offer.prices.yearly / 12).toFixed(2)}
                     </span>
                   </>
+                ) : offer.prices.monthly === 0 ? (
+                  <span className="text-4xl font-bold tracking-tight">
+                    Kostenlos
+                  </span>
                 ) : (
-                  offer.prices.monthly === 0 ? (
-                    <span className="text-4xl font-bold tracking-tight">Kostenlos</span>
-                  ) : (
-                    <span className="text-4xl font-bold tracking-tight">€{offer.prices.monthly}</span>
-                  )
+                  <span className="text-4xl font-bold tracking-tight">
+                    €{offer.prices.monthly}
+                  </span>
                 )}
               </div>
               {offer.prices.monthly > 0 && (
@@ -172,7 +191,11 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
             )}
             {isYearly && offer.prices.monthly > 0 && (
               <Badge variant="secondary" className="mt-2 text-xs">
-                Sparen Sie {Math.round((1 - offer.prices.yearly / (offer.prices.monthly * 12)) * 100)}%
+                Sparen Sie{" "}
+                {Math.round(
+                  (1 - offer.prices.yearly / (offer.prices.monthly * 12)) * 100,
+                )}
+                %
               </Badge>
             )}
           </div>
@@ -182,7 +205,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
         <div className="flex flex-1 flex-col gap-6 p-6">
           <ul className="space-y-3 text-left">
             {offer.benefits.map((feature, index) => (
-              <li 
+              <li
                 className="flex items-start gap-3 animate-in fade-in slide-in-from-left-4"
                 style={{ animationDelay: `${index * 50}ms` }}
                 key={feature}
@@ -211,7 +234,8 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
           {/* CTA Button */}
           <div className="mt-auto pt-4">
             {userId && subscriptionPlan ? (
-              offer.title.toLowerCase() === subscriptionPlan.title.toLowerCase() ? (
+              offer.title.toLowerCase() ===
+              subscriptionPlan.title.toLowerCase() ? (
                 <Link
                   href="/dashboard"
                   className={cn(
@@ -219,7 +243,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                       variant: "outline",
                       size: "lg",
                     }),
-                    "w-full group/btn"
+                    "w-full group/btn",
                   )}
                 >
                   Zum Dashboard
@@ -239,7 +263,9 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                 className="w-full group/btn"
                 onClick={() => setShowSignInModal(true)}
               >
-                {offer.prices.monthly === 0 ? "Kostenlos starten" : "Jetzt upgraden"}
+                {offer.prices.monthly === 0
+                  ? "Kostenlos starten"
+                  : "Jetzt upgraden"}
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
               </Button>
             )}
@@ -261,17 +287,20 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
             Wählen Sie Ihren Plan
           </h2>
           <p className="max-w-2xl mx-auto text-lg text-muted-foreground">
-            Flexible Pläne für jedes Unternehmen. Starten Sie kostenlos und upgraden Sie jederzeit.
+            Flexible Pläne für jedes Unternehmen. Starten Sie kostenlos und
+            upgraden Sie jederzeit.
           </p>
         </div>
 
         {/* Billing Toggle */}
         <div className="mb-8 flex items-center justify-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
-          <span className={cn(
-            "text-sm font-medium transition-colors",
-            !isYearly && "text-foreground",
-            isYearly && "text-muted-foreground"
-          )}>
+          <span
+            className={cn(
+              "text-sm font-medium transition-colors",
+              !isYearly && "text-foreground",
+              isYearly && "text-muted-foreground",
+            )}
+          >
             Monatlich
           </span>
           <ToggleGroup
@@ -295,16 +324,21 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
               aria-label="Toggle yearly billing"
             >
               Jährlich
-              <Badge variant="secondary" className="ml-2 text-xs px-1.5 py-0 h-4">
+              <Badge
+                variant="secondary"
+                className="ml-2 text-xs px-1.5 py-0 h-4"
+              >
                 -20%
               </Badge>
             </ToggleGroupItem>
           </ToggleGroup>
-          <span className={cn(
-            "text-sm font-medium transition-colors",
-            isYearly && "text-foreground",
-            !isYearly && "text-muted-foreground"
-          )}>
+          <span
+            className={cn(
+              "text-sm font-medium transition-colors",
+              isYearly && "text-foreground",
+              !isYearly && "text-muted-foreground",
+            )}
+          >
             Jährlich
           </span>
         </div>
@@ -312,10 +346,13 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
         {/* Pricing Cards Grid */}
         <div className="grid gap-6 w-full sm:grid-cols-2 lg:grid-cols-3 mb-12">
           {pricingData.map((offer, index) => (
-            <div 
+            <div
               key={offer.title}
               className="animate-in fade-in slide-in-from-bottom-4"
-              style={{ animationDelay: `${index * 100}ms`, animationDuration: "700ms" }}
+              style={{
+                animationDelay: `${index * 100}ms`,
+                animationDuration: "700ms",
+              }}
             >
               <PricingCard offer={offer} />
             </div>
@@ -334,7 +371,8 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
             </a>
           </p>
           <p className="text-xs text-muted-foreground/80">
-            <strong>Testen Sie alle Pläne kostenlos.</strong> Keine Kreditkarte erforderlich.
+            <strong>Testen Sie alle Pläne kostenlos.</strong> Keine Kreditkarte
+            erforderlich.
           </p>
         </div>
       </section>

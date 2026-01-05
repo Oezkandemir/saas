@@ -1,11 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { Button } from '@/components/alignui/actions/button';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { CreditCard, Edit, CheckCircle, XCircle } from "lucide-react";
 import type { Plan } from "@/actions/admin-plan-actions";
+import { CheckCircle, CreditCard, Edit, XCircle } from "lucide-react";
+
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
 
 interface PlansOverviewProps {
   plans: Plan[];
@@ -74,8 +81,3 @@ export function PlansOverview({ plans, locale }: PlansOverviewProps) {
     </div>
   );
 }
-
-
-
-
-

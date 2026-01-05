@@ -21,9 +21,6 @@ import {
   AccordionContent,
   AccordionItem,
 } from "@/components/ui/accordion";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Button } from '@/components/alignui/actions/button';
-import { Input } from '@/components/alignui/forms/input';
 import {
   Select,
   SelectContent,
@@ -32,6 +29,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Input } from "@/components/alignui/forms/input";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { TicketActions } from "@/components/support/ticket-actions";
 
@@ -196,8 +196,6 @@ export function TicketAccordionTable({
     });
   }, [filteredData, sorting]);
 
-  
-
   return (
     <div className="space-y-4">
       {/* Responsive Search and Filters */}
@@ -353,7 +351,9 @@ export function TicketAccordionTable({
                     <>
                       <div className="space-y-4">
                         <div>
-                          <p className="text-sm font-medium mb-2">{ticket.subject}</p>
+                          <p className="text-sm font-medium mb-2">
+                            {ticket.subject}
+                          </p>
                           <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                             {ticket.description}
                           </p>
@@ -361,13 +361,21 @@ export function TicketAccordionTable({
 
                         <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
                           <div>
-                            <span className="text-muted-foreground">Priority:</span>{" "}
-                            <Badge className={`${getPriorityColor(ticket.priority)} ml-1`}>
-                              <span className="capitalize">{ticket.priority}</span>
+                            <span className="text-muted-foreground">
+                              Priority:
+                            </span>{" "}
+                            <Badge
+                              className={`${getPriorityColor(ticket.priority)} ml-1`}
+                            >
+                              <span className="capitalize">
+                                {ticket.priority}
+                              </span>
                             </Badge>
                           </div>
                           <div>
-                            <span className="text-muted-foreground">Created:</span>{" "}
+                            <span className="text-muted-foreground">
+                              Created:
+                            </span>{" "}
                             <span className="text-foreground">
                               {formatDistance(
                                 new Date(ticket.created_at),
@@ -378,7 +386,9 @@ export function TicketAccordionTable({
                           </div>
                           <div>
                             <span className="text-muted-foreground">User:</span>{" "}
-                            <span className="text-foreground">{ticket.user?.email || "No email"}</span>
+                            <span className="text-foreground">
+                              {ticket.user?.email || "No email"}
+                            </span>
                           </div>
                         </div>
 

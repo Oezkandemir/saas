@@ -1,7 +1,8 @@
 "use client";
 
-import { Copy, Check } from "lucide-react";
 import { useState } from "react";
+import { Check, Copy } from "lucide-react";
+
 import { logger } from "@/lib/logger";
 
 interface CopyButtonProps {
@@ -36,4 +37,3 @@ export function CopyButton({ value, className }: CopyButtonProps) {
     </button>
   );
 }
-

@@ -1,15 +1,16 @@
-'use server';
+"use server";
 
-import { createClient } from '@/lib/supabase/server';
-import { getCurrentUser } from '@/lib/session';
-import { redirect } from 'next/navigation';
-import { logger } from '@/lib/logger';
+import { redirect } from "next/navigation";
+
+import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
+import { createClient } from "@/lib/supabase/server";
 
 export type SearchFilters = {
   query?: string;
-  role?: 'USER' | 'ADMIN' | 'all';
-  sortBy?: 'name' | 'email' | 'created_at';
-  sortOrder?: 'asc' | 'desc';
+  role?: "USER" | "ADMIN" | "all";
+  sortBy?: "name" | "email" | "created_at";
+  sortOrder?: "asc" | "desc";
 };
 
 export type UserSearchResult = {
@@ -33,12 +34,12 @@ export type SearchResults = {
 export async function searchUsers(
   filters: SearchFilters = {},
   page = 1,
-  limit = 20
+  limit = 20,
 ): Promise<SearchResults> {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      redirect('/login');
+      redirect("/login");
     }
 
     const supabase = await createClient();
@@ -46,26 +47,26 @@ export async function searchUsers(
 
     // Build the query
     let query = supabase
-      .from('users')
-      .select('id, name, email, avatar_url, role, created_at', { count: 'exact' });
+      .from("users")
+      .select("id, name, email, avatar_url, role, created_at", {
+        count: "exact",
+      });
 
     // Apply search filter
     if (filters.query) {
       const searchTerm = `%${filters.query.toLowerCase()}%`;
-      query = query.or(
-        `name.ilike.${searchTerm},email.ilike.${searchTerm}`
-      );
+      query = query.or(`name.ilike.${searchTerm},email.ilike.${searchTerm}`);
     }
 
     // Apply role filter
-    if (filters.role && filters.role !== 'all') {
-      query = query.eq('role', filters.role);
+    if (filters.role && filters.role !== "all") {
+      query = query.eq("role", filters.role);
     }
 
     // Apply sorting
-    const sortBy = filters.sortBy || 'created_at';
-    const sortOrder = filters.sortOrder || 'desc';
-    query = query.order(sortBy, { ascending: sortOrder === 'asc' });
+    const sortBy = filters.sortBy || "created_at";
+    const sortOrder = filters.sortOrder || "desc";
+    query = query.order(sortBy, { ascending: sortOrder === "asc" });
 
     // Apply pagination
     query = query.range(offset, offset + limit - 1);
@@ -73,7 +74,7 @@ export async function searchUsers(
     const { data: users, error, count } = await query;
 
     if (error) {
-      logger.error('Error searching users', error);
+      logger.error("Error searching users", error);
       return {
         users: [],
         totalCount: 0,
@@ -87,7 +88,7 @@ export async function searchUsers(
       hasMore: (count || 0) > offset + limit,
     };
   } catch (error) {
-    logger.error('Search users error', error);
+    logger.error("Search users error", error);
     return {
       users: [],
       totalCount: 0,
@@ -99,7 +100,9 @@ export async function searchUsers(
 /**
  * Get suggested users (recent users)
  */
-export async function getSuggestedUsers(limit = 10): Promise<UserSearchResult[]> {
+export async function getSuggestedUsers(
+  limit = 10,
+): Promise<UserSearchResult[]> {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
@@ -110,27 +113,29 @@ export async function getSuggestedUsers(limit = 10): Promise<UserSearchResult[]>
 
     // Get recent users, excluding current user
     const { data: users, error } = await supabase
-      .from('users')
-      .select(`
+      .from("users")
+      .select(
+        `
         id,
         name,
         email,
         avatar_url,
         role,
         created_at
-      `)
-      .neq('id', currentUser.id)
-      .order('created_at', { ascending: false })
+      `,
+      )
+      .neq("id", currentUser.id)
+      .order("created_at", { ascending: false })
       .limit(limit);
 
     if (error) {
-      logger.error('Error getting suggested users', error);
+      logger.error("Error getting suggested users", error);
       return [];
     }
 
     return users || [];
   } catch (error) {
-    logger.error('Get suggested users error', error);
+    logger.error("Get suggested users error", error);
     return [];
   }
 }
@@ -148,23 +153,23 @@ export async function getUserStats(): Promise<{
 
     // Get total users count
     const { count: totalUsers } = await supabase
-      .from('users')
-      .select('*', { count: 'exact', head: true });
+      .from("users")
+      .select("*", { count: "exact", head: true });
 
     // Get admin count
     const { count: totalAdmins } = await supabase
-      .from('users')
-      .select('*', { count: 'exact', head: true })
-      .eq('role', 'ADMIN');
+      .from("users")
+      .select("*", { count: "exact", head: true })
+      .eq("role", "ADMIN");
 
     // Get users joined in last 30 days
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const { count: recentJoins } = await supabase
-      .from('users')
-      .select('*', { count: 'exact', head: true })
-      .gte('created_at', thirtyDaysAgo.toISOString());
+      .from("users")
+      .select("*", { count: "exact", head: true })
+      .gte("created_at", thirtyDaysAgo.toISOString());
 
     return {
       totalUsers: totalUsers || 0,
@@ -172,11 +177,11 @@ export async function getUserStats(): Promise<{
       recentJoins: recentJoins || 0,
     };
   } catch (error) {
-    logger.error('Get user stats error', error);
+    logger.error("Get user stats error", error);
     return {
       totalUsers: 0,
       totalAdmins: 0,
       recentJoins: 0,
     };
   }
-} 
+}

@@ -1,33 +1,43 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { toast } from 'sonner';
-import { User, MapPin, FileText, X } from 'lucide-react';
-
-import { ButtonRoot, ButtonIcon } from '@/components/alignui/actions/button';
+import * as React from "react";
+import { useRouter } from "next/navigation";
 import {
-  DrawerRoot,
-  DrawerTrigger,
-  DrawerContent,
-  DrawerHeader,
+  updateCustomer,
+  type Customer,
+  type CustomerInput,
+} from "@/actions/customers-actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FileText, MapPin, User, X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+
+import { ButtonIcon, ButtonRoot } from "@/components/alignui/actions/button";
+import { FormRoot as Form } from "@/components/alignui/forms/form";
+import {
+  TabsContent,
+  TabsList,
+  TabsRoot,
+  TabsTrigger,
+} from "@/components/alignui/layout/tabs";
+import {
   DrawerBody,
-  DrawerFooter,
-  DrawerTitle,
   DrawerClose,
-} from '@/components/alignui/overlays/drawer';
-import { TabsRoot, TabsList, TabsTrigger, TabsContent } from '@/components/alignui/layout/tabs';
-import { FormRoot as Form } from '@/components/alignui/forms/form';
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerRoot,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/alignui/overlays/drawer";
+
 import {
-  CustomerPersonalInfoStep,
-  CustomerAddressStep,
   CustomerAdditionalInfoStep,
-} from './customer-form-steps';
-import { updateCustomer, type Customer, type CustomerInput } from '@/actions/customers-actions';
+  CustomerAddressStep,
+  CustomerPersonalInfoStep,
+} from "./customer-form-steps";
 
 // Create namespace objects locally for AlignUI pattern
 const Button = {
@@ -67,18 +77,18 @@ export function EditCustomerDrawer({
   trigger,
 }: EditCustomerDrawerProps) {
   const router = useRouter();
-  const t = useTranslations('Customers.form');
-  const tFields = useTranslations('Customers.form.fields');
+  const t = useTranslations("Customers.form");
+  const tFields = useTranslations("Customers.form.fields");
   const [internalOpen, setInternalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState('personal');
+  const [activeTab, setActiveTab] = React.useState("personal");
 
   const open = controlledOpen ?? internalOpen;
   const setOpen = controlledOnOpenChange ?? setInternalOpen;
 
   const customerSchema = z.object({
-    name: z.string().min(1, t('nameRequired')),
-    email: z.string().email(t('invalidEmail')).optional().or(z.literal('')),
+    name: z.string().min(1, t("nameRequired")),
+    email: z.string().email(t("invalidEmail")).optional().or(z.literal("")),
     phone: z.string().optional(),
     company: z.string().optional(),
     address_line1: z.string().optional(),
@@ -92,22 +102,22 @@ export function EditCustomerDrawer({
 
   // Normalize customer data
   const normalizedCustomer = {
-    name: customer.name || '',
-    email: customer.email || '',
-    phone: customer.phone || '',
-    company: customer.company || '',
-    address_line1: customer.address_line1 || '',
-    address_line2: customer.address_line2 || '',
-    city: customer.city || '',
-    postal_code: customer.postal_code || '',
-    country: customer.country || 'DE',
-    tax_id: customer.tax_id || '',
-    notes: customer.notes || '',
+    name: customer.name || "",
+    email: customer.email || "",
+    phone: customer.phone || "",
+    company: customer.company || "",
+    address_line1: customer.address_line1 || "",
+    address_line2: customer.address_line2 || "",
+    city: customer.city || "",
+    postal_code: customer.postal_code || "",
+    country: customer.country || "DE",
+    tax_id: customer.tax_id || "",
+    notes: customer.notes || "",
   };
 
   const form = useForm<CustomerInput>({
     resolver: zodResolver(customerSchema),
-    mode: 'onBlur',
+    mode: "onBlur",
     defaultValues: normalizedCustomer,
   });
 
@@ -115,15 +125,15 @@ export function EditCustomerDrawer({
     setIsLoading(true);
     try {
       await updateCustomer(customer.id, data);
-      toast.success(t('updateSuccess'), {
-        description: t('updateDescription'),
+      toast.success(t("updateSuccess"), {
+        description: t("updateDescription"),
       });
       setOpen(false);
       router.refresh();
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : t('unexpectedError');
-      toast.error(t('saveError'), {
+        error instanceof Error ? error.message : t("unexpectedError");
+      toast.error(t("saveError"), {
         description: errorMessage,
       });
     } finally {
@@ -140,7 +150,7 @@ export function EditCustomerDrawer({
   React.useEffect(() => {
     if (open) {
       form.reset(normalizedCustomer);
-      setActiveTab('personal');
+      setActiveTab("personal");
     }
   }, [open, customer.id]);
 
@@ -159,11 +169,7 @@ export function EditCustomerDrawer({
                 Kunde bearbeiten
               </Drawer.Title>
               <Drawer.Close asChild>
-                <Button.Root
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                >
+                <Button.Root variant="ghost" size="icon" className="h-8 w-8">
                   <X className="h-4 w-4" />
                 </Button.Root>
               </Drawer.Close>
@@ -172,7 +178,10 @@ export function EditCustomerDrawer({
 
           <Drawer.Body className="overflow-y-auto flex-1 bg-bg-white-0">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="h-full">
+              <form
+                onSubmit={form.handleSubmit(handleSubmit)}
+                className="h-full"
+              >
                 <div className="p-5">
                   <Tabs.Root
                     value={activeTab}
@@ -185,47 +194,38 @@ export function EditCustomerDrawer({
                         className="data-[state=active]:border-b-2 data-[state=active]:border-text-strong-950 rounded-none"
                       >
                         <User className="h-4 w-4 mr-2" />
-                        {tFields('personalInfo')}
+                        {tFields("personalInfo")}
                       </Tabs.Trigger>
                       <Tabs.Trigger
                         value="address"
                         className="data-[state=active]:border-b-2 data-[state=active]:border-text-strong-950 rounded-none"
                       >
                         <MapPin className="h-4 w-4 mr-2" />
-                        {tFields('address')}
+                        {tFields("address")}
                       </Tabs.Trigger>
                       <Tabs.Trigger
                         value="additional"
                         className="data-[state=active]:border-b-2 data-[state=active]:border-text-strong-950 rounded-none"
                       >
                         <FileText className="h-4 w-4 mr-2" />
-                        {tFields('additionalInfo')}
+                        {tFields("additionalInfo")}
                       </Tabs.Trigger>
                     </Tabs.List>
 
                     <div className="relative min-h-[400px]">
-                      <Tabs.Content
-                        value="personal"
-                        className="mt-0"
-                      >
+                      <Tabs.Content value="personal" className="mt-0">
                         <div className="animate-in fade-in-0 slide-in-from-right-4 duration-300">
                           <CustomerPersonalInfoStep form={form} />
                         </div>
                       </Tabs.Content>
 
-                      <Tabs.Content
-                        value="address"
-                        className="mt-0"
-                      >
+                      <Tabs.Content value="address" className="mt-0">
                         <div className="animate-in fade-in-0 slide-in-from-right-4 duration-300">
                           <CustomerAddressStep form={form} />
                         </div>
                       </Tabs.Content>
 
-                      <Tabs.Content
-                        value="additional"
-                        className="mt-0"
-                      >
+                      <Tabs.Content value="additional" className="mt-0">
                         <div className="animate-in fade-in-0 slide-in-from-right-4 duration-300">
                           <CustomerAdditionalInfoStep form={form} />
                         </div>
@@ -257,7 +257,7 @@ export function EditCustomerDrawer({
               disabled={isLoading}
               type="submit"
             >
-              {isLoading ? 'Wird gespeichert...' : 'Änderungen speichern'}
+              {isLoading ? "Wird gespeichert..." : "Änderungen speichern"}
             </Button.Root>
           </Drawer.Footer>
         </div>
@@ -265,4 +265,3 @@ export function EditCustomerDrawer({
     </Drawer.Root>
   );
 }
-

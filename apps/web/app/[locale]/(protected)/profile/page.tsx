@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getDefaultCompanyProfile } from "@/actions/company-profiles-actions";
+import { getUserPreferences } from "@/actions/preferences-actions";
 import { getUserTickets } from "@/actions/support-ticket-actions";
 import { formatDistance } from "date-fns";
 import {
+  ArrowRight,
   BadgeCheck,
   Building2,
   CreditCard,
@@ -10,38 +13,39 @@ import {
   Settings,
   Shield,
   User,
-  ArrowRight,
 } from "lucide-react";
-import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
+import { UserSubscriptionPlan } from "types";
+import { pricingData } from "@/config/subscriptions";
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
-import { createClient } from "@/lib/supabase/server";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
+import { createClient } from "@/lib/supabase/server";
 import { constructMetadata } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
-import { Button } from '@/components/alignui/actions/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/alignui/actions/button";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/alignui/data-display/avatar";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { UserTicketAccordion } from "@/components/support/user-ticket-accordion";
-import { getDefaultCompanyProfile } from "@/actions/company-profiles-actions";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { BillingInfo } from "@/components/pricing/billing-info";
-import { PolarPortalButton } from "@/components/pricing/polar-portal-button";
-import { PolarPortalButtonWithSubscription } from "@/components/pricing/polar-portal-button-subscription";
-import { PolarPortalButtonFallback } from "@/components/pricing/polar-portal-button-fallback";
+} from "@/components/alignui/data-display/card";
 import { UserAvatarForm } from "@/components/forms/user-avatar-form";
 import { UserNameForm } from "@/components/forms/user-name-form";
-import { getUserPreferences } from "@/actions/preferences-actions";
-import { pricingData } from "@/config/subscriptions";
-import { UserSubscriptionPlan } from "types";
-import { logger } from "@/lib/logger";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { BillingInfo } from "@/components/pricing/billing-info";
+import { PolarPortalButton } from "@/components/pricing/polar-portal-button";
+import { PolarPortalButtonFallback } from "@/components/pricing/polar-portal-button-fallback";
+import { PolarPortalButtonWithSubscription } from "@/components/pricing/polar-portal-button-subscription";
+import { UserTicketAccordion } from "@/components/support/user-ticket-accordion";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -133,7 +137,7 @@ export default async function ProfilePage() {
         <div className="relative">
           {/* Background Pattern */}
           <div className="absolute inset-0 bg-gradient-to-br via-transparent from-primary/5 to-primary/5" />
-          
+
           <CardContent className="relative p-6 sm:p-8">
             <div className="flex flex-col gap-6 items-start sm:flex-row sm:items-end">
               {/* Avatar - Perfect Circle, Not Stretched */}
@@ -145,7 +149,9 @@ export default async function ProfilePage() {
                     className="object-cover"
                   />
                   <AvatarFallback className="text-2xl font-semibold bg-gradient-to-br from-primary/20 to-primary/10 text-primary sm:text-3xl">
-                    {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
+                    {user.name?.[0]?.toUpperCase() ||
+                      user.email?.[0]?.toUpperCase() ||
+                      "U"}
                   </AvatarFallback>
                 </Avatar>
                 {user.role === "ADMIN" && (
@@ -175,24 +181,32 @@ export default async function ProfilePage() {
                       <User className="size-4 text-muted-foreground" />
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground">{t("memberSince")}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t("memberSince")}
+                      </p>
                       <p className="text-sm font-medium">
                         {user.created_at
-                          ? formatDistance(new Date(user.created_at), new Date(), {
-                              addSuffix: true,
-                            })
+                          ? formatDistance(
+                              new Date(user.created_at),
+                              new Date(),
+                              {
+                                addSuffix: true,
+                              },
+                            )
                           : "N/A"}
                       </p>
                     </div>
                   </div>
-                  
+
                   {subscriptionStatus && userSubscriptionPlan && (
                     <div className="flex gap-2 items-center">
                       <div className="flex justify-center items-center rounded-lg border size-8 bg-green-500/10 border-green-500/20">
                         <BadgeCheck className="text-green-600 size-4 dark:text-green-400" />
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">{t("subscription")}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t("subscription")}
+                        </p>
                         <p className="text-sm font-medium text-green-600 dark:text-green-400">
                           {userSubscriptionPlan.title}
                         </p>
@@ -201,7 +215,10 @@ export default async function ProfilePage() {
                   )}
 
                   {companyProfile && (
-                    <Link href={`/dashboard/settings/company/${companyProfile.id}`} className="flex gap-2 items-center transition-opacity group hover:opacity-80">
+                    <Link
+                      href={`/dashboard/settings/company/${companyProfile.id}`}
+                      className="flex gap-2 items-center transition-opacity group hover:opacity-80"
+                    >
                       <div className="flex justify-center items-center rounded-lg border size-8 bg-primary/10 border-primary/20">
                         <Building2 className="size-4 text-primary" />
                       </div>
@@ -209,7 +226,10 @@ export default async function ProfilePage() {
                         <div className="flex items-center gap-1.5">
                           <p className="text-xs text-muted-foreground">Firma</p>
                           {companyProfile.is_default && (
-                            <Badge variant="default" className="bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/30 text-[10px] px-1.5 py-0 h-4">
+                            <Badge
+                              variant="default"
+                              className="bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/30 text-[10px] px-1.5 py-0 h-4"
+                            >
                               Standard
                             </Badge>
                           )}
@@ -229,306 +249,359 @@ export default async function ProfilePage() {
 
       {/* Main content with tabs */}
       <div>
-          <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid grid-cols-4 w-full">
-              <TabsTrigger value="overview">
-                <User className="mr-2 size-4 md:hidden" />
-                <span className="hidden md:inline">{t("overview")}</span>
-                <span className="md:hidden">{t("info")}</span>
-              </TabsTrigger>
-              <TabsTrigger value="support">
-                <HelpCircle className="mr-2 size-4 md:hidden" />
-                <span className="hidden md:inline">{t("support")}</span>
-                <span className="md:hidden">{t("help")}</span>
-              </TabsTrigger>
-              <TabsTrigger value="billing">
-                <CreditCard className="mr-2 size-4 md:hidden" />
-                <span className="hidden md:inline">{t("billing")}</span>
-                <span className="md:hidden">{t("pay")}</span>
-              </TabsTrigger>
-              <TabsTrigger value="settings">
-                <Settings className="mr-2 size-4 md:hidden" />
-                <span className="hidden md:inline">{t("settings")}</span>
-                <span className="md:hidden">{t("edit")}</span>
-              </TabsTrigger>
-            </TabsList>
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid grid-cols-4 w-full">
+            <TabsTrigger value="overview">
+              <User className="mr-2 size-4 md:hidden" />
+              <span className="hidden md:inline">{t("overview")}</span>
+              <span className="md:hidden">{t("info")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="support">
+              <HelpCircle className="mr-2 size-4 md:hidden" />
+              <span className="hidden md:inline">{t("support")}</span>
+              <span className="md:hidden">{t("help")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="billing">
+              <CreditCard className="mr-2 size-4 md:hidden" />
+              <span className="hidden md:inline">{t("billing")}</span>
+              <span className="md:hidden">{t("pay")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="settings">
+              <Settings className="mr-2 size-4 md:hidden" />
+              <span className="hidden md:inline">{t("settings")}</span>
+              <span className="md:hidden">{t("edit")}</span>
+            </TabsTrigger>
+          </TabsList>
 
-            <TabsContent value="overview" className="mt-4 space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t("overview")}</CardTitle>
-                  <CardDescription>{t("updateProfile")}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">
-                      {t("personalInfo.title")}
-                    </h3>
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t("personalInfo.name")}
-                        </p>
-                        <p>{user.name || t("personalInfo.notProvided")}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t("personalInfo.email")}
-                        </p>
-                        <p>{user.email}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t("accountStatus")}
-                        </p>
-                        <p>{t("active")}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t("emailVerified")}
-                        </p>
-                        <p>{emailVerified ? t("yes") : t("no")}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">
-                      {t("subscription")}
-                    </h3>
-                    {hasSubscription && userSubscriptionPlan ? (
-                      <div className="p-4 rounded-lg border">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="font-medium">{t("currentPlan")}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {userSubscriptionPlan.title}
-                              {userSubscriptionPlan.interval && (
-                                <span className="ml-2 text-xs">
-                                  ({userSubscriptionPlan.interval === "month" ? t("monthly") : t("yearly")})
-                                </span>
-                              )}
-                            </p>
-                          </div>
-                          <Link href="/dashboard/billing">
-                            <Button variant="outline" size="sm">
-                              {t("manage")}
-                            </Button>
-                          </Link>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="p-4 rounded-lg border">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="font-medium">{t("freePlan")}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {t("upgradeText")}
-                            </p>
-                          </div>
-                          <Link href="/dashboard/billing">
-                            <Button>{t("upgrade")}</Button>
-                          </Link>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">
-                      {t("activity.title")}
-                    </h3>
-                    <div className="p-4 rounded-lg border">
-                      <p className="mb-2 text-sm text-muted-foreground">
-                        {t("recentLogins")}
+          <TabsContent value="overview" className="mt-4 space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("overview")}</CardTitle>
+                <CardDescription>{t("updateProfile")}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold">
+                    {t("personalInfo.title")}
+                  </h3>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {t("personalInfo.name")}
                       </p>
-                      <div className="space-y-2">
-                        {user.last_sign_in_at && (
-                          <div className="flex justify-between items-center text-sm">
-                            <span>{t("lastLogin")}</span>
-                            <span>
-                              {formatDistance(
-                                new Date(user.last_sign_in_at),
-                                new Date(),
-                                { addSuffix: true },
-                              )}
-                            </span>
-                          </div>
-                        )}
-                      </div>
+                      <p>{user.name || t("personalInfo.notProvided")}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {t("personalInfo.email")}
+                      </p>
+                      <p>{user.email}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {t("accountStatus")}
+                      </p>
+                      <p>{t("active")}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {t("emailVerified")}
+                      </p>
+                      <p>{emailVerified ? t("yes") : t("no")}</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                </div>
 
-            <TabsContent value="support" className="mt-4 space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t("supportTickets")}</CardTitle>
-                  <CardDescription>{t("viewManage")}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-semibold">
-                      {t("yourTickets")}
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold">{t("subscription")}</h3>
+                  {hasSubscription && userSubscriptionPlan ? (
+                    <div className="p-4 rounded-lg border">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium">{t("currentPlan")}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {userSubscriptionPlan.title}
+                            {userSubscriptionPlan.interval && (
+                              <span className="ml-2 text-xs">
+                                (
+                                {userSubscriptionPlan.interval === "month"
+                                  ? t("monthly")
+                                  : t("yearly")}
+                                )
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                        <Link href="/dashboard/billing">
+                          <Button variant="outline" size="sm">
+                            {t("manage")}
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 rounded-lg border">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium">{t("freePlan")}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {t("upgradeText")}
+                          </p>
+                        </div>
+                        <Link href="/dashboard/billing">
+                          <Button>{t("upgrade")}</Button>
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold">
+                    {t("activity.title")}
+                  </h3>
+                  <div className="p-4 rounded-lg border">
+                    <p className="mb-2 text-sm text-muted-foreground">
+                      {t("recentLogins")}
+                    </p>
+                    <div className="space-y-2">
+                      {user.last_sign_in_at && (
+                        <div className="flex justify-between items-center text-sm">
+                          <span>{t("lastLogin")}</span>
+                          <span>
+                            {formatDistance(
+                              new Date(user.last_sign_in_at),
+                              new Date(),
+                              { addSuffix: true },
+                            )}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="support" className="mt-4 space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("supportTickets")}</CardTitle>
+                <CardDescription>{t("viewManage")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">{t("yourTickets")}</h3>
+                  <Link href="/dashboard/support/new">
+                    <Button>{t("createNewTicket")}</Button>
+                  </Link>
+                </div>
+                {tickets.length > 0 ? (
+                  <UserTicketAccordion data={tickets} />
+                ) : (
+                  <div className="p-6 text-center rounded-lg border">
+                    <HelpCircle className="mx-auto mb-4 size-12 text-muted-foreground" />
+                    <h3 className="mb-2 text-xl font-semibold">
+                      {t("noTickets")}
                     </h3>
+                    <p className="mb-4 text-muted-foreground">
+                      {t("needHelp")}
+                    </p>
                     <Link href="/dashboard/support/new">
                       <Button>{t("createNewTicket")}</Button>
                     </Link>
                   </div>
-                  {tickets.length > 0 ? (
-                    <UserTicketAccordion data={tickets} />
-                  ) : (
-                    <div className="p-6 text-center rounded-lg border">
-                      <HelpCircle className="mx-auto mb-4 size-12 text-muted-foreground" />
-                      <h3 className="mb-2 text-xl font-semibold">
-                        {t("noTickets")}
-                      </h3>
-                      <p className="mb-4 text-muted-foreground">
-                        {t("needHelp")}
-                      </p>
-                      <Link href="/dashboard/support/new">
-                        <Button>{t("createNewTicket")}</Button>
-                      </Link>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-            <TabsContent value="billing" className="mt-4 space-y-4">
-              {/* Current Subscription */}
+          <TabsContent value="billing" className="mt-4 space-y-4">
+            {/* Current Subscription */}
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("billingInfo")}</CardTitle>
+                <CardDescription>{t("manageSubscription")}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <BillingInfo userSubscriptionPlan={userSubscriptionPlan} />
+
+                {/* Micro Actions */}
+                <div className="pt-4 space-y-2 border-t">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">
+                      Abrechnung verwalten
+                    </span>
+                    {userSubscriptionPlan.polarCustomerId ? (
+                      <PolarPortalButton
+                        customerId={userSubscriptionPlan.polarCustomerId}
+                        variant="outline"
+                        className="h-8 text-xs"
+                      />
+                    ) : userSubscriptionPlan.polarSubscriptionId ? (
+                      <PolarPortalButtonWithSubscription
+                        subscriptionId={
+                          userSubscriptionPlan.polarSubscriptionId
+                        }
+                        variant="outline"
+                        className="h-8 text-xs"
+                      />
+                    ) : (
+                      <PolarPortalButtonFallback
+                        variant="outline"
+                        className="h-8 text-xs"
+                      />
+                    )}
+                  </div>
+                  <Link
+                    href="/dashboard/billing"
+                    className="flex justify-between items-center text-sm transition-colors group hover:text-primary"
+                  >
+                    <span className="text-muted-foreground">
+                      Vollständige Abrechnungsübersicht
+                    </span>
+                    <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="settings" className="mt-4 space-y-4">
+            {/* Profile Settings */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Profil</CardTitle>
+                <CardDescription>
+                  Verwalten Sie Ihre Profilinformationen
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">
+                      Profilbild
+                    </label>
+                    <UserAvatarForm
+                      user={{ id: user.id, avatar_url: user.avatar_url }}
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">
+                      Name
+                    </label>
+                    <UserNameForm
+                      user={{ id: user.id, name: user.name || "" }}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Preferences */}
+            {preferences && (
               <Card>
                 <CardHeader>
-                  <CardTitle>{t("billingInfo")}</CardTitle>
-                  <CardDescription>{t("manageSubscription")}</CardDescription>
+                  <CardTitle>Einstellungen</CardTitle>
+                  <CardDescription>
+                    Anpassen Sie Ihre Präferenzen
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <BillingInfo userSubscriptionPlan={userSubscriptionPlan} />
-                  
-                  {/* Micro Actions */}
-                  <div className="pt-4 space-y-2 border-t">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">Abrechnung verwalten</span>
-                      {userSubscriptionPlan.polarCustomerId ? (
-                        <PolarPortalButton 
-                          customerId={userSubscriptionPlan.polarCustomerId}
-                          variant="outline"
-                          className="h-8 text-xs"
-                        />
-                      ) : userSubscriptionPlan.polarSubscriptionId ? (
-                        <PolarPortalButtonWithSubscription 
-                          subscriptionId={userSubscriptionPlan.polarSubscriptionId}
-                          variant="outline"
-                          className="h-8 text-xs"
-                        />
-                      ) : (
-                        <PolarPortalButtonFallback 
-                          variant="outline"
-                          className="h-8 text-xs"
-                        />
-                      )}
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Design
+                      </p>
+                      <p className="text-sm capitalize">
+                        {preferences.theme_preference || "System"}
+                      </p>
                     </div>
-                    <Link href="/dashboard/billing" className="flex justify-between items-center text-sm transition-colors group hover:text-primary">
-                      <span className="text-muted-foreground">Vollständige Abrechnungsübersicht</span>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Sprache
+                      </p>
+                      <p className="text-sm">
+                        {preferences.language_preference || "Deutsch"}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Währung
+                      </p>
+                      <p className="text-sm">{preferences.currency || "EUR"}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Datumsformat
+                      </p>
+                      <p className="text-sm">
+                        {preferences.date_format || "DD.MM.YYYY"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="pt-4 border-t">
+                    <Link
+                      href="/dashboard/settings/preferences"
+                      className="flex justify-between items-center text-sm transition-colors group hover:text-primary"
+                    >
+                      <span className="text-muted-foreground">
+                        Alle Einstellungen verwalten
+                      </span>
                       <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
                     </Link>
                   </div>
                 </CardContent>
               </Card>
-            </TabsContent>
+            )}
 
-            <TabsContent value="settings" className="mt-4 space-y-4">
-              {/* Profile Settings */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Profil</CardTitle>
-                  <CardDescription>Verwalten Sie Ihre Profilinformationen</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block mb-2 text-sm font-medium">Profilbild</label>
-                      <UserAvatarForm
-                        user={{ id: user.id, avatar_url: user.avatar_url }}
-                      />
-                    </div>
-                    <div>
-                      <label className="block mb-2 text-sm font-medium">Name</label>
-                      <UserNameForm user={{ id: user.id, name: user.name || "" }} />
-                    </div>
+            {/* Quick Links */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Weitere Einstellungen</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-0 divide-y divide-border">
+                <Link
+                  href="/dashboard/settings/company"
+                  className="flex justify-between items-center py-3 transition-colors group hover:text-primary"
+                >
+                  <div>
+                    <h3 className="text-sm font-medium">Firmenprofile</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Firmendaten verwalten
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Preferences */}
-              {preferences && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Einstellungen</CardTitle>
-                    <CardDescription>Anpassen Sie Ihre Präferenzen</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">Design</p>
-                        <p className="text-sm capitalize">{preferences.theme_preference || "System"}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">Sprache</p>
-                        <p className="text-sm">{preferences.language_preference || "Deutsch"}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">Währung</p>
-                        <p className="text-sm">{preferences.currency || "EUR"}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">Datumsformat</p>
-                        <p className="text-sm">{preferences.date_format || "DD.MM.YYYY"}</p>
-                      </div>
-                    </div>
-                    <div className="pt-4 border-t">
-                      <Link href="/dashboard/settings/preferences" className="flex justify-between items-center text-sm transition-colors group hover:text-primary">
-                        <span className="text-muted-foreground">Alle Einstellungen verwalten</span>
-                        <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Quick Links */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Weitere Einstellungen</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-0 divide-y divide-border">
-                  <Link href="/dashboard/settings/company" className="flex justify-between items-center py-3 transition-colors group hover:text-primary">
-                    <div>
-                      <h3 className="text-sm font-medium">Firmenprofile</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">Firmendaten verwalten</p>
-                    </div>
-                    <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
-                  </Link>
-                  <Link href="/dashboard/settings/security" className="flex justify-between items-center py-3 transition-colors group hover:text-primary">
-                    <div>
-                      <h3 className="text-sm font-medium">Sicherheit</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">Passwort und 2FA</p>
-                    </div>
-                    <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
-                  </Link>
-                  <Link href="/dashboard/settings/privacy" className="flex justify-between items-center py-3 transition-colors group hover:text-primary">
-                    <div>
-                      <h3 className="text-sm font-medium">Datenschutz</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">GDPR & Datenschutz</p>
-                    </div>
-                    <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
-                  </Link>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                  <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
+                </Link>
+                <Link
+                  href="/dashboard/settings/security"
+                  className="flex justify-between items-center py-3 transition-colors group hover:text-primary"
+                >
+                  <div>
+                    <h3 className="text-sm font-medium">Sicherheit</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Passwort und 2FA
+                    </p>
+                  </div>
+                  <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
+                </Link>
+                <Link
+                  href="/dashboard/settings/privacy"
+                  className="flex justify-between items-center py-3 transition-colors group hover:text-primary"
+                >
+                  <div>
+                    <h3 className="text-sm font-medium">Datenschutz</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      GDPR & Datenschutz
+                    </p>
+                  </div>
+                  <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
+                </Link>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </UnifiedPageLayout>
   );

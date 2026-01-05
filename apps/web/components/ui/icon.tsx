@@ -1,4 +1,5 @@
 import { LucideIcon, LucideProps } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 interface IconProps extends LucideProps {
@@ -42,22 +43,3 @@ export function createIconWrapper(size: IconProps["size"] = "md") {
     );
   };
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

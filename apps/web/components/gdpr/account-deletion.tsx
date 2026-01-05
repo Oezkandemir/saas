@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { deleteUserAccount } from "@/actions/gdpr-actions";
+import { AlertTriangle, Loader2, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Trash2, AlertTriangle, Loader2 } from "lucide-react";
 
-import { Button } from '@/components/alignui/actions/button';
+import { cn } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,11 +17,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Input } from '@/components/alignui/forms/input';
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { deleteUserAccount } from "@/actions/gdpr-actions";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/alignui/actions/button";
+import { Input } from "@/components/alignui/forms/input";
 
 export function AccountDeletion() {
   const t = useTranslations("GDPR.accountDeletion");
@@ -42,7 +42,7 @@ export function AccountDeletion() {
     setIsDeleting(true);
     try {
       const result = await deleteUserAccount(confirmation);
-      
+
       if (!result.success) {
         toast({
           variant: "destructive",
@@ -53,7 +53,9 @@ export function AccountDeletion() {
       }
 
       toast({
-        title: result.anonymized ? t("toast.accountAnonymized") : t("toast.accountDeleted"),
+        title: result.anonymized
+          ? t("toast.accountAnonymized")
+          : t("toast.accountDeleted"),
         description: result.message,
       });
 
@@ -106,9 +108,7 @@ export function AccountDeletion() {
           </AlertDialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="confirmation">
-                {t("confirm.inputLabel")}
-              </Label>
+              <Label htmlFor="confirmation">{t("confirm.inputLabel")}</Label>
               <Input
                 id="confirmation"
                 value={confirmation}
@@ -117,14 +117,10 @@ export function AccountDeletion() {
                 className="font-mono"
               />
             </div>
-            <p className="text-sm text-muted-foreground">
-              {t("confirm.note")}
-            </p>
+            <p className="text-sm text-muted-foreground">{t("confirm.note")}</p>
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel 
-              onClick={() => setConfirmation("")}
-            >
+            <AlertDialogCancel onClick={() => setConfirmation("")}>
               {t("confirm.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
@@ -132,7 +128,7 @@ export function AccountDeletion() {
               disabled={confirmation !== "DELETE" || isDeleting}
               className={cn(
                 "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-                "disabled:opacity-50 disabled:cursor-not-allowed"
+                "disabled:opacity-50 disabled:cursor-not-allowed",
               )}
             >
               {isDeleting ? (
@@ -153,4 +149,3 @@ export function AccountDeletion() {
     </div>
   );
 }
-

@@ -1,6 +1,7 @@
 import crypto from "crypto";
-import { createClient } from "@/lib/supabase/server";
+
 import { logger } from "@/lib/logger";
+import { createClient } from "@/lib/supabase/server";
 
 export type WebhookEvent =
   | "document.created"
@@ -33,10 +34,7 @@ export function calculateWebhookSignature(
   payload: string,
   secret: string,
 ): string {
-  return crypto
-    .createHmac("sha256", secret)
-    .update(payload)
-    .digest("hex");
+  return crypto.createHmac("sha256", secret).update(payload).digest("hex");
 }
 
 /**
@@ -70,8 +68,7 @@ async function deliverWebhook(
       body: responseBody.substring(0, 1000), // Limit response body length
     };
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : String(error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return {
       status: 0,
       body: "",
@@ -143,9 +140,7 @@ export async function triggerWebhooks(
     // Deliver to each webhook asynchronously
     const deliveries = webhooks
       .filter((webhook) => {
-        const events = Array.isArray(webhook.events)
-          ? webhook.events
-          : [];
+        const events = Array.isArray(webhook.events) ? webhook.events : [];
         return events.includes(event);
       })
       .map(async (webhook) => {
@@ -211,21 +206,3 @@ export function verifyWebhookSignature(
     Buffer.from(expectedSignature),
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

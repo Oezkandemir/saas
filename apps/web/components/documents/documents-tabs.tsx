@@ -1,15 +1,21 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { useState, useEffect, useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { TabsRoot as Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/alignui/layout/tabs";
+import { useSearchParams } from "next/navigation";
+import { Document, DocumentType } from "@/actions/documents-actions";
+import { Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
+
+import { Button } from "@/components/alignui/actions/button";
+import {
+  TabsRoot as Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/alignui/layout/tabs";
 import { DocumentsTable } from "@/components/documents/documents-table";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
-import { Button } from '@/components/alignui/actions/button';
-import { Plus } from "lucide-react";
-import { Document, DocumentType } from "@/actions/documents-actions";
 
 interface DocumentsTabsProps {
   allDocuments: Document[];
@@ -26,12 +32,14 @@ export function DocumentsTabs({
   const searchParams = useSearchParams();
   const typeParam = searchParams.get("type");
   const [activeTab, setActiveTab] = useState<DocumentType | "all">(
-    (typeParam === "quote" || typeParam === "invoice" ? typeParam : "all")
+    typeParam === "quote" || typeParam === "invoice" ? typeParam : "all",
   );
 
   // Update active tab when URL changes (e.g., browser back/forward or initial load)
   useEffect(() => {
-    const newType = (typeParam === "quote" || typeParam === "invoice" ? typeParam : "all") as DocumentType | "all";
+    const newType = (
+      typeParam === "quote" || typeParam === "invoice" ? typeParam : "all"
+    ) as DocumentType | "all";
     setActiveTab(newType);
   }, [typeParam]);
 
@@ -43,7 +51,7 @@ export function DocumentsTabs({
 
   const handleTabChange = (value: string) => {
     setActiveTab(value as DocumentType | "all");
-    
+
     // Update URL silently using history API (no navigation, no POST requests)
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -52,12 +60,12 @@ export function DocumentsTabs({
       } else {
         params.set("type", value);
       }
-      
+
       const queryString = params.toString();
-      const newUrl = queryString 
+      const newUrl = queryString
         ? `${window.location.pathname}?${queryString}`
         : window.location.pathname;
-      
+
       // Use replaceState to update URL without triggering navigation
       window.history.replaceState({ ...window.history.state }, "", newUrl);
     }
@@ -66,9 +74,7 @@ export function DocumentsTabs({
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
       <TabsList>
-        <TabsTrigger value="all">
-          {t("all")}
-        </TabsTrigger>
+        <TabsTrigger value="all">{t("all")}</TabsTrigger>
         <TabsTrigger value="quote">
           {t("quotes", { count: quotes.length })}
         </TabsTrigger>
@@ -81,7 +87,9 @@ export function DocumentsTabs({
           <div className="flex flex-col items-center justify-center py-16">
             <EmptyPlaceholder>
               <EmptyPlaceholder.Icon name="post" />
-              <EmptyPlaceholder.Title>{t("empty.title")}</EmptyPlaceholder.Title>
+              <EmptyPlaceholder.Title>
+                {t("empty.title")}
+              </EmptyPlaceholder.Title>
               <EmptyPlaceholder.Description>
                 {t("empty.description")}
               </EmptyPlaceholder.Description>
@@ -108,4 +116,3 @@ export function DocumentsTabs({
     </Tabs>
   );
 }
-

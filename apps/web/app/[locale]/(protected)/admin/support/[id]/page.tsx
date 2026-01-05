@@ -4,8 +4,10 @@ import { formatDistance } from "date-fns";
 import { MessageSquare } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 import {
   Card,
   CardContent,
@@ -13,13 +15,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/alignui/data-display/card';
-import { Separator } from "@/components/ui/separator";
+} from "@/components/alignui/data-display/card";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TicketMessageItem } from "@/components/support/ticket-message";
 import { TicketReplyForm } from "@/components/support/ticket-reply-form";
 import { TicketStatusUpdater } from "@/components/support/ticket-status-updater";
-import { logger } from "@/lib/logger";
 
 export async function generateMetadata({
   params,

@@ -1,19 +1,15 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
+import { redirect } from "next/navigation";
 import {
-  Shield,
-  Users,
-  ArrowRight,
-} from "lucide-react";
-
-import { getCurrentUser } from "@/lib/session";
+  getPlanStatistics,
+  getUsersByPlan,
+} from "@/actions/admin-plan-actions";
 import { getAdminStats } from "@/actions/admin-stats-actions";
 import { getAllUsers } from "@/actions/admin-user-actions";
-import { getPlanStatistics, getUsersByPlan } from "@/actions/admin-plan-actions";
-import { Button } from '@/components/alignui/actions/button';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/alignui/data-display/avatar';
+import { ArrowRight, Shield, Users } from "lucide-react";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
+
+import { getCurrentUser } from "@/lib/session";
 import {
   Table,
   TableBody,
@@ -22,6 +18,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/alignui/actions/button";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/alignui/data-display/avatar";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 // ISR: Revalidate every 60 seconds for fresh admin data
@@ -71,61 +74,67 @@ export default async function AdminPanelPage(props: Props) {
   }
 
   // Fetch optimized admin statistics, recent users, plan statistics, and users by plan
-  const [statsResult, usersResult, plansResult, usersByPlanResult] = await Promise.all([
-    getAdminStats(),
-    getAllUsers(),
-    getPlanStatistics(),
-    getUsersByPlan(),
-  ]);
+  const [statsResult, usersResult, plansResult, usersByPlanResult] =
+    await Promise.all([
+      getAdminStats(),
+      getAllUsers(),
+      getPlanStatistics(),
+      getUsersByPlan(),
+    ]);
 
   // Default values in case of errors
-  const statsData = statsResult.success && statsResult.data
-    ? statsResult.data
-    : {
-        totalUsers: 0,
-        adminUsers: 0,
-        subscribedUsers: 0,
-        totalTickets: 0,
-        openTickets: 0,
-        inProgressTickets: 0,
-        resolvedTickets: 0,
-      };
+  const statsData =
+    statsResult.success && statsResult.data
+      ? statsResult.data
+      : {
+          totalUsers: 0,
+          adminUsers: 0,
+          subscribedUsers: 0,
+          totalTickets: 0,
+          openTickets: 0,
+          inProgressTickets: 0,
+          resolvedTickets: 0,
+        };
 
   // Get recent users (last 5)
-  const recentUsers = usersResult.success && usersResult.data
-    ? usersResult.data.slice(0, 5)
-    : [];
+  const recentUsers =
+    usersResult.success && usersResult.data ? usersResult.data.slice(0, 5) : [];
 
   // Get active plans with user counts
-  const activePlans = plansResult.success && plansResult.data
-    ? plansResult.data.filter(plan => plan.user_count > 0)
-    : [];
+  const activePlans =
+    plansResult.success && plansResult.data
+      ? plansResult.data.filter((plan) => plan.user_count > 0)
+      : [];
 
   // Calculate total users in active plans
   const totalUsersInActivePlans = activePlans.reduce(
     (sum, plan) => sum + (plan.user_count || 0),
-    0
+    0,
   );
 
   // Get users in active plans for avatars
-  const usersInActivePlans = usersByPlanResult.success && usersByPlanResult.data
-    ? usersByPlanResult.data.filter(user => 
-        activePlans.some(plan => plan.plan_id === user.plan_id)
-      )
-    : [];
+  const usersInActivePlans =
+    usersByPlanResult.success && usersByPlanResult.data
+      ? usersByPlanResult.data.filter((user) =>
+          activePlans.some((plan) => plan.plan_id === user.plan_id),
+        )
+      : [];
 
   // Get user data with avatars for active plan users
-  const activePlanUsersWithAvatars = usersResult.success && usersResult.data
-    ? usersInActivePlans.map(planUser => {
-        const userData = usersResult.data.find(u => u.id === planUser.user_id);
-        return {
-          id: planUser.user_id,
-          name: planUser.user_name || planUser.user_email || "User",
-          email: planUser.user_email,
-          avatar_url: userData?.avatar_url || null,
-        };
-      })
-    : [];
+  const activePlanUsersWithAvatars =
+    usersResult.success && usersResult.data
+      ? usersInActivePlans.map((planUser) => {
+          const userData = usersResult.data.find(
+            (u) => u.id === planUser.user_id,
+          );
+          return {
+            id: planUser.user_id,
+            name: planUser.user_name || planUser.user_email || "User",
+            email: planUser.user_email,
+            avatar_url: userData?.avatar_url || null,
+          };
+        })
+      : [];
 
   // Maximal 3 KPIs: Admin Users, Open Tickets, Active Plans (with user count and avatars)
   const kpis = [
@@ -156,7 +165,9 @@ export default async function AdminPanelPage(props: Props) {
     >
       {/* 1. Primary Metric - Single Focus */}
       <div className="mb-8">
-        <p className="text-xs text-muted-foreground mb-2">{tStats("userStats")}</p>
+        <p className="text-xs text-muted-foreground mb-2">
+          {tStats("userStats")}
+        </p>
         <p className="text-4xl font-semibold tracking-tight">
           {statsData.totalUsers.toLocaleString()}
         </p>
@@ -187,7 +198,9 @@ export default async function AdminPanelPage(props: Props) {
                         />
                       ) : (
                         <AvatarFallback className="text-[10px] bg-muted">
-                          {user.name[0]?.toUpperCase() || user.email[0]?.toUpperCase() || "U"}
+                          {user.name[0]?.toUpperCase() ||
+                            user.email[0]?.toUpperCase() ||
+                            "U"}
                         </AvatarFallback>
                       )}
                     </Avatar>
@@ -219,7 +232,9 @@ export default async function AdminPanelPage(props: Props) {
         {recentUsers.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <Users className="h-6 w-6 text-muted-foreground mb-3" />
-            <p className="text-sm text-muted-foreground mb-4">{tUsers("noUsers")}</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              {tUsers("noUsers")}
+            </p>
             <Link href={`/${locale}/admin/users`}>
               <Button size="sm" variant="outline" className="h-8 text-xs">
                 {tUsers("manageUsers")}
@@ -230,15 +245,26 @@ export default async function AdminPanelPage(props: Props) {
           <Table>
             <TableHeader>
               <TableRow className="border-b border-border">
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground">Name</TableHead>
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground">Email</TableHead>
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground">Role</TableHead>
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground text-right">Status</TableHead>
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground">
+                  Name
+                </TableHead>
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground">
+                  Email
+                </TableHead>
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground">
+                  Role
+                </TableHead>
+                <TableHead className="h-9 text-xs font-medium text-muted-foreground text-right">
+                  Status
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {recentUsers.map((user) => (
-                <TableRow key={user.id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                <TableRow
+                  key={user.id}
+                  className="border-b border-border hover:bg-muted/50 transition-colors"
+                >
                   <TableCell className="py-3">
                     <Link
                       href={`/${locale}/admin/users`}
@@ -252,15 +278,21 @@ export default async function AdminPanelPage(props: Props) {
                   </TableCell>
                   <TableCell className="py-3">
                     <Badge variant="outline" className="text-xs font-normal">
-                      {user.role === "ADMIN" ? tUsers("table.admin") : tUsers("table.user")}
+                      {user.role === "ADMIN"
+                        ? tUsers("table.admin")
+                        : tUsers("table.user")}
                     </Badge>
                   </TableCell>
                   <TableCell className="py-3 text-right">
-                    <Badge 
-                      variant={user.status === "banned" ? "destructive" : "default"} 
+                    <Badge
+                      variant={
+                        user.status === "banned" ? "destructive" : "default"
+                      }
                       className="text-xs font-normal"
                     >
-                      {user.status === "banned" ? tUsers("table.banned") : tUsers("table.active")}
+                      {user.status === "banned"
+                        ? tUsers("table.banned")
+                        : tUsers("table.active")}
                     </Badge>
                   </TableCell>
                 </TableRow>

@@ -2,9 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
-import { logger } from "@/lib/logger";
 import { passwordSchema } from "@/lib/validations/password-policy";
 
 const changePasswordSchema = z.object({
@@ -81,14 +82,10 @@ export async function changePassword(
 
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Fehler beim Ändern des Passworts",
+      message:
+        error instanceof Error
+          ? error.message
+          : "Fehler beim Ändern des Passworts",
     };
   }
 }
-
-
-
-
-
-
-

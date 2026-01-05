@@ -1,8 +1,9 @@
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
-import { Database } from "../supabase";
 import { logger } from "@/lib/logger";
+
+import { Database } from "../supabase";
 
 export const createClient = async () => {
   try {

@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { Cookie } from "lucide-react";
-import { Button } from '@/components/alignui/actions/button';
+
+import { Button } from "@/components/alignui/actions/button";
+
 import { CookieConsent } from "./cookie-consent";
 
 export function CookieSettingsButton() {
@@ -22,4 +24,3 @@ export function CookieSettingsButton() {
     </>
   );
 }
-

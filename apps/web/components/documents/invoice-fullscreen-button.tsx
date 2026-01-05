@@ -1,23 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { Button } from '@/components/alignui/actions/button';
+import { Document } from "@/actions/documents-actions";
 import { Maximize2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+
+import { Button } from "@/components/alignui/actions/button";
 import {
   DialogRoot as Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/alignui/overlays/dialog";
+
 import { InvoiceFullPreview } from "./invoice-full-preview";
-import { Document } from "@/actions/documents-actions";
 
 interface InvoiceFullscreenButtonProps {
   document: Document;
 }
 
-export function InvoiceFullscreenButton({ document }: InvoiceFullscreenButtonProps) {
+export function InvoiceFullscreenButton({
+  document,
+}: InvoiceFullscreenButtonProps) {
   const t = useTranslations("Documents.preview");
   const [isOpen, setIsOpen] = useState(false);
 
@@ -41,4 +45,3 @@ export function InvoiceFullscreenButton({ document }: InvoiceFullscreenButtonPro
     </>
   );
 }
-

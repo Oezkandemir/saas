@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef, createElement } from "react";
-import { getUserNotifications } from "@/actions/user-profile-actions";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useSupabase } from "@/components/supabase-provider";
-import { toast } from "sonner";
+import { createElement, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Bell } from "lucide-react";
+import { getUserNotifications } from "@/actions/user-profile-actions";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Bell } from "lucide-react";
+import { toast } from "sonner";
+
 import { logger } from "@/lib/logger";
+import { useSupabase } from "@/components/supabase-provider";
 
 export interface UseNotificationsResult {
   unreadCount: number;
@@ -25,7 +26,8 @@ export interface UseNotificationsResult {
 function playNotificationSound() {
   try {
     // Create a pleasant notification sound using Web Audio API
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const audioContext = new (window.AudioContext ||
+      (window as any).webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
 
@@ -34,10 +36,16 @@ function playNotificationSound() {
 
     // Pleasant bell-like sound
     oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
-    
+    oscillator.frequency.exponentialRampToValueAtTime(
+      600,
+      audioContext.currentTime + 0.1,
+    );
+
     gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      audioContext.currentTime + 0.3,
+    );
 
     oscillator.start(audioContext.currentTime);
     oscillator.stop(audioContext.currentTime + 0.3);
@@ -53,13 +61,14 @@ export function useNotifications(): UseNotificationsResult {
   const channelRef = useRef<RealtimeChannel | null>(null);
   const router = useRouter();
   const previousCountRef = useRef<number>(0);
-  
+
   // Translation fallbacks (useTranslations might not be available in all contexts)
   const getTranslation = (key: string): string => {
     const translations: Record<string, string> = {
-      "newNotification": "Neue Benachrichtigung",
-      "newNotificationDescription": "Sie haben eine neue Benachrichtigung erhalten",
-      "viewAll": "Öffnen",
+      newNotification: "Neue Benachrichtigung",
+      newNotificationDescription:
+        "Sie haben eine neue Benachrichtigung erhalten",
+      viewAll: "Öffnen",
     };
     return translations[key] || key;
   };
@@ -149,40 +158,47 @@ export function useNotifications(): UseNotificationsResult {
           },
           (payload) => {
             logger.debug("🔔 Real-time INSERT event received:", payload);
-            const newNotification = payload.new as { 
-              read?: boolean; 
-              title?: string; 
+            const newNotification = payload.new as {
+              read?: boolean;
+              title?: string;
               content?: string;
               id?: string;
               type?: string;
             };
-            
+
             // Only process if notification is unread
             if (!newNotification.read) {
               // Increment count immediately (optimistic update)
               queryClient.setQueryData<number>(
                 ["notifications", "unread", userId],
-                (oldCount = 0) => oldCount + 1
+                (oldCount = 0) => oldCount + 1,
               );
-              
+
               // Play notification sound
               playNotificationSound();
-              
+
               // Show toast notification with link
-              toast.success(newNotification.title || getTranslation("newNotification"), {
-                description: newNotification.content || getTranslation("newNotificationDescription"),
-                duration: 8000,
-                icon: createElement(Bell, { className: "h-5 w-5 text-blue-500" }),
-                action: {
-                  label: getTranslation("viewAll"),
-                  onClick: () => {
-                    router.push("/profile/notifications");
+              toast.success(
+                newNotification.title || getTranslation("newNotification"),
+                {
+                  description:
+                    newNotification.content ||
+                    getTranslation("newNotificationDescription"),
+                  duration: 8000,
+                  icon: createElement(Bell, {
+                    className: "h-5 w-5 text-blue-500",
+                  }),
+                  action: {
+                    label: getTranslation("viewAll"),
+                    onClick: () => {
+                      router.push("/profile/notifications");
+                    },
                   },
+                  className: "border-l-4 border-l-blue-500 shadow-lg",
                 },
-                className: "border-l-4 border-l-blue-500 shadow-lg",
-              });
+              );
             }
-            
+
             // Always invalidate to ensure fresh data
             queryClient.invalidateQueries({
               queryKey: ["notifications"],
@@ -190,7 +206,7 @@ export function useNotifications(): UseNotificationsResult {
             queryClient.invalidateQueries({
               queryKey: ["notifications", "unread", userId],
             });
-          }
+          },
         )
         .on(
           "postgres_changes",
@@ -205,7 +221,7 @@ export function useNotifications(): UseNotificationsResult {
             queryClient.invalidateQueries({
               queryKey: ["notifications", "unread", userId],
             });
-          }
+          },
         )
         .on(
           "postgres_changes",
@@ -217,28 +233,33 @@ export function useNotifications(): UseNotificationsResult {
           },
           (payload) => {
             const deletedNotification = payload.old as { read?: boolean };
-            
+
             // Optimistically update count if deleted notification was unread
             if (!deletedNotification.read) {
               queryClient.setQueryData<number>(
                 ["notifications", "unread", userId],
-                (oldCount = 0) => Math.max(0, oldCount - 1)
+                (oldCount = 0) => Math.max(0, oldCount - 1),
               );
             }
-            
+
             // Invalidate to ensure we have the correct count
             queryClient.invalidateQueries({
               queryKey: ["notifications", "unread", userId],
             });
-          }
+          },
         )
         .subscribe((status, err) => {
           if (status === "SUBSCRIBED") {
-            logger.debug("✅ Successfully subscribed to real-time notifications for user:", userId);
+            logger.debug(
+              "✅ Successfully subscribed to real-time notifications for user:",
+              userId,
+            );
           } else if (status === "CHANNEL_ERROR") {
             logger.error("⚠️ Error subscribing to notifications channel:", err);
           } else if (status === "TIMED_OUT") {
-            logger.warn("⏱️ Subscription timed out, will retry on next effect run");
+            logger.warn(
+              "⏱️ Subscription timed out, will retry on next effect run",
+            );
             // Don't retry subscribe() on same channel - it will cause error
             // The useEffect will recreate the channel if dependencies change
           } else if (status === "CLOSED") {

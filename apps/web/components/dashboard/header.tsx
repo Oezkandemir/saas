@@ -1,4 +1,5 @@
 import { LucideIcon } from "lucide-react";
+
 import { ModernPageHeader } from "@/components/layout/modern-page-header";
 
 interface DashboardHeaderProps {

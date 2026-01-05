@@ -1,16 +1,21 @@
 "use server";
 
-import { getCurrentUser } from "@/lib/session";
 import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
 import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
 import { getSupabaseClient } from "@/lib/supabase";
 
 export type EmailTemplate = {
   id: string;
   name: string;
   description: string;
-  type: "magic-link" | "welcome" | "signup-confirmation" | "newsletter-confirmation" | "newsletter-unsubscribe";
+  type:
+    | "magic-link"
+    | "welcome"
+    | "signup-confirmation"
+    | "newsletter-confirmation"
+    | "newsletter-unsubscribe";
   component: string;
 };
 
@@ -22,7 +27,8 @@ export type ResendConfigStatus = {
 };
 
 export async function getResendConfigStatus(): Promise<ResendConfigStatus> {
-  const apiKeyConfigured = !!env.RESEND_API_KEY && env.RESEND_API_KEY.length > 0;
+  const apiKeyConfigured =
+    !!env.RESEND_API_KEY && env.RESEND_API_KEY.length > 0;
   const emailFromConfigured = !!env.EMAIL_FROM && env.EMAIL_FROM.length > 0;
 
   let status: "configured" | "partial" | "not_configured" = "not_configured";
@@ -41,7 +47,8 @@ export async function getResendConfigStatus(): Promise<ResendConfigStatus> {
       message += " - EMAIL_FROM fehlt";
     }
   } else {
-    message = "Resend ist nicht konfiguriert - RESEND_API_KEY und EMAIL_FROM fehlen";
+    message =
+      "Resend ist nicht konfiguriert - RESEND_API_KEY und EMAIL_FROM fehlen";
   }
 
   return {
@@ -65,7 +72,8 @@ export async function testResendConnection(): Promise<{
   if (configStatus.status === "not_configured") {
     return {
       success: false,
-      message: "Resend ist nicht konfiguriert. Bitte konfigurieren Sie RESEND_API_KEY und EMAIL_FROM.",
+      message:
+        "Resend ist nicht konfiguriert. Bitte konfigurieren Sie RESEND_API_KEY und EMAIL_FROM.",
     };
   }
 
@@ -82,7 +90,8 @@ export async function testResendConnection(): Promise<{
     if (response.ok) {
       return {
         success: true,
-        message: "Resend-Verbindung erfolgreich! Die API-Konfiguration ist korrekt.",
+        message:
+          "Resend-Verbindung erfolgreich! Die API-Konfiguration ist korrekt.",
       };
     } else {
       const errorData = await response.json();
@@ -117,22 +126,27 @@ export async function sendTestEmail(
   if (configStatus.status === "not_configured") {
     return {
       success: false,
-      message: "Resend ist nicht konfiguriert. Bitte konfigurieren Sie RESEND_API_KEY und EMAIL_FROM.",
+      message:
+        "Resend ist nicht konfiguriert. Bitte konfigurieren Sie RESEND_API_KEY und EMAIL_FROM.",
     };
   }
 
   try {
     // Use the Supabase Edge Function to send test emails
     const supabase = getSupabaseClient();
-    
+
     // Prepare test data based on template type
     const testData: any = {
-      type: templateType === "signup-confirmation" ? "confirmation" : templateType,
+      type:
+        templateType === "signup-confirmation" ? "confirmation" : templateType,
       email: testEmail,
       name: user.name || "Test User",
     };
 
-    if (templateType === "magic-link" || templateType === "signup-confirmation") {
+    if (
+      templateType === "magic-link" ||
+      templateType === "signup-confirmation"
+    ) {
       testData.actionUrl = `${siteConfig.url}/auth/callback?token=test-token`;
       if (templateType === "magic-link") {
         testData.emailType = "login";
@@ -155,7 +169,9 @@ export async function sendTestEmail(
       };
     }
 
-    logger.info(`Test email sent successfully for template ${templateType} to ${testEmail}`);
+    logger.info(
+      `Test email sent successfully for template ${templateType} to ${testEmail}`,
+    );
     return {
       success: true,
       message: `Test-E-Mail erfolgreich an ${testEmail} gesendet!`,
@@ -209,4 +225,3 @@ export async function getEmailTemplates(): Promise<EmailTemplate[]> {
     },
   ];
 }
-

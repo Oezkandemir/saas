@@ -1,6 +1,7 @@
 # Schnelle Lösung: Price IDs finden
 
 ## Das Problem
+
 Sie haben **Product IDs** (`prod_SDmTZNwnYvYe4C`) in den Environment-Variablen, benötigen aber **Price IDs** (`price_...`).
 
 ## Schnelle Lösung (2 Minuten)
@@ -9,6 +10,7 @@ Sie haben **Product IDs** (`prod_SDmTZNwnYvYe4C`) in den Environment-Variablen, 
 
 1. Stellen Sie sicher, dass `STRIPE_API_KEY` in `.env.local` gesetzt ist
 2. Führen Sie aus:
+
 ```bash
 cd apps/web
 node scripts/get-stripe-price-ids.js
@@ -56,6 +58,3 @@ pnpm dev
 - Stripe benötigt Price IDs für Checkout-Sessions
 
 Die API Keys sind richtig - Sie müssen nur die richtigen Price IDs eintragen!
-
-
-

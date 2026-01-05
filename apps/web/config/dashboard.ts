@@ -1,6 +1,5 @@
 import { SidebarNavItem } from "types";
 
-
 export const sidebarLinks: SidebarNavItem[] = [
   {
     title: "MENU",

@@ -2,18 +2,19 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { updateDocument } from "@/actions/documents-actions";
+import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from '@/components/alignui/actions/button';
+import { toast } from "sonner";
+
+import { Button } from "@/components/alignui/actions/button";
 import {
   DropdownMenuRoot as DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/alignui/overlays/dropdown-menu";
-import { StatusBadge, DocumentStatus } from "@/components/shared/status-badge";
-import { updateDocument } from "@/actions/documents-actions";
-import { toast } from "sonner";
-import { ChevronDown } from "lucide-react";
+import { DocumentStatus, StatusBadge } from "@/components/shared/status-badge";
 
 interface DocumentStatusChangerProps {
   documentId: string;
@@ -30,7 +31,10 @@ export function DocumentStatusChanger({
   const router = useRouter();
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const statusOptions: Record<DocumentStatus, { availableFor: ("quote" | "invoice")[] }> = {
+  const statusOptions: Record<
+    DocumentStatus,
+    { availableFor: ("quote" | "invoice")[] }
+  > = {
     draft: { availableFor: ["quote", "invoice"] },
     sent: { availableFor: ["quote", "invoice"] },
     accepted: { availableFor: ["quote"] },
@@ -45,7 +49,9 @@ export function DocumentStatusChanger({
     setIsUpdating(true);
     try {
       await updateDocument(documentId, { status: newStatus });
-      toast.success(t("toast.statusChanged", { status: t(`labels.${newStatus}`) }));
+      toast.success(
+        t("toast.statusChanged", { status: t(`labels.${newStatus}`) }),
+      );
       router.refresh();
     } catch (error) {
       toast.error(t("toast.changeError"));
@@ -54,9 +60,9 @@ export function DocumentStatusChanger({
     }
   };
 
-  const availableStatuses = Object.entries(statusOptions).filter(([_, option]) =>
-    option.availableFor.includes(type)
-  ) as [DocumentStatus, typeof statusOptions[DocumentStatus]][];
+  const availableStatuses = Object.entries(statusOptions).filter(
+    ([_, option]) => option.availableFor.includes(type),
+  ) as [DocumentStatus, (typeof statusOptions)[DocumentStatus]][];
 
   return (
     <DropdownMenu>
@@ -75,7 +81,9 @@ export function DocumentStatusChanger({
           >
             <StatusBadge status={status} />
             {status === currentStatus && (
-              <span className="ml-2 text-xs text-muted-foreground">{t("current")}</span>
+              <span className="ml-2 text-xs text-muted-foreground">
+                {t("current")}
+              </span>
             )}
           </DropdownMenuItem>
         ))}
@@ -83,9 +91,3 @@ export function DocumentStatusChanger({
     </DropdownMenu>
   );
 }
-
-
-
-
-
-

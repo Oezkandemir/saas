@@ -1,7 +1,5 @@
-
-
-import { getSupabaseClient } from "./supabase";
 import { logger } from "./logger";
+import { getSupabaseClient } from "./supabase";
 
 // Function to call our Supabase Edge Function for sending emails (client-safe)
 export const sendEmailWithEdgeFunction = async ({

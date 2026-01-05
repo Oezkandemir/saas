@@ -98,9 +98,7 @@ export default async function ImprintPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-2xl font-semibold">
-              {t("responsible.title")}
-            </h2>
+            <h2 className="text-2xl font-semibold">{t("responsible.title")}</h2>
             <p className="text-sm text-muted-foreground">
               {t("responsible.description")}
             </p>
@@ -182,4 +180,3 @@ export default async function ImprintPage() {
     </div>
   );
 }
-

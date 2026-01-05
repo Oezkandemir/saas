@@ -5,13 +5,13 @@ import Link from "next/link";
 import { Lock } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Button } from '@/components/alignui/actions/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Button } from "@/components/alignui/actions/button";
 
 interface PlanGateProps {
   children: ReactNode;
@@ -40,10 +40,7 @@ export function PlanGate({
       <Tooltip>
         <TooltipTrigger asChild>
           <div
-            className={cn(
-              "relative cursor-not-allowed opacity-60",
-              className,
-            )}
+            className={cn("relative cursor-not-allowed opacity-60", className)}
           >
             {children}
             <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
@@ -65,23 +62,3 @@ export function PlanGate({
     </TooltipProvider>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

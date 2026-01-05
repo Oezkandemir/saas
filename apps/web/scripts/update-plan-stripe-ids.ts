@@ -1,19 +1,20 @@
 /**
  * Script to update Stripe Price IDs in the database from environment variables
- * 
+ *
  * Usage:
  * 1. Make sure your .env.local has the Stripe Price IDs set:
  *    NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID=price_xxx
  *    NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID=price_xxx
  *    NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID=price_xxx
  *    NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID=price_xxx
- * 
+ *
  * 2. Run: npx tsx scripts/update-plan-stripe-ids.ts
  */
 
+import { resolve } from "path";
 import { createClient } from "@supabase/supabase-js";
 import { config } from "dotenv";
-import { resolve } from "path";
+
 import { logger } from "@/lib/logger";
 
 // Load environment variables
@@ -36,7 +37,8 @@ async function updatePlanStripeIds() {
   // Get Price IDs from environment
   const proMonthly = process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID;
   const proYearly = process.env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID;
-  const businessMonthly = process.env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID;
+  const businessMonthly =
+    process.env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID;
   const businessYearly = process.env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID;
 
   logger.debug("📋 Environment Variables:");
@@ -87,7 +89,9 @@ async function updatePlanStripeIds() {
   logger.debug("\n📊 Current Plans in Database:");
   const { data: plans, error: plansError } = await supabase
     .from("plans")
-    .select("id, title, plan_key, stripe_price_id_monthly, stripe_price_id_yearly")
+    .select(
+      "id, title, plan_key, stripe_price_id_monthly, stripe_price_id_yearly",
+    )
     .order("sort_order");
 
   if (plansError) {
@@ -95,8 +99,12 @@ async function updatePlanStripeIds() {
   } else {
     plans.forEach((plan) => {
       logger.debug(`\n  ${plan.title} (${plan.plan_key}):`);
-      logger.debug(`    Monthly: ${plan.stripe_price_id_monthly || "❌ Not set"}`);
-      logger.debug(`    Yearly: ${plan.stripe_price_id_yearly || "❌ Not set"}`);
+      logger.debug(
+        `    Monthly: ${plan.stripe_price_id_monthly || "❌ Not set"}`,
+      );
+      logger.debug(
+        `    Yearly: ${plan.stripe_price_id_yearly || "❌ Not set"}`,
+      );
     });
   }
 
@@ -104,19 +112,3 @@ async function updatePlanStripeIds() {
 }
 
 updatePlanStripeIds().catch(console.error);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

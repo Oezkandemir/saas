@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
+import { openPolarPortal } from "@/actions/open-polar-portal";
+
 import { getCurrentUser } from "@/lib/session";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
-import { openPolarPortal } from "@/actions/open-polar-portal";
 
 /**
  * Manage Subscription Page
@@ -32,4 +33,3 @@ export default async function ManageSubscriptionPage() {
   // If no Polar subscription, redirect to billing page
   redirect("/dashboard/billing");
 }
-

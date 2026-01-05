@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import { getRoles } from "@/actions/role-actions";
 import { UserCog } from "lucide-react";
-import { getTranslations, getLocale, setRequestLocale } from "next-intl/server";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { RoleList } from "@/components/admin/roles/role-list";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -56,7 +56,3 @@ export default async function AdminRolesPage(props: Props) {
     </UnifiedPageLayout>
   );
 }
-
-
-
-

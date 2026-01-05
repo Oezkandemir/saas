@@ -7,17 +7,11 @@ import {
   toggleUserAdminStatus,
   toggleUserBanStatus,
 } from "@/actions/admin-user-actions";
-import {
-  MoreHorizontal,
-  Shield,
-  Trash,
-  Unlock,
-  X,
-} from "lucide-react";
+import { MoreHorizontal, Shield, Trash, Unlock, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
-import { Button } from '@/components/alignui/actions/button';
 import {
   Drawer,
   DrawerClose,
@@ -36,10 +30,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/alignui/actions/button";
 import { UserAvatar } from "@/components/shared/user-avatar";
 
 import { User } from "./columns";
-import { logger } from "@/lib/logger";
 
 interface UserActionsProps {
   user: User;

@@ -1,26 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, UserCog, Shield } from "lucide-react";
-import { Button } from '@/components/alignui/actions/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/alignui/data-display/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
-import { RoleForm } from "./role-form";
 import { Role } from "@/actions/role-actions";
+import { Plus, Shield, UserCog } from "lucide-react";
+
 import {
   Dialog,
   DialogContent,
@@ -29,6 +12,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+
+import { RoleForm } from "./role-form";
 
 interface RoleListProps {
   initialRoles: Role[];
@@ -143,7 +145,11 @@ export function RoleList({ initialRoles, locale }: RoleListProps) {
                             .filter(([, value]) => value === true)
                             .slice(0, 3)
                             .map(([key]) => (
-                              <Badge key={key} variant="outline" className="text-xs">
+                              <Badge
+                                key={key}
+                                variant="outline"
+                                className="text-xs"
+                              >
                                 {key}
                               </Badge>
                             ))
@@ -156,7 +162,8 @@ export function RoleList({ initialRoles, locale }: RoleListProps) {
                           ([, value]) => value === true,
                         ).length > 3 && (
                           <Badge variant="outline" className="text-xs">
-                            +{Object.entries(role.permissions || {}).filter(
+                            +
+                            {Object.entries(role.permissions || {}).filter(
                               ([, value]) => value === true,
                             ).length - 3}
                           </Badge>
@@ -183,4 +190,3 @@ export function RoleList({ initialRoles, locale }: RoleListProps) {
     </div>
   );
 }
-

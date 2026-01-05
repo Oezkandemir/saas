@@ -1,9 +1,16 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useState, useEffect } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSupabase } from "@/components/supabase-provider";
+
 import { logger } from "@/lib/logger";
+import { useSupabase } from "@/components/supabase-provider";
 
 type NotificationsContextType = {
   refetchAll: () => Promise<void>;
@@ -40,7 +47,7 @@ export function NotificationsProvider({
           queryKey: ["notifications", "unread", userId],
         });
       }
-      
+
       // Dispatch a custom event to invalidate caches
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent("notifications-changed"));
@@ -54,10 +61,10 @@ export function NotificationsProvider({
     try {
       // Invalidate React Query cache first
       clearCache();
-      
+
       // Force a re-render
       setForceUpdate((prev) => prev + 1);
-      
+
       // Refetch all notification queries
       if (userId) {
         await queryClient.refetchQueries({
@@ -80,10 +87,16 @@ export function NotificationsProvider({
       });
     };
 
-    window.addEventListener("notifications-changed", handleNotificationsChanged);
+    window.addEventListener(
+      "notifications-changed",
+      handleNotificationsChanged,
+    );
 
     return () => {
-      window.removeEventListener("notifications-changed", handleNotificationsChanged);
+      window.removeEventListener(
+        "notifications-changed",
+        handleNotificationsChanged,
+      );
     };
   }, [userId, queryClient]);
 

@@ -10,13 +10,13 @@ import { marketingConfig } from "@/config/marketing";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { useScroll } from "@/hooks/use-scroll";
-import { Button } from '@/components/alignui/actions/button';
+import { Button } from "@/components/alignui/actions/button";
 import { DocsSearch } from "@/components/docs/search";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { ModalContext } from "@/components/modals/providers";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { useSupabase } from "@/components/supabase-provider";
-import { ModalContext } from "@/components/modals/providers";
 
 import { UserAccountNav } from "./user-account-nav";
 
@@ -40,7 +40,9 @@ export function NavBar({ scroll = false }: NavBarProps) {
   };
 
   const links =
-    (selectedLayout && selectedLayout in configMap ? configMap[selectedLayout] : undefined) || marketingConfig.mainNav;
+    (selectedLayout && selectedLayout in configMap
+      ? configMap[selectedLayout]
+      : undefined) || marketingConfig.mainNav;
 
   return (
     <header
@@ -53,7 +55,11 @@ export function NavBar({ scroll = false }: NavBarProps) {
         large={documentation}
       >
         <div className="flex gap-4 sm:gap-6 md:gap-10 items-center min-w-0 flex-1">
-          <Link href="/" prefetch={true} className="flex items-center space-x-1.5 shrink-0">
+          <Link
+            href="/"
+            prefetch={true}
+            className="flex items-center space-x-1.5 shrink-0"
+          >
             <Icons.logo className="h-6 w-6 sm:h-7 sm:w-7" />
             <span className="font-urban text-base sm:text-lg md:text-xl font-bold">
               {meta("shortName")}

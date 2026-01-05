@@ -1,48 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
-import { Button } from '@/components/alignui/actions/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/alignui/data-display/card';
-import { BadgeRoot as Badge } from '@/components/alignui/data-display/badge';
+import { useEffect, useState } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  FormRoot as Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "@/components/alignui/forms/form";
-import { Input } from '@/components/alignui/forms/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Plus, Clock, Trash2, Edit, Users } from "lucide-react";
-import { toast } from "sonner";
-import {
-  getTimeSlots,
   createTimeSlot,
-  updateTimeSlot,
   deleteTimeSlot,
+  getTimeSlots,
+  updateTimeSlot,
   type TimeSlot,
 } from "@/actions/scheduling/time-slots-actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Clock, Edit, Plus, Trash2, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,10 +25,49 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/alignui/actions/button";
+import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import {
+  FormRoot as Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/alignui/forms/form";
+import { Input } from "@/components/alignui/forms/input";
 
 const timeSlotSchema = z.object({
-  start_time: z.string().regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, "Format: HH:MM"),
-  end_time: z.string().regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, "Format: HH:MM"),
+  start_time: z
+    .string()
+    .regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, "Format: HH:MM"),
+  end_time: z
+    .string()
+    .regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, "Format: HH:MM"),
   day_of_week: z.number().int().min(0).max(6).nullable().optional(),
   max_participants: z.number().int().min(1).optional(),
 });
@@ -78,7 +89,10 @@ const dayNames = [
   "Samstag",
 ];
 
-export function TimeSlotsManager({ eventTypeId, defaultMaxParticipants = 12 }: TimeSlotsManagerProps) {
+export function TimeSlotsManager({
+  eventTypeId,
+  defaultMaxParticipants = 12,
+}: TimeSlotsManagerProps) {
   const t = useTranslations("Scheduling.timeSlots");
   const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -172,8 +186,8 @@ export function TimeSlotsManager({ eventTypeId, defaultMaxParticipants = 12 }: T
 
       toast.success(
         editingSlot
-          ? (t("updated") || "Zeitslot aktualisiert")
-          : (t("created") || "Zeitslot erstellt")
+          ? t("updated") || "Zeitslot aktualisiert"
+          : t("created") || "Zeitslot erstellt",
       );
       handleCloseDialog();
       loadSlots();
@@ -223,9 +237,12 @@ export function TimeSlotsManager({ eventTypeId, defaultMaxParticipants = 12 }: T
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-base">{t("title") || "Zeitslots"}</CardTitle>
+              <CardTitle className="text-base">
+                {t("title") || "Zeitslots"}
+              </CardTitle>
               <CardDescription>
-                {t("description") || "Verwalten Sie feste Zeitslots für diesen Event Type"}
+                {t("description") ||
+                  "Verwalten Sie feste Zeitslots für diesen Event Type"}
               </CardDescription>
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -239,22 +256,28 @@ export function TimeSlotsManager({ eventTypeId, defaultMaxParticipants = 12 }: T
                 <DialogHeader>
                   <DialogTitle>
                     {editingSlot
-                      ? (t("form.update") || "Zeitslot bearbeiten")
-                      : (t("form.create") || "Neuer Zeitslot")}
+                      ? t("form.update") || "Zeitslot bearbeiten"
+                      : t("form.create") || "Neuer Zeitslot"}
                   </DialogTitle>
                   <DialogDescription>
-                    {t("form.description") || "Geben Sie Start- und Endzeit an (z.B. 13:30 - 15:00)"}
+                    {t("form.description") ||
+                      "Geben Sie Start- und Endzeit an (z.B. 13:30 - 15:00)"}
                   </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-4"
+                  >
                     <div className="grid grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
                         name="start_time"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("form.startTime") || "Startzeit"}</FormLabel>
+                            <FormLabel>
+                              {t("form.startTime") || "Startzeit"}
+                            </FormLabel>
                             <FormControl>
                               <Input
                                 type="time"
@@ -272,7 +295,9 @@ export function TimeSlotsManager({ eventTypeId, defaultMaxParticipants = 12 }: T
                         name="end_time"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("form.endTime") || "Endzeit"}</FormLabel>
+                            <FormLabel>
+                              {t("form.endTime") || "Endzeit"}
+                            </FormLabel>
                             <FormControl>
                               <Input
                                 type="time"
@@ -291,29 +316,48 @@ export function TimeSlotsManager({ eventTypeId, defaultMaxParticipants = 12 }: T
                       name="day_of_week"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t("form.dayOfWeek") || "Wochentag"}</FormLabel>
+                          <FormLabel>
+                            {t("form.dayOfWeek") || "Wochentag"}
+                          </FormLabel>
                           <Select
                             onValueChange={(value) =>
-                              field.onChange(value === "all" ? null : parseInt(value))
+                              field.onChange(
+                                value === "all" ? null : parseInt(value),
+                              )
                             }
-                            value={field.value === null ? "all" : field.value?.toString()}
+                            value={
+                              field.value === null
+                                ? "all"
+                                : field.value?.toString()
+                            }
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder={t("form.dayOfWeekDescription") || "Alle Tage"} />
+                                <SelectValue
+                                  placeholder={
+                                    t("form.dayOfWeekDescription") ||
+                                    "Alle Tage"
+                                  }
+                                />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="all">{t("dayOfWeek.all") || "Alle Tage"}</SelectItem>
+                              <SelectItem value="all">
+                                {t("dayOfWeek.all") || "Alle Tage"}
+                              </SelectItem>
                               {dayNames.map((day, index) => (
-                                <SelectItem key={index} value={index.toString()}>
+                                <SelectItem
+                                  key={index}
+                                  value={index.toString()}
+                                >
                                   {day}
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
                           <FormDescription>
-                            {t("form.dayOfWeekDescription") || "Leer lassen für alle Tage"}
+                            {t("form.dayOfWeekDescription") ||
+                              "Leer lassen für alle Tage"}
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -325,15 +369,23 @@ export function TimeSlotsManager({ eventTypeId, defaultMaxParticipants = 12 }: T
                       name="max_participants"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t("form.maxParticipants") || "Max. Teilnehmer"}</FormLabel>
+                          <FormLabel>
+                            {t("form.maxParticipants") || "Max. Teilnehmer"}
+                          </FormLabel>
                           <FormControl>
                             <Input
                               type="number"
                               min={1}
-                              placeholder={defaultMaxParticipants?.toString() || "12"}
+                              placeholder={
+                                defaultMaxParticipants?.toString() || "12"
+                              }
                               {...field}
                               onChange={(e) =>
-                                field.onChange(e.target.value ? parseInt(e.target.value) : undefined)
+                                field.onChange(
+                                  e.target.value
+                                    ? parseInt(e.target.value)
+                                    : undefined,
+                                )
                               }
                               value={field.value || ""}
                             />
@@ -358,10 +410,10 @@ export function TimeSlotsManager({ eventTypeId, defaultMaxParticipants = 12 }: T
                       </Button>
                       <Button type="submit" disabled={isSubmitting}>
                         {isSubmitting
-                          ? (t("saving") || "Speichern...")
+                          ? t("saving") || "Speichern..."
                           : editingSlot
-                          ? (t("form.update") || "Aktualisieren")
-                          : (t("form.create") || "Erstellen")}
+                            ? t("form.update") || "Aktualisieren"
+                            : t("form.create") || "Erstellen"}
                       </Button>
                     </DialogFooter>
                   </form>
@@ -373,7 +425,8 @@ export function TimeSlotsManager({ eventTypeId, defaultMaxParticipants = 12 }: T
         <CardContent>
           {slots.length === 0 ? (
             <div className="text-center py-8 text-sm text-muted-foreground">
-              {t("noSlots") || "Keine Zeitslots konfiguriert. Buchungen können zu jeder Zeit vorgenommen werden."}
+              {t("noSlots") ||
+                "Keine Zeitslots konfiguriert. Buchungen können zu jeder Zeit vorgenommen werden."}
             </div>
           ) : (
             <div className="space-y-3">
@@ -387,7 +440,8 @@ export function TimeSlotsManager({ eventTypeId, defaultMaxParticipants = 12 }: T
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium">
-                          {slot.start_time.substring(0, 5)} - {slot.end_time.substring(0, 5)}
+                          {slot.start_time.substring(0, 5)} -{" "}
+                          {slot.end_time.substring(0, 5)}
                         </span>
                         {slot.day_of_week !== null && (
                           <Badge variant="outline" className="text-xs">
@@ -404,7 +458,8 @@ export function TimeSlotsManager({ eventTypeId, defaultMaxParticipants = 12 }: T
                         <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
                           <Users className="h-3 w-3" />
                           <span>
-                            {slot.max_participants} {t("form.maxParticipants") || "Teilnehmer"}
+                            {slot.max_participants}{" "}
+                            {t("form.maxParticipants") || "Teilnehmer"}
                           </span>
                         </div>
                       )}
@@ -435,17 +490,24 @@ export function TimeSlotsManager({ eventTypeId, defaultMaxParticipants = 12 }: T
         </CardContent>
       </Card>
 
-      <AlertDialog open={!!deletingSlot} onOpenChange={(open) => !open && setDeletingSlot(null)}>
+      <AlertDialog
+        open={!!deletingSlot}
+        onOpenChange={(open) => !open && setDeletingSlot(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("deleteConfirmTitle") || "Zeitslot löschen?"}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t("deleteConfirmTitle") || "Zeitslot löschen?"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {t("deleteConfirmDescription") ||
                 "Sind Sie sicher? Diese Aktion kann nicht rückgängig gemacht werden."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t("form.cancel") || "Abbrechen"}</AlertDialogCancel>
+            <AlertDialogCancel>
+              {t("form.cancel") || "Abbrechen"}
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isSubmitting}
@@ -459,10 +521,3 @@ export function TimeSlotsManager({ eventTypeId, defaultMaxParticipants = 12 }: T
     </>
   );
 }
-
-
-
-
-
-
-

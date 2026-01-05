@@ -1,8 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSupabaseServer } from "@/lib/supabase-server";
+
 import { getCurrentUser } from "@/lib/session";
+import { getSupabaseServer } from "@/lib/supabase-server";
 
 export type QRCodeType = "url" | "pdf" | "text" | "whatsapp" | "maps";
 
@@ -105,13 +106,13 @@ export async function createQRCode(input: QRCodeInput): Promise<QRCode> {
   const supabase = await getSupabaseServer();
 
   // Generate unique code
-  const { data: codeData, error: codeError } = await supabase.rpc(
-    "generate_qr_code",
-  );
+  const { data: codeData, error: codeError } =
+    await supabase.rpc("generate_qr_code");
 
   if (codeError) throw codeError;
 
-  const code = codeData || Math.random().toString(36).substring(2, 10).toUpperCase();
+  const code =
+    codeData || Math.random().toString(36).substring(2, 10).toUpperCase();
 
   const { data, error } = await supabase
     .from("qr_codes")
@@ -149,7 +150,10 @@ export async function updateQRCode(
   if (input.destination !== undefined) {
     if (!input.destination.trim()) throw new Error("Destination is required");
     // Validate URL if type is url
-    if (input.type === "url" || (input.type === undefined && input.destination.startsWith("http"))) {
+    if (
+      input.type === "url" ||
+      (input.type === undefined && input.destination.startsWith("http"))
+    ) {
       if (!input.destination.startsWith("http")) {
         throw new Error("URL must start with http:// or https://");
       }
@@ -217,7 +221,9 @@ export async function trackQRCodeScan(
   });
 }
 
-export async function getQRCodeEvents(qrCodeId: string): Promise<QRCodeEvent[]> {
+export async function getQRCodeEvents(
+  qrCodeId: string,
+): Promise<QRCodeEvent[]> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
@@ -253,4 +259,3 @@ export async function getQRCodeScanCount(qrCodeId: string): Promise<number> {
   if (error) return 0;
   return count || 0;
 }
-

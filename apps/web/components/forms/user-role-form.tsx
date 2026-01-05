@@ -8,10 +8,10 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { userRoleSchema } from "@/lib/validations/user";
-import { Button } from '@/components/alignui/actions/button';
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Button } from "@/components/alignui/actions/button";
 import { FormRoot as Form, FormField } from "@/components/alignui/forms/form";
 import { SectionColumns } from "@/components/dashboard/section-columns";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export enum UserRole {
   USER = "USER",

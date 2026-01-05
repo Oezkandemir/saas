@@ -1,7 +1,11 @@
 import { User } from "@/types";
 import { AvatarProps } from "@radix-ui/react-avatar";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/alignui/data-display/avatar';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/alignui/data-display/avatar";
 import { useAvatar } from "@/components/context/avatar-context";
 import { Icons } from "@/components/shared/icons";
 

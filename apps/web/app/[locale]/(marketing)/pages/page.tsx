@@ -1,5 +1,6 @@
-import { allPages } from "@/.contentlayer/generated";
 import Link from "next/link";
+import { allPages } from "@/.contentlayer/generated";
+
 import { constructMetadata } from "@/lib/utils";
 
 export const metadata = constructMetadata({
@@ -36,4 +37,3 @@ export default async function PagesPage() {
     </div>
   );
 }
-

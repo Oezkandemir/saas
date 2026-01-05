@@ -2,6 +2,7 @@
 // TODO: Fix this when we turn strict mode on.
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
+
 import { UserSubscriptionPlan } from "types";
 import { pricingData } from "@/config/subscriptions";
 import { supabaseAdmin } from "@/lib/db";
@@ -128,17 +129,17 @@ async function _getUserSubscriptionPlanInternal(
     // Check if user is on a paid plan (Polar only)
     const currentPeriodEnd = user.polarCurrentPeriodEnd;
     const productId = user.polarProductId;
-    
+
     // For Polar: if product_id exists, consider it paid
     const isPaid = !!productId;
 
     // Find the pricing data corresponding to the user's plan (Polar only)
     let userPlan = null;
-    
+
     // Log all available Polar product IDs for debugging
     logger.debug("Matching Polar product ID", {
       userProductId: user.polarProductId,
-      availablePlans: pricingData.map(plan => ({
+      availablePlans: pricingData.map((plan) => ({
         title: plan.title,
         monthlyId: plan.polarIds?.monthly,
         yearlyId: plan.polarIds?.yearly,
@@ -169,20 +170,25 @@ async function _getUserSubscriptionPlanInternal(
     }
 
     if (!userPlan && isPaid && user.polarProductId) {
-      logger.error("CRITICAL: No exact Polar product ID match found! This indicates a configuration mismatch.", {
-        userProductId: user.polarProductId,
-        availableProductIds: pricingData.map(plan => ({
-          planTitle: plan.title,
-          monthlyId: plan.polarIds?.monthly,
-          yearlyId: plan.polarIds?.yearly,
-        })),
-      });
+      logger.error(
+        "CRITICAL: No exact Polar product ID match found! This indicates a configuration mismatch.",
+        {
+          userProductId: user.polarProductId,
+          availableProductIds: pricingData.map((plan) => ({
+            planTitle: plan.title,
+            monthlyId: plan.polarIds?.monthly,
+            yearlyId: plan.polarIds?.yearly,
+          })),
+        },
+      );
       // Don't assign a fallback plan - this is a configuration error
       // Return free plan instead to prevent showing wrong plan
-      logger.warn("Returning free plan due to product ID mismatch. Please check configuration.");
+      logger.warn(
+        "Returning free plan due to product ID mismatch. Please check configuration.",
+      );
     }
 
-    logger.info("Plan matching result", { 
+    logger.info("Plan matching result", {
       planTitle: userPlan?.title || "No matching plan found",
       productId,
       isPaid,
@@ -194,13 +200,14 @@ async function _getUserSubscriptionPlanInternal(
     const plan = isPaid && userPlan ? userPlan : pricingData[0];
 
     // Determine the interval based on which Polar product ID matched
-    const interval = isPaid && userPlan
-      ? userPlan.polarIds?.monthly === user.polarProductId
-        ? "month"
-        : userPlan.polarIds?.yearly === user.polarProductId
-          ? "year"
-          : null
-      : null;
+    const interval =
+      isPaid && userPlan
+        ? userPlan.polarIds?.monthly === user.polarProductId
+          ? "month"
+          : userPlan.polarIds?.yearly === user.polarProductId
+            ? "year"
+            : null
+        : null;
 
     // Check if subscription is set to cancel at period end (Polar only)
     let isCanceled = false;
@@ -209,15 +216,21 @@ async function _getUserSubscriptionPlanInternal(
       try {
         const { data: subData } = await supabaseAdmin
           .from("subscriptions")
-          .select("status, cancel_at_period_end, current_period_start, created_at")
+          .select(
+            "status, cancel_at_period_end, current_period_start, created_at",
+          )
           .eq("polar_subscription_id", user.polarSubscriptionId)
           .single();
-        
+
         if (subData) {
-          isCanceled = subData.status === "canceled" || subData.cancel_at_period_end === true;
+          isCanceled =
+            subData.status === "canceled" ||
+            subData.cancel_at_period_end === true;
           // Store period start if available
           if (subData.current_period_start && !user.polarCurrentPeriodStart) {
-            user.polarCurrentPeriodStart = new Date(subData.current_period_start);
+            user.polarCurrentPeriodStart = new Date(
+              subData.current_period_start,
+            );
           }
           // Store created_at as subscription start date
           if (subData.created_at && !user.polarSubscriptionStart) {
@@ -270,13 +283,16 @@ async function _getUserSubscriptionPlanInternal(
 // will only execute the database query once
 export const getUserSubscriptionPlan = cache(
   unstable_cache(
-    async (userId: string, userEmail?: string): Promise<UserSubscriptionPlan> => {
+    async (
+      userId: string,
+      userEmail?: string,
+    ): Promise<UserSubscriptionPlan> => {
       return _getUserSubscriptionPlanInternal(userId, userEmail);
     },
     ["user-subscription-plan"],
     {
       revalidate: 300, // Cache for 5 minutes (300 seconds)
       tags: ["subscription-plan"],
-    }
-  )
+    },
+  ),
 );

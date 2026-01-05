@@ -1,7 +1,9 @@
 "use client";
 
 import { ReactNode } from "react";
+
 import { cn } from "@/lib/utils";
+
 import { ModernPageHeader } from "./modern-page-header";
 import { StatusBar, StatusBarItem } from "./status-bar";
 
@@ -57,10 +59,14 @@ export function UnifiedPageLayout({
       )}
 
       {/* Content - Konsistente Padding, reduzierte Gaps */}
-      <div className={cn("flex-1 overflow-y-auto px-4 xl:px-8 py-4 sm:py-6", contentClassName)}>
+      <div
+        className={cn(
+          "flex-1 overflow-y-auto px-4 xl:px-8 py-4 sm:py-6",
+          contentClassName,
+        )}
+      >
         {children}
       </div>
     </div>
   );
 }
-

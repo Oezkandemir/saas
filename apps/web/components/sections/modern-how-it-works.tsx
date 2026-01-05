@@ -3,7 +3,6 @@ import { getTranslations } from "next-intl/server";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
-
 export default async function ModernHowItWorks() {
   const t = await getTranslations("HowItWorks");
 
@@ -45,9 +44,7 @@ export default async function ModernHowItWorks() {
           <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
             {t("title")}
           </h2>
-          <p className="mt-6 text-xl text-muted-foreground">
-            {t("subtitle")}
-          </p>
+          <p className="mt-6 text-xl text-muted-foreground">{t("subtitle")}</p>
         </div>
 
         {/* Steps */}
@@ -58,7 +55,8 @@ export default async function ModernHowItWorks() {
 
             <div className="space-y-12">
               {steps.map((step, index) => {
-                const Icon = Icons[step.icon as keyof typeof Icons] || Icons.check;
+                const Icon =
+                  Icons[step.icon as keyof typeof Icons] || Icons.check;
 
                 return (
                   <div
@@ -96,4 +94,3 @@ export default async function ModernHowItWorks() {
     </section>
   );
 }
-

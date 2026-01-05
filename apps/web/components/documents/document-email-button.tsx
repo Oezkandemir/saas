@@ -1,9 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { sendDocumentEmail } from "@/actions/documents-email-actions";
+import { Loader2, Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from '@/components/alignui/actions/button';
-import { Mail, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/alignui/actions/button";
+import { Input } from "@/components/alignui/forms/input";
+import { LabelRoot as Label } from "@/components/alignui/forms/label";
+import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
 import {
   DialogRoot as Dialog,
   DialogContent,
@@ -13,12 +20,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/alignui/overlays/dialog";
-import { Input } from '@/components/alignui/forms/input';
-import { LabelRoot as Label } from "@/components/alignui/forms/label";
-import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
-import { sendDocumentEmail } from "@/actions/documents-email-actions";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 interface DocumentEmailButtonProps {
   documentId: string;
@@ -59,9 +60,7 @@ export function DocumentEmailButton({
       setOpen(false);
       router.refresh();
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : t("toast.error"),
-      );
+      toast.error(error instanceof Error ? error.message : t("toast.error"));
     } finally {
       setLoading(false);
     }
@@ -77,9 +76,7 @@ export function DocumentEmailButton({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {t(`title.${documentType}`)}
-          </DialogTitle>
+          <DialogTitle>{t(`title.${documentType}`)}</DialogTitle>
           <DialogDescription>
             {t(`description.${documentType}`, { number: documentNumber })}
           </DialogDescription>
@@ -102,7 +99,9 @@ export function DocumentEmailButton({
               id="subject"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder={t(`fields.subjectPlaceholder.${documentType}`, { number: documentNumber })}
+              placeholder={t(`fields.subjectPlaceholder.${documentType}`, {
+                number: documentNumber,
+              })}
             />
           </div>
           <div>
@@ -138,4 +137,3 @@ export function DocumentEmailButton({
     </Dialog>
   );
 }
-

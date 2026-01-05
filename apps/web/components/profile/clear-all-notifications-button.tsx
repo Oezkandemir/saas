@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
 import { deleteAllNotifications } from "@/actions/user-profile-actions";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, Trash2 } from "lucide-react";
 
-import { Button } from '@/components/alignui/actions/button';
+import { logger } from "@/lib/logger";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/alignui/actions/button";
 import { useNotificationsContext } from "@/components/context/notifications-context";
 import { useSupabase } from "@/components/supabase-provider";
-import { logger } from "@/lib/logger";
 
 export function ClearAllNotificationsButton() {
   const [loading, setLoading] = useState(false);
@@ -28,7 +28,7 @@ export function ClearAllNotificationsButton() {
       if (userId) {
         queryClient.setQueryData<number>(
           ["notifications", "unread", userId],
-          0
+          0,
         );
       }
 

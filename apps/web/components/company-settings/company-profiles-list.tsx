@@ -2,18 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { CompanyProfileWithMembership, deleteCompanyProfile, setDefaultProfile } from "@/actions/company-profiles-actions";
-import { CompanyProfileCard } from "./company-profile-card";
-import { logger } from "@/lib/logger";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from '@/components/alignui/actions/button';
+  CompanyProfileWithMembership,
+  deleteCompanyProfile,
+  setDefaultProfile,
+} from "@/actions/company-profiles-actions";
+import { Edit, Eye, MoreVertical, Star, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+
+import { logger } from "@/lib/logger";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,14 +21,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { MoreVertical, Edit, Trash2, Star, Eye } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/alignui/actions/button";
+
+import { CompanyProfileCard } from "./company-profile-card";
 
 interface CompanyProfilesListProps {
   profiles: CompanyProfileWithMembership[];
 }
 
 export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
-  const [profileToDelete, setProfileToDelete] = useState<CompanyProfileWithMembership | null>(null);
+  const [profileToDelete, setProfileToDelete] =
+    useState<CompanyProfileWithMembership | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
@@ -98,14 +105,18 @@ export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
-              onClick={() => router.push(`/dashboard/settings/company/${profile.id}`)}
+              onClick={() =>
+                router.push(`/dashboard/settings/company/${profile.id}`)
+              }
             >
               <Eye className="mr-2 h-4 w-4" />
               Anzeigen
             </DropdownMenuItem>
             {profile.is_owner && (
               <DropdownMenuItem
-                onClick={() => router.push(`/dashboard/settings/company/${profile.id}/edit`)}
+                onClick={() =>
+                  router.push(`/dashboard/settings/company/${profile.id}/edit`)
+                }
               >
                 <Edit className="mr-2 h-4 w-4" />
                 Bearbeiten
@@ -145,17 +156,22 @@ export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
       </div>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!profileToDelete} onOpenChange={(open) => !open && setProfileToDelete(null)}>
+      <AlertDialog
+        open={!!profileToDelete}
+        onOpenChange={(open) => !open && setProfileToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Profil löschen?</AlertDialogTitle>
             <AlertDialogDescription>
-              Möchten Sie das Profil "{profileToDelete?.profile_name}" wirklich löschen? 
-              Diese Aktion kann nicht rückgängig gemacht werden.
+              Möchten Sie das Profil "{profileToDelete?.profile_name}" wirklich
+              löschen? Diese Aktion kann nicht rückgängig gemacht werden.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Abbrechen</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>
+              Abbrechen
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isDeleting}
@@ -169,4 +185,3 @@ export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
     </>
   );
 }
-

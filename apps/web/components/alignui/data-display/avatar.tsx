@@ -1,6 +1,6 @@
 /**
  * AlignUI - Avatar Component (Free Base Component)
- * 
+ *
  * Based on AlignUI design system using Radix UI
  * Source: alignui.com/docs/v1.2/components/data-display/avatar
  */
@@ -12,7 +12,8 @@ import * as AvatarPrimitive from "@radix-ui/react-avatar";
 
 import { cn } from "@/lib/utils";
 
-interface AvatarProps extends React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> {
+interface AvatarProps
+  extends React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> {
   size?: number | string;
 }
 
@@ -32,7 +33,7 @@ const Avatar = React.forwardRef<
       className={cn(
         "relative flex shrink-0 overflow-hidden rounded-full",
         !size && "h-10 w-10",
-        className
+        className,
       )}
       style={{ ...sizeStyle, ...style }}
       {...props}
@@ -61,7 +62,7 @@ const AvatarFallback = React.forwardRef<
     ref={ref}
     className={cn(
       "flex h-full w-full items-center justify-center rounded-full bg-muted",
-      className
+      className,
     )}
     {...props}
   />

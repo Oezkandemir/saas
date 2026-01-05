@@ -15,13 +15,18 @@ const intlMiddleware = createIntlMiddleware({
 });
 
 // Cache for user status and role to avoid repeated DB calls
-const userStatusCache = new Map<string, { status: string; timestamp: number }>();
+const userStatusCache = new Map<
+  string,
+  { status: string; timestamp: number }
+>();
 const userRoleCache = new Map<string, { role: string; timestamp: number }>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 // Static file patterns for better performance
-const STATIC_FILE_EXTENSIONS = /\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot|otf|mp4|webm|ogg|mp3|wav|pdf|css|js|json|map)$/i;
-const INTERNAL_PATHS = /^(\/_next\/|\/api\/|\/favicon\.ico|\/robots\.txt|\/sitemap\.xml)/;
+const STATIC_FILE_EXTENSIONS =
+  /\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot|otf|mp4|webm|ogg|mp3|wav|pdf|css|js|json|map)$/i;
+const INTERNAL_PATHS =
+  /^(\/_next\/|\/api\/|\/favicon\.ico|\/robots\.txt|\/sitemap\.xml)/;
 
 // Proxy function (replaces middleware in Next.js 16)
 export default async function proxy(request: NextRequest) {
@@ -51,11 +56,13 @@ export default async function proxy(request: NextRequest) {
 
   // Clone the response to modify it
   // Use intlResponse if it exists (for rewrites/redirects), otherwise create new response
-  let response = intlResponse || NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
+  let response =
+    intlResponse ||
+    NextResponse.next({
+      request: {
+        headers: request.headers,
+      },
+    });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -104,16 +111,17 @@ export default async function proxy(request: NextRequest) {
   );
 
   // Get the locale from the request pathname
-  const pathnameWithoutLocale = pathname.replace(
-    /^\/(?:en|de)(?=$|\/)/,
-    "",
-  );
+  const pathnameWithoutLocale = pathname.replace(/^\/(?:en|de)(?=$|\/)/, "");
 
   // Get user session and data
-  const [{ data: { user: authUser } }, { data: { session } }] = await Promise.all([
-    supabase.auth.getUser(),
-    supabase.auth.getSession()
-  ]);
+  const [
+    {
+      data: { user: authUser },
+    },
+    {
+      data: { session },
+    },
+  ] = await Promise.all([supabase.auth.getUser(), supabase.auth.getSession()]);
 
   // Define route checks
   const protectedRoutes = ["/dashboard", "/settings", "/account", "/admin"];
@@ -126,7 +134,8 @@ export default async function proxy(request: NextRequest) {
   );
 
   // Get current locale
-  const locale = pathname.match(/^\/(en|de)(?:\/|$)/)?.[1] || routing.defaultLocale;
+  const locale =
+    pathname.match(/^\/(en|de)(?:\/|$)/)?.[1] || routing.defaultLocale;
 
   // Handle protected routes
   if (isProtectedRoute && !authUser) {
@@ -139,10 +148,10 @@ export default async function proxy(request: NextRequest) {
   if (authUser) {
     const now = Date.now();
     const cached = userStatusCache.get(authUser.id);
-    
-    let userStatus = 'active';
-    
-    if (cached && (now - cached.timestamp) < CACHE_TTL) {
+
+    let userStatus = "active";
+
+    if (cached && now - cached.timestamp < CACHE_TTL) {
       userStatus = cached.status;
     } else {
       try {
@@ -154,7 +163,10 @@ export default async function proxy(request: NextRequest) {
 
         if (!error && userData?.status) {
           userStatus = userData.status;
-          userStatusCache.set(authUser.id, { status: userStatus, timestamp: now });
+          userStatusCache.set(authUser.id, {
+            status: userStatus,
+            timestamp: now,
+          });
         }
       } catch (error) {
         logger.error("Error checking user status", error);
@@ -162,7 +174,10 @@ export default async function proxy(request: NextRequest) {
     }
 
     // If user is banned, redirect to banned page
-    if (userStatus === "banned" && !pathnameWithoutLocale.startsWith("/banned")) {
+    if (
+      userStatus === "banned" &&
+      !pathnameWithoutLocale.startsWith("/banned")
+    ) {
       const bannedUrl = new URL(`/${locale}/banned`, request.url);
       return NextResponse.redirect(bannedUrl);
     }
@@ -174,21 +189,17 @@ export default async function proxy(request: NextRequest) {
     // Get role from cache first (fast path)
     const now = Date.now();
     const cached = userRoleCache.get(authUser.id);
-    
-    if (cached && (now - cached.timestamp) < CACHE_TTL) {
+
+    if (cached && now - cached.timestamp < CACHE_TTL) {
       // Use cached role
     } else {
       // Only query database if cache miss (async, don't block)
       // For redirect, use default USER and let AuthLayout handle admin redirect
       // This prevents blocking the redirect with a DB query
-      
+
       // Update cache asynchronously (don't await)
       Promise.resolve(
-        supabase
-          .from("users")
-          .select("role")
-          .eq("id", authUser.id)
-          .single()
+        supabase.from("users").select("role").eq("id", authUser.id).single(),
       )
         .then(({ data: userData, error }) => {
           if (!error && userData?.role) {
@@ -203,8 +214,7 @@ export default async function proxy(request: NextRequest) {
 
     // Check for redirectTo param first, then use default
     const redirectTo =
-      request.nextUrl.searchParams.get("redirectTo") ||
-      "/dashboard"; // Always redirect to dashboard, let AuthLayout handle admin redirect
+      request.nextUrl.searchParams.get("redirectTo") || "/dashboard"; // Always redirect to dashboard, let AuthLayout handle admin redirect
 
     return NextResponse.redirect(
       new URL(`/${locale}${redirectTo}`, request.url),
@@ -231,17 +241,18 @@ export default async function proxy(request: NextRequest) {
 
   // Add Content Security Policy
   // Only add upgrade-insecure-requests in production (not on localhost)
-  const isProduction = process.env.NODE_ENV === "production" && 
-                       !request.nextUrl.hostname.includes("localhost") &&
-                       !request.nextUrl.hostname.includes("127.0.0.1");
-  
+  const isProduction =
+    process.env.NODE_ENV === "production" &&
+    !request.nextUrl.hostname.includes("localhost") &&
+    !request.nextUrl.hostname.includes("127.0.0.1");
+
   // SECURITY: CSP without unsafe-eval (removed for security, except for MDX routes)
   // Note: unsafe-inline for scripts is required for Next.js hydration
   // unsafe-eval is required for MDXRemote in docs, guides, blog, and marketing pages
   // Check for routes that use MDXRemote - handle both /docs/ and /:locale/docs/ patterns
   // Match patterns like: /en/docs/..., /de/docs/..., /docs/..., /en/guides/..., /blog/..., etc.
-  const isMdxRoute = 
-    pathname.includes("/docs/") || 
+  const isMdxRoute =
+    pathname.includes("/docs/") ||
     pathname.includes("/guides/") ||
     pathname.includes("/blog/") ||
     pathname.startsWith("/en/docs") ||
@@ -253,7 +264,7 @@ export default async function proxy(request: NextRequest) {
     pathname.match(/^\/[a-z]{2}\/docs\//) !== null ||
     pathname.match(/^\/[a-z]{2}\/guides\//) !== null ||
     pathname.match(/^\/[a-z]{2}\/blog\//) !== null;
-  
+
   const baseCspDirectives = [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
@@ -267,7 +278,7 @@ export default async function proxy(request: NextRequest) {
     "form-action 'self'",
     "frame-ancestors 'none'",
   ];
-  
+
   // Add unsafe-eval for MDX routes (required for MDXRemote)
   const cspDirectives = isMdxRoute
     ? [
@@ -284,15 +295,12 @@ export default async function proxy(request: NextRequest) {
         "frame-ancestors 'none'",
       ]
     : baseCspDirectives;
-  
+
   if (isProduction) {
     cspDirectives.push("upgrade-insecure-requests");
   }
-  
-  response.headers.set(
-    "Content-Security-Policy",
-    cspDirectives.join("; "),
-  );
+
+  response.headers.set("Content-Security-Policy", cspDirectives.join("; "));
 
   // Return the response we've built up
   return response;
@@ -305,4 +313,3 @@ export const config = {
     "/((?!api/|_next/static|_next/image|_next/|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot|otf|mp4|webm|ogg|mp3|wav|pdf|css|js|json)).*)",
   ],
 };
-

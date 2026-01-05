@@ -1,19 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ChevronDown, Cookie, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Cookie, ChevronDown, Settings } from "lucide-react";
 
-import { Button } from '@/components/alignui/actions/button';
-import { Avatar, AvatarImage } from '@/components/alignui/data-display/avatar';
+import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
-import { logger } from "@/lib/logger";
+import { Button } from "@/components/alignui/actions/button";
+import { Avatar, AvatarImage } from "@/components/alignui/data-display/avatar";
 
 const COOKIE_CONSENT_KEY = "cenety-cookie-consent";
 const COOKIE_CONSENT_VERSION = "1.0";
@@ -35,7 +35,11 @@ interface CookieConsentProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export function CookieConsent({ autoShow = true, open: controlledOpen, onOpenChange }: CookieConsentProps = {}) {
+export function CookieConsent({
+  autoShow = true,
+  open: controlledOpen,
+  onOpenChange,
+}: CookieConsentProps = {}) {
   const t = useTranslations("CookieConsent");
   const [internalOpen, setInternalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -71,20 +75,20 @@ export function CookieConsent({ autoShow = true, open: controlledOpen, onOpenCha
 
   const saveConsent = (consent: CookieConsent) => {
     localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(consent));
-    
+
     // Apply consent settings
     if (consent.analytics) {
       enableAnalytics();
     } else {
       disableAnalytics();
     }
-    
+
     if (consent.marketing) {
       enableMarketing();
     } else {
       disableMarketing();
     }
-    
+
     setOpen(false);
   };
 
@@ -149,7 +153,7 @@ export function CookieConsent({ autoShow = true, open: controlledOpen, onOpenCha
       className={cn(
         "fixed right-0 bottom-0 left-0 z-50 w-full border-t backdrop-blur bg-background/95 supports-[backdrop-filter]:bg-background/80",
         "shadow-lg animate-fade-up",
-        open ? "block" : "hidden"
+        open ? "block" : "hidden",
       )}
     >
       <div className="container px-4 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -183,7 +187,7 @@ export function CookieConsent({ autoShow = true, open: controlledOpen, onOpenCha
                   <ChevronDown
                     className={cn(
                       "ml-2 h-4 w-4 transition-transform duration-200",
-                      isSettingsOpen && "rotate-180"
+                      isSettingsOpen && "rotate-180",
                     )}
                   />
                 </Button>
@@ -213,7 +217,7 @@ export function CookieConsent({ autoShow = true, open: controlledOpen, onOpenCha
             className={cn(
               "overflow-hidden transition-all duration-300 ease-in-out",
               "data-[state=open]:animate-accordion-down",
-              "data-[state=closed]:animate-accordion-up"
+              "data-[state=closed]:animate-accordion-up",
             )}
           >
             <div className="pt-6 mt-6 space-y-6 border-t animate-fade-in">
@@ -225,16 +229,14 @@ export function CookieConsent({ autoShow = true, open: controlledOpen, onOpenCha
                     <AvatarImage src="/favicon.ico" alt="Necessary" />
                   </Avatar>
                   <div className="flex-1 space-y-1">
-                    <div className="text-sm font-semibold">{t("necessary")}</div>
+                    <div className="text-sm font-semibold">
+                      {t("necessary")}
+                    </div>
                     <div className="text-xs text-muted-foreground">
                       {t("necessaryDescription")}
                     </div>
                   </div>
-                  <Switch
-                    checked={true}
-                    disabled
-                    className="opacity-50"
-                  />
+                  <Switch checked={true} disabled className="opacity-50" />
                 </div>
 
                 {/* Analytics Cookies */}
@@ -243,7 +245,9 @@ export function CookieConsent({ autoShow = true, open: controlledOpen, onOpenCha
                     <AvatarImage src="/favicon.ico" alt="Analytics" />
                   </Avatar>
                   <div className="flex-1 space-y-1">
-                    <div className="text-sm font-semibold">{t("analytics")}</div>
+                    <div className="text-sm font-semibold">
+                      {t("analytics")}
+                    </div>
                     <div className="text-xs text-muted-foreground">
                       {t("analyticsDescription")}
                     </div>
@@ -262,7 +266,9 @@ export function CookieConsent({ autoShow = true, open: controlledOpen, onOpenCha
                     <AvatarImage src="/favicon.ico" alt="Marketing" />
                   </Avatar>
                   <div className="flex-1 space-y-1">
-                    <div className="text-sm font-semibold">{t("marketing")}</div>
+                    <div className="text-sm font-semibold">
+                      {t("marketing")}
+                    </div>
                     <div className="text-xs text-muted-foreground">
                       {t("marketingDescription")}
                     </div>

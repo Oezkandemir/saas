@@ -28,24 +28,28 @@ pnpm test tests/security
 These tests cover:
 
 1. **CSRF Protection**
+
    - Token generation
    - Token validation
    - Request validation
    - Safe method exemptions
 
 2. **API Middleware**
+
    - Authentication checks
    - Authorization checks (admin)
    - Rate limiting
    - Combined checks
 
 3. **Error Handling**
+
    - Zod validation errors
    - Standard errors
    - Production vs development error details
    - Error response formatting
 
 4. **Admin Route Security**
+
    - Authentication requirements
    - Authorization requirements
    - CSRF protection
@@ -73,6 +77,7 @@ When adding new security features:
 ## Mocking
 
 Tests use Vitest mocks for:
+
 - `next/headers` - Cookie and header access
 - `@/lib/session` - User session management
 - `@/lib/rate-limit` - Rate limiting
@@ -86,4 +91,3 @@ Tests use Vitest mocks for:
 3. **Test edge cases** - Test null, undefined, invalid inputs
 4. **Test security** - Verify security checks are enforced
 5. **Test error handling** - Verify errors are handled correctly
-

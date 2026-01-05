@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
 import { deleteNotification } from "@/actions/user-profile-actions";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, Trash2 } from "lucide-react";
 
-import { Button } from '@/components/alignui/actions/button';
+import { logger } from "@/lib/logger";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/alignui/actions/button";
 import { useNotificationsContext } from "@/components/context/notifications-context";
 import { useSupabase } from "@/components/supabase-provider";
-import { logger } from "@/lib/logger";
 
 interface DeleteNotificationButtonProps {
   notificationId: string;
@@ -36,7 +36,7 @@ export function DeleteNotificationButton({
       if (userId && isUnread) {
         queryClient.setQueryData<number>(
           ["notifications", "unread", userId],
-          (oldCount = 0) => Math.max(0, oldCount - 1)
+          (oldCount = 0) => Math.max(0, oldCount - 1),
         );
       }
 

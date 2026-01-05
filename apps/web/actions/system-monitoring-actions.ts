@@ -46,10 +46,13 @@ export async function getSystemStatusOverview(): Promise<
     // Determine overall status
     const statuses = result.statuses.map((s) => s.status);
     let overallStatus: "operational" | "degraded" | "down" = "operational";
-    
+
     if (statuses.includes("down")) {
       overallStatus = "down";
-    } else if (statuses.includes("degraded") || statuses.includes("maintenance")) {
+    } else if (
+      statuses.includes("degraded") ||
+      statuses.includes("maintenance")
+    ) {
       overallStatus = "degraded";
     }
 
@@ -61,7 +64,8 @@ export async function getSystemStatusOverview(): Promise<
   } catch (error) {
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to get system status",
+      message:
+        error instanceof Error ? error.message : "Failed to get system status",
     };
   }
 }
@@ -80,12 +84,12 @@ export async function getRecentErrors(
 > {
   try {
     const supabase = await createClient();
-    
+
     // Check if user is admin
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    
+
     const { data: userData } = await supabase
       .from("users")
       .select("role")
@@ -144,7 +148,7 @@ export async function resolveError(
 ): Promise<{ success: boolean; message: string }> {
   try {
     const supabase = await createClient();
-    
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -170,7 +174,8 @@ export async function resolveError(
   } catch (error) {
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to resolve error",
+      message:
+        error instanceof Error ? error.message : "Failed to resolve error",
     };
   }
 }
@@ -178,17 +183,15 @@ export async function resolveError(
 /**
  * Bulk resolve errors by filter criteria
  */
-export async function bulkResolveErrors(
-  filters?: {
-    component?: string;
-    errorType?: string;
-    errorMessagePattern?: string;
-    resolved?: boolean;
-  },
-): Promise<{ success: boolean; message: string; count?: number }> {
+export async function bulkResolveErrors(filters?: {
+  component?: string;
+  errorType?: string;
+  errorMessagePattern?: string;
+  resolved?: boolean;
+}): Promise<{ success: boolean; message: string; count?: number }> {
   try {
     const supabase = await createClient();
-    
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -258,7 +261,8 @@ export async function bulkResolveErrors(
   } catch (error) {
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to resolve errors",
+      message:
+        error instanceof Error ? error.message : "Failed to resolve errors",
     };
   }
 }
@@ -281,11 +285,11 @@ export async function getErrorStatistics(): Promise<
 > {
   try {
     const supabase = await createClient();
-    
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    
+
     const { data: userData } = await supabase
       .from("users")
       .select("role")
@@ -314,14 +318,16 @@ export async function getErrorStatistics(): Promise<
 
     // Count by component
     errors?.forEach((error) => {
-      stats.byComponent[error.component] = (stats.byComponent[error.component] || 0) + 1;
+      stats.byComponent[error.component] =
+        (stats.byComponent[error.component] || 0) + 1;
     });
 
     return { success: true, stats };
   } catch (error) {
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to get statistics",
+      message:
+        error instanceof Error ? error.message : "Failed to get statistics",
     };
   }
 }
@@ -353,7 +359,7 @@ export async function deleteOldestErrors(
 ): Promise<{ success: boolean; message: string; count?: number }> {
   try {
     const supabase = await createClient();
-    
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -408,7 +414,8 @@ export async function deleteOldestErrors(
   } catch (error) {
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to delete errors",
+      message:
+        error instanceof Error ? error.message : "Failed to delete errors",
     };
   }
 }
@@ -422,7 +429,7 @@ export async function deleteOldResolvedErrors(
 ): Promise<{ success: boolean; message: string; count?: number }> {
   try {
     const supabase = await createClient();
-    
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -475,7 +482,8 @@ export async function deleteOldResolvedErrors(
   } catch (error) {
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to delete errors",
+      message:
+        error instanceof Error ? error.message : "Failed to delete errors",
     };
   }
 }
@@ -484,10 +492,14 @@ export async function deleteOldResolvedErrors(
  * Delete all system errors
  * WARNING: This will permanently delete all errors from the database
  */
-export async function deleteAllErrors(): Promise<{ success: boolean; message: string; count?: number }> {
+export async function deleteAllErrors(): Promise<{
+  success: boolean;
+  message: string;
+  count?: number;
+}> {
   try {
     const supabase = await createClient();
-    
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -542,7 +554,10 @@ export async function deleteAllErrors(): Promise<{ success: boolean; message: st
         .in("id", batch);
 
       if (deleteError) {
-        return { success: false, message: `Failed to delete errors: ${deleteError.message}` };
+        return {
+          success: false,
+          message: `Failed to delete errors: ${deleteError.message}`,
+        };
       }
     }
 
@@ -554,8 +569,8 @@ export async function deleteAllErrors(): Promise<{ success: boolean; message: st
   } catch (error) {
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to delete errors",
+      message:
+        error instanceof Error ? error.message : "Failed to delete errors",
     };
   }
 }
-

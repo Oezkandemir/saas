@@ -3,10 +3,9 @@
  * Script to check page_views table structure and data
  * Run with: npx tsx scripts/check-page-views.ts
  */
-
+import { resolve } from "path";
 import { createClient } from "@supabase/supabase-js";
 import * as dotenv from "dotenv";
-import { resolve } from "path";
 
 // Load environment variables
 dotenv.config({ path: resolve(__dirname, "../.env.local") });
@@ -56,7 +55,9 @@ async function checkPageViews() {
       return;
     }
 
-    console.log(`\n📊 Found ${allData?.length || 0} records (showing first 10):`);
+    console.log(
+      `\n📊 Found ${allData?.length || 0} records (showing first 10):`,
+    );
     if (allData && allData.length > 0) {
       allData.forEach((row: any, index: number) => {
         console.log(`\nRow ${index + 1}:`);
@@ -79,7 +80,9 @@ async function checkPageViews() {
     if (!slugError && slugData && slugData.length > 0) {
       console.log(`\n📈 Top pages by slug (${slugData.length} records):`);
       slugData.forEach((row: any, index: number) => {
-        console.log(`  ${index + 1}. ${row.slug || "NULL"}: ${row.view_count || 0} views`);
+        console.log(
+          `  ${index + 1}. ${row.slug || "NULL"}: ${row.view_count || 0} views`,
+        );
       });
     } else {
       console.log("⚠️  No aggregated data by slug");
@@ -95,7 +98,6 @@ async function checkPageViews() {
     } else {
       console.error("❌ Error counting records:", countError);
     }
-
   } catch (error) {
     console.error("❌ Unexpected error:", error);
   }
@@ -110,7 +112,3 @@ checkPageViews()
     console.error("❌ Script failed:", error);
     process.exit(1);
   });
-
-
-
-
