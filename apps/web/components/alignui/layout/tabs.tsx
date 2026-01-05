@@ -62,3 +62,4 @@ export const Tabs = {
   Trigger: TabsTrigger,
   Content: TabsContent,
 };
+

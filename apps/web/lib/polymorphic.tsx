@@ -44,3 +44,4 @@ export function createPolymorphicComponent<
 ): PolymorphicComponent<DefaultElement, Props> {
   return component as PolymorphicComponent<DefaultElement, Props>;
 }
+

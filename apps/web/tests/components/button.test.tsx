@@ -70,3 +70,4 @@ describe("Button Component", () => {
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 });
+

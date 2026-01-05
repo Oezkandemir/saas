@@ -151,3 +151,4 @@ async function getStripeInfo() {
 }
 
 getStripeInfo();
+

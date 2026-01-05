@@ -111,3 +111,4 @@ Um zurück zur Production-Umgebung zu wechseln:
 - [Polar.sh Sandbox Dokumentation](https://polar.sh/docs/integrate/sandbox)
 - [Polar.sh API Referenz](https://polar.sh/docs/api-reference)
 - [Stripe Test Cards](https://stripe.com/docs/testing#cards)
+

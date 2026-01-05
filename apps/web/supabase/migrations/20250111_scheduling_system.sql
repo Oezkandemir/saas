@@ -417,3 +417,4 @@ CREATE TRIGGER create_booking_canceled_event
 
 
 
+

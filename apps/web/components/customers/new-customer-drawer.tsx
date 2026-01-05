@@ -177,7 +177,7 @@ export function NewCustomerDrawer({
 
               <div className="space-y-1.5">
                 <Label.Root htmlFor="company">
-                  Unternehmen <Label.Sub>(Optional)</Label.Sub>
+                  {t("company")} <Label.Sub>(Optional)</Label.Sub>
                 </Label.Root>
                 <Input
                   id="company"

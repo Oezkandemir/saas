@@ -91,3 +91,4 @@ export const CompactButton = {
   Root: CompactButtonRoot,
   Icon: CompactButtonIcon,
 };
+
