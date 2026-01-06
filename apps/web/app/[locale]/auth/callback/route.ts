@@ -156,29 +156,31 @@ export async function GET(request: NextRequest) {
       }
 
       // Update user's email confirmation status in Auth
-      // Use SQL function as primary method since updateUserById fails due to missing logs table trigger
+      // Use direct SQL function as primary method (most reliable)
       const confirmationTimestamp = new Date().toISOString();
       
-      // Try using SQL function first (more reliable)
+      // Try using direct SQL function first (most reliable)
       let emailConfirmed = false;
       try {
-        const { data: sqlResult, error: sqlError } = await supabaseAdmin.rpc('confirm_user_email', {
+        const { data: sqlResult, error: sqlError } = await supabaseAdmin.rpc('confirm_user_email_direct', {
           user_id: userId
         });
         
         if (sqlError) {
-          logger.error("SQL function failed:", sqlError);
-        } else if (sqlResult) {
-          logger.info("Email confirmed using SQL function");
+          logger.error("Direct SQL function failed:", sqlError);
+        } else if (sqlResult === true) {
+          logger.info("Email confirmed using direct SQL function");
           emailConfirmed = true;
+        } else {
+          logger.warn("Direct SQL function returned false - trying Admin API");
         }
       } catch (sqlError) {
-        logger.error("SQL function exception:", sqlError);
+        logger.error("Direct SQL function exception:", sqlError);
       }
       
       // If SQL function failed, try Admin API as fallback
       if (!emailConfirmed) {
-        logger.info("SQL function failed, trying Admin API");
+        logger.info("Trying Admin API as fallback");
         const existingMetadata = userData.user.user_metadata || {};
         
         const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
@@ -197,7 +199,7 @@ export async function GET(request: NextRequest) {
             status: updateError.status,
           });
           
-          // Last resort: try to update directly in database
+          // Last resort: try to update directly in public.users table
           try {
             const { error: dbUpdateError } = await supabaseAdmin
               .from("users")
@@ -213,7 +215,7 @@ export async function GET(request: NextRequest) {
                 ),
               );
             } else {
-              logger.warn("Updated emailVerified in database as last resort");
+              logger.warn("Updated emailVerified in database as last resort (auth.users may not be updated)");
               // Still redirect to verified page since we updated the database
               return NextResponse.redirect(
                 new URL(`/${locale}/auth/verified?userId=${userId}&confirmed=true&warning=true`, requestUrl.origin),
