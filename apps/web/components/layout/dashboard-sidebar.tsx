@@ -268,14 +268,11 @@ function DashboardSidebarContent({ links }: DashboardSidebarProps) {
                                   {item.badge}
                                 </Badge>
                               )}
-                              {/* Add notification badge */}
+                              {/* Add notification badge with thin blue border */}
                               {showNotificationBadge && (
-                                <Badge
-                                  className="ml-auto flex min-w-[20px] shrink-0 items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-xs font-bold text-white"
-                                  variant="outline"
-                                >
+                                <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full ring-1 ring-blue-500 bg-transparent text-xs font-bold text-blue-500">
                                   {unreadCount > 99 ? "99+" : unreadCount}
-                                </Badge>
+                                </span>
                               )}
                             </Link>
                           ) : (
@@ -297,12 +294,13 @@ function DashboardSidebarContent({ links }: DashboardSidebarProps) {
                                       "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-muted-foreground",
                                   )}
                                 >
-                                  <span className="flex size-full items-center justify-center">
-                                    <Icon className="size-5 min-w-5 shrink-0" />
-                                    {showNotificationBadge && (
-                                      <span className="absolute -right-1 -top-1 flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
-                                        {unreadCount > 9 ? "9+" : unreadCount}
+                                  <span className="flex size-full items-center justify-center relative">
+                                    {showNotificationBadge ? (
+                                      <span className="flex h-6 w-6 items-center justify-center rounded-full ring-1 ring-blue-500 bg-transparent text-xs font-bold text-blue-500">
+                                        {unreadCount > 99 ? "99+" : unreadCount}
                                       </span>
+                                    ) : (
+                                      <Icon className="size-5 min-w-5 shrink-0" />
                                     )}
                                   </span>
                                 </Link>
@@ -615,14 +613,11 @@ function MobileSheetSidebarContent({ links }: DashboardSidebarProps) {
                                 {item.badge}
                               </Badge>
                             )}
-                            {/* Add notification badge */}
+                            {/* Add notification badge with thin blue border */}
                             {showNotificationBadge && (
-                              <Badge
-                                className="ml-auto flex min-w-[20px] shrink-0 items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-xs font-bold text-white"
-                                variant="outline"
-                              >
+                              <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full ring-1 ring-blue-500 bg-transparent text-xs font-bold text-blue-500">
                                 {unreadCount > 99 ? "99+" : unreadCount}
-                              </Badge>
+                              </span>
                             )}
                           </Link>
                         </Fragment>

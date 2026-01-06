@@ -91,7 +91,9 @@ export function useNotifications(): UseNotificationsResult {
         const result = await getUserNotifications(true); // Only get unread notifications
 
         if (result.success && result.data) {
-          return result.data.length;
+          const count = result.data.length;
+          logger.debug(`📊 Fetched unread notification count: ${count}`);
+          return count;
         } else {
           // If user is not authenticated, return 0 instead of throwing error
           if (result.error === "User not authenticated") {
@@ -109,11 +111,11 @@ export function useNotifications(): UseNotificationsResult {
         return 0;
       }
     },
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes (realtime handles updates)
+    staleTime: 0, // Always consider stale so realtime updates are reflected immediately
     gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
     retry: 1,
-    refetchOnWindowFocus: false, // Don't refetch on window focus - realtime handles it
-    refetchInterval: false, // Disable polling - use realtime instead
+    refetchOnWindowFocus: true, // Refetch on focus as backup
+    refetchInterval: 2000, // Poll every 2 seconds as fallback (works even if realtime fails)
     enabled: !!userId && !!supabase, // Only run if we have a user session and supabase client
   });
 
@@ -149,152 +151,274 @@ export function useNotifications(): UseNotificationsResult {
       isSubscribedRef.current = false;
     }
 
-    try {
-      // Create new channel for real-time notifications with better error handling
-      const channel = supabase
-        .channel(`notifications:${userId}`, {
-          config: {
-            broadcast: { self: false },
-            presence: { key: userId },
-          },
-        })
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "user_notifications",
-            filter: `user_id=eq.${userId}`,
-          },
-          (payload) => {
-            logger.debug("🔔 Real-time INSERT event received:", payload);
-            const newNotification = payload.new as {
-              read?: boolean;
-              title?: string;
-              content?: string;
-              id?: string;
-              type?: string;
-            };
+    // Setup realtime subscription with proper error handling
+    const setupRealtime = async () => {
+      try {
+        // Create new channel for real-time notifications
+        const channelName = `notifications:${userId}:${Date.now()}`;
+        logger.debug(`🔧 Setting up realtime channel: ${channelName}`);
+        
+        // Try with filter first
+        let channel = supabase
+          .channel(channelName)
+          .on(
+            "postgres_changes",
+            {
+              event: "INSERT",
+              schema: "public",
+              table: "user_notifications",
+              filter: `user_id=eq.${userId}`,
+            },
+            async (payload) => {
+              logger.debug("🔔 Real-time INSERT event received:", payload);
+              const newNotification = payload.new as {
+                read?: boolean;
+                title?: string;
+                content?: string;
+                id?: string;
+                type?: string;
+                user_id?: string;
+              };
 
-            // Only process if notification is unread
-            if (!newNotification.read) {
-              // Increment count immediately (optimistic update)
-              queryClient.setQueryData<number>(
-                ["notifications", "unread", userId],
-                (oldCount = 0) => oldCount + 1,
-              );
+              // Verify this notification is for the current user
+              if (newNotification.user_id !== userId) {
+                logger.debug("Notification is for different user, ignoring");
+                return;
+              }
 
-              // Play notification sound
-              playNotificationSound();
-
-              // Show toast notification with link
-              toast.success(
-                newNotification.title || getTranslation("newNotification"),
-                {
-                  description:
-                    newNotification.content ||
-                    getTranslation("newNotificationDescription"),
-                  duration: 8000,
-                  icon: createElement(Bell, {
-                    className: "h-5 w-5 text-blue-500",
-                  }),
-                  action: {
-                    label: getTranslation("viewAll"),
-                    onClick: () => {
-                      router.push("/profile/notifications");
-                    },
+              // Only process if notification is unread
+              if (!newNotification.read) {
+                // Increment count immediately (optimistic update)
+                queryClient.setQueryData<number>(
+                  ["notifications", "unread", userId],
+                  (oldCount = 0) => {
+                    const newCount = oldCount + 1;
+                    logger.debug(`📊 Updated unread count: ${oldCount} -> ${newCount}`);
+                    return newCount;
                   },
-                  className: "border-l-4 border-l-blue-500 shadow-lg",
-                },
-              );
-            }
+                );
 
-            // Always invalidate to ensure fresh data
+                // Play notification sound
+                playNotificationSound();
+
+                // Show toast notification with link
+                toast.success(
+                  newNotification.title || getTranslation("newNotification"),
+                  {
+                    description:
+                      newNotification.content ||
+                      getTranslation("newNotificationDescription"),
+                    duration: 8000,
+                    icon: createElement(Bell, {
+                      className: "h-5 w-5 text-blue-500",
+                    }),
+                    action: {
+                      label: getTranslation("viewAll"),
+                      onClick: () => {
+                        router.push("/profile/notifications");
+                      },
+                    },
+                    className: "border-l-4 border-l-blue-500 shadow-lg",
+                  },
+                );
+
+                // Immediately refetch to ensure we have the latest count
+                // Don't wait - refetch right away
+                queryClient.refetchQueries({
+                  queryKey: ["notifications", "unread", userId],
+                }).catch(() => {
+                  // Silently handle errors
+                });
+                queryClient.invalidateQueries({
+                  queryKey: ["notifications"],
+                });
+              } else {
+                // Even if read, invalidate to ensure consistency
+                queryClient.invalidateQueries({
+                  queryKey: ["notifications"],
+                });
+              }
+            },
+          )
+          .on(
+            "postgres_changes",
+            {
+              event: "UPDATE",
+              schema: "public",
+              table: "user_notifications",
+              filter: `user_id=eq.${userId}`,
+            },
+          async () => {
+            // Notification updated (e.g., marked as read) - immediately refetch count
+            logger.debug("📝 Notification UPDATE event received");
+            // Immediately refetch without delay
+            queryClient.refetchQueries({
+              queryKey: ["notifications", "unread", userId],
+            }).catch(() => {
+              // Silently handle errors
+            });
             queryClient.invalidateQueries({
               queryKey: ["notifications"],
             });
-            queryClient.invalidateQueries({
-              queryKey: ["notifications", "unread", userId],
-            });
           },
-        )
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "user_notifications",
-            filter: `user_id=eq.${userId}`,
-          },
-          () => {
-            // Notification updated (e.g., marked as read) - refetch count
-            queryClient.invalidateQueries({
-              queryKey: ["notifications", "unread", userId],
-            });
-          },
-        )
-        .on(
-          "postgres_changes",
-          {
-            event: "DELETE",
-            schema: "public",
-            table: "user_notifications",
-            filter: `user_id=eq.${userId}`,
-          },
-          (payload) => {
-            const deletedNotification = payload.old as { read?: boolean };
+          )
+          .on(
+            "postgres_changes",
+            {
+              event: "DELETE",
+              schema: "public",
+              table: "user_notifications",
+              filter: `user_id=eq.${userId}`,
+            },
+            (payload) => {
+              logger.debug("🗑️ Notification DELETE event received");
+              const deletedNotification = payload.old as { read?: boolean };
 
-            // Optimistically update count if deleted notification was unread
-            if (!deletedNotification.read) {
-              queryClient.setQueryData<number>(
-                ["notifications", "unread", userId],
-                (oldCount = 0) => Math.max(0, oldCount - 1),
+              // Optimistically update count if deleted notification was unread
+              if (!deletedNotification.read) {
+                queryClient.setQueryData<number>(
+                  ["notifications", "unread", userId],
+                  (oldCount = 0) => Math.max(0, oldCount - 1),
+                );
+              }
+
+            // Immediately refetch to ensure we have the correct count
+            queryClient.refetchQueries({
+              queryKey: ["notifications", "unread", userId],
+            }).catch(() => {
+              // Silently handle errors
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["notifications"],
+            });
+            },
+          )
+          .subscribe((status, err) => {
+            if (status === "SUBSCRIBED") {
+              isSubscribedRef.current = true;
+              logger.debug(
+                `✅ Successfully subscribed to real-time notifications for user: ${userId}`,
               );
+              logger.debug(
+                `📡 Listening for changes on user_notifications where user_id = ${userId}`,
+              );
+            } else if (status === "CHANNEL_ERROR") {
+              isSubscribedRef.current = false;
+              logger.error("⚠️ Error subscribing to notifications channel:", err);
+              // Try to refetch count as fallback
+              queryClient.invalidateQueries({
+                queryKey: ["notifications", "unread", userId],
+              });
+            } else if (status === "TIMED_OUT") {
+              isSubscribedRef.current = false;
+              logger.warn(
+                "⏱️ Subscription timed out, will retry on next effect run",
+              );
+            } else if (status === "CLOSED") {
+              isSubscribedRef.current = false;
+              logger.warn("🔌 Channel closed, will reconnect on next mount");
+            } else {
+              logger.debug(`📡 Channel status: ${status}`, err);
             }
+          });
 
-            // Invalidate to ensure we have the correct count
-            queryClient.invalidateQueries({
-              queryKey: ["notifications", "unread", userId],
-            });
-          },
-        )
-        .subscribe((status, err) => {
-          if (status === "SUBSCRIBED") {
-            isSubscribedRef.current = true;
-            logger.debug(
-              "✅ Successfully subscribed to real-time notifications for user:",
-              userId,
-            );
-          } else if (status === "CHANNEL_ERROR") {
-            isSubscribedRef.current = false;
-            logger.error("⚠️ Error subscribing to notifications channel:", err);
-          } else if (status === "TIMED_OUT") {
-            isSubscribedRef.current = false;
-            logger.warn(
-              "⏱️ Subscription timed out, will retry on next effect run",
-            );
-            // Don't retry subscribe() on same channel - it will cause error
-            // The useEffect will recreate the channel if dependencies change
-          } else if (status === "CLOSED") {
-            isSubscribedRef.current = false;
-            logger.warn("🔌 Channel closed, will reconnect on next mount");
-          }
-        });
+        channelRef.current = channel;
+        
+        // Also set up a fallback channel that listens to ALL notifications
+        // and filters client-side (in case the filter doesn't work)
+        const fallbackChannelName = `notifications-fallback:${userId}:${Date.now()}`;
+        const fallbackChannel = supabase
+          .channel(fallbackChannelName)
+          .on(
+            "postgres_changes",
+            {
+              event: "INSERT",
+              schema: "public",
+              table: "user_notifications",
+            },
+            async (payload) => {
+              const newNotification = payload.new as {
+                read?: boolean;
+                title?: string;
+                content?: string;
+                id?: string;
+                type?: string;
+                user_id?: string;
+              };
 
-      channelRef.current = channel;
-    } catch (err) {
-      isSubscribedRef.current = false;
-      logger.warn("Failed to set up real-time notifications:", err);
-    }
+              // Only process if this notification is for the current user
+              if (newNotification.user_id === userId && !newNotification.read) {
+                logger.debug("🔔 Fallback channel received notification:", newNotification);
+                
+                // Increment count
+                queryClient.setQueryData<number>(
+                  ["notifications", "unread", userId],
+                  (oldCount = 0) => oldCount + 1,
+                );
+
+                // Play sound and show toast
+                playNotificationSound();
+                toast.success(
+                  newNotification.title || getTranslation("newNotification"),
+                  {
+                    description:
+                      newNotification.content ||
+                      getTranslation("newNotificationDescription"),
+                    duration: 8000,
+                    icon: createElement(Bell, {
+                      className: "h-5 w-5 text-blue-500",
+                    }),
+                    action: {
+                      label: getTranslation("viewAll"),
+                      onClick: () => {
+                        router.push("/profile/notifications");
+                      },
+                    },
+                    className: "border-l-4 border-l-blue-500 shadow-lg",
+                  },
+                );
+
+                // Immediately refetch
+                queryClient.refetchQueries({
+                  queryKey: ["notifications", "unread", userId],
+                }).catch(() => {
+                  // Silently handle errors
+                });
+              }
+            },
+          )
+          .subscribe((status) => {
+            if (status === "SUBSCRIBED") {
+              logger.debug("✅ Fallback channel subscribed");
+            }
+          });
+        
+        // Store fallback channel reference (we'll clean it up in the return)
+        (channelRef.current as any).fallbackChannel = fallbackChannel;
+      } catch (err) {
+        isSubscribedRef.current = false;
+        logger.error("❌ Failed to set up real-time notifications:", err);
+      }
+    };
+
+    setupRealtime();
 
     // Cleanup on unmount
     return () => {
       if (channelRef.current && supabase) {
         try {
-          // Check channel state before removing
+          // Remove main channel
           const channelState = channelRef.current.state;
           if (channelState === "joined" || channelState === "joining") {
             supabase.removeChannel(channelRef.current);
+          }
+          
+          // Remove fallback channel if it exists
+          const fallbackChannel = (channelRef.current as any).fallbackChannel;
+          if (fallbackChannel) {
+            supabase.removeChannel(fallbackChannel).catch(() => {
+              // Ignore cleanup errors
+            });
           }
         } catch (err) {
           // Ignore cleanup errors
@@ -311,6 +435,26 @@ export function useNotifications(): UseNotificationsResult {
       previousCountRef.current = unreadCount;
     }
   }, [unreadCount, isLoading]);
+
+  // Aggressive polling fallback: Always poll every 1 second to ensure we get updates immediately
+  // This ensures notifications work even if realtime fails
+  useEffect(() => {
+    if (!userId || !supabase || isLoading) return;
+
+    // Poll every 1 second to ensure we catch any missed notifications immediately
+    const pollInterval = setInterval(async () => {
+      try {
+        // Silently refetch without logging to avoid spam
+        await queryClient.refetchQueries({
+          queryKey: ["notifications", "unread", userId],
+        });
+      } catch (err) {
+        // Silently handle errors to avoid console spam
+      }
+    }, 1000); // Poll every 1 second for immediate updates
+
+    return () => clearInterval(pollInterval);
+  }, [userId, supabase, isLoading, queryClient]);
 
   return {
     unreadCount: typeof unreadCount === "number" ? unreadCount : 0,

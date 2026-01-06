@@ -35,7 +35,7 @@ export function NotificationBell({
     <Button variant={variant} size={size} className="relative" type="button">
       <Bell className="size-5" />
       {!isLoading && unreadCount > 0 && (
-        <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+        <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
           {unreadCount > 99 ? "99+" : unreadCount}
         </span>
       )}

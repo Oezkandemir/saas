@@ -33,9 +33,33 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
       return existingUser;
     }
 
-    // If error is not "no rows returned", log it
-    if (fetchError && fetchError.code !== "PGRST116") {
-      logger.error("Error checking for existing user:", fetchError);
+    // Handle connection errors gracefully - these are often harmless (aborted requests, etc.)
+    if (fetchError) {
+      // PGRST116 = no rows returned (expected case)
+      if (fetchError.code === "PGRST116") {
+        // This is expected - user doesn't exist yet
+      } else {
+        // Check if it's a connection error (harmless)
+        const errorMessage = fetchError.message || String(fetchError);
+        const isConnectionError =
+          errorMessage.includes("ECONNRESET") ||
+          errorMessage.includes("aborted") ||
+          errorMessage.includes("ECONNREFUSED") ||
+          errorMessage.includes("socket hang up");
+
+        if (isConnectionError) {
+          // Log as warning, not error - these are often harmless
+          logger.warn(
+            `Connection error while checking user ${user.id} (likely aborted request):`,
+            fetchError.message || fetchError,
+          );
+          // Return null to allow retry or graceful degradation
+          return null;
+        } else {
+          // Other errors should be logged as errors
+          logger.error("Error checking for existing user:", fetchError);
+        }
+      }
     }
 
     // If user not found by ID, try to find by email
@@ -76,7 +100,24 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
           }
         }
       } catch (emailLookupError) {
-        logger.error("Error during email lookup:", emailLookupError);
+        // Handle connection errors gracefully
+        const errorMessage =
+          emailLookupError instanceof Error
+            ? emailLookupError.message
+            : String(emailLookupError);
+        const isConnectionError =
+          errorMessage.includes("ECONNRESET") ||
+          errorMessage.includes("aborted") ||
+          errorMessage.includes("ECONNREFUSED");
+
+        if (isConnectionError) {
+          logger.warn(
+            "Connection error during email lookup (likely aborted request):",
+            emailLookupError,
+          );
+        } else {
+          logger.error("Error during email lookup:", emailLookupError);
+        }
       }
     }
 
@@ -208,6 +249,25 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
       logger.info(`Successfully created user record for ${user.id}`);
       return newUser;
     } catch (insertError) {
+      // Handle connection errors gracefully
+      const errorMessage =
+        insertError instanceof Error
+          ? insertError.message
+          : String(insertError);
+      const isConnectionError =
+        errorMessage.includes("ECONNRESET") ||
+        errorMessage.includes("aborted") ||
+        errorMessage.includes("ECONNREFUSED");
+
+      if (isConnectionError) {
+        logger.warn(
+          "Connection error during user insert (likely aborted request):",
+          insertError,
+        );
+        // Return null to allow retry
+        return null;
+      }
+
       logger.error("Exception during user insert:", insertError);
 
       // Try a more minimal insert as a last resort
@@ -254,12 +314,44 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
         logger.info(`Successfully created minimal user record for ${user.id}`);
         return minimalUser;
       } catch (minimalError) {
-        logger.error("Exception during minimal user insert:", minimalError);
+        // Handle connection errors gracefully
+        const errorMessage =
+          minimalError instanceof Error
+            ? minimalError.message
+            : String(minimalError);
+        const isConnectionError =
+          errorMessage.includes("ECONNRESET") ||
+          errorMessage.includes("aborted") ||
+          errorMessage.includes("ECONNREFUSED");
+
+        if (isConnectionError) {
+          logger.warn(
+            "Connection error during minimal user insert (likely aborted request):",
+            minimalError,
+          );
+        } else {
+          logger.error("Exception during minimal user insert:", minimalError);
+        }
         return null;
       }
     }
   } catch (error) {
-    logger.error("Unexpected error in syncUserWithDatabase:", error);
+    // Handle connection errors gracefully
+    const errorMessage =
+      error instanceof Error ? error.message : String(error);
+    const isConnectionError =
+      errorMessage.includes("ECONNRESET") ||
+      errorMessage.includes("aborted") ||
+      errorMessage.includes("ECONNREFUSED");
+
+    if (isConnectionError) {
+      logger.warn(
+        "Connection error in syncUserWithDatabase (likely aborted request):",
+        error,
+      );
+    } else {
+      logger.error("Unexpected error in syncUserWithDatabase:", error);
+    }
     return null;
   }
 }

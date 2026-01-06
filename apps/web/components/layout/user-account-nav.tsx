@@ -38,6 +38,7 @@ import {
 } from "@/components/alignui/overlays/drawer";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { useSupabase } from "@/components/supabase-provider";
+import { useNotifications } from "@/hooks/use-notifications";
 
 // Create namespace objects locally for AlignUI pattern
 const Button = {
@@ -78,6 +79,7 @@ export function UserAccountNav() {
   const router = useI18nRouter();
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const { unreadCount } = useNotifications();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dbUserName, setDbUserName] = useState<string | null>(null);
@@ -182,7 +184,11 @@ export function UserAccountNav() {
                 e.stopPropagation();
                 setDrawerOpen(true);
               }}
-              className="cursor-pointer focus:outline-none rounded-full transition-opacity hover:opacity-90 active:opacity-80"
+              className={`relative cursor-pointer focus:outline-none rounded-full transition-opacity hover:opacity-90 active:opacity-80 ${
+                unreadCount > 0
+                  ? "ring-1 ring-blue-500 ring-offset-0 p-0.5"
+                  : ""
+              }`}
               aria-label="Open user account menu"
               aria-expanded={drawerOpen}
             >
@@ -192,7 +198,7 @@ export function UserAccountNav() {
                   image: user.user_metadata?.image || null,
                   avatar_url: user.user_metadata?.avatar_url || null,
                 }}
-                className="border size-9"
+                className="border border-stroke-soft-200 size-9"
               />
             </button>
           </Drawer.Trigger>
@@ -272,10 +278,17 @@ export function UserAccountNav() {
                     href="/profile/notifications"
                     prefetch={true}
                     onClick={closeDrawer}
-                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-bg-white-50 active:bg-bg-white-100 transition-colors rounded-lg"
+                    className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm font-medium hover:bg-bg-white-50 active:bg-bg-white-100 transition-colors rounded-lg"
                   >
-                    <Bell className="size-4" />
-                    <span>{tNav("notifications")}</span>
+                    <div className="flex items-center gap-3">
+                      <Bell className="size-4" />
+                      <span>{tNav("notifications")}</span>
+                    </div>
+                    {unreadCount > 0 && (
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full ring-1 ring-blue-500 bg-transparent text-xs font-bold text-blue-500">
+                        {unreadCount > 99 ? "99+" : unreadCount}
+                      </span>
+                    )}
                   </Link>
 
                   <Link
