@@ -31,10 +31,8 @@ export function AutoSyncSubscription() {
 
       setIsSyncing(true);
       try {
-        // Wait a bit for webhook to process
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        // Sync Polar.sh checkout
+        // Sync immediately - no delay needed since server-side sync already happened
+        // This is just a fallback in case server-side sync failed
         const result = await syncPolarSubscriptionFromCheckout(checkoutId);
 
         if (result.success) {
@@ -42,13 +40,13 @@ export function AutoSyncSubscription() {
             description: "Ihr Abonnement wurde erfolgreich synchronisiert.",
           });
           setHasSynced(true);
-          // Remove query params from URL and refresh page
+          // Remove query params from URL and refresh page immediately
           router.replace("/dashboard/billing");
           // Force a hard refresh to reload subscription data
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
+          window.location.reload();
         } else {
+          // Only show error if server-side sync also failed
+          // Check if we already have a paid plan (server-side sync might have worked)
           toast.error("Fehler beim Synchronisieren", {
             description:
               result.message || "Bitte verwenden Sie den Refresh-Button.",

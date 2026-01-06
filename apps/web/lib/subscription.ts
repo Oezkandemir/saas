@@ -1,7 +1,7 @@
 // @ts-nocheck
 // TODO: Fix this when we turn strict mode on.
 import { cache } from "react";
-import { unstable_cache } from "next/cache";
+import { unstable_cache, unstable_noStore } from "next/cache";
 
 import { UserSubscriptionPlan } from "types";
 import { pricingData } from "@/config/subscriptions";
@@ -24,11 +24,17 @@ const DEFAULT_FREE_PLAN: UserSubscriptionPlan = {
 async function _getUserSubscriptionPlanInternal(
   userId: string,
   userEmail?: string,
+  skipCache?: boolean,
 ): Promise<UserSubscriptionPlan> {
   // If no userId provided, return the default free plan
   if (!userId) {
     logger.warn("getUserSubscriptionPlan called without userId");
     return DEFAULT_FREE_PLAN;
+  }
+
+  // Skip cache if explicitly requested (e.g., after sync)
+  if (skipCache) {
+    unstable_noStore();
   }
 
   try {
@@ -281,17 +287,18 @@ async function _getUserSubscriptionPlanInternal(
 // Cached version using React cache() for request-level deduplication
 // This ensures that multiple calls to getUserSubscriptionPlan within the same request
 // will only execute the database query once
+// Cache reduced to 10 seconds to ensure more up-to-date subscription data
 export const getUserSubscriptionPlan = cache(
   unstable_cache(
     async (
       userId: string,
       userEmail?: string,
     ): Promise<UserSubscriptionPlan> => {
-      return _getUserSubscriptionPlanInternal(userId, userEmail);
+      return _getUserSubscriptionPlanInternal(userId, userEmail, false);
     },
     ["user-subscription-plan"],
     {
-      revalidate: 300, // Cache for 5 minutes (300 seconds)
+      revalidate: 10, // Cache for 10 seconds (reduced for better real-time updates)
       tags: ["subscription-plan"],
     },
   ),

@@ -3,7 +3,6 @@
 import { revalidateTag } from "next/cache";
 import { auth } from "@/auth";
 
-import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 
@@ -26,29 +25,29 @@ export async function refreshSubscription(): Promise<RefreshResult> {
       return { success: false, message: "User not authenticated" };
     }
 
-    // Get user data from database (Polar only)
-    const { data: userData, error: userError } = await supabaseAdmin
-      .from("users")
-      .select("polar_subscription_id, polar_customer_id, payment_provider")
-      .eq("id", user.id)
-      .single();
+    // Sync directly from Polar API to ensure we have the latest data
+    const { syncPolarSubscriptionDirect } = await import(
+      "@/actions/sync-polar-subscription-direct"
+    );
+    const syncResult = await syncPolarSubscriptionDirect();
 
-    if (userError || !userData) {
-      logger.error("Error fetching user data:", userError);
-      return { success: false, message: "Error fetching user data" };
+    if (!syncResult.success) {
+      logger.warn("Failed to sync from Polar API, using cached data", {
+        message: syncResult.message,
+      });
     }
 
-    // Subscriptions are automatically synced via webhooks
-    // Just invalidate cache and return current subscription data
+    // Invalidate cache to force refresh
     revalidateTagSafe("subscription-plan");
 
-    // Get current subscription plan
+    // Get current subscription plan (will use fresh data after sync)
     const updatedPlan = await getUserSubscriptionPlan(user.id);
 
     return {
       success: true,
-      message:
-        "Subscription data refreshed (synced automatically via webhooks)",
+      message: syncResult.success
+        ? "Subscription synced directly from Polar API"
+        : "Subscription refreshed (using cached data)",
       subscription: {
         plan: updatedPlan.title,
         isPaid: updatedPlan.isPaid,
