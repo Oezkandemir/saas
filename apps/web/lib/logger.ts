@@ -10,9 +10,14 @@ class Logger {
   private isClient = typeof window !== "undefined";
 
   private formatMessage(level: LogLevel, message: string): string {
-    const timestamp = new Date().toISOString();
-    const context = this.isClient ? "[Client]" : "[Server]";
-    return `${timestamp} ${context} [${level.toUpperCase()}] ${message}`;
+    // Simplified format - only show level and message for cleaner output
+    const levelEmoji = {
+      error: "❌",
+      warn: "⚠️",
+      info: "ℹ️",
+      debug: "🔍",
+    };
+    return `${levelEmoji[level]} [${level.toUpperCase()}] ${message}`;
   }
 
   info(message: string, data?: any) {

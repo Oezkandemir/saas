@@ -25,8 +25,7 @@ import {
   CardTitle,
 } from "@/components/alignui/data-display/card";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { TicketMessageItem } from "@/components/support/ticket-message";
-import { TicketReplyForm } from "@/components/support/ticket-reply-form";
+import { TicketConversation } from "@/components/support/ticket-conversation";
 
 // Helper function to get status badge color
 const getStatusColor = (status: string) => {
@@ -178,41 +177,17 @@ export default async function TicketPage({
               <MessageCircle className="w-4 h-4 text-primary" />
               Conversation History
             </h3>
-            {messages.length === 0 ? (
-              <div className="py-8 text-center">
-                <div className="flex justify-center items-center mx-auto mb-3 rounded-full border size-16 bg-muted/50 border-border">
-                  <MessageSquareMore className="size-7 text-muted-foreground" />
-                </div>
-                <p className="font-medium text-muted-foreground">
-                  No messages yet
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Our support team will respond within 2-4 hours
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {messages.map((message) => (
-                  <TicketMessageItem
-                    key={message.id}
-                    message={message}
-                    isCurrentUser={message.user_id === user.id}
-                  />
-                ))}
-              </div>
-            )}
+            <TicketConversation
+              ticketId={ticket.id}
+              initialMessages={messages}
+              currentUserId={user.id}
+              currentUserName={user.name || user.email || "User"}
+              ticketStatus={ticket.status}
+            />
           </div>
         </CardContent>
-        <CardFooter className="flex-col gap-4 bg-muted/30">
-          {ticket.status !== "closed" ? (
-            <div className="w-full">
-              <div className="flex gap-2 items-center mb-3 text-sm text-muted-foreground">
-                <MessageSquareMore className="h-3.5 w-3.5" />
-                Add a reply to continue the conversation
-              </div>
-              <TicketReplyForm ticketId={ticket.id} />
-            </div>
-          ) : (
+        {ticket.status === "closed" && (
+          <CardFooter className="flex-col gap-4 bg-muted/30">
             <div className="py-6 w-full text-center">
               <div className="inline-flex justify-center items-center mb-3 rounded-lg border size-12 bg-muted/50 border-border">
                 <XCircle className="size-6 text-muted-foreground" />
@@ -222,8 +197,8 @@ export default async function TicketPage({
                 If you need further assistance, please create a new ticket
               </p>
             </div>
-          )}
-        </CardFooter>
+          </CardFooter>
+        )}
       </Card>
     </UnifiedPageLayout>
   );

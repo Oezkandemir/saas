@@ -54,7 +54,7 @@ async function _getUserSubscriptionPlanInternal(
     userData = userResult.data;
     error = userResult.error;
 
-    logger.debug(`Fetching subscription data for user ${userId}`, { userData });
+    // Fetching subscription data silently
 
     // If user not found by ID and we have an email, try to find by email
     if ((!userData || error) && userEmail) {
@@ -125,12 +125,7 @@ async function _getUserSubscriptionPlanInternal(
       paymentProvider,
     };
 
-    logger.debug(`User subscription data (Polar only)`, {
-      customerId: user.polarCustomerId,
-      subscriptionId: user.polarSubscriptionId,
-      productId: user.polarProductId,
-      periodEnd: user.polarCurrentPeriodEnd,
-    });
+    // User subscription data loaded
 
     // Check if user is on a paid plan (Polar only)
     const currentPeriodEnd = user.polarCurrentPeriodEnd;
@@ -143,34 +138,19 @@ async function _getUserSubscriptionPlanInternal(
     let userPlan = null;
 
     // Log all available Polar product IDs for debugging
-    logger.debug("Matching Polar product ID", {
-      userProductId: user.polarProductId,
-      availablePlans: pricingData.map((plan) => ({
-        title: plan.title,
-        monthlyId: plan.polarIds?.monthly,
-        yearlyId: plan.polarIds?.yearly,
-      })),
-    });
+    // Matching Polar product ID silently
 
     // Check Polar product IDs - try monthly first, then yearly
     // IMPORTANT: Check all plans to find exact match
     for (const plan of pricingData) {
       if (plan.polarIds?.monthly === user.polarProductId) {
         userPlan = plan;
-        logger.info("Found matching Polar plan (monthly)", {
-          planTitle: plan.title,
-          productId: user.polarProductId,
-          matchedId: plan.polarIds.monthly,
-        });
+        // Plan matched silently
         break;
       }
       if (plan.polarIds?.yearly === user.polarProductId) {
         userPlan = plan;
-        logger.info("Found matching Polar plan (yearly)", {
-          planTitle: plan.title,
-          productId: user.polarProductId,
-          matchedId: plan.polarIds.yearly,
-        });
+        // Plan matched silently
         break;
       }
     }
@@ -194,13 +174,7 @@ async function _getUserSubscriptionPlanInternal(
       );
     }
 
-    logger.info("Plan matching result", {
-      planTitle: userPlan?.title || "No matching plan found",
-      productId,
-      isPaid,
-      provider: paymentProvider,
-      userProductId: user.polarProductId,
-    });
+    // Plan matching completed silently
 
     // Use the found plan or default to free
     const plan = isPaid && userPlan ? userPlan : pricingData[0];
@@ -268,13 +242,7 @@ async function _getUserSubscriptionPlanInternal(
       isCanceled,
     };
 
-    logger.debug("Returning subscription plan", {
-      title: result.title,
-      isPaid: result.isPaid,
-      polarProductId: result.polarProductId,
-      interval: result.interval,
-      provider: paymentProvider,
-    });
+    // Subscription plan returned silently
 
     return result;
   } catch (error) {

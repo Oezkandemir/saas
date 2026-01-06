@@ -53,29 +53,58 @@ export function AnalyticsTracker() {
   const getGeolocationInfo = async (): Promise<GeolocationInfo> => {
     try {
       // Use server-side API route to avoid CSP issues
-      const response = await fetch("/api/analytics/geolocation", {
-        signal: AbortSignal.timeout(5000),
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      try {
+        const response = await fetch("/api/analytics/geolocation", {
+          signal: controller.signal,
+        });
+        
+        clearTimeout(timeoutId);
 
-      if (response.ok) {
-        const data = await response.json();
-        return {
-          country: data.country || null,
-          city: data.city || null,
-          region: data.region || null,
-          timezone:
-            data.timezone ||
-            Intl.DateTimeFormat().resolvedOptions().timeZone ||
-            null,
-          latitude: data.latitude || null,
-          longitude: data.longitude || null,
-        };
+        if (response.ok) {
+        // Check content type before parsing JSON
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          try {
+            const text = await response.text();
+            const trimmedText = text.trim();
+            let data;
+            // Try direct parse first
+            try {
+              data = JSON.parse(trimmedText);
+            } catch {
+              // If direct parse fails, try to extract JSON object
+              const jsonMatch = trimmedText.match(/\{[\s\S]*\}/);
+              if (jsonMatch) {
+                data = JSON.parse(jsonMatch[0]);
+              } else {
+                throw new Error("No valid JSON found");
+              }
+            }
+            return {
+              country: data.country || null,
+              city: data.city || null,
+              region: data.region || null,
+              timezone:
+                data.timezone ||
+                Intl.DateTimeFormat().resolvedOptions().timeZone ||
+                null,
+              latitude: data.latitude || null,
+              longitude: data.longitude || null,
+            };
+          } catch (parseError) {
+            // JSON parse failed - fall through to defaults silently
+          }
+        }
+      }
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        // Silent fail - return defaults
       }
     } catch (error) {
-      // Silent fail - return defaults
-      logger.debug(
-        `Geolocation fetch failed: ${error instanceof Error ? error.message : String(error)}`,
-      );
+      // Silent fail - return defaults silently
     }
 
     // Return defaults with timezone from browser

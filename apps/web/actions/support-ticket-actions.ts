@@ -328,7 +328,7 @@ export async function addTicketMessage(
       };
     }
 
-    // Add the message
+    // Add the message with user data included
     const { data, error } = await supabase
       .from("support_ticket_messages")
       .insert({
@@ -337,18 +337,22 @@ export async function addTicketMessage(
         message: validatedData.message,
         is_admin: user.role === "ADMIN",
       })
-      .select()
+      .select(
+        `
+        *,
+        user:users(name, email, avatar_url)
+      `,
+      )
       .single();
 
     if (error) {
       throw new Error(error.message);
     }
 
-    revalidatePath(`/dashboard/support/${ticketId}`);
-    if (user.role === "ADMIN") {
-      revalidatePath("/admin/support");
-    }
-
+    // Don't use revalidatePath here - we're using Realtime for instant updates
+    // Revalidating causes page reloads which breaks the real-time experience
+    // The realtime subscription will handle updating the UI immediately
+    
     return {
       success: true,
       data: data as TicketMessage,

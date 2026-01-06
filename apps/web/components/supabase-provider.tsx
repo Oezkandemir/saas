@@ -37,6 +37,8 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   // This prevents duplicate subscriptions and reduces unnecessary realtime connections
 
   useEffect(() => {
+    // Note: onAuthStateChange provides session from storage (less secure)
+    // but it's OK here for UI state updates. For authentication checks, use getUser()
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -45,9 +47,11 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
 
     async function loadInitialSession() {
       try {
+        // Use getUser() for secure authentication check
         const { data: userData } = await supabase.auth.getUser();
 
         if (userData.user) {
+          // Get session for UI state (session is OK here for client-side UI updates)
           const { data: sessionData } = await supabase.auth.getSession();
           setSession(sessionData.session);
         }

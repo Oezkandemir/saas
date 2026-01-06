@@ -10,6 +10,7 @@ import { toast } from "sonner";
 
 import { logger } from "@/lib/logger";
 import { useSupabase } from "@/components/supabase-provider";
+import { usePathname } from "@/i18n/routing";
 
 export interface UseNotificationsResult {
   unreadCount: number;
@@ -60,7 +61,10 @@ export function useNotifications(): UseNotificationsResult {
   const queryClient = useQueryClient();
   const channelRef = useRef<RealtimeChannel | null>(null);
   const isSubscribedRef = useRef<boolean>(false);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isSettingUpRef = useRef<boolean>(false); // Prevent multiple simultaneous setup attempts
   const router = useRouter();
+  const pathname = usePathname();
   const previousCountRef = useRef<number>(0);
 
   // Translation fallbacks (useTranslations might not be available in all contexts)
@@ -92,7 +96,6 @@ export function useNotifications(): UseNotificationsResult {
 
         if (result.success && result.data) {
           const count = result.data.length;
-          logger.debug(`📊 Fetched unread notification count: ${count}`);
           return count;
         } else {
           // If user is not authenticated, return 0 instead of throwing error
@@ -111,11 +114,11 @@ export function useNotifications(): UseNotificationsResult {
         return 0;
       }
     },
-    staleTime: 0, // Always consider stale so realtime updates are reflected immediately
+    staleTime: 30 * 1000, // Consider stale after 30 seconds
     gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
     retry: 1,
-    refetchOnWindowFocus: true, // Refetch on focus as backup
-    refetchInterval: 2000, // Poll every 2 seconds as fallback (works even if realtime fails)
+    refetchOnWindowFocus: false, // Realtime handles updates, no need to refetch on focus
+    refetchInterval: false, // Disable automatic polling - rely on realtime instead
     enabled: !!userId && !!supabase, // Only run if we have a user session and supabase client
   });
 
@@ -137,8 +140,14 @@ export function useNotifications(): UseNotificationsResult {
     // This prevents double subscription in React Strict Mode
     if (channelRef.current) {
       const channelState = channelRef.current.state;
-      if (channelState === "joined" || channelState === "joining") {
-        // Channel is already active, don't create a new one
+      // If channel is already joined, joining, or we're in the process of setting up, don't create a new one
+      if (
+        channelState === "joined" ||
+        channelState === "joining" ||
+        isSubscribedRef.current ||
+        isSettingUpRef.current
+      ) {
+        // Channel is already active or being set up, don't create a new one
         return;
       }
       // Channel exists but is not active, clean it up
@@ -153,24 +162,58 @@ export function useNotifications(): UseNotificationsResult {
 
     // Setup realtime subscription with proper error handling
     const setupRealtime = async () => {
+      // Prevent multiple simultaneous setup attempts
+      if (isSettingUpRef.current) {
+        return;
+      }
+      
+      // Check if channel already exists and is subscribed
+      if (channelRef.current) {
+        const channelState = channelRef.current.state;
+        if (channelState === "joined" || channelState === "joining") {
+          // Channel is already active, don't create a new one
+          return;
+        }
+        // Channel exists but is not active, clean it up first
+        try {
+          await supabase.removeChannel(channelRef.current);
+        } catch (err) {
+          // Ignore cleanup errors
+        }
+        channelRef.current = null;
+        isSubscribedRef.current = false;
+      }
+      
+      isSettingUpRef.current = true;
+      
       try {
         // Create new channel for real-time notifications
-        const channelName = `notifications:${userId}:${Date.now()}`;
-        logger.debug(`🔧 Setting up realtime channel: ${channelName}`);
+        // Use consistent channel name per user (not timestamp-based) to avoid conflicts
+        const channelName = `notifications:${userId}`;
         
-        // Try with filter first
-        let channel = supabase
-          .channel(channelName)
+        // Create channel instance first
+        let channel = supabase.channel(channelName);
+        
+        // Set channel ref IMMEDIATELY after creation to prevent race conditions
+        // This ensures that if setupRealtime is called again, it will see the channel
+        channelRef.current = channel;
+        
+        // Configure channel event handlers
+        // Remove filter to avoid binding mismatch - we'll filter in the handler instead
+        channel = channel
           .on(
             "postgres_changes",
             {
               event: "INSERT",
               schema: "public",
               table: "user_notifications",
-              filter: `user_id=eq.${userId}`,
             },
             async (payload) => {
-              logger.debug("🔔 Real-time INSERT event received:", payload);
+              // Verify payload structure first
+              if (!payload || !payload.new) {
+                return;
+              }
+
               const newNotification = payload.new as {
                 read?: boolean;
                 title?: string;
@@ -181,8 +224,8 @@ export function useNotifications(): UseNotificationsResult {
               };
 
               // Verify this notification is for the current user
-              if (newNotification.user_id !== userId) {
-                logger.debug("Notification is for different user, ignoring");
+              // Filter in handler instead of using filter parameter to avoid binding mismatch
+              if (!newNotification.user_id || newNotification.user_id !== userId) {
                 return;
               }
 
@@ -191,46 +234,49 @@ export function useNotifications(): UseNotificationsResult {
                 // Increment count immediately (optimistic update)
                 queryClient.setQueryData<number>(
                   ["notifications", "unread", userId],
-                  (oldCount = 0) => {
-                    const newCount = oldCount + 1;
-                    logger.debug(`📊 Updated unread count: ${oldCount} -> ${newCount}`);
-                    return newCount;
-                  },
+                  (oldCount = 0) => oldCount + 1,
                 );
 
-                // Play notification sound
-                playNotificationSound();
+                // Check if user is currently on a ticket/conversation page
+                // Don't show toast if user is already viewing a ticket conversation
+                // Handle both locale-prefixed paths (e.g., /de/admin/support/123) and non-prefixed paths
+                const normalizedPathname = pathname || "";
+                const isOnTicketPage =
+                  normalizedPathname.includes("/support/") ||
+                  normalizedPathname.includes("/admin/support/") ||
+                  normalizedPathname.match(/\/support\/[^/]+$/) !== null ||
+                  normalizedPathname.match(/\/admin\/support\/[^/]+$/) !== null;
 
-                // Show toast notification with link
-                toast.success(
-                  newNotification.title || getTranslation("newNotification"),
-                  {
-                    description:
-                      newNotification.content ||
-                      getTranslation("newNotificationDescription"),
-                    duration: 8000,
-                    icon: createElement(Bell, {
-                      className: "h-5 w-5 text-blue-500",
-                    }),
-                    action: {
-                      label: getTranslation("viewAll"),
-                      onClick: () => {
-                        router.push("/profile/notifications");
+                // Only show toast and play sound if NOT on ticket page
+                if (!isOnTicketPage) {
+                  // Play notification sound
+                  playNotificationSound();
+
+                  // Show toast notification with link
+                  toast.success(
+                    newNotification.title || getTranslation("newNotification"),
+                    {
+                      description:
+                        newNotification.content ||
+                        getTranslation("newNotificationDescription"),
+                      duration: 8000,
+                      icon: createElement(Bell, {
+                        className: "h-5 w-5 text-blue-500",
+                      }),
+                      action: {
+                        label: getTranslation("viewAll"),
+                        onClick: () => {
+                          router.push("/profile/notifications");
+                        },
                       },
+                      className: "border-l-4 border-l-blue-500 shadow-lg",
                     },
-                    className: "border-l-4 border-l-blue-500 shadow-lg",
-                  },
-                );
+                  );
+                }
 
-                // Immediately refetch to ensure we have the latest count
-                // Don't wait - refetch right away
-                queryClient.refetchQueries({
-                  queryKey: ["notifications", "unread", userId],
-                }).catch(() => {
-                  // Silently handle errors
-                });
+                // Invalidate queries to trigger refetch (more efficient than direct refetch)
                 queryClient.invalidateQueries({
-                  queryKey: ["notifications"],
+                  queryKey: ["notifications", "unread", userId],
                 });
               } else {
                 // Even if read, invalidate to ensure consistency
@@ -249,16 +295,9 @@ export function useNotifications(): UseNotificationsResult {
               filter: `user_id=eq.${userId}`,
             },
           async () => {
-            // Notification updated (e.g., marked as read) - immediately refetch count
-            logger.debug("📝 Notification UPDATE event received");
-            // Immediately refetch without delay
-            queryClient.refetchQueries({
-              queryKey: ["notifications", "unread", userId],
-            }).catch(() => {
-              // Silently handle errors
-            });
+            // Notification updated (e.g., marked as read) - invalidate to trigger refetch
             queryClient.invalidateQueries({
-              queryKey: ["notifications"],
+              queryKey: ["notifications", "unread", userId],
             });
           },
           )
@@ -271,7 +310,6 @@ export function useNotifications(): UseNotificationsResult {
               filter: `user_id=eq.${userId}`,
             },
             (payload) => {
-              logger.debug("🗑️ Notification DELETE event received");
               const deletedNotification = payload.old as { read?: boolean };
 
               // Optimistically update count if deleted notification was unread
@@ -282,122 +320,114 @@ export function useNotifications(): UseNotificationsResult {
                 );
               }
 
-            // Immediately refetch to ensure we have the correct count
-            queryClient.refetchQueries({
-              queryKey: ["notifications", "unread", userId],
-            }).catch(() => {
-              // Silently handle errors
-            });
+            // Invalidate to trigger refetch
             queryClient.invalidateQueries({
-              queryKey: ["notifications"],
+              queryKey: ["notifications", "unread", userId],
             });
             },
-          )
-          .subscribe((status, err) => {
-            if (status === "SUBSCRIBED") {
-              isSubscribedRef.current = true;
-              logger.debug(
-                `✅ Successfully subscribed to real-time notifications for user: ${userId}`,
-              );
-              logger.debug(
-                `📡 Listening for changes on user_notifications where user_id = ${userId}`,
-              );
-            } else if (status === "CHANNEL_ERROR") {
-              isSubscribedRef.current = false;
-              logger.error("⚠️ Error subscribing to notifications channel:", err);
-              // Try to refetch count as fallback
-              queryClient.invalidateQueries({
-                queryKey: ["notifications", "unread", userId],
-              });
-            } else if (status === "TIMED_OUT") {
-              isSubscribedRef.current = false;
-              logger.warn(
-                "⏱️ Subscription timed out, will retry on next effect run",
-              );
-            } else if (status === "CLOSED") {
-              isSubscribedRef.current = false;
-              logger.warn("🔌 Channel closed, will reconnect on next mount");
+          );
+
+        // Check again before subscribing to ensure channel hasn't been cleaned up or already subscribed
+        if (channelRef.current !== channel) {
+          // Channel was replaced, don't subscribe
+          isSettingUpRef.current = false;
+          // Clean up the channel we created but won't use
+          try {
+            await supabase.removeChannel(channel);
+          } catch (cleanupErr) {
+            // Ignore cleanup errors
+          }
+          return;
+        }
+
+        // Double-check channel state before subscribing to prevent double subscription
+        const currentState = channel.state;
+        if (currentState === "joined" || currentState === "joining") {
+          // Channel is already subscribed or in the process, don't subscribe again
+          isSettingUpRef.current = false;
+          isSubscribedRef.current = currentState === "joined";
+          return;
+        }
+
+        // Subscribe to the channel
+        channel.subscribe((status, err) => {
+          // Reset setup flag in all cases
+          isSettingUpRef.current = false;
+          
+          if (status === "SUBSCRIBED") {
+            isSubscribedRef.current = true;
+            // Clear any pending reconnection attempts
+            if (reconnectTimeoutRef.current) {
+              clearTimeout(reconnectTimeoutRef.current);
+              reconnectTimeoutRef.current = null;
+            }
+          } else if (status === "CHANNEL_ERROR") {
+            isSubscribedRef.current = false;
+            // Only log error if err is actually provided and meaningful
+            if (err) {
+              logger.error("Error subscribing to notifications channel:", err);
             } else {
-              logger.debug(`📡 Channel status: ${status}`, err);
+              logger.warn("Notifications channel error (no details provided)");
             }
-          });
-
-        channelRef.current = channel;
-        
-        // Also set up a fallback channel that listens to ALL notifications
-        // and filters client-side (in case the filter doesn't work)
-        const fallbackChannelName = `notifications-fallback:${userId}:${Date.now()}`;
-        const fallbackChannel = supabase
-          .channel(fallbackChannelName)
-          .on(
-            "postgres_changes",
-            {
-              event: "INSERT",
-              schema: "public",
-              table: "user_notifications",
-            },
-            async (payload) => {
-              const newNotification = payload.new as {
-                read?: boolean;
-                title?: string;
-                content?: string;
-                id?: string;
-                type?: string;
-                user_id?: string;
-              };
-
-              // Only process if this notification is for the current user
-              if (newNotification.user_id === userId && !newNotification.read) {
-                logger.debug("🔔 Fallback channel received notification:", newNotification);
-                
-                // Increment count
-                queryClient.setQueryData<number>(
-                  ["notifications", "unread", userId],
-                  (oldCount = 0) => oldCount + 1,
-                );
-
-                // Play sound and show toast
-                playNotificationSound();
-                toast.success(
-                  newNotification.title || getTranslation("newNotification"),
-                  {
-                    description:
-                      newNotification.content ||
-                      getTranslation("newNotificationDescription"),
-                    duration: 8000,
-                    icon: createElement(Bell, {
-                      className: "h-5 w-5 text-blue-500",
-                    }),
-                    action: {
-                      label: getTranslation("viewAll"),
-                      onClick: () => {
-                        router.push("/profile/notifications");
-                      },
-                    },
-                    className: "border-l-4 border-l-blue-500 shadow-lg",
-                  },
-                );
-
-                // Immediately refetch
-                queryClient.refetchQueries({
-                  queryKey: ["notifications", "unread", userId],
-                }).catch(() => {
-                  // Silently handle errors
-                });
-              }
-            },
-          )
-          .subscribe((status) => {
-            if (status === "SUBSCRIBED") {
-              logger.debug("✅ Fallback channel subscribed");
+            // Invalidate to trigger refetch as fallback
+            queryClient.invalidateQueries({
+              queryKey: ["notifications", "unread", userId],
+            });
+            // Attempt to reconnect after a delay (only if not already reconnecting)
+            if (!reconnectTimeoutRef.current && userId && supabase) {
+              reconnectTimeoutRef.current = setTimeout(() => {
+                reconnectTimeoutRef.current = null;
+                if (channelRef.current?.state !== "joined") {
+                  setupRealtime();
+                }
+              }, 5000);
             }
-          });
-        
-        // Store fallback channel reference (we'll clean it up in the return)
-        (channelRef.current as any).fallbackChannel = fallbackChannel;
+          } else if (status === "TIMED_OUT") {
+            isSubscribedRef.current = false;
+            logger.warn("Notifications channel subscription timed out, will retry");
+            // Attempt to reconnect (only if not already reconnecting)
+            if (!reconnectTimeoutRef.current && userId && supabase) {
+              reconnectTimeoutRef.current = setTimeout(() => {
+                reconnectTimeoutRef.current = null;
+                if (channelRef.current?.state !== "joined") {
+                  setupRealtime();
+                }
+              }, 5000);
+            }
+          } else if (status === "CLOSED") {
+            isSubscribedRef.current = false;
+            logger.debug("Notifications channel closed, will reconnect");
+            // Attempt to reconnect (only if not already reconnecting)
+            if (!reconnectTimeoutRef.current && userId && supabase) {
+              reconnectTimeoutRef.current = setTimeout(() => {
+                reconnectTimeoutRef.current = null;
+                if (channelRef.current?.state !== "joined") {
+                  setupRealtime();
+                }
+              }, 2000);
+            }
+          }
+        });
       } catch (err) {
         isSubscribedRef.current = false;
-        logger.error("❌ Failed to set up real-time notifications:", err);
+        isSettingUpRef.current = false;
+        // Clean up channel if it was created
+        if (channelRef.current && supabase) {
+          try {
+            await supabase.removeChannel(channelRef.current);
+          } catch (cleanupErr) {
+            // Ignore cleanup errors
+          }
+        }
+        channelRef.current = null;
+        // Only log if err is meaningful
+        if (err instanceof Error) {
+          logger.error("❌ Failed to set up real-time notifications:", err);
+        } else if (err) {
+          logger.error("❌ Failed to set up real-time notifications:", err);
+        } else {
+          logger.warn("Failed to set up real-time notifications (no error details)");
+        }
       }
     };
 
@@ -405,21 +435,22 @@ export function useNotifications(): UseNotificationsResult {
 
     // Cleanup on unmount
     return () => {
+      // Clear any pending reconnection attempts
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
+      }
+      
+      // Reset setup flag
+      isSettingUpRef.current = false;
+      
       if (channelRef.current && supabase) {
         try {
-          // Remove main channel
-          const channelState = channelRef.current.state;
-          if (channelState === "joined" || channelState === "joining") {
-            supabase.removeChannel(channelRef.current);
-          }
-          
-          // Remove fallback channel if it exists
-          const fallbackChannel = (channelRef.current as any).fallbackChannel;
-          if (fallbackChannel) {
-            supabase.removeChannel(fallbackChannel).catch(() => {
-              // Ignore cleanup errors
-            });
-          }
+          // Remove main channel - try to remove regardless of state
+          // Supabase will handle cleanup even if channel is not fully joined
+          supabase.removeChannel(channelRef.current).catch(() => {
+            // Ignore cleanup errors - channel might already be removed
+          });
         } catch (err) {
           // Ignore cleanup errors
         }
@@ -427,7 +458,7 @@ export function useNotifications(): UseNotificationsResult {
         isSubscribedRef.current = false;
       }
     };
-  }, [userId, supabase, queryClient, router]);
+  }, [userId, supabase, queryClient, router, pathname]);
 
   // Track count changes for initial load (don't show toast on initial load)
   useEffect(() => {
@@ -435,26 +466,6 @@ export function useNotifications(): UseNotificationsResult {
       previousCountRef.current = unreadCount;
     }
   }, [unreadCount, isLoading]);
-
-  // Aggressive polling fallback: Always poll every 1 second to ensure we get updates immediately
-  // This ensures notifications work even if realtime fails
-  useEffect(() => {
-    if (!userId || !supabase || isLoading) return;
-
-    // Poll every 1 second to ensure we catch any missed notifications immediately
-    const pollInterval = setInterval(async () => {
-      try {
-        // Silently refetch without logging to avoid spam
-        await queryClient.refetchQueries({
-          queryKey: ["notifications", "unread", userId],
-        });
-      } catch (err) {
-        // Silently handle errors to avoid console spam
-      }
-    }, 1000); // Poll every 1 second for immediate updates
-
-    return () => clearInterval(pollInterval);
-  }, [userId, supabase, isLoading, queryClient]);
 
   return {
     unreadCount: typeof unreadCount === "number" ? unreadCount : 0,

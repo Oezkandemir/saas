@@ -14,8 +14,6 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
   }
 
   try {
-    logger.debug(`Checking if user ${user.id} exists in database...`);
-
     // First try to get the user by ID directly
     const { data: existingUser, error: fetchError } = await supabaseAdmin
       .from("users")
@@ -27,9 +25,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
     // IMPORTANT: Do NOT update the role - preserve the existing database role
     // This prevents admin roles from being reset to USER
     if (existingUser) {
-      logger.debug(
-        `User ${user.id} already exists in database with role ${existingUser.role}`,
-      );
+      // Only log if there's an actual issue or new user creation
       return existingUser;
     }
 

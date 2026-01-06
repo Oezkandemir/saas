@@ -3,17 +3,68 @@
 import { revalidateTag } from "next/cache";
 import { auth } from "@/auth";
 
+import { pricingData } from "@/config/subscriptions";
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
+
+/**
+ * Helper function to get plan name from product ID
+ */
+function getPlanNameFromProductId(productId: string | null | undefined): string {
+  if (!productId) return "Free";
+  
+  for (const plan of pricingData) {
+    if (plan.polarIds?.monthly === productId || plan.polarIds?.yearly === productId) {
+      return plan.title;
+    }
+  }
+  
+  return `Unknown Plan (${productId})`;
+}
+
+/**
+ * Helper function to get user display info for logging
+ */
+async function getUserDisplayInfo(userId: string): Promise<{ name: string; email: string } | null> {
+  try {
+    // Get user data from users table (has email and name)
+    const { data: userData } = await supabaseAdmin
+      .from("users")
+      .select("email, name")
+      .eq("id", userId)
+      .single();
+    
+    if (!userData) {
+      return null;
+    }
+    
+    // Try to get display_name from user_profiles for better name
+    const { data: profileData } = await supabaseAdmin
+      .from("user_profiles")
+      .select("display_name")
+      .eq("user_id", userId)
+      .single();
+    
+    // Prioritize display_name from profile, then name from users, then email prefix
+    const displayName = profileData?.display_name || 
+                       userData.name || 
+                       userData.email?.split("@")[0] || 
+                       "Unknown";
+    
+    return {
+      name: displayName,
+      email: userData.email || "Unknown",
+    };
+  } catch {
+    return null;
+  }
+}
 import {
   cancelPolarSubscription,
   getPolarSubscription,
   reactivatePolarSubscription,
   updatePolarSubscription,
 } from "@/lib/polar";
-
-// Type assertion to handle Next.js 16 type requirements
-const revalidateTagSafe = revalidateTag as (tag: string) => void;
 
 export type ManageSubscriptionResult = {
   success: boolean;
@@ -63,10 +114,11 @@ export async function cancelSubscription(
       .eq("polar_subscription_id", userData.polar_subscription_id);
 
     // Invalidate cache
-    revalidateTagSafe("subscription-plan");
+    revalidateTag("subscription-plan", "max");
 
+    const userInfo = await getUserDisplayInfo(user.id);
     logger.info(
-      `Subscription ${userData.polar_subscription_id} canceled for user ${user.id}`,
+      `Subscription canceled: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"})`,
     );
 
     return {
@@ -124,10 +176,11 @@ export async function reactivateSubscription(): Promise<ManageSubscriptionResult
       .eq("polar_subscription_id", userData.polar_subscription_id);
 
     // Invalidate cache
-    revalidateTagSafe("subscription-plan");
+    revalidateTag("subscription-plan", "max");
 
+    const userInfo = await getUserDisplayInfo(user.id);
     logger.info(
-      `Subscription ${userData.polar_subscription_id} reactivated for user ${user.id}`,
+      `Subscription reactivated: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"})`,
     );
 
     return {
@@ -225,10 +278,13 @@ export async function updateSubscriptionPlan(
       .eq("polar_subscription_id", subscriptionId);
 
     // Invalidate cache
-    revalidateTagSafe("subscription-plan");
+    revalidateTag("subscription-plan", "max");
 
+    const userInfo = await getUserDisplayInfo(user.id);
+    const oldPlanName = getPlanNameFromProductId(userData.polar_product_id);
+    const newPlanName = getPlanNameFromProductId(newProductId);
     logger.info(
-      `Subscription ${subscriptionId} updated to product ${newProductId} for user ${user.id}`,
+      `Subscription updated: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"}) → Plan changed from ${oldPlanName} to ${newPlanName}`,
     );
 
     return {

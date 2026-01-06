@@ -6,9 +6,6 @@ import { auth } from "@/auth";
 import { logger } from "@/lib/logger";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 
-// Type assertion to handle Next.js 16 type requirements
-const revalidateTagSafe = revalidateTag as (tag: string) => void;
-
 export type RefreshResult = {
   success: boolean;
   message: string;
@@ -38,7 +35,7 @@ export async function refreshSubscription(): Promise<RefreshResult> {
     }
 
     // Invalidate cache to force refresh
-    revalidateTagSafe("subscription-plan");
+    revalidateTag("subscription-plan", "max");
 
     // Get current subscription plan (will use fresh data after sync)
     const updatedPlan = await getUserSubscriptionPlan(user.id);

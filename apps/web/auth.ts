@@ -7,35 +7,35 @@ import { getSupabaseServer } from "@/lib/supabase-server";
 
 export const auth = cache(async () => {
   try {
-    // Get session directly instead of using getSession
+    // Use getUser() instead of getSession() for secure authentication
     const supabase = await getSupabaseServer();
     const {
-      data: { session },
-    } = await supabase.auth.getSession();
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!session) {
+    if (!user) {
       return null;
     }
 
     // Ensure user exists in the database
-    await syncUserWithDatabase(session.user);
+    await syncUserWithDatabase(user);
 
     // Get user data from database to get the proper name
     const { data: dbUser } = await supabase
       .from("user_profiles")
       .select("name")
-      .eq("id", session.user.id)
+      .eq("id", user.id)
       .single();
 
     return {
       user: {
-        id: session.user.id,
-        email: session.user.email,
+        id: user.id,
+        email: user.email,
         // Prioritize the database name
         name:
           dbUser?.name ||
-          session.user.user_metadata?.name ||
-          session.user.email?.split("@")[0],
+          user.user_metadata?.name ||
+          user.email?.split("@")[0],
       },
     };
   } catch (error) {

@@ -2,9 +2,63 @@
 
 import { auth } from "@/auth";
 
+import { pricingData } from "@/config/subscriptions";
 import { env } from "@/env.mjs";
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
+
+/**
+ * Helper function to get plan name from product ID
+ */
+function getPlanNameFromProductId(productId: string | null | undefined): string {
+  if (!productId) return "Free";
+  
+  for (const plan of pricingData) {
+    if (plan.polarIds?.monthly === productId || plan.polarIds?.yearly === productId) {
+      return plan.title;
+    }
+  }
+  
+  return `Unknown Plan (${productId})`;
+}
+
+/**
+ * Helper function to get user display info for logging
+ */
+async function getUserDisplayInfo(userId: string): Promise<{ name: string; email: string } | null> {
+  try {
+    // Get user data from users table (has email and name)
+    const { data: userData } = await supabaseAdmin
+      .from("users")
+      .select("email, name")
+      .eq("id", userId)
+      .single();
+    
+    if (!userData) {
+      return null;
+    }
+    
+    // Try to get display_name from user_profiles for better name
+    const { data: profileData } = await supabaseAdmin
+      .from("user_profiles")
+      .select("display_name")
+      .eq("user_id", userId)
+      .single();
+    
+    // Prioritize display_name from profile, then name from users, then email prefix
+    const displayName = profileData?.display_name || 
+                       userData.name || 
+                       userData.email?.split("@")[0] || 
+                       "Unknown";
+    
+    return {
+      name: displayName,
+      email: userData.email || "Unknown",
+    };
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Sync subscription directly from Polar API
@@ -309,13 +363,11 @@ export async function syncPolarSubscriptionDirect(): Promise<{
     // Use the customerId from subscription or the one we found earlier
     const finalCustomerId = subscriptionCustomerId || customerId;
 
-    logger.info("Updating user with latest Polar subscription data", {
-      userId: user.id,
-      productId,
-      customerId: finalCustomerId,
-      status,
-      currentPeriodEnd,
-    });
+    const planName = getPlanNameFromProductId(productId);
+    const userInfo = await getUserDisplayInfo(user.id);
+    logger.info(
+      `Updating user "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"}) with latest Polar subscription data: Plan: ${planName}, Status: ${status}`,
+    );
 
     // Update user table with latest data
     
@@ -374,15 +426,9 @@ export async function syncPolarSubscriptionDirect(): Promise<{
     // Note: Cache invalidation is handled by unstable_noStore() in the page component
     // We don't call revalidateTag here to avoid calling it during render
 
+    // Reuse planName and userInfo from above (already declared at line 362-363)
     logger.info(
-      `Successfully synced subscription ${subscriptionId} from Polar API`,
-      {
-        userId: user.id,
-        productId,
-        customerId,
-        status,
-        currentPeriodEnd,
-      },
+      `Successfully synced subscription from Polar API: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"}) → Plan: ${planName}, Status: ${status}`,
     );
 
     return {

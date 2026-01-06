@@ -249,19 +249,54 @@ export async function fetcher<JSON = any>(
   const res = await fetch(input, init);
 
   if (!res.ok) {
-    const json = await res.json();
-    if (json.error) {
-      const error = new Error(json.error) as Error & {
-        status: number;
-      };
-      error.status = res.status;
-      throw error;
-    } else {
-      throw new Error("An unexpected error occurred");
+    // Check content type before parsing JSON
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      try {
+        const text = await res.text();
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const json = JSON.parse(jsonMatch[0]);
+          if (json.error) {
+            const error = new Error(json.error) as Error & {
+              status: number;
+            };
+            error.status = res.status;
+            throw error;
+          }
+        }
+      } catch (parseError) {
+        // JSON parse failed - throw generic error
+      }
     }
+    throw new Error("An unexpected error occurred");
   }
 
-  return res.json();
+  // Check content type before parsing JSON
+  const contentType = res.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    throw new Error("Response is not JSON");
+  }
+
+  try {
+    const text = await res.text();
+    const trimmedText = text.trim();
+    // Try direct parse first
+    try {
+      return JSON.parse(trimmedText);
+    } catch {
+      // If direct parse fails, try to extract JSON object
+      const jsonMatch = trimmedText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+      }
+      throw new Error("No valid JSON found in response");
+    }
+  } catch (parseError) {
+    throw new Error(
+      `Failed to parse JSON: ${parseError instanceof Error ? parseError.message : String(parseError)}`,
+    );
+  }
 }
 
 export function nFormatter(num: number, digits?: number) {

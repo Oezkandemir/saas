@@ -46,9 +46,18 @@ export async function GET(request: NextRequest) {
 
     // Create abort controller for better timeout handling
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
-
+    let timeoutId: NodeJS.Timeout | null = null;
+    
     try {
+      // Set timeout to abort request after 3 seconds
+      timeoutId = setTimeout(() => {
+        try {
+          controller.abort();
+        } catch (err) {
+          // Ignore abort errors
+        }
+      }, 3000);
+
       const response = await fetch(url, {
         signal: controller.signal,
         headers: {
@@ -56,14 +65,46 @@ export async function GET(request: NextRequest) {
         },
       });
 
-      clearTimeout(timeoutId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
 
       if (!response.ok) {
         // Return default values if API fails
         return NextResponse.json(defaultResponse);
       }
 
-      const data = await response.json();
+      // Check content type before parsing JSON
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        // Not JSON response - return defaults
+        return NextResponse.json(defaultResponse);
+      }
+
+      // Try to parse JSON with error handling
+      let data;
+      try {
+        const text = await response.text();
+        // Trim whitespace and try to parse JSON
+        const trimmedText = text.trim();
+        // Try direct parse first
+        try {
+          data = JSON.parse(trimmedText);
+        } catch {
+          // If direct parse fails, try to extract JSON object
+          const jsonMatch = trimmedText.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            data = JSON.parse(jsonMatch[0]);
+          } else {
+            // No valid JSON found - return defaults
+            return NextResponse.json(defaultResponse);
+          }
+        }
+      } catch (parseError) {
+        // JSON parse failed - return defaults silently
+        return NextResponse.json(defaultResponse);
+      }
 
       return NextResponse.json({
         country: data.country_name || null,
@@ -74,10 +115,13 @@ export async function GET(request: NextRequest) {
         longitude: data.longitude || null,
       });
     } catch (fetchError: any) {
-      clearTimeout(timeoutId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
 
       // Don't log timeout errors - they're expected and handled gracefully
-      if (fetchError?.name === "AbortError" || fetchError?.code === 23) {
+      if (fetchError?.name === "AbortError" || fetchError?.code === 23 || fetchError?.message?.includes("aborted")) {
         // Timeout - return defaults silently
         return NextResponse.json(defaultResponse);
       }
@@ -86,10 +130,14 @@ export async function GET(request: NextRequest) {
       throw fetchError;
     }
   } catch (error: any) {
-    // Only log unexpected errors, not timeouts or expected failures
-    if (error?.name !== "AbortError" && error?.code !== 23) {
-      // Log only unexpected errors
-      logger.debug("Geolocation API error:", error?.message || error);
+    // Only log critical errors, not timeouts or expected failures
+    if (
+      error?.name !== "AbortError" &&
+      error?.code !== 23 &&
+      !error?.message?.includes("aborted")
+    ) {
+      // Log only critical unexpected errors
+      logger.error("Geolocation API error:", error?.message || error);
     }
 
     // Return default values on any error

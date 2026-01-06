@@ -113,15 +113,15 @@ export default async function proxy(request: NextRequest) {
   // Get the locale from the request pathname
   const pathnameWithoutLocale = pathname.replace(/^\/(?:en|de)(?=$|\/)/, "");
 
-  // Get user session and data
-  const [
-    {
-      data: { user: authUser },
-    },
-    {
-      data: { session },
-    },
-  ] = await Promise.all([supabase.auth.getUser(), supabase.auth.getSession()]);
+  // Get user data (use getUser() for secure authentication)
+  const {
+    data: { user: authUser },
+  } = await supabase.auth.getUser();
+  
+  // Get session only if needed for route checks (session is less secure but OK for route protection)
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   // Define route checks
   const protectedRoutes = ["/dashboard", "/settings", "/account", "/admin"];

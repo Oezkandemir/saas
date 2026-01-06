@@ -17,8 +17,7 @@ import {
   CardTitle,
 } from "@/components/alignui/data-display/card";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { TicketMessageItem } from "@/components/support/ticket-message";
-import { TicketReplyForm } from "@/components/support/ticket-reply-form";
+import { TicketConversation } from "@/components/support/ticket-conversation";
 import { TicketStatusUpdater } from "@/components/support/ticket-status-updater";
 
 export async function generateMetadata({
@@ -122,36 +121,23 @@ export default async function AdminTicketPage({
 
           <div>
             <h3 className="mb-4 font-medium">{t("conversation")}</h3>
-            {messages.length === 0 ? (
-              <div className="py-6 text-center text-muted-foreground">
-                {t("noMessagesAdmin")}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {messages.map((message) => (
-                  <TicketMessageItem
-                    key={message.id}
-                    message={message}
-                    isCurrentUser={message.user_id === user.id}
-                    isAdminView={true}
-                  />
-                ))}
-              </div>
-            )}
+            <TicketConversation
+              ticketId={ticket.id}
+              initialMessages={messages}
+              currentUserId={user.id}
+              currentUserName={user.name || user.email || "Admin"}
+              ticketStatus={ticket.status}
+              isAdminView={true}
+            />
           </div>
         </CardContent>
-        <CardFooter>
-          {ticket.status !== "closed" && (
-            <div className="w-full">
-              <TicketReplyForm ticketId={ticket.id} />
-            </div>
-          )}
-          {ticket.status === "closed" && (
+        {ticket.status === "closed" && (
+          <CardFooter>
             <div className="w-full py-4 text-center text-muted-foreground">
               {t("ticketClosed")}
             </div>
-          )}
-        </CardFooter>
+          </CardFooter>
+        )}
       </Card>
     </UnifiedPageLayout>
   );

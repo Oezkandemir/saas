@@ -72,7 +72,7 @@ export function TicketMessageItem({
 
       <div
         className={cn(
-          "flex max-w-[80%] flex-col",
+          "flex max-w-[80%] flex-col animate-in fade-in slide-in-from-bottom-2 duration-300",
           alignRight ? "items-end" : "items-start",
         )}
       >

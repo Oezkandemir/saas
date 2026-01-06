@@ -12,6 +12,10 @@ import { logger } from "@/lib/logger";
  * Automatically refreshes subscription data periodically when user is authenticated
  * This ensures that changes made in Polar Customer Portal are reflected automatically
  * Works globally across all pages, not just billing page
+ * 
+ * Note: Uses polling instead of Realtime because subscription updates come from
+ * external Polar API webhooks, not direct database changes. Polling interval is
+ * optimized to balance freshness with server load.
  */
 export function AutoRefreshSubscription() {
   const router = useRouter();
@@ -33,10 +37,11 @@ export function AutoRefreshSubscription() {
       hasCheckedRef.current = true;
     }, 5000);
 
-    // Then check every 30 seconds
+    // Check every 60 seconds (optimized interval - balances freshness with server load)
+    // Only runs for users with paid subscriptions, so impact is minimal
     intervalRef.current = setInterval(async () => {
       await checkAndRefresh();
-    }, 30000);
+    }, 60000);
 
     return () => {
       clearTimeout(initialTimeout);

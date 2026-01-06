@@ -49,13 +49,9 @@ export default async function BillingPage({
     const { syncPolarSubscriptionDirect } = await import(
       "@/actions/sync-polar-subscription-direct"
     );
-    logger.info("Syncing subscription directly from Polar API");
     const syncResult = await syncPolarSubscriptionDirect();
     syncSuccess = syncResult.success;
-    logger.info("Subscription synced successfully from Polar API", {
-      success: syncResult.success,
-      message: syncResult.message,
-    });
+    // Only log errors, not successful syncs
   } catch (error) {
     logger.error("Error syncing subscription from Polar API:", error);
     // Continue loading page even if sync fails - will show cached data
@@ -67,16 +63,11 @@ export default async function BillingPage({
       const { syncPolarSubscriptionFromCheckout } = await import(
         "@/actions/sync-polar-subscription"
       );
-      logger.info(
-        `Syncing subscription for checkout_id: ${resolvedSearchParams.checkout_id}`,
-      );
       const checkoutSyncResult = await syncPolarSubscriptionFromCheckout(
         resolvedSearchParams.checkout_id,
       );
       syncSuccess = checkoutSyncResult.success || syncSuccess;
-      logger.info("Subscription synced successfully from checkout", {
-        success: checkoutSyncResult.success,
-      });
+      // Only log errors, not successful syncs
     } catch (error) {
       logger.error("Error syncing subscription from checkout:", error);
       // Continue loading page even if sync fails
@@ -122,29 +113,14 @@ export default async function BillingPage({
       // After sync, bypass cache to get fresh data
       const plan = await getUserSubscriptionPlan(user.id, user.email);
       userSubscriptionPlan = plan || defaultFreePlan;
-      
-      // Log the plan details for debugging
-      logger.info("Loaded subscription plan for USER", {
-        planTitle: plan?.title,
-        productId: plan?.polarProductId,
-        isPaid: plan?.isPaid,
-        interval: plan?.interval,
-      });
     } else if (user.role === "ADMIN") {
       // For admins, try to fetch subscription if they have one
       // Otherwise use the default free plan
       try {
         const plan = await getUserSubscriptionPlan(user.id, user.email);
         userSubscriptionPlan = plan || defaultFreePlan;
-        
-        logger.info("Loaded subscription plan for ADMIN", {
-          planTitle: plan?.title,
-          productId: plan?.polarProductId,
-          isPaid: plan?.isPaid,
-        });
       } catch (error) {
         // If admin has no subscription, use default free plan
-        logger.debug("Admin has no subscription, using default free plan");
         userSubscriptionPlan = defaultFreePlan;
       }
     } else {

@@ -28,44 +28,8 @@ export const supabaseAdmin = createClient<Database>(
   },
 );
 
-// Test the connection only in development mode and skip if env vars are missing
-async function testConnection() {
-  // Skip connection test in production or if env vars are missing
-  if (
-    process.env.NODE_ENV === "production" ||
-    !supabaseUrl ||
-    !supabaseServiceKey
-  ) {
-    return;
-  }
-
-  try {
-    const { error } = await supabaseAdmin
-      .from("users")
-      .select("count")
-      .limit(1);
-
-    if (error) {
-      // Only log as warning in development, not as error
-      logger.warn("Supabase admin client connection test warning", {
-        code: error.code,
-        message: error.message,
-      });
-    } else {
-      logger.debug("Supabase admin client connected successfully");
-    }
-  } catch (error) {
-    // Only log as warning in development
-    logger.warn("Supabase connection test failed", error);
-  }
-}
-
-// Run the test but don't block initialization - only in development
-if (process.env.NODE_ENV === "development") {
-  testConnection().catch(() => {
-    // Silently fail - connection test is not critical
-  });
-}
+// Connection test removed to reduce log spam
+// The client will fail gracefully if there are connection issues
 
 // Server-only versions of user functions
 export const getServerUserByEmail = async (email: string) => {
