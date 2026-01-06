@@ -173,21 +173,47 @@ export function UserAuthForm({
           // Build the confirmation URL - use the site URL from config if available
           // This ensures we don't use localhost in production emails
           // IMPORTANT: Include locale in the callback URL
-          const baseUrl = siteConfig.url || window.location.origin;
+          // Ensure localhost uses http:// instead of https://
+          let baseUrl = siteConfig.url || window.location.origin;
+          try {
+            const url = new URL(baseUrl);
+            // If hostname is localhost or 127.0.0.1, force http:// protocol
+            if ((url.hostname === "localhost" || url.hostname === "127.0.0.1") && url.protocol === "https:") {
+              url.protocol = "http:";
+              baseUrl = url.toString().replace(/\/$/, ""); // Remove trailing slash if present
+            }
+          } catch (e) {
+            // If URL parsing fails, fall back to string replacement
+            if ((baseUrl.includes("localhost") || baseUrl.includes("127.0.0.1")) && baseUrl.startsWith("https://")) {
+              baseUrl = baseUrl.replace(/^https:\/\//, "http://");
+            }
+          }
           const confirmationUrl = `${baseUrl}/${locale}/auth/callback?type=signup&id=${signUpResult.data.user?.id}`;
 
           // Send custom confirmation email
-          await sendSignupConfirmationEmail({
-            email: data.email,
-            name: userName,
-            actionUrl: confirmationUrl,
-          });
+          try {
+            await sendSignupConfirmationEmail({
+              email: data.email,
+              name: userName,
+              actionUrl: confirmationUrl,
+            });
+            logger.info("Confirmation email sent successfully");
+          } catch (confirmationError) {
+            logger.error("Failed to send confirmation email:", confirmationError);
+            // Continue even if confirmation email fails
+          }
 
           // Send welcome email
-          await sendWelcomeEmail({
-            email: data.email,
-            name: userName,
-          });
+          try {
+            await sendWelcomeEmail({
+              email: data.email,
+              name: userName,
+            });
+            logger.info("Welcome email sent successfully");
+          } catch (welcomeError) {
+            logger.error("Failed to send welcome email:", welcomeError);
+            // Continue even if welcome email fails
+          }
 
           // Create a welcome notification in the user's account
           await supabase.from("user_notifications").insert({

@@ -156,31 +156,168 @@ export async function GET(request: NextRequest) {
       }
 
       // Update user's email confirmation status in Auth
-      const { error: updateError } =
-        await supabaseAdmin.auth.admin.updateUserById(userId, {
+      // Use SQL function as primary method since updateUserById fails due to missing logs table trigger
+      const confirmationTimestamp = new Date().toISOString();
+      
+      // Try using SQL function first (more reliable)
+      let emailConfirmed = false;
+      try {
+        const { data: sqlResult, error: sqlError } = await supabaseAdmin.rpc('confirm_user_email', {
+          user_id: userId
+        });
+        
+        if (sqlError) {
+          logger.error("SQL function failed:", sqlError);
+        } else if (sqlResult) {
+          logger.info("Email confirmed using SQL function");
+          emailConfirmed = true;
+        }
+      } catch (sqlError) {
+        logger.error("SQL function exception:", sqlError);
+      }
+      
+      // If SQL function failed, try Admin API as fallback
+      if (!emailConfirmed) {
+        logger.info("SQL function failed, trying Admin API");
+        const existingMetadata = userData.user.user_metadata || {};
+        
+        const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
           email_confirm: true,
           user_metadata: {
-            ...userData.user.user_metadata,
+            ...existingMetadata,
             email_confirmed: true,
           },
         });
 
-      if (updateError) {
-        logger.error("Error updating user auth status:", updateError);
+        if (updateError) {
+          logger.error("Admin API also failed:", {
+            error: updateError,
+            message: updateError.message,
+            code: updateError.code,
+            status: updateError.status,
+          });
+          
+          // Last resort: try to update directly in database
+          try {
+            const { error: dbUpdateError } = await supabaseAdmin
+              .from("users")
+              .update({ emailVerified: confirmationTimestamp })
+              .eq("id", userId);
+            
+            if (dbUpdateError) {
+              logger.error("Database update also failed:", dbUpdateError);
+              return NextResponse.redirect(
+                new URL(
+                  `/${locale}/login?error=${encodeURIComponent("Failed to confirm email. Please contact support.")}`,
+                  requestUrl.origin,
+                ),
+              );
+            } else {
+              logger.warn("Updated emailVerified in database as last resort");
+              // Still redirect to verified page since we updated the database
+              return NextResponse.redirect(
+                new URL(`/${locale}/auth/verified?userId=${userId}&confirmed=true&warning=true`, requestUrl.origin),
+              );
+            }
+          } catch (fallbackError) {
+            logger.error("All confirmation methods failed:", fallbackError);
+            return NextResponse.redirect(
+              new URL(
+                `/${locale}/login?error=${encodeURIComponent("Failed to confirm email. Please contact support.")}`,
+                requestUrl.origin,
+              ),
+            );
+          }
+        } else {
+          logger.info("Email confirmed using Admin API");
+          emailConfirmed = true;
+        }
+      }
+
+      // Verify the confirmation actually worked by checking the user again
+      // Wait a moment for the update to propagate
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const { data: verifiedUserData, error: verifyError } =
+        await supabaseAdmin.auth.admin.getUserById(userId);
+
+      if (verifyError || !verifiedUserData?.user) {
+        logger.error("Error verifying user after confirmation:", verifyError);
+        // Still update database as fallback
+        try {
+          await supabaseAdmin
+            .from("users")
+            .update({ emailVerified: confirmationTimestamp })
+            .eq("id", userId);
+          logger.warn("Updated emailVerified in database as fallback");
+        } catch (dbError) {
+          logger.error("Database update failed:", dbError);
+        }
+        
         return NextResponse.redirect(
-          new URL(
-            `/${locale}/login?error=${encodeURIComponent("Failed to confirm email: " + updateError.message)}`,
-            requestUrl.origin,
-          ),
+          new URL(`/${locale}/auth/verified?userId=${userId}&confirmed=true&warning=true`, requestUrl.origin),
         );
       }
 
-      logger.info(`Successfully confirmed email for user ${userId} in auth.users`);
+      // Check if email_confirmed_at was actually set
+      if (!verifiedUserData.user.email_confirmed_at) {
+        logger.error(`Email confirmation failed - email_confirmed_at is still null for user ${userId}`);
+        
+        // Try SQL function one more time
+        try {
+          const { data: retryResult } = await supabaseAdmin.rpc('confirm_user_email', {
+            user_id: userId
+          });
+          
+          if (!retryResult) {
+            // Update database as fallback
+            await supabaseAdmin
+              .from("users")
+              .update({ emailVerified: confirmationTimestamp })
+              .eq("id", userId);
+            
+            logger.warn("Updated emailVerified in database as fallback after retry");
+            return NextResponse.redirect(
+              new URL(`/${locale}/auth/verified?userId=${userId}&confirmed=true&warning=true`, requestUrl.origin),
+            );
+          }
+          
+          // Verify again after retry
+          await new Promise(resolve => setTimeout(resolve, 500));
+          const { data: retryVerifiedData } = await supabaseAdmin.auth.admin.getUserById(userId);
+          if (!retryVerifiedData?.user?.email_confirmed_at) {
+            logger.error("Email confirmation still failed after SQL retry");
+            // Update database as fallback
+            await supabaseAdmin
+              .from("users")
+              .update({ emailVerified: confirmationTimestamp })
+              .eq("id", userId);
+            
+            return NextResponse.redirect(
+              new URL(`/${locale}/auth/verified?userId=${userId}&confirmed=true&warning=true`, requestUrl.origin),
+            );
+          }
+        } catch (retryError) {
+          logger.error("Retry also failed:", retryError);
+          // Update database as fallback
+          await supabaseAdmin
+            .from("users")
+            .update({ emailVerified: confirmationTimestamp })
+            .eq("id", userId);
+          
+          return NextResponse.redirect(
+            new URL(`/${locale}/auth/verified?userId=${userId}&confirmed=true&warning=true`, requestUrl.origin),
+          );
+        }
+      }
+
+      const confirmedTimestamp = verifiedUserData.user.email_confirmed_at || confirmationTimestamp;
+      logger.info(`Email confirmed at: ${confirmedTimestamp} for user ${userId}`);
 
       // Also update the user table
       const { error: dbError } = await supabaseAdmin
         .from("users")
-        .update({ emailVerified: new Date().toISOString() })
+        .update({ emailVerified: confirmedTimestamp })
         .eq("id", userId);
 
       if (dbError) {
@@ -192,36 +329,11 @@ export async function GET(request: NextRequest) {
 
       logger.info(`Email verified successfully for user ${userId}`);
 
-      // After confirming email, generate a magic link to automatically sign in the user
-      // This creates a session without requiring the password
-      try {
-        const { data: magicLinkData, error: magicLinkError } =
-          await supabaseAdmin.auth.admin.generateLink({
-            type: "magiclink",
-            email: userData.user.email!,
-            options: {
-              redirectTo: `${requestUrl.origin}/${locale}/auth/callback?autoLogin=true`,
-            },
-          });
-
-        if (magicLinkError || !magicLinkData?.properties?.action_link) {
-          logger.error("Error generating magic link for auto-login:", magicLinkError);
-          // Fallback: redirect to verified page where user can manually log in
-          return NextResponse.redirect(
-            new URL(`/${locale}/auth/verified?userId=${userId}`, requestUrl.origin),
-          );
-        }
-
-        // Redirect to the magic link - Supabase will handle the session creation
-        logger.info(`Redirecting user ${userId} to magic link for auto-login`);
-        return NextResponse.redirect(magicLinkData.properties.action_link);
-      } catch (autoLoginError) {
-        logger.error("Error during auto-login after confirmation:", autoLoginError);
-        // Fallback: redirect to verified page where user can manually log in
-        return NextResponse.redirect(
-          new URL(`/${locale}/auth/verified?userId=${userId}`, requestUrl.origin),
-        );
-      }
+      // Redirect to verified page - user will be redirected to login after 3 seconds
+      // User is NOT automatically logged in - they need to sign in manually
+      return NextResponse.redirect(
+        new URL(`/${locale}/auth/verified?userId=${userId}&confirmed=true`, requestUrl.origin),
+      );
     } catch (error) {
       logger.error("Error handling signup callback", error);
       return NextResponse.redirect(

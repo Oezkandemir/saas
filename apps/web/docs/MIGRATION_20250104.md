@@ -66,3 +66,4 @@ Nach erfolgreicher Ausführung der Migration sollten:
 - Neue Firmenprofile automatisch die Standardwerte verwenden
 - Das Formular für Firmenprofile die neuen Felder anzeigen
 
+

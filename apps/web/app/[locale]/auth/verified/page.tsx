@@ -12,22 +12,20 @@ export default function VerifiedPage() {
   const router = useRouter();
   const params = useParams();
   const locale = params.locale as string;
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(3);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          router.push(`/${locale}/login`);
-          return 0;
-        }
-        return prev - 1;
-      });
+    if (countdown <= 0) {
+      router.push(`/${locale}/login`);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setCountdown((prev) => prev - 1);
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [router, locale]);
+    return () => clearTimeout(timer);
+  }, [router, locale, countdown]);
 
   return (
     <div className="container flex h-screen w-screen flex-col items-center justify-center">
