@@ -270,7 +270,7 @@ function DashboardSidebarContent({ links }: DashboardSidebarProps) {
                               )}
                               {/* Add notification badge with thin blue border */}
                               {showNotificationBadge && (
-                                <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full ring-1 ring-blue-500 bg-transparent text-xs font-bold text-blue-500">
+                                <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full ring-1 ring-black dark:ring-blue-500 bg-transparent text-xs font-bold text-black dark:text-blue-500">
                                   {unreadCount > 99 ? "99+" : unreadCount}
                                 </span>
                               )}
@@ -296,7 +296,7 @@ function DashboardSidebarContent({ links }: DashboardSidebarProps) {
                                 >
                                   <span className="flex size-full items-center justify-center relative">
                                     {showNotificationBadge ? (
-                                      <span className="flex h-6 w-6 items-center justify-center rounded-full ring-1 ring-blue-500 bg-transparent text-xs font-bold text-blue-500">
+                                      <span className="flex h-6 w-6 items-center justify-center rounded-full ring-1 ring-black dark:ring-blue-500 bg-transparent text-xs font-bold text-black dark:text-blue-500">
                                         {unreadCount > 99 ? "99+" : unreadCount}
                                       </span>
                                     ) : (
@@ -615,7 +615,7 @@ function MobileSheetSidebarContent({ links }: DashboardSidebarProps) {
                             )}
                             {/* Add notification badge with thin blue border */}
                             {showNotificationBadge && (
-                              <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full ring-1 ring-blue-500 bg-transparent text-xs font-bold text-blue-500">
+                              <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full ring-1 ring-black dark:ring-blue-500 bg-transparent text-xs font-bold text-black dark:text-blue-500">
                                 {unreadCount > 99 ? "99+" : unreadCount}
                               </span>
                             )}

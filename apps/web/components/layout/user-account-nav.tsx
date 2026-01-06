@@ -285,7 +285,7 @@ export function UserAccountNav() {
                       <span>{tNav("notifications")}</span>
                     </div>
                     {unreadCount > 0 && (
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full ring-1 ring-blue-500 bg-transparent text-xs font-bold text-blue-500">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full ring-1 ring-black dark:ring-blue-500 bg-transparent text-xs font-bold text-black dark:text-blue-500">
                         {unreadCount > 99 ? "99+" : unreadCount}
                       </span>
                     )}
