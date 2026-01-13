@@ -18,6 +18,7 @@ import {
   Download,
   Loader2,
   Paperclip,
+  Reply,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -32,6 +33,7 @@ import {
   CardTitle,
 } from "@/components/alignui/data-display/card";
 import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
+import { InboundEmailReplyForm } from "./inbound-email-reply-form";
 
 type InboundEmailDetailProps = {
   emailId: string;
@@ -42,6 +44,7 @@ export function InboundEmailDetail({ emailId }: InboundEmailDetailProps) {
   const [email, setEmail] = useState<InboundEmail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showReplyForm, setShowReplyForm] = useState(false);
 
   useEffect(() => {
     loadEmail();
@@ -161,6 +164,15 @@ export function InboundEmailDetail({ emailId }: InboundEmailDetailProps) {
           Zurück
         </Button>
         <div className="flex items-center gap-2">
+          <Button
+            variant="default"
+            size="sm"
+            onClick={() => setShowReplyForm(!showReplyForm)}
+            disabled={isProcessing}
+          >
+            <Reply className="h-4 w-4 mr-2" />
+            {showReplyForm ? "Antwort abbrechen" : "Antworten"}
+          </Button>
           {email.is_read ? (
             <Button
               variant="outline"
@@ -315,6 +327,21 @@ export function InboundEmailDetail({ emailId }: InboundEmailDetailProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Reply Form */}
+      {showReplyForm && email && (
+        <InboundEmailReplyForm
+          inboundEmailId={email.id}
+          originalSubject={email.subject || "(Kein Betreff)"}
+          originalFrom={email.from_name ? `${email.from_name} <${email.from_email}>` : email.from_email}
+          onSuccess={() => {
+            setShowReplyForm(false);
+            // Optionally reload email to show it as read
+            loadEmail();
+          }}
+          onCancel={() => setShowReplyForm(false)}
+        />
+      )}
     </div>
   );
 }

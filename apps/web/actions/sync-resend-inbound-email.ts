@@ -30,8 +30,9 @@ export async function syncResendInboundEmail(emailId: string): Promise<{
       };
     }
 
-    // Fetch email from Resend API
-    const response = await fetch(`https://api.resend.com/emails/${emailId}`, {
+    // Fetch inbound email from Resend API
+    // Use the correct endpoint for inbound/received emails
+    const response = await fetch(`https://api.resend.com/emails/receiving/${emailId}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${env.RESEND_API_KEY}`,
@@ -52,6 +53,12 @@ export async function syncResendInboundEmail(emailId: string): Promise<{
     }
 
     const emailData = await response.json();
+
+    logger.info("Fetched email from Resend API", {
+      emailId,
+      hasData: !!emailData,
+      keys: Object.keys(emailData || {}),
+    });
 
     // Check if email already exists
     const { data: existingEmail } = await supabaseAdmin
@@ -87,6 +94,14 @@ export async function syncResendInboundEmail(emailId: string): Promise<{
       : emailData.to
         ? [emailData.to]
         : [];
+
+    if (toArray.length === 0) {
+      logger.warn("No recipients found in email data", { emailData });
+      return {
+        success: false,
+        message: "No recipients found in email data",
+      };
+    }
 
     // Insert email into database
     const { data: insertedEmail, error: emailError } = await supabaseAdmin

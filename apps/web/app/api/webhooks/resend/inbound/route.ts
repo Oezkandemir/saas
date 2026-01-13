@@ -3,9 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
 
-// Disable body parsing to get raw body for signature verification
+// Route configuration
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+// Ensure this route is not cached and handles POST requests correctly
+export const maxDuration = 30;
 
 /**
  * Resend Inbound Email Webhook Route
@@ -39,6 +41,8 @@ export const dynamic = "force-dynamic";
  * }
  */
 export async function POST(req: NextRequest) {
+  // Create response immediately to prevent any redirects
+  // This ensures Resend gets a proper response even if processing fails
   try {
     // Read body as text first (needed for signature verification)
     const bodyText = await req.text();
@@ -47,9 +51,18 @@ export async function POST(req: NextRequest) {
     logger.info("Resend Inbound webhook received", {
       url: req.url,
       method: req.method,
+      pathname: req.nextUrl.pathname,
       headers: Object.fromEntries(req.headers.entries()),
       bodyLength: bodyText.length,
     });
+
+    // Verify this is actually the correct path (prevent redirect issues)
+    if (!req.nextUrl.pathname.includes("/api/webhooks/resend/inbound")) {
+      logger.error("Webhook path mismatch", {
+        expected: "/api/webhooks/resend/inbound",
+        actual: req.nextUrl.pathname,
+      });
+    }
 
     // Parse JSON body
     let body;
@@ -57,9 +70,12 @@ export async function POST(req: NextRequest) {
       body = JSON.parse(bodyText);
     } catch (parseError) {
       logger.error("Failed to parse webhook body as JSON", parseError);
-      return NextResponse.json(
-        { error: "Invalid JSON payload" },
-        { status: 400 },
+      return new NextResponse(
+        JSON.stringify({ error: "Invalid JSON payload" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
     
@@ -70,9 +86,12 @@ export async function POST(req: NextRequest) {
     // Verify webhook type
     if (body.type !== "email.received") {
       logger.warn(`Unhandled webhook type: ${body.type}`);
-      return NextResponse.json(
-        { received: true, message: `Unhandled type: ${body.type}` },
-        { status: 200 },
+      return new NextResponse(
+        JSON.stringify({ received: true, message: `Unhandled type: ${body.type}` }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -80,9 +99,12 @@ export async function POST(req: NextRequest) {
 
     if (!emailData || !emailData.email_id) {
       logger.error("Invalid webhook payload: missing email_id");
-      return NextResponse.json(
-        { error: "Invalid payload: email_id is required" },
-        { status: 400 },
+      return new NextResponse(
+        JSON.stringify({ error: "Invalid payload: email_id is required" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -103,9 +125,12 @@ export async function POST(req: NextRequest) {
     // Ensure fromEmail is set
     if (!fromEmail) {
       logger.error("Invalid webhook payload: missing from email");
-      return NextResponse.json(
-        { error: "Invalid payload: from email is required" },
-        { status: 400 },
+      return new NextResponse(
+        JSON.stringify({ error: "Invalid payload: from email is required" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -113,9 +138,12 @@ export async function POST(req: NextRequest) {
     const toArray = Array.isArray(emailData.to) ? emailData.to : [emailData.to].filter(Boolean);
     if (toArray.length === 0) {
       logger.error("Invalid webhook payload: missing recipients");
-      return NextResponse.json(
-        { error: "Invalid payload: recipients are required" },
-        { status: 400 },
+      return new NextResponse(
+        JSON.stringify({ error: "Invalid payload: recipients are required" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -128,11 +156,17 @@ export async function POST(req: NextRequest) {
 
     if (existingEmail) {
       logger.info(`Email ${emailData.email_id} already exists, skipping`);
-      return NextResponse.json({
-        received: true,
-        message: "Email already processed",
-        email_id: emailData.email_id,
-      });
+      return new NextResponse(
+        JSON.stringify({
+          received: true,
+          message: "Email already processed",
+          email_id: emailData.email_id,
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
 
     // Insert email into database
@@ -157,9 +191,12 @@ export async function POST(req: NextRequest) {
 
     if (emailError) {
       logger.error("Error inserting inbound email:", emailError);
-      return NextResponse.json(
-        { error: "Failed to save email", message: emailError.message },
-        { status: 500 },
+      return new NextResponse(
+        JSON.stringify({ error: "Failed to save email", message: emailError.message }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -188,13 +225,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json(
-      {
+    // Return success response with explicit headers to prevent redirects
+    return new NextResponse(
+      JSON.stringify({
         received: true,
         message: "Email processed successfully",
         email_id: emailData.email_id,
+      }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store, no-cache, must-revalidate",
+          "X-Content-Type-Options": "nosniff",
+        },
       },
-      { status: 200 },
     );
   } catch (error: any) {
     logger.error("Error processing Resend Inbound webhook:", {
@@ -205,21 +250,37 @@ export async function POST(req: NextRequest) {
     
     // Return 200 to prevent Resend from retrying on processing errors
     // But log the error for debugging
-    return NextResponse.json(
-      {
+    // Use explicit response to prevent redirects
+    return new NextResponse(
+      JSON.stringify({
         error: "Webhook processing failed",
         message: error.message || "Unknown error",
+      }),
+      {
+        status: 200, // Return 200 to prevent retries, but log the error
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store, no-cache, must-revalidate",
+        },
       },
-      { status: 200 }, // Return 200 to prevent retries, but log the error
     );
   }
 }
 
 // Handle GET requests (for webhook verification/testing)
 export async function GET() {
-  return NextResponse.json({
-    message: "Resend Inbound Email Webhook Endpoint",
-    status: "active",
-    endpoint: "/api/webhooks/resend/inbound",
-  });
+  return new NextResponse(
+    JSON.stringify({
+      message: "Resend Inbound Email Webhook Endpoint",
+      status: "active",
+      endpoint: "/api/webhooks/resend/inbound",
+    }),
+    {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store, no-cache, must-revalidate",
+      },
+    },
+  );
 }
