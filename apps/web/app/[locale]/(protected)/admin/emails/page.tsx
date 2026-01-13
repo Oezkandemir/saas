@@ -8,9 +8,6 @@ import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { EmailTemplates } from "@/components/admin/email-templates";
-import { InboundEmailsList } from "@/components/admin/inbound-emails/inbound-emails-list";
-import { InboundEmailsStats } from "@/components/admin/inbound-emails/inbound-emails-stats";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { EmailsTabs } from "@/components/admin/emails-tabs";
 
