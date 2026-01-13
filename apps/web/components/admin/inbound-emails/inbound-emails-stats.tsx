@@ -1,0 +1,130 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { getInboundEmailStats, type InboundEmailStats } from "@/actions/inbound-email-actions";
+import { Mail, MailOpen, Calendar, TrendingUp } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/alignui/data-display/card";
+import { Loader2 } from "lucide-react";
+
+export function InboundEmailsStats() {
+  const { toast } = useToast();
+  const [stats, setStats] = useState<InboundEmailStats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    setIsLoading(true);
+    try {
+      const result = await getInboundEmailStats();
+      if (result.success && result.data) {
+        setStats(result.data);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Fehler",
+          description: result.error || "Statistiken konnten nicht geladen werden",
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Fehler",
+        description: "Statistiken konnten nicht geladen werden",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card key={i}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Laden...</CardTitle>
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">-</div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (!stats) {
+    return null;
+  }
+
+  const statCards = [
+    {
+      title: "Gesamt",
+      value: stats.total,
+      description: "Alle eingehenden Emails",
+      icon: Mail,
+    },
+    {
+      title: "Ungelesen",
+      value: stats.unread,
+      description: "Noch nicht gelesen",
+      icon: MailOpen,
+      highlight: stats.unread > 0,
+    },
+    {
+      title: "Heute",
+      value: stats.today,
+      description: "Emails heute empfangen",
+      icon: Calendar,
+    },
+    {
+      title: "Diese Woche",
+      value: stats.thisWeek,
+      description: "Emails in den letzten 7 Tagen",
+      icon: TrendingUp,
+    },
+  ];
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {statCards.map((stat) => {
+        const Icon = stat.icon;
+        return (
+          <Card key={stat.title}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+              <Icon
+                className={`h-4 w-4 ${
+                  stat.highlight ? "text-primary" : "text-muted-foreground"
+                }`}
+              />
+            </CardHeader>
+            <CardContent>
+              <div
+                className={`text-2xl font-bold ${
+                  stat.highlight ? "text-primary" : ""
+                }`}
+              >
+                {stat.value.toLocaleString()}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {stat.description}
+              </p>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}

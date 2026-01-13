@@ -67,3 +67,4 @@ Nach erfolgreicher Ausführung der Migration sollten:
 - Das Formular für Firmenprofile die neuen Felder anzeigen
 
 
+

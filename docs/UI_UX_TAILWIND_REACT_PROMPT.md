@@ -428,3 +428,4 @@ Für jede Komponente:
 
 
 
+

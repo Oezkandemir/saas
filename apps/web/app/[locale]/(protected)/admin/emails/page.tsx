@@ -9,7 +9,10 @@ import { getLocale, setRequestLocale } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
 import { EmailTemplates } from "@/components/admin/email-templates";
+import { InboundEmailsList } from "@/components/admin/inbound-emails/inbound-emails-list";
+import { InboundEmailsStats } from "@/components/admin/inbound-emails/inbound-emails-stats";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { EmailsTabs } from "@/components/admin/emails-tabs";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -18,8 +21,8 @@ export async function generateMetadata() {
   setRequestLocale(locale);
 
   return constructMetadata({
-    title: "E-Mail-Templates",
-    description: "Verwalten und testen Sie E-Mail-Templates",
+    title: "E-Mail-Verwaltung",
+    description: "Verwalten Sie E-Mail-Templates und eingehende Emails",
   });
 }
 
@@ -40,12 +43,15 @@ export default async function AdminEmailsPage() {
 
   return (
     <UnifiedPageLayout
-      title="E-Mail-Templates"
-      description="Verwalten Sie alle E-Mail-Templates und testen Sie die Resend-Konfiguration"
+      title="E-Mail-Verwaltung"
+      description="Verwalten Sie E-Mail-Templates und eingehende Emails"
       icon={<Mail className="h-4 w-4 text-primary" />}
       contentClassName="space-y-6 pb-10"
     >
-      <EmailTemplates templates={templates} configStatus={configStatus} />
+      <EmailsTabs
+        templates={templates}
+        configStatus={configStatus}
+      />
     </UnifiedPageLayout>
   );
 }

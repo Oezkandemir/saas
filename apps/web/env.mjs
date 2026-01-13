@@ -9,6 +9,7 @@ export const env = createEnv({
     // Email
     RESEND_API_KEY: z.string().optional(),
     EMAIL_FROM: z.string().optional(),
+    RESEND_WEBHOOK_SECRET: z.string().optional(), // Webhook signing secret (whsec_...)
 
     // PDF Service (optional - wird für Rechnungen/Angebote benötigt)
     PDF_SERVICE_URL: z.string().url().optional(),
@@ -42,6 +43,7 @@ export const env = createEnv({
     // Email
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM,
+    RESEND_WEBHOOK_SECRET: process.env.RESEND_WEBHOOK_SECRET,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
 
     // PDF Service
