@@ -31,7 +31,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/alignui/data-display/card";
-import { Separator } from "@/components/alignui/data-display/separator";
+import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
 
 type InboundEmailDetailProps = {
   emailId: string;

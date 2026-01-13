@@ -216,7 +216,7 @@ export async function POST(req: NextRequest) {
 }
 
 // Handle GET requests (for webhook verification/testing)
-export async function GET(req: NextRequest) {
+export async function GET() {
   return NextResponse.json({
     message: "Resend Inbound Email Webhook Endpoint",
     status: "active",
