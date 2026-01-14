@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Badge as BadgeComponent } from "@/components/ui/badge";
 
 export type DocumentStatus =
   | "draft"
@@ -37,8 +37,8 @@ interface StatusBadgeProps {
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
   return (
-    <Badge variant={statusColors[status]} className={cn(className)}>
+    <BadgeComponent variant={statusColors[status]} className={cn(className)}>
       {statusLabels[status]}
-    </Badge>
+    </BadgeComponent>
   );
 }

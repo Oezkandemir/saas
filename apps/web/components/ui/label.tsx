@@ -23,4 +23,22 @@ const Label = React.forwardRef<
 ));
 Label.displayName = LabelPrimitive.Root.displayName;
 
-export { Label };
+// Additional label components
+const LabelAsterisk = ({ className }: { className?: string }) => (
+  <span className={cn("text-destructive ml-1", className)}>*</span>
+);
+LabelAsterisk.displayName = "Label.Asterisk";
+
+const LabelSub = React.forwardRef<
+  HTMLSpanElement,
+  React.HTMLAttributes<HTMLSpanElement>
+>(({ className, ...props }, ref) => (
+  <span
+    ref={ref}
+    className={cn("text-xs text-muted-foreground ml-1", className)}
+    {...props}
+  />
+));
+LabelSub.displayName = "Label.Sub";
+
+export { Label, LabelAsterisk, LabelSub };

@@ -33,7 +33,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 
 interface TicketActionsProps {
   ticket: Ticket;

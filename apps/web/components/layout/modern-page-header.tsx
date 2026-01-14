@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button"; // shadcn/ui button component
 
 interface ModernPageHeaderProps {
   title: string;

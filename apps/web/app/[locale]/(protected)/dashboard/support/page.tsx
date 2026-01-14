@@ -14,7 +14,7 @@ import { siteConfig } from "@/config/site";
 import { constructMetadata } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { UserTicketAccordion } from "@/components/support/user-ticket-accordion";
 

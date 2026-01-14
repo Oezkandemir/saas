@@ -9,16 +9,16 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/alignui/actions/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
-import { Input } from "@/components/alignui/forms/input";
-import { LabelRoot as Label } from "@/components/alignui/forms/label";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface TwoFactorLoginFormProps {
   userId: string;

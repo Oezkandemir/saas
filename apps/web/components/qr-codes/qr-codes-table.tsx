@@ -32,8 +32,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ButtonRoot } from "@/components/alignui/actions/button";
-import { BadgeRoot } from "@/components/alignui/data-display/badge";
+import { ButtonRoot } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   TableBody,
   TableCell,
@@ -42,7 +42,7 @@ import {
   TableRoot,
   TableRow,
   TableRowDivider,
-} from "@/components/alignui/data-display/table";
+} from "@/components/ui/table";
 
 interface QRCodesTableProps {
   qrCodes: QRCode[];
@@ -237,9 +237,9 @@ export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
         </div>
       ),
       cell: ({ row }) => (
-        <BadgeRoot variant={row.original.is_active ? "default" : "secondary"}>
+        <Badge variant={row.original.is_active ? "default" : "secondary"}>
           {row.original.is_active ? "Aktiv" : "Inaktiv"}
-        </BadgeRoot>
+        </Badge>
       ),
     },
     {

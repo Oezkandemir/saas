@@ -19,8 +19,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/alignui/actions/button";
-import { Input } from "@/components/alignui/forms/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export function AccountDeletion() {
   const t = useTranslations("GDPR.accountDeletion");

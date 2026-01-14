@@ -16,7 +16,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -24,8 +24,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
-import { Input } from "@/components/alignui/forms/input";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 interface OnboardingWizardProps {
   onComplete: () => void;

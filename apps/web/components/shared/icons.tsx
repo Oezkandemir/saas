@@ -1,6 +1,7 @@
 import {
   Activity,
   AlertTriangle,
+  Archive,
   ArrowRight,
   ArrowUpRight,
   BarChart3,
@@ -11,6 +12,7 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  Clock,
   Copy,
   CreditCard,
   DollarSign,
@@ -38,7 +40,10 @@ import {
   QrCode,
   Quote,
   Search,
+  Send,
   Settings,
+  ShoppingBag,
+  Star,
   SunMedium,
   Trash,
   TrendingUp,
@@ -54,6 +59,7 @@ export type Icon = LucideIcon;
 export const Icons = {
   activity: Activity,
   add: Plus,
+  archive: Archive,
   arrowRight: ArrowRight,
   arrowUpRight: ArrowUpRight,
   barChart: BarChart3,
@@ -61,6 +67,7 @@ export const Icons = {
   billing: CreditCard,
   bookOpen: BookOpen,
   calendar: Calendar,
+  clock: Clock,
   building: Building2,
   chevronLeft: ChevronLeft,
   chevronRight: ChevronRight,
@@ -75,6 +82,9 @@ export const Icons = {
   mail: Mail,
   play: Play,
   quote: Quote,
+  send: Send,
+  shoppingBag: ShoppingBag,
+  star: Star,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

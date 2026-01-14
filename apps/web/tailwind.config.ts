@@ -106,7 +106,7 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // AlignUI Design System Colors
+        // Design System Colors
         "bg-white": {
           0: "hsl(var(--bg-white-0))",
           50: "hsl(var(--bg-white-50))",
@@ -130,7 +130,7 @@ const config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-        "20": "20px", // AlignUI rounded-20
+        "20": "20px", // Custom rounded-20
       },
       fontFamily: {
         // Inter - Moderne, hochgradig lesbare Schrift für alle Texte
@@ -389,7 +389,7 @@ const config = {
           "box-shadow":
             "0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3)",
         },
-        // AlignUI Shadow Utilities
+        // Shadow Utilities
         ".shadow-regular-xs": {
           "box-shadow": "var(--shadow-regular-xs)",
         },

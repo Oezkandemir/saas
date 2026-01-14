@@ -40,7 +40,9 @@ export default async function InboundEmailDetailPage(props: Props) {
       icon={<Mail className="h-4 w-4 text-primary" />}
       contentClassName="space-y-6 pb-10"
     >
-      <InboundEmailDetail emailId={params.id} />
+      <InboundEmailDetail 
+        emailId={params.id}
+      />
     </UnifiedPageLayout>
   );
 }

@@ -19,14 +19,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import { useSupabase } from "@/components/supabase-provider";
 
 interface ActiveUser {

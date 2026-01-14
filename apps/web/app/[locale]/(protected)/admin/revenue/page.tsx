@@ -13,14 +13,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export async function generateMetadata() {

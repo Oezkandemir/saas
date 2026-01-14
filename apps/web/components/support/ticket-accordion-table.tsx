@@ -29,9 +29,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
-import { Input } from "@/components/alignui/forms/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { TicketActions } from "@/components/support/ticket-actions";
 

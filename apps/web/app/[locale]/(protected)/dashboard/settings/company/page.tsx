@@ -4,7 +4,7 @@ import { getCompanyProfiles } from "@/actions/company-profiles-actions";
 import { Building2, Plus } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/session";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import { CompanyProfilesList } from "@/components/company-settings/company-profiles-list";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 

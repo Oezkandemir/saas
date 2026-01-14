@@ -17,7 +17,7 @@ import {
   getBlurDataURL,
   placeholderBlurhash,
 } from "@/lib/utils";
-import { buttonVariants } from "@/components/alignui/actions/button";
+import { buttonVariants } from "@/components/ui/button";
 import Author from "@/components/content/author";
 import { BlurImage } from "@/components/shared/blur-image";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";

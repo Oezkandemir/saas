@@ -8,7 +8,7 @@ import { Loader2, Trash2 } from "lucide-react";
 
 import { logger } from "@/lib/logger";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import { useNotificationsContext } from "@/components/context/notifications-context";
 import { useSupabase } from "@/components/supabase-provider";
 

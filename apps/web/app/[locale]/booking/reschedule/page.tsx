@@ -14,11 +14,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import {
-  AlertRoot as Alert,
+  Alert,
   AlertDescription,
-} from "@/components/alignui/feedback/alert";
+} from "@/components/ui/alert";
 
 export default function RescheduleBookingPage() {
   const searchParams = useSearchParams();

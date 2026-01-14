@@ -9,8 +9,8 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Modal } from "@/components/ui/modal";
-import { Button } from "@/components/alignui/actions/button";
-import { Input } from "@/components/alignui/forms/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { useSupabase } from "@/components/supabase-provider";
 

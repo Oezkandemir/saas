@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Input } from "@/components/alignui/forms/input";
+import { Input } from "@/components/ui/input";
 
 interface SearchResult {
   id: string;

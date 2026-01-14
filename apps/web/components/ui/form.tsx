@@ -177,6 +177,22 @@ const FormMessage = React.forwardRef<
 });
 FormMessage.displayName = "FormMessage";
 
+// Hint components for backward compatibility (alias to FormDescription)
+const HintRoot = FormDescription;
+const HintIcon = ({
+  className,
+  as: IconComponent,
+}: {
+  className?: string;
+  as?: React.ComponentType<{ className?: string }>;
+}) => {
+  if (IconComponent) {
+    return <IconComponent className={cn("size-4", className)} />;
+  }
+  return <div className={cn("size-4", className)} />;
+};
+HintIcon.displayName = "Hint.Icon";
+
 export {
   useFormField,
   Form,
@@ -186,4 +202,6 @@ export {
   FormDescription,
   FormMessage,
   FormField,
+  HintRoot,
+  HintIcon,
 };

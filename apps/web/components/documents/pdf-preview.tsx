@@ -12,14 +12,14 @@ import {
 import { useTranslations } from "next-intl";
 
 import { logger } from "@/lib/logger";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
-  DialogRoot as Dialog,
+  Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/alignui/overlays/dialog";
+} from "@/components/ui/dialog";
 
 interface PDFPreviewProps {
   documentId: string;
@@ -267,7 +267,7 @@ export function PDFPreview({
         </div>
         <Button
           onClick={() => setShowPdfPreview(true)}
-          variant="primary"
+          variant="default"
           size="lg"
         >
           <FileText className="h-4 w-4 mr-2" />

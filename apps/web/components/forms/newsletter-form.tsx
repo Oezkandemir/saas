@@ -10,15 +10,15 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
-  FormRoot as Form,
+  Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/alignui/forms/form";
-import { Input } from "@/components/alignui/forms/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { useNotificationsContext } from "@/components/context/notifications-context";
 import { useSupabase } from "@/components/supabase-provider";
 

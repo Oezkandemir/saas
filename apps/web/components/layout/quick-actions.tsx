@@ -6,7 +6,7 @@ import { FileText, Plus, QrCode, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenuRoot as DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +14,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/alignui/overlays/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 
 export function QuickActions() {
   const router = useRouter();

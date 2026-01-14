@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 import { logger } from "@/lib/logger";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/shared/icons";
 
 export function RefreshSubscriptionButton() {

@@ -1,5 +1,5 @@
 /**
- * AlignUI - Polymorphic Utility
+ * Polymorphic Utility
  *
  * Creates polymorphic components that can render as different HTML elements
  * while maintaining type safety

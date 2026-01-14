@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/alignui/forms/input";
+import { Input } from "@/components/ui/input";
 
 interface CompanyBasicFieldsProps {
   control: Control<any>;

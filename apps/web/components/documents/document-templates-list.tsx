@@ -10,10 +10,10 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { logger } from "@/lib/logger";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
-  AlertDialogRoot as AlertDialog,
+  AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/alignui/overlays/alert-dialog";
+} from "@/components/ui/alert-dialog";
 
 interface DocumentTemplatesListProps {
   templates: DocumentTemplate[];

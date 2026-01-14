@@ -16,9 +16,9 @@ import {
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { buttonVariants } from "@/components/alignui/actions/button";
-import { Input } from "@/components/alignui/forms/input";
-import { LabelRoot as Label } from "@/components/alignui/forms/label";
+import { buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useSupabase } from "@/components/supabase-provider";
 
 import { TwoFactorLoginForm } from "./two-factor-login-form";

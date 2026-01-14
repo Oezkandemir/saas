@@ -18,13 +18,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/alignui/data-display/avatar";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+} from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 // ISR: Revalidate every 60 seconds for fresh admin data

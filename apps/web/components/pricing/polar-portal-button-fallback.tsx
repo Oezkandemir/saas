@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button, buttonVariants } from "@/components/alignui/actions/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Icons } from "@/components/shared/icons";
 
 interface PolarPortalButtonFallbackProps {
@@ -28,7 +28,7 @@ export function PolarPortalButtonFallback({
   className,
 }: PolarPortalButtonFallbackProps) {
   // Map old variants to new ones for backward compatibility
-  const mappedVariant = variant === "default" ? "primary" : variant;
+  const mappedVariant = variant === "default" ? "default" : variant === "primary" ? "default" : variant === "neutral" ? "secondary" : variant;
   const [isPending, startTransition] = useTransition();
   const t = useTranslations("Billing");
 

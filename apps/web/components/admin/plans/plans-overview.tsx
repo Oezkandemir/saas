@@ -4,15 +4,15 @@ import Link from "next/link";
 import type { Plan } from "@/actions/admin-plan-actions";
 import { CheckCircle, CreditCard, Edit, XCircle } from "lucide-react";
 
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 
 interface PlansOverviewProps {
   plans: Plan[];

@@ -11,7 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 
 interface PlanGateProps {
   children: ReactNode;

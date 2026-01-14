@@ -16,9 +16,15 @@ import { useTranslations } from "next-intl";
 
 import { marketingConfig } from "@/config/marketing";
 import { cn } from "@/lib/utils";
-import { CompactButton } from "@/components/alignui/actions/compact-button";
-import { Kbd } from "@/components/alignui/actions/kbd";
-import { CommandMenu } from "@/components/alignui/overlays/command-menu";
+import { ButtonIcon, ButtonRoot } from "@/components/ui/button";
+import { Kbd } from "@/components/ui/kbd";
+import { CommandMenu } from "@/components/ui/command";
+
+// Create namespace object for Button pattern
+const Button = {
+  Root: ButtonRoot,
+  Icon: ButtonIcon,
+};
 
 interface MarketingCommandMenuItem {
   title: string;
@@ -131,14 +137,14 @@ export function MarketingCommandMenu() {
                   />
                 </svg>
               </Kbd.Root>
-              <CompactButton.Root
-                size="medium"
+              <Button.Root
+                size="default"
                 variant="ghost"
                 onClick={() => setOpen(false)}
                 type="button"
               >
-                <CompactButton.Icon as={RiCloseLine} />
-              </CompactButton.Root>
+                <Button.Icon as={RiCloseLine} />
+              </Button.Root>
             </div>
 
             {/* CommandMenu Liste */}

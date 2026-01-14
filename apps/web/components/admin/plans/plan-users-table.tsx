@@ -15,8 +15,8 @@ import {
 import {
   Avatar,
   AvatarFallback,
-} from "@/components/alignui/data-display/avatar";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+} from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 interface PlanUsersTableProps {
   users: PlanUser[];

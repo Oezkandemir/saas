@@ -41,25 +41,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import {
-  FormRoot as Form,
+  Form,
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/alignui/forms/form";
-import { Input } from "@/components/alignui/forms/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 const timeSlotSchema = z.object({
   start_time: z

@@ -7,9 +7,9 @@ import { Loader2, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
-  AlertDialogRoot as AlertDialog,
+  AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
@@ -18,15 +18,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/alignui/overlays/alert-dialog";
+} from "@/components/ui/alert-dialog";
 
 interface DeleteCustomerButtonProps {
   customerId: string;
   customerName: string;
   variant?:
-    | "primary"
+    | "default"
     | "secondary"
-    | "neutral"
     | "destructive"
     | "outline"
     | "ghost";

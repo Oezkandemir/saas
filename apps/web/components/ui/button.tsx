@@ -65,4 +65,18 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 Button.displayName = "Button";
 
+// Alias for backward compatibility
+export const ButtonRoot = Button;
+
+// Icon component for Button
+interface ButtonIconProps {
+  as: React.ComponentType<{ className?: string }>;
+  className?: string;
+}
+
+export const ButtonIcon = ({ as: Icon, className }: ButtonIconProps) => {
+  return <Icon className={className} />;
+};
+ButtonIcon.displayName = "Button.Icon";
+
 export { Button, buttonVariants };

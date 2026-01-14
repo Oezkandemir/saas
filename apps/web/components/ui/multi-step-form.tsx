@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 
 export interface Step<T extends FieldValues> {
   id: string;

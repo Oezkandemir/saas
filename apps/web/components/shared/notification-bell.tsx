@@ -12,11 +12,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import { NotificationsPopover } from "@/components/shared/notifications-popover";
 
 interface NotificationBellProps {
-  variant?: "primary" | "secondary" | "ghost" | "destructive" | "outline";
+  variant?: "default" | "secondary" | "ghost" | "destructive" | "outline";
   size?: "default" | "sm" | "lg" | "icon";
   showTooltip?: boolean;
   className?: string;

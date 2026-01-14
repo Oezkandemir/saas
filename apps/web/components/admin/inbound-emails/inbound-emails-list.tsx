@@ -23,21 +23,21 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import {
-  SelectRoot,
+  Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/alignui";
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -183,7 +183,7 @@ export function InboundEmailsList() {
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <SelectRoot value={filter} onValueChange={(value) => {
+            <Select value={filter} onValueChange={(value) => {
               setFilter(value as FilterType);
               setPage(1);
             }}>
@@ -197,7 +197,7 @@ export function InboundEmailsList() {
                 <SelectItem value="unread">Ungelesen</SelectItem>
                 <SelectItem value="read">Gelesen</SelectItem>
               </SelectContent>
-            </SelectRoot>
+            </Select>
             <Button
               variant="outline"
               size="sm"

@@ -9,9 +9,9 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
-import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();

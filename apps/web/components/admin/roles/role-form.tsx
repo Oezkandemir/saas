@@ -24,8 +24,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/alignui/actions/button";
-import { Input } from "@/components/alignui/forms/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const roleFormSchema = z.object({
   name: z.string().min(1, "Name ist erforderlich").max(100),

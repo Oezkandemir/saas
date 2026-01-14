@@ -32,8 +32,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useNotificationsContext } from "@/components/context/notifications-context";
 
 interface NotificationsPopoverProps {

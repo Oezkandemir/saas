@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 import { marketingConfig } from "@/config/marketing";
 import { cn } from "@/lib/utils";
 import { useScroll } from "@/hooks/use-scroll";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import { ModalContext } from "@/components/modals/providers";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
@@ -93,7 +93,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
               {/* Icon button for small screens */}
               <Button
                 className="flex md:hidden gap-2 px-3 py-2 text-sm touch-manipulation rounded-full"
-                variant="primary"
+                variant="default"
                 size="sm"
                 onClick={() => setShowSignInModal(true)}
                 aria-label={t("signIn")}
@@ -104,7 +104,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
               {/* Text button for larger screens */}
               <Button
                 className="hidden gap-2 px-4 sm:px-5 text-sm md:flex touch-manipulation rounded-full"
-                variant="primary"
+                variant="default"
                 size="sm"
                 onClick={() => setShowSignInModal(true)}
               >

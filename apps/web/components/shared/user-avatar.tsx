@@ -5,7 +5,7 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/alignui/data-display/avatar";
+} from "@/components/ui/avatar";
 import { useAvatar } from "@/components/context/avatar-context";
 import { Icons } from "@/components/shared/icons";
 

@@ -2,7 +2,7 @@
 
 ## Übersicht
 
-Das AlignUI CommandMenu ist eine moderne Command Palette Komponente, die es Benutzern ermöglicht, schnell durch Ihre Anwendung zu navigieren und Aktionen auszuführen.
+Das CommandMenu (shadcn/ui) ist eine moderne Command Palette Komponente, die es Benutzern ermöglicht, schnell durch Ihre Anwendung zu navigieren und Aktionen auszuführen.
 
 ## Installation
 
@@ -19,7 +19,7 @@ cd apps/web && pnpm install
 ```tsx
 'use client';
 
-import { CommandMenuExample } from '@/components/alignui/overlays/command-menu-example';
+import { CommandMenuExample } from '@/components/ui/command';
 
 export function MyComponent() {
   return <CommandMenuExample />;
@@ -31,7 +31,7 @@ export function MyComponent() {
 ```tsx
 'use client';
 
-import { CommandMenuExample } from '@/components/alignui/overlays/command-menu-example';
+import { CommandMenuExample } from '@/components/ui/command';
 import { RiUserLine, RiSettingsLine } from '@remixicon/react';
 
 export function MyComponent() {
@@ -60,7 +60,7 @@ export function MyComponent() {
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { CommandMenu } from '@/components/alignui/overlays/command-menu';
+import { Command } from '@/components/ui/command';
 import { RiHomeLine } from '@remixicon/react';
 
 export function CustomCommandMenu() {
@@ -112,7 +112,7 @@ export function CustomCommandMenu() {
 // apps/web/components/layout/header-command-menu.tsx
 'use client';
 
-import { CommandMenuExample } from '@/components/alignui/overlays/command-menu-example';
+import { CommandMenuExample } from '@/components/ui/command';
 
 export function HeaderCommandMenu() {
   return (
@@ -136,7 +136,7 @@ import { HeaderCommandMenu } from '@/components/layout/header-command-menu';
 
 ```tsx
 // apps/web/components/layout/quick-actions.tsx
-import { CommandMenuExample } from '@/components/alignui/overlays/command-menu-example';
+import { CommandMenuExample } from '@/components/ui/command';
 
 export function QuickActions() {
   return (
@@ -216,7 +216,7 @@ Box für ein Tastenkürzel im Footer.
 
 ```tsx
 import { sidebarLinks } from '@/config/dashboard';
-import { CommandMenuExample } from '@/components/alignui/overlays/command-menu-example';
+import { CommandMenuExample } from '@/components/ui/command';
 
 <CommandMenuExample navigationItems={sidebarLinks} />
 ```
@@ -248,7 +248,7 @@ Das CommandMenu unterstützt automatisch die Suche durch alle Items. Die Suche f
 
 ## Styling
 
-Das CommandMenu verwendet Tailwind CSS und folgt dem AlignUI Designsystem. Sie können die Styles über die `className` Props anpassen:
+Das CommandMenu verwendet Tailwind CSS und folgt dem shadcn/ui Designsystem. Sie können die Styles über die `className` Props anpassen:
 
 ```tsx
 <CommandMenu.Content className="max-w-3xl">
@@ -280,9 +280,9 @@ Das CommandMenu verwendet Tailwind CSS und folgt dem AlignUI Designsystem. Sie k
 
 ## Weitere Ressourcen
 
-- [AlignUI Dokumentation](https://alignui.com)
+- [shadcn/ui Dokumentation](https://ui.shadcn.com)
 - [cmdk Dokumentation](https://cmdk.paco.me)
-- Demo-Komponente: `apps/web/components/alignui/overlays/command-menu-demo.tsx`
+- Demo-Komponente: `apps/web/components/ui/command`
 
 
 

@@ -9,17 +9,17 @@ import {
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { ButtonRoot } from "@/components/alignui/actions/button";
+import { ButtonRoot } from "@/components/ui/button";
 import {
+  Drawer,
   DrawerBody,
   DrawerClose,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
-  DrawerRoot,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/alignui/overlays/drawer";
+} from "@/components/ui/drawer";
 
 import { EditEventTypeForm } from "./edit-event-type-form";
 
@@ -27,8 +27,8 @@ const Button = {
   Root: ButtonRoot,
 };
 
-const Drawer = {
-  Root: DrawerRoot,
+const DrawerNS = {
+  Root: Drawer,
   Trigger: DrawerTrigger,
   Content: DrawerContent,
   Header: DrawerHeader,
@@ -74,28 +74,28 @@ export function EditEventTypeDrawer({
   }, [eventType]);
 
   return (
-    <Drawer.Root open={open} onOpenChange={setOpen} direction="right">
-      {trigger && <Drawer.Trigger asChild>{trigger}</Drawer.Trigger>}
+    <DrawerNS.Root open={open} onOpenChange={setOpen} direction="right">
+      {trigger && <DrawerNS.Trigger asChild>{trigger}</DrawerNS.Trigger>}
 
-      <Drawer.Content
+      <DrawerNS.Content
         side="right"
         className="mr-2 shadow-custom-md w-[min(600px,calc(100%-16px))]"
       >
         <div className="flex flex-col h-full bg-bg-white-0">
-          <Drawer.Header className="bg-bg-white-0 border-b border-stroke-soft-200">
+          <DrawerNS.Header className="bg-bg-white-0 border-b border-stroke-soft-200">
             <div className="flex items-center justify-between">
-              <Drawer.Title className="text-label-lg text-text-strong-950">
+              <DrawerNS.Title className="text-label-lg text-text-strong-950">
                 {t("edit") || "Event Type bearbeiten"}
-              </Drawer.Title>
-              <Drawer.Close asChild>
+              </DrawerNS.Title>
+              <DrawerNS.Close asChild>
                 <Button.Root variant="ghost" size="icon" className="h-8 w-8">
                   <X className="h-4 w-4" />
                 </Button.Root>
-              </Drawer.Close>
+              </DrawerNS.Close>
             </div>
-          </Drawer.Header>
+          </DrawerNS.Header>
 
-          <Drawer.Body className="overflow-y-auto flex-1 bg-bg-white-0">
+          <DrawerNS.Body className="overflow-y-auto flex-1 bg-bg-white-0">
             <div className="p-5">
               <EditEventTypeForm
                 eventType={currentEventType}
@@ -103,10 +103,10 @@ export function EditEventTypeDrawer({
                 onSuccess={handleSuccess}
               />
             </div>
-          </Drawer.Body>
+          </DrawerNS.Body>
         </div>
-      </Drawer.Content>
-    </Drawer.Root>
+      </DrawerNS.Content>
+    </DrawerNS.Root>
   );
 }
 

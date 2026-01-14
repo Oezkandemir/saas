@@ -6,14 +6,14 @@ import { CheckCircle2, Copy, Download, QrCode } from "lucide-react";
 import { toast } from "sonner";
 
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 
 interface CustomerQRCodeProps {
   customer: Customer;

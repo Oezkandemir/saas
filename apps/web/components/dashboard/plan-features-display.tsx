@@ -4,14 +4,14 @@ import { Check, X } from "lucide-react";
 
 import type { PlanFeaturesInfo } from "@/lib/plan-features";
 import { cn } from "@/lib/utils";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 
 interface PlanFeaturesDisplayProps {
   planInfo: PlanFeaturesInfo;

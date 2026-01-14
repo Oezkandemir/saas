@@ -7,7 +7,7 @@ import { Shield, X } from "lucide-react";
 
 import { logger } from "@/lib/logger";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 
 export function TwoFactorSecurityBanner() {
   const [isEnabled, setIsEnabled] = useState<boolean | null>(null);
@@ -91,7 +91,7 @@ export function TwoFactorSecurityBanner() {
         <Button
           asChild
           size="sm"
-          variant="primary"
+          variant="default"
           className="bg-yellow-600 hover:bg-yellow-700 dark:bg-yellow-500 dark:hover:bg-yellow-600"
         >
           <Link href="/dashboard/settings/security" onClick={handleDismiss}>

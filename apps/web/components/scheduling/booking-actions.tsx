@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 
 import { RescheduleBookingDrawer } from "./reschedule-booking-drawer";
 
@@ -124,7 +124,7 @@ export function BookingActions({ booking }: BookingActionsProps) {
             <span className="text-xs">{t("sendEmail") || "E-Mail senden"}</span>
           </Button>
           <Button
-            variant="primary"
+            variant="default"
             size="sm"
             onClick={() => setShowReactivateDialog(true)}
             className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
@@ -133,7 +133,7 @@ export function BookingActions({ booking }: BookingActionsProps) {
             <span className="text-xs">{t("reactivate") || "Buchung reaktivieren"}</span>
           </Button>
           <Button
-            variant="primary"
+            variant="default"
             size="sm"
             onClick={() => setShowDeleteDialog(true)}
             className="gap-1.5 w-full bg-foreground text-background hover:bg-destructive hover:text-destructive-foreground font-medium"
@@ -228,7 +228,7 @@ export function BookingActions({ booking }: BookingActionsProps) {
           <span className="text-xs">{t("reschedule") || "Buchung umbuchen"}</span>
         </Button>
         <Button
-          variant="primary"
+          variant="default"
           size="sm"
           onClick={() => setShowCancelDialog(true)}
           className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
@@ -237,7 +237,7 @@ export function BookingActions({ booking }: BookingActionsProps) {
           <span className="text-xs">{t("cancel") || "Buchung stornieren"}</span>
         </Button>
         <Button
-          variant="primary"
+          variant="default"
           size="sm"
           onClick={() => setShowDeleteDialog(true)}
           className="gap-1.5 w-full bg-foreground text-background hover:bg-destructive hover:text-destructive-foreground font-medium"

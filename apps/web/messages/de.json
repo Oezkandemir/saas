@@ -924,7 +924,9 @@
     "toggleNavigationMenu": "Navigationsmenü umschalten",
     "sections": {
       "menu": "MENÜ",
-      "options": "OPTIONEN"
+      "options": "OPTIONEN",
+      "emails": "EMAILS",
+      "mehr": "MEHR"
     },
     "items": {
       "admin_panel": "Admin-Panel",
@@ -955,7 +957,14 @@
       "company_profiles": "Firmenprofile",
       "blog": "Blog-Beiträge",
       "blog_posts": "Blog-Beiträge",
-      "system": "System"
+      "system": "System",
+      "posteingang": "Posteingang",
+      "markiert": "Markiert",
+      "zurückgestellt": "Zurückgestellt",
+      "gesendet": "Gesendet",
+      "käufe": "Käufe",
+      "archiv": "Archiv",
+      "papierkorb": "Papierkorb"
     }
   },
   "Support": {

@@ -2,26 +2,18 @@
 
 import { useState } from "react";
 import { replyToInboundEmail } from "@/actions/reply-to-inbound-email";
-import { AlertCircle, Loader2, Send, X } from "lucide-react";
+import { AlertCircle, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/alignui/actions/button";
-import { Input } from "@/components/alignui/forms/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/alignui/data-display/card";
 
 interface InboundEmailReplyFormProps {
   inboundEmailId: string;
   originalSubject: string;
-  originalFrom: string;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
@@ -29,7 +21,6 @@ interface InboundEmailReplyFormProps {
 export function InboundEmailReplyForm({
   inboundEmailId,
   originalSubject,
-  originalFrom,
   onSuccess,
   onCancel,
 }: InboundEmailReplyFormProps) {
@@ -90,28 +81,7 @@ export function InboundEmailReplyForm({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Antwort senden</CardTitle>
-            <CardDescription>
-              Antwort an: {originalFrom}
-            </CardDescription>
-          </div>
-          {onCancel && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onCancel}
-              disabled={isSubmitting}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent>
+    <div className="bg-background rounded-lg">
         {error && (
           <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
@@ -144,7 +114,7 @@ export function InboundEmailReplyForm({
             />
           </div>
 
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-2 pt-4 border-t">
             {onCancel && (
               <Button
                 type="button"
@@ -155,7 +125,7 @@ export function InboundEmailReplyForm({
                 Abbrechen
               </Button>
             )}
-            <Button type="submit" disabled={isSubmitting || !body.trim()}>
+            <Button type="submit" disabled={isSubmitting || !body.trim()} className="min-w-[140px]">
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -170,7 +140,6 @@ export function InboundEmailReplyForm({
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+    </div>
   );
 }

@@ -7,6 +7,7 @@ import { Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 
 // Custom VisuallyHidden component to hide content visually but keep it accessible to screen readers
 const VisuallyHidden = ({ children }: { children: React.ReactNode }) => {
@@ -60,6 +61,7 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
     </Dialog>
   );
 };
+CommandDialog.displayName = "CommandDialog";
 
 const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
@@ -79,6 +81,22 @@ const CommandInput = React.forwardRef<
 ));
 
 CommandInput.displayName = CommandPrimitive.Input.displayName;
+
+// CommandMenuInput - Input without wrapper (for use in custom layouts)
+const CommandMenuInput = React.forwardRef<
+  React.ElementRef<typeof CommandPrimitive.Input>,
+  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
+>(({ className, ...props }, ref) => (
+  <CommandPrimitive.Input
+    ref={ref}
+    className={cn(
+      "flex h-full w-full bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
+      className,
+    )}
+    {...props}
+  />
+));
+CommandMenuInput.displayName = CommandPrimitive.Input.displayName;
 
 const CommandList = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.List>,
@@ -165,6 +183,135 @@ const CommandShortcut = ({
   );
 };
 CommandShortcut.displayName = "CommandShortcut";
+
+// CommandMenu namespace object for backward compatibility
+// Dialog wrapper for CommandMenu - just the Dialog root
+interface CommandMenuDialogProps extends DialogProps {}
+
+const CommandMenuDialog = ({ children, ...props }: CommandMenuDialogProps) => {
+  return <Dialog {...props}>{children}</Dialog>;
+};
+CommandMenuDialog.displayName = "CommandMenu.Dialog";
+
+// DialogOverlay for CommandMenu
+const CommandMenuOverlay = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Overlay>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Overlay
+    ref={ref}
+    className={cn(
+      "fixed inset-0 z-50 bg-background/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      className,
+    )}
+    {...props}
+  />
+));
+CommandMenuOverlay.displayName = "CommandMenu.Overlay";
+
+// Content wrapper - DialogContent with Command styling (without close button)
+const CommandMenuContent = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
+>(({ className, children, ...props }, ref) => (
+  <DialogPrimitive.Portal>
+    <CommandMenuOverlay />
+    <DialogPrimitive.Content
+      ref={ref}
+      className={cn(
+        "fixed left-1/2 top-1/2 z-50 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg border bg-background shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 p-0",
+        className,
+      )}
+      {...props}
+    >
+      <DialogPrimitive.Title className="sr-only">
+        Command Menu
+      </DialogPrimitive.Title>
+      {children}
+    </DialogPrimitive.Content>
+  </DialogPrimitive.Portal>
+));
+CommandMenuContent.displayName = "CommandMenu.Content";
+
+// ItemIcon component
+const CommandMenuItemIcon = React.forwardRef<
+  HTMLSpanElement,
+  React.HTMLAttributes<HTMLSpanElement> & {
+    as?: React.ElementType;
+  }
+>(({ className, as: Component, children, ...props }, ref) => {
+  if (Component) {
+    return (
+      <Component
+        ref={ref}
+        className={cn("size-4 shrink-0 text-muted-foreground", className)}
+        {...props}
+      >
+        {children}
+      </Component>
+    );
+  }
+  return (
+    <span
+      ref={ref}
+      className={cn("size-4 shrink-0 text-muted-foreground", className)}
+      {...props}
+    >
+      {children}
+    </span>
+  );
+});
+CommandMenuItemIcon.displayName = "CommandMenu.ItemIcon";
+
+// Footer component
+const CommandMenuFooter = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      "flex items-center justify-between border-t px-5 py-3",
+      className,
+    )}
+    {...props}
+  />
+));
+CommandMenuFooter.displayName = "CommandMenu.Footer";
+
+// FooterKeyBox component
+const CommandMenuFooterKeyBox = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      "flex h-5 w-5 items-center justify-center rounded border bg-muted text-xs text-muted-foreground",
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+));
+CommandMenuFooterKeyBox.displayName = "CommandMenu.FooterKeyBox";
+
+// Export CommandMenu namespace object
+export const CommandMenu = {
+  Dialog: CommandMenuDialog,
+  Content: CommandMenuContent,
+  Command,
+  Input: CommandMenuInput, // Use CommandMenuInput (without wrapper) for custom layouts
+  List: CommandList,
+  Empty: CommandEmpty,
+  Group: CommandGroup,
+  Item: CommandItem,
+  ItemIcon: CommandMenuItemIcon,
+  Separator: CommandSeparator,
+  Footer: CommandMenuFooter,
+  FooterKeyBox: CommandMenuFooterKeyBox,
+};
 
 export {
   Command,

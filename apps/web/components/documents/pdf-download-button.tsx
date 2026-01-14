@@ -6,12 +6,12 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { logger } from "@/lib/logger";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 
 interface PDFDownloadButtonProps {
   documentId: string;
   pdfUrl?: string | null;
-  variant?: "primary" | "secondary" | "ghost" | "destructive" | "outline";
+  variant?: "default" | "secondary" | "ghost" | "destructive" | "outline";
   size?: "default" | "sm" | "lg" | "icon";
 }
 

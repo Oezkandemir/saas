@@ -7,7 +7,7 @@ import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { ButtonRoot } from "@/components/alignui/actions/button";
+import { ButtonRoot } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export async function generateMetadata() {
@@ -61,7 +61,7 @@ export default async function AdminBlogPage(props: Props) {
             </p>
           </div>
           <Link href="/admin/blog/new">
-            <ButtonRoot variant="primary" size="medium">
+            <ButtonRoot variant="default" size="default">
               <Plus className="h-4 w-4 mr-2" />
               {t("newPost") || "New Post"}
             </ButtonRoot>
@@ -79,7 +79,7 @@ export default async function AdminBlogPage(props: Props) {
                 "Get started by creating your first blog post."}
             </p>
             <Link href="/admin/blog/new">
-              <ButtonRoot variant="primary" size="medium">
+              <ButtonRoot variant="default" size="default">
                 <Plus className="h-4 w-4 mr-2" />
                 {t("createFirstPost") || "Create First Post"}
               </ButtonRoot>
@@ -149,7 +149,7 @@ export default async function AdminBlogPage(props: Props) {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <Link href={`/admin/blog/${post.id}`}>
-                          <ButtonRoot variant="neutral" mode="stroke" size="sm">
+                          <ButtonRoot variant="outline" size="sm">
                             {t("edit") || "Edit"}
                           </ButtonRoot>
                         </Link>

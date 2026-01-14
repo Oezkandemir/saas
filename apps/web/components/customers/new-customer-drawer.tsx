@@ -10,18 +10,18 @@ import { RiInformationFill } from "@remixicon/react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-import { ButtonRoot } from "@/components/alignui/actions/button";
-import { HintIcon, HintRoot } from "@/components/alignui/feedback/hint";
-import { Input } from "@/components/alignui/forms/input";
+import { ButtonRoot } from "@/components/ui/button";
+import { HintIcon, HintRoot } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   LabelAsterisk,
-  LabelRoot,
+  Label,
   LabelSub,
-} from "@/components/alignui/forms/label";
+} from "@/components/ui/label";
 import {
   TextareaCharCounter,
-  TextareaRoot,
-} from "@/components/alignui/forms/textarea";
+  Textarea,
+} from "@/components/ui/textarea";
 import {
   Sheet,
   SheetContent,
@@ -39,14 +39,14 @@ const Hint = {
   Icon: HintIcon,
 };
 
-const Label = {
-  Root: LabelRoot,
+const LabelNS = {
+  Root: Label,
   Asterisk: LabelAsterisk,
   Sub: LabelSub,
 };
 
-const Textarea = {
-  Root: TextareaRoot,
+const TextareaNS = {
+  Root: Textarea,
   CharCounter: TextareaCharCounter,
 };
 
@@ -135,9 +135,9 @@ export function NewCustomerDrawer({
           {/* Form Fields */}
           <div className="space-y-3">
               <div className="flex flex-col gap-1">
-                <Label.Root htmlFor="name">
-                  Name <Label.Asterisk />
-                </Label.Root>
+                <LabelNS.Root htmlFor="name">
+                  Name <LabelNS.Asterisk />
+                </LabelNS.Root>
                 <Input
                   id="name"
                   type="text"
@@ -151,7 +151,7 @@ export function NewCustomerDrawer({
               </div>
 
               <div className="space-y-1.5">
-                <Label.Root htmlFor="email">{t("email")}</Label.Root>
+                <LabelNS.Root htmlFor="email">{t("email")}</LabelNS.Root>
                 <Input
                   id="email"
                   type="email"
@@ -164,7 +164,7 @@ export function NewCustomerDrawer({
               </div>
 
               <div className="space-y-1.5">
-                <Label.Root htmlFor="phone">{t("phone")}</Label.Root>
+                <LabelNS.Root htmlFor="phone">{t("phone")}</LabelNS.Root>
                 <Input
                   id="phone"
                   type="tel"
@@ -177,9 +177,9 @@ export function NewCustomerDrawer({
               </div>
 
               <div className="space-y-1.5">
-                <Label.Root htmlFor="company">
-                  {t("company")} <Label.Sub>(Optional)</Label.Sub>
-                </Label.Root>
+                <LabelNS.Root htmlFor="company">
+                  {t("company")} <LabelNS.Sub>(Optional)</LabelNS.Sub>
+                </LabelNS.Root>
                 <Input
                   id="company"
                   type="text"
@@ -192,10 +192,10 @@ export function NewCustomerDrawer({
               </div>
 
               <div className="space-y-1.5">
-                <Label.Root htmlFor="notes">
-                  {t("notes")} <Label.Sub>({tForm("optional")})</Label.Sub>
-                </Label.Root>
-                <Textarea.Root
+                <LabelNS.Root htmlFor="notes">
+                  {t("notes")} <LabelNS.Sub>({tForm("optional")})</LabelNS.Sub>
+                </LabelNS.Root>
+                <TextareaNS.Root
                   placeholder={t("notesPlaceholder")}
                   className="min-h-[50px]"
                   id="notes"
@@ -205,11 +205,11 @@ export function NewCustomerDrawer({
                   }
                   maxLength={500}
                 >
-                  <Textarea.CharCounter
+                  <TextareaNS.CharCounter
                     current={formData.notes?.length ?? 0}
                     max={500}
                   />
-                </Textarea.Root>
+                </TextareaNS.Root>
                 <Hint.Root>
                   <Hint.Icon as={RiInformationFill} />
                   {tForm("notesHint")}
@@ -222,9 +222,8 @@ export function NewCustomerDrawer({
         <div className="p-5 mt-auto border-t border-stroke-soft-200 bg-bg-white-0">
           <div className="flex gap-3 justify-between">
             <Button.Root
-              variant="neutral"
-              mode="stroke"
-              size="medium"
+              variant="outline"
+              size="default"
               className="flex-1 px-6 h-12 text-base font-medium border-2 border-stroke-soft-200 bg-bg-white-0 text-text-strong-950 hover:bg-bg-white-50 hover:border-stroke-soft-300"
               onClick={handleDiscard}
               disabled={isLoading}
@@ -233,8 +232,8 @@ export function NewCustomerDrawer({
               {tForm("cancel")}
             </Button.Root>
             <Button.Root
-              variant="primary"
-              size="medium"
+              variant="default"
+              size="default"
               className="flex-1 px-6 h-12 text-base font-semibold shadow-sm bg-text-strong-950 text-bg-white-0 hover:bg-text-strong-900 hover:shadow-md"
               onClick={handleSubmit}
               disabled={isLoading || !formData.name.trim()}

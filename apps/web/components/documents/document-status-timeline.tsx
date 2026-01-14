@@ -9,19 +9,19 @@ import { ChevronDown, Clock } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import {
   DropdownMenuRoot as DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/alignui/overlays/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { DocumentStatus, StatusBadge } from "@/components/shared/status-badge";
 
 interface DocumentStatusTimelineProps {

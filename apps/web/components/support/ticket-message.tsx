@@ -9,8 +9,8 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/alignui/data-display/avatar";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+} from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 interface TicketMessageProps {
   message: TicketMessage;

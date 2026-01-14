@@ -10,14 +10,14 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/alignui/data-display/avatar";
+} from "@/components/ui/avatar";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
 
 interface UserProfilePageProps {

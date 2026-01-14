@@ -15,7 +15,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TicketConversation } from "@/components/support/ticket-conversation";
 import { TicketStatusUpdater } from "@/components/support/ticket-status-updater";

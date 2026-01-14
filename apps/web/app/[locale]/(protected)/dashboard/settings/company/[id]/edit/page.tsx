@@ -3,7 +3,7 @@ import { getCompanyProfile } from "@/actions/company-profiles-actions";
 import { Building2 } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/session";
-import { Card, CardContent } from "@/components/alignui/data-display/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { CompanyProfileForm } from "@/components/company-settings/company-profile-form";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 

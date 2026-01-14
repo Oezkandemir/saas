@@ -4,14 +4,14 @@ import React from "react";
 import { AlertCircle, Home, RefreshCw } from "lucide-react";
 
 import { logger } from "@/lib/logger";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -52,7 +52,7 @@ function DefaultErrorFallback({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-2 sm:flex-row">
-            <Button onClick={resetError} className="flex-1" variant="primary">
+            <Button onClick={resetError} className="flex-1" variant="default">
               <RefreshCw className="mr-2 size-4" />
               Try Again
             </Button>

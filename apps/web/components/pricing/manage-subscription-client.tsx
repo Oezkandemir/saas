@@ -27,15 +27,15 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 
 interface ManageSubscriptionClientProps {
   userSubscriptionPlan: UserSubscriptionPlan;
@@ -260,7 +260,7 @@ export function ManageSubscriptionClient({
                 onOpenChange={setShowReactivateDialog}
               >
                 <AlertDialogTrigger asChild>
-                  <Button variant="primary" disabled={isLoading}>
+                  <Button variant="default" disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <LoadingSpinner size="sm" variant="primary" />
@@ -389,7 +389,7 @@ export function ManageSubscriptionClient({
                               </p>
                             </div>
                             <Button
-                              variant={isUpgrade ? "primary" : "outline"}
+                              variant={isUpgrade ? "default" : "outline"}
                               size="sm"
                               onClick={() => handlePlanChange(planProductId)}
                               disabled={isLoading}

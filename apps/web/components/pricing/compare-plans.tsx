@@ -9,7 +9,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Badge } from "@/components/ui/badge";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 export function ComparePlans() {

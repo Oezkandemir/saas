@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Cookie } from "lucide-react";
 
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 
 import { CookieConsent } from "./cookie-consent";
 

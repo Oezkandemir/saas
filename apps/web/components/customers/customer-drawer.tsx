@@ -30,15 +30,15 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
-import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
-  AccordionRoot,
+  Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "@/components/alignui/layout/accordion";
-import { Button } from "@/components/alignui/actions/button";
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import { EditCustomerDrawer } from "./edit-customer-drawer";
 import { DeleteCustomerButton } from "./delete-customer-button";
 import Link from "next/link";
@@ -135,7 +135,7 @@ export function CustomerDrawer({
           </div>
         ) : customer && createdDate && updatedDate ? (
           <div className="mt-3 flex flex-col">
-            <AccordionRoot type="multiple" defaultValue={["contact", "documents"]} className="w-full">
+            <Accordion type="multiple" defaultValue={["contact", "documents"]} className="w-full">
               {/* Contact Information - Wichtigste Info zuerst */}
               <AccordionItem value="contact" className="border-b border-stroke-soft-200">
                 <AccordionTrigger className="text-sm font-semibold">
@@ -467,7 +467,7 @@ export function CustomerDrawer({
                   </div>
                 </AccordionContent>
               </AccordionItem>
-            </AccordionRoot>
+            </Accordion>
 
             {/* Actions - Immer ganz unten, außerhalb der Accordions */}
             <div className="mt-4 pt-4 border-t border-border">
@@ -497,7 +497,7 @@ export function CustomerDrawer({
                 <EditCustomerDrawer
                   customer={customer}
                   trigger={
-                    <Button variant="primary" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
+                    <Button variant="default" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
                       <User className="h-3.5 w-3.5" />
                       <span className="text-xs">Bearbeiten</span>
                     </Button>
@@ -507,7 +507,7 @@ export function CustomerDrawer({
                   href={`/dashboard/documents/new?type=quote&customer_id=${customer.id}`}
                   className="w-full"
                 >
-                  <Button variant="primary" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
+                  <Button variant="default" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
                     <FileText className="h-3.5 w-3.5" />
                     <span className="text-xs">Angebot erstellen</span>
                   </Button>
@@ -516,7 +516,7 @@ export function CustomerDrawer({
                   href={`/dashboard/documents/new?type=invoice&customer_id=${customer.id}`}
                   className="w-full"
                 >
-                  <Button variant="primary" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
+                  <Button variant="default" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
                     <FileText className="h-3.5 w-3.5" />
                     <span className="text-xs">Rechnung erstellen</span>
                   </Button>
@@ -524,7 +524,7 @@ export function CustomerDrawer({
                 <DeleteCustomerButton
                   customerId={customer.id}
                   customerName={customer.name}
-                  variant="primary"
+                  variant="default"
                   size="sm"
                   className="w-full bg-foreground text-background hover:bg-destructive hover:text-destructive-foreground font-medium"
                   onDeleted={() => onOpenChange(false)}

@@ -25,14 +25,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
-import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
-  AccordionRoot,
+  Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "@/components/alignui/layout/accordion";
+} from "@/components/ui/accordion";
 import { BookingActions } from "@/components/scheduling/booking-actions";
 
 interface BookingDrawerProps {
@@ -119,7 +119,7 @@ export function BookingDrawer({
           </div>
         ) : booking && startDate && endDate ? (
           <div className="mt-3 flex flex-col">
-            <AccordionRoot type="multiple" defaultValue={["booking", "participant"]} className="w-full">
+            <Accordion type="multiple" defaultValue={["booking", "participant"]} className="w-full">
               {/* Booking Information */}
               <AccordionItem value="booking">
                 <AccordionTrigger className="text-sm font-semibold">
@@ -296,7 +296,7 @@ export function BookingDrawer({
                 </AccordionItem>
               )}
 
-            </AccordionRoot>
+            </Accordion>
 
             {/* Actions - Immer ganz unten, außerhalb der Accordions */}
             <div className="mt-4 pt-4 border-t border-border">

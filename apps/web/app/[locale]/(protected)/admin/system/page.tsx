@@ -20,9 +20,9 @@ import { SystemStatus } from "@/components/admin/system-status";
 import {
   AccordionContent,
   AccordionItem,
-  AccordionRoot,
+  Accordion,
   AccordionTrigger,
-} from "@/components/alignui/layout/accordion";
+} from "@/components/ui/accordion";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export async function generateMetadata() {
@@ -57,7 +57,7 @@ export default async function SystemMonitoringPage() {
       contentClassName="pb-10"
     >
       <div className="max-w-7xl mx-auto">
-        <AccordionRoot
+        <Accordion
           type="multiple"
           defaultValue={["system-status", "database-stats"]}
           className="w-full space-y-4"
@@ -203,7 +203,7 @@ export default async function SystemMonitoringPage() {
               </div>
             </AccordionContent>
           </AccordionItem>
-        </AccordionRoot>
+        </Accordion>
       </div>
     </UnifiedPageLayout>
   );

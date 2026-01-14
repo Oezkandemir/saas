@@ -19,8 +19,8 @@ import { useAutoSave } from "@/lib/hooks/use-auto-save";
 import { logger } from "@/lib/logger";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { MultiStepForm, Step } from "@/components/ui/multi-step-form";
-import { Card, CardContent } from "@/components/alignui/data-display/card";
-import { FormRoot as Form } from "@/components/alignui/forms/form";
+import { Card, CardContent } from "@/components/ui/card";
+import { Form } from "@/components/ui/form";
 
 import {
   CustomerAdditionalInfoStep,

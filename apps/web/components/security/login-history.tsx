@@ -11,14 +11,14 @@ import { Calendar, CheckCircle2, MapPin, Shield, XCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { logger } from "@/lib/logger";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 
 export function LoginHistory() {
   const t = useTranslations("Security.loginHistory");

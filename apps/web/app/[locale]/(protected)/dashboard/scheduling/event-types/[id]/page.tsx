@@ -27,20 +27,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
-import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
-import { Input } from "@/components/alignui/forms/input";
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { ApplyTimeSlotsToAll } from "@/components/scheduling/apply-time-slots-to-all";
-import { CopyBookingLinkButton } from "@/components/scheduling/copy-booking-link-button";
+import { CopyBookingButton } from "@/components/scheduling/copy-booking-link-button";
 import { DateOverrideManager } from "@/components/scheduling/date-override-manager";
 import { EventTypeActions } from "@/components/scheduling/event-type-actions";
 import { TimeSlotsManager } from "@/components/scheduling/time-slots-manager";
@@ -103,7 +103,7 @@ export default async function EventTypeDetailPage({
       backHref="/dashboard/scheduling"
       actions={
         <div className="flex items-center gap-2">
-          <CopyBookingLinkButton bookingUrl={bookingUrl} />
+          <CopyBookingButton bookingUrl={bookingUrl} />
           <Link href={`/dashboard/scheduling/event-types/${id}/edit`}>
             <Button variant="outline" size="sm" className="gap-1.5 h-8">
               <Edit className="h-3.5 w-3.5" />
@@ -553,7 +553,7 @@ export default async function EventTypeDetailPage({
                     readOnly
                     className="font-mono text-xs"
                   />
-                  <CopyBookingLinkButton bookingUrl={bookingUrl} />
+                  <CopyBookingButton bookingUrl={bookingUrl} />
                 </div>
               </div>
 

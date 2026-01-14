@@ -34,31 +34,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/alignui/data-display/avatar";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+} from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
-import { Input } from "@/components/alignui/forms/input";
-import { LabelRoot } from "@/components/alignui/forms/label";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   DrawerBody,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
-  DrawerRoot,
+  Drawer,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/alignui/overlays/drawer";
+} from "@/components/ui/drawer";
 
 interface CompanyProfileTeamManagementProps {
   companyProfileId: string;
@@ -290,7 +290,7 @@ export function CompanyProfileTeamManagement({
               Firmenprofil
             </CardDescription>
           </div>
-          <DrawerRoot
+          <Drawer
             open={addDrawerOpen}
             onOpenChange={setAddDrawerOpen}
             direction="right"
@@ -315,7 +315,7 @@ export function CompanyProfileTeamManagement({
                 <DrawerBody className="overflow-y-auto flex-1 bg-bg-white-0">
                   <div className="p-5 space-y-4">
                     <div className="flex flex-col gap-1">
-                      <LabelRoot htmlFor="email">E-Mail-Adresse</LabelRoot>
+                      <Label htmlFor="email">E-Mail-Adresse</Label>
                       <Input
                         id="email"
                         type="email"
@@ -325,7 +325,7 @@ export function CompanyProfileTeamManagement({
                       />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <LabelRoot htmlFor="role">Rolle</LabelRoot>
+                      <Label htmlFor="role">Rolle</Label>
                       <Select
                         value={newMemberRole}
                         onValueChange={(value) => {
@@ -350,9 +350,9 @@ export function CompanyProfileTeamManagement({
                       </p>
                     </div>
                     <div className="space-y-3 rounded-lg border border-stroke-soft-200 p-4 bg-bg-white-50">
-                      <LabelRoot className="text-label-sm font-semibold text-text-strong-950">
+                      <Label className="text-label-sm font-semibold text-text-strong-950">
                         Berechtigungen
-                      </LabelRoot>
+                      </Label>
                       <div className="space-y-2.5">
                         <div className="flex items-center gap-3">
                           <Checkbox
@@ -365,13 +365,13 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot
+                          <Label
                             htmlFor="edit-docs"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
                             <FileEdit className="h-4 w-4 text-text-sub-600" />
                             Dokumente bearbeiten
-                          </LabelRoot>
+                          </Label>
                         </div>
                         <div className="flex items-center gap-3">
                           <Checkbox
@@ -384,13 +384,13 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot
+                          <Label
                             htmlFor="delete-docs"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
                             <FileX className="h-4 w-4 text-text-sub-600" />
                             Dokumente löschen
-                          </LabelRoot>
+                          </Label>
                         </div>
                         <div className="flex items-center gap-3">
                           <Checkbox
@@ -403,13 +403,13 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot
+                          <Label
                             htmlFor="edit-customers"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
                             <UserCheck className="h-4 w-4 text-text-sub-600" />
                             Kunden bearbeiten
-                          </LabelRoot>
+                          </Label>
                         </div>
                         <div className="flex items-center gap-3">
                           <Checkbox
@@ -422,13 +422,13 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot
+                          <Label
                             htmlFor="delete-customers"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
                             <UserX className="h-4 w-4 text-text-sub-600" />
                             Kunden löschen
-                          </LabelRoot>
+                          </Label>
                         </div>
                         <div className="flex items-center gap-3">
                           <Checkbox
@@ -441,13 +441,13 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot
+                          <Label
                             htmlFor="manage-team"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
                             <Settings className="h-4 w-4 text-text-sub-600" />
                             Team verwalten
-                          </LabelRoot>
+                          </Label>
                         </div>
                       </div>
                     </div>
@@ -481,7 +481,7 @@ export function CompanyProfileTeamManagement({
                 </DrawerFooter>
               </div>
             </DrawerContent>
-          </DrawerRoot>
+          </Drawer>
         </div>
       </CardHeader>
       <CardContent>
@@ -563,7 +563,7 @@ export function CompanyProfileTeamManagement({
         )}
 
         {/* Edit Drawer */}
-        <DrawerRoot
+        <Drawer
           open={editDrawerOpen}
           onOpenChange={setEditDrawerOpen}
           direction="right"
@@ -582,7 +582,7 @@ export function CompanyProfileTeamManagement({
                 <DrawerBody className="overflow-y-auto flex-1 bg-bg-white-0">
                   <div className="p-5 space-y-4">
                     <div className="flex flex-col gap-1">
-                      <LabelRoot htmlFor="edit-role">Rolle</LabelRoot>
+                      <Label htmlFor="edit-role">Rolle</Label>
                       <Select
                         value={editMemberRole}
                         onValueChange={(value) => {
@@ -607,9 +607,9 @@ export function CompanyProfileTeamManagement({
                       </p>
                     </div>
                     <div className="space-y-3 rounded-lg border border-stroke-soft-200 p-4 bg-bg-white-50">
-                      <LabelRoot className="text-label-sm font-semibold text-text-strong-950">
+                      <Label className="text-label-sm font-semibold text-text-strong-950">
                         Berechtigungen
-                      </LabelRoot>
+                      </Label>
                       <div className="space-y-2.5">
                         <div className="flex items-center gap-3">
                           <Checkbox
@@ -622,13 +622,13 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot
+                          <Label
                             htmlFor="edit-docs-edit"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
                             <FileEdit className="h-4 w-4 text-text-sub-600" />
                             Dokumente bearbeiten
-                          </LabelRoot>
+                          </Label>
                         </div>
                         <div className="flex items-center gap-3">
                           <Checkbox
@@ -641,13 +641,13 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot
+                          <Label
                             htmlFor="delete-docs-edit"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
                             <FileX className="h-4 w-4 text-text-sub-600" />
                             Dokumente löschen
-                          </LabelRoot>
+                          </Label>
                         </div>
                         <div className="flex items-center gap-3">
                           <Checkbox
@@ -660,13 +660,13 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot
+                          <Label
                             htmlFor="edit-customers-edit"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
                             <UserCheck className="h-4 w-4 text-text-sub-600" />
                             Kunden bearbeiten
-                          </LabelRoot>
+                          </Label>
                         </div>
                         <div className="flex items-center gap-3">
                           <Checkbox
@@ -679,13 +679,13 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot
+                          <Label
                             htmlFor="delete-customers-edit"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
                             <UserX className="h-4 w-4 text-text-sub-600" />
                             Kunden löschen
-                          </LabelRoot>
+                          </Label>
                         </div>
                         <div className="flex items-center gap-3">
                           <Checkbox
@@ -698,13 +698,13 @@ export function CompanyProfileTeamManagement({
                               }))
                             }
                           />
-                          <LabelRoot
+                          <Label
                             htmlFor="manage-team-edit"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
                             <Settings className="h-4 w-4 text-text-sub-600" />
                             Team verwalten
-                          </LabelRoot>
+                          </Label>
                         </div>
                       </div>
                     </div>
@@ -739,7 +739,7 @@ export function CompanyProfileTeamManagement({
               </DrawerFooter>
             </div>
           </DrawerContent>
-        </DrawerRoot>
+        </Drawer>
       </CardContent>
     </Card>
   );

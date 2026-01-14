@@ -43,7 +43,7 @@
     /* Border Radius */
     --radius: 0.5rem;
 
-    /* AlignUI Design System - Neutrale Grautöne für Text/Hintergründe */
+    /* Design System - Neutrale Grautöne für Text/Hintergründe */
     --bg-white-0: 0 0% 100%;
     --bg-white-50: 0 0% 99%;
     --bg-white-100: 0 0% 98%;
@@ -79,7 +79,7 @@
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
 
-    /* Shadows - AlignUI Style */
+    /* Shadows - Design System */
     --shadow-regular-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-regular-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1);
     --shadow-regular-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
@@ -137,7 +137,7 @@
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
 
-    /* AlignUI Design System - Dark Mode Neutrale Grautöne */
+    /* Design System - Dark Mode Neutrale Grautöne */
     --bg-white-0: 0 0% 4%;
     --bg-white-50: 0 0% 5%;
     --bg-white-100: 0 0% 6%;
@@ -228,7 +228,7 @@
     letter-spacing: -0.02em; /* Leicht kompakter für Headings */
   }
 
-  /* AlignUI Typography Scale */
+  /* Typography Scale */
   .text-label-sm {
     font-size: 0.875rem;
     line-height: 1.25rem;

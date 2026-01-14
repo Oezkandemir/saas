@@ -9,25 +9,25 @@ import {
 import { Loader2, Trash2, Zap } from "lucide-react";
 
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
+  AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogRoot,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/alignui/overlays/alert-dialog";
+} from "@/components/ui/alert-dialog";
 
 interface QuickAction {
   id: string;
   title: string;
   description: string;
   icon: React.ReactNode;
-  variant: "primary" | "destructive" | "outline";
+  variant: "default" | "destructive" | "outline";
   action: () => Promise<QuickActionResult>;
   requiresConfirmation: boolean;
 }
@@ -51,7 +51,7 @@ export function QuickActions() {
       title: "Datenbank optimieren",
       description: "Führt ANALYZE aus, um Statistiken zu aktualisieren",
       icon: <Zap className="w-4 h-4" />,
-      variant: "primary",
+      variant: "default",
       requiresConfirmation: true,
       action: async () => await optimizeDatabase(),
     },
@@ -93,7 +93,7 @@ export function QuickActions() {
 
           if (action.requiresConfirmation) {
             return (
-              <AlertDialogRoot key={action.id}>
+              <AlertDialog key={action.id}>
                 <AlertDialogTrigger asChild>
                   <Button
                     variant={action.variant}
@@ -159,7 +159,7 @@ export function QuickActions() {
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
-              </AlertDialogRoot>
+              </AlertDialog>
             );
           }
 

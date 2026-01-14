@@ -7,7 +7,7 @@ import { Check, Copy, FileText, Mail, Phone } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 
 import { SendEmailDialog } from "./send-email-dialog";
 
@@ -43,7 +43,7 @@ export function CustomerQuickActions({ customer }: CustomerQuickActionsProps) {
           <SendEmailDialog
             customer={customer}
             trigger={
-              <Button variant="primary" size="sm" className="gap-2">
+              <Button variant="default" size="sm" className="gap-2">
                 <Mail className="h-4 w-4" />
                 {t("sendEmail")}
               </Button>

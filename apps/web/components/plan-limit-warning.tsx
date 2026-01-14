@@ -4,7 +4,7 @@ import { AlertTriangle, ArrowUp } from "lucide-react";
 
 import { LimitType } from "@/lib/plan-limits";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 
 interface PlanLimitWarningProps {
   limitType: LimitType;
@@ -71,7 +71,7 @@ export async function PlanLimitWarning({
         )}
         <div className="flex gap-2 pt-2">
           <Link href="/pricing">
-            <Button size="sm" variant={isAtLimit ? "primary" : "outline"}>
+            <Button size="sm" variant={isAtLimit ? "default" : "outline"}>
               <ArrowUp className="mr-2 h-4 w-4" />
               Jetzt upgraden
             </Button>

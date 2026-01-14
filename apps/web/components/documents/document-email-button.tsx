@@ -7,19 +7,19 @@ import { Loader2, Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-import { Button } from "@/components/alignui/actions/button";
-import { Input } from "@/components/alignui/forms/input";
-import { LabelRoot as Label } from "@/components/alignui/forms/label";
-import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
-  DialogRoot as Dialog,
+  Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/alignui/overlays/dialog";
+} from "@/components/ui/dialog";
 
 interface DocumentEmailButtonProps {
   documentId: string;

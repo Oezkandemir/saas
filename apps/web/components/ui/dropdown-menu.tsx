@@ -200,6 +200,9 @@ const DropdownMenuShortcut = ({
 };
 DropdownMenuShortcut.displayName = "DropdownMenuShortcut";
 
+// Alias for backward compatibility
+export const DropdownMenuRoot = DropdownMenu;
+
 export {
   DropdownMenu,
   DropdownMenuTrigger,

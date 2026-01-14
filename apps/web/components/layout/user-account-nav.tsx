@@ -25,29 +25,29 @@ import { useTheme } from "next-themes";
 import { toast } from "sonner";
 
 import { logger } from "@/lib/logger";
-import { ButtonIcon, ButtonRoot } from "@/components/alignui/actions/button";
+import { ButtonIcon, ButtonRoot } from "@/components/ui/button";
 import {
+  Drawer,
   DrawerBody,
   DrawerClose,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
-  DrawerRoot,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/alignui/overlays/drawer";
+} from "@/components/ui/drawer";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { useSupabase } from "@/components/supabase-provider";
 import { useNotifications } from "@/hooks/use-notifications";
 
-// Create namespace objects locally for AlignUI pattern
+// Create namespace objects locally for component pattern
 const Button = {
   Root: ButtonRoot,
   Icon: ButtonIcon,
 };
 
-const Drawer = {
-  Root: DrawerRoot,
+const DrawerNS = {
+  Root: Drawer,
   Trigger: DrawerTrigger,
   Content: DrawerContent,
   Header: DrawerHeader,
@@ -172,12 +172,12 @@ export function UserAccountNav() {
     <>
       <div className="flex items-center gap-1">
         {/* User Account Drawer */}
-        <Drawer.Root
+        <DrawerNS.Root
           open={drawerOpen}
           onOpenChange={setDrawerOpen}
           direction="right"
         >
-          <Drawer.Trigger asChild>
+          <DrawerNS.Trigger asChild>
             <button
               type="button"
               onClick={(e) => {
@@ -201,18 +201,18 @@ export function UserAccountNav() {
                 className="border border-stroke-soft-200 size-9"
               />
             </button>
-          </Drawer.Trigger>
-          <Drawer.Content
+          </DrawerNS.Trigger>
+          <DrawerNS.Content
             side="right"
-            className="mr-2 shadow-custom-md w-[min(400px,calc(100%-16px))]"
+            className="mr-2 shadow-custom-md w-auto min-w-[280px] max-w-[400px]"
           >
             <div className="flex flex-col h-full bg-bg-white-0">
-              <Drawer.Header className="bg-bg-white-0 border-b border-stroke-soft-200">
+              <DrawerNS.Header className="bg-bg-white-0 border-b border-stroke-soft-200">
                 <div className="flex items-center justify-between">
-                  <Drawer.Title className="text-label-lg text-text-strong-950">
+                  <DrawerNS.Title className="text-label-lg text-text-strong-950">
                     {t("account")}
-                  </Drawer.Title>
-                  <Drawer.Close asChild>
+                  </DrawerNS.Title>
+                  <DrawerNS.Close asChild>
                     <Button.Root
                       variant="ghost"
                       size="icon"
@@ -220,11 +220,11 @@ export function UserAccountNav() {
                     >
                       <X className="h-4 w-4" />
                     </Button.Root>
-                  </Drawer.Close>
+                  </DrawerNS.Close>
                 </div>
-              </Drawer.Header>
+              </DrawerNS.Header>
 
-              <Drawer.Body className="overflow-y-auto flex-1 bg-bg-white-0">
+              <DrawerNS.Body className="overflow-y-auto flex-1 bg-bg-white-0">
                 {/* User Context - Compact */}
                 <div className="p-5 border-b border-stroke-soft-200">
                   <div className="flex items-center gap-3">
@@ -465,10 +465,10 @@ export function UserAccountNav() {
                     <span>{t("logout")}</span>
                   </button>
                 </div>
-              </Drawer.Body>
+              </DrawerNS.Body>
             </div>
-          </Drawer.Content>
-        </Drawer.Root>
+          </DrawerNS.Content>
+        </DrawerNS.Root>
       </div>
     </>
   );

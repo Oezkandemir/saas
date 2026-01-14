@@ -9,8 +9,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { logger } from "@/lib/logger";
 import { formatDuration } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface CourseCardProps {
   eventType: EventType & {
@@ -136,7 +136,7 @@ export function CourseCard({ eventType }: CourseCardProps) {
             href={bookingLink}
             className={cn(
               buttonVariants({
-                variant: "primary",
+                variant: "default",
                 size: "lg",
               }),
               "w-full group/btn",

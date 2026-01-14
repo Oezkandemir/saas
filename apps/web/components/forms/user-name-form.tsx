@@ -11,9 +11,9 @@ import { toast } from "sonner";
 
 import { userNameSchema } from "@/lib/validations/user";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button } from "@/components/alignui/actions/button";
-import { Input } from "@/components/alignui/forms/input";
-import { LabelRoot as Label } from "@/components/alignui/forms/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface UserNameFormProps {
   user: Pick<User, "id" | "name">;
@@ -75,7 +75,7 @@ export function UserNameForm({ user }: UserNameFormProps) {
         />
         <Button
           type="submit"
-          variant={updated ? "primary" : "outline"}
+          variant={updated ? "default" : "outline"}
           size="sm"
           className="h-9 shrink-0 min-w-[80px]"
           disabled={isPending || !updated}

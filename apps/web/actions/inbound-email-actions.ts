@@ -35,6 +35,21 @@ export type InboundEmailAttachment = {
   created_at: string;
 };
 
+export type InboundEmailReply = {
+  id: string;
+  inbound_email_id: string;
+  user_id: string;
+  subject: string;
+  body: string;
+  html_body: string | null;
+  message_id: string | null;
+  sent_at: string;
+  created_at: string;
+  updated_at: string;
+  user_name?: string;
+  user_email?: string;
+};
+
 export type InboundEmailStats = {
   total: number;
   unread: number;
@@ -352,63 +367,165 @@ export async function getInboundEmailStats(): Promise<
 
     const supabase = await createClient();
 
-    // Get total count
-    const { count: total, error: totalError } = await supabase
-      .from("inbound_emails")
-      .select("*", { count: "exact", head: true });
+    // Get total count with error handling
+    let total = 0;
+    try {
+      const { count, error: totalError } = await supabase
+        .from("inbound_emails")
+        .select("*", { count: "exact", head: true });
 
-    if (totalError) {
-      logger.error("Error fetching total count:", totalError);
+      if (totalError) {
+        logger.error("Error fetching total count:", totalError);
+      } else {
+        total = count || 0;
+      }
+    } catch (error) {
+      logger.error("Error fetching total count:", error);
     }
 
-    // Get unread count
-    const { count: unread, error: unreadError } = await supabase
-      .from("inbound_emails")
-      .select("*", { count: "exact", head: true })
-      .eq("is_read", false);
+    // Get unread count with error handling
+    let unread = 0;
+    try {
+      const { count, error: unreadError } = await supabase
+        .from("inbound_emails")
+        .select("*", { count: "exact", head: true })
+        .eq("is_read", false);
 
-    if (unreadError) {
-      logger.error("Error fetching unread count:", unreadError);
+      if (unreadError) {
+        logger.error("Error fetching unread count:", unreadError);
+      } else {
+        unread = count || 0;
+      }
+    } catch (error) {
+      logger.error("Error fetching unread count:", error);
     }
 
-    // Get today's count
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const { count: todayCount, error: todayError } = await supabase
-      .from("inbound_emails")
-      .select("*", { count: "exact", head: true })
-      .gte("received_at", today.toISOString());
+    // Get today's count with error handling
+    let todayCount = 0;
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const { count, error: todayError } = await supabase
+        .from("inbound_emails")
+        .select("*", { count: "exact", head: true })
+        .gte("received_at", today.toISOString());
 
-    if (todayError) {
-      logger.error("Error fetching today count:", todayError);
+      if (todayError) {
+        logger.error("Error fetching today count:", todayError);
+      } else {
+        todayCount = count || 0;
+      }
+    } catch (error) {
+      logger.error("Error fetching today count:", error);
     }
 
-    // Get this week's count
-    const weekAgo = new Date();
-    weekAgo.setDate(weekAgo.getDate() - 7);
-    const { count: weekCount, error: weekError } = await supabase
-      .from("inbound_emails")
-      .select("*", { count: "exact", head: true })
-      .gte("received_at", weekAgo.toISOString());
+    // Get this week's count with error handling
+    let weekCount = 0;
+    try {
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      const { count, error: weekError } = await supabase
+        .from("inbound_emails")
+        .select("*", { count: "exact", head: true })
+        .gte("received_at", weekAgo.toISOString());
 
-    if (weekError) {
-      logger.error("Error fetching week count:", weekError);
+      if (weekError) {
+        logger.error("Error fetching week count:", weekError);
+      } else {
+        weekCount = count || 0;
+      }
+    } catch (error) {
+      logger.error("Error fetching week count:", error);
     }
 
     return {
       success: true,
       data: {
-        total: total || 0,
-        unread: unread || 0,
-        today: todayCount || 0,
-        thisWeek: weekCount || 0,
+        total,
+        unread,
+        today: todayCount,
+        thisWeek: weekCount,
       },
     };
+  } catch (error: any) {
+    logger.error("Error in getInboundEmailStats:", {
+      error: error.message,
+      stack: error.stack,
+    });
+    // Return default values instead of failing completely
+    return {
+      success: true,
+      data: {
+        total: 0,
+        unread: 0,
+        today: 0,
+        thisWeek: 0,
+      },
+    };
+  }
+}
+
+/**
+ * Get replies for an inbound email
+ */
+export async function getInboundEmailReplies(
+  inboundEmailId: string,
+): Promise<ActionResult<InboundEmailReply[]>> {
+  try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "ADMIN") {
+      return {
+        success: false,
+        error: "Unauthorized: Admin access required",
+      };
+    }
+
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("inbound_email_replies")
+      .select(`
+        *,
+        users:user_id (
+          name,
+          email
+        )
+      `)
+      .eq("inbound_email_id", inboundEmailId)
+      .order("sent_at", { ascending: true });
+
+    if (error) {
+      logger.error("Error fetching email replies:", error);
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+
+    const replies: InboundEmailReply[] = (data || []).map((reply: any) => ({
+      id: reply.id,
+      inbound_email_id: reply.inbound_email_id,
+      user_id: reply.user_id,
+      subject: reply.subject,
+      body: reply.body,
+      html_body: reply.html_body,
+      message_id: reply.message_id,
+      sent_at: reply.sent_at,
+      created_at: reply.created_at,
+      updated_at: reply.updated_at,
+      user_name: reply.users?.name || null,
+      user_email: reply.users?.email || null,
+    }));
+
+    return {
+      success: true,
+      data: replies,
+    };
   } catch (error) {
-    logger.error("Error in getInboundEmailStats:", error);
+    logger.error("Error in getInboundEmailReplies:", error);
     return {
       success: false,
-      error: "Failed to fetch email statistics",
+      error: "Failed to fetch email replies",
     };
   }
 }

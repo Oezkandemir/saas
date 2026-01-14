@@ -25,25 +25,25 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
-  FormRoot as Form,
+  Form,
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/alignui/forms/form";
-import { Input } from "@/components/alignui/forms/input";
-import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
-  AccordionRoot,
+  Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "@/components/alignui/layout/accordion";
-import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
+} from "@/components/ui/accordion";
+import { Separator } from "@/components/ui/separator";
 
 const eventTypeSchema = z.object({
   slug: z
@@ -164,7 +164,7 @@ export function CreateEventTypeDrawer({
         <div className="mt-3 flex flex-col">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
-              <AccordionRoot type="multiple" defaultValue={["basic", "duration"]} className="w-full">
+              <Accordion type="multiple" defaultValue={["basic", "duration"]} className="w-full">
                 {/* Basic Information */}
                 <AccordionItem value="basic" className="border-b border-stroke-soft-200">
                   <AccordionTrigger className="text-sm font-semibold">
@@ -491,7 +491,7 @@ export function CreateEventTypeDrawer({
                     </div>
                   </AccordionContent>
                 </AccordionItem>
-              </AccordionRoot>
+              </Accordion>
 
               {/* Actions - Immer ganz unten, außerhalb der Accordions */}
               <div className="mt-4 pt-4 border-t border-border">
@@ -510,7 +510,7 @@ export function CreateEventTypeDrawer({
                   </Button>
                   <Button
                     type="button"
-                    variant="primary"
+                    variant="default"
                     onClick={() => onOpenChange(false)}
                     disabled={isLoading}
                     size="sm"

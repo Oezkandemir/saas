@@ -23,15 +23,15 @@ import {
 
 import { getCurrentUser } from "@/lib/session";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import { CompanyProfileTeamManagement } from "@/components/company-settings/company-profile-team-management";
 import { CopyButton } from "@/components/company-settings/copy-button";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";

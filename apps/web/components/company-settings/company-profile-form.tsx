@@ -18,7 +18,7 @@ import { useAutoSave } from "@/lib/hooks/use-auto-save";
 import { logger } from "@/lib/logger";
 import { Form } from "@/components/ui/form";
 import { MultiStepForm, Step } from "@/components/ui/multi-step-form";
-import { Card, CardContent } from "@/components/alignui/data-display/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 import {
   CompanyBankInfoStep,

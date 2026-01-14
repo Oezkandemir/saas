@@ -6,7 +6,7 @@ import { Plus, QrCode } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { QRCodesTable } from "@/components/qr-codes/qr-codes-table";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";

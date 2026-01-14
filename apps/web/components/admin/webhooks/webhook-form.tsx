@@ -23,8 +23,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/alignui/actions/button";
-import { Input } from "@/components/alignui/forms/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 // Client-side secret generator (not a server action)
 function generateClientSecret(): string {

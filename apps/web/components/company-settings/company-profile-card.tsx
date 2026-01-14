@@ -15,12 +15,12 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardHeader,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 
 interface CompanyProfileCardProps {
   profile: CompanyProfileWithMembership;

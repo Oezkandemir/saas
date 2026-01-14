@@ -8,7 +8,7 @@ import { Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { logger } from "@/lib/logger";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import { useNotificationsContext } from "@/components/context/notifications-context";
 import { useSupabase } from "@/components/supabase-provider";
 

@@ -27,7 +27,7 @@ import { Check, Copy, FileDown, Pencil, Search, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-import { ButtonRoot } from "@/components/alignui/actions/button";
+import { ButtonRoot } from "@/components/ui/button";
 import {
   TableBody,
   TableCell,
@@ -36,15 +36,15 @@ import {
   TableRoot,
   TableRow,
   TableRowDivider,
-} from "@/components/alignui/data-display/table";
-import { Input } from "@/components/alignui/forms/input";
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenuRoot as DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/alignui/overlays/dropdown-menu";
-import { StatusBadge as DocumentStatusBadge } from "@/components/shared/status-badge";
+} from "@/components/ui/dropdown-menu";
+import { StatusBadge as DocumentBadge } from "@/components/shared/status-badge";
 
 interface DocumentsTableProps {
   documents: Document[];
@@ -258,7 +258,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
         </div>
       ),
       cell: ({ row }) => (
-        <DocumentStatusBadge status={row.original.status as any} />
+        <DocumentBadge status={row.original.status as any} />
       ),
     },
     {

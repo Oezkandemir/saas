@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 import { logger } from "@/lib/logger";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/shared/icons";
 
 interface BillingFormButtonProps {
@@ -74,7 +74,7 @@ export function BillingFormButton({
 
   return (
     <Button
-      variant={isCurrentPlan ? "primary" : "outline"}
+      variant={isCurrentPlan ? "default" : "outline"}
       className="w-full"
       disabled={isDisabled}
       onClick={handlePaymentAction}

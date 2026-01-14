@@ -4,7 +4,7 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 
 export function CardSkeleton() {
   return (

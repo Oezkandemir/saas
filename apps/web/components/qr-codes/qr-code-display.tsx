@@ -4,7 +4,7 @@ import { QRCode as QRCodeType } from "@/actions/qr-codes-actions";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 
 interface QRCodeDisplayProps {
   qrCode: QRCodeType;

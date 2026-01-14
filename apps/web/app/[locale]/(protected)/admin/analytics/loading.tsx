@@ -5,7 +5,7 @@ import {
   Card,
   CardContent,
   CardHeader,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 
 export default function AnalyticsLoading() {

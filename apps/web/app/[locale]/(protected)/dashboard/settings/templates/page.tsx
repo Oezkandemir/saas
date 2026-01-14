@@ -4,14 +4,14 @@ import { getDocumentTemplates } from "@/actions/document-templates-actions";
 import { FileText, Plus } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/session";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import { DocumentTemplatesList } from "@/components/documents/document-templates-list";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 

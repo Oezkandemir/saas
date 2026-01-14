@@ -14,24 +14,24 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
-import { ButtonIcon, ButtonRoot } from "@/components/alignui/actions/button";
-import { FormRoot as Form } from "@/components/alignui/forms/form";
+import { ButtonIcon, ButtonRoot } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
 import {
+  Tabs,
   TabsContent,
   TabsList,
-  TabsRoot,
   TabsTrigger,
-} from "@/components/alignui/layout/tabs";
+} from "@/components/ui/tabs";
 import {
+  Drawer,
   DrawerBody,
   DrawerClose,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
-  DrawerRoot,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/alignui/overlays/drawer";
+} from "@/components/ui/drawer";
 
 import {
   CustomerAdditionalInfoStep,
@@ -39,14 +39,15 @@ import {
   CustomerPersonalInfoStep,
 } from "./customer-form-steps";
 
-// Create namespace objects locally for AlignUI pattern
+// Create namespace objects locally for component pattern
 const Button = {
   Root: ButtonRoot,
   Icon: ButtonIcon,
 };
 
-const Drawer = {
-  Root: DrawerRoot,
+// Namespace objects for component pattern
+const DrawerNS = {
+  Root: Drawer,
   Trigger: DrawerTrigger,
   Content: DrawerContent,
   Header: DrawerHeader,
@@ -56,8 +57,8 @@ const Drawer = {
   Close: DrawerClose,
 };
 
-const Tabs = {
-  Root: TabsRoot,
+const TabsNS = {
+  Root: Tabs,
   List: TabsList,
   Trigger: TabsTrigger,
   Content: TabsContent,
@@ -155,93 +156,92 @@ export function EditCustomerDrawer({
   }, [open, customer.id]);
 
   return (
-    <Drawer.Root open={open} onOpenChange={setOpen} direction="right">
-      {trigger && <Drawer.Trigger asChild>{trigger}</Drawer.Trigger>}
+    <DrawerNS.Root open={open} onOpenChange={setOpen} direction="right">
+      {trigger && <DrawerNS.Trigger asChild>{trigger}</DrawerNS.Trigger>}
 
-      <Drawer.Content
+      <DrawerNS.Content
         side="right"
         className="mr-2 shadow-custom-md w-[min(600px,calc(100%-16px))]"
       >
         <div className="flex flex-col h-full bg-bg-white-0">
-          <Drawer.Header className="bg-bg-white-0 border-b border-stroke-soft-200">
+          <DrawerNS.Header className="bg-bg-white-0 border-b border-stroke-soft-200">
             <div className="flex items-center justify-between">
-              <Drawer.Title className="text-label-lg text-text-strong-950">
+              <DrawerNS.Title className="text-label-lg text-text-strong-950">
                 Kunde bearbeiten
-              </Drawer.Title>
-              <Drawer.Close asChild>
+              </DrawerNS.Title>
+              <DrawerNS.Close asChild>
                 <Button.Root variant="ghost" size="icon" className="h-8 w-8">
                   <X className="h-4 w-4" />
                 </Button.Root>
-              </Drawer.Close>
+              </DrawerNS.Close>
             </div>
-          </Drawer.Header>
+          </DrawerNS.Header>
 
-          <Drawer.Body className="overflow-y-auto flex-1 bg-bg-white-0">
+          <DrawerNS.Body className="overflow-y-auto flex-1 bg-bg-white-0">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(handleSubmit)}
                 className="h-full"
               >
                 <div className="p-5">
-                  <Tabs.Root
+                  <TabsNS.Root
                     value={activeTab}
                     onValueChange={setActiveTab}
                     className="w-full"
                   >
-                    <Tabs.List className="mb-6 w-full justify-start border-b border-stroke-soft-200">
-                      <Tabs.Trigger
+                    <TabsNS.List className="mb-6 w-full justify-start border-b border-stroke-soft-200">
+                      <TabsNS.Trigger
                         value="personal"
                         className="data-[state=active]:border-b-2 data-[state=active]:border-text-strong-950 rounded-none"
                       >
                         <User className="h-4 w-4 mr-2" />
                         {tFields("personalInfo")}
-                      </Tabs.Trigger>
-                      <Tabs.Trigger
+                      </TabsNS.Trigger>
+                      <TabsNS.Trigger
                         value="address"
                         className="data-[state=active]:border-b-2 data-[state=active]:border-text-strong-950 rounded-none"
                       >
                         <MapPin className="h-4 w-4 mr-2" />
                         {tFields("address")}
-                      </Tabs.Trigger>
-                      <Tabs.Trigger
+                      </TabsNS.Trigger>
+                      <TabsNS.Trigger
                         value="additional"
                         className="data-[state=active]:border-b-2 data-[state=active]:border-text-strong-950 rounded-none"
                       >
                         <FileText className="h-4 w-4 mr-2" />
                         {tFields("additionalInfo")}
-                      </Tabs.Trigger>
-                    </Tabs.List>
+                      </TabsNS.Trigger>
+                    </TabsNS.List>
 
                     <div className="relative min-h-[400px]">
-                      <Tabs.Content value="personal" className="mt-0">
+                      <TabsNS.Content value="personal" className="mt-0">
                         <div className="animate-in fade-in-0 slide-in-from-right-4 duration-300">
                           <CustomerPersonalInfoStep form={form} />
                         </div>
-                      </Tabs.Content>
+                      </TabsNS.Content>
 
-                      <Tabs.Content value="address" className="mt-0">
+                      <TabsNS.Content value="address" className="mt-0">
                         <div className="animate-in fade-in-0 slide-in-from-right-4 duration-300">
                           <CustomerAddressStep form={form} />
                         </div>
-                      </Tabs.Content>
+                      </TabsNS.Content>
 
-                      <Tabs.Content value="additional" className="mt-0">
+                      <TabsNS.Content value="additional" className="mt-0">
                         <div className="animate-in fade-in-0 slide-in-from-right-4 duration-300">
                           <CustomerAdditionalInfoStep form={form} />
                         </div>
-                      </Tabs.Content>
+                      </TabsNS.Content>
                     </div>
-                  </Tabs.Root>
+                  </TabsNS.Root>
                 </div>
               </form>
             </Form>
-          </Drawer.Body>
+          </DrawerNS.Body>
 
-          <Drawer.Footer className="flex gap-3 justify-between p-5 border-t border-stroke-soft-200 bg-bg-white-0">
+          <DrawerNS.Footer className="flex gap-3 justify-between p-5 border-t border-stroke-soft-200 bg-bg-white-0">
             <Button.Root
-              variant="neutral"
-              mode="stroke"
-              size="medium"
+              variant="outline"
+              size="default"
               className="flex-1 px-6 h-12 text-base font-medium border-2 border-stroke-soft-200 bg-bg-white-0 text-text-strong-950 hover:bg-bg-white-50 hover:border-stroke-soft-300"
               onClick={handleDiscard}
               disabled={isLoading}
@@ -250,8 +250,8 @@ export function EditCustomerDrawer({
               Abbrechen
             </Button.Root>
             <Button.Root
-              variant="primary"
-              size="medium"
+              variant="default"
+              size="default"
               className="flex-1 px-6 h-12 text-base font-semibold shadow-sm bg-text-strong-950 text-bg-white-0 hover:bg-text-strong-900 hover:shadow-md"
               onClick={form.handleSubmit(handleSubmit)}
               disabled={isLoading}
@@ -259,9 +259,9 @@ export function EditCustomerDrawer({
             >
               {isLoading ? "Wird gespeichert..." : "Änderungen speichern"}
             </Button.Root>
-          </Drawer.Footer>
+          </DrawerNS.Footer>
         </div>
-      </Drawer.Content>
-    </Drawer.Root>
+      </DrawerNS.Content>
+    </DrawerNS.Root>
   );
 }

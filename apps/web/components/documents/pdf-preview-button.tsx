@@ -4,20 +4,20 @@ import { useEffect, useState } from "react";
 import { Eye, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
-  DialogRoot as Dialog,
+  Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/alignui/overlays/dialog";
+} from "@/components/ui/dialog";
 
 interface PDFPreviewButtonProps {
   documentId: string;
   pdfUrl?: string | null;
   documentNumber: string;
-  variant?: "primary" | "secondary" | "ghost" | "destructive" | "outline";
+  variant?: "default" | "secondary" | "ghost" | "destructive" | "outline";
   size?: "default" | "sm" | "lg" | "icon";
 }
 

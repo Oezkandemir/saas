@@ -7,13 +7,13 @@ import { Document, DocumentType } from "@/actions/documents-actions";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
-  TabsRoot as Tabs,
+  Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/alignui/layout/tabs";
+} from "@/components/ui/tabs";
 import { DocumentsTable } from "@/components/documents/documents-table";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
 

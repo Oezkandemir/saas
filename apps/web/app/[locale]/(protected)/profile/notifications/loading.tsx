@@ -3,7 +3,7 @@ import {
   Card,
   CardContent,
   CardHeader,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 
 export default function NotificationsLoading() {
   return (

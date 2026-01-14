@@ -14,31 +14,31 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
-  FormRoot as Form,
+  Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/alignui/forms/form";
-import { Input } from "@/components/alignui/forms/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
-  SelectRoot as Select,
+  Select as Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/alignui/forms/select";
+} from "@/components/ui/select";
 import {
-  DialogRoot as Dialog,
+  Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/alignui/overlays/dialog";
+} from "@/components/ui/dialog";
 
 interface CustomerSelectorProps {
   value?: string;

@@ -16,14 +16,14 @@ import { getTranslations } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { formatDurationHours } from "@/lib/utils";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
-import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { BookingActions } from "@/components/scheduling/booking-actions";
 

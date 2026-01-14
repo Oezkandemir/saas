@@ -924,7 +924,9 @@
     "toggleNavigationMenu": "Toggle navigation menu",
     "sections": {
       "menu": "MENU",
-      "options": "OPTIONS"
+      "options": "OPTIONS",
+      "emails": "EMAILS",
+      "mehr": "MORE"
     },
     "items": {
       "admin_panel": "Admin Panel",
@@ -955,7 +957,14 @@
       "company_profiles": "Company Profiles",
       "blog": "Blog Posts",
       "blog_posts": "Blog Posts",
-      "system": "System"
+      "system": "System",
+      "posteingang": "Inbox",
+      "markiert": "Starred",
+      "zurückgestellt": "Snoozed",
+      "gesendet": "Sent",
+      "käufe": "Purchases",
+      "archiv": "Archive",
+      "papierkorb": "Trash"
     }
   },
   "Support": {

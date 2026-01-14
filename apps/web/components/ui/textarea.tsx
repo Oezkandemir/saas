@@ -21,4 +21,31 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 );
 Textarea.displayName = "Textarea";
 
-export { Textarea };
+// Character counter component
+interface TextareaCharCounterProps {
+  current: number;
+  max?: number;
+  className?: string;
+}
+
+const TextareaCharCounter = ({
+  current,
+  max,
+  className,
+}: TextareaCharCounterProps) => {
+  if (!max) return null;
+  return (
+    <div
+      className={cn(
+        "text-xs text-muted-foreground text-right mt-1",
+        current > max && "text-destructive",
+        className,
+      )}
+    >
+      {current}/{max}
+    </div>
+  );
+};
+TextareaCharCounter.displayName = "Textarea.CharCounter";
+
+export { Textarea, TextareaCharCounter };

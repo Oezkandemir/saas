@@ -10,8 +10,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
-import { Button } from "@/components/alignui/actions/button";
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();

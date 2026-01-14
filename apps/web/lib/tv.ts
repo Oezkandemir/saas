@@ -1,7 +1,7 @@
 /**
- * AlignUI - tv (tailwind-variants) Utility
+ * tv (tailwind-variants) Utility
  *
- * Similar to class-variance-authority but optimized for AlignUI patterns
+ * Similar to class-variance-authority but optimized for component variants
  * Used for creating component variants with Tailwind classes
  */
 

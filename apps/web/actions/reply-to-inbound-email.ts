@@ -5,6 +5,7 @@ import { siteConfig } from "@/config/site";
 import { resend } from "@/lib/email";
 import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
+import { supabaseAdmin } from "@/lib/db";
 import { getInboundEmailById } from "./inbound-email-actions";
 import { revalidatePath } from "next/cache";
 
@@ -164,6 +165,31 @@ export async function replyToInboundEmail(
     logger.info(
       `Reply email sent successfully to ${originalEmail.from_email}, messageId: ${data?.id}`,
     );
+
+    // Save reply to database
+    try {
+      const { error: replyError } = await supabaseAdmin
+        .from("inbound_email_replies")
+        .insert({
+          inbound_email_id: input.inboundEmailId,
+          user_id: user.id,
+          subject: replySubject,
+          body: input.body,
+          html_body: htmlContent,
+          message_id: data?.id || null,
+          sent_at: new Date().toISOString(),
+        });
+
+      if (replyError) {
+        logger.error("Failed to save reply to database", replyError);
+        // Don't fail the whole operation if saving reply fails
+      } else {
+        logger.info(`Reply saved to database for email ${input.inboundEmailId}`);
+      }
+    } catch (saveError) {
+      logger.error("Error saving reply to database", saveError);
+      // Don't fail the whole operation if saving reply fails
+    }
 
     // Mark original email as read (since we replied)
     // This is optional but makes sense UX-wise

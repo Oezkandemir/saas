@@ -12,7 +12,7 @@ import { toast } from "sonner";
 
 import { userAvatarSchema } from "@/lib/validations/user";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import { useAvatar } from "@/components/context/avatar-context";
 import { Icons } from "@/components/shared/icons";
 

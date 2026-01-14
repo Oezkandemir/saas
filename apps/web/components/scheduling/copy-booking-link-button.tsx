@@ -5,15 +5,15 @@ import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 
-interface CopyBookingLinkButtonProps {
+interface CopyBookingButtonProps {
   bookingUrl: string;
 }
 
-export function CopyBookingLinkButton({
+export function CopyBookingButton({
   bookingUrl,
-}: CopyBookingLinkButtonProps) {
+}: CopyBookingButtonProps) {
   const t = useTranslations("Scheduling.eventTypes.detail.share");
   const [copied, setCopied] = useState(false);
 

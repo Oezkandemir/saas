@@ -5,7 +5,7 @@ import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { Card, CardContent } from "@/components/alignui/data-display/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { ClearAllNotificationsButton } from "@/components/profile/clear-all-notifications-button";
 import { MarkAllAsReadButton } from "@/components/profile/mark-all-as-read-button";

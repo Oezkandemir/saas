@@ -34,13 +34,13 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
-} from "@/components/alignui/data-display/card";
-import { Input } from "@/components/alignui/forms/input";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 const qrCodeSchema = z.object({
   name: z.string().min(1, "Name ist erforderlich"),

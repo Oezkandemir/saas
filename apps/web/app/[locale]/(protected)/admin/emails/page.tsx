@@ -1,25 +1,17 @@
 import { redirect } from "next/navigation";
-import {
-  getEmailTemplates,
-  getResendConfigStatus,
-} from "@/actions/admin-email-actions";
-import { Mail } from "lucide-react";
 import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { EmailsTabs } from "@/components/admin/emails-tabs";
+import { InboundEmailsInbox } from "@/components/admin/inbound-emails/inbound-emails-inbox";
 
 export async function generateMetadata() {
-  // CRITICAL FIX: Get locale and set it before translations
-  // This ensures correct language during client-side navigation
   const locale = await getLocale();
   setRequestLocale(locale);
 
   return constructMetadata({
-    title: "E-Mail-Verwaltung",
-    description: "Verwalten Sie E-Mail-Templates und eingehende Emails",
+    title: "Posteingang",
+    description: "Eingehende Emails verwalten",
   });
 }
 
@@ -35,20 +27,12 @@ export default async function AdminEmailsPage() {
     redirect("/dashboard");
   }
 
-  const templates = await getEmailTemplates();
-  const configStatus = await getResendConfigStatus();
-
+  // Full-width email inbox layout - replaces sidebar
   return (
-    <UnifiedPageLayout
-      title="E-Mail-Verwaltung"
-      description="Verwalten Sie E-Mail-Templates und eingehende Emails"
-      icon={<Mail className="h-4 w-4 text-primary" />}
-      contentClassName="space-y-6 pb-10"
-    >
-      <EmailsTabs
-        templates={templates}
-        configStatus={configStatus}
-      />
-    </UnifiedPageLayout>
+    <div className="flex flex-col h-[calc(100vh-140px)] w-full">
+      <div className="flex-1 w-full overflow-hidden px-4 py-4 min-h-0">
+        <InboundEmailsInbox />
+      </div>
+    </div>
   );
 }

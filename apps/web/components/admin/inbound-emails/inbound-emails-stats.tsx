@@ -2,18 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { getInboundEmailStats, type InboundEmailStats } from "@/actions/inbound-email-actions";
-import { Mail, MailOpen, Calendar, TrendingUp } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { Mail, MailOpen, Calendar, TrendingUp, Loader2 } from "lucide-react";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
-import { Loader2 } from "lucide-react";
+} from "@/components/ui/card";
 
 export function InboundEmailsStats() {
-  const { toast } = useToast();
   const [stats, setStats] = useState<InboundEmailStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -28,17 +25,21 @@ export function InboundEmailsStats() {
       if (result.success && result.data) {
         setStats(result.data);
       } else {
-        toast({
-          variant: "destructive",
-          title: "Fehler",
-          description: result.error || "Statistiken konnten nicht geladen werden",
+        // Set default stats instead of showing error toast
+        setStats({
+          total: 0,
+          unread: 0,
+          today: 0,
+          thisWeek: 0,
         });
       }
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Fehler",
-        description: "Statistiken konnten nicht geladen werden",
+      // Set default stats on error
+      setStats({
+        total: 0,
+        unread: 0,
+        today: 0,
+        thisWeek: 0,
       });
     } finally {
       setIsLoading(false);

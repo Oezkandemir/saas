@@ -28,9 +28,9 @@ import {
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
-import { Card, CardContent } from "@/components/alignui/data-display/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 
 import { DeleteNotificationButton } from "./delete-notification-button";
 

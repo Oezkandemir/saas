@@ -24,26 +24,26 @@ import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
-import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
-  FormRoot as Form,
+  Form,
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/alignui/forms/form";
-import { Input } from "@/components/alignui/forms/input";
-import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { CompanyProfileSelector } from "@/components/company-settings/company-profile-selector";
 import { CustomerSelector } from "@/components/documents/customer-selector";
 

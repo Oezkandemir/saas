@@ -2,7 +2,7 @@
 
 import { useTheme } from "next-themes";
 
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/shared/icons";
 
 export function ModeToggle() {

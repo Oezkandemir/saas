@@ -11,18 +11,18 @@ import { de, enUS } from "date-fns/locale";
 import { Calendar, CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useLocale } from "next-intl";
 
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import {
-  AlertRoot as Alert,
+  Alert,
   AlertDescription,
-} from "@/components/alignui/feedback/alert";
+} from "@/components/ui/alert";
 
 export default function CancelBookingPage() {
   const searchParams = useSearchParams();

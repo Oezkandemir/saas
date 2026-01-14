@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -18,8 +18,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
-import { Input } from "@/components/alignui/forms/input";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 export function CreateTicketForm() {
   const router = useRouter();

@@ -29,25 +29,25 @@ import { getCurrentUser } from "@/lib/session";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { createClient } from "@/lib/supabase/server";
 import { constructMetadata } from "@/lib/utils";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import {
-  AccordionRoot,
+  Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "@/components/alignui/layout/accordion";
+} from "@/components/ui/accordion";
 import { UserAvatarForm } from "@/components/forms/user-avatar-form";
 import { UserNameForm } from "@/components/forms/user-name-form";
 import { AccountDeletion } from "@/components/gdpr/account-deletion";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { LabelRoot as Label } from "@/components/alignui/forms/label";
+import { Label } from "@/components/ui/label";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -299,7 +299,7 @@ export default async function SettingsPage() {
           <CardDescription>{t("profile.description")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <AccordionRoot type="single" defaultValue="profile" collapsible className="w-full">
+          <Accordion type="single" defaultValue="profile" collapsible className="w-full">
             <AccordionItem value="profile">
               <AccordionTrigger className="flex items-center gap-2">
                 <UserCircle className="size-4 text-muted-foreground" />
@@ -329,7 +329,7 @@ export default async function SettingsPage() {
                 </div>
               </AccordionContent>
             </AccordionItem>
-          </AccordionRoot>
+          </Accordion>
         </CardContent>
       </Card>
 

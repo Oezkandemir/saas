@@ -24,20 +24,20 @@ import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { createClient } from "@/lib/supabase/server";
 import { constructMetadata } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/alignui/data-display/avatar";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+} from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import { UserAvatarForm } from "@/components/forms/user-avatar-form";
 import { UserNameForm } from "@/components/forms/user-name-form";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";

@@ -1,322 +1,267 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { format } from "date-fns";
+import { useEffect, useState, useRef } from "react";
+import { format, formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
+
+// Email Detail Component - Gmail Style Design
 import {
   getInboundEmailById,
   markEmailAsRead,
-  markEmailAsUnread,
-  deleteInboundEmail,
+  getInboundEmailReplies,
   type InboundEmail,
+  type InboundEmailReply,
 } from "@/actions/inbound-email-actions";
 import {
-  ArrowLeft,
   Mail,
-  MailOpen,
-  Trash2,
   Download,
   Loader2,
   Paperclip,
   Reply,
+  Forward,
+  ChevronDown,
+  X,
+  Lock,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/alignui/data-display/card";
-import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 import { InboundEmailReplyForm } from "./inbound-email-reply-form";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 type InboundEmailDetailProps = {
   emailId: string;
+  onMarkAsRead?: () => void;
 };
 
-export function InboundEmailDetail({ emailId }: InboundEmailDetailProps) {
-  const router = useRouter();
+export function InboundEmailDetail({
+  emailId,
+  onMarkAsRead,
+}: InboundEmailDetailProps) {
   const [email, setEmail] = useState<InboundEmail | null>(null);
+  const [replies, setReplies] = useState<InboundEmailReply[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
+  const replyFormRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadEmail();
   }, [emailId]);
 
+  // Scroll to reply form when it opens
+  useEffect(() => {
+    if (showReplyForm && replyFormRef.current) {
+      setTimeout(() => {
+        replyFormRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, [showReplyForm]);
+
   const loadEmail = async () => {
     setIsLoading(true);
     try {
-      const result = await getInboundEmailById(emailId);
-      if (result.success && result.data) {
-        setEmail(result.data);
+      const [emailResult, repliesResult] = await Promise.all([
+        getInboundEmailById(emailId),
+        getInboundEmailReplies(emailId),
+      ]);
+
+      if (emailResult.success && emailResult.data) {
+        setEmail(emailResult.data);
         // Auto-mark as read when viewing
-        if (!result.data.is_read) {
+        if (!emailResult.data.is_read) {
           await markEmailAsRead(emailId);
+          if (onMarkAsRead) onMarkAsRead();
         }
       } else {
-        toast.error(result.error || "Email konnte nicht geladen werden");
-        router.push("/admin/emails");
+        toast.error(emailResult.error || "Email konnte nicht geladen werden");
+      }
+
+      if (repliesResult.success && repliesResult.data) {
+        setReplies(repliesResult.data);
       }
     } catch (error) {
       toast.error("Fehler beim Laden der Email");
-      router.push("/admin/emails");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleMarkAsRead = async () => {
-    if (!email) return;
-    setIsProcessing(true);
-    try {
-      const result = await markEmailAsRead(email.id);
-      if (result.success) {
-        toast.success("Email als gelesen markiert");
-        await loadEmail();
-      } else {
-        toast.error(result.error || "Fehler beim Markieren");
-      }
-    } catch (error) {
-      toast.error("Fehler beim Markieren der Email");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleMarkAsUnread = async () => {
-    if (!email) return;
-    setIsProcessing(true);
-    try {
-      const result = await markEmailAsUnread(email.id);
-      if (result.success) {
-        toast.success("Email als ungelesen markiert");
-        await loadEmail();
-      } else {
-        toast.error(result.error || "Fehler beim Markieren");
-      }
-    } catch (error) {
-      toast.error("Fehler beim Markieren der Email");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!email) return;
-    if (!confirm("Möchten Sie diese Email wirklich löschen?")) {
-      return;
-    }
-
-    setIsProcessing(true);
-    try {
-      const result = await deleteInboundEmail(email.id);
-      if (result.success) {
-        toast.success("Email gelöscht");
-        router.push("/admin/emails");
-      } else {
-        toast.error(result.error || "Fehler beim Löschen");
-      }
-    } catch (error) {
-      toast.error("Fehler beim Löschen der Email");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
   if (isLoading) {
     return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
     );
   }
 
   if (!email) {
     return (
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-12">
-          <Mail className="h-12 w-12 text-muted-foreground mb-4" />
-          <p className="text-sm font-medium">Email nicht gefunden</p>
-        </CardContent>
-      </Card>
+      <div className="flex flex-col items-center justify-center py-12">
+        <Mail className="h-12 w-12 text-muted-foreground mb-4" />
+        <p className="text-sm font-medium">Email nicht gefunden</p>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => router.push("/admin/emails")}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Zurück
-        </Button>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="default"
-            size="sm"
-            onClick={() => setShowReplyForm(!showReplyForm)}
-            disabled={isProcessing}
-          >
-            <Reply className="h-4 w-4 mr-2" />
-            {showReplyForm ? "Antwort abbrechen" : "Antworten"}
-          </Button>
-          {email.is_read ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleMarkAsUnread}
-              disabled={isProcessing}
-            >
-              <Mail className="h-4 w-4 mr-2" />
-              Als ungelesen markieren
-            </Button>
-          ) : (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleMarkAsRead}
-              disabled={isProcessing}
-            >
-              <MailOpen className="h-4 w-4 mr-2" />
-              Als gelesen markieren
-            </Button>
-          )}
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={handleDelete}
-            disabled={isProcessing}
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Löschen
-          </Button>
+    <div className="flex flex-col h-full bg-background">
+      {/* Email Header - Modern Single Line Layout */}
+      <div className="px-4 py-2.5 bg-background border-b">
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Subject */}
+          <h1 className="text-lg font-semibold text-foreground flex-shrink-0 min-w-0 truncate">
+            {email.subject || "(Kein Betreff)"}
+          </h1>
+          
+          {/* Separator */}
+          <Separator orientation="vertical" className="h-4" />
+          
+          {/* Sender */}
+          <div className="flex items-center gap-1.5 flex-shrink-0 min-w-0">
+            <span className="text-sm font-medium text-foreground truncate">
+              {email.from_name || email.from_email}
+            </span>
+            <Badge variant="outline" className="h-3.5 w-3.5 p-0 rounded-full bg-blue-500 border-blue-500 flex items-center justify-center flex-shrink-0">
+              <span className="text-white text-[9px]">✓</span>
+            </Badge>
+          </div>
+          
+          {/* Date */}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <span className="text-xs text-muted-foreground whitespace-nowrap">
+              {format(new Date(email.received_at), "dd.MM.yyyy, HH:mm", { locale: de })}
+            </span>
+            <span className="text-xs text-muted-foreground/70 whitespace-nowrap">
+              ({formatDistanceToNow(new Date(email.received_at), {
+                addSuffix: true,
+                locale: de,
+              })})
+            </span>
+          </div>
+          
+          {/* Recipient Info */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors flex-shrink-0">
+                <span>an mich</span>
+                <ChevronDown className="h-3 w-3" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[500px] p-4 shadow-lg" align="start" side="bottom">
+              <div className="space-y-3 text-sm">
+                <div className="flex items-start gap-4">
+                  <span className="font-medium w-24 text-muted-foreground flex-shrink-0">Von:</span>
+                  <div className="min-w-0 flex-1 text-right">
+                    <span className="font-semibold text-foreground">
+                      {email.from_name || email.from_email}
+                    </span>
+                    {" "}
+                    <span className="text-muted-foreground">
+                      &lt;{email.from_email}&gt;
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <span className="font-medium w-24 text-muted-foreground flex-shrink-0">an:</span>
+                  <div className="min-w-0 flex-1 text-right break-all">
+                    {email.to.map((to, idx) => (
+                      <div key={idx} className="text-muted-foreground">{to}</div>
+                    ))}
+                  </div>
+                </div>
+                {email.cc && email.cc.length > 0 && (
+                  <div className="flex items-start gap-4">
+                    <span className="font-medium w-24 text-muted-foreground flex-shrink-0">CC:</span>
+                    <div className="min-w-0 flex-1 text-right break-all">
+                      {email.cc.map((cc, idx) => (
+                        <div key={idx} className="text-muted-foreground">{cc}</div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {email.bcc && email.bcc.length > 0 && (
+                  <div className="flex items-start gap-4">
+                    <span className="font-medium w-24 text-muted-foreground flex-shrink-0">BCC:</span>
+                    <div className="min-w-0 flex-1 text-right break-all">
+                      {email.bcc.map((bcc, idx) => (
+                        <div key={idx} className="text-muted-foreground">{bcc}</div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="flex items-start gap-4">
+                  <span className="font-medium w-24 text-muted-foreground flex-shrink-0">Datum:</span>
+                  <div className="min-w-0 flex-1 text-right text-muted-foreground">
+                    {format(new Date(email.received_at), "dd.MM.yyyy, HH:mm", { locale: de })}
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <span className="font-medium w-24 text-muted-foreground flex-shrink-0">Betreff:</span>
+                  <div className="min-w-0 flex-1 text-right text-muted-foreground break-words">
+                    {email.subject || "(Kein Betreff)"}
+                  </div>
+                </div>
+                {email.message_id && (
+                  <>
+                    <div className="flex items-start gap-4">
+                      <span className="font-medium w-24 text-muted-foreground flex-shrink-0">Gesendet von:</span>
+                      <div className="min-w-0 flex-1 text-right text-muted-foreground break-all">
+                        {email.message_id.includes("@") ? email.message_id.split("@")[1] : email.message_id}
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <span className="font-medium w-24 text-muted-foreground flex-shrink-0">Signiert von:</span>
+                      <div className="min-w-0 flex-1 text-right text-muted-foreground break-all">
+                        {email.message_id.includes("@") ? email.message_id.split("@")[1] : email.message_id}
+                      </div>
+                    </div>
+                  </>
+                )}
+                <div className="flex items-start gap-4">
+                  <span className="font-medium w-24 text-muted-foreground flex-shrink-0">Sicherheit:</span>
+                  <div className="min-w-0 flex-1 text-right">
+                    <div className="flex items-center justify-end gap-2 text-muted-foreground">
+                      <Lock className="h-3 w-3 flex-shrink-0" />
+                      <span>Standardverschlüsselung (TLS)</span>
+                      <Button variant="link" size="sm" className="h-auto p-0 text-xs text-primary flex-shrink-0">
+                        Weitere Informationen
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
-      {/* Email Card */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <CardTitle className="text-lg">
-                  {email.subject || "(Kein Betreff)"}
-                </CardTitle>
-                {!email.is_read && (
-                  <Badge variant="default" className="bg-primary">
-                    Neu
-                  </Badge>
-                )}
-              </div>
-              <CardDescription>
-                {format(new Date(email.received_at), "PPpp", { locale: de })}
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Email Headers */}
-          <div className="space-y-2 text-sm">
-            <div className="flex items-start">
-              <span className="font-medium w-20 text-muted-foreground">Von:</span>
-              <div>
-                <div className="font-medium">
-                  {email.from_name || email.from_email}
-                </div>
-                <div className="text-muted-foreground">{email.from_email}</div>
-              </div>
-            </div>
-            <div className="flex items-start">
-              <span className="font-medium w-20 text-muted-foreground">An:</span>
-              <div>
-                {email.to.map((to, idx) => (
-                  <div key={idx}>{to}</div>
-                ))}
-              </div>
-            </div>
-            {email.cc && email.cc.length > 0 && (
-              <div className="flex items-start">
-                <span className="font-medium w-20 text-muted-foreground">CC:</span>
-                <div>
-                  {email.cc.map((cc, idx) => (
-                    <div key={idx}>{cc}</div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {email.bcc && email.bcc.length > 0 && (
-              <div className="flex items-start">
-                <span className="font-medium w-20 text-muted-foreground">BCC:</span>
-                <div>
-                  {email.bcc.map((bcc, idx) => (
-                    <div key={idx}>{bcc}</div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <Separator />
-
-          {/* Attachments */}
-          {email.attachments && email.attachments.length > 0 && (
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Paperclip className="h-4 w-4" />
-                Anhänge ({email.attachments.length})
-              </div>
-              <div className="space-y-2">
-                {email.attachments.map((attachment) => (
-                  <div
-                    key={attachment.id}
-                    className="flex items-center justify-between rounded-lg border p-3"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Paperclip className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <div className="text-sm font-medium">
-                          {attachment.filename}
-                        </div>
-                        {attachment.size && (
-                          <div className="text-xs text-muted-foreground">
-                            {(attachment.size / 1024).toFixed(2)} KB
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      <Download className="h-4 w-4 mr-2" />
-                      Download
-                    </Button>
-                  </div>
-                ))}
-              </div>
-              <Separator />
-            </div>
-          )}
-
+      {/* Email Content Area */}
+      <div className="flex-1 overflow-y-auto bg-background">
+        <div className="max-w-4xl mx-auto px-4 py-6">
           {/* Email Content */}
           <div className="prose prose-sm dark:prose-invert max-w-none">
             {email.html_content ? (
               <div
                 dangerouslySetInnerHTML={{ __html: email.html_content }}
-                className="email-content"
+                className="email-content break-words"
               />
             ) : email.text_content ? (
-              <div className="whitespace-pre-wrap text-sm">
+              <div className="whitespace-pre-wrap text-sm break-words leading-relaxed text-foreground">
                 {email.text_content}
               </div>
             ) : (
@@ -325,23 +270,152 @@ export function InboundEmailDetail({ emailId }: InboundEmailDetailProps) {
               </div>
             )}
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Reply Form */}
-      {showReplyForm && email && (
-        <InboundEmailReplyForm
-          inboundEmailId={email.id}
-          originalSubject={email.subject || "(Kein Betreff)"}
-          originalFrom={email.from_name ? `${email.from_name} <${email.from_email}>` : email.from_email}
-          onSuccess={() => {
-            setShowReplyForm(false);
-            // Optionally reload email to show it as read
-            loadEmail();
+          {/* Reply Form - Directly after email content for maximum visibility */}
+          {showReplyForm && email && (
+            <div
+              ref={replyFormRef}
+              className="mt-8 pt-8 border-t border-border bg-primary/5 rounded-lg p-6 animate-in slide-in-from-bottom-4 duration-300"
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold mb-1">Antwort verfassen</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Antwort an: {email.from_name || email.from_email}
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowReplyForm(false)}
+                  className="h-8 w-8 p-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <InboundEmailReplyForm
+                inboundEmailId={email.id}
+                originalSubject={email.subject || "(Kein Betreff)"}
+                onSuccess={() => {
+                  setShowReplyForm(false);
+                  loadEmail();
+                }}
+                onCancel={() => setShowReplyForm(false)}
+              />
+            </div>
+          )}
+
+          {/* Attachments */}
+          {email.attachments && email.attachments.length > 0 && (
+            <div className="space-y-3 mt-8 pt-8 border-t border-border">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Paperclip className="h-4 w-4" />
+                <span>{email.attachments.length} Anhang{email.attachments.length > 1 ? "e" : ""}</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {email.attachments.map((attachment) => (
+                  <div
+                    key={attachment.id}
+                    className="flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex-shrink-0 w-10 h-10 rounded bg-muted flex items-center justify-center">
+                      <Paperclip className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">
+                        {attachment.filename}
+                      </div>
+                      {attachment.size && (
+                        <div className="text-xs text-muted-foreground">
+                          {(attachment.size / 1024).toFixed(2)} KB
+                        </div>
+                      )}
+                    </div>
+                    <Button variant="ghost" size="sm" className="flex-shrink-0">
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Replies Thread - Gmail Style with Accordion */}
+          {replies.length > 0 && (
+            <div className="mt-8 pt-8 border-t border-border">
+              <Accordion type="single" defaultValue="replies" collapsible className="w-full">
+                <AccordionItem value="replies" className="border-none">
+                  <AccordionTrigger className="text-sm font-medium py-2 hover:no-underline">
+                    Antworten ({replies.length})
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-4 space-y-4">
+                    {replies.map((reply, index) => (
+                      <div key={reply.id} className="space-y-3">
+                        <div className="flex items-start gap-4">
+                          {/* Reply Avatar */}
+                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium text-xs">
+                            {reply.user_name
+                              ? reply.user_name
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")
+                                  .toUpperCase()
+                                  .slice(0, 2)
+                              : "A"}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-sm font-medium">
+                                {reply.user_name || "Unbekannt"}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {format(new Date(reply.sent_at), "PPp", { locale: de })}
+                              </span>
+                            </div>
+                            <div className="text-sm text-muted-foreground mb-2">
+                              Betreff: {reply.subject}
+                            </div>
+                            {reply.html_body ? (
+                              <div
+                                dangerouslySetInnerHTML={{ __html: reply.html_body }}
+                                className="prose prose-sm dark:prose-invert max-w-none break-words"
+                              />
+                            ) : (
+                              <div className="whitespace-pre-wrap text-sm break-words leading-relaxed">
+                                {reply.body}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        {index < replies.length - 1 && <Separator className="ml-12" />}
+                      </div>
+                    ))}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom Toolbar - Gmail Style (Grey Background) */}
+      <div className="px-4 py-2 border-t bg-muted/50 flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setShowReplyForm(!showReplyForm);
           }}
-          onCancel={() => setShowReplyForm(false)}
-        />
-      )}
+          className={`h-9 ${showReplyForm ? "bg-primary/10 text-primary" : ""}`}
+        >
+          <Reply className="h-4 w-4 mr-2" />
+          Antworten
+        </Button>
+        <Button variant="outline" size="sm" className="h-9">
+          <Forward className="h-4 w-4 mr-2" />
+          Weiterleiten
+        </Button>
+      </div>
     </div>
   );
 }

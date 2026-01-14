@@ -2,14 +2,14 @@ import { Metadata } from "next";
 import { Check } from "lucide-react";
 
 import { constructMetadata } from "@/lib/utils";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 
 export const metadata: Metadata = constructMetadata({
   title: "Enterprise Solutions",

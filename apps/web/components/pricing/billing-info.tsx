@@ -12,15 +12,15 @@ import { useTranslations } from "next-intl";
 import { UserSubscriptionPlan } from "types";
 import { pricingData } from "@/config/subscriptions";
 import { cn, formatDate } from "@/lib/utils";
-import { buttonVariants } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import { Icons } from "@/components/shared/icons";
 
 import { PolarPortalButton } from "./polar-portal-button";

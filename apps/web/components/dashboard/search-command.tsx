@@ -21,9 +21,15 @@ import { useTranslations } from "next-intl";
 
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
-import { CompactButton } from "@/components/alignui/actions/compact-button";
-import { Kbd } from "@/components/alignui/actions/kbd";
-import { CommandMenu } from "@/components/alignui/overlays/command-menu";
+import { ButtonIcon, ButtonRoot } from "@/components/ui/button";
+import { Kbd } from "@/components/ui/kbd";
+import { CommandMenu } from "@/components/ui/command";
+
+// Create namespace object for Button pattern
+const Button = {
+  Root: ButtonRoot,
+  Icon: ButtonIcon,
+};
 
 // Icon mapping von Icons-Namen zu Remix Icons
 const iconMap: Record<string, React.ElementType> = {
@@ -121,14 +127,14 @@ function SearchCommandContent({
                   />
                 </svg>
               </Kbd.Root>
-              <CompactButton.Root
-                size="medium"
+              <Button.Root
+                size="default"
                 variant="ghost"
                 onClick={() => setOpen(false)}
                 type="button"
               >
-                <CompactButton.Icon as={RiCloseLine} />
-              </CompactButton.Root>
+                <Button.Icon as={RiCloseLine} />
+              </Button.Root>
             </div>
 
             {/* CommandMenu Liste */}
@@ -236,14 +242,14 @@ function SearchCommandFallback({ links }: { links: SidebarNavItem[] }) {
               <CommandMenu.Input
                 placeholder={fallbackTranslations.inputPlaceholder}
               />
-              <CompactButton.Root
-                size="medium"
+              <Button.Root
+                size="default"
                 variant="ghost"
                 onClick={() => setOpen(false)}
                 type="button"
               >
-                <CompactButton.Icon as={RiCloseLine} />
-              </CompactButton.Root>
+                <Button.Icon as={RiCloseLine} />
+              </Button.Root>
             </div>
             <CommandMenu.List>
               <CommandMenu.Empty>

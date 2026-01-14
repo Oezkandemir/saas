@@ -12,8 +12,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/alignui/actions/button";
-import { Avatar, AvatarImage } from "@/components/alignui/data-display/avatar";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 const COOKIE_CONSENT_KEY = "cenety-cookie-consent";
 const COOKIE_CONSENT_VERSION = "1.0";
@@ -225,7 +225,7 @@ export function CookieConsent({
               <div className="space-y-4">
                 {/* Necessary Cookies */}
                 <div className="flex items-center gap-3.5 rounded-lg p-3 transition-colors hover:bg-muted/50">
-                  <Avatar size={40}>
+                  <Avatar className="h-10 w-10">
                     <AvatarImage src="/favicon.ico" alt="Necessary" />
                   </Avatar>
                   <div className="flex-1 space-y-1">
@@ -241,7 +241,7 @@ export function CookieConsent({
 
                 {/* Analytics Cookies */}
                 <div className="flex items-center gap-3.5 rounded-lg p-3 transition-colors hover:bg-muted/50">
-                  <Avatar size={40}>
+                  <Avatar className="h-10 w-10">
                     <AvatarImage src="/favicon.ico" alt="Analytics" />
                   </Avatar>
                   <div className="flex-1 space-y-1">
@@ -262,7 +262,7 @@ export function CookieConsent({
 
                 {/* Marketing Cookies */}
                 <div className="flex items-center gap-3.5 rounded-lg p-3 transition-colors hover:bg-muted/50">
-                  <Avatar size={40}>
+                  <Avatar className="h-10 w-10">
                     <AvatarImage src="/favicon.ico" alt="Marketing" />
                   </Avatar>
                   <div className="flex-1 space-y-1">

@@ -105,6 +105,24 @@ const TableCaption = React.forwardRef<
 ));
 TableCaption.displayName = "TableCaption";
 
+// Table row divider component
+const TableRowDivider = React.forwardRef<
+  HTMLTableRowElement,
+  React.HTMLAttributes<HTMLTableRowElement>
+>(({ className, ...props }, ref) => (
+  <tr
+    ref={ref}
+    className={cn("h-px bg-border", className)}
+    {...props}
+  >
+    <td colSpan={1000} className="h-px p-0" />
+  </tr>
+));
+TableRowDivider.displayName = "Table.RowDivider";
+
+// Alias for backward compatibility
+const TableRoot = Table;
+
 export {
   Table,
   TableHeader,
@@ -114,4 +132,6 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  TableRoot,
+  TableRowDivider,
 };

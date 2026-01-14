@@ -20,16 +20,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/alignui/forms/form";
-import { Input } from "@/components/alignui/forms/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
-  SelectRoot as Select,
+  Select as Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/alignui/forms/select";
-import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 // Step 1: Personal Information
 export function CustomerPersonalInfoStep({

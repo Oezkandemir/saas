@@ -15,7 +15,7 @@ import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -23,7 +23,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TicketConversation } from "@/components/support/ticket-conversation";
 

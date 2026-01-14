@@ -30,25 +30,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import {
-  FormRoot as Form,
+  Form,
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/alignui/forms/form";
-import { Input } from "@/components/alignui/forms/input";
-import { TextareaRoot as Textarea } from "@/components/alignui/forms/textarea";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const eventTypeSchema = z.object({
   slug: z
@@ -531,7 +531,7 @@ export function EditEventTypeForm({
               <div className="flex flex-wrap gap-2">
                 <Button
                   type="button"
-                  variant={embedType === "button" ? "primary" : "outline"}
+                  variant={embedType === "button" ? "default" : "outline"}
                   size="sm"
                   onClick={() => setEmbedType("button")}
                 >
@@ -539,7 +539,7 @@ export function EditEventTypeForm({
                 </Button>
                 <Button
                   type="button"
-                  variant={embedType === "script" ? "primary" : "outline"}
+                  variant={embedType === "script" ? "default" : "outline"}
                   size="sm"
                   onClick={() => setEmbedType("script")}
                 >
@@ -547,7 +547,7 @@ export function EditEventTypeForm({
                 </Button>
                 <Button
                   type="button"
-                  variant={embedType === "link" ? "primary" : "outline"}
+                  variant={embedType === "link" ? "default" : "outline"}
                   size="sm"
                   onClick={() => setEmbedType("link")}
                 >

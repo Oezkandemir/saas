@@ -17,18 +17,18 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { Trash2, Upload, X } from "lucide-react";
 
-import { ButtonRoot } from "@/components/alignui/actions/button";
-import { HintIcon, HintRoot } from "@/components/alignui/feedback/hint";
-import { Input } from "@/components/alignui/forms/input";
+import { ButtonRoot } from "@/components/ui/button";
+import { HintIcon, HintRoot } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   LabelAsterisk,
-  LabelRoot,
+  Label,
   LabelSub,
-} from "@/components/alignui/forms/label";
+} from "@/components/ui/label";
 import {
   TextareaCharCounter,
-  TextareaRoot,
-} from "@/components/alignui/forms/textarea";
+  Textarea,
+} from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 
 const Button = {
@@ -40,14 +40,14 @@ const Hint = {
   Icon: HintIcon,
 };
 
-const Label = {
-  Root: LabelRoot,
+const LabelNS = {
+  Root: Label,
   Asterisk: LabelAsterisk,
   Sub: LabelSub,
 };
 
-const Textarea = {
-  Root: TextareaRoot,
+const TextareaNS = {
+  Root: Textarea,
   CharCounter: TextareaCharCounter,
 };
 
@@ -219,9 +219,9 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
       <div className="border rounded-lg p-6 space-y-6">
         {/* Title */}
         <div className="flex flex-col gap-1">
-          <Label.Root htmlFor="title">
-            {t("title") || "Title"} <Label.Asterisk />
-          </Label.Root>
+          <LabelNS.Root htmlFor="title">
+            {t("title") || "Title"} <LabelNS.Asterisk />
+          </LabelNS.Root>
           <Input
             id="title"
             type="text"
@@ -236,9 +236,9 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
 
         {/* Slug */}
         <div className="flex flex-col gap-1">
-          <Label.Root htmlFor="slug">
-            {t("slug") || "Slug"} <Label.Asterisk />
-          </Label.Root>
+          <LabelNS.Root htmlFor="slug">
+            {t("slug") || "Slug"} <LabelNS.Asterisk />
+          </LabelNS.Root>
           <Input
             id="slug"
             type="text"
@@ -258,10 +258,10 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
 
         {/* Description */}
         <div className="flex flex-col gap-1">
-          <Label.Root htmlFor="description">
-            {t("description") || "Description"} <Label.Sub>(Optional)</Label.Sub>
-          </Label.Root>
-          <Textarea.Root
+          <LabelNS.Root htmlFor="description">
+            {t("description") || "Description"} <LabelNS.Sub>(Optional)</LabelNS.Sub>
+          </LabelNS.Root>
+          <TextareaNS.Root
             id="description"
             placeholder={t("descriptionPlaceholder") || "Brief description of the blog post"}
             value={formData.description || ""}
@@ -271,18 +271,18 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
             maxLength={300}
             className="min-h-[80px]"
           >
-            <Textarea.CharCounter
+            <TextareaNS.CharCounter
               current={formData.description?.length || 0}
               max={300}
             />
-          </Textarea.Root>
+          </TextareaNS.Root>
         </div>
 
         {/* Image Upload */}
         <div className="flex flex-col gap-1">
-          <Label.Root htmlFor="image">
-            {t("image") || "Featured Image"} <Label.Asterisk />
-          </Label.Root>
+          <LabelNS.Root htmlFor="image">
+            {t("image") || "Featured Image"} <LabelNS.Asterisk />
+          </LabelNS.Root>
           {imagePreview ? (
             <div className="relative w-full max-w-md">
               <div className="relative aspect-video rounded-lg overflow-hidden border bg-muted">
@@ -351,9 +351,9 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
 
         {/* Authors */}
         <div className="flex flex-col gap-1">
-          <Label.Root>
-            {t("authors") || "Authors"} <Label.Asterisk />
-          </Label.Root>
+          <LabelNS.Root>
+            {t("authors") || "Authors"} <LabelNS.Asterisk />
+          </LabelNS.Root>
           <div className="flex flex-wrap gap-2">
             {Object.keys(BLOG_AUTHORS).map((authorKey) => (
               <button
@@ -379,9 +379,9 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
 
         {/* Categories */}
         <div className="flex flex-col gap-1">
-          <Label.Root>
-            {t("categories") || "Categories"} <Label.Asterisk />
-          </Label.Root>
+          <LabelNS.Root>
+            {t("categories") || "Categories"} <LabelNS.Asterisk />
+          </LabelNS.Root>
           <div className="flex flex-wrap gap-2">
             {BLOG_CATEGORIES.map((category) => (
               <button
@@ -414,17 +414,17 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
               setFormData({ ...formData, published: checked === true })
             }
           />
-          <Label.Root htmlFor="published" className="cursor-pointer">
+          <LabelNS.Root htmlFor="published" className="cursor-pointer">
             {t("published") || "Published"}
-          </Label.Root>
+          </LabelNS.Root>
         </div>
 
         {/* Content */}
         <div className="flex flex-col gap-1">
-          <Label.Root htmlFor="content">
-            {t("content") || "Content"} <Label.Asterisk />
-          </Label.Root>
-          <Textarea.Root
+          <LabelNS.Root htmlFor="content">
+            {t("content") || "Content"} <LabelNS.Asterisk />
+          </LabelNS.Root>
+          <TextareaNS.Root
             id="content"
             placeholder={t("contentPlaceholder") || "Write your blog post content here. You can use HTML or Markdown."}
             value={formData.content}
@@ -446,9 +446,8 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
         <div>
           {post && (
             <Button.Root
-              variant="neutral"
-              mode="stroke"
-              size="medium"
+              variant="outline"
+              size="default"
               onClick={handleDelete}
               disabled={isLoading}
               className="text-destructive hover:text-destructive"
@@ -460,17 +459,16 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
         </div>
         <div className="flex gap-3">
           <Button.Root
-            variant="neutral"
-            mode="stroke"
-            size="medium"
+            variant="outline"
+            size="default"
             onClick={() => router.push("/admin/blog")}
             disabled={isLoading}
           >
             {t("cancel") || "Cancel"}
           </Button.Root>
           <Button.Root
-            variant="primary"
-            size="medium"
+            variant="default"
+            size="default"
             onClick={handleSubmit}
             disabled={
               isLoading ||

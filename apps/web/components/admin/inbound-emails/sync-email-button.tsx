@@ -5,15 +5,15 @@ import { syncResendInboundEmail } from "@/actions/sync-resend-inbound-email";
 import { Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/alignui/actions/button";
-import { Input } from "@/components/alignui/forms/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 
 export function SyncEmailButton() {

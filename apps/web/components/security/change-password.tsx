@@ -18,17 +18,17 @@ import {
   validatePassword,
 } from "@/lib/validations/password-policy";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
-import { Input } from "@/components/alignui/forms/input";
-import { LabelRoot as Label } from "@/components/alignui/forms/label";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function ChangePassword() {
   const t = useTranslations("Security.changePassword");
@@ -254,7 +254,7 @@ export function ChangePassword() {
 
           <Button
             type="submit"
-            variant="primary"
+            variant="default"
             className="w-full"
             disabled={isPending}
           >

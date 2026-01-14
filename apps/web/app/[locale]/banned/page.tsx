@@ -3,7 +3,7 @@ import { AlertTriangle, BanIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { getSupabaseServer } from "@/lib/supabase-server";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/shared/user-avatar";
 
 export const dynamic = "force-dynamic";

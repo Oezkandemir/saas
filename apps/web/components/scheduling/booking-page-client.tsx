@@ -38,13 +38,13 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 
 import { BookingFormDrawer } from "./booking-form-drawer";
 

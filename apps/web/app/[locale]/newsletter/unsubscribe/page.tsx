@@ -9,14 +9,14 @@ import { toast } from "sonner";
 
 import { logger } from "@/lib/logger";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import { Icons } from "@/components/shared/icons";
 
 export default function NewsletterUnsubscribe() {

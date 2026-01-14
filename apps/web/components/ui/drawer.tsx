@@ -36,23 +36,40 @@ DrawerOverlay.displayName = "DrawerOverlay";
 
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <DrawerPortal>
-    <DrawerOverlay />
-    <DrawerPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto max-h-[85vh] flex-col rounded-t-[10px] border bg-background",
-        className,
-      )}
-      {...props}
-    >
-      <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
-      {children}
-    </DrawerPrimitive.Content>
-  </DrawerPortal>
-));
+  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content> & {
+    side?: "top" | "bottom" | "left" | "right";
+  }
+>(({ className, children, side = "bottom", ...props }, ref) => {
+  const sideClasses = {
+    top: "inset-x-0 top-0 rounded-b-[10px]",
+    bottom: "inset-x-0 bottom-0 mt-24 rounded-t-[10px]",
+    left: "inset-y-0 left-0 rounded-r-[10px]",
+    right: "inset-y-0 right-0 rounded-l-[10px]",
+  };
+
+  return (
+    <DrawerPortal>
+      <DrawerOverlay />
+      <DrawerPrimitive.Content
+        ref={ref}
+        className={cn(
+          "fixed z-50 flex flex-col border bg-background",
+          side === "top" || side === "bottom"
+            ? "h-auto max-h-[85vh]"
+            : "h-full w-auto max-w-[90vw]",
+          sideClasses[side],
+          className,
+        )}
+        {...props}
+      >
+        {side === "bottom" && (
+          <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
+        )}
+        {children}
+      </DrawerPrimitive.Content>
+    </DrawerPortal>
+  );
+});
 DrawerContent.displayName = "DrawerContent";
 
 const DrawerHeader = ({
@@ -104,6 +121,21 @@ const DrawerDescription = React.forwardRef<
 ));
 DrawerDescription.displayName = "DrawerDescription";
 
+// DrawerBody component (alias for content area)
+const DrawerBody = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn("flex-1 overflow-y-auto p-4", className)}
+    {...props}
+  />
+);
+DrawerBody.displayName = "DrawerBody";
+
+// Alias for backward compatibility
+export const DrawerRoot = Drawer;
+
 export {
   Drawer,
   DrawerPortal,
@@ -115,4 +147,5 @@ export {
   DrawerFooter,
   DrawerTitle,
   DrawerDescription,
+  DrawerBody,
 };

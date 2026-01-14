@@ -1,5 +1,5 @@
 /**
- * AlignUI - recursiveCloneChildren Utility
+ * recursiveCloneChildren Utility
  *
  * Recursively clones React children and applies props to them
  * Useful for passing props down to nested components

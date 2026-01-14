@@ -26,11 +26,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
-import { Card, CardContent } from "@/components/alignui/data-display/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
-  AlertDialogRoot as AlertDialog,
+  AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
@@ -38,14 +38,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/alignui/overlays/alert-dialog";
+} from "@/components/ui/alert-dialog";
 import {
   DropdownMenuRoot as DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/alignui/overlays/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 
 interface CustomersTableProps {
   customers: Customer[];

@@ -10,9 +10,10 @@ import {
 
 interface DashboardSidebarWrapperProps {
   links: SidebarNavItem[];
+  showBackButton?: boolean;
 }
 
-export function DashboardSidebar({ links }: DashboardSidebarWrapperProps) {
+export function DashboardSidebar({ links, showBackButton }: DashboardSidebarWrapperProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -30,10 +31,10 @@ export function DashboardSidebar({ links }: DashboardSidebarWrapperProps) {
     );
   }
 
-  return <DashboardSidebarComponent links={links} />;
+  return <DashboardSidebarComponent links={links} showBackButton={showBackButton} />;
 }
 
-export function MobileSheetSidebar({ links }: DashboardSidebarWrapperProps) {
+export function MobileSheetSidebar({ links, showBackButton = false }: DashboardSidebarWrapperProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -44,5 +45,5 @@ export function MobileSheetSidebar({ links }: DashboardSidebarWrapperProps) {
     return null;
   }
 
-  return <MobileSheetSidebarComponent links={links} />;
+  return <MobileSheetSidebarComponent links={links} showBackButton={showBackButton} />;
 }

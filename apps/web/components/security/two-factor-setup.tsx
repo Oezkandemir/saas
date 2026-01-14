@@ -9,15 +9,15 @@ import { Check, Copy, Loader2, Shield } from "lucide-react";
 
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
-import { Input } from "@/components/alignui/forms/input";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 interface TwoFactorSetupProps {
   onComplete: () => void;

@@ -12,8 +12,10 @@ import {
   PanelLeftClose,
   PanelRightClose,
   Sparkles,
+  ArrowLeft,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 import { siteConfig } from "@/config/site";
 import { logger } from "@/lib/logger";
@@ -31,19 +33,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
-import { ScrollAreaRoot as ScrollArea } from "@/components/alignui/data-display/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { UserRole } from "@/components/forms/user-role-form";
 import { Icons } from "@/components/shared/icons";
 import { useSupabase } from "@/components/supabase-provider";
 
 interface DashboardSidebarProps {
   links: SidebarNavItem[];
+  showBackButton?: boolean;
 }
 
-function DashboardSidebarContent({ links }: DashboardSidebarProps) {
+function DashboardSidebarContent({ links, showBackButton = false }: DashboardSidebarProps) {
   const path = usePathname();
+  const router = useRouter();
   // Desktop sidebar is always expanded by default (only shown on lg+ screens, 1024px+)
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [userPlan, setUserPlan] = useState<{
@@ -163,7 +167,19 @@ function DashboardSidebarContent({ links }: DashboardSidebarProps) {
           )}
         >
           {/* Sidebar Header - merged with main header */}
-          <div className="flex h-14 shrink-0 items-center border-b px-4 lg:h-[60px]">
+          <div className="flex h-14 shrink-0 items-center gap-2 border-b px-4 lg:h-[60px]">
+            {showBackButton && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-9 lg:size-8"
+                onClick={() => router.push("/admin")}
+                title="Zurück zu Admin"
+              >
+                <ArrowLeft size={18} className="stroke-muted-foreground" />
+                <span className="sr-only">Zurück zu Admin</span>
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon"
@@ -422,12 +438,13 @@ function DashboardSidebarContent({ links }: DashboardSidebarProps) {
 }
 
 // Internal component - use DashboardSidebarWrapper for SSR safety
-export function DashboardSidebar({ links }: DashboardSidebarProps) {
-  return <DashboardSidebarContent links={links} />;
+export function DashboardSidebar({ links, showBackButton }: DashboardSidebarProps) {
+  return <DashboardSidebarContent links={links} showBackButton={showBackButton} />;
 }
 
-function MobileSheetSidebarContent({ links }: DashboardSidebarProps) {
+function MobileSheetSidebarContent({ links, showBackButton = false }: DashboardSidebarProps) {
   const path = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [userPlan, setUserPlan] = useState<{
     title: string;
@@ -525,6 +542,22 @@ function MobileSheetSidebarContent({ links }: DashboardSidebarProps) {
         <ScrollArea className="h-full overflow-y-auto">
           <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
           <div className="flex h-screen flex-col">
+            {showBackButton && (
+              <div className="border-b p-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    router.push("/admin");
+                    setOpen(false);
+                  }}
+                  className="w-full justify-start"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Zurück zu Admin
+                </Button>
+              </div>
+            )}
             <nav className="flex flex-1 flex-col gap-y-8 p-6 text-lg font-medium">
               <Link
                 href="#"
@@ -661,6 +694,6 @@ function MobileSheetSidebarContent({ links }: DashboardSidebarProps) {
 }
 
 // Internal component - use MobileSheetSidebarWrapper for SSR safety
-export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
-  return <MobileSheetSidebarContent links={links} />;
+export function MobileSheetSidebar({ links, showBackButton }: DashboardSidebarProps) {
+  return <MobileSheetSidebarContent links={links} showBackButton={showBackButton} />;
 }

@@ -5,13 +5,13 @@ import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { constructMetadata } from "@/lib/utils";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { ActiveSessions } from "@/components/security/active-sessions";
 import { ChangePassword } from "@/components/security/change-password";

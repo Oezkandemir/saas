@@ -10,11 +10,11 @@ import { EmailTemplates } from "@/components/admin/email-templates";
 import { InboundEmailsList } from "@/components/admin/inbound-emails/inbound-emails-list";
 import { InboundEmailsStats } from "@/components/admin/inbound-emails/inbound-emails-stats";
 import {
-  TabsRoot,
+  Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
-} from "@/components/alignui/layout/tabs";
+} from "@/components/ui/tabs";
 
 type EmailsTabsProps = {
   templates: EmailTemplate[];
@@ -25,7 +25,7 @@ export function EmailsTabs({ templates, configStatus }: EmailsTabsProps) {
   const [activeTab, setActiveTab] = useState("templates");
 
   return (
-    <TabsRoot value={activeTab} onValueChange={setActiveTab} className="w-full">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="mb-6">
         <TabsTrigger value="templates" className="flex items-center gap-2">
           <FileText className="h-4 w-4" />
@@ -45,6 +45,6 @@ export function EmailsTabs({ templates, configStatus }: EmailsTabsProps) {
         <InboundEmailsStats />
         <InboundEmailsList />
       </TabsContent>
-    </TabsRoot>
+    </Tabs>
   );
 }

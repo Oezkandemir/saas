@@ -10,13 +10,13 @@ import { getTranslations } from "next-intl/server";
 
 import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import { DocumentDeleteButton } from "@/components/documents/document-delete-button";
 import { PDFActionButtons } from "@/components/documents/document-pdf-components";
 import { DocumentStatusTimeline } from "@/components/documents/document-status-timeline";

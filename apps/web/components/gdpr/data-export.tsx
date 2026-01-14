@@ -6,14 +6,14 @@ import { Download, FileJson, FileSpreadsheet, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 
 export function DataExport() {
   const t = useTranslations("GDPR.dataExport");

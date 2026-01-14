@@ -21,16 +21,16 @@ import { toast } from "sonner";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
-import { Input } from "@/components/alignui/forms/input";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 type EmailTemplatesProps = {
   templates: EmailTemplate[];
@@ -92,7 +92,7 @@ export function EmailTemplates({
     }
   };
 
-  const getStatusBadge = () => {
+  const getBadge = () => {
     switch (configStatus.status) {
       case "configured":
         return (
@@ -128,7 +128,7 @@ export function EmailTemplates({
               <Mail className="h-5 w-5" />
               Resend Konfiguration
             </span>
-            {getStatusBadge()}
+            {getBadge()}
           </CardTitle>
           <CardDescription>
             Überprüfen Sie den Status Ihrer Resend-Konfiguration

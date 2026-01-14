@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 
 interface UsageWarning {
   limitType: string;

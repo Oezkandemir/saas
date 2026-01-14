@@ -19,14 +19,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 
 interface ApplyTimeSlotsToAllProps {
   sourceEventTypeId: string;
@@ -123,7 +123,7 @@ export function ApplyTimeSlotsToAll({
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button
-              variant="primary"
+              variant="default"
               onClick={handleOpenDialog}
               className="w-full"
             >

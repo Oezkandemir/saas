@@ -7,7 +7,7 @@ import { AlertCircle, Loader2, Send } from "lucide-react";
 import { logger } from "@/lib/logger";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import { useTypingIndicator } from "@/hooks/use-typing-indicator";
 
 interface TicketReplyFormProps {

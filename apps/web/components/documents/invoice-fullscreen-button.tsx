@@ -5,13 +5,13 @@ import { Document } from "@/actions/documents-actions";
 import { Maximize2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
-  DialogRoot as Dialog,
+  Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/alignui/overlays/dialog";
+} from "@/components/ui/dialog";
 
 import { InvoiceFullPreview } from "./invoice-full-preview";
 

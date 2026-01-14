@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 
 interface EventTypeActionsProps {
   eventType: EventType;
@@ -116,7 +116,7 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
     <>
       <div className="grid grid-cols-1 gap-1.5">
         <Button
-          variant="primary"
+          variant="default"
           size="sm"
           onClick={handleToggle}
           disabled={isToggling}
@@ -130,7 +130,7 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
           </span>
         </Button>
         <Button
-          variant="primary"
+          variant="default"
           size="sm"
           onClick={handleDuplicate}
           disabled={isDuplicating}
@@ -142,7 +142,7 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
           </span>
         </Button>
         <Button
-          variant="primary"
+          variant="default"
           size="sm"
           onClick={() => setShowDeleteDialog(true)}
           className="gap-1.5 w-full bg-foreground text-background hover:bg-destructive hover:text-destructive-foreground font-medium"

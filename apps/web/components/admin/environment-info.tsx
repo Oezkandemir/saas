@@ -8,14 +8,14 @@ import {
 import { CheckCircle2, Loader2, RefreshCw, XCircle } from "lucide-react";
 
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 
 export function EnvironmentInfo() {
   const { toast } = useToast();

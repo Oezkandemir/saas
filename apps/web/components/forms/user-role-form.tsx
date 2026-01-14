@@ -9,8 +9,8 @@ import { toast } from "sonner";
 
 import { userRoleSchema } from "@/lib/validations/user";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button } from "@/components/alignui/actions/button";
-import { FormRoot as Form, FormField } from "@/components/alignui/forms/form";
+import { Button } from "@/components/ui/button";
+import { Form, FormField } from "@/components/ui/form";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 
 export enum UserRole {
@@ -103,7 +103,7 @@ export function UserRoleForm({ user }: UserNameFormProps) {
             />
             <Button
               type="submit"
-              variant={updated ? "primary" : "outline"}
+              variant={updated ? "default" : "outline"}
               disabled={isPending || !updated}
               className="w-[67px] shrink-0 px-0 sm:w-[130px]"
             >

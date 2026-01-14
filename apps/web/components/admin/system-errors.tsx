@@ -19,25 +19,25 @@ import {
 
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
-import { Button, buttonVariants } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import {
+  AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogRoot,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/alignui/overlays/alert-dialog";
+} from "@/components/ui/alert-dialog";
 
 export function SystemErrors() {
   const { toast } = useToast();
@@ -189,7 +189,7 @@ export function SystemErrors() {
           </h4>
         </div>
         {errors.length > 0 && (
-          <AlertDialogRoot>
+          <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive" size="sm" disabled={isDeletingAll}>
                 {isDeletingAll ? (
@@ -220,7 +220,7 @@ export function SystemErrors() {
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
-          </AlertDialogRoot>
+          </AlertDialog>
         )}
       </div>
       <div className="space-y-4">
@@ -300,7 +300,7 @@ export function SystemErrors() {
                   </p>
                 </div>
                 {!error.resolved && (
-                  <AlertDialogRoot>
+                  <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button
                         variant="outline"
@@ -337,7 +337,7 @@ export function SystemErrors() {
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
-                  </AlertDialogRoot>
+                  </AlertDialog>
                 )}
               </div>
             ))}

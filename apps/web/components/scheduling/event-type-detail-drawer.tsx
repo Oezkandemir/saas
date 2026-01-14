@@ -33,18 +33,18 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
-import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
-  AccordionRoot,
+  Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "@/components/alignui/layout/accordion";
-import { Input } from "@/components/alignui/forms/input";
+} from "@/components/ui/accordion";
+import { Input } from "@/components/ui/input";
 
-import { CopyBookingLinkButton } from "./copy-booking-link-button";
+import { CopyBookingButton } from "./copy-booking-link-button";
 import { EditEventTypeDrawer } from "./edit-event-type-drawer";
 import { EventTypeActions } from "./event-type-actions";
 
@@ -162,7 +162,7 @@ export function EventTypeDetailDrawer({
           </div>
         ) : eventType ? (
           <div className="mt-3 flex flex-col">
-            <AccordionRoot type="multiple" defaultValue={["details", "stats"]} className="w-full">
+            <Accordion type="multiple" defaultValue={["details", "stats"]} className="w-full">
               {/* Event Details - Wichtigste Info zuerst */}
               <AccordionItem value="details" className="border-b border-stroke-soft-200">
                 <AccordionTrigger className="text-sm font-semibold">
@@ -452,12 +452,12 @@ export function EventTypeDetailDrawer({
                         )}
                       </Button>
                     </div>
-                    <CopyBookingLinkButton bookingUrl={bookingUrl} />
+                    <CopyBookingButton bookingUrl={bookingUrl} />
                   </div>
                 </AccordionContent>
               </AccordionItem>
 
-            </AccordionRoot>
+            </Accordion>
 
             {/* Actions - Immer ganz unten, außerhalb der Accordions */}
             <div className="mt-4 pt-4 border-t border-border">
@@ -478,14 +478,14 @@ export function EventTypeDetailDrawer({
                       }
                     }}
                     trigger={
-                      <Button variant="primary" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
+                      <Button variant="default" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
                         <Edit className="h-3.5 w-3.5" />
                         <span className="text-xs">{t("tabs.edit") || "Bearbeiten"}</span>
                       </Button>
                     }
                   />
                 )}
-                <CopyBookingLinkButton bookingUrl={bookingUrl} />
+                <CopyBookingButton bookingUrl={bookingUrl} />
                 <EventTypeActions eventType={eventType} />
               </div>
             </div>

@@ -33,20 +33,20 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/alignui/actions/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/alignui/data-display/card";
+} from "@/components/ui/card";
 import {
-  AccordionRoot,
+  Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "@/components/alignui/layout/accordion";
-import { SeparatorRoot as Separator } from "@/components/alignui/data-display/separator";
+} from "@/components/ui/accordion";
+import { Separator } from "@/components/ui/separator";
 
 interface RescheduleBookingDrawerProps {
   booking: Booking;
@@ -233,7 +233,7 @@ export function RescheduleBookingDrawer({
         </SheetHeader>
 
         <div className="mt-3 flex flex-col">
-          <AccordionRoot type="multiple" defaultValue={["current", "date"]} className="w-full">
+          <Accordion type="multiple" defaultValue={["current", "date"]} className="w-full">
             {/* Current Booking Info */}
             <AccordionItem value="current" className="border-b border-stroke-soft-200">
               <AccordionTrigger className="text-sm font-semibold">
@@ -487,7 +487,7 @@ export function RescheduleBookingDrawer({
                 </AccordionContent>
               </AccordionItem>
             )}
-          </AccordionRoot>
+          </Accordion>
 
           {/* Actions - Immer ganz unten, außerhalb der Accordions */}
           <div className="mt-4 pt-4 border-t border-border">
@@ -505,7 +505,7 @@ export function RescheduleBookingDrawer({
                 </span>
               </Button>
               <Button
-                variant="primary"
+                variant="default"
                 onClick={() => onOpenChange(false)}
                 size="sm"
                 className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"

@@ -30,8 +30,8 @@ import { toast } from "sonner";
 import { getURL } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/alignui/actions/button";
-import { BadgeRoot as Badge } from "@/components/alignui/data-display/badge";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 import { BookingDrawer } from "./booking-drawer";
 import { BookingsList } from "./bookings-list";

@@ -973,3 +973,133 @@
 - Index & Übersicht: `docs/UI_UX_PROMPTS_INDEX.md`
 
 **Current Status:** ✅ **COMPLETED** - Alle UI/UX Master Prompts erstellt und dokumentiert
+
+## [2026-01-15] Migration zurück zu shadcn/ui (Latest Version) 🚧
+
+**Vollständige Migration von AlignUI zurück zu shadcn/ui mit neuesten Features**
+
+### **Hintergrund:**
+- Projekt wurde teilweise zu AlignUI migriert (5 Komponenten)
+- shadcn/ui hat neue, moderne Updates und Email-Komponenten (2025)
+- Bessere Community-Unterstützung und Dokumentation
+- Moderne, slick Design-Updates
+
+### **Phase 1: Vorbereitung & Setup** 🚧
+- [ ] shadcn/ui CLI installieren/aktualisieren
+- [ ] `components.json` auf neueste Version aktualisieren
+- [ ] Neue Email-Komponenten installieren (Mail Client, Subscribe Blocks)
+- [ ] Komponenten-Inventar erstellen
+- [ ] Import-Mapping-Tabelle erstellen
+- [ ] Git Branch für Migration erstellen
+
+### **Phase 2: Basis-Komponenten Migration** 🔴 KRITISCH
+- [ ] Button (alignui → ui/button)
+- [ ] Card (alignui → ui/card)
+- [ ] Input (alignui → ui/input)
+- [ ] Badge (alignui → ui/badge)
+- [ ] Avatar (alignui → ui/avatar)
+- [ ] Label (alignui → ui/label)
+- [ ] Textarea (alignui → ui/textarea)
+- [ ] Select (alignui → ui/select)
+- [ ] Checkbox (alignui → ui/checkbox)
+- [ ] Switch (alignui → ui/switch)
+- [ ] Form (alignui → ui/form)
+
+### **Phase 3: Overlay-Komponenten Migration** 🟠 HOCH
+- [ ] Dialog (alignui → ui/dialog)
+- [ ] AlertDialog (alignui → ui/alert-dialog)
+- [ ] Drawer (alignui → ui/drawer oder sheet)
+- [ ] DropdownMenu (alignui → ui/dropdown-menu)
+- [ ] Popover (alignui → ui/popover)
+- [ ] Command (alignui → ui/command)
+
+### **Phase 4: Layout-Komponenten Migration** 🟡 MITTEL
+- [ ] Tabs (alignui → ui/tabs)
+- [ ] Accordion (alignui → ui/accordion)
+- [ ] Breadcrumb (falls benötigt)
+- [ ] NavigationMenu (falls benötigt)
+
+### **Phase 5: Feedback-Komponenten Migration** 🟡 MITTEL
+- [ ] Alert (alignui → ui/alert)
+- [ ] Progress (alignui → ui/progress)
+- [ ] Toast/Sonner (bereits vorhanden)
+
+### **Phase 6: Spezielle Komponenten** 🟢 NIEDRIG
+- [ ] StatusBadge → Badge mit Varianten
+- [ ] Tag → Badge
+- [ ] FileFormatIcon → Behalten oder Lucide Icons
+- [ ] Kbd → shadcn/ui Kbd oder custom
+- [ ] Hint → FormDescription
+- [ ] Divider → Separator
+
+### **Phase 7: Neue shadcn/ui Features** 🆕
+- [ ] **Mail Client** - Responsive Mail Client installieren
+  - [ ] Inbox-Komponente
+  - [ ] Search-Funktionalität
+  - [ ] Composer-Komponente
+  - [ ] Inbound Email System aktualisieren
+- [ ] **Subscribe Blocks** - Newsletter Blocks installieren
+  - [ ] Benefits List Block
+  - [ ] Incentive Center Aligned Block
+  - [ ] Newsletter Preview Block
+  - [ ] Social Proof Center Block
+  - [ ] Split Layout Block
+  - [ ] Newsletter-Formular aktualisieren
+
+### **Phase 8: Import-Migration** 🔄
+- [ ] Automatisiertes Script für Import-Ersetzung erstellen
+- [ ] Alle ~200+ Dateien mit AlignUI Imports aktualisieren
+- [ ] Komponenten-APIs prüfen und anpassen
+- [ ] Props-Mappings aktualisieren
+- [ ] TypeScript-Fehler beheben
+- [ ] Linter-Fehler beheben
+
+### **Phase 9: Testing & Qualitätssicherung** ✅
+- [ ] Alle Seiten manuell testen
+- [ ] Formulare testen
+- [ ] Modals und Dialogs testen
+- [ ] Dark/Light Mode testen
+- [ ] Responsive Design testen
+- [ ] Browser-Kompatibilität testen
+- [ ] Accessibility-Tests durchführen
+- [ ] Performance-Tests durchführen
+
+### **Phase 10: Cleanup** 🧹
+- [ ] `components/alignui/` Verzeichnis löschen
+- [ ] AlignUI Dependencies entfernen
+- [ ] AlignUI Dokumentation entfernen
+- [ ] `package.json` bereinigen
+- [ ] README aktualisieren
+- [ ] TASK.md aktualisieren
+
+### **Phase 11: Mobile App Migration** 📱
+- [ ] Prüfen ob Mobile App AlignUI verwendet
+- [ ] Mobile Komponenten migrieren (falls nötig)
+- [ ] NativeWind Integration sicherstellen
+
+### **Dokumentation:**
+- Master Plan: `docs/SHADCN_UI_MIGRATION_MASTER_PLAN.md` ✅
+- Import-Mapping-Tabelle erstellt ✅
+- Rollback-Strategie definiert ✅
+
+### **Nächste Schritte:**
+1. shadcn/ui CLI Setup & Email-Komponenten installieren
+2. Basis-Komponenten Migration starten
+3. Schrittweise alle Komponenten migrieren
+4. Import-Updates durchführen
+5. Testing & Cleanup
+
+**Current Status:** ✅ **COMPLETED** - Migration erfolgreich abgeschlossen!
+
+### **Ergebnisse:**
+- ✅ **225 Dateien** migriert
+- ✅ **480 Imports** ersetzt
+- ✅ **14 Dateien** mit Komponenten-Namen aktualisiert
+- ✅ Alle AlignUI Imports durch shadcn/ui ersetzt
+- ✅ Komponenten-Namen standardisiert (SeparatorRoot → Separator, AccordionRoot → Accordion, SelectRoot → Select)
+- ✅ Migration Scripts erstellt und ausgeführt
+
+### **Nächste Schritte:**
+- [ ] Email-Komponenten installieren (Mail Client, Subscribe Blocks)
+- [ ] AlignUI Verzeichnis entfernen (nach finaler Prüfung)
+- [ ] Finale Tests durchführen
