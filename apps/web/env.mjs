@@ -31,6 +31,12 @@ export const env = createEnv({
     POLAR_SUCCESS_URL: z.string().url().optional(),
     // Payment provider selection: "polar" (Stripe removed)
     NEXT_PUBLIC_PAYMENT_PROVIDER: z.enum(["polar"]).optional().default("polar"),
+    
+    // Polar Plan IDs (optional - fallback to mocks in development)
+    NEXT_PUBLIC_POLAR_PRO_MONTHLY_PLAN_ID: z.string().uuid().optional(),
+    NEXT_PUBLIC_POLAR_PRO_YEARLY_PLAN_ID: z.string().uuid().optional(),
+    NEXT_PUBLIC_POLAR_ENTERPRISE_MONTHLY_PLAN_ID: z.string().uuid().optional(),
+    NEXT_PUBLIC_POLAR_ENTERPRISE_YEARLY_PLAN_ID: z.string().uuid().optional(),
 
     // Supabase config
     NEXT_PUBLIC_SUPABASE_URL: z.string().min(1),
@@ -56,6 +62,14 @@ export const env = createEnv({
     POLAR_USE_SANDBOX: process.env.POLAR_USE_SANDBOX || "false",
     NEXT_PUBLIC_PAYMENT_PROVIDER:
       process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || "polar",
+    NEXT_PUBLIC_POLAR_PRO_MONTHLY_PLAN_ID:
+      process.env.NEXT_PUBLIC_POLAR_PRO_MONTHLY_PLAN_ID,
+    NEXT_PUBLIC_POLAR_PRO_YEARLY_PLAN_ID:
+      process.env.NEXT_PUBLIC_POLAR_PRO_YEARLY_PLAN_ID,
+    NEXT_PUBLIC_POLAR_ENTERPRISE_MONTHLY_PLAN_ID:
+      process.env.NEXT_PUBLIC_POLAR_ENTERPRISE_MONTHLY_PLAN_ID,
+    NEXT_PUBLIC_POLAR_ENTERPRISE_YEARLY_PLAN_ID:
+      process.env.NEXT_PUBLIC_POLAR_ENTERPRISE_YEARLY_PLAN_ID,
 
     // Supabase
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,

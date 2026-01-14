@@ -3,7 +3,9 @@ import { getLocale, setRequestLocale } from "next-intl/server";
 
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 import { InboundEmailsInbox } from "@/components/admin/inbound-emails/inbound-emails-inbox";
+import { syncAllResendInboundEmails } from "@/actions/sync-all-resend-inbound-emails";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -25,6 +27,19 @@ export default async function AdminEmailsPage() {
 
   if (!isAdmin) {
     redirect("/dashboard");
+  }
+
+  // Automatically sync all emails from Resend when page loads
+  // This ensures all emails sent to us are visible
+  try {
+    logger.info("Auto-syncing emails from Resend on page load");
+    const syncResult = await syncAllResendInboundEmails();
+    if (syncResult.success && syncResult.synced > 0) {
+      logger.info(`Auto-sync completed: ${syncResult.synced} emails synced`);
+    }
+  } catch (error) {
+    // Don't fail the page load if sync fails
+    logger.error("Error auto-syncing emails on page load:", error);
   }
 
   // Full-width email inbox layout - replaces sidebar

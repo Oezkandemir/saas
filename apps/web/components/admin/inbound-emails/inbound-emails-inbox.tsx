@@ -49,6 +49,40 @@ export function InboundEmailsInbox() {
     loadEmails();
   }, [filter, page]);
 
+  // Auto-sync emails from Resend on initial load (only once)
+  // This ensures all emails sent to us are visible
+  useEffect(() => {
+    let isMounted = true;
+    
+    const autoSync = async () => {
+      try {
+        const { syncAllResendInboundEmails } = await import("@/actions/sync-all-resend-inbound-emails");
+        const result = await syncAllResendInboundEmails();
+        if (isMounted && result.success) {
+          if (result.synced > 0) {
+            toast.success(`${result.synced} neue Email${result.synced !== 1 ? "s" : ""} synchronisiert`, {
+              duration: 3000,
+            });
+          }
+          // Always reload emails after sync to show latest data
+          await loadEmails();
+        }
+      } catch (error) {
+        // Silently fail - don't show error to user on auto-sync
+        // The server-side sync will handle errors
+        console.error("Auto-sync failed:", error);
+      }
+    };
+
+    // Only sync once on mount
+    autoSync();
+    
+    return () => {
+      isMounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array = only run once on mount
+
   // Load selected email when selection changes
   useEffect(() => {
     if (selectedEmailId && emails.length > 0) {

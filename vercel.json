@@ -22,6 +22,10 @@
     "apps/web/api/**/*.ts": {
       "memory": 1024,
       "maxDuration": 10
+    },
+    "apps/web/app/api/webhooks/**/*.ts": {
+      "memory": 1024,
+      "maxDuration": 30
     }
   },
   "headers": [

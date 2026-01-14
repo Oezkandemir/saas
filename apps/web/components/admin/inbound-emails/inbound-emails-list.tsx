@@ -47,6 +47,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { SyncEmailButton } from "./sync-email-button";
+import { SyncAllEmailsButton } from "./sync-all-emails-button";
 
 type FilterType = "all" | "unread" | "read";
 
@@ -172,7 +173,10 @@ export function InboundEmailsList() {
 
   return (
     <div className="space-y-4">
-      <SyncEmailButton />
+      <div className="grid gap-4 md:grid-cols-2">
+        <SyncAllEmailsButton />
+        <SyncEmailButton />
+      </div>
       <Card>
         <CardHeader>
         <div className="flex items-center justify-between">

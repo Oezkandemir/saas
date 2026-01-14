@@ -87,10 +87,28 @@ export async function getInboundEmails(
     const limit = options?.limit || 50;
     const filter = options?.filter || "all";
 
-    // Build query
+    // Build query - get count first for accurate total
+    let countQuery = supabase
+      .from("inbound_emails")
+      .select("*", { count: "exact", head: true });
+
+    // Apply filter to count query
+    if (filter === "unread") {
+      countQuery = countQuery.eq("is_read", false);
+    } else if (filter === "read") {
+      countQuery = countQuery.eq("is_read", true);
+    }
+
+    const { count, error: countError } = await countQuery;
+
+    if (countError) {
+      logger.error("Error fetching email count:", countError);
+    }
+
+    // Build data query
     let query = supabase
       .from("inbound_emails")
-      .select("*, inbound_email_attachments(*)", { count: "exact" })
+      .select("*, inbound_email_attachments(*)")
       .order("received_at", { ascending: false });
 
     // Apply filter
@@ -105,15 +123,31 @@ export async function getInboundEmails(
     const to = from + limit - 1;
     query = query.range(from, to);
 
-    const { data, error, count } = await query;
+    const { data, error } = await query;
 
     if (error) {
-      logger.error("Error fetching inbound emails:", error);
+      logger.error("Error fetching inbound emails:", {
+        error,
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        filter,
+        page,
+        limit,
+      });
       return {
         success: false,
         error: error.message,
       };
     }
+
+    logger.debug("Fetched inbound emails", {
+      count: data?.length || 0,
+      total: count || 0,
+      filter,
+      page,
+      limit,
+    });
 
     // Transform data to include attachments
     const emails: InboundEmail[] = (data || []).map((email: any) => ({

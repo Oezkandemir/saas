@@ -47,14 +47,21 @@ export async function POST(req: NextRequest) {
     // Read body as text first (needed for signature verification)
     const bodyText = await req.text();
     
-    // Log incoming webhook for debugging
-    logger.info("Resend Inbound webhook received", {
+    // Enhanced logging for production debugging
+    const requestInfo = {
       url: req.url,
       method: req.method,
       pathname: req.nextUrl.pathname,
-      headers: Object.fromEntries(req.headers.entries()),
+      host: req.headers.get("host"),
+      userAgent: req.headers.get("user-agent"),
+      contentType: req.headers.get("content-type"),
       bodyLength: bodyText.length,
-    });
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV,
+    };
+    
+    // Log incoming webhook for debugging
+    logger.info("🔔 Resend Inbound webhook received", requestInfo);
 
     // Verify this is actually the correct path (prevent redirect issues)
     if (!req.nextUrl.pathname.includes("/api/webhooks/resend/inbound")) {
@@ -80,7 +87,7 @@ export async function POST(req: NextRequest) {
     }
     
     logger.info(
-      `Processing Resend Inbound webhook: type=${body.type}, email_id=${body.data?.email_id}`,
+      `📧 Processing Resend Inbound webhook: type=${body.type}, email_id=${body.data?.email_id}, from=${body.data?.from}`,
     );
 
     // Verify webhook type
@@ -169,30 +176,57 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Prepare email data for insertion
+    const emailInsertData = {
+      email_id: emailData.email_id,
+      message_id: emailData.message_id || null,
+      from_email: fromEmail,
+      from_name: fromName,
+      to: toArray,
+      cc: Array.isArray(emailData.cc) ? emailData.cc : emailData.cc ? [emailData.cc] : [],
+      bcc: Array.isArray(emailData.bcc) ? emailData.bcc : emailData.bcc ? [emailData.bcc] : [],
+      subject: emailData.subject || null,
+      text_content: emailData.text || null,
+      html_content: emailData.html || null,
+      raw_payload: body,
+      received_at: emailData.created_at || new Date().toISOString(),
+    };
+
+    logger.info("✅ Attempting to insert inbound email", {
+      email_id: emailData.email_id,
+      from_email: fromEmail,
+      from_name: fromName,
+      to: toArray,
+      subject: emailData.subject,
+      hasText: !!emailData.text,
+      hasHtml: !!emailData.html,
+      hasAttachments: Array.isArray(emailData.attachments) && emailData.attachments.length > 0,
+    });
+
     // Insert email into database
     const { data: insertedEmail, error: emailError } = await supabaseAdmin
       .from("inbound_emails")
-      .insert({
-        email_id: emailData.email_id,
-        message_id: emailData.message_id || null,
-        from_email: fromEmail,
-        from_name: fromName,
-        to: toArray,
-        cc: Array.isArray(emailData.cc) ? emailData.cc : emailData.cc ? [emailData.cc] : [],
-        bcc: Array.isArray(emailData.bcc) ? emailData.bcc : emailData.bcc ? [emailData.bcc] : [],
-        subject: emailData.subject || null,
-        text_content: emailData.text || null,
-        html_content: emailData.html || null,
-        raw_payload: body,
-        received_at: emailData.created_at || new Date().toISOString(),
-      })
+      .insert(emailInsertData)
       .select()
       .single();
 
     if (emailError) {
-      logger.error("Error inserting inbound email:", emailError);
+      logger.error("Error inserting inbound email:", {
+        error: emailError,
+        message: emailError.message,
+        code: emailError.code,
+        details: emailError.details,
+        hint: emailError.hint,
+        email_id: emailData.email_id,
+        emailData: emailInsertData,
+      });
       return new NextResponse(
-        JSON.stringify({ error: "Failed to save email", message: emailError.message }),
+        JSON.stringify({ 
+          error: "Failed to save email", 
+          message: emailError.message,
+          code: emailError.code,
+          details: emailError.details,
+        }),
         {
           status: 500,
           headers: { "Content-Type": "application/json" },
@@ -200,7 +234,26 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    logger.info(`Successfully saved inbound email: ${emailData.email_id}`);
+    if (!insertedEmail) {
+      logger.error("Email insert returned no data", {
+        email_id: emailData.email_id,
+        emailInsertData,
+      });
+      return new NextResponse(
+        JSON.stringify({ error: "Failed to save email: No data returned" }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    logger.info(`✅ Successfully saved inbound email: ${emailData.email_id}`, {
+      id: insertedEmail.id,
+      from: fromEmail,
+      to: toArray,
+      subject: emailData.subject,
+    });
 
     // Handle attachments if present
     if (Array.isArray(emailData.attachments) && emailData.attachments.length > 0) {
@@ -246,6 +299,8 @@ export async function POST(req: NextRequest) {
       error: error.message,
       stack: error.stack,
       name: error.name,
+      cause: error.cause,
+      body: bodyText?.substring(0, 500), // Log first 500 chars of body for debugging
     });
     
     // Return 200 to prevent Resend from retrying on processing errors
