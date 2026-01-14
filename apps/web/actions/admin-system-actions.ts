@@ -407,7 +407,7 @@ function formatBytes(bytes: number): string {
 
 function parseBytes(sizeStr: string): number {
   const match = sizeStr.match(/^([\d.]+)\s*(\w+)$/);
-  if (!match) return 0;
+  if (!match || !match[1] || !match[2]) return 0;
   const value = parseFloat(match[1]);
   const unit = match[2].toUpperCase();
   const multipliers: Record<string, number> = {
