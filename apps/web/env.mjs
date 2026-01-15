@@ -38,19 +38,12 @@ export const env = createEnv({
     NEXT_PUBLIC_PAYMENT_PROVIDER: z.enum(["polar"]).optional().default("polar"),
 
     // Polar Plan IDs (optional - fallback to mocks in development)
-    // Allow undefined, empty strings, or valid UUIDs - if set and not empty, must be valid UUID
-    NEXT_PUBLIC_POLAR_PRO_MONTHLY_PLAN_ID: z
-      .union([z.string().uuid(), z.literal(""), z.undefined()])
-      .optional(),
-    NEXT_PUBLIC_POLAR_PRO_YEARLY_PLAN_ID: z
-      .union([z.string().uuid(), z.literal(""), z.undefined()])
-      .optional(),
-    NEXT_PUBLIC_POLAR_ENTERPRISE_MONTHLY_PLAN_ID: z
-      .union([z.string().uuid(), z.literal(""), z.undefined()])
-      .optional(),
-    NEXT_PUBLIC_POLAR_ENTERPRISE_YEARLY_PLAN_ID: z
-      .union([z.string().uuid(), z.literal(""), z.undefined()])
-      .optional(),
+    // Accept any string (including empty) or undefined - validation happens at runtime
+    // This allows builds to succeed even if invalid values are set in Vercel
+    NEXT_PUBLIC_POLAR_PRO_MONTHLY_PLAN_ID: z.string().optional(),
+    NEXT_PUBLIC_POLAR_PRO_YEARLY_PLAN_ID: z.string().optional(),
+    NEXT_PUBLIC_POLAR_ENTERPRISE_MONTHLY_PLAN_ID: z.string().optional(),
+    NEXT_PUBLIC_POLAR_ENTERPRISE_YEARLY_PLAN_ID: z.string().optional(),
 
     // Supabase config
     NEXT_PUBLIC_SUPABASE_URL: z.string().min(1),

@@ -58,12 +58,26 @@ export const pricingData: SubscriptionPlan[] = [
     },
     polarIds: {
       monthly:
-        env.NEXT_PUBLIC_POLAR_PRO_MONTHLY_PLAN_ID ||
+        (env.NEXT_PUBLIC_POLAR_PRO_MONTHLY_PLAN_ID &&
+          env.NEXT_PUBLIC_POLAR_PRO_MONTHLY_PLAN_ID.trim() !== "" &&
+          // Validate UUID format at runtime
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+            env.NEXT_PUBLIC_POLAR_PRO_MONTHLY_PLAN_ID
+          )
+          ? env.NEXT_PUBLIC_POLAR_PRO_MONTHLY_PLAN_ID
+          : null) ||
         (process.env.NODE_ENV === "development"
           ? mockPolarIds.pro.monthly
           : null),
       yearly:
-        env.NEXT_PUBLIC_POLAR_PRO_YEARLY_PLAN_ID ||
+        (env.NEXT_PUBLIC_POLAR_PRO_YEARLY_PLAN_ID &&
+          env.NEXT_PUBLIC_POLAR_PRO_YEARLY_PLAN_ID.trim() !== "" &&
+          // Validate UUID format at runtime
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+            env.NEXT_PUBLIC_POLAR_PRO_YEARLY_PLAN_ID
+          )
+          ? env.NEXT_PUBLIC_POLAR_PRO_YEARLY_PLAN_ID
+          : null) ||
         (process.env.NODE_ENV === "development"
           ? mockPolarIds.pro.yearly
           : null),
@@ -106,12 +120,26 @@ export const pricingData: SubscriptionPlan[] = [
     },
     polarIds: {
       monthly:
-        env.NEXT_PUBLIC_POLAR_ENTERPRISE_MONTHLY_PLAN_ID ||
+        (env.NEXT_PUBLIC_POLAR_ENTERPRISE_MONTHLY_PLAN_ID &&
+          env.NEXT_PUBLIC_POLAR_ENTERPRISE_MONTHLY_PLAN_ID.trim() !== "" &&
+          // Validate UUID format at runtime
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+            env.NEXT_PUBLIC_POLAR_ENTERPRISE_MONTHLY_PLAN_ID
+          )
+          ? env.NEXT_PUBLIC_POLAR_ENTERPRISE_MONTHLY_PLAN_ID
+          : null) ||
         (process.env.NODE_ENV === "development"
           ? mockPolarIds.enterprise.monthly
           : null),
       yearly:
-        env.NEXT_PUBLIC_POLAR_ENTERPRISE_YEARLY_PLAN_ID ||
+        (env.NEXT_PUBLIC_POLAR_ENTERPRISE_YEARLY_PLAN_ID &&
+          env.NEXT_PUBLIC_POLAR_ENTERPRISE_YEARLY_PLAN_ID.trim() !== "" &&
+          // Validate UUID format at runtime
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+            env.NEXT_PUBLIC_POLAR_ENTERPRISE_YEARLY_PLAN_ID
+          )
+          ? env.NEXT_PUBLIC_POLAR_ENTERPRISE_YEARLY_PLAN_ID
+          : null) ||
         (process.env.NODE_ENV === "development"
           ? mockPolarIds.enterprise.yearly
           : null),
