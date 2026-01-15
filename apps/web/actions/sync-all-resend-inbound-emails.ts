@@ -111,14 +111,62 @@ export async function syncAllResendInboundEmails(): Promise<{
           continue;
         }
 
-        // Skip if already exists
-        if (existingEmailIds.has(emailId)) {
+        // Fetch full email content if not in list response
+        let fullEmailData = emailData;
+        if (!emailData.text && !emailData.html) {
+          try {
+            const fullResponse = await fetch(
+              `https://api.resend.com/emails/receiving/${emailId}`,
+              {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${env.RESEND_API_KEY}`,
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+
+            if (fullResponse.ok) {
+              fullEmailData = await fullResponse.json();
+            }
+          } catch (fetchError) {
+            logger.warn(`Failed to fetch full content for ${emailId}`, fetchError);
+            // Continue with list data
+          }
+        }
+
+        // Check if email already exists and needs content update
+        const { data: existingEmail } = await supabaseAdmin
+          .from("inbound_emails")
+          .select("id, text_content, html_content")
+          .eq("email_id", emailId)
+          .single();
+
+        if (existingEmail) {
+          // Update if missing content
+          if (!existingEmail.text_content && !existingEmail.html_content) {
+            if (fullEmailData.text || fullEmailData.html) {
+              const { error: updateError } = await supabaseAdmin
+                .from("inbound_emails")
+                .update({
+                  text_content: fullEmailData.text || null,
+                  html_content: fullEmailData.html || null,
+                  updated_at: new Date().toISOString(),
+                })
+                .eq("id", existingEmail.id);
+
+              if (!updateError) {
+                synced++;
+                continue;
+              }
+            }
+          }
           skipped++;
           continue;
         }
 
         // Parse sender information
-        const fromString = emailData.from || "";
+        const fromString = fullEmailData.from || "";
         let fromEmail = "";
         let fromName = null;
 
@@ -131,10 +179,10 @@ export async function syncAllResendInboundEmails(): Promise<{
         }
 
         // Ensure to array exists
-        const toArray = Array.isArray(emailData.to)
-          ? emailData.to
-          : emailData.to
-            ? [emailData.to]
+        const toArray = Array.isArray(fullEmailData.to)
+          ? fullEmailData.to
+          : fullEmailData.to
+            ? [fullEmailData.to]
             : [];
 
         if (toArray.length === 0) {
@@ -151,25 +199,25 @@ export async function syncAllResendInboundEmails(): Promise<{
           .from("inbound_emails")
           .insert({
             email_id: emailId,
-            message_id: emailData.message_id || null,
+            message_id: fullEmailData.message_id || null,
             from_email: fromEmail,
             from_name: fromName,
             to: toArray,
-            cc: Array.isArray(emailData.cc)
-              ? emailData.cc
-              : emailData.cc
-                ? [emailData.cc]
+            cc: Array.isArray(fullEmailData.cc)
+              ? fullEmailData.cc
+              : fullEmailData.cc
+                ? [fullEmailData.cc]
                 : [],
-            bcc: Array.isArray(emailData.bcc)
-              ? emailData.bcc
-              : emailData.bcc
-                ? [emailData.bcc]
+            bcc: Array.isArray(fullEmailData.bcc)
+              ? fullEmailData.bcc
+              : fullEmailData.bcc
+                ? [fullEmailData.bcc]
                 : [],
-            subject: emailData.subject || null,
-            text_content: emailData.text || null,
-            html_content: emailData.html || null,
-            raw_payload: emailData,
-            received_at: emailData.created_at || new Date().toISOString(),
+            subject: fullEmailData.subject || null,
+            text_content: fullEmailData.text || null,
+            html_content: fullEmailData.html || null,
+            raw_payload: fullEmailData,
+            received_at: fullEmailData.created_at || new Date().toISOString(),
           })
           .select()
           .single();
@@ -191,10 +239,10 @@ export async function syncAllResendInboundEmails(): Promise<{
 
         // Handle attachments if present
         if (
-          Array.isArray(emailData.attachments) &&
-          emailData.attachments.length > 0
+          Array.isArray(fullEmailData.attachments) &&
+          fullEmailData.attachments.length > 0
         ) {
-          const attachments = emailData.attachments.map((attachment: any) => ({
+          const attachments = fullEmailData.attachments.map((attachment: any) => ({
             inbound_email_id: insertedEmail.id,
             attachment_id: attachment.id || attachment.filename,
             filename: attachment.filename || "attachment",

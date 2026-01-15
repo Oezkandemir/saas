@@ -526,9 +526,11 @@ export async function getInboundEmailReplies(
 
     if (error) {
       logger.error("Error fetching email replies:", error);
+      // Don't fail completely - return empty array instead
+      // This allows the email to load even if replies fail
       return {
-        success: false,
-        error: error.message,
+        success: true,
+        data: [],
       };
     }
 

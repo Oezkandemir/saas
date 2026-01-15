@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
   };
 
   // Internal function to fetch geolocation
-  async function _fetchGeolocation(ip: string) {
+  async function _fetchGeolocation(ip: string, userAgent: string) {
     const url = ip ? `https://ipapi.co/${ip}/json/` : "https://ipapi.co/json/";
 
     // Create abort controller for better timeout handling
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
       const response = await fetch(url, {
         signal: controller.signal,
         headers: {
-          "User-Agent": request.headers.get("user-agent") || "Mozilla/5.0",
+          "User-Agent": userAgent || "Mozilla/5.0",
         },
       });
 
@@ -117,10 +117,19 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  // Get client IP and user-agent from headers BEFORE caching
+  const forwarded = request.headers.get("x-forwarded-for");
+  const realIp = request.headers.get("x-real-ip");
+  const ip = forwarded?.split(",")[0]?.trim() || realIp?.trim() || "";
+  const userAgent = request.headers.get("user-agent") || "Mozilla/5.0";
+
+  // If no IP found, use empty string to get current request IP
+  const ipToUse = ip || "";
+
   // Cached version of geolocation fetch
   const getCachedGeolocation = unstable_cache(
-    async (ip: string) => {
-      return _fetchGeolocation(ip);
+    async (ip: string, userAgent: string) => {
+      return _fetchGeolocation(ip, userAgent);
     },
     ["analytics-geolocation"],
     {
@@ -130,16 +139,8 @@ export async function GET(request: NextRequest) {
   );
 
   try {
-    // Get client IP from headers
-    const forwarded = request.headers.get("x-forwarded-for");
-    const realIp = request.headers.get("x-real-ip");
-    const ip = forwarded?.split(",")[0]?.trim() || realIp?.trim() || "";
-
-    // If no IP found, use empty string to get current request IP
-    const ipToUse = ip || "";
-
     // Fetch cached geolocation data
-    const data = await getCachedGeolocation(ipToUse);
+    const data = await getCachedGeolocation(ipToUse, userAgent);
     const etag = generateETag(data);
 
     // Check ETag for 304 Not Modified

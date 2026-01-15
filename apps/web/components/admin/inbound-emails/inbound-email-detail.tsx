@@ -13,7 +13,7 @@ import {
   Reply,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 // Email Detail Component - Gmail Style Design
 import {
@@ -53,8 +53,16 @@ export function InboundEmailDetail({
   const [isLoading, setIsLoading] = useState(true);
   const [showReplyForm, setShowReplyForm] = useState(false);
   const replyFormRef = useRef<HTMLDivElement>(null);
+  const onMarkAsReadRef = useRef(onMarkAsRead);
 
-  const loadEmail = async () => {
+  // Keep ref updated without causing re-renders
+  useEffect(() => {
+    onMarkAsReadRef.current = onMarkAsRead;
+  }, [onMarkAsRead]);
+
+  const loadEmail = useCallback(async () => {
+    if (!emailId) return;
+    
     setIsLoading(true);
     try {
       const [emailResult, repliesResult] = await Promise.all([
@@ -67,25 +75,37 @@ export function InboundEmailDetail({
         // Auto-mark as read when viewing
         if (!emailResult.data.is_read) {
           await markEmailAsRead(emailId);
-          if (onMarkAsRead) onMarkAsRead();
+          if (onMarkAsReadRef.current) {
+            onMarkAsReadRef.current();
+          }
         }
       } else {
         toast.error(emailResult.error || "Email konnte nicht geladen werden");
+        setEmail(null);
       }
 
       if (repliesResult.success && repliesResult.data) {
         setReplies(repliesResult.data);
+      } else {
+        setReplies([]);
       }
-    } catch (_error) {
+    } catch (error) {
+      console.error("Error loading email:", error);
       toast.error("Fehler beim Laden der Email");
+      setEmail(null);
+      setReplies([]);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [emailId]);
 
   useEffect(() => {
+    // Reset state when emailId changes
+    setEmail(null);
+    setReplies([]);
+    setIsLoading(true);
     loadEmail();
-  }, [loadEmail]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadEmail]);
 
   // Scroll to reply form when it opens
   useEffect(() => {

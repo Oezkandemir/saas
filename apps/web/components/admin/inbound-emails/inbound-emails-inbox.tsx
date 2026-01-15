@@ -10,7 +10,7 @@ import {
   RefreshCw,
   Star,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   getInboundEmails,
@@ -43,9 +43,14 @@ export function InboundEmailsInbox() {
   const [showDetail, setShowDetail] = useState(false); // For mobile toggle
   const [selectedEmails, setSelectedEmails] = useState<Set<string>>(new Set());
   const limit = 50;
+  const loadEmailsRef = useRef<((silent?: boolean) => Promise<void>) | null>(null);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const lastEmailCountRef = useRef<number>(0);
 
-  const loadEmails = async () => {
-    setIsLoading(true);
+  const loadEmails = useCallback(async (silent = false) => {
+    if (!silent) {
+      setIsLoading(true);
+    }
     try {
       const result = await getInboundEmails({
         page,
@@ -54,23 +59,78 @@ export function InboundEmailsInbox() {
       });
 
       if (result.success && result.data) {
+        const newCount = result.data.total;
+        const oldCount = lastEmailCountRef.current;
+        const hadNewEmails = newCount > oldCount && oldCount > 0;
+        
         setEmails(result.data.emails);
-        setTotal(result.data.total);
+        setTotal(newCount);
+
+        // Show notification if new emails arrived (but not on initial load)
+        if (hadNewEmails && silent) {
+          const newEmailCount = newCount - oldCount;
+          toast.success(
+            `${newEmailCount} neue Email${newEmailCount !== 1 ? "s" : ""} empfangen`,
+            {
+              duration: 3000,
+            }
+          );
+        }
+        
+        lastEmailCountRef.current = newCount;
         // Don't auto-select - user should click to open
       } else {
-        toast.error(result.error || "Emails konnten nicht geladen werden");
+        if (!silent) {
+          toast.error(result.error || "Emails konnten nicht geladen werden");
+        }
       }
     } catch (_error) {
-      toast.error("Fehler beim Laden der Emails");
+      if (!silent) {
+        toast.error("Fehler beim Laden der Emails");
+      }
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  };
+  }, [page, limit, filter]);
+
+  // Keep ref updated
+  useEffect(() => {
+    loadEmailsRef.current = loadEmails;
+  }, [loadEmails]);
 
   useEffect(() => {
     loadEmails();
-  }, [loadEmails]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadEmails]);
+
+  // Auto-poll for new emails every 30 seconds
+  useEffect(() => {
+    // Only poll if we're on the first page and showing all emails
+    // (to avoid disrupting user's current view)
+    if (page === 1 && filter === "all") {
+      pollingIntervalRef.current = setInterval(() => {
+        if (loadEmailsRef.current) {
+          // Silent refresh - don't show loading spinner
+          loadEmailsRef.current(true); // Pass silent = true
+        }
+      }, 30000); // Check every 30 seconds
+
+      return () => {
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current);
+          pollingIntervalRef.current = null;
+        }
+      };
+    } else {
+      // Clear interval if user navigates away from first page or changes filter
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+      // Return undefined cleanup function for else branch
+      return undefined;
+    }
+  }, [page, filter]);
 
   // Auto-sync emails from Resend on initial load (only once)
   // This ensures all emails sent to us are visible
@@ -92,8 +152,10 @@ export function InboundEmailsInbox() {
               }
             );
           }
-          // Always reload emails after sync to show latest data
-          await loadEmails();
+          // Reload emails after sync using ref to avoid dependency issues
+          if (isMounted && loadEmailsRef.current) {
+            await loadEmailsRef.current();
+          }
         }
       } catch (error) {
         // Silently fail - don't show error to user on auto-sync
@@ -109,7 +171,7 @@ export function InboundEmailsInbox() {
       isMounted = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadEmails]); // Empty dependency array = only run once on mount
+  }, []); // Empty dependency array = only run once on mount
 
   // Load selected email when selection changes
   useEffect(() => {
@@ -123,7 +185,7 @@ export function InboundEmailsInbox() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await loadEmails();
+    await loadEmails(false); // Not silent - show loading state
   };
 
   const selectedEmail = emails.find((e) => e.id === selectedEmailId);

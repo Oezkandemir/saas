@@ -61,16 +61,46 @@ export async function syncResendInboundEmail(emailId: string): Promise<{
       emailId,
       hasData: !!emailData,
       keys: Object.keys(emailData || {}),
+      hasText: !!emailData.text,
+      hasHtml: !!emailData.html,
     });
 
     // Check if email already exists
     const { data: existingEmail } = await supabaseAdmin
       .from("inbound_emails")
-      .select("id")
+      .select("id, text_content, html_content")
       .eq("email_id", emailId)
       .single();
 
+    // If email exists but has no content, update it
     if (existingEmail) {
+      const needsUpdate = !existingEmail.text_content && !existingEmail.html_content;
+      if (needsUpdate && (emailData.text || emailData.html)) {
+        logger.info(`Updating email ${emailId} with content`);
+        const { error: updateError } = await supabaseAdmin
+          .from("inbound_emails")
+          .update({
+            text_content: emailData.text || null,
+            html_content: emailData.html || null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", existingEmail.id);
+
+        if (updateError) {
+          logger.error("Error updating email content:", updateError);
+          return {
+            success: false,
+            message: `Failed to update email content: ${updateError.message}`,
+          };
+        }
+
+        return {
+          success: true,
+          message: "Email content updated successfully",
+          emailId,
+        };
+      }
+
       return {
         success: true,
         message: "Email already exists in database",

@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+import { env } from "@/env.mjs";
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
 
@@ -182,6 +183,43 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Fetch full email content from Resend API if not in webhook payload
+    let textContent = emailData.text || null;
+    let htmlContent = emailData.html || null;
+
+    // If content is missing, fetch it from Resend API
+    if ((!textContent && !htmlContent) && env.RESEND_API_KEY) {
+      try {
+        logger.info(`Fetching full email content for ${emailData.email_id}`);
+        const resendResponse = await fetch(
+          `https://api.resend.com/emails/receiving/${emailData.email_id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${env.RESEND_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (resendResponse.ok) {
+          const fullEmailData = await resendResponse.json();
+          textContent = fullEmailData.text || textContent;
+          htmlContent = fullEmailData.html || htmlContent;
+          logger.info(`✅ Fetched email content`, {
+            email_id: emailData.email_id,
+            hasText: !!textContent,
+            hasHtml: !!htmlContent,
+          });
+        } else {
+          logger.warn(`Failed to fetch email content: ${resendResponse.status}`);
+        }
+      } catch (error) {
+        logger.error("Error fetching email content from Resend API:", error);
+        // Continue with whatever we have from webhook
+      }
+    }
+
     // Prepare email data for insertion
     const emailInsertData = {
       email_id: emailData.email_id,
@@ -200,8 +238,8 @@ export async function POST(req: NextRequest) {
           ? [emailData.bcc]
           : [],
       subject: emailData.subject || null,
-      text_content: emailData.text || null,
-      html_content: emailData.html || null,
+      text_content: textContent,
+      html_content: htmlContent,
       raw_payload: body,
       received_at: emailData.created_at || new Date().toISOString(),
     };
@@ -212,8 +250,8 @@ export async function POST(req: NextRequest) {
       from_name: fromName,
       to: toArray,
       subject: emailData.subject,
-      hasText: !!emailData.text,
-      hasHtml: !!emailData.html,
+      hasText: !!textContent,
+      hasHtml: !!htmlContent,
       hasAttachments:
         Array.isArray(emailData.attachments) &&
         emailData.attachments.length > 0,
