@@ -103,10 +103,14 @@ export async function getInboundEmails(options?: {
       logger.error("Error fetching email count:", countError);
     }
 
-    // Build data query
+    // Build data query - only select fields needed for list view
+    // Include text_content for preview, but skip html_content and attachments for better performance
+    // html_content and attachments will be fetched when viewing email detail
     let query = supabase
       .from("inbound_emails")
-      .select("*, inbound_email_attachments(*)")
+      .select(
+        "id, email_id, message_id, from_email, from_name, to, cc, bcc, subject, text_content, is_read, received_at, created_at, updated_at"
+      )
       .order("received_at", { ascending: false });
 
     // Apply filter
@@ -147,7 +151,8 @@ export async function getInboundEmails(options?: {
       limit,
     });
 
-    // Transform data to include attachments
+    // Transform data - html_content and attachments not fetched in list view for better performance
+    // text_content is included for preview in list view
     const emails: InboundEmail[] = (data || []).map((email: any) => ({
       id: email.id,
       email_id: email.email_id,
@@ -158,13 +163,13 @@ export async function getInboundEmails(options?: {
       cc: email.cc || [],
       bcc: email.bcc || [],
       subject: email.subject,
-      text_content: email.text_content,
-      html_content: email.html_content,
+      text_content: email.text_content, // Included for preview
+      html_content: null, // Not fetched in list view for performance - fetched in detail view
       is_read: email.is_read,
       received_at: email.received_at,
       created_at: email.created_at,
       updated_at: email.updated_at,
-      attachments: email.inbound_email_attachments || [],
+      attachments: [], // Not fetched in list view for performance - fetched in detail view
     }));
 
     return {

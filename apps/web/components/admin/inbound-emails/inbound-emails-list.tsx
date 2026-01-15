@@ -96,15 +96,28 @@ export function InboundEmailsList() {
 
   const handleMarkAsRead = async (id: string) => {
     setSelectedEmailId(id);
+    
+    // Optimistic update
+    setEmails((prev) =>
+      prev.map((email) => (email.id === id ? { ...email, is_read: true } : email))
+    );
+
     try {
       const result = await markEmailAsRead(id);
       if (result.success) {
         toast.success("Email als gelesen markiert");
-        await loadEmails();
       } else {
+        // Revert on error
+        setEmails((prev) =>
+          prev.map((email) => (email.id === id ? { ...email, is_read: false } : email))
+        );
         toast.error(result.error || "Fehler beim Markieren");
       }
     } catch (_error) {
+      // Revert on error
+      setEmails((prev) =>
+        prev.map((email) => (email.id === id ? { ...email, is_read: false } : email))
+      );
       toast.error("Fehler beim Markieren der Email");
     } finally {
       setSelectedEmailId(null);
@@ -113,15 +126,28 @@ export function InboundEmailsList() {
 
   const handleMarkAsUnread = async (id: string) => {
     setSelectedEmailId(id);
+    
+    // Optimistic update
+    setEmails((prev) =>
+      prev.map((email) => (email.id === id ? { ...email, is_read: false } : email))
+    );
+
     try {
       const result = await markEmailAsUnread(id);
       if (result.success) {
         toast.success("Email als ungelesen markiert");
-        await loadEmails();
       } else {
+        // Revert on error
+        setEmails((prev) =>
+          prev.map((email) => (email.id === id ? { ...email, is_read: true } : email))
+        );
         toast.error(result.error || "Fehler beim Markieren");
       }
     } catch (_error) {
+      // Revert on error
+      setEmails((prev) =>
+        prev.map((email) => (email.id === id ? { ...email, is_read: true } : email))
+      );
       toast.error("Fehler beim Markieren der Email");
     } finally {
       setSelectedEmailId(null);
@@ -134,15 +160,47 @@ export function InboundEmailsList() {
     }
 
     setSelectedEmailId(id);
+    
+    // Store email for potential revert
+    const emailToDelete = emails.find((e) => e.id === id);
+    
+    // Optimistic update - remove from list
+    setEmails((prev) => prev.filter((email) => email.id !== id));
+    setTotal((prev) => Math.max(0, prev - 1));
+
     try {
       const result = await deleteInboundEmail(id);
       if (result.success) {
         toast.success("Email gelöscht");
-        await loadEmails();
       } else {
+        // Revert on error - add back to list
+        if (emailToDelete) {
+          setEmails((prev) => {
+            // Insert back in correct position (sorted by received_at DESC)
+            const newEmails = [...prev, emailToDelete];
+            return newEmails.sort(
+              (a, b) =>
+                new Date(b.received_at).getTime() -
+                new Date(a.received_at).getTime()
+            );
+          });
+          setTotal((prev) => prev + 1);
+        }
         toast.error(result.error || "Fehler beim Löschen");
       }
     } catch (_error) {
+      // Revert on error
+      if (emailToDelete) {
+        setEmails((prev) => {
+          const newEmails = [...prev, emailToDelete];
+          return newEmails.sort(
+            (a, b) =>
+              new Date(b.received_at).getTime() -
+              new Date(a.received_at).getTime()
+          );
+        });
+        setTotal((prev) => prev + 1);
+      }
       toast.error("Fehler beim Löschen der Email");
     } finally {
       setSelectedEmailId(null);
@@ -257,9 +315,9 @@ export function InboundEmailsList() {
                       >
                         <TableCell>
                           {email.is_read ? (
-                            <MailOpen className="size-4 text-muted-foreground" />
+                            <MailOpen className="size-3 text-muted-foreground" />
                           ) : (
-                            <Mail className="size-4 text-primary" />
+                            <Mail className="size-3 text-primary" />
                           )}
                         </TableCell>
                         <TableCell>
@@ -310,7 +368,7 @@ export function InboundEmailsList() {
                               size="sm"
                               onClick={() => handleViewEmail(email.id)}
                             >
-                              <Eye className="size-4" />
+                              <Eye className="size-3" />
                             </Button>
                             {email.is_read ? (
                               <Button
@@ -319,7 +377,7 @@ export function InboundEmailsList() {
                                 onClick={() => handleMarkAsUnread(email.id)}
                                 disabled={selectedEmailId === email.id}
                               >
-                                <Mail className="size-4" />
+                                <Mail className="size-3" />
                               </Button>
                             ) : (
                               <Button
@@ -328,7 +386,7 @@ export function InboundEmailsList() {
                                 onClick={() => handleMarkAsRead(email.id)}
                                 disabled={selectedEmailId === email.id}
                               >
-                                <MailOpen className="size-4" />
+                                <MailOpen className="size-3" />
                               </Button>
                             )}
                             <Button
@@ -337,7 +395,7 @@ export function InboundEmailsList() {
                               onClick={() => handleDelete(email.id)}
                               disabled={selectedEmailId === email.id}
                             >
-                              <Trash2 className="size-4" />
+                              <Trash2 className="size-3" />
                             </Button>
                           </div>
                         </TableCell>

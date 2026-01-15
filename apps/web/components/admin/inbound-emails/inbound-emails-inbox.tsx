@@ -16,6 +16,8 @@ import {
   getInboundEmails,
   type InboundEmail,
   markEmailAsRead,
+  markEmailAsUnread,
+  deleteInboundEmail,
 } from "@/actions/inbound-email-actions";
 import { getSupabaseClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
@@ -232,58 +234,129 @@ export function InboundEmailsInbox() {
     }
   }, [page, filter]);
 
-  // Auto-sync emails from Resend on initial load (only once, after initial render)
-  // This ensures all emails sent to us are visible, but doesn't block page load
-  useEffect(() => {
-    let isMounted = true;
-
-    // Delay sync slightly to allow page to render first
-    const timeoutId = setTimeout(() => {
-      const autoSync = async () => {
-        try {
-          const { syncAllResendInboundEmails } = await import(
-            "@/actions/sync-all-resend-inbound-emails"
-          );
-          const result = await syncAllResendInboundEmails();
-          if (isMounted && result.success) {
-            if (result.synced > 0) {
-              toast.success(
-                `${result.synced} neue Email${result.synced !== 1 ? "s" : ""} synchronisiert`,
-                {
-                  duration: 3000,
-                }
-              );
-            }
-            // Reload emails after sync using ref to avoid dependency issues
-            if (isMounted && loadEmailsRef.current) {
-              await loadEmailsRef.current(true); // Silent reload
-            }
-          }
-        } catch (error) {
-          // Silently fail - don't show error to user on auto-sync
-          console.error("Auto-sync failed:", error);
-        }
-      };
-
-      autoSync();
-    }, 500); // Small delay to allow page to render
-
-    return () => {
-      isMounted = false;
-      clearTimeout(timeoutId);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array = only run once on mount
+  // Removed auto-sync on initial load for better performance
+  // Rely on Supabase Realtime for new emails instead
+  // Users can manually sync using the SyncAllEmailsButton if needed
 
   // Load selected email when selection changes
   useEffect(() => {
     if (selectedEmailId && emails.length > 0) {
       const email = emails.find((e) => e.id === selectedEmailId);
       if (email && !email.is_read) {
-        markEmailAsRead(email.id);
+        // Optimistic update
+        setEmails((prev) =>
+          prev.map((e) => (e.id === email.id ? { ...e, is_read: true } : e))
+        );
+        // Update in background
+        markEmailAsRead(email.id).catch((error) => {
+          console.error("Failed to mark email as read:", error);
+          // Revert on error
+          setEmails((prev) =>
+            prev.map((e) => (e.id === email.id ? { ...e, is_read: false } : e))
+          );
+        });
       }
     }
   }, [selectedEmailId, emails]);
+
+  // Optimistic update handlers for mark as read/unread/delete
+  const handleMarkAsRead = async (id: string) => {
+    // Optimistic update
+    setEmails((prev) =>
+      prev.map((email) => (email.id === id ? { ...email, is_read: true } : email))
+    );
+    setTotal((prev) => prev);
+
+    try {
+      const result = await markEmailAsRead(id);
+      if (!result.success) {
+        // Revert on error
+        setEmails((prev) =>
+          prev.map((email) => (email.id === id ? { ...email, is_read: false } : email))
+        );
+        toast.error(result.error || "Fehler beim Markieren");
+      }
+    } catch (error) {
+      // Revert on error
+      setEmails((prev) =>
+        prev.map((email) => (email.id === id ? { ...email, is_read: false } : email))
+      );
+      toast.error("Fehler beim Markieren der Email");
+    }
+  };
+
+  const handleMarkAsUnread = async (id: string) => {
+    // Optimistic update
+    setEmails((prev) =>
+      prev.map((email) => (email.id === id ? { ...email, is_read: false } : email))
+    );
+
+    try {
+      const result = await markEmailAsUnread(id);
+      if (!result.success) {
+        // Revert on error
+        setEmails((prev) =>
+          prev.map((email) => (email.id === id ? { ...email, is_read: true } : email))
+        );
+        toast.error(result.error || "Fehler beim Markieren");
+      }
+    } catch (error) {
+      // Revert on error
+      setEmails((prev) =>
+        prev.map((email) => (email.id === id ? { ...email, is_read: true } : email))
+      );
+      toast.error("Fehler beim Markieren der Email");
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Möchten Sie diese Email wirklich löschen?")) {
+      return;
+    }
+
+    // Store email for potential revert
+    const emailToDelete = emails.find((e) => e.id === id);
+    
+    // Optimistic update - remove from list
+    setEmails((prev) => prev.filter((email) => email.id !== id));
+    setTotal((prev) => Math.max(0, prev - 1));
+
+    try {
+      const result = await deleteInboundEmail(id);
+      if (!result.success) {
+        // Revert on error - add back to list
+        if (emailToDelete) {
+          setEmails((prev) => {
+            // Insert back in correct position (sorted by received_at DESC)
+            const newEmails = [...prev, emailToDelete];
+            return newEmails.sort(
+              (a, b) =>
+                new Date(b.received_at).getTime() -
+                new Date(a.received_at).getTime()
+            );
+          });
+          setTotal((prev) => prev + 1);
+        }
+        toast.error(result.error || "Fehler beim Löschen");
+      } else {
+        toast.success("Email gelöscht");
+      }
+    } catch (error) {
+      // Revert on error
+      if (emailToDelete) {
+        setEmails((prev) => {
+          const newEmails = [...prev, emailToDelete];
+          return newEmails.sort(
+            (a, b) =>
+              new Date(b.received_at).getTime() -
+              new Date(a.received_at).getTime()
+          );
+        });
+        setTotal((prev) => prev + 1);
+      }
+      toast.error("Fehler beim Löschen der Email");
+    }
+  };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
