@@ -189,10 +189,14 @@ const nextConfig = {
         ...config.optimization,
         moduleIds: "deterministic",
         runtimeChunk: "single",
+        // Enable tree-shaking for better dead code elimination
+        usedExports: true,
+        sideEffects: false,
         splitChunks: {
           chunks: "all",
           maxInitialRequests: 25,
           minSize: 20000,
+          maxSize: 244000, // ~240KB chunks for better caching
           cacheGroups: {
             default: false,
             vendors: false,
@@ -204,7 +208,7 @@ const nextConfig = {
               priority: 40,
               enforce: true,
             },
-            // Vendor chunk (other node_modules)
+            // Vendor chunk (other node_modules) - split larger vendors
             vendor: {
               name: "vendor",
               chunks: "all",
@@ -212,12 +216,13 @@ const nextConfig = {
               priority: 20,
               minChunks: 1,
             },
-            // UI libraries chunk (Radix UI, Lucide)
+            // UI libraries chunk (Radix UI, Lucide) - split for better tree-shaking
             ui: {
               test: /[\\/]node_modules[\\/](@radix-ui|lucide-react)[\\/]/,
               name: "ui",
               priority: 30,
               chunks: "all",
+              enforce: true,
             },
             // Supabase chunk
             supabase: {
@@ -225,6 +230,14 @@ const nextConfig = {
               name: "supabase",
               priority: 25,
               chunks: "all",
+            },
+            // Large libraries that should be split separately
+            largeVendors: {
+              test: /[\\/]node_modules[\\/](chart\.js|recharts|@tanstack)[\\/]/,
+              name: "large-vendors",
+              priority: 15,
+              chunks: "all",
+              minSize: 50000,
             },
             // Common chunk (shared code)
             common: {

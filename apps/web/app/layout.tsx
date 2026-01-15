@@ -55,17 +55,27 @@ export default async function RootLayout({
   // The [locale] layout will load messages synchronously for its route
   const messages = {};
 
+  // Extract Supabase origin for preconnect (if available)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseOrigin = supabaseUrl
+    ? new URL(supabaseUrl).origin
+    : null;
+
   return (
     <html lang={locale} suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
         {/* ⚡ PERFORMANCE: Resource hints for faster external resource loading */}
+        {/* Preconnect to critical third-party origins (max 4 as per Lighthouse recommendation) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        <link rel="dns-prefetch" href="https://*.supabase.co" />
+        {supabaseOrigin && (
+          <link rel="preconnect" href={supabaseOrigin} crossOrigin="anonymous" />
+        )}
+        {/* DNS prefetch for less critical origins */}
         <link rel="dns-prefetch" href="https://vercel.live" />
 
         {/* ⚡ PERFORMANCE: Prefetch critical routes */}
