@@ -41,16 +41,18 @@ import { InboundEmailReplyForm } from "./inbound-email-reply-form";
 
 type InboundEmailDetailProps = {
   emailId: string;
+  initialEmail?: InboundEmail; // Optional: pre-loaded email data for instant display
   onMarkAsRead?: () => void;
 };
 
 export function InboundEmailDetail({
   emailId,
+  initialEmail,
   onMarkAsRead,
 }: InboundEmailDetailProps) {
-  const [email, setEmail] = useState<InboundEmail | null>(null);
+  const [email, setEmail] = useState<InboundEmail | null>(initialEmail || null);
   const [replies, setReplies] = useState<InboundEmailReply[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!initialEmail); // If we have initial data, don't show loading
   const [showReplyForm, setShowReplyForm] = useState(false);
   const replyFormRef = useRef<HTMLDivElement>(null);
   const onMarkAsReadRef = useRef(onMarkAsRead);
@@ -65,47 +67,64 @@ export function InboundEmailDetail({
     
     setIsLoading(true);
     try {
-      const [emailResult, repliesResult] = await Promise.all([
-        getInboundEmailById(emailId),
-        getInboundEmailReplies(emailId),
-      ]);
+      // Load email first (critical path)
+      const emailResult = await getInboundEmailById(emailId);
 
       if (emailResult.success && emailResult.data) {
         setEmail(emailResult.data);
-        // Auto-mark as read when viewing
+        setIsLoading(false); // Show email immediately, don't wait for replies
+        
+        // Mark as read asynchronously (don't block UI)
         if (!emailResult.data.is_read) {
-          await markEmailAsRead(emailId);
-          if (onMarkAsReadRef.current) {
-            onMarkAsReadRef.current();
-          }
+          markEmailAsRead(emailId).then(() => {
+            if (onMarkAsReadRef.current) {
+              onMarkAsReadRef.current();
+            }
+          }).catch((error) => {
+            console.error("Error marking email as read:", error);
+          });
         }
+
+        // Load replies in background (non-blocking)
+        getInboundEmailReplies(emailId).then((repliesResult) => {
+          if (repliesResult.success && repliesResult.data) {
+            setReplies(repliesResult.data);
+          } else {
+            setReplies([]);
+          }
+        }).catch((error) => {
+          console.error("Error loading replies:", error);
+          setReplies([]);
+        });
       } else {
         toast.error(emailResult.error || "Email konnte nicht geladen werden");
         setEmail(null);
-      }
-
-      if (repliesResult.success && repliesResult.data) {
-        setReplies(repliesResult.data);
-      } else {
-        setReplies([]);
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("Error loading email:", error);
       toast.error("Fehler beim Laden der Email");
       setEmail(null);
       setReplies([]);
-    } finally {
       setIsLoading(false);
     }
   }, [emailId]);
 
   useEffect(() => {
-    // Reset state when emailId changes
-    setEmail(null);
-    setReplies([]);
-    setIsLoading(true);
-    loadEmail();
-  }, [loadEmail]);
+    // If we have initial email data and it matches the emailId, use it immediately
+    if (initialEmail && initialEmail.id === emailId) {
+      setEmail(initialEmail);
+      setIsLoading(false);
+      // Still load full details in background to ensure we have latest data
+      loadEmail();
+    } else {
+      // Reset state when emailId changes
+      setEmail(null);
+      setReplies([]);
+      setIsLoading(true);
+      loadEmail();
+    }
+  }, [loadEmail, emailId, initialEmail]);
 
   // Scroll to reply form when it opens
   useEffect(() => {

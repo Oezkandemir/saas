@@ -1,10 +1,23 @@
 import { redirect } from "next/navigation";
 import { getLocale, setRequestLocale } from "next-intl/server";
-import { syncAllResendInboundEmails } from "@/actions/sync-all-resend-inbound-emails";
-import { InboundEmailsInbox } from "@/components/admin/inbound-emails/inbound-emails-inbox";
-import { logger } from "@/lib/logger";
+import dynamic from "next/dynamic";
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
+
+// Lazy load the inbox component for better performance
+const InboundEmailsInbox = dynamic(
+  () => import("@/components/admin/inbound-emails/inbound-emails-inbox").then((mod) => ({ default: mod.InboundEmailsInbox })),
+  {
+    loading: () => (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-sm text-muted-foreground">Lade Posteingang...</p>
+        </div>
+      </div>
+    ),
+  }
+);
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -28,18 +41,8 @@ export default async function AdminEmailsPage() {
     redirect("/dashboard");
   }
 
-  // Automatically sync all emails from Resend when page loads
-  // This ensures all emails sent to us are visible
-  try {
-    logger.info("Auto-syncing emails from Resend on page load");
-    const syncResult = await syncAllResendInboundEmails();
-    if (syncResult.success && syncResult.synced > 0) {
-      logger.info(`Auto-sync completed: ${syncResult.synced} emails synced`);
-    }
-  } catch (error) {
-    // Don't fail the page load if sync fails
-    logger.error("Error auto-syncing emails on page load:", error);
-  }
+  // Removed auto-sync from server-side to improve page load performance
+  // Sync now happens client-side after page loads
 
   // Full-width email inbox layout - replaces sidebar
   return (

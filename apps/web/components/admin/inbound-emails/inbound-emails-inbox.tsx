@@ -17,6 +17,7 @@ import {
   type InboundEmail,
   markEmailAsRead,
 } from "@/actions/inbound-email-actions";
+import { getSupabaseClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -46,6 +47,7 @@ export function InboundEmailsInbox() {
   const loadEmailsRef = useRef<((silent?: boolean) => Promise<void>) | null>(null);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastEmailCountRef = useRef<number>(0);
+  const realtimeChannelRef = useRef<ReturnType<ReturnType<typeof getSupabaseClient>["channel"]> | null>(null);
 
   const loadEmails = useCallback(async (silent = false) => {
     if (!silent) {
@@ -103,72 +105,172 @@ export function InboundEmailsInbox() {
     loadEmails();
   }, [loadEmails]);
 
-  // Auto-poll for new emails every 30 seconds
+  // Setup Supabase Realtime for instant email updates
   useEffect(() => {
-    // Only poll if we're on the first page and showing all emails
-    // (to avoid disrupting user's current view)
+    const supabase = getSupabaseClient();
+    
+    // Only subscribe on first page with "all" filter for real-time updates
     if (page === 1 && filter === "all") {
-      pollingIntervalRef.current = setInterval(() => {
-        if (loadEmailsRef.current) {
-          // Silent refresh - don't show loading spinner
-          loadEmailsRef.current(true); // Pass silent = true
-        }
-      }, 30000); // Check every 30 seconds
+      const channelName = `inbound-emails:realtime`;
+      
+      // Clean up existing channel if any
+      if (realtimeChannelRef.current) {
+        supabase.removeChannel(realtimeChannelRef.current);
+      }
+
+      const channel = supabase
+        .channel(channelName)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "inbound_emails",
+          },
+          async (payload) => {
+            // New email received - add to top of list
+            if (payload.new) {
+              const newEmail: InboundEmail = {
+                id: payload.new.id,
+                email_id: payload.new.email_id,
+                message_id: payload.new.message_id,
+                from_email: payload.new.from_email,
+                from_name: payload.new.from_name,
+                to: payload.new.to || [],
+                cc: payload.new.cc || [],
+                bcc: payload.new.bcc || [],
+                subject: payload.new.subject,
+                text_content: payload.new.text_content,
+                html_content: payload.new.html_content,
+                is_read: payload.new.is_read,
+                received_at: payload.new.received_at,
+                created_at: payload.new.created_at,
+                updated_at: payload.new.updated_at,
+                attachments: [],
+              };
+
+              // Add new email to the top of the list
+              setEmails((prev) => {
+                // Check if email already exists (avoid duplicates)
+                if (prev.some((e) => e.id === newEmail.id)) {
+                  return prev;
+                }
+                return [newEmail, ...prev];
+              });
+
+              // Update total count
+              setTotal((prev) => prev + 1);
+
+              // Show notification
+              toast.success("Neue Email empfangen", {
+                description: newEmail.subject || "Kein Betreff",
+                duration: 3000,
+              });
+            }
+          }
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "inbound_emails",
+          },
+          (payload) => {
+            // Email updated (e.g., marked as read)
+            if (payload.new) {
+              setEmails((prev) =>
+                prev.map((email) =>
+                  email.id === payload.new.id
+                    ? {
+                        ...email,
+                        is_read: payload.new.is_read,
+                        updated_at: payload.new.updated_at,
+                      }
+                    : email
+                )
+              );
+            }
+          }
+        )
+        .subscribe((status) => {
+          if (status === "SUBSCRIBED") {
+            console.log("✅ Realtime subscription active for inbound emails");
+          } else if (status === "CHANNEL_ERROR") {
+            console.warn("⚠️ Realtime channel error, falling back to polling");
+            // Fallback to polling if realtime fails
+            if (pollingIntervalRef.current) {
+              clearInterval(pollingIntervalRef.current);
+            }
+            pollingIntervalRef.current = setInterval(() => {
+              if (loadEmailsRef.current) {
+                loadEmailsRef.current(true);
+              }
+            }, 30000);
+          }
+        });
+
+      realtimeChannelRef.current = channel;
 
       return () => {
+        if (realtimeChannelRef.current) {
+          supabase.removeChannel(realtimeChannelRef.current);
+          realtimeChannelRef.current = null;
+        }
         if (pollingIntervalRef.current) {
           clearInterval(pollingIntervalRef.current);
           pollingIntervalRef.current = null;
         }
       };
     } else {
-      // Clear interval if user navigates away from first page or changes filter
-      if (pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current);
-        pollingIntervalRef.current = null;
+      // Clean up realtime when not on first page or different filter
+      if (realtimeChannelRef.current) {
+        supabase.removeChannel(realtimeChannelRef.current);
+        realtimeChannelRef.current = null;
       }
-      // Return undefined cleanup function for else branch
       return undefined;
     }
   }, [page, filter]);
 
-  // Auto-sync emails from Resend on initial load (only once)
-  // This ensures all emails sent to us are visible
+  // Auto-sync emails from Resend on initial load (only once, after initial render)
+  // This ensures all emails sent to us are visible, but doesn't block page load
   useEffect(() => {
     let isMounted = true;
 
-    const autoSync = async () => {
-      try {
-        const { syncAllResendInboundEmails } = await import(
-          "@/actions/sync-all-resend-inbound-emails"
-        );
-        const result = await syncAllResendInboundEmails();
-        if (isMounted && result.success) {
-          if (result.synced > 0) {
-            toast.success(
-              `${result.synced} neue Email${result.synced !== 1 ? "s" : ""} synchronisiert`,
-              {
-                duration: 3000,
-              }
-            );
+    // Delay sync slightly to allow page to render first
+    const timeoutId = setTimeout(() => {
+      const autoSync = async () => {
+        try {
+          const { syncAllResendInboundEmails } = await import(
+            "@/actions/sync-all-resend-inbound-emails"
+          );
+          const result = await syncAllResendInboundEmails();
+          if (isMounted && result.success) {
+            if (result.synced > 0) {
+              toast.success(
+                `${result.synced} neue Email${result.synced !== 1 ? "s" : ""} synchronisiert`,
+                {
+                  duration: 3000,
+                }
+              );
+            }
+            // Reload emails after sync using ref to avoid dependency issues
+            if (isMounted && loadEmailsRef.current) {
+              await loadEmailsRef.current(true); // Silent reload
+            }
           }
-          // Reload emails after sync using ref to avoid dependency issues
-          if (isMounted && loadEmailsRef.current) {
-            await loadEmailsRef.current();
-          }
+        } catch (error) {
+          // Silently fail - don't show error to user on auto-sync
+          console.error("Auto-sync failed:", error);
         }
-      } catch (error) {
-        // Silently fail - don't show error to user on auto-sync
-        // The server-side sync will handle errors
-        console.error("Auto-sync failed:", error);
-      }
-    };
+      };
 
-    // Only sync once on mount
-    autoSync();
+      autoSync();
+    }, 500); // Small delay to allow page to render
 
     return () => {
       isMounted = false;
+      clearTimeout(timeoutId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency array = only run once on mount
@@ -439,6 +541,7 @@ export function InboundEmailsInbox() {
             <div className="flex-1 overflow-hidden">
               <InboundEmailDetail
                 emailId={selectedEmail.id}
+                initialEmail={selectedEmail}
                 onMarkAsRead={loadEmails}
               />
             </div>
