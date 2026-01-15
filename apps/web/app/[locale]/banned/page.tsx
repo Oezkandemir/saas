@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { AlertTriangle, BanIcon } from "lucide-react";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-
-import { getSupabaseServer } from "@/lib/supabase-server";
-import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/shared/user-avatar";
+import { Button } from "@/components/ui/button";
+import { getSupabaseServer } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
 

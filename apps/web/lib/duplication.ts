@@ -47,7 +47,7 @@ export interface DuplicationOptions<T> {
  * Generic duplication function
  */
 export async function duplicateEntity<T extends { id: string }>(
-  options: DuplicationOptions<T>,
+  options: DuplicationOptions<T>
 ): Promise<T> {
   const {
     original,
@@ -100,7 +100,7 @@ export async function duplicateEntity<T extends { id: string }>(
 export async function generateUniqueSlug(
   baseSlug: string,
   checkExists: (slug: string) => Promise<boolean>,
-  maxAttempts: number = 100,
+  maxAttempts: number = 100
 ): Promise<string> {
   let slug = `${baseSlug}-copy`;
   let counter = 1;
@@ -115,7 +115,7 @@ export async function generateUniqueSlug(
   }
 
   throw new Error(
-    `Failed to generate unique slug after ${maxAttempts} attempts`,
+    `Failed to generate unique slug after ${maxAttempts} attempts`
   );
 }
 
@@ -126,7 +126,7 @@ export async function copyItems(
   sourceId: string,
   targetId: string,
   tableName: string,
-  itemMapper?: (item: any, index: number) => any,
+  itemMapper?: (item: any, index: number) => any
 ): Promise<void> {
   const supabase = await getSupabaseServer();
 
@@ -186,7 +186,7 @@ export const duplicationPatterns = {
    * Duplicate with status reset to draft
    */
   duplicateAsDraft: <T extends { status?: string }>(
-    original: T,
+    original: T
   ): Partial<T> => ({
     ...original,
     status: "draft" as any,
@@ -196,7 +196,7 @@ export const duplicationPatterns = {
    * Duplicate with inactive status
    */
   duplicateAsInactive: <T extends { is_active?: boolean }>(
-    original: T,
+    original: T
   ): Partial<T> => ({
     ...original,
     is_active: false,
@@ -207,7 +207,7 @@ export const duplicationPatterns = {
    */
   duplicateWithSuffix: <T extends { title?: string }>(
     original: T,
-    suffix: string = " (Copy)",
+    suffix: string = " (Copy)"
   ): Partial<T> => ({
     ...original,
     title: original.title ? `${original.title}${suffix}` : undefined,

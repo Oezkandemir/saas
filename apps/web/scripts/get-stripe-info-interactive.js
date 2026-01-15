@@ -5,7 +5,7 @@
  * Enter your Stripe API Key when prompted to get account info and Price IDs
  */
 
-const readline = require("readline");
+const readline = require("node:readline");
 const stripe = require("stripe");
 
 const rl = readline.createInterface({
@@ -27,12 +27,12 @@ async function getStripeInfo() {
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
 
   const apiKey = await askQuestion(
-    "Bitte geben Sie Ihren Stripe API Key ein (sk_test_... oder sk_live_...): ",
+    "Bitte geben Sie Ihren Stripe API Key ein (sk_test_... oder sk_live_...): "
   );
 
   if (!apiKey || !apiKey.startsWith("sk_")) {
     console.error(
-      '\n❌ Ungültiger API Key. Muss mit "sk_test_" oder "sk_live_" beginnen.\n',
+      '\n❌ Ungültiger API Key. Muss mit "sk_test_" oder "sk_live_" beginnen.\n'
     );
     rl.close();
     return;
@@ -53,13 +53,13 @@ async function getStripeInfo() {
       "🏢 Account Name:",
       account.business_profile?.name ||
         account.display_name ||
-        "Nicht verfügbar",
+        "Nicht verfügbar"
     );
     console.log("🌍 Land:", account.country || "Nicht verfügbar");
     console.log("💳 Account Typ:", account.type || "Nicht verfügbar");
     console.log(
       "📊 Account Status:",
-      account.details_submitted ? "✅ Verifiziert" : "⚠️  Nicht verifiziert",
+      account.details_submitted ? "✅ Verifiziert" : "⚠️  Nicht verifiziert"
     );
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
 
@@ -105,14 +105,14 @@ async function getStripeInfo() {
               interval === "month"
             ) {
               console.log(
-                `           📝 → NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID`,
+                `           📝 → NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID`
               );
             } else if (
               product.name.toLowerCase().includes("pro") &&
               interval === "year"
             ) {
               console.log(
-                `           📝 → NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID`,
+                `           📝 → NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID`
               );
             } else if (
               (product.name.toLowerCase().includes("enterprise") ||
@@ -120,7 +120,7 @@ async function getStripeInfo() {
               interval === "month"
             ) {
               console.log(
-                `           📝 → NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID`,
+                `           📝 → NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID`
               );
             } else if (
               (product.name.toLowerCase().includes("enterprise") ||
@@ -128,7 +128,7 @@ async function getStripeInfo() {
               interval === "year"
             ) {
               console.log(
-                `           📝 → NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID`,
+                `           📝 → NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID`
               );
             }
           }
@@ -144,7 +144,7 @@ async function getStripeInfo() {
     console.log("2. Öffnen Sie: apps/web/.env.local");
     console.log("3. Fügen Sie diese Zeilen hinzu:\n");
     console.log("   # Stripe API Key (falls noch nicht vorhanden)");
-    console.log("   STRIPE_API_KEY=" + apiKey.substring(0, 20) + "...");
+    console.log(`   STRIPE_API_KEY=${apiKey.substring(0, 20)}...`);
     console.log("");
     console.log("   # Pro Plan Price IDs");
     console.log("   NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID=price_xxxxx");
@@ -174,6 +174,3 @@ async function getStripeInfo() {
 }
 
 getStripeInfo();
-
-
-

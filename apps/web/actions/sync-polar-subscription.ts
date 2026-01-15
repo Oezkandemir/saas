@@ -11,7 +11,7 @@ import { logger } from "@/lib/logger";
  * Called when user returns from Polar checkout
  */
 export async function syncPolarSubscriptionFromCheckout(
-  checkoutId: string,
+  checkoutId: string
 ): Promise<{ success: boolean; message: string }> {
   try {
     const session = await auth();
@@ -84,7 +84,7 @@ export async function syncPolarSubscriptionFromCheckout(
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
           },
-        },
+        }
       );
 
       if (subscriptionResponse.ok) {
@@ -147,7 +147,7 @@ export async function syncPolarSubscriptionFromCheckout(
         }
 
         logger.info(
-          `Successfully synced Polar subscription ${subscriptionId} for user ${user.id}`,
+          `Successfully synced Polar subscription ${subscriptionId} for user ${user.id}`
         );
 
         // Generate customer portal link after successful subscription
@@ -157,13 +157,13 @@ export async function syncPolarSubscriptionFromCheckout(
               "@/lib/polar"
             );
             const portalUrl = await generatePolarCustomerPortalLink(
-              subscription.customer_id || customerId,
+              subscription.customer_id || customerId
             );
 
             // Optionally store the portal URL in the database
             // You could add a column like 'polar_portal_url' to the users table
             logger.info(
-              `Generated customer portal link for user ${user.id}: ${portalUrl}`,
+              `Generated customer portal link for user ${user.id}: ${portalUrl}`
             );
 
             // TODO: Store portal URL in database or send via email/notification
@@ -201,7 +201,7 @@ export async function syncPolarSubscriptionFromCheckout(
       }
 
       logger.info(
-        `Successfully synced Polar product ${productId} for user ${user.id}`,
+        `Successfully synced Polar product ${productId} for user ${user.id}`
       );
       return {
         success: true,

@@ -16,7 +16,7 @@ export async function GET() {
         timestamp: new Date().toISOString(),
         message: "All systems operational",
       },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error) {
     return NextResponse.json(
@@ -25,10 +25,7 @@ export async function GET() {
         timestamp: new Date().toISOString(),
         message: error instanceof Error ? error.message : "Health check failed",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
-
-
-

@@ -1,10 +1,9 @@
-import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { CreateEventTypeForm } from "@/components/scheduling/create-event-type-form";
+import { getCurrentUser } from "@/lib/session";
 
 export default async function NewEventTypePage() {
   const user = await getCurrentUser();
@@ -18,7 +17,7 @@ export default async function NewEventTypePage() {
         t("eventTypes.createDescription") ||
         "Create a new event type for scheduling"
       }
-      icon={<Plus className="w-4 h-4 text-primary" />}
+      icon={<Plus className="size-4 text-primary" />}
       contentClassName=""
     >
       <CreateEventTypeForm />

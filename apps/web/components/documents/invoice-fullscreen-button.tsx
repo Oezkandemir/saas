@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Document } from "@/actions/documents-actions";
 import { Maximize2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+import type { Document } from "@/actions/documents-actions";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +28,7 @@ export function InvoiceFullscreenButton({
   return (
     <>
       <Button onClick={() => setIsOpen(true)} variant="outline" size="default">
-        <Maximize2 className="h-4 w-4 mr-2" />
+        <Maximize2 className="size-4 mr-2" />
         {t("fullscreenButton")}
       </Button>
 

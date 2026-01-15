@@ -1,9 +1,8 @@
 "use server";
 
 import { Resend } from "resend";
-
-import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
+import { env } from "@/env.mjs";
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
 
@@ -82,7 +81,7 @@ export async function logSystemError(error: SystemError): Promise<void> {
       await updateComponentStatus(
         error.component,
         "degraded",
-        error.errorMessage,
+        error.errorMessage
       );
     }
   } catch (err) {
@@ -106,7 +105,7 @@ export async function logSystemError(error: SystemError): Promise<void> {
 export async function updateComponentStatus(
   component: SystemComponent,
   status: SystemStatus,
-  message?: string,
+  message?: string
 ): Promise<void> {
   try {
     // Use supabaseAdmin to avoid cookies() issues
@@ -119,7 +118,7 @@ export async function updateComponentStatus(
       },
       {
         onConflict: "component",
-      },
+      }
     );
   } catch (error) {
     // Don't use logger.error here to avoid infinite loops
@@ -177,7 +176,7 @@ export async function getSystemStatus(): Promise<
  */
 async function notifyAdminsOfCriticalError(
   error: SystemError,
-  errorId: string,
+  errorId: string
 ): Promise<void> {
   try {
     // Use supabaseAdmin to avoid cookies() issues
@@ -259,7 +258,7 @@ async function notifyAdminsOfCriticalError(
       } catch (emailError) {
         logger.error(
           `Failed to send error notification to ${admin.email}:`,
-          emailError,
+          emailError
         );
       }
     }
@@ -276,7 +275,7 @@ export async function recordMetric(
   metricName: string,
   value: number,
   unit?: string,
-  metadata?: Record<string, unknown>,
+  metadata?: Record<string, unknown>
 ): Promise<void> {
   try {
     // Use supabaseAdmin to avoid cookies() issues
@@ -309,7 +308,7 @@ export async function performHealthCheck(): Promise<void> {
       dbError ? "degraded" : "operational",
       dbError
         ? `Database error: ${dbError.message}`
-        : "Database connection healthy",
+        : "Database connection healthy"
     );
 
     // Check auth - use supabaseAdmin for health check (no user context needed)
@@ -317,14 +316,14 @@ export async function performHealthCheck(): Promise<void> {
     await updateComponentStatus(
       "auth",
       "operational",
-      "Authentication service operational",
+      "Authentication service operational"
     );
 
     // Check API (if we got here, API is working)
     await updateComponentStatus(
       "api",
       "operational",
-      "API responding normally",
+      "API responding normally"
     );
   } catch (error) {
     logger.error("Error performing health check:", error);

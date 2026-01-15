@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function hasPermission(
   userId: string,
-  permission: string,
+  permission: string
 ): Promise<boolean> {
   try {
     const result = await checkPermission(userId, permission);
@@ -27,14 +27,14 @@ export async function hasResourceAccess(
   resourceType: "document" | "qr_code" | "customer",
   resourceId: string,
   userId: string,
-  requiredLevel: "read" | "write" | "delete" = "read",
+  requiredLevel: "read" | "write" | "delete" = "read"
 ): Promise<boolean> {
   try {
     const result = await checkResourceAccess(
       resourceType,
       resourceId,
       userId,
-      requiredLevel,
+      requiredLevel
     );
     return result.success && result.data === true;
   } catch (error) {
@@ -49,7 +49,7 @@ export async function hasResourceAccess(
 export async function ownsResource(
   resourceType: "document" | "qr_code" | "customer",
   resourceId: string,
-  userId: string,
+  userId: string
 ): Promise<boolean> {
   try {
     const supabase = await createClient();
@@ -95,7 +95,7 @@ export async function canAccessResource(
   resourceType: "document" | "qr_code" | "customer",
   resourceId: string,
   userId: string,
-  requiredLevel: "read" | "write" | "delete" = "read",
+  requiredLevel: "read" | "write" | "delete" = "read"
 ): Promise<boolean> {
   // Check ownership first (owners have full access)
   const isOwner = await ownsResource(resourceType, resourceId, userId);
@@ -111,7 +111,7 @@ export async function canAccessResource(
  * Get all permissions for a user (combines role permissions)
  */
 export async function getUserPermissions(
-  userId: string,
+  userId: string
 ): Promise<Record<string, boolean>> {
   try {
     const supabase = await createClient();
@@ -139,6 +139,3 @@ export async function getUserPermissions(
     return {};
   }
 }
-
-
-

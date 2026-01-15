@@ -1,18 +1,17 @@
 "use client";
 
-import { useContext } from "react";
 import { useSelectedLayoutSegment } from "next/navigation";
-import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
-
-import { marketingConfig } from "@/config/marketing";
-import { cn } from "@/lib/utils";
-import { useScroll } from "@/hooks/use-scroll";
-import { Button } from "@/components/ui/button";
+import { useContext } from "react";
 import { ModalContext } from "@/components/modals/providers";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { useSupabase } from "@/components/supabase-provider";
+import { Button } from "@/components/ui/button";
+import { marketingConfig } from "@/config/marketing";
+import { useScroll } from "@/hooks/use-scroll";
+import { Link } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
 
 import { UserAccountNav } from "./user-account-nav";
 
@@ -37,16 +36,14 @@ export function NavBar({ scroll = false }: NavBarProps) {
         scroll ? (scrolled ? "border-b" : "bg-transparent") : "border-b"
       }`}
     >
-      <MaxWidthWrapper
-        className="flex h-14 sm:h-16 items-center justify-between py-3 sm:py-4 px-4 sm:px-6"
-      >
+      <MaxWidthWrapper className="flex h-14 sm:h-16 items-center justify-between py-3 sm:py-4 px-4 sm:px-6">
         <div className="flex gap-4 sm:gap-6 md:gap-10 items-center min-w-0 flex-1">
           <Link
             href="/"
             prefetch={true}
             className="flex items-center space-x-1.5 shrink-0"
           >
-            <Icons.logo className="h-6 w-6 sm:h-7 sm:w-7" />
+            <Icons.logo className="size-6 sm:size-7" />
             <span className="font-urban text-base sm:text-lg md:text-xl font-bold">
               {meta("shortName")}
             </span>
@@ -64,7 +61,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
                     item.href.startsWith(`/${selectedLayout}`)
                       ? "text-foreground"
                       : "text-foreground/60",
-                    item.disabled && "cursor-not-allowed opacity-80",
+                    item.disabled && "cursor-not-allowed opacity-80"
                   )}
                 >
                   {t(item.title.toLowerCase())}
@@ -81,7 +78,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
                 href="/dashboard"
                 prefetch={true}
                 className={cn(
-                  "hidden items-center rounded-full border border-input bg-background px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground md:flex touch-manipulation",
+                  "hidden items-center rounded-full border border-input bg-background px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground md:flex touch-manipulation"
                 )}
               >
                 {t("dashboard")}

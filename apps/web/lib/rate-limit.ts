@@ -25,7 +25,7 @@ export interface RateLimitConfig {
  * Always returns a config (default if none found)
  */
 export async function getRateLimitConfig(
-  endpoint: string,
+  endpoint: string
 ): Promise<RateLimitConfig> {
   const supabase = await createClient();
 
@@ -84,7 +84,7 @@ export async function getRateLimitConfig(
 export async function checkRateLimit(
   endpoint: string,
   identifier?: string,
-  identifierType: "ip" | "user" = "ip",
+  identifierType: "ip" | "user" = "ip"
 ): Promise<RateLimitResult> {
   const config = await getRateLimitConfig(endpoint);
 
@@ -184,7 +184,7 @@ export async function rateLimitMiddleware(
   options?: {
     useUserBasedLimit?: boolean;
     customIdentifier?: string;
-  },
+  }
 ): Promise<RateLimitResult> {
   const identifierType = options?.useUserBasedLimit ? "user" : "ip";
   return checkRateLimit(endpoint, options?.customIdentifier, identifierType);

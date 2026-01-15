@@ -1,15 +1,14 @@
 "use client";
 
-import { useTransition } from "react";
-import { openPolarPortalFallback } from "@/actions/open-polar-portal";
 import { useTranslations } from "next-intl";
+import { useTransition } from "react";
 import { toast } from "sonner";
-
+import { openPolarPortalFallback } from "@/actions/open-polar-portal";
+import { Icons } from "@/components/shared/icons";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Icons } from "@/components/shared/icons";
 
 interface PolarPortalButtonFallbackProps {
   variant?:
@@ -28,7 +27,14 @@ export function PolarPortalButtonFallback({
   className,
 }: PolarPortalButtonFallbackProps) {
   // Map old variants to new ones for backward compatibility
-  const mappedVariant = variant === "default" ? "default" : variant === "primary" ? "default" : variant === "neutral" ? "secondary" : variant;
+  const mappedVariant =
+    variant === "default"
+      ? "default"
+      : variant === "primary"
+        ? "default"
+        : variant === "neutral"
+          ? "secondary"
+          : variant;
   const [isPending, startTransition] = useTransition();
   const t = useTranslations("Billing");
 
@@ -71,7 +77,7 @@ export function PolarPortalButtonFallback({
 
         logger.error("Error opening customer portal:", error);
         toast.error(
-          "Failed to open customer portal. Please try again or contact support.",
+          "Failed to open customer portal. Please try again or contact support."
         );
       }
     });

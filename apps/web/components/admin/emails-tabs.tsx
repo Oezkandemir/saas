@@ -1,7 +1,7 @@
 "use client";
 
+import { FileText, Mail } from "lucide-react";
 import { useState } from "react";
-import { Mail, FileText } from "lucide-react";
 import type {
   EmailTemplate,
   ResendConfigStatus,
@@ -9,12 +9,7 @@ import type {
 import { EmailTemplates } from "@/components/admin/email-templates";
 import { InboundEmailsList } from "@/components/admin/inbound-emails/inbound-emails-list";
 import { InboundEmailsStats } from "@/components/admin/inbound-emails/inbound-emails-stats";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type EmailsTabsProps = {
   templates: EmailTemplate[];
@@ -28,11 +23,11 @@ export function EmailsTabs({ templates, configStatus }: EmailsTabsProps) {
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="mb-6">
         <TabsTrigger value="templates" className="flex items-center gap-2">
-          <FileText className="h-4 w-4" />
+          <FileText className="size-4" />
           E-Mail-Templates
         </TabsTrigger>
         <TabsTrigger value="inbound" className="flex items-center gap-2">
-          <Mail className="h-4 w-4" />
+          <Mail className="size-4" />
           Eingehende Emails
         </TabsTrigger>
       </TabsList>

@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { deleteDocument } from "@/actions/documents-actions";
 import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
-
-import { Button } from "@/components/ui/button";
+import { deleteDocument } from "@/actions/documents-actions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 interface DocumentDeleteButtonProps {
   documentId: string;
@@ -44,7 +43,7 @@ export function DocumentDeleteButton({
       toast.success(t(`toast.success.${documentType}`));
       // Navigate to documents list immediately (replace to avoid back button issues)
       router.replace("/dashboard/documents");
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("toast.error"));
       setIsDeleting(false);
       setOpen(false);
@@ -59,7 +58,7 @@ export function DocumentDeleteButton({
           size="sm"
           className="gap-1.5 h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
         >
-          <Trash2 className="h-3.5 w-3.5" />
+          <Trash2 className="size-3.5" />
           <span className="hidden sm:inline">{t("button")}</span>
         </Button>
       </AlertDialogTrigger>

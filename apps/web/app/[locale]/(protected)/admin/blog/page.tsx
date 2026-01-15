@@ -1,14 +1,13 @@
-import { redirect } from "next/navigation";
-import Link from "next/link";
-import { getAllBlogPosts } from "@/actions/blog-actions";
-import { formatDate } from "@/lib/utils";
 import { FileText, Plus } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
+import { getAllBlogPosts } from "@/actions/blog-actions";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { ButtonRoot } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ButtonRoot } from "@/components/ui/button";
+import { getCurrentUser } from "@/lib/session";
+import { formatDate } from "@/lib/utils";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -48,7 +47,7 @@ export default async function AdminBlogPage(props: Props) {
     <UnifiedPageLayout
       title={t("title") || "Blog Posts"}
       description={t("description") || "Manage your blog posts"}
-      icon={<FileText className="h-4 w-4 text-primary" />}
+      icon={<FileText className="size-4 text-primary" />}
     >
       <div className="space-y-4">
         <div className="flex justify-between items-center">
@@ -62,7 +61,7 @@ export default async function AdminBlogPage(props: Props) {
           </div>
           <Link href="/admin/blog/new">
             <ButtonRoot variant="default" size="default">
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="size-4 mr-2" />
               {t("newPost") || "New Post"}
             </ButtonRoot>
           </Link>
@@ -70,7 +69,7 @@ export default async function AdminBlogPage(props: Props) {
 
         {posts.length === 0 ? (
           <div className="text-center py-12 border rounded-lg">
-            <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <FileText className="size-12 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">
               {t("noPosts") || "No blog posts yet"}
             </h3>
@@ -80,7 +79,7 @@ export default async function AdminBlogPage(props: Props) {
             </p>
             <Link href="/admin/blog/new">
               <ButtonRoot variant="default" size="default">
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="size-4 mr-2" />
                 {t("createFirstPost") || "Create First Post"}
               </ButtonRoot>
             </Link>
@@ -165,4 +164,3 @@ export default async function AdminBlogPage(props: Props) {
     </UnifiedPageLayout>
   );
 }
-

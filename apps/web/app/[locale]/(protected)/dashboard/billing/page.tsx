@@ -1,18 +1,18 @@
-import { Suspense } from "react";
-import { redirect } from "next/navigation";
 import { CreditCard } from "lucide-react";
+import { redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
+import { Suspense } from "react";
 
-import { UserSubscriptionPlan } from "types";
+import type { UserSubscriptionPlan } from "types";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { AutoSyncSubscription } from "@/components/pricing/auto-sync-subscription";
+import { BillingInfo } from "@/components/pricing/billing-info";
+import { RefreshSubscriptionButton } from "@/components/pricing/refresh-subscription-button";
 import { pricingData } from "@/config/subscriptions";
 import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { constructMetadata } from "@/lib/utils";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { AutoSyncSubscription } from "@/components/pricing/auto-sync-subscription";
-import { BillingInfo } from "@/components/pricing/billing-info";
-import { RefreshSubscriptionButton } from "@/components/pricing/refresh-subscription-button";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -64,7 +64,7 @@ export default async function BillingPage({
         "@/actions/sync-polar-subscription"
       );
       const checkoutSyncResult = await syncPolarSubscriptionFromCheckout(
-        resolvedSearchParams.checkout_id,
+        resolvedSearchParams.checkout_id
       );
       syncSuccess = checkoutSyncResult.success || syncSuccess;
       // Only log errors, not successful syncs
@@ -77,19 +77,19 @@ export default async function BillingPage({
   // After sync, ensure we get fresh data (cache invalidation happens in server action)
   if (syncSuccess) {
     const { unstable_noStore } = await import("next/cache");
-    
+
     // Small delay to ensure database write is committed
     await new Promise((resolve) => setTimeout(resolve, 200));
-    
+
     // Force no cache for this request to get fresh data
     unstable_noStore();
-    
+
     logger.info("Sync successful, forcing fresh data load");
   }
 
   // Default free plan for admins or when subscription fetch fails
   const defaultFreePlan: UserSubscriptionPlan = {
-    ...pricingData[0],
+    ...pricingData[0]!,
     stripeCustomerId: null,
     stripeSubscriptionId: null,
     stripePriceId: null,
@@ -119,7 +119,7 @@ export default async function BillingPage({
       try {
         const plan = await getUserSubscriptionPlan(user.id, user.email);
         userSubscriptionPlan = plan || defaultFreePlan;
-      } catch (error) {
+      } catch (_error) {
         // If admin has no subscription, use default free plan
         userSubscriptionPlan = defaultFreePlan;
       }
@@ -147,7 +147,7 @@ export default async function BillingPage({
           ? `${userSubscriptionPlan.title} • ${userSubscriptionPlan.interval === "month" ? t("monthly") : t("yearly")}`
           : t("text")
       }
-      icon={<CreditCard className="h-4 w-4 text-primary" />}
+      icon={<CreditCard className="size-4 text-primary" />}
       actions={<RefreshSubscriptionButton />}
       contentClassName="space-y-6"
     >

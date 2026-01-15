@@ -1,26 +1,25 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { getUserPlan } from "@/actions/get-user-plan";
-import { SidebarNavItem } from "@/types";
 import {
+  ArrowLeft,
   LayoutDashboard,
   Mail,
   Menu,
   PanelLeftClose,
   PanelRightClose,
   Sparkles,
-  ArrowLeft,
 } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-
-import { siteConfig } from "@/config/site";
-import { logger } from "@/lib/logger";
-import { cn } from "@/lib/utils";
-import { useNotifications } from "@/hooks/use-notifications";
+import { Fragment, useEffect, useState } from "react";
+import { getUserPlan } from "@/actions/get-user-plan";
+import { UserRole } from "@/components/forms/user-role-form";
+import { Icons } from "@/components/shared/icons";
+import { useSupabase } from "@/components/supabase-provider";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
@@ -33,19 +32,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { UserRole } from "@/components/forms/user-role-form";
-import { Icons } from "@/components/shared/icons";
-import { useSupabase } from "@/components/supabase-provider";
+import { siteConfig } from "@/config/site";
+import { useNotifications } from "@/hooks/use-notifications";
+import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
+import type { SidebarNavItem } from "@/types";
 
 interface DashboardSidebarProps {
   links: SidebarNavItem[];
   showBackButton?: boolean;
 }
 
-function DashboardSidebarContent({ links, showBackButton = false }: DashboardSidebarProps) {
+function DashboardSidebarContent({
+  links,
+  showBackButton = false,
+}: DashboardSidebarProps) {
   const path = usePathname();
   const router = useRouter();
   // Desktop sidebar is always expanded by default (only shown on lg+ screens, 1024px+)
@@ -98,7 +99,7 @@ function DashboardSidebarContent({ links, showBackButton = false }: DashboardSid
           if (userData.created_at) {
             const createdDate = new Date(userData.created_at);
             const daysSinceCreation = Math.floor(
-              (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24),
+              (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
             );
             // Consider user "new" if created within last 30 days
             setIsNewUser(daysSinceCreation <= 30);
@@ -163,7 +164,7 @@ function DashboardSidebarContent({ links, showBackButton = false }: DashboardSid
         <aside
           className={cn(
             isSidebarExpanded ? "w-[260px] xl:w-[300px]" : "w-[68px]",
-            "hidden h-full lg:flex lg:flex-col",
+            "hidden h-full lg:flex lg:flex-col"
           )}
         >
           {/* Sidebar Header - merged with main header */}
@@ -247,7 +248,7 @@ function DashboardSidebarContent({ links, showBackButton = false }: DashboardSid
                       `items.${item.title.toLowerCase().replace(/\s+/g, "_")}`,
                       {
                         defaultValue: item.title,
-                      },
+                      }
                     );
 
                     // Add notification badge for notification items
@@ -272,7 +273,7 @@ function DashboardSidebarContent({ links, showBackButton = false }: DashboardSid
                                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                                 // Disabled State
                                 item.disabled &&
-                                  "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-muted-foreground",
+                                  "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-muted-foreground"
                               )}
                             >
                               <Icon className="size-5 min-w-5 shrink-0" />
@@ -286,7 +287,7 @@ function DashboardSidebarContent({ links, showBackButton = false }: DashboardSid
                               )}
                               {/* Add notification badge with thin blue border */}
                               {showNotificationBadge && (
-                                <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full ring-1 ring-black dark:ring-blue-500 bg-transparent text-xs font-bold text-black dark:text-blue-500">
+                                <span className="ml-auto flex size-6 shrink-0 items-center justify-center rounded-full ring-1 ring-black dark:ring-blue-500 bg-transparent text-xs font-bold text-black dark:text-blue-500">
                                   {unreadCount > 99 ? "99+" : unreadCount}
                                 </span>
                               )}
@@ -307,12 +308,12 @@ function DashboardSidebarContent({ links, showBackButton = false }: DashboardSid
                                       : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                                     // Disabled State
                                     item.disabled &&
-                                      "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-muted-foreground",
+                                      "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-muted-foreground"
                                   )}
                                 >
                                   <span className="flex size-full items-center justify-center relative">
                                     {showNotificationBadge ? (
-                                      <span className="flex h-6 w-6 items-center justify-center rounded-full ring-1 ring-black dark:ring-blue-500 bg-transparent text-xs font-bold text-black dark:text-blue-500">
+                                      <span className="flex size-6 items-center justify-center rounded-full ring-1 ring-black dark:ring-blue-500 bg-transparent text-xs font-bold text-black dark:text-blue-500">
                                         {unreadCount > 99 ? "99+" : unreadCount}
                                       </span>
                                     ) : (
@@ -342,58 +343,55 @@ function DashboardSidebarContent({ links, showBackButton = false }: DashboardSid
               <div
                 className={cn(
                   "flex flex-col gap-2 p-4",
-                  !isSidebarExpanded && "items-center",
+                  !isSidebarExpanded && "items-center"
                 )}
               >
                 {/* Upgrade Banner - Only show for new users on free plan */}
                 {isNewUser &&
                   userPlan &&
                   !userPlan.isPaid &&
-                  userPlan.title === "Free" && (
-                    <>
-                      {isSidebarExpanded ? (
+                  userPlan.title === "Free" &&
+                  (isSidebarExpanded ? (
+                    <Link
+                      href="/pricing"
+                      prefetch={true}
+                      className="group relative overflow-hidden rounded-lg border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-3 transition-all hover:border-primary/40 hover:shadow-md"
+                    >
+                      <div className="flex items-start gap-2">
+                        <Sparkles className="mt-0.5 size-4 shrink-0 text-primary" />
+                        <div className="flex-1 space-y-1">
+                          <p className="text-xs font-semibold text-foreground">
+                            Upgrade empfohlen
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Für mehr Features upgraden
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  ) : (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
                         <Link
                           href="/pricing"
                           prefetch={true}
-                          className="group relative overflow-hidden rounded-lg border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-3 transition-all hover:border-primary/40 hover:shadow-md"
+                          className="flex items-center justify-center rounded-lg border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-2 transition-all hover:border-primary/40 hover:shadow-md"
                         >
-                          <div className="flex items-start gap-2">
-                            <Sparkles className="mt-0.5 size-4 shrink-0 text-primary" />
-                            <div className="flex-1 space-y-1">
-                              <p className="text-xs font-semibold text-foreground">
-                                Upgrade empfohlen
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                Für mehr Features upgraden
-                              </p>
-                            </div>
-                          </div>
+                          <Sparkles className="size-4 text-primary" />
                         </Link>
-                      ) : (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Link
-                              href="/pricing"
-                              prefetch={true}
-                              className="flex items-center justify-center rounded-lg border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-2 transition-all hover:border-primary/40 hover:shadow-md"
-                            >
-                              <Sparkles className="size-4 text-primary" />
-                            </Link>
-                          </TooltipTrigger>
-                          <TooltipContent side="right">
-                            <div className="flex flex-col gap-1">
-                              <span className="font-semibold">
-                                Upgrade empfohlen
-                              </span>
-                              <span className="text-xs">
-                                Für mehr Features upgraden
-                              </span>
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      )}
-                    </>
-                  )}
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <div className="flex flex-col gap-1">
+                          <span className="font-semibold">
+                            Upgrade empfohlen
+                          </span>
+                          <span className="text-xs">
+                            Für mehr Features upgraden
+                          </span>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  ))}
 
                 {isSidebarExpanded ? (
                   <>
@@ -438,11 +436,19 @@ function DashboardSidebarContent({ links, showBackButton = false }: DashboardSid
 }
 
 // Internal component - use DashboardSidebarWrapper for SSR safety
-export function DashboardSidebar({ links, showBackButton }: DashboardSidebarProps) {
-  return <DashboardSidebarContent links={links} showBackButton={showBackButton} />;
+export function DashboardSidebar({
+  links,
+  showBackButton,
+}: DashboardSidebarProps) {
+  return (
+    <DashboardSidebarContent links={links} showBackButton={showBackButton} />
+  );
 }
 
-function MobileSheetSidebarContent({ links, showBackButton = false }: DashboardSidebarProps) {
+function MobileSheetSidebarContent({
+  links,
+  showBackButton = false,
+}: DashboardSidebarProps) {
   const path = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -489,7 +495,7 @@ function MobileSheetSidebarContent({ links, showBackButton = false }: DashboardS
           if (userData.created_at) {
             const createdDate = new Date(userData.created_at);
             const daysSinceCreation = Math.floor(
-              (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24),
+              (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
             );
             // Consider user "new" if created within last 30 days
             setIsNewUser(daysSinceCreation <= 30);
@@ -553,7 +559,7 @@ function MobileSheetSidebarContent({ links, showBackButton = false }: DashboardS
                   }}
                   className="w-full justify-start"
                 >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  <ArrowLeft className="size-4 mr-2" />
                   Zurück zu Admin
                 </Button>
               </div>
@@ -612,7 +618,7 @@ function MobileSheetSidebarContent({ links, showBackButton = false }: DashboardS
                       `items.${item.title.toLowerCase().replace(/\s+/g, "_")}`,
                       {
                         defaultValue: item.title,
-                      },
+                      }
                     );
 
                     // Add notification badge for notification items
@@ -636,7 +642,7 @@ function MobileSheetSidebarContent({ links, showBackButton = false }: DashboardS
                                 ? "bg-muted"
                                 : "text-muted-foreground hover:text-accent-foreground",
                               item.disabled &&
-                                "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
+                                "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground"
                             )}
                           >
                             <Icon className="size-5 min-w-5 shrink-0" />
@@ -648,7 +654,7 @@ function MobileSheetSidebarContent({ links, showBackButton = false }: DashboardS
                             )}
                             {/* Add notification badge with thin blue border */}
                             {showNotificationBadge && (
-                              <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full ring-1 ring-black dark:ring-blue-500 bg-transparent text-xs font-bold text-black dark:text-blue-500">
+                              <span className="ml-auto flex size-6 shrink-0 items-center justify-center rounded-full ring-1 ring-black dark:ring-blue-500 bg-transparent text-xs font-bold text-black dark:text-blue-500">
                                 {unreadCount > 99 ? "99+" : unreadCount}
                               </span>
                             )}
@@ -694,6 +700,11 @@ function MobileSheetSidebarContent({ links, showBackButton = false }: DashboardS
 }
 
 // Internal component - use MobileSheetSidebarWrapper for SSR safety
-export function MobileSheetSidebar({ links, showBackButton }: DashboardSidebarProps) {
-  return <MobileSheetSidebarContent links={links} showBackButton={showBackButton} />;
+export function MobileSheetSidebar({
+  links,
+  showBackButton,
+}: DashboardSidebarProps) {
+  return (
+    <MobileSheetSidebarContent links={links} showBackButton={showBackButton} />
+  );
 }

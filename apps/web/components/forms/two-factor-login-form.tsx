@@ -1,14 +1,12 @@
 "use client";
 
-import * as React from "react";
-import { verifyTwoFactorCodeForSignIn } from "@/actions/two-factor-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Shield } from "lucide-react";
+import * as React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-
-import { cn } from "@/lib/utils";
+import { verifyTwoFactorCodeForSignIn } from "@/actions/two-factor-actions";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -19,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface TwoFactorLoginFormProps {
   userId: string;
@@ -57,7 +56,7 @@ export function TwoFactorLoginForm({
     if (codeValue && codeValue.length === 6) {
       handleSubmit(onSubmit)();
     }
-  }, [codeValue]);
+  }, [codeValue, handleSubmit, onSubmit]);
 
   async function onSubmit(data: TwoFactorFormData) {
     setIsLoading(true);
@@ -90,7 +89,7 @@ export function TwoFactorLoginForm({
     <Card className="w-full max-w-md mx-auto md:border md:shadow-md">
       <CardHeader className="text-center px-4 pt-6 pb-4 md:px-6 md:pt-6">
         <div className="flex justify-center mb-2">
-          <Shield className="h-12 w-12 text-primary" />
+          <Shield className="size-12 text-primary" />
         </div>
         <CardTitle className="text-xl md:text-2xl">
           Two-Factor Authentication
@@ -142,7 +141,7 @@ export function TwoFactorLoginForm({
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 size-4 animate-spin" />
                   Verifying...
                 </>
               ) : (
@@ -156,7 +155,7 @@ export function TwoFactorLoginForm({
               onClick={onCancel}
               className={cn(
                 buttonVariants({ variant: "ghost", size: "sm" }),
-                "w-full text-muted-foreground h-10 md:h-11",
+                "w-full text-muted-foreground h-10 md:h-11"
               )}
               disabled={isLoading}
             >

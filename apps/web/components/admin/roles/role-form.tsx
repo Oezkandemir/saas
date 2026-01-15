@@ -1,18 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import {
-  createRole,
-  deleteRole,
-  Role,
-  updateRole,
-} from "@/actions/role-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, Loader2, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-
+import {
+  createRole,
+  deleteRole,
+  type Role,
+  updateRole,
+} from "@/actions/role-actions";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -23,9 +23,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const roleFormSchema = z.object({
   name: z.string().min(1, "Name ist erforderlich").max(100),
@@ -92,9 +91,7 @@ export function RoleForm({
 
       if (result.success && result.data) {
         toast.success(
-          role
-            ? "Rolle erfolgreich aktualisiert"
-            : "Rolle erfolgreich erstellt",
+          role ? "Rolle erfolgreich aktualisiert" : "Rolle erfolgreich erstellt"
         );
         onSuccess(result.data);
         if (role) {
@@ -103,7 +100,7 @@ export function RoleForm({
       } else {
         toast.error(result.error || "Fehler beim Speichern der Rolle");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Ein Fehler ist aufgetreten");
     } finally {
       setIsSubmitting(false);
@@ -126,7 +123,7 @@ export function RoleForm({
       } else {
         toast.error(result.error || "Fehler beim Löschen der Rolle");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Ein Fehler ist aufgetreten");
     } finally {
       setIsDeleting(false);
@@ -145,9 +142,9 @@ export function RoleForm({
             disabled={isDeleting}
           >
             {isDeleting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="size-4 animate-spin" />
             ) : (
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="size-4" />
             )}
           </Button>
         )}
@@ -157,7 +154,7 @@ export function RoleForm({
           size="sm"
           onClick={() => setIsEditing(true)}
         >
-          <Edit className="mr-2 h-4 w-4" />
+          <Edit className="mr-2 size-4" />
           Bearbeiten
         </Button>
       </div>
@@ -298,9 +295,9 @@ export function RoleForm({
                 disabled={isDeleting}
               >
                 {isDeleting ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 size-4 animate-spin" />
                 ) : (
-                  <Trash2 className="mr-2 h-4 w-4" />
+                  <Trash2 className="mr-2 size-4" />
                 )}
                 Löschen
               </Button>
@@ -328,9 +325,7 @@ export function RoleForm({
               type="submit"
               disabled={isSubmitting || role?.is_system_role}
             >
-              {isSubmitting && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
+              {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
               {role ? "Aktualisieren" : "Erstellen"}
             </Button>
           </div>

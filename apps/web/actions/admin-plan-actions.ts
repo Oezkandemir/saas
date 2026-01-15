@@ -235,7 +235,7 @@ export async function getPlanFeatures(planId: string): Promise<{
  */
 export async function updatePlan(
   planId: string,
-  updates: Partial<Plan>,
+  updates: Partial<Plan>
 ): Promise<{
   success: boolean;
   data?: Plan;
@@ -328,7 +328,7 @@ export async function getUsersByPlan(): Promise<{
     const { data: usersData, error: usersError } = await supabaseAdmin
       .from("users")
       .select(
-        "id, email, name, role, polar_product_id, polar_subscription_id, polar_current_period_end",
+        "id, email, name, role, polar_product_id, polar_subscription_id, polar_current_period_end"
       )
       .not("polar_subscription_id", "is", null)
       .order("created_at", { ascending: false });
@@ -342,7 +342,7 @@ export async function getUsersByPlan(): Promise<{
     const { data: plansData, error: plansError } = await supabaseAdmin
       .from("plans")
       .select(
-        "id, title, plan_key, polar_product_id_monthly, polar_product_id_yearly",
+        "id, title, plan_key, polar_product_id_monthly, polar_product_id_yearly"
       );
 
     if (plansError) {
@@ -357,7 +357,7 @@ export async function getUsersByPlan(): Promise<{
         (plan) =>
           user.polar_product_id &&
           (user.polar_product_id === plan.polar_product_id_monthly ||
-            user.polar_product_id === plan.polar_product_id_yearly),
+            user.polar_product_id === plan.polar_product_id_yearly)
       );
 
       return {

@@ -1,14 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  listBookings,
-  type Booking,
-} from "@/actions/scheduling/bookings-actions";
-import {
-  getEventType,
-  type EventType,
-} from "@/actions/scheduling/event-types-actions";
 import {
   BarChart3,
   CheckCircle2,
@@ -22,10 +13,26 @@ import {
   XCircle,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
-import { logger } from "@/lib/logger";
-import { getURL } from "@/lib/utils";
+import {
+  type Booking,
+  listBookings,
+} from "@/actions/scheduling/bookings-actions";
+import {
+  type EventType,
+  getEventType,
+} from "@/actions/scheduling/event-types-actions";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -33,16 +40,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
-import { Input } from "@/components/ui/input";
+import { logger } from "@/lib/logger";
+import { getURL } from "@/lib/utils";
 
 import { CopyBookingButton } from "./copy-booking-link-button";
 import { EditEventTypeDrawer } from "./edit-event-type-drawer";
@@ -109,7 +108,7 @@ export function EventTypeDetailDrawer({
       setCopiedLink(true);
       toast.success(t("linkCopied") || "Link copied to clipboard");
       setTimeout(() => setCopiedLink(false), 2000);
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("copyError") || "Failed to copy link");
     }
   };
@@ -119,18 +118,17 @@ export function EventTypeDetailDrawer({
   const upcomingBookings = scheduledBookings
     .filter((b) => new Date(b.start_at) > new Date())
     .sort(
-      (a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime(),
+      (a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime()
     );
   const pastBookings = scheduledBookings
     .filter((b) => new Date(b.start_at) <= new Date())
     .sort(
-      (a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime(),
+      (a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime()
     );
 
-  const bookingUrl =
-    eventType && eventType.owner_user_id
-      ? `${getURL()}/${locale}/book/${eventType.owner_user_id}/${eventType.slug}`
-      : "";
+  const bookingUrl = eventType?.owner_user_id
+    ? `${getURL()}/${locale}/book/${eventType.owner_user_id}/${eventType.slug}`
+    : "";
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -158,16 +156,23 @@ export function EventTypeDetailDrawer({
         </SheetHeader>
         {isLoading ? (
           <div className="flex items-center justify-center h-full mt-8">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <Loader2 className="size-6 animate-spin text-muted-foreground" />
           </div>
         ) : eventType ? (
           <div className="mt-3 flex flex-col">
-            <Accordion type="multiple" defaultValue={["details", "stats"]} className="w-full">
+            <Accordion
+              type="multiple"
+              defaultValue={["details", "stats"]}
+              className="w-full"
+            >
               {/* Event Details - Wichtigste Info zuerst */}
-              <AccordionItem value="details" className="border-b border-stroke-soft-200">
+              <AccordionItem
+                value="details"
+                className="border-b border-stroke-soft-200"
+              >
                 <AccordionTrigger className="text-sm font-semibold">
                   <div className="flex items-center gap-2">
-                    <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                    <Clock className="size-3.5 text-muted-foreground" />
                     {t("details.title") || "Event Details"}
                   </div>
                 </AccordionTrigger>
@@ -176,7 +181,7 @@ export function EventTypeDetailDrawer({
                     <div className="flex items-start justify-between">
                       <div className="space-y-1">
                         <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                          <Clock className="h-3 w-3" />
+                          <Clock className="size-3" />
                           {t("details.duration") || "Dauer"}
                         </p>
                         <p className="text-sm font-medium">
@@ -210,7 +215,7 @@ export function EventTypeDetailDrawer({
 
                     <div className="space-y-1">
                       <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                        <MapPin className="h-3 w-3" />
+                        <MapPin className="size-3" />
                         {t("details.location") || "Ort"}
                       </p>
                       <p className="text-sm font-medium capitalize">
@@ -245,7 +250,7 @@ export function EventTypeDetailDrawer({
               <AccordionItem value="stats">
                 <AccordionTrigger className="text-sm font-semibold">
                   <div className="flex items-center gap-2">
-                    <BarChart3 className="h-3.5 w-3.5 text-muted-foreground" />
+                    <BarChart3 className="size-3.5 text-muted-foreground" />
                     Statistiken
                     {bookings.length > 0 && (
                       <Badge variant="secondary" className="ml-auto text-xs">
@@ -259,7 +264,7 @@ export function EventTypeDetailDrawer({
                     <div className="grid grid-cols-2 gap-2">
                       <div className="p-2 rounded border bg-muted/30">
                         <div className="flex items-center gap-1.5 mb-1">
-                          <Users className="h-3 w-3 text-muted-foreground" />
+                          <Users className="size-3 text-muted-foreground" />
                           <p className="text-xs text-muted-foreground">
                             {t("stats.totalBookings") || "Gesamt"}
                           </p>
@@ -270,7 +275,7 @@ export function EventTypeDetailDrawer({
                       </div>
                       <div className="p-2 rounded border bg-muted/30">
                         <div className="flex items-center gap-1.5 mb-1">
-                          <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400" />
+                          <CheckCircle2 className="size-3 text-green-600 dark:text-green-400" />
                           <p className="text-xs text-muted-foreground">
                             {t("stats.upcoming") || "Anstehend"}
                           </p>
@@ -281,7 +286,7 @@ export function EventTypeDetailDrawer({
                       </div>
                       <div className="p-2 rounded border bg-muted/30">
                         <div className="flex items-center gap-1.5 mb-1">
-                          <BarChart3 className="h-3 w-3 text-muted-foreground" />
+                          <BarChart3 className="size-3 text-muted-foreground" />
                           <p className="text-xs text-muted-foreground">
                             {t("stats.completed") || "Abgeschlossen"}
                           </p>
@@ -292,7 +297,7 @@ export function EventTypeDetailDrawer({
                       </div>
                       <div className="p-2 rounded border bg-muted/30">
                         <div className="flex items-center gap-1.5 mb-1">
-                          <XCircle className="h-3 w-3 text-red-600 dark:text-red-400" />
+                          <XCircle className="size-3 text-red-600 dark:text-red-400" />
                           <p className="text-xs text-muted-foreground">
                             {t("stats.canceled") || "Storniert"}
                           </p>
@@ -311,7 +316,7 @@ export function EventTypeDetailDrawer({
                 <AccordionItem value="bookings">
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
-                      <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                      <Users className="size-3.5 text-muted-foreground" />
                       {t("tabs.bookings") || "Buchungen"}
                       <Badge variant="secondary" className="ml-auto text-xs">
                         {bookings.length}
@@ -323,7 +328,7 @@ export function EventTypeDetailDrawer({
                       {upcomingBookings.length > 0 && (
                         <div>
                           <h3 className="text-xs font-semibold mb-2 flex items-center gap-1.5">
-                            <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400" />
+                            <CheckCircle2 className="size-3 text-green-600 dark:text-green-400" />
                             {t("bookings.upcoming") || "Anstehend"} (
                             {upcomingBookings.length})
                           </h3>
@@ -341,10 +346,10 @@ export function EventTypeDetailDrawer({
                                     {booking.invitee_email}
                                   </p>
                                 </div>
-                                <div className="text-right flex-shrink-0 ml-2">
+                                <div className="text-right shrink-0 ml-2">
                                   <p className="font-medium">
                                     {new Date(
-                                      booking.start_at,
+                                      booking.start_at
                                     ).toLocaleDateString(undefined, {
                                       day: "2-digit",
                                       month: "short",
@@ -352,7 +357,7 @@ export function EventTypeDetailDrawer({
                                   </p>
                                   <p className="text-muted-foreground">
                                     {new Date(
-                                      booking.start_at,
+                                      booking.start_at
                                     ).toLocaleTimeString(undefined, {
                                       hour: "2-digit",
                                       minute: "2-digit",
@@ -369,7 +374,7 @@ export function EventTypeDetailDrawer({
                           {upcomingBookings.length > 0 && <Separator />}
                           <div>
                             <h3 className="text-xs font-semibold mb-2 flex items-center gap-1.5">
-                              <Clock className="h-3 w-3 text-muted-foreground" />
+                              <Clock className="size-3 text-muted-foreground" />
                               {t("bookings.past") || "Vergangen"} (
                               {pastBookings.length})
                             </h3>
@@ -387,10 +392,10 @@ export function EventTypeDetailDrawer({
                                       {booking.invitee_email}
                                     </p>
                                   </div>
-                                  <div className="text-right flex-shrink-0 ml-2">
+                                  <div className="text-right shrink-0 ml-2">
                                     <p className="font-medium">
                                       {new Date(
-                                        booking.start_at,
+                                        booking.start_at
                                       ).toLocaleDateString(undefined, {
                                         day: "2-digit",
                                         month: "short",
@@ -398,7 +403,7 @@ export function EventTypeDetailDrawer({
                                     </p>
                                     <p className="text-muted-foreground">
                                       {new Date(
-                                        booking.start_at,
+                                        booking.start_at
                                       ).toLocaleTimeString(undefined, {
                                         hour: "2-digit",
                                         minute: "2-digit",
@@ -420,7 +425,7 @@ export function EventTypeDetailDrawer({
               <AccordionItem value="share">
                 <AccordionTrigger className="text-sm font-semibold">
                   <div className="flex items-center gap-2">
-                    <LinkIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                    <LinkIcon className="size-3.5 text-muted-foreground" />
                     {t("share.title") || "Teilen"}
                   </div>
                 </AccordionTrigger>
@@ -443,12 +448,12 @@ export function EventTypeDetailDrawer({
                         variant="outline"
                         size="sm"
                         onClick={handleCopyLink}
-                        className="flex-shrink-0 h-8"
+                        className="shrink-0 h-8"
                       >
                         {copiedLink ? (
-                          <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                          <CheckCircle2 className="size-3.5 text-green-500" />
                         ) : (
-                          <Copy className="h-3.5 w-3.5" />
+                          <Copy className="size-3.5" />
                         )}
                       </Button>
                     </div>
@@ -456,13 +461,12 @@ export function EventTypeDetailDrawer({
                   </div>
                 </AccordionContent>
               </AccordionItem>
-
             </Accordion>
 
             {/* Actions - Immer ganz unten, außerhalb der Accordions */}
             <div className="mt-4 pt-4 border-t border-border">
               <div className="grid grid-cols-1 gap-1.5">
-                {eventType && eventType.owner_user_id && (
+                {eventType?.owner_user_id && (
                   <EditEventTypeDrawer
                     eventType={eventType}
                     open={editDrawerOpen}
@@ -478,9 +482,15 @@ export function EventTypeDetailDrawer({
                       }
                     }}
                     trigger={
-                      <Button variant="default" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
-                        <Edit className="h-3.5 w-3.5" />
-                        <span className="text-xs">{t("tabs.edit") || "Bearbeiten"}</span>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
+                      >
+                        <Edit className="size-3.5" />
+                        <span className="text-xs">
+                          {t("tabs.edit") || "Bearbeiten"}
+                        </span>
                       </Button>
                     }
                   />
@@ -492,7 +502,7 @@ export function EventTypeDetailDrawer({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-12 text-center mt-8">
-            <XCircle className="h-8 w-8 text-destructive mb-3" />
+            <XCircle className="size-8 text-destructive mb-3" />
             <p className="text-sm font-medium mb-1">
               {t("error") || "Failed to load event type"}
             </p>

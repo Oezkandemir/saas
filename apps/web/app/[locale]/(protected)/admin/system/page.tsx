@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import {
   Activity,
   AlertTriangle,
@@ -7,23 +6,23 @@ import {
   Settings,
   Zap,
 } from "lucide-react";
+import { redirect } from "next/navigation";
 import { getLocale, setRequestLocale } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
-import { constructMetadata } from "@/lib/utils";
 import { DatabaseStats } from "@/components/admin/database-stats";
 import { EnvironmentInfo } from "@/components/admin/environment-info";
 import { QuickActions } from "@/components/admin/quick-actions";
 import { SystemErrors } from "@/components/admin/system-errors";
 import { SystemMetricsComponent } from "@/components/admin/system-metrics";
 import { SystemStatus } from "@/components/admin/system-status";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import {
+  Accordion,
   AccordionContent,
   AccordionItem,
-  Accordion,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { getCurrentUser } from "@/lib/session";
+import { constructMetadata } from "@/lib/utils";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -53,7 +52,7 @@ export default async function SystemMonitoringPage() {
     <UnifiedPageLayout
       title="System-Monitoring"
       description="Umfassende Systemüberwachung, Datenbank-Statistiken und Admin-Tools"
-      icon={<Activity className="h-4 w-4 text-primary" />}
+      icon={<Activity className="size-4 text-primary" />}
       contentClassName="pb-10"
     >
       <div className="max-w-7xl mx-auto">
@@ -67,9 +66,9 @@ export default async function SystemMonitoringPage() {
             value="system-status"
             className="border rounded-lg px-6 bg-card shadow-sm"
           >
-            <AccordionTrigger className="hover:no-underline py-6 -mx-6 px-6">
+            <AccordionTrigger className="hover:no-underline p-6 -mx-6">
               <div className="flex items-center gap-3">
-                <Activity className="h-5 w-5 text-primary" />
+                <Activity className="size-5 text-primary" />
                 <div className="text-left">
                   <h3 className="text-lg font-semibold">System-Status</h3>
                   <p className="text-sm text-muted-foreground font-normal">
@@ -90,9 +89,9 @@ export default async function SystemMonitoringPage() {
             value="database-stats"
             className="border rounded-lg px-6 bg-card shadow-sm"
           >
-            <AccordionTrigger className="hover:no-underline py-6 -mx-6 px-6">
+            <AccordionTrigger className="hover:no-underline p-6 -mx-6">
               <div className="flex items-center gap-3">
-                <Database className="h-5 w-5 text-primary" />
+                <Database className="size-5 text-primary" />
                 <div className="text-left">
                   <h3 className="text-lg font-semibold">
                     Datenbank-Statistiken
@@ -115,9 +114,9 @@ export default async function SystemMonitoringPage() {
             value="quick-actions"
             className="border rounded-lg px-6 bg-card shadow-sm"
           >
-            <AccordionTrigger className="hover:no-underline py-6 -mx-6 px-6">
+            <AccordionTrigger className="hover:no-underline p-6 -mx-6">
               <div className="flex items-center gap-3">
-                <Zap className="h-5 w-5 text-primary" />
+                <Zap className="size-5 text-primary" />
                 <div className="text-left">
                   <h3 className="text-lg font-semibold">Schnellaktionen</h3>
                   <p className="text-sm text-muted-foreground font-normal">
@@ -138,9 +137,9 @@ export default async function SystemMonitoringPage() {
             value="system-errors"
             className="border rounded-lg px-6 bg-card shadow-sm"
           >
-            <AccordionTrigger className="hover:no-underline py-6 -mx-6 px-6">
+            <AccordionTrigger className="hover:no-underline p-6 -mx-6">
               <div className="flex items-center gap-3">
-                <AlertTriangle className="h-5 w-5 text-primary" />
+                <AlertTriangle className="size-5 text-primary" />
                 <div className="text-left">
                   <h3 className="text-lg font-semibold">System-Fehler</h3>
                   <p className="text-sm text-muted-foreground font-normal">
@@ -161,9 +160,9 @@ export default async function SystemMonitoringPage() {
             value="system-metrics"
             className="border rounded-lg px-6 bg-card shadow-sm"
           >
-            <AccordionTrigger className="hover:no-underline py-6 -mx-6 px-6">
+            <AccordionTrigger className="hover:no-underline p-6 -mx-6">
               <div className="flex items-center gap-3">
-                <BarChart3 className="h-5 w-5 text-primary" />
+                <BarChart3 className="size-5 text-primary" />
                 <div className="text-left">
                   <h3 className="text-lg font-semibold">System-Metriken</h3>
                   <p className="text-sm text-muted-foreground font-normal">
@@ -184,9 +183,9 @@ export default async function SystemMonitoringPage() {
             value="environment-info"
             className="border rounded-lg px-6 bg-card shadow-sm"
           >
-            <AccordionTrigger className="hover:no-underline py-6 -mx-6 px-6">
+            <AccordionTrigger className="hover:no-underline p-6 -mx-6">
               <div className="flex items-center gap-3">
-                <Settings className="h-5 w-5 text-primary" />
+                <Settings className="size-5 text-primary" />
                 <div className="text-left">
                   <h3 className="text-lg font-semibold">
                     Umgebungsinformationen

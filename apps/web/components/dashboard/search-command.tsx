@@ -1,8 +1,5 @@
 "use client";
 
-import React from "react";
-import { useRouter } from "next/navigation";
-import { SidebarNavItem } from "@/types";
 import {
   RiArrowDownLine,
   RiArrowUpLine,
@@ -17,13 +14,15 @@ import {
   RiSettingsLine,
   RiUserLine,
 } from "@remixicon/react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-
+import React from "react";
+import { ButtonIcon, ButtonRoot } from "@/components/ui/button";
+import { CommandMenu } from "@/components/ui/command";
+import { Kbd } from "@/components/ui/kbd";
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
-import { ButtonIcon, ButtonRoot } from "@/components/ui/button";
-import { Kbd } from "@/components/ui/kbd";
-import { CommandMenu } from "@/components/ui/command";
+import type { SidebarNavItem } from "@/types";
 
 // Create namespace object for Button pattern
 const Button = {
@@ -91,7 +90,7 @@ function SearchCommandContent({
       setOpen(false);
       router.push(href);
     },
-    [router],
+    [router]
   );
 
   return (
@@ -105,7 +104,7 @@ function SearchCommandContent({
               <RiSearch2Line
                 className={cn(
                   "size-5 shrink-0 text-muted-foreground transition-colors",
-                  "group-focus-within/cmd-input:text-primary",
+                  "group-focus-within/cmd-input:text-primary"
                 )}
               />
               <CommandMenu.Input placeholder={t("inputPlaceholder")} />

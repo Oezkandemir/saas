@@ -1,18 +1,18 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 import {
   createWebhook,
   deleteWebhook,
   updateWebhook,
-  Webhook,
+  type Webhook,
 } from "@/actions/webhook-actions";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Trash2 } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -23,7 +23,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 // Client-side secret generator (not a server action)
@@ -100,13 +99,13 @@ export function WebhookForm({
         toast.success(
           webhook
             ? "Webhook updated successfully"
-            : "Webhook created successfully",
+            : "Webhook created successfully"
         );
         onSuccess(result.data);
       } else {
         toast.error(result.error || "Failed to save webhook");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("An error occurred");
     } finally {
       setIsSubmitting(false);
@@ -129,7 +128,7 @@ export function WebhookForm({
       } else {
         toast.error(result.error || "Failed to delete webhook");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("An error occurred");
     } finally {
       setIsDeleting(false);
@@ -234,8 +233,8 @@ export function WebhookForm({
                                   ? field.onChange([...field.value, event])
                                   : field.onChange(
                                       field.value?.filter(
-                                        (value) => value !== event,
-                                      ),
+                                        (value) => value !== event
+                                      )
                                     );
                               }}
                             />
@@ -285,9 +284,9 @@ export function WebhookForm({
                 disabled={isDeleting}
               >
                 {isDeleting ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 size-4 animate-spin" />
                 ) : (
-                  <Trash2 className="mr-2 h-4 w-4" />
+                  <Trash2 className="mr-2 size-4" />
                 )}
                 Delete
               </Button>
@@ -300,9 +299,7 @@ export function WebhookForm({
               </Button>
             )}
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
+              {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
               {webhook ? "Update" : "Create"}
             </Button>
           </div>

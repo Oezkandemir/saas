@@ -1,33 +1,39 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  createBooking,
-  type AvailableSlot,
-} from "@/actions/scheduling/bookings-actions";
-import type { EventType } from "@/actions/scheduling/event-types-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
-import { Calendar as CalendarIcon, Mail, MessageSquare, Minus, Plus, User, Users } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
 import {
-  useFieldArray,
-  useForm,
+  Calendar as CalendarIcon,
+  Mail,
+  MessageSquare,
+  Minus,
+  Plus,
+  User,
+  Users,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import {
   type Control,
   type FieldArrayPath,
+  useFieldArray,
+  useForm,
 } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+  type AvailableSlot,
+  createBooking,
+} from "@/actions/scheduling/bookings-actions";
+import type { EventType } from "@/actions/scheduling/event-types-actions";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -39,14 +45,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Textarea } from "@/components/ui/textarea";
 
 const bookingSchema = z.object({
   invitee_name: z.string().min(1, "Name is required").max(200),
@@ -181,9 +188,7 @@ export function BookingFormDrawer({
             "Your booking has been confirmed.",
         });
         toast.warning(t("emailCouldNotBeSent"), {
-          description:
-            emailError ||
-            t("emailCouldNotBeSentDescription"),
+          description: emailError || t("emailCouldNotBeSentDescription"),
         });
       }
 
@@ -228,13 +233,23 @@ export function BookingFormDrawer({
 
         <div className="mt-3 flex flex-col">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
-              <Accordion type="multiple" defaultValue={["slot", "contact"]} className="w-full">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col"
+            >
+              <Accordion
+                type="multiple"
+                defaultValue={["slot", "contact"]}
+                className="w-full"
+              >
                 {/* Selected Slot Info - Wichtigste Info zuerst */}
-                <AccordionItem value="slot" className="border-b border-stroke-soft-200">
+                <AccordionItem
+                  value="slot"
+                  className="border-b border-stroke-soft-200"
+                >
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
-                      <CalendarIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                      <CalendarIcon className="size-3.5 text-muted-foreground" />
                       {t("selectedSlot") || "Ausgewählter Slot"}
                     </div>
                   </AccordionTrigger>
@@ -242,7 +257,7 @@ export function BookingFormDrawer({
                     <div className="space-y-3 pt-1">
                       <div className="space-y-1">
                         <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                          <CalendarIcon className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                          <CalendarIcon className="size-3 text-blue-600 dark:text-blue-400" />
                           <span className="text-blue-600 dark:text-blue-400 font-medium">
                             {t("dateAndTime")}
                           </span>
@@ -261,7 +276,8 @@ export function BookingFormDrawer({
                               {t("totalPrice") || "Gesamtpreis"}
                             </p>
                             <p className="text-lg font-bold text-primary">
-                              {totalPrice.toFixed(2)} {eventType.price_currency || "EUR"}
+                              {totalPrice.toFixed(2)}{" "}
+                              {eventType.price_currency || "EUR"}
                             </p>
                           </div>
                         </>
@@ -274,7 +290,7 @@ export function BookingFormDrawer({
                 <AccordionItem value="contact">
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
-                      <User className="h-3.5 w-3.5 text-muted-foreground" />
+                      <User className="size-3.5 text-muted-foreground" />
                       {t("contactInformation")}
                     </div>
                   </AccordionTrigger>
@@ -286,7 +302,7 @@ export function BookingFormDrawer({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="flex items-center gap-2">
-                              <User className="h-3.5 w-3.5" />
+                              <User className="size-3.5" />
                               {t("name") || "Name"}
                             </FormLabel>
                             <FormControl>
@@ -308,13 +324,15 @@ export function BookingFormDrawer({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="flex items-center gap-2">
-                              <Mail className="h-3.5 w-3.5" />
+                              <Mail className="size-3.5" />
                               {t("email") || "E-Mail"}
                             </FormLabel>
                             <FormControl>
                               <Input
                                 type="email"
-                                placeholder={t("emailPlaceholder") || "ihre@email.com"}
+                                placeholder={
+                                  t("emailPlaceholder") || "ihre@email.com"
+                                }
                                 {...field}
                               />
                             </FormControl>
@@ -330,7 +348,7 @@ export function BookingFormDrawer({
                 <AccordionItem value="participants">
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
-                      <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                      <Users className="size-3.5 text-muted-foreground" />
                       {t("participants")}
                     </div>
                   </AccordionTrigger>
@@ -340,7 +358,8 @@ export function BookingFormDrawer({
                         control={form.control}
                         name="number_of_participants"
                         render={({ field }) => {
-                          const maxParticipants = selectedSlot?.max_participants || 999;
+                          const maxParticipants =
+                            selectedSlot?.max_participants || 999;
                           const availablePlaces =
                             selectedSlot?.available_places ?? maxParticipants;
                           const currentValue = field.value || 1;
@@ -348,8 +367,9 @@ export function BookingFormDrawer({
                           return (
                             <FormItem>
                               <FormLabel className="flex items-center gap-2">
-                                <Users className="h-3.5 w-3.5" />
-                                {t("numberOfParticipants") || "Anzahl der Teilnehmer"}
+                                <Users className="size-3.5" />
+                                {t("numberOfParticipants") ||
+                                  "Anzahl der Teilnehmer"}
                               </FormLabel>
                               <FormControl>
                                 <div className="space-y-3">
@@ -358,7 +378,7 @@ export function BookingFormDrawer({
                                       type="button"
                                       variant="outline"
                                       size="icon"
-                                      className="h-9 w-9"
+                                      className="size-9"
                                       onClick={() => {
                                         if (currentValue > 1) {
                                           field.onChange(currentValue - 1);
@@ -366,16 +386,16 @@ export function BookingFormDrawer({
                                       }}
                                       disabled={currentValue <= 1}
                                     >
-                                      <Minus className="h-4 w-4" />
+                                      <Minus className="size-4" />
                                     </Button>
-                                    <div className="flex-1 text-center font-semibold text-lg min-w-[3rem]">
+                                    <div className="flex-1 text-center font-semibold text-lg min-w-12">
                                       {currentValue}
                                     </div>
                                     <Button
                                       type="button"
                                       variant="outline"
                                       size="icon"
-                                      className="h-9 w-9"
+                                      className="size-9"
                                       onClick={() => {
                                         if (currentValue < availablePlaces) {
                                           field.onChange(currentValue + 1);
@@ -383,14 +403,15 @@ export function BookingFormDrawer({
                                       }}
                                       disabled={currentValue >= availablePlaces}
                                     >
-                                      <Plus className="h-4 w-4" />
+                                      <Plus className="size-4" />
                                     </Button>
                                   </div>
                                 </div>
                               </FormControl>
                               <FormDescription>
                                 {selectedSlot?.max_participants &&
-                                  selectedSlot.available_places !== undefined && (
+                                  selectedSlot.available_places !==
+                                    undefined && (
                                     <span className="text-sm text-muted-foreground">
                                       {t("availablePlaces", {
                                         places: selectedSlot.available_places,
@@ -416,9 +437,10 @@ export function BookingFormDrawer({
                             render={({ field: nameField }) => (
                               <FormItem>
                                 <FormLabel className="flex items-center gap-2">
-                                  <User className="h-3.5 w-3.5" />
-                                  {t("participantName", { number: index + 2 }) ||
-                                    `Teilnehmer ${index + 2}`}
+                                  <User className="size-3.5" />
+                                  {t("participantName", {
+                                    number: index + 2,
+                                  }) || `Teilnehmer ${index + 2}`}
                                 </FormLabel>
                                 <FormControl>
                                   <Input
@@ -444,7 +466,7 @@ export function BookingFormDrawer({
                 <AccordionItem value="notes">
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
-                      <MessageSquare className="h-3.5 w-3.5 text-muted-foreground" />
+                      <MessageSquare className="size-3.5 text-muted-foreground" />
                       {t("notes") || "Notizen (Optional)"}
                     </div>
                   </AccordionTrigger>
@@ -456,7 +478,7 @@ export function BookingFormDrawer({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="flex items-center gap-2">
-                              <MessageSquare className="h-3.5 w-3.5" />
+                              <MessageSquare className="size-3.5" />
                               {t("notes") || "Notizen"}
                             </FormLabel>
                             <FormControl>

@@ -1,13 +1,10 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
-
-import { testimonials } from "@/config/landing";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { testimonials } from "@/config/landing";
 
-interface ModernTestimonialsProps {}
-
-export default async function ModernTestimonials({}: ModernTestimonialsProps) {
+export default async function ModernTestimonials() {
   const t = await getTranslations("Testimonials");
 
   return (
@@ -63,7 +60,7 @@ export default async function ModernTestimonials({}: ModernTestimonialsProps) {
               <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
               {/* Decorative corner */}
-              <div className="absolute right-0 top-0 h-24 w-24 -translate-y-1/2 translate-x-1/2 rounded-full bg-gradient-to-br from-primary/10 to-transparent blur-2xl opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="absolute right-0 top-0 size-24 -translate-y-1/2 translate-x-1/2 rounded-full bg-gradient-to-br from-primary/10 to-transparent blur-2xl opacity-0 transition-opacity group-hover:opacity-100" />
             </div>
           ))}
         </div>

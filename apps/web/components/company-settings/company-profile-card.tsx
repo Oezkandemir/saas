@@ -1,6 +1,5 @@
 "use client";
 
-import { CompanyProfileWithMembership } from "@/actions/company-profiles-actions";
 import {
   Building2,
   Calendar,
@@ -13,14 +12,10 @@ import {
   Scale,
   Shield,
 } from "lucide-react";
-
-import { cn } from "@/lib/utils";
+import type { CompanyProfileWithMembership } from "@/actions/company-profiles-actions";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface CompanyProfileCardProps {
   profile: CompanyProfileWithMembership;
@@ -37,15 +32,15 @@ export function CompanyProfileCard({
     <Card
       className={cn(
         "cursor-pointer transition-all hover:shadow-md",
-        isSelected && "ring-2 ring-primary shadow-md",
+        isSelected && "ring-2 ring-primary shadow-md"
       )}
       onClick={onClick}
     >
       <CardHeader className="pb-4 pr-20 border-b bg-gradient-to-r from-background via-muted/20 to-background">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3 flex-1 min-w-0">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 via-primary/15 to-primary/10 border border-primary/20 shadow-sm flex-shrink-0">
-              <Building2 className="h-6 w-6 text-primary" />
+            <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 via-primary/15 to-primary/10 border border-primary/20 shadow-sm shrink-0">
+              <Building2 className="size-6 text-primary" />
             </div>
             <div className="flex-1 min-w-0 pt-0.5">
               <h3 className="font-bold text-lg leading-tight truncate mb-1">
@@ -57,15 +52,15 @@ export function CompanyProfileCard({
                 </p>
                 {/* Only show "Standard" badge for owned profiles that are default */}
                 {profile.is_default && profile.is_owner && (
-                  <Badge className="h-5 px-1.5 text-[10px] font-semibold bg-green-500/10 dark:bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30 dark:border-green-500/40 flex-shrink-0">
-                    <CheckCircle2 className="h-2.5 w-2.5 mr-0.5" />
+                  <Badge className="h-5 px-1.5 text-[10px] font-semibold bg-green-500/10 dark:bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30 dark:border-green-500/40 shrink-0">
+                    <CheckCircle2 className="size-2.5 mr-0.5" />
                     Standard
                   </Badge>
                 )}
                 {/* Show "Verwaltet" badge for owned profiles that are not default */}
                 {profile.is_owner && !profile.is_default && (
-                  <Badge className="h-5 px-1.5 text-[10px] font-semibold bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary border-primary/30 dark:border-primary/40 flex-shrink-0">
-                    <Shield className="h-2.5 w-2.5 mr-0.5" />
+                  <Badge className="h-5 px-1.5 text-[10px] font-semibold bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary border-primary/30 dark:border-primary/40 shrink-0">
+                    <Shield className="size-2.5 mr-0.5" />
                     Verwaltet
                   </Badge>
                 )}
@@ -81,7 +76,7 @@ export function CompanyProfileCard({
           profile.company_city ||
           profile.company_country) && (
           <div className="flex items-start gap-2 text-sm text-muted-foreground">
-            <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
+            <MapPin className="size-4 mt-0.5 shrink-0" />
             <span className="truncate">
               {[
                 profile.company_address,
@@ -100,7 +95,7 @@ export function CompanyProfileCard({
           {/* Email */}
           {profile.company_email && (
             <div className="flex items-start gap-2 text-sm text-muted-foreground">
-              <Mail className="h-4 w-4 mt-0.5 flex-shrink-0" />
+              <Mail className="size-4 mt-0.5 shrink-0" />
               <span className="truncate">{profile.company_email}</span>
             </div>
           )}
@@ -108,7 +103,7 @@ export function CompanyProfileCard({
           {/* Phone */}
           {(profile.company_phone || profile.company_mobile) && (
             <div className="flex items-start gap-2 text-sm text-muted-foreground">
-              <Phone className="h-4 w-4 mt-0.5 flex-shrink-0" />
+              <Phone className="size-4 mt-0.5 shrink-0" />
               <span className="truncate">
                 {profile.company_phone || profile.company_mobile}
               </span>
@@ -119,7 +114,7 @@ export function CompanyProfileCard({
         {/* Legal Information */}
         {(profile.company_vat_id || profile.company_tax_id) && (
           <div className="flex items-start gap-2 text-sm text-muted-foreground">
-            <Scale className="h-4 w-4 mt-0.5 flex-shrink-0" />
+            <Scale className="size-4 mt-0.5 shrink-0" />
             <span className="truncate">
               {profile.company_vat_id
                 ? `USt-IdNr: ${profile.company_vat_id}`
@@ -133,7 +128,7 @@ export function CompanyProfileCard({
         {/* Bank Information */}
         {profile.iban && (
           <div className="flex items-start gap-2 text-sm text-muted-foreground">
-            <Landmark className="h-4 w-4 mt-0.5 flex-shrink-0" />
+            <Landmark className="size-4 mt-0.5 shrink-0" />
             <span className="truncate font-mono text-xs">
               {profile.iban.replace(/(.{4})/g, "$1 ").trim()}
             </span>
@@ -146,13 +141,13 @@ export function CompanyProfileCard({
           <div className="flex items-center gap-3 pt-1 text-xs text-muted-foreground">
             {profile.default_tax_rate !== null && (
               <div className="flex items-center gap-1">
-                <Percent className="h-3 w-3" />
+                <Percent className="size-3" />
                 <span>{profile.default_tax_rate}% MwSt</span>
               </div>
             )}
             {profile.default_payment_days !== null && (
               <div className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
+                <Calendar className="size-3" />
                 <span>{profile.default_payment_days} Tage</span>
               </div>
             )}

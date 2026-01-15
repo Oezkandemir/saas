@@ -154,7 +154,7 @@ export async function getUserProfile(): Promise<ActionResult<UserProfile>> {
 
 // Update user profile
 export async function updateUserProfile(
-  formData: FormData,
+  formData: FormData
 ): Promise<ActionResult<UserProfile>> {
   const user = await getCurrentUser();
 
@@ -262,7 +262,7 @@ export async function updateUserProfile(
 // Get user notifications
 export async function getUserNotifications(
   onlyUnread: boolean = false,
-  limit?: number,
+  limit?: number
 ): Promise<ActionResult<UserNotification[]>> {
   const user = await getCurrentUser();
 
@@ -395,7 +395,7 @@ export async function markAllNotificationsAsRead(): Promise<
 
 // Mark notification as read
 export async function markNotificationAsRead(
-  notificationId: string,
+  notificationId: string
 ): Promise<ActionResult<null>> {
   const user = await getCurrentUser();
 
@@ -437,7 +437,7 @@ export async function markNotificationAsRead(
 
 // Delete a single notification
 export async function deleteNotification(
-  notificationId: string,
+  notificationId: string
 ): Promise<ActionResult<null>> {
   const user = await getCurrentUser();
 
@@ -517,7 +517,7 @@ export async function deleteAllNotifications(): Promise<ActionResult<null>> {
 
 // Get user activity logs
 export async function getUserActivityLogs(
-  limit: number = 10,
+  limit: number = 10
 ): Promise<ActionResult<ActivityLog[]>> {
   const user = await getCurrentUser();
 

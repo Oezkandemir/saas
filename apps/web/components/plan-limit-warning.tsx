@@ -1,10 +1,9 @@
+import { AlertTriangle, ArrowUp } from "lucide-react";
 import Link from "next/link";
 import { getPlanLimitInfo } from "@/actions/plan-limits-actions";
-import { AlertTriangle, ArrowUp } from "lucide-react";
-
-import { LimitType } from "@/lib/plan-limits";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import type { LimitType } from "@/lib/plan-limits";
 
 interface PlanLimitWarningProps {
   limitType: LimitType;
@@ -49,7 +48,7 @@ export async function PlanLimitWarning({
       variant={isAtLimit ? "destructive" : "default"}
       className={className}
     >
-      <AlertTriangle className="h-4 w-4" />
+      <AlertTriangle className="size-4" />
       <AlertTitle>
         {isAtLimit
           ? `Limit erreicht: ${getLimitTypeLabel()}`
@@ -72,7 +71,7 @@ export async function PlanLimitWarning({
         <div className="flex gap-2 pt-2">
           <Link href="/pricing">
             <Button size="sm" variant={isAtLimit ? "default" : "outline"}>
-              <ArrowUp className="mr-2 h-4 w-4" />
+              <ArrowUp className="mr-2 size-4" />
               Jetzt upgraden
             </Button>
           </Link>

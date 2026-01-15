@@ -30,7 +30,7 @@ export async function updateUserAvatar(userId: string, formData: FormData) {
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
     if (!allowedTypes.includes(avatarFile.type)) {
       throw new Error(
-        "File type not supported. Please upload a JPEG, PNG, GIF, or WEBP image.",
+        "File type not supported. Please upload a JPEG, PNG, GIF, or WEBP image."
       );
     }
 

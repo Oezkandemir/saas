@@ -1,11 +1,5 @@
-import { Metadata } from "next";
-
-import { constructMetadata } from "@/lib/utils";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import type { Metadata } from "next";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -15,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { constructMetadata } from "@/lib/utils";
 
 export const metadata: Metadata = constructMetadata({
   title: "Customers",

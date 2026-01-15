@@ -2,18 +2,17 @@
 
 import { HelpCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-
+import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 export function PricingFaq() {
   const t = useTranslations("Pricing.faq");
-  
+
   const pricingFaqData = [
     {
       id: "item-1",
@@ -47,7 +46,7 @@ export function PricingFaq() {
         {/* Header */}
         <div className="mb-12 text-center animate-in fade-in slide-in-from-top-4 duration-700">
           <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-4">
-            <HelpCircle className="h-4 w-4" />
+            <HelpCircle className="size-4" />
             {t("badge")}
           </div>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">

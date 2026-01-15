@@ -19,7 +19,7 @@ const eventTypeSchema = z.object({
     .max(100)
     .regex(
       /^[a-z0-9-]+$/,
-      "Slug must contain only lowercase letters, numbers, and hyphens",
+      "Slug must contain only lowercase letters, numbers, and hyphens"
     ),
   title: z.string().min(1).max(200),
   description: z.string().max(1000).optional(),
@@ -74,7 +74,7 @@ export type EventType = {
  * Create a new event type
  */
 export async function createEventType(
-  input: z.infer<typeof eventTypeSchema>,
+  input: z.infer<typeof eventTypeSchema>
 ): Promise<ActionResult<EventType>> {
   const user = await getCurrentUser();
 
@@ -168,7 +168,7 @@ export async function createEventType(
  * Update an existing event type
  */
 export async function updateEventType(
-  input: z.infer<typeof eventTypeUpdateSchema>,
+  input: z.infer<typeof eventTypeUpdateSchema>
 ): Promise<ActionResult<EventType>> {
   const user = await getCurrentUser();
 
@@ -322,7 +322,7 @@ export async function deleteEventType(id: string): Promise<ActionResult<null>> {
  */
 export async function toggleEventType(
   id: string,
-  isActive: boolean,
+  isActive: boolean
 ): Promise<ActionResult<EventType>> {
   const user = await getCurrentUser();
 
@@ -379,7 +379,7 @@ export async function toggleEventType(
  * Duplicate an event type
  */
 export async function duplicateEventType(
-  id: string,
+  id: string
 ): Promise<ActionResult<EventType>> {
   const user = await getCurrentUser();
 
@@ -527,7 +527,7 @@ export async function getEventTypes(): Promise<ActionResult<EventType[]>> {
  * Get a single event type by ID
  */
 export async function getEventType(
-  id: string,
+  id: string
 ): Promise<ActionResult<EventType>> {
   const user = await getCurrentUser();
 
@@ -585,7 +585,7 @@ export async function getEventType(
  */
 export async function getPublicEventTypeByUserId(
   ownerUserId: string,
-  eventSlug: string,
+  eventSlug: string
 ): Promise<
   ActionResult<
     EventType & { owner: { name: string | null; email: string | null } }
@@ -600,7 +600,7 @@ export async function getPublicEventTypeByUserId(
         `
         *,
         owner:users!event_types_owner_user_id_fkey(id, name, email)
-      `,
+      `
       )
       .eq("owner_user_id", ownerUserId)
       .eq("slug", eventSlug)
@@ -634,7 +634,7 @@ export async function getPublicEventTypeByUserId(
  */
 export async function getPublicEventType(
   _ownerSlug: string,
-  eventSlug: string,
+  eventSlug: string
 ): Promise<
   ActionResult<
     EventType & { owner: { name: string | null; email: string | null } }
@@ -651,7 +651,7 @@ export async function getPublicEventType(
         `
         *,
         owner:users!event_types_owner_user_id_fkey(id, name, email)
-      `,
+      `
       )
       .eq("slug", eventSlug)
       .eq("is_active", true)
@@ -700,7 +700,7 @@ export async function getAllPublicEventTypes(): Promise<
         `
         *,
         owner:users!event_types_owner_user_id_fkey(id, name, email)
-      `,
+      `
       )
       .eq("is_active", true)
       .order("created_at", { ascending: false });

@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { Calendar, Mail, RotateCcw, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { toast } from "sonner";
 import {
+  type Booking,
   cancelBookingAsHost,
   deleteBooking,
   reactivateBooking,
-  type Booking,
 } from "@/actions/scheduling/bookings-actions";
-import { Calendar, Mail, RotateCcw, Trash2, X } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
 
 import {
   AlertDialog,
@@ -55,7 +55,7 @@ export function BookingActions({ booking }: BookingActionsProps) {
 
       toast.success(t("canceled") || "Booking canceled");
       router.refresh();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("cancelError") || "Failed to cancel booking");
     } finally {
       setIsCanceling(false);
@@ -77,7 +77,7 @@ export function BookingActions({ booking }: BookingActionsProps) {
 
       toast.success(t("deleted") || "Booking deleted");
       router.refresh();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("deleteError") || "Failed to delete booking");
     } finally {
       setIsDeleting(false);
@@ -99,7 +99,7 @@ export function BookingActions({ booking }: BookingActionsProps) {
 
       toast.success(t("reactivated") || "Booking reactivated");
       router.refresh();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("reactivateError") || "Failed to reactivate booking");
     } finally {
       setIsReactivating(false);
@@ -120,7 +120,7 @@ export function BookingActions({ booking }: BookingActionsProps) {
             }
             className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50"
           >
-            <Mail className="h-3.5 w-3.5" />
+            <Mail className="size-3.5" />
             <span className="text-xs">{t("sendEmail") || "E-Mail senden"}</span>
           </Button>
           <Button
@@ -129,8 +129,10 @@ export function BookingActions({ booking }: BookingActionsProps) {
             onClick={() => setShowReactivateDialog(true)}
             className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
           >
-            <RotateCcw className="h-3.5 w-3.5" />
-            <span className="text-xs">{t("reactivate") || "Buchung reaktivieren"}</span>
+            <RotateCcw className="size-3.5" />
+            <span className="text-xs">
+              {t("reactivate") || "Buchung reaktivieren"}
+            </span>
           </Button>
           <Button
             variant="default"
@@ -138,7 +140,7 @@ export function BookingActions({ booking }: BookingActionsProps) {
             onClick={() => setShowDeleteDialog(true)}
             className="gap-1.5 w-full bg-foreground text-background hover:bg-destructive hover:text-destructive-foreground font-medium"
           >
-            <Trash2 className="h-3.5 w-3.5" />
+            <Trash2 className="size-3.5" />
             <span className="text-xs">{t("delete") || "Buchung löschen"}</span>
           </Button>
         </div>
@@ -215,7 +217,7 @@ export function BookingActions({ booking }: BookingActionsProps) {
           }
           className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50"
         >
-          <Mail className="h-3.5 w-3.5" />
+          <Mail className="size-3.5" />
           <span className="text-xs">{t("sendEmail") || "E-Mail senden"}</span>
         </Button>
         <Button
@@ -224,8 +226,10 @@ export function BookingActions({ booking }: BookingActionsProps) {
           onClick={() => setShowRescheduleDialog(true)}
           className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50"
         >
-          <Calendar className="h-3.5 w-3.5" />
-          <span className="text-xs">{t("reschedule") || "Buchung umbuchen"}</span>
+          <Calendar className="size-3.5" />
+          <span className="text-xs">
+            {t("reschedule") || "Buchung umbuchen"}
+          </span>
         </Button>
         <Button
           variant="default"
@@ -233,7 +237,7 @@ export function BookingActions({ booking }: BookingActionsProps) {
           onClick={() => setShowCancelDialog(true)}
           className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
         >
-          <X className="h-3.5 w-3.5" />
+          <X className="size-3.5" />
           <span className="text-xs">{t("cancel") || "Buchung stornieren"}</span>
         </Button>
         <Button
@@ -242,7 +246,7 @@ export function BookingActions({ booking }: BookingActionsProps) {
           onClick={() => setShowDeleteDialog(true)}
           className="gap-1.5 w-full bg-foreground text-background hover:bg-destructive hover:text-destructive-foreground font-medium"
         >
-          <Trash2 className="h-3.5 w-3.5" />
+          <Trash2 className="size-3.5" />
           <span className="text-xs">{t("delete") || "Buchung löschen"}</span>
         </Button>
       </div>

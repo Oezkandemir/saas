@@ -1,33 +1,28 @@
 "use client";
 
+import { format } from "date-fns";
+import { de } from "date-fns/locale";
+import { Loader2, RefreshCw, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   getSystemMetrics,
   type SystemMetrics,
 } from "@/actions/admin-system-actions";
-import { format } from "date-fns";
-import { de } from "date-fns/locale";
-import { Loader2, RefreshCw, TrendingUp } from "lucide-react";
-
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 
 export function SystemMetricsComponent() {
   const { toast } = useToast();
   const [metrics, setMetrics] = useState<SystemMetrics[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-
-  useEffect(() => {
-    loadMetrics();
-  }, []);
 
   const loadMetrics = async () => {
     setIsLoading(true);
@@ -42,7 +37,7 @@ export function SystemMetricsComponent() {
           description: result.error || "Metriken konnten nicht geladen werden",
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: "Fehler",
@@ -53,6 +48,10 @@ export function SystemMetricsComponent() {
     }
   };
 
+  useEffect(() => {
+    loadMetrics();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
@@ -61,7 +60,7 @@ export function SystemMetricsComponent() {
         title: "Aktualisiert",
         description: "System-Metriken wurden aktualisiert",
       });
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: "Fehler",
@@ -78,16 +77,16 @@ export function SystemMetricsComponent() {
       if (!acc[metric.component]) {
         acc[metric.component] = [];
       }
-      acc[metric.component].push(metric);
+      acc[metric.component]?.push(metric);
       return acc;
     },
-    {} as Record<string, SystemMetrics[]>,
+    {} as Record<string, SystemMetrics[]>
   );
 
   // Get latest metrics for each component
   const latestMetrics = Object.entries(metricsByComponent).map(
     ([component, componentMetrics]) => {
-      const latest = componentMetrics[0]; // Already sorted by date desc
+      const latest = componentMetrics[0]!; // Already sorted by date desc
       return {
         component,
         metric: latest.metricName,
@@ -95,7 +94,7 @@ export function SystemMetricsComponent() {
         unit: latest.unit,
         timestamp: latest.timestamp,
       };
-    },
+    }
   );
 
   if (isLoading) {
@@ -158,7 +157,7 @@ export function SystemMetricsComponent() {
                         {metric.metric}
                       </p>
                     </div>
-                    <TrendingUp className="h-8 w-8 text-muted-foreground" />
+                    <TrendingUp className="size-8 text-muted-foreground" />
                   </div>
                 </div>
               ))}
@@ -176,13 +175,15 @@ export function SystemMetricsComponent() {
                           {component}
                         </Badge>
                         <span className="text-xs text-muted-foreground">
-                          {format(
-                            new Date(componentMetrics[0].timestamp),
-                            "PPp",
-                            {
-                              locale: de,
-                            },
-                          )}
+                          {componentMetrics[0]?.timestamp
+                            ? format(
+                                new Date(componentMetrics[0].timestamp),
+                                "PPp",
+                                {
+                                  locale: de,
+                                }
+                              )
+                            : "N/A"}
                         </span>
                       </div>
                       <div className="space-y-1">
@@ -202,7 +203,7 @@ export function SystemMetricsComponent() {
                         ))}
                       </div>
                     </div>
-                  ),
+                  )
                 )}
               </div>
             </div>

@@ -1,8 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { Booking } from "@/actions/scheduling/bookings-actions";
-import { getBooking } from "@/actions/scheduling/bookings-actions";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
 import {
@@ -16,8 +13,18 @@ import {
   XCircle,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-
-import { formatDurationHours } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import type { Booking } from "@/actions/scheduling/bookings-actions";
+import { getBooking } from "@/actions/scheduling/bookings-actions";
+import { BookingActions } from "@/components/scheduling/booking-actions";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -25,15 +32,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
-import { BookingActions } from "@/components/scheduling/booking-actions";
+import { formatDurationHours } from "@/lib/utils";
 
 interface BookingDrawerProps {
   bookingId: string | null;
@@ -78,7 +77,10 @@ export function BookingDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-[min(400px,calc(100%-16px))] overflow-y-auto">
+      <SheetContent
+        side="right"
+        className="w-[min(400px,calc(100%-16px))] overflow-y-auto"
+      >
         <SheetHeader>
           <div className="flex items-center justify-between gap-3">
             <SheetTitle>
@@ -91,16 +93,16 @@ export function BookingDrawer({
             {booking && (
               <Badge
                 variant={booking.status === "scheduled" ? "default" : "outline"}
-                className="flex-shrink-0"
+                className="shrink-0"
               >
                 {booking.status === "scheduled" ? (
                   <>
-                    <CheckCircle2 className="mr-1 h-3 w-3" />
+                    <CheckCircle2 className="mr-1 size-3" />
                     {t("status.scheduled") || "Geplant"}
                   </>
                 ) : (
                   <>
-                    <XCircle className="mr-1 h-3 w-3" />
+                    <XCircle className="mr-1 size-3" />
                     {t("status.canceled") || "Storniert"}
                   </>
                 )}
@@ -119,18 +121,21 @@ export function BookingDrawer({
           </div>
         ) : booking && startDate && endDate ? (
           <div className="mt-3 flex flex-col">
-            <Accordion type="multiple" defaultValue={["booking", "participant"]} className="w-full">
+            <Accordion
+              type="multiple"
+              defaultValue={["booking", "participant"]}
+              className="w-full"
+            >
               {/* Booking Information */}
               <AccordionItem value="booking">
                 <AccordionTrigger className="text-sm font-semibold">
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                    <Calendar className="size-3.5 text-muted-foreground" />
                     {t("bookingInfo") || "Buchungsinformationen"}
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-3 pt-1">
-
                     <div className="space-y-1">
                       <p className="text-xs text-muted-foreground">
                         {t("eventType") || "Event Type"}
@@ -144,7 +149,7 @@ export function BookingDrawer({
 
                     <div className="space-y-1">
                       <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                        <Clock className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                        <Clock className="size-3 text-blue-600 dark:text-blue-400" />
                         <span className="text-blue-600 dark:text-blue-400 font-medium">
                           {t("eventDate") || t("date") || "Event Datum"}
                         </span>
@@ -185,7 +190,10 @@ export function BookingDrawer({
                             {t("duration") || "Dauer"}
                           </p>
                           <p className="text-sm font-medium">
-                            {formatDurationHours(booking.duration_hours, locale)}
+                            {formatDurationHours(
+                              booking.duration_hours,
+                              locale
+                            )}
                           </p>
                         </div>
                       </>
@@ -196,7 +204,7 @@ export function BookingDrawer({
                         <Separator />
                         <div className="space-y-1">
                           <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                            <Calendar className="h-3 w-3 text-green-600 dark:text-green-400" />
+                            <Calendar className="size-3 text-green-600 dark:text-green-400" />
                             <span className="text-green-600 dark:text-green-400 font-medium">
                               {t("bookedAt") || "Gebucht am"}
                             </span>
@@ -205,7 +213,7 @@ export function BookingDrawer({
                             {format(
                               new Date(booking.created_at),
                               "d. MMMM yyyy 'um' HH:mm",
-                              { locale: dateLocale },
+                              { locale: dateLocale }
                             )}
                           </p>
                         </div>
@@ -219,7 +227,7 @@ export function BookingDrawer({
               <AccordionItem value="participant">
                 <AccordionTrigger className="text-sm font-semibold">
                   <div className="flex items-center gap-2">
-                    <User className="h-3.5 w-3.5 text-muted-foreground" />
+                    <User className="size-3.5 text-muted-foreground" />
                     {t("participantInfo") || "Teilnehmerinformationen"}
                   </div>
                 </AccordionTrigger>
@@ -227,17 +235,19 @@ export function BookingDrawer({
                   <div className="space-y-3 pt-1">
                     <div className="space-y-1">
                       <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                        <User className="h-3 w-3" />
+                        <User className="size-3" />
                         {t("name") || "Name"}
                       </p>
-                      <p className="text-sm font-medium">{booking.invitee_name}</p>
+                      <p className="text-sm font-medium">
+                        {booking.invitee_name}
+                      </p>
                     </div>
 
                     <Separator />
 
                     <div className="space-y-1">
                       <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                        <Mail className="h-3 w-3" />
+                        <Mail className="size-3" />
                         {t("email") || "E-Mail"}
                       </p>
                       <a
@@ -253,7 +263,7 @@ export function BookingDrawer({
                         <Separator />
                         <div className="space-y-1">
                           <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                            <Users className="h-3 w-3" />
+                            <Users className="size-3" />
                             {t("participants") || "Teilnehmer"}
                           </p>
                           <p className="text-sm font-medium">
@@ -262,14 +272,16 @@ export function BookingDrawer({
                           {booking.participant_names &&
                             booking.participant_names.length > 0 && (
                               <div className="mt-2 space-y-1">
-                                {booking.participant_names.map((name, index) => (
-                                  <p
-                                    key={index}
-                                    className="text-xs text-muted-foreground"
-                                  >
-                                    • {name}
-                                  </p>
-                                ))}
+                                {booking.participant_names.map(
+                                  (name, index) => (
+                                    <p
+                                      key={index}
+                                      className="text-xs text-muted-foreground"
+                                    >
+                                      • {name}
+                                    </p>
+                                  )
+                                )}
                               </div>
                             )}
                         </div>
@@ -284,18 +296,19 @@ export function BookingDrawer({
                 <AccordionItem value="notes">
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
-                      <MessageSquare className="h-3.5 w-3.5 text-muted-foreground" />
+                      <MessageSquare className="size-3.5 text-muted-foreground" />
                       {t("notes") || "Notizen"}
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="pt-1">
-                      <p className="text-sm whitespace-pre-wrap">{booking.invitee_notes}</p>
+                      <p className="text-sm whitespace-pre-wrap">
+                        {booking.invitee_notes}
+                      </p>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
               )}
-
             </Accordion>
 
             {/* Actions - Immer ganz unten, außerhalb der Accordions */}

@@ -32,13 +32,16 @@ export async function syncResendInboundEmail(emailId: string): Promise<{
 
     // Fetch inbound email from Resend API
     // Use the correct endpoint for inbound/received emails
-    const response = await fetch(`https://api.resend.com/emails/receiving/${emailId}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `https://api.resend.com/emails/receiving/${emailId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${env.RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -112,8 +115,16 @@ export async function syncResendInboundEmail(emailId: string): Promise<{
         from_email: fromEmail,
         from_name: fromName,
         to: toArray,
-        cc: Array.isArray(emailData.cc) ? emailData.cc : emailData.cc ? [emailData.cc] : [],
-        bcc: Array.isArray(emailData.bcc) ? emailData.bcc : emailData.bcc ? [emailData.bcc] : [],
+        cc: Array.isArray(emailData.cc)
+          ? emailData.cc
+          : emailData.cc
+            ? [emailData.cc]
+            : [],
+        bcc: Array.isArray(emailData.bcc)
+          ? emailData.bcc
+          : emailData.bcc
+            ? [emailData.bcc]
+            : [],
         subject: emailData.subject || null,
         text_content: emailData.text || null,
         html_content: emailData.html || null,
@@ -134,7 +145,10 @@ export async function syncResendInboundEmail(emailId: string): Promise<{
     logger.info(`Successfully synced inbound email: ${emailId}`);
 
     // Handle attachments if present
-    if (Array.isArray(emailData.attachments) && emailData.attachments.length > 0) {
+    if (
+      Array.isArray(emailData.attachments) &&
+      emailData.attachments.length > 0
+    ) {
       const attachments = emailData.attachments.map((attachment: any) => ({
         inbound_email_id: insertedEmail.id,
         attachment_id: attachment.id || attachment.filename,
@@ -151,7 +165,9 @@ export async function syncResendInboundEmail(emailId: string): Promise<{
       if (attachmentError) {
         logger.error("Error inserting attachments:", attachmentError);
       } else {
-        logger.info(`Saved ${attachments.length} attachment(s) for email ${emailId}`);
+        logger.info(
+          `Saved ${attachments.length} attachment(s) for email ${emailId}`
+        );
       }
     }
 

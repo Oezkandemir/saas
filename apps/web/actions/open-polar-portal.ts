@@ -18,7 +18,7 @@ export type responseAction = {
  * Note: redirect() throws a NEXT_REDIRECT exception which should not be caught
  */
 export async function openPolarPortal(
-  customerId: string,
+  customerId: string
 ): Promise<responseAction> {
   let portalUrl: string;
 
@@ -36,7 +36,7 @@ export async function openPolarPortal(
     }
 
     logger.info(
-      `Generating Polar customer portal link for customer: ${customerId}`,
+      `Generating Polar customer portal link for customer: ${customerId}`
     );
 
     // Generate authenticated portal link
@@ -63,7 +63,7 @@ export async function openPolarPortal(
  * First gets the customer ID from the subscription, then opens the portal
  */
 export async function openPolarPortalFromSubscription(
-  subscriptionId: string,
+  subscriptionId: string
 ): Promise<responseAction> {
   try {
     const session = await auth();
@@ -86,7 +86,7 @@ export async function openPolarPortalFromSubscription(
 
     if (!customerId) {
       logger.error(
-        "Cannot open Polar portal: No customer ID found in subscription",
+        "Cannot open Polar portal: No customer ID found in subscription"
       );
       throw new Error("No customer ID found in subscription");
     }
@@ -96,7 +96,7 @@ export async function openPolarPortalFromSubscription(
   } catch (error: any) {
     logger.error(
       "Error opening Polar customer portal from subscription",
-      error,
+      error
     );
 
     return {
@@ -147,7 +147,7 @@ export async function openPolarPortalFallback(): Promise<responseAction> {
     if (userData?.polar_subscription_id) {
       logger.info("Fallback: Found subscription ID in users table");
       return await openPolarPortalFromSubscription(
-        userData.polar_subscription_id,
+        userData.polar_subscription_id
       );
     }
 
@@ -191,7 +191,7 @@ export async function openPolarPortalFallback(): Promise<responseAction> {
           })
           .eq("id", session.user.id);
         return await openPolarPortalFromSubscription(
-          subscriptionData.polar_subscription_id,
+          subscriptionData.polar_subscription_id
         );
       }
     }
@@ -199,7 +199,7 @@ export async function openPolarPortalFallback(): Promise<responseAction> {
     // If still not found, try to find customer ID by email from Polar API
     if (session.user.email) {
       logger.info(
-        "Fallback: No Polar data found, attempting to find customer by email",
+        "Fallback: No Polar data found, attempting to find customer by email"
       );
 
       try {
@@ -219,14 +219,14 @@ export async function openPolarPortalFallback(): Promise<responseAction> {
       } catch (emailSearchError: any) {
         logger.error(
           "Fallback: Error searching for customer by email",
-          emailSearchError,
+          emailSearchError
         );
       }
     }
 
     // If still not found, subscriptions will be synced automatically via webhooks
     logger.info(
-      "No Polar data found - subscription will be synced automatically via webhooks",
+      "No Polar data found - subscription will be synced automatically via webhooks"
     );
 
     // Return error - user needs to wait for webhook or complete checkout

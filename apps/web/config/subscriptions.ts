@@ -1,4 +1,4 @@
-import { PlansRow, SubscriptionPlan } from "types";
+import type { PlansRow, SubscriptionPlan } from "types";
 import { env } from "@/env.mjs";
 import { mockPolarIds } from "@/lib/mocks";
 
@@ -49,16 +49,12 @@ export const pricingData: SubscriptionPlan[] = [
       yearly: 100,
     },
     stripeIds: {
-      monthly:
-        env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID &&
-        env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID.startsWith("price_")
-          ? env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID
-          : null,
-      yearly:
-        env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID &&
-        env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID.startsWith("price_")
-          ? env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID
-          : null,
+      monthly: env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID?.startsWith("price_")
+        ? env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID
+        : null,
+      yearly: env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID?.startsWith("price_")
+        ? env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID
+        : null,
     },
     polarIds: {
       monthly:
@@ -97,16 +93,16 @@ export const pricingData: SubscriptionPlan[] = [
     },
     stripeIds: {
       // Use BUSINESS plan IDs for Enterprise plan
-      monthly:
-        env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID &&
-        env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID.startsWith("price_")
-          ? env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID
-          : null,
-      yearly:
-        env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID &&
-        env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID.startsWith("price_")
-          ? env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID
-          : null,
+      monthly: env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID?.startsWith(
+        "price_"
+      )
+        ? env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID
+        : null,
+      yearly: env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID?.startsWith(
+        "price_"
+      )
+        ? env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID
+        : null,
     },
     polarIds: {
       monthly:

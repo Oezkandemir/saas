@@ -1,15 +1,22 @@
 "use client";
 
+import { ArrowRightLeft, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   applyTimeSlotsToAllEvents,
   getTimeSlots,
   type TimeSlot,
 } from "@/actions/scheduling/time-slots-actions";
-import { ArrowRightLeft, Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
-
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -19,14 +26,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 interface ApplyTimeSlotsToAllProps {
   sourceEventTypeId: string;
@@ -49,12 +48,12 @@ export function ApplyTimeSlotsToAll({
         setTimeSlots(result.data);
       } else {
         toast.error(
-          t("timeSlots.loadError") || "Fehler beim Laden der Zeitslots",
+          t("timeSlots.loadError") || "Fehler beim Laden der Zeitslots"
         );
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error(
-        t("timeSlots.loadError") || "Fehler beim Laden der Zeitslots",
+        t("timeSlots.loadError") || "Fehler beim Laden der Zeitslots"
       );
     } finally {
       setIsLoadingSlots(false);
@@ -86,22 +85,22 @@ export function ApplyTimeSlotsToAll({
       if (result.success && result.data) {
         toast.success(
           t("applyToAll.success", { count: result.data.created }) ||
-            `${result.data.created} Zeitslots auf alle Events angewendet`,
+            `${result.data.created} Zeitslots auf alle Events angewendet`
         );
         if (result.data.errors.length > 0) {
           toast.warning(
             t("applyToAll.partialSuccess", {
               errors: result.data.errors.length,
-            }) || `${result.data.errors.length} Fehler aufgetreten`,
+            }) || `${result.data.errors.length} Fehler aufgetreten`
           );
         }
         setIsDialogOpen(false);
       } else {
         toast.error(
-          result.error || t("applyToAll.error") || "Fehler beim Anwenden",
+          result.error || t("applyToAll.error") || "Fehler beim Anwenden"
         );
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("applyToAll.error") || "Fehler beim Anwenden");
     } finally {
       setIsLoading(false);
@@ -127,7 +126,7 @@ export function ApplyTimeSlotsToAll({
               onClick={handleOpenDialog}
               className="w-full"
             >
-              <ArrowRightLeft className="h-4 w-4 mr-2" />
+              <ArrowRightLeft className="size-4 mr-2" />
               {t("applyToAll.button") || "Auf alle Kurse anwenden"}
             </Button>
           </DialogTrigger>
@@ -145,7 +144,7 @@ export function ApplyTimeSlotsToAll({
 
             {isLoadingSlots ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                <Loader2 className="size-6 animate-spin text-muted-foreground" />
               </div>
             ) : timeSlots.length === 0 ? (
               <div className="text-center py-8 text-sm text-muted-foreground">
@@ -197,7 +196,7 @@ export function ApplyTimeSlotsToAll({
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="size-4 mr-2 animate-spin" />
                     {t("applyToAll.applying") || "Wird angewendet..."}
                   </>
                 ) : (

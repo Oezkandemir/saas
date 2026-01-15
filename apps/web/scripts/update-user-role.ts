@@ -12,7 +12,7 @@ const newRole = process.argv[3];
 if (!userId || !newRole) {
   logger.error("Usage: npx tsx scripts/update-user-role.ts <userId> <role>");
   logger.error(
-    "Example: npx tsx scripts/update-user-role.ts bfe22e7b-05a2-48c8-ab53-dc4542dc9367 ADMIN",
+    "Example: npx tsx scripts/update-user-role.ts bfe22e7b-05a2-48c8-ab53-dc4542dc9367 ADMIN"
   );
   process.exit(1);
 }
@@ -22,15 +22,21 @@ if (newRole !== "ADMIN" && newRole !== "USER") {
   process.exit(1);
 }
 
+// Type assertion: userId and newRole are guaranteed to be strings after validation
+const validatedUserId: string = userId;
+const validatedRole: "ADMIN" | "USER" = newRole as "ADMIN" | "USER";
+
 async function updateUserRole() {
   try {
-    logger.debug(`Updating user ${userId} to role ${newRole}...`);
+    logger.debug(
+      `Updating user ${validatedUserId} to role ${validatedRole}...`
+    );
 
     // Update role in database
     const { error: dbError } = await supabaseAdmin
       .from("users")
-      .update({ role: newRole })
-      .eq("id", userId);
+      .update({ role: validatedRole })
+      .eq("id", validatedUserId);
 
     if (dbError) {
       logger.error("Error updating database:", dbError);
@@ -41,20 +47,20 @@ async function updateUserRole() {
 
     // Get current user metadata from Auth
     const { data: authUserData, error: authFetchError } =
-      await supabaseAdmin.auth.admin.getUserById(userId);
+      await supabaseAdmin.auth.admin.getUserById(validatedUserId);
 
-    if (authFetchError) {
+    if (authFetchError || !authUserData?.user) {
       logger.error("Error fetching auth user:", authFetchError);
       process.exit(1);
     }
 
     // Update Auth metadata
-    const currentMetadata = authUserData?.user?.user_metadata || {};
+    const currentMetadata = authUserData.user.user_metadata || {};
     const { error: authUpdateError } =
-      await supabaseAdmin.auth.admin.updateUserById(userId, {
+      await supabaseAdmin.auth.admin.updateUserById(validatedUserId, {
         user_metadata: {
           ...currentMetadata,
-          role: newRole,
+          role: validatedRole,
         },
       });
 
@@ -64,7 +70,9 @@ async function updateUserRole() {
     }
 
     logger.debug("✓ Auth metadata updated");
-    logger.debug(`\nSuccessfully updated user ${userId} to role ${newRole}`);
+    logger.debug(
+      `\nSuccessfully updated user ${validatedUserId} to role ${validatedRole}`
+    );
   } catch (error) {
     logger.error("Unexpected error:", error);
     process.exit(1);
@@ -72,6 +80,3 @@ async function updateUserRole() {
 }
 
 updateUserRole();
-
-
-

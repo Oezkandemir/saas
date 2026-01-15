@@ -1,12 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  deleteAllErrors,
-  getRecentErrors,
-  resolveError,
-  type SystemErrorRecord,
-} from "@/actions/system-monitoring-actions";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import {
@@ -16,17 +9,13 @@ import {
   Loader2,
   XCircle,
 } from "lucide-react";
-
-import { cn } from "@/lib/utils";
-import { useToast } from "@/components/ui/use-toast";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
 import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  deleteAllErrors,
+  getRecentErrors,
+  resolveError,
+  type SystemErrorRecord,
+} from "@/actions/system-monitoring-actions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,6 +27,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 export function SystemErrors() {
   const { toast } = useToast();
@@ -45,10 +44,6 @@ export function SystemErrors() {
   const [isLoading, setIsLoading] = useState(true);
   const [resolvingId, setResolvingId] = useState<string | null>(null);
   const [isDeletingAll, setIsDeletingAll] = useState(false);
-
-  useEffect(() => {
-    loadErrors();
-  }, []);
 
   const loadErrors = async () => {
     setIsLoading(true);
@@ -63,7 +58,7 @@ export function SystemErrors() {
           description: result.message,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: "Fehler",
@@ -73,6 +68,10 @@ export function SystemErrors() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadErrors();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleResolve = async (errorId: string) => {
     setResolvingId(errorId);
@@ -91,7 +90,7 @@ export function SystemErrors() {
           description: result.message,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: "Fehler",
@@ -119,7 +118,7 @@ export function SystemErrors() {
           description: result.message,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: "Fehler",
@@ -177,7 +176,7 @@ export function SystemErrors() {
 
   const unresolvedErrors = errors.filter((e) => !e.resolved);
   const criticalErrors = unresolvedErrors.filter(
-    (e) => e.errorType === "critical",
+    (e) => e.errorType === "critical"
   );
 
   return (

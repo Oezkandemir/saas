@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { cn, resolveStaticPath } from "@/lib/utils";
 
@@ -49,7 +49,7 @@ export function BlurImage({
       <div
         className={cn(
           "flex items-center justify-center bg-muted/30",
-          className,
+          className
         )}
         style={{ width: `${width}px`, height: `${height}px` }}
       >
@@ -70,7 +70,7 @@ export function BlurImage({
         className={cn(
           "duration-700 ease-in-out",
           isLoading ? "scale-105 blur-sm" : "scale-100 blur-0",
-          className,
+          className
         )}
         placeholder={placeholder || (blurDataURL ? "blur" : "empty")}
         blurDataURL={blurDataURL}

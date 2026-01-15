@@ -48,7 +48,7 @@ export function reportWebVital(metric: WebVitals) {
       rating: metric.rating,
       delta: metric.delta,
       navigationType: metric.navigationType,
-    },
+    }
   ).catch((error) => {
     // Silently fail to avoid breaking the app
     console.error("Failed to report Web Vital:", error);
@@ -60,7 +60,7 @@ export function reportWebVital(metric: WebVitals) {
  */
 export async function measurePerformance<T>(
   name: string,
-  fn: () => Promise<T>,
+  fn: () => Promise<T>
 ): Promise<T> {
   const start = performance.now();
   try {
@@ -80,7 +80,7 @@ export async function measurePerformance<T>(
       recordMetric("api", `performance_${name}_error`, duration, "ms").catch(
         () => {
           // Silently fail
-        },
+        }
       );
     }
     throw error;
@@ -92,7 +92,7 @@ export async function measurePerformance<T>(
  */
 export async function trackQueryPerformance<T>(
   queryName: string,
-  fn: () => Promise<T>,
+  fn: () => Promise<T>
 ): Promise<T> {
   return measurePerformance(`db_query_${queryName}`, fn);
 }
@@ -102,7 +102,7 @@ export async function trackQueryPerformance<T>(
  */
 export async function trackAPIPerformance<T>(
   route: string,
-  fn: () => Promise<T>,
+  fn: () => Promise<T>
 ): Promise<T> {
   return measurePerformance(`api_route_${route.replace(/\//g, "_")}`, fn);
 }
@@ -133,7 +133,7 @@ export const performanceMonitor = {
     name: string,
     value: number,
     unit: string = "ms",
-    metadata?: Record<string, unknown>,
+    metadata?: Record<string, unknown>
   ) => {
     // Only report in production
     if (process.env.NODE_ENV !== "production") {
@@ -156,7 +156,7 @@ export const performanceMonitor = {
       }).catch(() => {
         // Silently fail to avoid breaking the app
       });
-    } catch (error) {
+    } catch (_error) {
       // Silently fail to avoid breaking the app
     }
   },

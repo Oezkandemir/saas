@@ -1,13 +1,13 @@
 "use client";
 
-import * as React from "react";
-import { useRouter } from "next/navigation";
-import {
-  getEventType,
-  type EventType,
-} from "@/actions/scheduling/event-types-actions";
 import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import * as React from "react";
+import {
+  type EventType,
+  getEventType,
+} from "@/actions/scheduling/event-types-actions";
 
 import { ButtonRoot } from "@/components/ui/button";
 import {
@@ -54,7 +54,8 @@ export function EditEventTypeDrawer({
   const router = useRouter();
   const t = useTranslations("Scheduling.eventTypes");
   const [internalOpen, setInternalOpen] = React.useState(false);
-  const [currentEventType, setCurrentEventType] = React.useState<EventType>(eventType);
+  const [currentEventType, setCurrentEventType] =
+    React.useState<EventType>(eventType);
 
   const open = controlledOpen ?? internalOpen;
   const setOpen = controlledOnOpenChange ?? setInternalOpen;
@@ -88,8 +89,8 @@ export function EditEventTypeDrawer({
                 {t("edit") || "Event Type bearbeiten"}
               </DrawerNS.Title>
               <DrawerNS.Close asChild>
-                <Button.Root variant="ghost" size="icon" className="h-8 w-8">
-                  <X className="h-4 w-4" />
+                <Button.Root variant="ghost" size="icon" className="size-8">
+                  <X className="size-4" />
                 </Button.Root>
               </DrawerNS.Close>
             </div>
@@ -109,4 +110,3 @@ export function EditEventTypeDrawer({
     </DrawerNS.Root>
   );
 }
-

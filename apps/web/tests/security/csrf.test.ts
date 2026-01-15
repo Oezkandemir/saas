@@ -60,7 +60,7 @@ describe("CSRF Protection", () => {
 
     it("should return true for valid token", async () => {
       const token = generateCSRFToken();
-      const hashedToken = require("crypto")
+      const hashedToken = require("node:crypto")
         .createHash("sha256")
         .update(token)
         .digest("hex");
@@ -76,7 +76,7 @@ describe("CSRF Protection", () => {
     it("should return false for invalid token", async () => {
       const token = generateCSRFToken();
       const wrongToken = generateCSRFToken();
-      const hashedWrongToken = require("crypto")
+      const hashedWrongToken = require("node:crypto")
         .createHash("sha256")
         .update(wrongToken)
         .digest("hex");
@@ -100,7 +100,7 @@ describe("CSRF Protection", () => {
     it("should validate token if session exists", async () => {
       vi.mocked(getSession).mockResolvedValue({} as any);
       const token = generateCSRFToken();
-      const hashedToken = require("crypto")
+      const hashedToken = require("node:crypto")
         .createHash("sha256")
         .update(token)
         .digest("hex");
@@ -166,7 +166,7 @@ describe("CSRF Protection", () => {
     it("should return valid for POST with valid token", async () => {
       vi.mocked(getSession).mockResolvedValue({} as any);
       const token = generateCSRFToken();
-      const hashedToken = require("crypto")
+      const hashedToken = require("node:crypto")
         .createHash("sha256")
         .update(token)
         .digest("hex");

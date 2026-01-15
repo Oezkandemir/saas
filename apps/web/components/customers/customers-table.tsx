@@ -1,9 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Customer, deleteCustomer } from "@/actions/customers-actions";
 import {
   Building2,
   ChevronRight,
@@ -15,20 +11,12 @@ import {
   QrCode,
   Trash2,
 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { type Customer, deleteCustomer } from "@/actions/customers-actions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,6 +27,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenuRoot as DropdownMenu,
   DropdownMenuContent,
@@ -46,6 +37,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface CustomersTableProps {
   customers: Customer[];
@@ -73,7 +72,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
         description: t("toast.deletedDescription"),
       });
       router.refresh();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("toast.deleteError"), {
         description: t("toast.deleteErrorDescription"),
       });
@@ -110,7 +109,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                     </h3>
                     {customer.company && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Building2 className="h-3.5 w-3.5 shrink-0" />
+                        <Building2 className="size-3.5 shrink-0" />
                         <span className="truncate">{customer.company}</span>
                       </div>
                     )}
@@ -118,7 +117,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                   <div className="flex items-center gap-2 shrink-0">
                     {customer.qr_code && (
                       <Badge variant="secondary" className="text-xs">
-                        <QrCode className="h-3 w-3" />
+                        <QrCode className="size-3" />
                       </Badge>
                     )}
                     <DropdownMenu>
@@ -130,15 +129,15 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                           variant="ghost"
                           size="icon"
                           disabled={deletingId === customer.id}
-                          className="h-8 w-8 shrink-0"
+                          className="size-8 shrink-0"
                         >
-                          <MoreVertical className="h-4 w-4" />
+                          <MoreVertical className="size-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
                         <DropdownMenuItem asChild>
                           <Link href={`/dashboard/customers/${customer.id}`}>
-                            <Eye className="mr-2 h-4 w-4" />
+                            <Eye className="mr-2 size-4" />
                             {t("viewDetails")}
                           </Link>
                         </DropdownMenuItem>
@@ -146,7 +145,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                           <Link
                             href={`/dashboard/customers/${customer.id}/edit`}
                           >
-                            <Pencil className="mr-2 h-4 w-4" />
+                            <Pencil className="mr-2 size-4" />
                             {t("edit")}
                           </Link>
                         </DropdownMenuItem>
@@ -155,7 +154,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                           onClick={() => handleDeleteClick(customer.id)}
                           className="text-destructive focus:text-destructive"
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
+                          <Trash2 className="mr-2 size-4" />
                           {t("delete")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -167,7 +166,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                 <div className="space-y-2">
                   {customer.email && (
                     <div className="flex items-center gap-2 text-sm">
-                      <Mail className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <Mail className="size-3.5 text-muted-foreground shrink-0" />
                       <span className="text-muted-foreground truncate">
                         {customer.email}
                       </span>
@@ -175,7 +174,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                   )}
                   {customer.phone && (
                     <div className="flex items-center gap-2 text-sm">
-                      <Phone className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <Phone className="size-3.5 text-muted-foreground shrink-0" />
                       <span className="text-muted-foreground truncate">
                         {customer.phone}
                       </span>
@@ -192,10 +191,10 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                           year: "numeric",
                           month: "short",
                           day: "numeric",
-                        },
+                        }
                       )}
                     </span>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    <ChevronRight className="size-4 text-muted-foreground" />
                   </div>
                 </div>
               </Link>
@@ -242,7 +241,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                     <div className="flex flex-col gap-1">
                       {customer.email && (
                         <div className="flex items-center gap-2 text-sm">
-                          <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                          <Mail className="size-3.5 text-muted-foreground" />
                           <span className="text-muted-foreground">
                             {customer.email}
                           </span>
@@ -250,7 +249,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                       )}
                       {customer.phone && (
                         <div className="flex items-center gap-2 text-sm">
-                          <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                          <Phone className="size-3.5 text-muted-foreground" />
                           <span className="text-muted-foreground">
                             {customer.phone}
                           </span>
@@ -264,7 +263,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                   <TableCell>
                     {customer.company ? (
                       <div className="flex items-center gap-2">
-                        <Building2 className="h-4 w-4 text-muted-foreground" />
+                        <Building2 className="size-4 text-muted-foreground" />
                         <span>{customer.company}</span>
                       </div>
                     ) : (
@@ -274,7 +273,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                   <TableCell>
                     {customer.qr_code ? (
                       <Badge variant="secondary" className="font-mono text-xs">
-                        <QrCode className="h-3 w-3 mr-1" />
+                        <QrCode className="size-3 mr-1" />
                         {customer.qr_code}
                       </Badge>
                     ) : (
@@ -289,7 +288,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                           year: "numeric",
                           month: "short",
                           day: "numeric",
-                        },
+                        }
                       )}
                     </span>
                   </TableCell>
@@ -303,15 +302,15 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                           variant="ghost"
                           size="icon"
                           disabled={deletingId === customer.id}
-                          className="h-8 w-8"
+                          className="size-8"
                         >
-                          <MoreVertical className="h-4 w-4" />
+                          <MoreVertical className="size-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
                         <DropdownMenuItem asChild>
                           <Link href={`/dashboard/customers/${customer.id}`}>
-                            <Eye className="mr-2 h-4 w-4" />
+                            <Eye className="mr-2 size-4" />
                             {t("viewDetails")}
                           </Link>
                         </DropdownMenuItem>
@@ -319,7 +318,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                           <Link
                             href={`/dashboard/customers/${customer.id}/edit`}
                           >
-                            <Pencil className="mr-2 h-4 w-4" />
+                            <Pencil className="mr-2 size-4" />
                             {t("edit")}
                           </Link>
                         </DropdownMenuItem>
@@ -328,7 +327,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                           onClick={() => handleDeleteClick(customer.id)}
                           className="text-destructive focus:text-destructive"
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
+                          <Trash2 className="mr-2 size-4" />
                           {t("delete")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>

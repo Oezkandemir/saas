@@ -44,7 +44,7 @@ class Logger {
       const errorKeys =
         typeof error === "object" && error !== null
           ? Object.keys(error).filter(
-              (key) => error[key] !== undefined && error[key] !== null,
+              (key) => error[key] !== undefined && error[key] !== null
             )
           : [];
 
@@ -60,7 +60,7 @@ class Logger {
             } else {
               console.error(
                 this.formatMessage("error", message),
-                "(Empty error object - check console for details)",
+                "(Empty error object - check console for details)"
               );
               // Try to log error properties that might not be enumerable
               if (error instanceof Error) {
@@ -77,7 +77,7 @@ class Logger {
           const errorString = this.serializeError(error);
           console.error(
             this.formatMessage("error", message),
-            errorString || error,
+            errorString || error
           );
         }
       } else {
@@ -132,7 +132,7 @@ class Logger {
     try {
       const serialized = JSON.stringify(
         error,
-        Object.getOwnPropertyNames(error),
+        Object.getOwnPropertyNames(error)
       );
       if (
         serialized &&

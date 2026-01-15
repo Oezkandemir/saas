@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-
-import { siteConfig } from "@/config/site";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import { Icons } from "@/components/shared/icons";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
 
 export default function VerifiedPage() {
   const router = useRouter();

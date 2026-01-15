@@ -1,8 +1,7 @@
-import * as React from "react";
-
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import type * as React from "react";
 import { Icons } from "@/components/shared/icons";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface EmptyPlaceholderProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -15,7 +14,7 @@ export function EmptyPlaceholder({
     <div
       className={cn(
         "flex flex-1 items-center justify-center rounded-lg border border-dashed p-8 text-center shadow-sm",
-        className,
+        className
       )}
       {...props}
     >
@@ -79,7 +78,7 @@ EmptyPlaceholder.Description = function EmptyPlaceholderDescription({
     <p
       className={cn(
         "text-sm text-muted-foreground mb-6 text-center max-w-md",
-        className,
+        className
       )}
       {...props}
     />

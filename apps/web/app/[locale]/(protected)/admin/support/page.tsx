@@ -1,12 +1,11 @@
-import { redirect } from "next/navigation";
-import { getAllTickets } from "@/actions/support-ticket-actions";
 import { MessageSquare } from "lucide-react";
+import { redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { logger } from "@/lib/logger";
-import { getCurrentUser } from "@/lib/session";
+import { getAllTickets } from "@/actions/support-ticket-actions";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { TicketAccordionTable } from "@/components/support/ticket-accordion-table";
+import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -56,7 +55,7 @@ export default async function AdminSupportPage(props: Props) {
       <UnifiedPageLayout
         title={tSupport("pageTitle")}
         description={tSupport("loadingError")}
-        icon={<MessageSquare className="h-4 w-4 text-primary" />}
+        icon={<MessageSquare className="size-4 text-primary" />}
       >
         <div />
       </UnifiedPageLayout>
@@ -67,20 +66,20 @@ export default async function AdminSupportPage(props: Props) {
 
   // Calculate stats
   const openTickets = tickets.filter(
-    (ticket) => ticket.status === "open",
+    (ticket) => ticket.status === "open"
   ).length;
   const inProgressTickets = tickets.filter(
-    (ticket) => ticket.status === "in_progress",
+    (ticket) => ticket.status === "in_progress"
   ).length;
   const resolvedTickets = tickets.filter(
-    (ticket) => ticket.status === "resolved" || ticket.status === "closed",
+    (ticket) => ticket.status === "resolved" || ticket.status === "closed"
   ).length;
 
   return (
     <UnifiedPageLayout
       title={tSupport("pageTitle")}
       description={tSupport("pageDescription")}
-      icon={<MessageSquare className="h-4 w-4 text-primary" />}
+      icon={<MessageSquare className="size-4 text-primary" />}
       contentClassName="space-y-6"
     >
       {/* Primary Metric + Secondary KPIs */}

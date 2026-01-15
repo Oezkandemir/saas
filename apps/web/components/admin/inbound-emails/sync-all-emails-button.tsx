@@ -1,9 +1,15 @@
 "use client";
 
+import {
+  CheckCircle2,
+  Loader2,
+  RefreshCw,
+  SkipForward,
+  XCircle,
+} from "lucide-react";
 import { useState } from "react";
-import { syncAllResendInboundEmails } from "@/actions/sync-all-resend-inbound-emails";
-import { Loader2, RefreshCw, CheckCircle2, XCircle, SkipForward } from "lucide-react";
 import { toast } from "sonner";
+import { syncAllResendInboundEmails } from "@/actions/sync-all-resend-inbound-emails";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -43,7 +49,7 @@ export function SyncAllEmailsButton() {
       } else {
         toast.error(result.message);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Fehler beim Synchronisieren der Emails");
     } finally {
       setIsSyncing(false);
@@ -54,12 +60,12 @@ export function SyncAllEmailsButton() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <RefreshCw className="h-4 w-4" />
+          <RefreshCw className="size-4" />
           Alle Emails synchronisieren
         </CardTitle>
         <CardDescription>
-          Synchronisieren Sie alle eingehenden Emails von Resend in die Datenbank.
-          Dies ist nützlich, wenn der Webhook nicht funktioniert.
+          Synchronisieren Sie alle eingehenden Emails von Resend in die
+          Datenbank. Dies ist nützlich, wenn der Webhook nicht funktioniert.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -71,12 +77,12 @@ export function SyncAllEmailsButton() {
         >
           {isSyncing ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 size-4 animate-spin" />
               Synchronisiere alle Emails...
             </>
           ) : (
             <>
-              <RefreshCw className="mr-2 h-4 w-4" />
+              <RefreshCw className="mr-2 size-4" />
               Alle Emails von Resend synchronisieren
             </>
           )}
@@ -86,7 +92,7 @@ export function SyncAllEmailsButton() {
           <div className="space-y-2 rounded-lg border p-4 bg-muted/50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                <CheckCircle2 className="size-4 text-green-600" />
                 <span className="text-sm font-medium">Synchronisiert:</span>
               </div>
               <span className="text-sm font-bold text-green-600">
@@ -95,7 +101,7 @@ export function SyncAllEmailsButton() {
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <SkipForward className="h-4 w-4 text-blue-600" />
+                <SkipForward className="size-4 text-blue-600" />
                 <span className="text-sm font-medium">Übersprungen:</span>
               </div>
               <span className="text-sm font-bold text-blue-600">
@@ -105,7 +111,7 @@ export function SyncAllEmailsButton() {
             {lastSyncResult.errors > 0 && (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <XCircle className="h-4 w-4 text-red-600" />
+                  <XCircle className="size-4 text-red-600" />
                   <span className="text-sm font-medium">Fehler:</span>
                 </div>
                 <span className="text-sm font-bold text-red-600">

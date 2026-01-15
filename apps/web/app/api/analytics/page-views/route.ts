@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 import { applyAPIMiddleware } from "@/lib/api-middleware";
 import { logger } from "@/lib/logger";
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
 
     // Convert to array and sort by view count
     const processedPages = Array.from(viewCountMap.values()).sort(
-      (a, b) => b.view_count - a.view_count,
+      (a, b) => b.view_count - a.view_count
     );
 
     // Get total count of page views
@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
     logger.error("Error fetching page views:", error);
     return NextResponse.json(
       { error: "Failed to fetch page views analytics" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

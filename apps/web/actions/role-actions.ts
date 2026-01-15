@@ -46,7 +46,7 @@ export type UserRole = {
  * Create a new role
  */
 export async function createRole(
-  input: z.infer<typeof roleSchema>,
+  input: z.infer<typeof roleSchema>
 ): Promise<ActionResult<Role>> {
   try {
     const user = await getCurrentUser();
@@ -109,7 +109,7 @@ export async function createRole(
  * Update an existing role
  */
 export async function updateRole(
-  input: z.infer<typeof roleUpdateSchema>,
+  input: z.infer<typeof roleUpdateSchema>
 ): Promise<ActionResult<Role>> {
   try {
     const user = await getCurrentUser();
@@ -286,7 +286,7 @@ export async function getRoles(): Promise<ActionResult<Role[]>> {
  */
 export async function assignRoleToUser(
   userId: string,
-  roleId: string,
+  roleId: string
 ): Promise<ActionResult<UserRole>> {
   try {
     const user = await getCurrentUser();
@@ -337,7 +337,7 @@ export async function assignRoleToUser(
  */
 export async function removeRoleFromUser(
   userId: string,
-  roleId: string,
+  roleId: string
 ): Promise<ActionResult<void>> {
   try {
     const user = await getCurrentUser();
@@ -382,7 +382,7 @@ export async function removeRoleFromUser(
  * Get roles for a user
  */
 export async function getUserRoles(
-  userId: string,
+  userId: string
 ): Promise<ActionResult<UserRole[]>> {
   try {
     const user = await getCurrentUser();
@@ -445,7 +445,7 @@ export async function getUserRoles(
  */
 export async function checkPermission(
   userId: string,
-  permission: string,
+  permission: string
 ): Promise<ActionResult<boolean>> {
   try {
     const user = await getCurrentUser();
@@ -512,6 +512,3 @@ export async function checkPermission(
     };
   }
 }
-
-
-

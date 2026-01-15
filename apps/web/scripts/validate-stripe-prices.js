@@ -12,7 +12,7 @@ async function validatePrices() {
   if (!process.env.STRIPE_API_KEY) {
     console.error("❌ STRIPE_API_KEY nicht gefunden");
     console.error(
-      "   Bitte setzen Sie STRIPE_API_KEY in Ihrer .env.local Datei",
+      "   Bitte setzen Sie STRIPE_API_KEY in Ihrer .env.local Datei"
     );
     return;
   }
@@ -23,7 +23,7 @@ async function validatePrices() {
 
   console.log(`🔍 Validiere Stripe Price IDs (${mode}-Modus)...\n`);
   console.log(
-    `   API Key: ${process.env.STRIPE_API_KEY.substring(0, 12)}...${process.env.STRIPE_API_KEY.substring(process.env.STRIPE_API_KEY.length - 4)}\n`,
+    `   API Key: ${process.env.STRIPE_API_KEY.substring(0, 12)}...${process.env.STRIPE_API_KEY.substring(process.env.STRIPE_API_KEY.length - 4)}\n`
   );
 
   const priceIds = [
@@ -70,7 +70,7 @@ async function validatePrices() {
       if (id.startsWith("prod_")) {
         console.log(`   → Sie verwenden eine Product ID statt einer Price ID!`);
         console.log(
-          `   → Gehen Sie zu Stripe Dashboard > Products > [Ihr Produkt] > Pricing`,
+          `   → Gehen Sie zu Stripe Dashboard > Products > [Ihr Produkt] > Pricing`
         );
         console.log(`   → Kopieren Sie die Price ID (nicht die Product ID)\n`);
       } else {
@@ -92,7 +92,7 @@ async function validatePrices() {
         console.log(`   Betrag: ${currency} ${amount} / ${interval}`);
         console.log(`   → Diese Price ID existiert, ist aber nicht aktiv`);
         console.log(
-          `   → Aktivieren Sie sie in Stripe Dashboard oder verwenden Sie eine andere Price ID\n`,
+          `   → Aktivieren Sie sie in Stripe Dashboard oder verwenden Sie eine andere Price ID\n`
         );
         invalidCount++;
       } else {
@@ -108,17 +108,17 @@ async function validatePrices() {
         console.log(`   Price ID: ${id}`);
         console.log(`   Environment Variable: ${envVar}`);
         console.log(
-          `   → Diese Price ID existiert nicht in Ihrem Stripe ${mode}-Account`,
+          `   → Diese Price ID existiert nicht in Ihrem Stripe ${mode}-Account`
         );
         console.log(`   → Mögliche Ursachen:`);
         console.log(`     - Price ID wurde gelöscht oder archiviert`);
         console.log(`     - Price ID stammt aus einem anderen Stripe Account`);
         console.log(
-          `     - Sie verwenden ${mode}-Modus, aber die Price ID ist aus dem anderen Modus`,
+          `     - Sie verwenden ${mode}-Modus, aber die Price ID ist aus dem anderen Modus`
         );
         console.log(`   → Lösung:`);
         console.log(
-          `     1. Gehen Sie zu Stripe Dashboard (${mode}-Modus) > Products`,
+          `     1. Gehen Sie zu Stripe Dashboard (${mode}-Modus) > Products`
         );
         console.log(`     2. Wählen Sie Ihr Produkt aus`);
         console.log(`     3. Scrollen Sie zu "Pricing"`);
@@ -137,7 +137,7 @@ async function validatePrices() {
   }
 
   // Summary
-  console.log("\n" + "=".repeat(60));
+  console.log(`\n${"=".repeat(60)}`);
   console.log("📊 ZUSAMMENFASSUNG:");
   console.log(`   ✅ Gültig: ${validCount}`);
   console.log(`   ❌ Ungültig/Fehlend: ${invalidCount + missingCount}`);
@@ -148,7 +148,7 @@ async function validatePrices() {
     console.log("\n💡 TIPPS:");
     console.log("   - Führen Sie aus: node scripts/get-stripe-price-ids.js");
     console.log(
-      "   - Dies zeigt alle verfügbaren Price IDs in Ihrem Stripe Account",
+      "   - Dies zeigt alle verfügbaren Price IDs in Ihrem Stripe Account"
     );
     console.log("   - Aktualisieren Sie dann Ihre .env.local Datei\n");
   }

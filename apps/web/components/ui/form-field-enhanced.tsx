@@ -3,8 +3,8 @@
 import * as React from "react";
 import {
   Controller,
-  FieldPath,
-  FieldValues,
+  type FieldPath,
+  type FieldValues,
   useFormContext,
 } from "react-hook-form";
 
@@ -56,7 +56,7 @@ export function FormFieldEnhanced<
   const fieldState = form.getFieldState(name);
   const fieldValue = form.watch(name);
   const isDirty = Boolean(
-    (form.formState.dirtyFields as Record<string, boolean>)[name as string],
+    (form.formState.dirtyFields as Record<string, boolean>)[name as string]
   );
   const hasError = !!fieldState.error;
   const hasSuccess =
@@ -110,7 +110,7 @@ export function FormFieldEnhanced<
                     ...enhancedField,
                     hasError,
                     hasSuccess,
-                  } as any,
+                  } as any
                 )}
               </FormControl>
               {description && <FormDescription>{description}</FormDescription>}

@@ -1,28 +1,27 @@
-import { PlansRow } from "@/types";
 import { Check, Info, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-
-import { comparePlans, plansColumns } from "@/config/subscriptions";
-import { cn } from "@/lib/utils";
+import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { Badge } from "@/components/ui/badge";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
-import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { comparePlans, plansColumns } from "@/config/subscriptions";
+import { cn } from "@/lib/utils";
+import type { PlansRow } from "@/types";
 
 export function ComparePlans() {
   const t = useTranslations("ComparePlans");
   const tFeatures = useTranslations("Pricing.features");
-  
+
   // Feature name mapping from config to translation keys
   const featureKeyMap: Record<string, string> = {
-    "Kunden": "customers",
+    Kunden: "customers",
     "QR-Codes": "qrCodes",
     "Dokumente pro Monat": "documentsPerMonth",
     "PDF-Export": "pdfExport",
-    "Statusverwaltung": "statusManagement",
+    Statusverwaltung: "statusManagement",
     "Angebot zu Rechnung": "quoteToInvoice",
     "QR-Code Scan-Tracking": "qrCodeScanTracking",
     "Custom QR Alias": "customQrAlias",
@@ -31,10 +30,12 @@ export function ComparePlans() {
     "API-Zugang": "apiAccess",
     "Cenety Branding": "cenetyBranding",
   };
-  
+
   // Translate features dynamically
   const translatedPlans = comparePlans.map((row) => {
-    const featureKey = featureKeyMap[row.feature] || row.feature.toLowerCase().replace(/\s+/g, "");
+    const featureKey =
+      featureKeyMap[row.feature] ||
+      row.feature.toLowerCase().replace(/\s+/g, "");
     const translatedRow: PlansRow = {
       ...row,
       feature: tFeatures(featureKey),
@@ -44,21 +45,21 @@ export function ComparePlans() {
     }
     return translatedRow;
   });
-  
+
   const renderCell = (value: string | boolean | null, col: string) => {
     if (value === null)
       return <span className="text-muted-foreground/50">—</span>;
     if (typeof value === "boolean") {
       return value ? (
         <div className="flex items-center justify-center">
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <Check className="h-4 w-4" />
+          <div className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <Check className="size-4" />
           </div>
         </div>
       ) : (
         <div className="flex items-center justify-center">
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted">
-            <X className="h-3 w-3 text-muted-foreground" />
+          <div className="flex size-6 items-center justify-center rounded-full bg-muted">
+            <X className="size-3 text-muted-foreground" />
           </div>
         </div>
       );
@@ -68,7 +69,7 @@ export function ComparePlans() {
         className={cn(
           "font-medium",
           col === "pro" && "text-primary",
-          col === "enterprise" && "text-primary",
+          col === "enterprise" && "text-primary"
         )}
       >
         {value}
@@ -79,9 +80,12 @@ export function ComparePlans() {
   const getPlanBadge = (col: string) => {
     if (col === "pro")
       return (
-        <Badge className="bg-primary text-primary-foreground">{t("popular")}</Badge>
+        <Badge className="bg-primary text-primary-foreground">
+          {t("popular")}
+        </Badge>
       );
-    if (col === "enterprise") return <Badge variant="secondary">{t("premium")}</Badge>;
+    if (col === "enterprise")
+      return <Badge variant="secondary">{t("premium")}</Badge>;
     return null;
   };
 
@@ -133,7 +137,7 @@ export function ComparePlans() {
                         {row.tooltip && (
                           <Popover>
                             <PopoverTrigger className="shrink-0 rounded p-0.5 hover:bg-muted transition-colors">
-                              <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                              <Info className="size-3.5 text-muted-foreground" />
                             </PopoverTrigger>
                             <PopoverContent
                               side="top"
@@ -147,9 +151,14 @@ export function ComparePlans() {
                     </div>
                     <div className="shrink-0">
                       {renderCell(
-                        typeof row[col] === "string" && (row[col] === "Unbegrenzt" || row[col] === "Unlimited" || row[col] === "3")
-                          ? row[col] === "3" ? row[col] : tFeatures("unlimited")
-                          : row[col],
+                        typeof row[col] === "string" &&
+                          (row[col] === "Unbegrenzt" ||
+                            row[col] === "Unlimited" ||
+                            row[col] === "3")
+                          ? row[col] === "3"
+                            ? row[col]
+                            : tFeatures("unlimited")
+                          : (row[col] ?? null),
                         col
                       )}
                     </div>

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
@@ -12,7 +12,7 @@ export const maxDuration = 30;
 /**
  * Resend Inbound Email Webhook Route
  * Handles incoming emails from Resend Inbound
- * 
+ *
  * Webhook payload format:
  * {
  *   "type": "email.received",
@@ -43,10 +43,11 @@ export const maxDuration = 30;
 export async function POST(req: NextRequest) {
   // Create response immediately to prevent any redirects
   // This ensures Resend gets a proper response even if processing fails
+  let bodyText: string | undefined;
   try {
     // Read body as text first (needed for signature verification)
-    const bodyText = await req.text();
-    
+    bodyText = await req.text();
+
     // Enhanced logging for production debugging
     const requestInfo = {
       url: req.url,
@@ -59,7 +60,7 @@ export async function POST(req: NextRequest) {
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV,
     };
-    
+
     // Log incoming webhook for debugging
     logger.info("🔔 Resend Inbound webhook received", requestInfo);
 
@@ -82,23 +83,26 @@ export async function POST(req: NextRequest) {
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
-    
+
     logger.info(
-      `📧 Processing Resend Inbound webhook: type=${body.type}, email_id=${body.data?.email_id}, from=${body.data?.from}`,
+      `📧 Processing Resend Inbound webhook: type=${body.type}, email_id=${body.data?.email_id}, from=${body.data?.from}`
     );
 
     // Verify webhook type
     if (body.type !== "email.received") {
       logger.warn(`Unhandled webhook type: ${body.type}`);
       return new NextResponse(
-        JSON.stringify({ received: true, message: `Unhandled type: ${body.type}` }),
+        JSON.stringify({
+          received: true,
+          message: `Unhandled type: ${body.type}`,
+        }),
         {
           status: 200,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -111,7 +115,7 @@ export async function POST(req: NextRequest) {
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -137,12 +141,14 @@ export async function POST(req: NextRequest) {
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
     // Ensure to array exists
-    const toArray = Array.isArray(emailData.to) ? emailData.to : [emailData.to].filter(Boolean);
+    const toArray = Array.isArray(emailData.to)
+      ? emailData.to
+      : [emailData.to].filter(Boolean);
     if (toArray.length === 0) {
       logger.error("Invalid webhook payload: missing recipients");
       return new NextResponse(
@@ -150,7 +156,7 @@ export async function POST(req: NextRequest) {
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -172,7 +178,7 @@ export async function POST(req: NextRequest) {
         {
           status: 200,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -183,8 +189,16 @@ export async function POST(req: NextRequest) {
       from_email: fromEmail,
       from_name: fromName,
       to: toArray,
-      cc: Array.isArray(emailData.cc) ? emailData.cc : emailData.cc ? [emailData.cc] : [],
-      bcc: Array.isArray(emailData.bcc) ? emailData.bcc : emailData.bcc ? [emailData.bcc] : [],
+      cc: Array.isArray(emailData.cc)
+        ? emailData.cc
+        : emailData.cc
+          ? [emailData.cc]
+          : [],
+      bcc: Array.isArray(emailData.bcc)
+        ? emailData.bcc
+        : emailData.bcc
+          ? [emailData.bcc]
+          : [],
       subject: emailData.subject || null,
       text_content: emailData.text || null,
       html_content: emailData.html || null,
@@ -200,7 +214,9 @@ export async function POST(req: NextRequest) {
       subject: emailData.subject,
       hasText: !!emailData.text,
       hasHtml: !!emailData.html,
-      hasAttachments: Array.isArray(emailData.attachments) && emailData.attachments.length > 0,
+      hasAttachments:
+        Array.isArray(emailData.attachments) &&
+        emailData.attachments.length > 0,
     });
 
     // Insert email into database
@@ -221,8 +237,8 @@ export async function POST(req: NextRequest) {
         emailData: emailInsertData,
       });
       return new NextResponse(
-        JSON.stringify({ 
-          error: "Failed to save email", 
+        JSON.stringify({
+          error: "Failed to save email",
           message: emailError.message,
           code: emailError.code,
           details: emailError.details,
@@ -230,7 +246,7 @@ export async function POST(req: NextRequest) {
         {
           status: 500,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -244,7 +260,7 @@ export async function POST(req: NextRequest) {
         {
           status: 500,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -256,7 +272,10 @@ export async function POST(req: NextRequest) {
     });
 
     // Handle attachments if present
-    if (Array.isArray(emailData.attachments) && emailData.attachments.length > 0) {
+    if (
+      Array.isArray(emailData.attachments) &&
+      emailData.attachments.length > 0
+    ) {
       const attachments = emailData.attachments.map((attachment: any) => ({
         inbound_email_id: insertedEmail.id,
         attachment_id: attachment.id,
@@ -274,7 +293,9 @@ export async function POST(req: NextRequest) {
         logger.error("Error inserting attachments:", attachmentError);
         // Don't fail the whole request if attachments fail
       } else {
-        logger.info(`Saved ${attachments.length} attachment(s) for email ${emailData.email_id}`);
+        logger.info(
+          `Saved ${attachments.length} attachment(s) for email ${emailData.email_id}`
+        );
       }
     }
 
@@ -292,7 +313,7 @@ export async function POST(req: NextRequest) {
           "Cache-Control": "no-store, no-cache, must-revalidate",
           "X-Content-Type-Options": "nosniff",
         },
-      },
+      }
     );
   } catch (error: any) {
     logger.error("Error processing Resend Inbound webhook:", {
@@ -302,7 +323,7 @@ export async function POST(req: NextRequest) {
       cause: error.cause,
       body: bodyText?.substring(0, 500), // Log first 500 chars of body for debugging
     });
-    
+
     // Return 200 to prevent Resend from retrying on processing errors
     // But log the error for debugging
     // Use explicit response to prevent redirects
@@ -317,7 +338,7 @@ export async function POST(req: NextRequest) {
           "Content-Type": "application/json",
           "Cache-Control": "no-store, no-cache, must-revalidate",
         },
-      },
+      }
     );
   }
 }
@@ -336,6 +357,6 @@ export async function GET() {
         "Content-Type": "application/json",
         "Cache-Control": "no-store, no-cache, must-revalidate",
       },
-    },
+    }
   );
 }

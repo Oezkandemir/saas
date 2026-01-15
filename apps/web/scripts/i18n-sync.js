@@ -8,8 +8,8 @@
  * which is required by inlang for proper translation.
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // Configuration
 const SOURCE_LANG = "en";
@@ -52,7 +52,7 @@ const langFiles = fs
   .map((file) => file.replace(".json", ""));
 
 console.log(
-  `Found ${langFiles.length} language files: ${langFiles.join(", ")}`,
+  `Found ${langFiles.length} language files: ${langFiles.join(", ")}`
 );
 console.log(`Source language: ${SOURCE_LANG}`);
 
@@ -78,7 +78,7 @@ for (const lang of langFiles) {
   const missingInSource = targetKeys.filter((key) => !sourceKeys.includes(key));
   if (missingInSource.length > 0) {
     console.log(
-      `Found ${missingInSource.length} keys in ${lang} that don't exist in ${SOURCE_LANG}`,
+      `Found ${missingInSource.length} keys in ${lang} that don't exist in ${SOURCE_LANG}`
     );
     console.log("Adding missing keys to source language...");
 
@@ -100,7 +100,7 @@ for (const lang of langFiles) {
     // Write updated source file
     fs.writeFileSync(sourcePath, JSON.stringify(sourceData, null, 2));
     console.log(
-      `Updated source language file with ${missingInSource.length} new keys.`,
+      `Updated source language file with ${missingInSource.length} new keys.`
     );
   } else {
     console.log("All keys in target language exist in source language.");

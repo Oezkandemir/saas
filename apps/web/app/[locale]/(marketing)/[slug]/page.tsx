@@ -3,7 +3,7 @@ import { setRequestLocale } from "next-intl/server";
 
 import "@/styles/mdx.css";
 
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 import { constructMetadata } from "@/lib/utils";
 

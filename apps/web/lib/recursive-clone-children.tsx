@@ -9,7 +9,7 @@ import * as React from "react";
 
 export function recursiveCloneChildren(
   children: React.ReactNode,
-  props: Record<string, any>,
+  props: Record<string, any>
 ): React.ReactNode {
   return React.Children.map(children, (child) => {
     if (!React.isValidElement(child)) {
@@ -27,7 +27,7 @@ export function recursiveCloneChildren(
           ...props,
           ...element.props,
         },
-        recursiveCloneChildren(element.props.children, props),
+        recursiveCloneChildren(element.props.children, props)
       );
     }
 

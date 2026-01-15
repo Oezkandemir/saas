@@ -1,8 +1,8 @@
 "use client";
 
+import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 import * as React from "react";
 import { useState } from "react";
-import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 
 import {
   AlertDialogAction,
@@ -83,11 +83,7 @@ export function useConfirmationDialog() {
           AlertDialogHeader,
           null,
           React.createElement(AlertDialogTitle, null, options.title),
-          React.createElement(
-            AlertDialogDescription,
-            null,
-            options.description,
-          ),
+          React.createElement(AlertDialogDescription, null, options.description)
         ),
         options.showNeverAskAgain &&
           React.createElement(
@@ -105,8 +101,8 @@ export function useConfirmationDialog() {
                 htmlFor: "never-ask-again",
                 className: "text-sm font-normal cursor-pointer",
               },
-              "Nie wieder fragen",
-            ),
+              "Nie wieder fragen"
+            )
           ),
         React.createElement(
           AlertDialogFooter,
@@ -114,7 +110,7 @@ export function useConfirmationDialog() {
           React.createElement(
             AlertDialogCancel,
             { onClick: handleCancel },
-            options.cancelText || "Abbrechen",
+            options.cancelText || "Abbrechen"
           ),
           React.createElement(
             AlertDialogAction,
@@ -125,10 +121,10 @@ export function useConfirmationDialog() {
                   ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   : "",
             },
-            options.confirmText || "Bestätigen",
-          ),
-        ),
-      ),
+            options.confirmText || "Bestätigen"
+          )
+        )
+      )
     );
   };
 

@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { getTwoFactorStatus } from "@/actions/two-factor-actions";
 import { Shield, X } from "lucide-react";
-
-import { logger } from "@/lib/logger";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { getTwoFactorStatus } from "@/actions/two-factor-actions";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { logger } from "@/lib/logger";
 
 export function TwoFactorSecurityBanner() {
   const [isEnabled, setIsEnabled] = useState<boolean | null>(null);
@@ -27,7 +26,7 @@ export function TwoFactorSecurityBanner() {
     const checkStatus = async () => {
       try {
         const result = await getTwoFactorStatus();
-        if (result && result.success && result.data) {
+        if (result?.success && result.data) {
           setIsEnabled(result.data.enabled ?? false);
         } else if (
           result &&
@@ -78,7 +77,7 @@ export function TwoFactorSecurityBanner() {
 
   return (
     <Alert className="border-yellow-500/50 bg-yellow-500/10 dark:bg-yellow-500/5">
-      <Shield className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+      <Shield className="size-4 text-yellow-600 dark:text-yellow-400" />
       <AlertTitle className="text-yellow-900 dark:text-yellow-100">
         Zwei-Faktor-Authentifizierung aktivieren
       </AlertTitle>
@@ -110,10 +109,10 @@ export function TwoFactorSecurityBanner() {
       <Button
         variant="ghost"
         size="icon"
-        className="absolute right-2 top-2 h-6 w-6 text-yellow-800 hover:bg-yellow-500/20 dark:text-yellow-200"
+        className="absolute right-2 top-2 size-6 text-yellow-800 hover:bg-yellow-500/20 dark:text-yellow-200"
         onClick={handleDismiss}
       >
-        <X className="h-4 w-4" />
+        <X className="size-4" />
       </Button>
     </Alert>
   );

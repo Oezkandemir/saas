@@ -1,20 +1,17 @@
-import { notFound, redirect } from "next/navigation";
-import { getTicketWithMessages } from "@/actions/support-ticket-actions";
 import { formatDistance } from "date-fns";
 import {
-  MessageSquareMore,
   CircleDot,
   Clock,
   FileText,
   MessageCircle,
+  MessageSquareMore,
   XCircle,
 } from "lucide-react";
+import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-
-import { logger } from "@/lib/logger";
-import { getCurrentUser } from "@/lib/session";
-import { constructMetadata } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
+import { getTicketWithMessages } from "@/actions/support-ticket-actions";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { TicketConversation } from "@/components/support/ticket-conversation";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -24,8 +21,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { TicketConversation } from "@/components/support/ticket-conversation";
+import { Separator } from "@/components/ui/separator";
+import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
+import { constructMetadata } from "@/lib/utils";
 
 // Helper function to get status badge color
 const getStatusColor = (status: string) => {
@@ -116,7 +115,7 @@ export default async function TicketPage({
     <UnifiedPageLayout
       title={ticket.subject}
       description="Track your ticket status and communicate with our support team in real-time."
-      icon={<MessageSquareMore className="w-4 h-4 text-primary" />}
+      icon={<MessageSquareMore className="size-4 text-primary" />}
       showBackButton
       backHref="/dashboard/support"
       contentClassName="space-y-6"
@@ -126,11 +125,11 @@ export default async function TicketPage({
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <CardTitle className="flex gap-2 items-center text-xl">
-                <CircleDot className="w-4 h-4 text-primary" />
+                <CircleDot className="size-4 text-primary" />
                 Ticket Details
               </CardTitle>
               <CardDescription className="flex items-center gap-1.5 mt-1.5">
-                <Clock className="h-3.5 w-3.5" />
+                <Clock className="size-3.5" />
                 Created {createdAt} • Last updated {updatedAt}
               </CardDescription>
             </div>
@@ -162,7 +161,7 @@ export default async function TicketPage({
         <CardContent>
           <div className="mb-6">
             <h3 className="flex gap-2 items-center mb-3 font-semibold">
-              <FileText className="w-4 h-4 text-primary" />
+              <FileText className="size-4 text-primary" />
               Original Request
             </h3>
             <div className="p-4 text-sm leading-relaxed whitespace-pre-wrap rounded-lg border bg-muted/50 border-border">
@@ -174,7 +173,7 @@ export default async function TicketPage({
 
           <div>
             <h3 className="flex gap-2 items-center mb-4 font-semibold">
-              <MessageCircle className="w-4 h-4 text-primary" />
+              <MessageCircle className="size-4 text-primary" />
               Conversation History
             </h3>
             <TicketConversation

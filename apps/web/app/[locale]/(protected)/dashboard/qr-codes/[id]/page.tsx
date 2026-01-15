@@ -1,3 +1,4 @@
+import { Edit, ExternalLink, QrCode } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
@@ -5,11 +6,10 @@ import {
   getQRCodeEvents,
   type QRCodeEvent,
 } from "@/actions/qr-codes-actions";
-import { Edit, ExternalLink, QrCode } from "lucide-react";
-
-import { getCurrentUser } from "@/lib/session";
-import { Button } from "@/components/ui/button";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { QRCodeDisplay } from "@/components/qr-codes/qr-code-display";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -17,8 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { QRCodeDisplay } from "@/components/qr-codes/qr-code-display";
+import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -51,13 +50,13 @@ export default async function QRCodeDetailPage({
     <UnifiedPageLayout
       title={qrCode.name}
       description="QR-Code Details und Statistiken"
-      icon={<QrCode className="h-4 w-4 text-primary" />}
+      icon={<QrCode className="size-4 text-primary" />}
       showBackButton
       backHref="/dashboard/qr-codes"
       actions={
         <Link href={`/dashboard/qr-codes/${qrCode.id}/edit`}>
           <Button variant="outline" className="gap-2">
-            <Edit className="h-4 w-4" />
+            <Edit className="size-4" />
             Bearbeiten
           </Button>
         </Link>
@@ -118,7 +117,7 @@ export default async function QRCodeDetailPage({
                     rel="noopener noreferrer"
                     className="text-primary hover:underline"
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <ExternalLink className="size-4" />
                   </a>
                 )}
               </div>

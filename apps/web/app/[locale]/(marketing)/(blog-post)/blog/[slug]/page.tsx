@@ -1,13 +1,20 @@
 import { notFound } from "next/navigation";
-import { getBlogPostBySlug, getPublishedBlogPosts } from "@/actions/blog-actions";
 import { getTranslations } from "next-intl/server";
+import {
+  getBlogPostBySlug,
+  getPublishedBlogPosts,
+} from "@/actions/blog-actions";
 
 import "@/styles/mdx.css";
 
-import { Metadata } from "next";
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-
+import type { Metadata } from "next";
+import Link from "next/link";
+import Author from "@/components/content/author";
+import { BlurImage } from "@/components/shared/blur-image";
+import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { DashboardTableOfContents } from "@/components/shared/toc";
+import { buttonVariants } from "@/components/ui/button";
 import { BLOG_CATEGORIES } from "@/config/blog";
 import { getTableOfContentsFromHTML } from "@/lib/toc";
 import {
@@ -17,11 +24,6 @@ import {
   getBlurDataURL,
   placeholderBlurhash,
 } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
-import Author from "@/components/content/author";
-import { BlurImage } from "@/components/shared/blur-image";
-import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
-import { DashboardTableOfContents } from "@/components/shared/toc";
 
 interface PostPageProps {
   params: Promise<{
@@ -73,16 +75,15 @@ export default async function PostPage({ params }: PostPageProps) {
   }
 
   const category = BLOG_CATEGORIES.find(
-    (category) => category.slug === post.categories[0],
+    (category) => category.slug === post.categories[0]
   )!;
 
   // Get related articles
   const allPosts = await getPublishedBlogPosts();
   const relatedArticles =
-    (post.related &&
-      post.related
-        .map((slug) => allPosts.find((p) => p.slug === slug))
-        .filter((post): post is NonNullable<typeof post> => post !== undefined)) ||
+    post.related
+      ?.map((slug) => allPosts.find((p) => p.slug === slug))
+      .filter((post): post is NonNullable<typeof post> => post !== undefined) ||
     [];
 
   // Generate table of contents from HTML content and add IDs to headings
@@ -101,10 +102,10 @@ export default async function PostPage({ params }: PostPageProps) {
               variant: "ghost",
               size: "sm",
             }),
-            "mb-6 -ml-2 w-fit",
+            "mb-6 -ml-2 w-fit"
           )}
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft className="mr-2 size-4" />
           {t("backToBlog")}
         </Link>
 

@@ -1,8 +1,8 @@
 "use client";
 
-import { CompanyProfile } from "@/actions/company-profiles-actions";
-import { Document } from "@/actions/documents-actions";
 import { useTranslations } from "next-intl";
+import type { CompanyProfile } from "@/actions/company-profiles-actions";
+import type { Document } from "@/actions/documents-actions";
 
 interface InvoiceFullPreviewProps {
   document: Document;
@@ -133,7 +133,7 @@ export function InvoiceFullPreview({
                     year: "numeric",
                     month: "long",
                     day: "numeric",
-                  },
+                  }
                 )}
               </span>
             </div>
@@ -207,7 +207,7 @@ export function InvoiceFullPreview({
                       {
                         style: "currency",
                         currency: "EUR",
-                      },
+                      }
                     )}
                   </td>
                 </tr>

@@ -18,7 +18,7 @@ export function PerformanceTracker() {
       const handleLoad = () => {
         // Use PerformanceNavigationTiming if available (modern API)
         const perfData = window.performance.getEntriesByType(
-          "navigation",
+          "navigation"
         )[0] as PerformanceNavigationTiming;
 
         if (perfData) {

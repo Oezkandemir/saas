@@ -1,20 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { Calendar, CheckCircle2, CreditCard, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+import type { UserSubscriptionPlan } from "types";
 import {
   cancelSubscription,
   reactivateSubscription,
   updateSubscriptionPlan,
 } from "@/actions/manage-polar-subscription";
 import { refreshSubscription } from "@/actions/refresh-subscription";
-import { Calendar, CheckCircle2, CreditCard, XCircle } from "lucide-react";
-import { toast } from "sonner";
-
-import { UserSubscriptionPlan } from "types";
-import { pricingData } from "@/config/subscriptions";
-import { logger } from "@/lib/logger";
-import { cn, formatDate } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,9 +22,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -36,6 +31,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { pricingData } from "@/config/subscriptions";
+import { logger } from "@/lib/logger";
+import { cn, formatDate } from "@/lib/utils";
 
 interface ManageSubscriptionClientProps {
   userSubscriptionPlan: UserSubscriptionPlan;
@@ -196,7 +195,7 @@ export function ManageSubscriptionClient({
                 "px-3 py-1 text-sm",
                 isCanceled
                   ? "text-amber-600 bg-amber-500/10 dark:text-amber-400 border-amber-500/20"
-                  : "text-green-600 bg-green-500/10 dark:text-green-400 border-green-500/20",
+                  : "text-green-600 bg-green-500/10 dark:text-green-400 border-green-500/20"
               )}
             >
               {isCanceled ? (

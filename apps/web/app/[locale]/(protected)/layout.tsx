@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
 import { SidebarLinksProvider } from "@/components/layout/sidebar-links-provider";
+import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 

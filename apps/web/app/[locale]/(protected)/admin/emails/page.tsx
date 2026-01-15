@@ -1,11 +1,10 @@
 import { redirect } from "next/navigation";
 import { getLocale, setRequestLocale } from "next-intl/server";
-
+import { syncAllResendInboundEmails } from "@/actions/sync-all-resend-inbound-emails";
+import { InboundEmailsInbox } from "@/components/admin/inbound-emails/inbound-emails-inbox";
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { logger } from "@/lib/logger";
-import { InboundEmailsInbox } from "@/components/admin/inbound-emails/inbound-emails-inbox";
-import { syncAllResendInboundEmails } from "@/actions/sync-all-resend-inbound-emails";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -45,7 +44,7 @@ export default async function AdminEmailsPage() {
   // Full-width email inbox layout - replaces sidebar
   return (
     <div className="flex flex-col h-[calc(100vh-140px)] w-full">
-      <div className="flex-1 w-full overflow-hidden px-4 py-4 min-h-0">
+      <div className="flex-1 w-full overflow-hidden p-4 min-h-0">
         <InboundEmailsInbox />
       </div>
     </div>

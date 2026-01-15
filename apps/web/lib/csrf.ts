@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from "crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
 
 import { logger } from "./logger";
@@ -53,7 +53,7 @@ export async function getCSRFToken(): Promise<string> {
  * Validate CSRF token from request
  */
 export async function validateCSRFToken(
-  token: string | null | undefined,
+  token: string | null | undefined
 ): Promise<boolean> {
   if (!token) {
     logger.warn("CSRF token missing from request");
@@ -87,7 +87,7 @@ export async function validateCSRFToken(
  * Use this in API routes
  */
 export async function validateCSRFTokenFromRequest(
-  csrfToken: string | null | undefined,
+  csrfToken: string | null | undefined
 ): Promise<boolean> {
   // Skip CSRF validation for GET, HEAD, OPTIONS requests
   // Only validate for state-changing operations
@@ -107,7 +107,7 @@ export async function validateCSRFTokenFromRequest(
  * Returns error response if validation fails
  */
 export async function requireCSRFToken(
-  request: Request,
+  request: Request
 ): Promise<{ valid: true } | { valid: false; response: Response }> {
   const session = await getSession();
 

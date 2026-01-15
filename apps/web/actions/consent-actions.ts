@@ -54,10 +54,10 @@ export async function getUserConsents(): Promise<
     const latestConsents = new Map<ConsentType, ConsentRecord>();
     (data || []).forEach((record) => {
       const type = record.consent_type as ConsentType;
+      const existingConsent = latestConsents.get(type);
       if (
-        !latestConsents.has(type) ||
-        new Date(record.created_at) >
-          new Date(latestConsents.get(type)!.createdAt)
+        !existingConsent ||
+        new Date(record.created_at) > new Date(existingConsent.createdAt)
       ) {
         latestConsents.set(type, {
           id: record.id,
@@ -94,7 +94,7 @@ export async function getUserConsents(): Promise<
 export async function updateConsent(
   consentType: ConsentType,
   granted: boolean,
-  source: string = "settings",
+  source: string = "settings"
 ): Promise<{ success: boolean; message: string }> {
   try {
     const supabase = await createClient();
@@ -161,7 +161,7 @@ export async function updateConsent(
  * @returns Array of consent history records
  */
 export async function getConsentHistory(
-  consentType: ConsentType,
+  consentType: ConsentType
 ): Promise<
   | { success: true; history: ConsentRecord[] }
   | { success: false; message: string }

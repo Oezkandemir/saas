@@ -1,28 +1,37 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import type { Customer } from "@/actions/customers-actions";
-import { getCustomer } from "@/actions/customers-actions";
-import { getDocuments, type Document } from "@/actions/documents-actions";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
 import {
+  AlertCircle,
   Building2,
   Calendar,
+  CheckCircle2,
+  Clock,
+  FileText,
   Mail,
   MapPin,
   Phone,
   QrCode,
-  User,
-  FileText,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
   Receipt,
   TrendingUp,
+  User,
 } from "lucide-react";
+import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-
+import { useEffect, useMemo, useState } from "react";
+import type { Customer } from "@/actions/customers-actions";
+import { getCustomer } from "@/actions/customers-actions";
+import { type Document, getDocuments } from "@/actions/documents-actions";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -30,18 +39,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { EditCustomerDrawer } from "./edit-customer-drawer";
 import { DeleteCustomerButton } from "./delete-customer-button";
-import Link from "next/link";
+import { EditCustomerDrawer } from "./edit-customer-drawer";
 
 interface CustomerDrawerProps {
   customerId: string | null;
@@ -90,7 +89,7 @@ export function CustomerDrawer({
     const paidInvoices = invoices.filter((d) => d.status === "paid");
     const totalRevenue = paidInvoices.reduce(
       (sum, d) => sum + Number(d.total),
-      0,
+      0
     );
     const pendingAmount = invoices
       .filter((d) => d.status === "sent" || d.status === "overdue")
@@ -114,7 +113,10 @@ export function CustomerDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-[min(400px,calc(100%-16px))] overflow-y-auto">
+      <SheetContent
+        side="right"
+        className="w-[min(400px,calc(100%-16px))] overflow-y-auto"
+      >
         <SheetHeader>
           <SheetTitle>
             {isLoading
@@ -135,12 +137,19 @@ export function CustomerDrawer({
           </div>
         ) : customer && createdDate && updatedDate ? (
           <div className="mt-3 flex flex-col">
-            <Accordion type="multiple" defaultValue={["contact", "documents"]} className="w-full">
+            <Accordion
+              type="multiple"
+              defaultValue={["contact", "documents"]}
+              className="w-full"
+            >
               {/* Contact Information - Wichtigste Info zuerst */}
-              <AccordionItem value="contact" className="border-b border-stroke-soft-200">
+              <AccordionItem
+                value="contact"
+                className="border-b border-stroke-soft-200"
+              >
                 <AccordionTrigger className="text-sm font-semibold">
                   <div className="flex items-center gap-2">
-                    <User className="h-3.5 w-3.5 text-muted-foreground" />
+                    <User className="size-3.5 text-muted-foreground" />
                     Kontaktinformationen
                   </div>
                 </AccordionTrigger>
@@ -148,7 +157,7 @@ export function CustomerDrawer({
                   <div className="space-y-3 pt-1">
                     <div className="space-y-1">
                       <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                        <User className="h-3 w-3" />
+                        <User className="size-3" />
                         Name
                       </p>
                       <p className="text-sm font-medium">{customer.name}</p>
@@ -159,7 +168,7 @@ export function CustomerDrawer({
                         <Separator />
                         <div className="space-y-1">
                           <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                            <Mail className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                            <Mail className="size-3 text-blue-600 dark:text-blue-400" />
                             <span className="text-blue-600 dark:text-blue-400 font-medium">
                               E-Mail
                             </span>
@@ -179,7 +188,7 @@ export function CustomerDrawer({
                         <Separator />
                         <div className="space-y-1">
                           <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                            <Phone className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                            <Phone className="size-3 text-blue-600 dark:text-blue-400" />
                             <span className="text-blue-600 dark:text-blue-400 font-medium">
                               Telefon
                             </span>
@@ -199,10 +208,12 @@ export function CustomerDrawer({
                         <Separator />
                         <div className="space-y-1">
                           <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                            <Building2 className="h-3 w-3" />
+                            <Building2 className="size-3" />
                             Unternehmen
                           </p>
-                          <p className="text-sm font-medium">{customer.company}</p>
+                          <p className="text-sm font-medium">
+                            {customer.company}
+                          </p>
                         </div>
                       </>
                     )}
@@ -218,7 +229,7 @@ export function CustomerDrawer({
                 <AccordionItem value="address">
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                      <MapPin className="size-3.5 text-muted-foreground" />
                       Adresse
                     </div>
                   </AccordionTrigger>
@@ -227,7 +238,7 @@ export function CustomerDrawer({
                       {customer.address_line1 && (
                         <div className="space-y-1">
                           <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                            <MapPin className="h-3 w-3" />
+                            <MapPin className="size-3" />
                             Straße
                           </p>
                           <p className="text-sm font-medium">
@@ -261,7 +272,9 @@ export function CustomerDrawer({
                             customer.postal_code ||
                             customer.city) && <Separator />}
                           <div className="space-y-1">
-                            <p className="text-xs text-muted-foreground">Land</p>
+                            <p className="text-xs text-muted-foreground">
+                              Land
+                            </p>
                             <p className="text-sm font-medium">
                               {customer.country}
                             </p>
@@ -278,7 +291,7 @@ export function CustomerDrawer({
                 <AccordionItem value="documents">
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
-                      <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                      <FileText className="size-3.5 text-muted-foreground" />
                       Dokumente & Statistiken
                       {stats.total > 0 && (
                         <Badge variant="secondary" className="ml-auto text-xs">
@@ -292,31 +305,47 @@ export function CustomerDrawer({
                       <div className="grid grid-cols-2 gap-2">
                         <div className="p-2 rounded border bg-muted/30">
                           <div className="flex items-center gap-1.5 mb-1">
-                            <FileText className="h-3 w-3 text-muted-foreground" />
-                            <p className="text-xs text-muted-foreground">Gesamt</p>
+                            <FileText className="size-3 text-muted-foreground" />
+                            <p className="text-xs text-muted-foreground">
+                              Gesamt
+                            </p>
                           </div>
-                          <p className="text-base font-semibold">{stats.total}</p>
+                          <p className="text-base font-semibold">
+                            {stats.total}
+                          </p>
                         </div>
                         <div className="p-2 rounded border bg-muted/30">
                           <div className="flex items-center gap-1.5 mb-1">
-                            <Receipt className="h-3 w-3 text-muted-foreground" />
-                            <p className="text-xs text-muted-foreground">Angebote</p>
+                            <Receipt className="size-3 text-muted-foreground" />
+                            <p className="text-xs text-muted-foreground">
+                              Angebote
+                            </p>
                           </div>
-                          <p className="text-base font-semibold">{stats.quotes}</p>
+                          <p className="text-base font-semibold">
+                            {stats.quotes}
+                          </p>
                         </div>
                         <div className="p-2 rounded border bg-muted/30">
                           <div className="flex items-center gap-1.5 mb-1">
-                            <FileText className="h-3 w-3 text-muted-foreground" />
-                            <p className="text-xs text-muted-foreground">Rechnungen</p>
+                            <FileText className="size-3 text-muted-foreground" />
+                            <p className="text-xs text-muted-foreground">
+                              Rechnungen
+                            </p>
                           </div>
-                          <p className="text-base font-semibold">{stats.invoices}</p>
+                          <p className="text-base font-semibold">
+                            {stats.invoices}
+                          </p>
                         </div>
                         <div className="p-2 rounded border bg-muted/30">
                           <div className="flex items-center gap-1.5 mb-1">
-                            <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400" />
-                            <p className="text-xs text-muted-foreground">Bezahlt</p>
+                            <CheckCircle2 className="size-3 text-green-600 dark:text-green-400" />
+                            <p className="text-xs text-muted-foreground">
+                              Bezahlt
+                            </p>
                           </div>
-                          <p className="text-base font-semibold">{stats.paidInvoices}</p>
+                          <p className="text-base font-semibold">
+                            {stats.paidInvoices}
+                          </p>
                         </div>
                       </div>
 
@@ -325,7 +354,7 @@ export function CustomerDrawer({
                           <Separator />
                           <div className="space-y-1">
                             <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                              <TrendingUp className="h-3 w-3 text-green-600 dark:text-green-400" />
+                              <TrendingUp className="size-3 text-green-600 dark:text-green-400" />
                               <span className="text-green-600 dark:text-green-400 font-medium">
                                 Umsatz gesamt
                               </span>
@@ -345,7 +374,7 @@ export function CustomerDrawer({
                           <Separator />
                           <div className="space-y-1">
                             <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                              <AlertCircle className="h-3 w-3 text-orange-600 dark:text-orange-400" />
+                              <AlertCircle className="size-3 text-orange-600 dark:text-orange-400" />
                               <span className="text-orange-600 dark:text-orange-400 font-medium">
                                 Ausstehend
                               </span>
@@ -361,10 +390,19 @@ export function CustomerDrawer({
                       )}
 
                       <Separator />
-                      <Link href={`/dashboard/customers/${customer.id}`} className="block">
-                        <Button variant="outline" size="sm" className="w-full gap-1.5">
-                          <FileText className="h-3.5 w-3.5" />
-                          <span className="text-xs">Alle Dokumente anzeigen</span>
+                      <Link
+                        href={`/dashboard/customers/${customer.id}`}
+                        className="block"
+                      >
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full gap-1.5"
+                        >
+                          <FileText className="size-3.5" />
+                          <span className="text-xs">
+                            Alle Dokumente anzeigen
+                          </span>
                         </Button>
                       </Link>
                     </div>
@@ -377,7 +415,7 @@ export function CustomerDrawer({
                 <AccordionItem value="additional">
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
-                      <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                      <FileText className="size-3.5 text-muted-foreground" />
                       Zusätzliche Informationen
                     </div>
                   </AccordionTrigger>
@@ -385,7 +423,9 @@ export function CustomerDrawer({
                     <div className="space-y-3 pt-1">
                       {customer.tax_id && (
                         <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground">Steuernummer</p>
+                          <p className="text-xs text-muted-foreground">
+                            Steuernummer
+                          </p>
                           <p className="text-sm font-medium font-mono">
                             {customer.tax_id}
                           </p>
@@ -397,10 +437,13 @@ export function CustomerDrawer({
                           {customer.tax_id && <Separator />}
                           <div className="space-y-1">
                             <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                              <QrCode className="h-3 w-3" />
+                              <QrCode className="size-3" />
                               QR-Code
                             </p>
-                            <Badge variant="secondary" className="text-xs font-mono">
+                            <Badge
+                              variant="secondary"
+                              className="text-xs font-mono"
+                            >
                               {customer.qr_code}
                             </Badge>
                           </div>
@@ -409,10 +452,12 @@ export function CustomerDrawer({
 
                       {customer.notes && (
                         <>
-                          {(customer.tax_id || customer.qr_code) && <Separator />}
+                          {(customer.tax_id || customer.qr_code) && (
+                            <Separator />
+                          )}
                           <div className="space-y-1">
                             <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                              <FileText className="h-3 w-3" />
+                              <FileText className="size-3" />
                               Notizen
                             </p>
                             <p className="text-sm whitespace-pre-wrap">
@@ -426,12 +471,11 @@ export function CustomerDrawer({
                 </AccordionItem>
               )}
 
-
               {/* Metadata - Nach unten verschoben */}
               <AccordionItem value="metadata">
                 <AccordionTrigger className="text-sm font-semibold">
                   <div className="flex items-center gap-2">
-                    <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                    <Clock className="size-3.5 text-muted-foreground" />
                     Metadaten
                   </div>
                 </AccordionTrigger>
@@ -439,7 +483,7 @@ export function CustomerDrawer({
                   <div className="space-y-3 pt-1">
                     <div className="space-y-1">
                       <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                        <Calendar className="h-3 w-3 text-green-600 dark:text-green-400" />
+                        <Calendar className="size-3 text-green-600 dark:text-green-400" />
                         <span className="text-green-600 dark:text-green-400 font-medium">
                           Erstellt am
                         </span>
@@ -453,7 +497,7 @@ export function CustomerDrawer({
                     <Separator />
                     <div className="space-y-1">
                       <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                        <Calendar className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                        <Calendar className="size-3 text-blue-600 dark:text-blue-400" />
                         <span className="text-blue-600 dark:text-blue-400 font-medium">
                           Aktualisiert am
                         </span>
@@ -472,24 +516,39 @@ export function CustomerDrawer({
             {/* Actions - Immer ganz unten, außerhalb der Accordions */}
             <div className="mt-4 pt-4 border-t border-border">
               <div className="grid grid-cols-1 gap-1.5">
-                <Link href={`/dashboard/customers/${customer.id}`} className="w-full">
-                  <Button variant="outline" size="sm" className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50">
-                    <FileText className="h-3.5 w-3.5" />
+                <Link
+                  href={`/dashboard/customers/${customer.id}`}
+                  className="w-full"
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50"
+                  >
+                    <FileText className="size-3.5" />
                     <span className="text-xs">Details anzeigen</span>
                   </Button>
                 </Link>
                 {customer.email && (
                   <a href={`mailto:${customer.email}`} className="w-full">
-                    <Button variant="outline" size="sm" className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50">
-                      <Mail className="h-3.5 w-3.5" />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50"
+                    >
+                      <Mail className="size-3.5" />
                       <span className="text-xs">E-Mail senden</span>
                     </Button>
                   </a>
                 )}
                 {customer.phone && (
                   <a href={`tel:${customer.phone}`} className="w-full">
-                    <Button variant="outline" size="sm" className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50">
-                      <Phone className="h-3.5 w-3.5" />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1.5 w-full bg-bg-white-0 dark:bg-bg-white-0 text-text-strong-950 dark:text-text-strong-950 border-stroke-soft-200 hover:bg-bg-white-50 dark:hover:bg-bg-white-50"
+                    >
+                      <Phone className="size-3.5" />
                       <span className="text-xs">Anrufen</span>
                     </Button>
                   </a>
@@ -497,8 +556,12 @@ export function CustomerDrawer({
                 <EditCustomerDrawer
                   customer={customer}
                   trigger={
-                    <Button variant="default" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
-                      <User className="h-3.5 w-3.5" />
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
+                    >
+                      <User className="size-3.5" />
                       <span className="text-xs">Bearbeiten</span>
                     </Button>
                   }
@@ -507,8 +570,12 @@ export function CustomerDrawer({
                   href={`/dashboard/documents/new?type=quote&customer_id=${customer.id}`}
                   className="w-full"
                 >
-                  <Button variant="default" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
-                    <FileText className="h-3.5 w-3.5" />
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
+                  >
+                    <FileText className="size-3.5" />
                     <span className="text-xs">Angebot erstellen</span>
                   </Button>
                 </Link>
@@ -516,8 +583,12 @@ export function CustomerDrawer({
                   href={`/dashboard/documents/new?type=invoice&customer_id=${customer.id}`}
                   className="w-full"
                 >
-                  <Button variant="default" size="sm" className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90">
-                    <FileText className="h-3.5 w-3.5" />
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
+                  >
+                    <FileText className="size-3.5" />
                     <span className="text-xs">Rechnung erstellen</span>
                   </Button>
                 </Link>

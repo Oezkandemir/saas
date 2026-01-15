@@ -1,5 +1,5 @@
+import { type NextRequest, NextResponse } from "next/server";
 import { cache } from "react";
-import { NextRequest, NextResponse } from "next/server";
 
 import { syncUserWithDatabase } from "@/lib/auth-sync";
 import { logger } from "@/lib/logger";
@@ -33,9 +33,7 @@ export const auth = cache(async () => {
         email: user.email,
         // Prioritize the database name
         name:
-          dbUser?.name ||
-          user.user_metadata?.name ||
-          user.email?.split("@")[0],
+          dbUser?.name || user.user_metadata?.name || user.email?.split("@")[0],
       },
     };
   } catch (error) {
@@ -68,7 +66,7 @@ export async function GET(request: NextRequest) {
     logger.error("Auth GET error", error);
     return NextResponse.json(
       { error: "Authentication error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -85,7 +83,7 @@ export async function POST(request: NextRequest) {
         await supabase.auth.signOut();
         return NextResponse.json({ success: true }, { status: 200 });
 
-      case "signin":
+      case "signin": {
         const { data, error } = await supabase.auth.signInWithPassword({
           email: body.email,
           password: body.password,
@@ -93,6 +91,7 @@ export async function POST(request: NextRequest) {
 
         if (error) throw error;
         return NextResponse.json(data, { status: 200 });
+      }
 
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
@@ -101,7 +100,7 @@ export async function POST(request: NextRequest) {
     logger.error("Auth POST error", error);
     return NextResponse.json(
       { error: "Authentication error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

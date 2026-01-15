@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { updateDocument } from "@/actions/documents-actions";
 import { ChevronDown } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
-
+import { updateDocument } from "@/actions/documents-actions";
+import {
+  type DocumentStatus,
+  StatusBadge,
+} from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenuRoot as DropdownMenu,
@@ -14,7 +17,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DocumentStatus, StatusBadge } from "@/components/shared/status-badge";
 
 interface DocumentStatusChangerProps {
   documentId: string;
@@ -50,10 +52,10 @@ export function DocumentStatusChanger({
     try {
       await updateDocument(documentId, { status: newStatus });
       toast.success(
-        t("toast.statusChanged", { status: t(`labels.${newStatus}`) }),
+        t("toast.statusChanged", { status: t(`labels.${newStatus}`) })
       );
       router.refresh();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("toast.changeError"));
     } finally {
       setIsUpdating(false);
@@ -61,7 +63,7 @@ export function DocumentStatusChanger({
   };
 
   const availableStatuses = Object.entries(statusOptions).filter(
-    ([_, option]) => option.availableFor.includes(type),
+    ([_, option]) => option.availableFor.includes(type)
   ) as [DocumentStatus, (typeof statusOptions)[DocumentStatus]][];
 
   return (
@@ -69,7 +71,7 @@ export function DocumentStatusChanger({
       <DropdownMenuTrigger asChild>
         <Button variant="outline" disabled={isUpdating} className="gap-2">
           <StatusBadge status={currentStatus} />
-          <ChevronDown className="h-4 w-4" />
+          <ChevronDown className="size-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

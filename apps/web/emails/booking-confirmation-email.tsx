@@ -10,9 +10,8 @@ import {
   Tailwind,
   Text,
 } from "@react-email/components";
-
-import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
+import { env } from "@/env.mjs";
 
 import { Icons } from "../components/shared/icons";
 

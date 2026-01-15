@@ -1,26 +1,29 @@
 "use client";
 
-import * as React from "react";
-import { Ticket } from "@/actions/support-ticket-actions";
 import {
-  ColumnFiltersState,
+  type ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
-  SortingState,
+  type SortingState,
   useReactTable,
-  VisibilityState,
+  type VisibilityState,
 } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
 import { Filter, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
-
-import { cn } from "@/lib/utils";
+import * as React from "react";
+import type { Ticket } from "@/actions/support-ticket-actions";
+import { UserAvatar } from "@/components/shared/user-avatar";
+import { TicketActions } from "@/components/support/ticket-actions";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -29,11 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { TicketActions } from "@/components/support/ticket-actions";
+import { cn } from "@/lib/utils";
 
 interface TicketAccordionTableProps {
   data: Ticket[];
@@ -88,7 +87,7 @@ export function TicketAccordionTable({
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+    []
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -225,7 +224,7 @@ export function TicketAccordionTable({
           <div
             className={cn(
               "flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0",
-              !showFilters && "hidden sm:flex",
+              !showFilters && "hidden sm:flex"
             )}
           >
             <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -287,13 +286,13 @@ export function TicketAccordionTable({
                 <div
                   className={cn(
                     "flex cursor-pointer items-center justify-between px-0 py-3",
-                    openItem === ticket.id && "border-b border-border pb-3",
+                    openItem === ticket.id && "border-b border-border pb-3"
                   )}
                   onClick={(e) => {
                     // Only toggle if not clicking on an action button
                     if (!(e.target as HTMLElement).closest('[role="button"]')) {
                       setOpenItem(
-                        openItem === ticket.id ? undefined : ticket.id,
+                        openItem === ticket.id ? undefined : ticket.id
                       );
                     }
                   }}
@@ -320,7 +319,7 @@ export function TicketAccordionTable({
                           {formatDistance(
                             new Date(ticket.updated_at),
                             new Date(),
-                            { addSuffix: true },
+                            { addSuffix: true }
                           )}
                         </p>
                       </div>
@@ -344,59 +343,57 @@ export function TicketAccordionTable({
                   forceMount
                   className={cn(
                     "overflow-hidden pt-3 pb-4 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
-                    openItem !== ticket.id && "h-0 p-0",
+                    openItem !== ticket.id && "h-0 p-0"
                   )}
                 >
                   {openItem === ticket.id && (
-                    <>
-                      <div className="space-y-4">
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-sm font-medium mb-2">
+                          {ticket.subject}
+                        </p>
+                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                          {ticket.description}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
                         <div>
-                          <p className="text-sm font-medium mb-2">
-                            {ticket.subject}
-                          </p>
-                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                            {ticket.description}
-                          </p>
-                        </div>
-
-                        <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-                          <div>
-                            <span className="text-muted-foreground">
-                              Priority:
-                            </span>{" "}
-                            <Badge
-                              className={`${getPriorityColor(ticket.priority)} ml-1`}
-                            >
-                              <span className="capitalize">
-                                {ticket.priority}
-                              </span>
-                            </Badge>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">
-                              Created:
-                            </span>{" "}
-                            <span className="text-foreground">
-                              {formatDistance(
-                                new Date(ticket.created_at),
-                                new Date(),
-                                { addSuffix: true },
-                              )}
+                          <span className="text-muted-foreground">
+                            Priority:
+                          </span>{" "}
+                          <Badge
+                            className={`${getPriorityColor(ticket.priority)} ml-1`}
+                          >
+                            <span className="capitalize">
+                              {ticket.priority}
                             </span>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">User:</span>{" "}
-                            <span className="text-foreground">
-                              {ticket.user?.email || "No email"}
-                            </span>
-                          </div>
+                          </Badge>
                         </div>
-
-                        <div className="pt-2 border-t md:hidden">
-                          <TicketActions ticket={ticket} locale={locale} />
+                        <div>
+                          <span className="text-muted-foreground">
+                            Created:
+                          </span>{" "}
+                          <span className="text-foreground">
+                            {formatDistance(
+                              new Date(ticket.created_at),
+                              new Date(),
+                              { addSuffix: true }
+                            )}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">User:</span>{" "}
+                          <span className="text-foreground">
+                            {ticket.user?.email || "No email"}
+                          </span>
                         </div>
                       </div>
-                    </>
+
+                      <div className="pt-2 border-t md:hidden">
+                        <TicketActions ticket={ticket} locale={locale} />
+                      </div>
+                    </div>
                   )}
                 </AccordionContent>
               </AccordionItem>

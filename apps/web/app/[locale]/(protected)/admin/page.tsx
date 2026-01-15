@@ -1,15 +1,17 @@
+import { ArrowRight, Shield, Users } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import {
   getPlanStatistics,
   getUsersByPlan,
 } from "@/actions/admin-plan-actions";
 import { getAdminStats } from "@/actions/admin-stats-actions";
 import { getAllUsers } from "@/actions/admin-user-actions";
-import { ArrowRight, Shield, Users } from "lucide-react";
-import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -18,14 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { getCurrentUser } from "@/lib/session";
 
 // ISR: Revalidate every 60 seconds for fresh admin data
 export const revalidate = 60;
@@ -109,14 +104,14 @@ export default async function AdminPanelPage(props: Props) {
   // Calculate total users in active plans
   const totalUsersInActivePlans = activePlans.reduce(
     (sum, plan) => sum + (plan.user_count || 0),
-    0,
+    0
   );
 
   // Get users in active plans for avatars
   const usersInActivePlans =
     usersByPlanResult.success && usersByPlanResult.data
       ? usersByPlanResult.data.filter((user) =>
-          activePlans.some((plan) => plan.plan_id === user.plan_id),
+          activePlans.some((plan) => plan.plan_id === user.plan_id)
         )
       : [];
 
@@ -125,7 +120,7 @@ export default async function AdminPanelPage(props: Props) {
     usersResult.success && usersResult.data
       ? usersInActivePlans.map((planUser) => {
           const userData = usersResult.data.find(
-            (u) => u.id === planUser.user_id,
+            (u) => u.id === planUser.user_id
           );
           return {
             id: planUser.user_id,
@@ -160,7 +155,7 @@ export default async function AdminPanelPage(props: Props) {
     <UnifiedPageLayout
       title={tPanel("heading")}
       description={tPanel("subheading")}
-      icon={<Shield className="h-4 w-4 text-primary" />}
+      icon={<Shield className="size-4 text-primary" />}
       contentClassName=""
     >
       {/* 1. Primary Metric - Single Focus */}
@@ -224,14 +219,14 @@ export default async function AdminPanelPage(props: Props) {
           <Link href={`/${locale}/admin/users`}>
             <Button variant="ghost" size="sm" className="h-7 text-xs -mr-2">
               {tPanel("viewAll")}
-              <ArrowRight className="ml-1 h-3 w-3" />
+              <ArrowRight className="ml-1 size-3" />
             </Button>
           </Link>
         </div>
 
         {recentUsers.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <Users className="h-6 w-6 text-muted-foreground mb-3" />
+            <Users className="size-6 text-muted-foreground mb-3" />
             <p className="text-sm text-muted-foreground mb-4">
               {tUsers("noUsers")}
             </p>

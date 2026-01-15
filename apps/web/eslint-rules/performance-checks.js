@@ -41,7 +41,7 @@ module.exports = {
     const maxListSize = options.maxListSize || 50;
 
     // Track async operations and data fetching
-    const asyncHooks = new Set();
+    const _asyncHooks = new Set();
     const dataFetchingHooks = [
       "useQuery",
       "useSWR",
@@ -97,7 +97,7 @@ module.exports = {
       ArrayExpression(node) {
         checkForLargeArray(node);
       },
-      JSXElement(node) {
+      JSXElement(_node) {
         // Check for .map() calls that might need virtualization
         // This is a simplified check
       },

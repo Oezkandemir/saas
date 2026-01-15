@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireCSRFToken } from "@/lib/csrf";
@@ -42,11 +42,11 @@ export async function POST(request: NextRequest) {
           userId: user.id,
           userRole: user.role,
           ip: request.headers.get("x-forwarded-for") || "unknown",
-        },
+        }
       );
       return NextResponse.json(
         { error: "Forbidden: Admin access required" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     const rateLimit = await checkRateLimit(
       "/api/admin/update-user-role",
       user.id,
-      "user",
+      "user"
     );
     if (!rateLimit.allowed) {
       logger.warn("Rate limit exceeded for role update", {
@@ -65,17 +65,17 @@ export async function POST(request: NextRequest) {
         {
           error: "Rate limit exceeded",
           retryAfter: Math.ceil(
-            (rateLimit.resetAt.getTime() - Date.now()) / 1000,
+            (rateLimit.resetAt.getTime() - Date.now()) / 1000
           ),
         },
         {
           status: 429,
           headers: {
             "Retry-After": Math.ceil(
-              (rateLimit.resetAt.getTime() - Date.now()) / 1000,
+              (rateLimit.resetAt.getTime() - Date.now()) / 1000
             ).toString(),
           },
-        },
+        }
       );
     }
 
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
           error: "Invalid input",
           details: validationResult.error.errors,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
       });
       return NextResponse.json(
         { error: "Cannot remove your own admin role" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
       logger.error("Error updating database:", dbError);
       return NextResponse.json(
         { error: `Failed to update database: ${dbError.message}` },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
       logger.error("Error fetching auth user:", authFetchError);
       return NextResponse.json(
         { error: `Failed to fetch auth user: ${authFetchError.message}` },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
       logger.error("Error updating auth metadata:", authUpdateError);
       return NextResponse.json(
         { error: `Failed to update auth metadata: ${authUpdateError.message}` },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
     logger.error("Unexpected error:", error);
     return NextResponse.json(
       { error: error.message || "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

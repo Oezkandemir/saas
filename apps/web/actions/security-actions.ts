@@ -132,7 +132,7 @@ export async function getActiveSessions(): Promise<
  * @returns Success status
  */
 export async function revokeSession(
-  sessionId: string,
+  sessionId: string
 ): Promise<{ success: boolean; message: string }> {
   try {
     const supabase = await createClient();
@@ -301,7 +301,7 @@ export async function clearAllSessions(): Promise<{
  * @returns Array of login history entries
  */
 export async function getLoginHistory(
-  limit: number = 50,
+  limit: number = 50
 ): Promise<
   | { success: true; history: LoginHistoryEntry[] }
   | { success: false; message: string }
@@ -361,7 +361,7 @@ export async function getLoginHistory(
 export async function logLoginAttempt(
   success: boolean,
   failureReason?: string,
-  twoFactorUsed: boolean = false,
+  twoFactorUsed: boolean = false
 ): Promise<void> {
   try {
     const supabase = await createClient();

@@ -1,9 +1,7 @@
-import { Metadata } from "next";
-import Link from "next/link";
 import { FileText } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { constructMetadata } from "@/lib/utils";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import {
   Card,
@@ -12,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { constructMetadata } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -46,9 +45,9 @@ export default async function TermsPage({
             </div>
           </div>
           <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-2">
-            <span className="flex relative w-2 h-2">
-              <span className="inline-flex absolute w-full h-full rounded-full opacity-75 animate-ping bg-primary"></span>
-              <span className="inline-flex relative w-2 h-2 rounded-full bg-primary"></span>
+            <span className="flex relative size-2">
+              <span className="inline-flex absolute size-full rounded-full opacity-75 animate-ping bg-primary"></span>
+              <span className="inline-flex relative size-2 rounded-full bg-primary"></span>
             </span>
             {t("hero.badge")}
           </div>

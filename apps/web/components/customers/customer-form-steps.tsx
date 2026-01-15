@@ -1,6 +1,5 @@
 "use client";
 
-import { CustomerInput } from "@/actions/customers-actions";
 import {
   Building2,
   FileText,
@@ -11,7 +10,8 @@ import {
   User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useFormContext, UseFormReturn } from "react-hook-form";
+import { type UseFormReturn, useFormContext } from "react-hook-form";
+import type { CustomerInput } from "@/actions/customers-actions";
 
 import {
   FormControl,
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  Select as Select,
+  Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
@@ -53,7 +53,7 @@ export function CustomerPersonalInfoStep({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 pb-2">
-        <User className="h-5 w-5 text-muted-foreground" />
+        <User className="size-5 text-muted-foreground" />
         <h3 className="text-lg font-semibold">{t("personalInfo")}</h3>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
@@ -65,7 +65,7 @@ export function CustomerPersonalInfoStep({
             return (
               <FormItem>
                 <FormLabel className="text-base font-medium flex items-center gap-2">
-                  <User className="h-4 w-4 text-primary" />
+                  <User className="size-4 text-primary" />
                   {t("name")} *
                 </FormLabel>
                 <FormControl>
@@ -89,7 +89,7 @@ export function CustomerPersonalInfoStep({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-base font-medium flex items-center gap-2">
-                <Mail className="h-4 w-4 text-primary" />
+                <Mail className="size-4 text-primary" />
                 {t("email")}
               </FormLabel>
               <FormControl>
@@ -111,7 +111,7 @@ export function CustomerPersonalInfoStep({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-base font-medium flex items-center gap-2">
-                <Phone className="h-4 w-4 text-primary" />
+                <Phone className="size-4 text-primary" />
                 {t("phone")}
               </FormLabel>
               <FormControl>
@@ -133,7 +133,7 @@ export function CustomerPersonalInfoStep({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-base font-medium flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-primary" />
+                <Building2 className="size-4 text-primary" />
                 {t("company")}
               </FormLabel>
               <FormControl>
@@ -180,7 +180,7 @@ export function CustomerAddressStep({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 pb-2">
-        <MapPin className="h-5 w-5 text-muted-foreground" />
+        <MapPin className="size-5 text-muted-foreground" />
         <h3 className="text-lg font-semibold">{t("address")}</h3>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
@@ -266,7 +266,7 @@ export function CustomerAddressStep({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-base font-medium flex items-center gap-2">
-                <Globe className="h-4 w-4" />
+                <Globe className="size-4" />
                 {t("country")}
               </FormLabel>
               <Select onValueChange={field.onChange} value={field.value}>
@@ -303,7 +303,7 @@ export function CustomerAdditionalInfoStep({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 pb-2">
-        <FileText className="h-5 w-5 text-muted-foreground" />
+        <FileText className="size-5 text-muted-foreground" />
         <h3 className="text-lg font-semibold">{t("additionalInfo")}</h3>
       </div>
       <div className="grid gap-4 md:grid-cols-2">

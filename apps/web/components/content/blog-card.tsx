@@ -1,18 +1,18 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
-import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { BlurImage } from "@/components/shared/blur-image";
 
 import { BLOG_AUTHORS } from "@/config/blog";
+import { Link } from "@/i18n/routing";
 import {
   cn,
   formatDate,
   placeholderBlurhash,
   resolveStaticPath,
 } from "@/lib/utils";
-import { BlurImage } from "@/components/shared/blur-image";
 
 type BlogPostData = {
   _id?: string;
@@ -45,7 +45,7 @@ export function BlogCard({
       ? data.image
       : resolveStaticPath(data.image)
     : "";
-  
+
   const postDate = data.date || data.created_at || "";
 
   return (
@@ -54,7 +54,7 @@ export function BlogCard({
         "group relative",
         horizontale
           ? "grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-6"
-          : "flex flex-col space-y-2",
+          : "flex flex-col space-y-2"
       )}
     >
       {imageSrc && !imageError && (
@@ -62,7 +62,7 @@ export function BlogCard({
           <BlurImage
             alt={data.title}
             blurDataURL={data.blurDataURL ?? placeholderBlurhash}
-            className="w-full h-full object-contain object-center"
+            className="size-full object-contain object-center"
             width={800}
             height={450}
             priority={priority}
@@ -76,7 +76,7 @@ export function BlogCard({
       <div
         className={cn(
           "flex flex-1 flex-col",
-          horizontale ? "justify-center" : "justify-between",
+          horizontale ? "justify-center" : "justify-between"
         )}
       >
         <div className="w-full">

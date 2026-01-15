@@ -1,7 +1,5 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-
-import { constructMetadata } from "@/lib/utils";
 // ⚡ PERFORMANCE: Next.js automatically code-splits these imports into separate chunks
 import ModernBenefits from "@/components/sections/modern-benefits";
 import ModernCTA from "@/components/sections/modern-cta";
@@ -12,6 +10,7 @@ import ModernHowItWorks from "@/components/sections/modern-how-it-works";
 import ModernOfferings from "@/components/sections/modern-offerings";
 import ModernStats from "@/components/sections/modern-stats";
 import ModernTestimonials from "@/components/sections/modern-testimonials";
+import { constructMetadata } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{

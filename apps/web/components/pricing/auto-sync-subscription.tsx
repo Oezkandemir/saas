@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { syncPolarSubscriptionFromCheckout } from "@/actions/sync-polar-subscription";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { syncPolarSubscriptionFromCheckout } from "@/actions/sync-polar-subscription";
 
 import { logger } from "@/lib/logger";
 

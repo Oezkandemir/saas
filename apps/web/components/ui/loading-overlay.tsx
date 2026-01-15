@@ -23,13 +23,10 @@ export function LoadingOverlay({
         "absolute inset-0 z-50 flex items-center justify-center",
         "bg-background/80 backdrop-blur-sm rounded-lg",
         "transition-opacity duration-300 animate-in fade-in",
-        className,
+        className
       )}
     >
       <LoadingSpinner size={spinnerSize} text={text} />
     </div>
   );
 }
-
-
-

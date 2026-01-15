@@ -1,13 +1,10 @@
-import { Link } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
-
-import { features } from "@/config/landing";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { features } from "@/config/landing";
+import { Link } from "@/i18n/routing";
 
-interface ModernFeaturesProps {}
-
-export default async function ModernFeatures({}: ModernFeaturesProps) {
+export default async function ModernFeatures() {
   const t = await getTranslations("Features");
 
   return (
@@ -66,7 +63,7 @@ export default async function ModernFeatures({}: ModernFeaturesProps) {
                 </Link>
 
                 {/* Decorative corner element */}
-                <div className="absolute right-0 top-0 h-20 w-20 -translate-y-1/2 translate-x-1/2 rounded-full bg-gradient-to-br from-primary/20 to-transparent blur-2xl opacity-0 transition-opacity group-hover:opacity-100" />
+                <div className="absolute right-0 top-0 size-20 -translate-y-1/2 translate-x-1/2 rounded-full bg-gradient-to-br from-primary/20 to-transparent blur-2xl opacity-0 transition-opacity group-hover:opacity-100" />
               </div>
             );
           })}

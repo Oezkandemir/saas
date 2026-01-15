@@ -1,8 +1,7 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
-
-import { testimonials } from "@/config/landing";
 import { HeaderSection } from "@/components/shared/header-section";
+import { testimonials } from "@/config/landing";
 
 export default async function Testimonials() {
   // Get translations

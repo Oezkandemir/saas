@@ -84,7 +84,7 @@ export async function getAllTickets(): Promise<ActionResult<Ticket[]>> {
         `
         *,
         user:users(name, email, avatar_url)
-      `,
+      `
       )
       .order("updated_at", { ascending: false });
 
@@ -125,7 +125,7 @@ export async function getUserTickets(): Promise<ActionResult<Ticket[]>> {
         `
         *,
         user:users(name, email, avatar_url)
-      `,
+      `
       )
       .eq("user_id", user.id)
       .order("updated_at", { ascending: false });
@@ -149,7 +149,7 @@ export async function getUserTickets(): Promise<ActionResult<Ticket[]>> {
 
 // Get single ticket with messages
 export async function getTicketWithMessages(
-  ticketId: string,
+  ticketId: string
 ): Promise<ActionResult<{ ticket: Ticket; messages: TicketMessage[] }>> {
   const user = await getCurrentUser();
 
@@ -170,7 +170,7 @@ export async function getTicketWithMessages(
         `
         *,
         user:users(name, email, avatar_url)
-      `,
+      `
       )
       .eq("id", ticketId)
       .single();
@@ -194,7 +194,7 @@ export async function getTicketWithMessages(
         `
         *,
         user:users(name, email, avatar_url)
-      `,
+      `
       )
       .eq("ticket_id", ticketId)
       .order("created_at", { ascending: true });
@@ -221,7 +221,7 @@ export async function getTicketWithMessages(
 
 // Create a new ticket
 export async function createTicket(
-  formData: FormData,
+  formData: FormData
 ): Promise<ActionResult<Ticket>> {
   const user = await getCurrentUser();
 
@@ -290,7 +290,7 @@ export async function createTicket(
 // Add a message to a ticket
 export async function addTicketMessage(
   ticketId: string,
-  formData: FormData,
+  formData: FormData
 ): Promise<ActionResult<TicketMessage>> {
   const user = await getCurrentUser();
 
@@ -341,7 +341,7 @@ export async function addTicketMessage(
         `
         *,
         user:users(name, email, avatar_url)
-      `,
+      `
       )
       .single();
 
@@ -352,7 +352,7 @@ export async function addTicketMessage(
     // Don't use revalidatePath here - we're using Realtime for instant updates
     // Revalidating causes page reloads which breaks the real-time experience
     // The realtime subscription will handle updating the UI immediately
-    
+
     return {
       success: true,
       data: data as TicketMessage,
@@ -379,7 +379,7 @@ export async function addTicketMessage(
 // Update ticket status (admin only)
 export async function updateTicketStatus(
   ticketId: string,
-  status: "open" | "in_progress" | "resolved" | "closed",
+  status: "open" | "in_progress" | "resolved" | "closed"
 ): Promise<ActionResult<Ticket>> {
   const user = await getCurrentUser();
 
@@ -429,7 +429,7 @@ export async function updateTicketStatus(
 
 // Delete ticket (admin only)
 export async function deleteTicket(
-  ticketId: string,
+  ticketId: string
 ): Promise<ActionResult<void>> {
   const user = await getCurrentUser();
 

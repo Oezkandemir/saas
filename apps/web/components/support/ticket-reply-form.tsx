@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { addTicketMessage, type TicketMessage } from "@/actions/support-ticket-actions";
 import { AlertCircle, Loader2, Send } from "lucide-react";
-
-import { logger } from "@/lib/logger";
+import { useEffect, useRef, useState } from "react";
+import {
+  addTicketMessage,
+  type TicketMessage,
+} from "@/actions/support-ticket-actions";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { useTypingIndicator } from "@/hooks/use-typing-indicator";
+import { logger } from "@/lib/logger";
 
 interface TicketReplyFormProps {
   ticketId: string;
@@ -32,7 +34,7 @@ export function TicketReplyForm({
   const { sendTypingEvent, setIsTyping } = useTypingIndicator(
     ticketId,
     currentUserId,
-    currentUserName,
+    currentUserName
   );
 
   // Handle typing detection

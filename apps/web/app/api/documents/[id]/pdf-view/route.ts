@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { getDocument } from "@/actions/documents-actions";
 
 import { logger } from "@/lib/logger";
@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser();
@@ -26,7 +26,7 @@ export async function GET(
     if (!document) {
       return NextResponse.json(
         { error: "Document not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -46,7 +46,7 @@ export async function GET(
       logger.error("Error fetching PDF from storage:", fetchError);
       return NextResponse.json(
         { error: "Failed to fetch PDF from storage" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -59,7 +59,7 @@ export async function GET(
         {
           error: `Failed to fetch PDF: ${pdfResponse.status} ${pdfResponse.statusText}`,
         },
-        { status: pdfResponse.status },
+        { status: pdfResponse.status }
       );
     }
 

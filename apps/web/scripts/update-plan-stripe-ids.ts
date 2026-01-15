@@ -11,7 +11,7 @@
  * 2. Run: npx tsx scripts/update-plan-stripe-ids.ts
  */
 
-import { resolve } from "path";
+import { resolve } from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { config } from "dotenv";
 
@@ -90,7 +90,7 @@ async function updatePlanStripeIds() {
   const { data: plans, error: plansError } = await supabase
     .from("plans")
     .select(
-      "id, title, plan_key, stripe_price_id_monthly, stripe_price_id_yearly",
+      "id, title, plan_key, stripe_price_id_monthly, stripe_price_id_yearly"
     )
     .order("sort_order");
 
@@ -100,10 +100,10 @@ async function updatePlanStripeIds() {
     plans.forEach((plan) => {
       logger.debug(`\n  ${plan.title} (${plan.plan_key}):`);
       logger.debug(
-        `    Monthly: ${plan.stripe_price_id_monthly || "❌ Not set"}`,
+        `    Monthly: ${plan.stripe_price_id_monthly || "❌ Not set"}`
       );
       logger.debug(
-        `    Yearly: ${plan.stripe_price_id_yearly || "❌ Not set"}`,
+        `    Yearly: ${plan.stripe_price_id_yearly || "❌ Not set"}`
       );
     });
   }
@@ -112,6 +112,3 @@ async function updatePlanStripeIds() {
 }
 
 updatePlanStripeIds().catch(console.error);
-
-
-

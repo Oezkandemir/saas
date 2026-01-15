@@ -1,25 +1,19 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import {
-  changePassword,
-  type ChangePasswordFormData,
-} from "@/actions/change-password";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Eye, EyeOff, Lock } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-
 import {
-  passwordSchema,
-  validatePassword,
-} from "@/lib/validations/password-policy";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button } from "@/components/ui/button";
+  type ChangePasswordFormData,
+  changePassword,
+} from "@/actions/change-password";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -29,6 +23,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import {
+  passwordSchema,
+  validatePassword,
+} from "@/lib/validations/password-policy";
 
 export function ChangePassword() {
   const t = useTranslations("Security.changePassword");

@@ -1,13 +1,19 @@
 "use client";
 
+import { Database, Loader2, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
+  type DatabaseTableStats,
   getDatabaseInfo,
   getDatabaseTableStats,
-  type DatabaseTableStats,
 } from "@/actions/admin-system-actions";
-import { Database, Loader2, RefreshCw } from "lucide-react";
-
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -17,13 +23,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 export function DatabaseStats() {
   const { toast } = useToast();
@@ -34,10 +33,6 @@ export function DatabaseStats() {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-
-  useEffect(() => {
-    loadStats();
-  }, []);
 
   const loadStats = async () => {
     setIsLoading(true);
@@ -65,7 +60,7 @@ export function DatabaseStats() {
           responseTime: infoResult.data.responseTime || 0,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: "Fehler",
@@ -76,6 +71,10 @@ export function DatabaseStats() {
     }
   };
 
+  useEffect(() => {
+    loadStats();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
@@ -84,7 +83,7 @@ export function DatabaseStats() {
         title: "Aktualisiert",
         description: "Datenbank-Statistiken wurden aktualisiert",
       });
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: "Fehler",
@@ -206,7 +205,7 @@ export function DatabaseStats() {
           </div>
         ) : (
           <div className="text-center py-12 text-muted-foreground border rounded-lg">
-            <Database className="h-12 w-12 mx-auto mb-3 opacity-50" />
+            <Database className="size-12 mx-auto mb-3 opacity-50" />
             <p className="font-medium">Keine Statistiken verfügbar</p>
             <p className="text-sm mt-1">
               Die Datenbank-Statistiken werden geladen...

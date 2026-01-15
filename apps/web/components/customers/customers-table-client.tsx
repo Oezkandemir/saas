@@ -1,9 +1,9 @@
 "use client";
 
+import { Building2, Mail, Phone } from "lucide-react";
 import { useState } from "react";
 import type { Customer } from "@/actions/customers-actions";
-import { Building2, Mail, Phone } from "lucide-react";
-
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -12,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { CustomerDrawer } from "./customer-drawer";
 
 interface CustomersTableClientProps {
@@ -21,7 +20,7 @@ interface CustomersTableClientProps {
 
 export function CustomersTableClient({ customers }: CustomersTableClientProps) {
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(
-    null,
+    null
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -37,9 +36,15 @@ export function CustomersTableClient({ customers }: CustomersTableClientProps) {
           <TableHeader>
             <TableRow>
               <TableHead className="h-10 text-xs font-medium">Name</TableHead>
-              <TableHead className="h-10 text-xs font-medium">Contact</TableHead>
-              <TableHead className="h-10 text-xs font-medium">Company</TableHead>
-              <TableHead className="h-10 text-xs font-medium">QR Code</TableHead>
+              <TableHead className="h-10 text-xs font-medium">
+                Contact
+              </TableHead>
+              <TableHead className="h-10 text-xs font-medium">
+                Company
+              </TableHead>
+              <TableHead className="h-10 text-xs font-medium">
+                QR Code
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -58,7 +63,7 @@ export function CustomersTableClient({ customers }: CustomersTableClientProps) {
                   <div className="flex flex-col gap-0.5">
                     {customer.email && (
                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Mail className="h-3 w-3" />
+                        <Mail className="size-3" />
                         <span className="truncate max-w-[200px]">
                           {customer.email}
                         </span>
@@ -66,7 +71,7 @@ export function CustomersTableClient({ customers }: CustomersTableClientProps) {
                     )}
                     {customer.phone && (
                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Phone className="h-3 w-3" />
+                        <Phone className="size-3" />
                         <span>{customer.phone}</span>
                       </div>
                     )}
@@ -78,7 +83,7 @@ export function CustomersTableClient({ customers }: CustomersTableClientProps) {
                 <TableCell className="py-2.5 text-sm text-muted-foreground">
                   {customer.company ? (
                     <div className="flex items-center gap-1.5">
-                      <Building2 className="h-3 w-3" />
+                      <Building2 className="size-3" />
                       <span>{customer.company}</span>
                     </div>
                   ) : (
@@ -108,7 +113,3 @@ export function CustomersTableClient({ customers }: CustomersTableClientProps) {
     </>
   );
 }
-
-
-
-

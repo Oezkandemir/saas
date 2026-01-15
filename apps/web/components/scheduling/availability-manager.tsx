@@ -1,18 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  deleteWeeklyAvailability,
-  getWeeklyAvailability,
-  upsertWeeklyAvailability,
-  type AvailabilityRule,
-} from "@/actions/scheduling/availability-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar, Clock, Edit, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import {
+  type AvailabilityRule,
+  deleteWeeklyAvailability,
+  getWeeklyAvailability,
+  upsertWeeklyAvailability,
+} from "@/actions/scheduling/availability-actions";
 
 import {
   AlertDialog,
@@ -24,6 +24,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -33,14 +41,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -86,7 +86,7 @@ export function AvailabilityManager({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRule, setEditingRule] = useState<AvailabilityRule | null>(null);
   const [deletingRule, setDeletingRule] = useState<AvailabilityRule | null>(
-    null,
+    null
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -106,7 +106,7 @@ export function AvailabilityManager({
       if (result.success && result.data) {
         setRules(result.data);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("loadError") || "Fehler beim Laden der Öffnungszeiten");
     } finally {
       setIsLoading(false);
@@ -115,7 +115,7 @@ export function AvailabilityManager({
 
   useEffect(() => {
     loadRules();
-  }, [eventTypeId]);
+  }, [loadRules]);
 
   const handleOpenDialog = (rule?: AvailabilityRule) => {
     if (rule) {
@@ -164,11 +164,11 @@ export function AvailabilityManager({
       toast.success(
         editingRule
           ? t("updated") || "Öffnungszeit aktualisiert"
-          : t("created") || "Öffnungszeit erstellt",
+          : t("created") || "Öffnungszeit erstellt"
       );
       handleCloseDialog();
       loadRules();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("saveError") || "Fehler beim Speichern");
     } finally {
       setIsSubmitting(false);
@@ -189,7 +189,7 @@ export function AvailabilityManager({
       toast.success(t("deleted") || "Öffnungszeit gelöscht");
       setDeletingRule(null);
       loadRules();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("deleteError") || "Fehler beim Löschen");
     } finally {
       setIsSubmitting(false);
@@ -214,10 +214,10 @@ export function AvailabilityManager({
       if (!acc[rule.day_of_week]) {
         acc[rule.day_of_week] = [];
       }
-      acc[rule.day_of_week].push(rule);
+      acc[rule.day_of_week]?.push(rule);
       return acc;
     },
-    {} as Record<number, AvailabilityRule[]>,
+    {} as Record<number, AvailabilityRule[]>
   );
 
   return (
@@ -227,7 +227,7 @@ export function AvailabilityManager({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-base flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
+                <Calendar className="size-4" />
                 {t("title") || "Öffnungszeiten"}
               </CardTitle>
               <CardDescription>
@@ -238,7 +238,7 @@ export function AvailabilityManager({
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" onClick={() => handleOpenDialog()}>
-                  <Plus className="h-4 w-4 mr-1" />
+                  <Plus className="size-4 mr-1" />
                   {t("add") || "Öffnungszeit hinzufügen"}
                 </Button>
               </DialogTrigger>
@@ -269,7 +269,7 @@ export function AvailabilityManager({
                             <select
                               {...field}
                               onChange={(e) =>
-                                field.onChange(parseInt(e.target.value))
+                                field.onChange(parseInt(e.target.value, 10))
                               }
                               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             >
@@ -349,11 +349,11 @@ export function AvailabilityManager({
           ) : (
             <div className="space-y-3">
               {Object.entries(rulesByDay)
-                .sort(([a], [b]) => parseInt(a) - parseInt(b))
+                .sort(([a], [b]) => parseInt(a, 10) - parseInt(b, 10))
                 .map(([day, dayRules]) => (
                   <div key={day} className="space-y-2">
                     <div className="text-sm font-medium text-muted-foreground">
-                      {dayNames[parseInt(day)]}
+                      {dayNames[parseInt(day, 10)]}
                     </div>
                     {dayRules.map((rule) => (
                       <div
@@ -361,7 +361,7 @@ export function AvailabilityManager({
                         className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
                       >
                         <div className="flex items-center gap-3">
-                          <Clock className="h-4 w-4 text-muted-foreground" />
+                          <Clock className="size-4 text-muted-foreground" />
                           <span className="text-sm">
                             {rule.start_time.substring(0, 5)} -{" "}
                             {rule.end_time.substring(0, 5)}
@@ -372,17 +372,17 @@ export function AvailabilityManager({
                             variant="ghost"
                             size="sm"
                             onClick={() => handleOpenDialog(rule)}
-                            className="h-7 w-7 p-0"
+                            className="size-7 p-0"
                           >
-                            <Edit className="h-3 w-3" />
+                            <Edit className="size-3" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => setDeletingRule(rule)}
-                            className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                            className="size-7 p-0 text-destructive hover:text-destructive"
                           >
-                            <Trash2 className="h-3 w-3" />
+                            <Trash2 className="size-3" />
                           </Button>
                         </div>
                       </div>

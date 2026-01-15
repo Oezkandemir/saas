@@ -1,5 +1,5 @@
-import { notFound } from "next/navigation";
 import { addDays, format } from "date-fns";
+import { notFound } from "next/navigation";
 import { getPublicSlots } from "@/actions/scheduling/bookings-actions";
 import { getPublicEventTypeByUserId } from "@/actions/scheduling/event-types-actions";
 
@@ -15,7 +15,7 @@ export const revalidate = 60;
 async function findNextAvailableDate(
   eventSlug: string,
   startDate: Date = new Date(),
-  maxDays: number = 30,
+  maxDays: number = 30
 ): Promise<{ date: string; slots: any[] }> {
   let currentDate = new Date(startDate);
   currentDate.setHours(0, 0, 0, 0);
@@ -24,7 +24,11 @@ async function findNextAvailableDate(
     const dateStr = format(currentDate, "yyyy-MM-dd");
     const slotsResult = await getPublicSlots(eventSlug, dateStr);
 
-    if (slotsResult.success && slotsResult.data && slotsResult.data.length > 0) {
+    if (
+      slotsResult.success &&
+      slotsResult.data &&
+      slotsResult.data.length > 0
+    ) {
       return {
         date: dateStr,
         slots: slotsResult.data,

@@ -1,7 +1,7 @@
 "use client";
 
-import { Document } from "@/actions/documents-actions";
 import { useTranslations } from "next-intl";
+import type { Document } from "@/actions/documents-actions";
 
 interface InvoiceCompactPreviewProps {
   document: Document;
@@ -123,7 +123,7 @@ export function InvoiceCompactPreview({
               })}
             </span>
           </div>
-          <div className="flex justify-between py-3 bg-gray-100 px-3 mt-2">
+          <div className="flex justify-between p-3 bg-gray-100 mt-2">
             <span className="text-base font-bold">{t("totalAmount")}</span>
             <span className="text-base font-bold">
               {document.total.toLocaleString("de-DE", {

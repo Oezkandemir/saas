@@ -1,8 +1,8 @@
 "use client";
 
-import { QRCode as QRCodeType } from "@/actions/qr-codes-actions";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
+import type { QRCode as QRCodeType } from "@/actions/qr-codes-actions";
 
 import { Button } from "@/components/ui/button";
 
@@ -27,7 +27,7 @@ export function QRCodeDisplay({ qrCode }: QRCodeDisplayProps) {
         <img
           src={qrCodeImageUrl}
           alt={`QR Code für ${qrCode.name}`}
-          className="w-64 h-64"
+          className="size-64"
         />
       </div>
       <div className="text-center w-full max-w-md">
@@ -42,7 +42,7 @@ export function QRCodeDisplay({ qrCode }: QRCodeDisplayProps) {
             onClick={handleCopy}
             className="shrink-0"
           >
-            <Copy className="h-4 w-4" />
+            <Copy className="size-4" />
           </Button>
         </div>
       </div>

@@ -14,7 +14,7 @@ export async function GET() {
       resendApiKey: {
         configured: !!env.RESEND_API_KEY,
         length: env.RESEND_API_KEY ? env.RESEND_API_KEY.length : 0,
-        status: !!env.RESEND_API_KEY ? "✅ OK" : "❌ MISSING",
+        status: env.RESEND_API_KEY ? "✅ OK" : "❌ MISSING",
       },
       appUrl: {
         value: env.NEXT_PUBLIC_APP_URL,
@@ -27,14 +27,15 @@ export async function GET() {
       supabase: {
         url: env.NEXT_PUBLIC_SUPABASE_URL,
         hasServiceKey: !!env.SUPABASE_SERVICE_ROLE_KEY,
-        status: !!env.SUPABASE_SERVICE_ROLE_KEY ? "✅ OK" : "❌ MISSING",
+        status: env.SUPABASE_SERVICE_ROLE_KEY ? "✅ OK" : "❌ MISSING",
+        databaseConnection: "⏳ Testing..." as string,
       },
     },
   };
 
   // Test database connection
   try {
-    const { data, error } = await supabaseAdmin
+    const { error } = await supabaseAdmin
       .from("inbound_emails")
       .select("count")
       .limit(1)
@@ -70,6 +71,6 @@ export async function GET() {
         "Content-Type": "application/json",
         "Cache-Control": "no-store, no-cache, must-revalidate",
       },
-    },
+    }
   );
 }

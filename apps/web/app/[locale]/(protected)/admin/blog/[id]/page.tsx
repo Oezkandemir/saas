@@ -1,11 +1,10 @@
-import { redirect, notFound } from "next/navigation";
-import Link from "next/link";
-import { getBlogPostById } from "@/actions/blog-actions";
 import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
+import { getBlogPostById } from "@/actions/blog-actions";
 import { BlogPostForm } from "@/components/admin/blog/blog-post-form";
+import { getCurrentUser } from "@/lib/session";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -54,9 +53,9 @@ export default async function EditBlogPostPage(props: Props) {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
         <div className="container flex relative z-10 flex-col gap-6 items-center text-center duration-700 animate-in fade-in slide-in-from-top-4">
           <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-2">
-            <span className="flex relative w-2 h-2">
-              <span className="inline-flex absolute w-full h-full rounded-full opacity-75 animate-ping bg-primary"></span>
-              <span className="inline-flex relative w-2 h-2 rounded-full bg-primary"></span>
+            <span className="flex relative size-2">
+              <span className="inline-flex absolute size-full rounded-full opacity-75 animate-ping bg-primary"></span>
+              <span className="inline-flex relative size-2 rounded-full bg-primary"></span>
             </span>
             {t("editPost") || "Blog Post bearbeiten"}
           </div>
@@ -64,11 +63,12 @@ export default async function EditBlogPostPage(props: Props) {
             {post.title || t("editPost") || "Blog Post bearbeiten"}
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-            {t("editPostDescription") || "Bearbeiten Sie Ihren Blog-Post und veröffentlichen Sie ihn."}
+            {t("editPostDescription") ||
+              "Bearbeiten Sie Ihren Blog-Post und veröffentlichen Sie ihn."}
           </p>
           <Link href="/admin/blog">
             <button className="flex gap-2 items-center px-4 py-2 mt-4 rounded-lg border transition-colors bg-background hover:bg-muted text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="size-4" />
               {t("backToPosts") || "Zurück zu Posts"}
             </button>
           </Link>
@@ -84,4 +84,3 @@ export default async function EditBlogPostPage(props: Props) {
     </div>
   );
 }
-

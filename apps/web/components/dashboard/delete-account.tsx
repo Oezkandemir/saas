@@ -1,12 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-
-import { siteConfig } from "@/config/site";
-import { Button } from "@/components/ui/button";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { useDeleteAccountModal } from "@/components/modals/delete-account-modal";
 import { Icons } from "@/components/shared/icons";
+import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
 
 export function DeleteAccountSection() {
   const { setShowDeleteAccountModal, DeleteAccountModal } =

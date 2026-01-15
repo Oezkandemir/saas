@@ -46,7 +46,7 @@ export type RevenueAnalytics = {
  */
 export async function getRevenueAnalytics(
   startDate?: Date,
-  endDate?: Date,
+  endDate?: Date
 ): Promise<ActionResult<RevenueAnalytics>> {
   try {
     const user = await getCurrentUser();
@@ -104,7 +104,7 @@ export async function getRevenueAnalytics(
 export async function getRevenueByPeriod(
   startDate: Date,
   endDate: Date,
-  groupBy: "day" | "week" | "month" | "year" = "month",
+  groupBy: "day" | "week" | "month" | "year" = "month"
 ): Promise<ActionResult<RevenueByPeriod[]>> {
   try {
     const user = await getCurrentUser();
@@ -146,9 +146,9 @@ export async function getRevenueByPeriod(
           total_revenue: parseFloat(String(item.total_revenue || "0")),
           subscriber_count: parseInt(String(item.subscriber_count || "0"), 10),
           avg_revenue_per_subscriber: parseFloat(
-            String(item.avg_revenue_per_subscriber || "0"),
+            String(item.avg_revenue_per_subscriber || "0")
           ),
-        }),
+        })
       ) as RevenueByPeriod[],
     };
   } catch (error) {
@@ -165,7 +165,7 @@ export async function getRevenueByPeriod(
  */
 export async function getRevenueByPlan(
   startDate: Date,
-  endDate: Date,
+  endDate: Date
 ): Promise<ActionResult<RevenueByPlan[]>> {
   try {
     const user = await getCurrentUser();
@@ -205,10 +205,10 @@ export async function getRevenueByPlan(
           subscriber_count: parseInt(String(item.subscriber_count || "0"), 10),
           total_revenue: parseFloat(String(item.total_revenue || "0")),
           avg_revenue_per_subscriber: parseFloat(
-            String(item.avg_revenue_per_subscriber || "0"),
+            String(item.avg_revenue_per_subscriber || "0")
           ),
           mrr: parseFloat(String(item.mrr || "0")),
-        }),
+        })
       ) as RevenueByPlan[],
     };
   } catch (error) {
@@ -270,7 +270,7 @@ export async function getSubscriptionMetrics(): Promise<
         active_subscribers: parseInt(metrics.active_subscribers || "0", 10),
         cancelled_subscribers: parseInt(
           metrics.cancelled_subscribers || "0",
-          10,
+          10
         ),
         total_mrr: parseFloat(metrics.total_mrr || "0"),
         churn_rate: parseFloat(metrics.churn_rate || "0"),

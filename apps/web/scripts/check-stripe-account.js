@@ -28,13 +28,13 @@ async function checkStripeAccount() {
     console.log("📧 Account E-Mail:", account.email || "Nicht verfügbar");
     console.log(
       "🏢 Account Name:",
-      account.business_profile?.name || "Nicht verfügbar",
+      account.business_profile?.name || "Nicht verfügbar"
     );
     console.log("🌍 Land:", account.country || "Nicht verfügbar");
     console.log("💳 Account Typ:", account.type || "Nicht verfügbar");
     console.log(
       "📊 Account Status:",
-      account.details_submitted ? "✅ Verifiziert" : "⚠️  Nicht verifiziert",
+      account.details_submitted ? "✅ Verifiziert" : "⚠️  Nicht verifiziert"
     );
 
     // Get products
@@ -65,7 +65,7 @@ async function checkStripeAccount() {
             const intervalCount = price.recurring?.interval_count || 1;
 
             console.log(
-              `         - ${currency} ${amount} / ${intervalCount} ${interval}`,
+              `         - ${currency} ${amount} / ${intervalCount} ${interval}`
             );
             console.log(`           ✅ Price ID: ${price.id}`);
           }
@@ -80,7 +80,7 @@ async function checkStripeAccount() {
     console.log("      NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID=price_xxxxx");
     console.log("      NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID=price_xxxxx");
     console.log(
-      "      NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID=price_xxxxx",
+      "      NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID=price_xxxxx"
     );
     console.log("      NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID=price_xxxxx");
     console.log("   3. Starten Sie den Server neu\n");
@@ -92,7 +92,7 @@ async function checkStripeAccount() {
     } else if (error.message.includes("Invalid API Key")) {
       console.error("\n   Ungültige Stripe API Key");
       console.error(
-        "   Überprüfen Sie, ob Sie den richtigen Key verwenden (sk_test_... für Test, sk_live_... für Production)",
+        "   Überprüfen Sie, ob Sie den richtigen Key verwenden (sk_test_... für Test, sk_live_... für Production)"
       );
     } else if (error.type === "StripeAuthenticationError") {
       console.error("\n   Authentifizierungsfehler");

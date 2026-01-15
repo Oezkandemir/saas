@@ -804,7 +804,7 @@
       "update": "Rolle aktualisieren",
       "delete": "Rolle löschen",
       "name": "Name",
-      "description": "Beschreibung",
+      "roleDescription": "Beschreibung",
       "permissions": "Berechtigungen",
       "isSystemRole": "System-Rolle",
       "assignRole": "Rolle zuweisen",
@@ -1595,12 +1595,6 @@
       "title": "Keine Teams gefunden",
       "description": "Sie haben noch keine Teams. Erstellen Sie Ihr erstes Team, um mit der Zusammenarbeit zu beginnen."
     },
-    "roles": {
-      "owner": "Eigentümer",
-      "admin": "Administrator",
-      "member": "Mitglied",
-      "guest": "Gast"
-    },
     "teamDetail": {
       "meta": {
         "title": "Team-Details"
@@ -1608,7 +1602,6 @@
       "noDescription": "Keine Beschreibung vorhanden",
       "createdAt": "Erstellt {time}",
       "members": "Mitglieder",
-      "projects": "Projekte",
       "stats": {
         "members": "Mitglieder",
         "projects": "Projekte",
@@ -1963,20 +1956,6 @@
       }
     }
   },
-  "Billing": {
-    "title": "Abrechnung – Cenety",
-    "description": "Verwalten Sie Ihre Abrechnung und Ihren Abonnementplan.",
-    "heading": "Abrechnung",
-    "text": "Verwalten Sie Ihre Abrechnung und Ihren Abonnementplan.",
-    "demoAlert": "Dies ist eine Demo-App.",
-    "demoDescription": "Cenety App ist eine Demo-App, die eine Stripe-Testumgebung verwendet. Eine Liste der Testkartennummern finden Sie in der",
-    "stripeDocs": "Stripe-Dokumentation",
-    "billingCycle": "Abrechnungszyklus",
-    "monthly": "Monatlich",
-    "yearly": "Jährlich",
-    "manageSubscription": "Abonnement verwalten",
-    "manageSubscriptionDescription": "Aktualisieren oder kündigen Sie Ihr Abonnement"
-  },
   "GDPR": {
     "consent": {
       "title": "Einwilligungsverwaltung",
@@ -2105,12 +2084,6 @@
     "footer": {
       "allPrices": "Alle Preise verstehen sich in Euro. Es gelten unsere Allgemeinen Geschäftsbedingungen.",
       "electronic": "Dieses Dokument wurde elektronisch erstellt und ist ohne Unterschrift gültig."
-    },
-    "email": {
-      "invoiceSubject": "Rechnung {number}",
-      "quoteSubject": "Angebot {number}",
-      "invoiceBody": "Sehr geehrte Damen und Herren,\n\nanbei erhalten Sie die Rechnung {number}.\n\nBei Fragen stehen wir Ihnen gerne zur Verfügung.\n\nMit freundlichen Grüßen\n{name}",
-      "quoteBody": "Sehr geehrte Damen und Herren,\n\nanbei erhalten Sie unser Angebot {number}.\n\nWir freuen uns auf Ihre Rückmeldung.\n\nMit freundlichen Grüßen\n{name}"
     },
     "page": {
       "title": "Dokumente",

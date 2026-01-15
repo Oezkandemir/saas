@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 import { Icons } from "./icons";
 
@@ -18,7 +17,7 @@ export function CopyButton({ value, className, ...props }: CopyButtonProps) {
     setTimeout(() => {
       setHasCopied(false);
     }, 2000);
-  }, [hasCopied]);
+  }, []);
 
   const handleCopyValue = (value: string) => {
     navigator.clipboard.writeText(value);
@@ -31,7 +30,7 @@ export function CopyButton({ value, className, ...props }: CopyButtonProps) {
       variant="ghost"
       className={cn(
         "z-10 size-[30px] border border-white/25 bg-zinc-900 p-1.5 text-primary-foreground hover:text-foreground dark:text-foreground",
-        className,
+        className
       )}
       onClick={() => handleCopyValue(value)}
       {...props}

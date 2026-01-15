@@ -1,45 +1,43 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
 import { format, formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
-
+import {
+  ChevronDown,
+  Download,
+  Forward,
+  Loader2,
+  Lock,
+  Mail,
+  Paperclip,
+  Reply,
+  X,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 // Email Detail Component - Gmail Style Design
 import {
   getInboundEmailById,
-  markEmailAsRead,
   getInboundEmailReplies,
   type InboundEmail,
   type InboundEmailReply,
+  markEmailAsRead,
 } from "@/actions/inbound-email-actions";
 import {
-  Mail,
-  Download,
-  Loader2,
-  Paperclip,
-  Reply,
-  Forward,
-  ChevronDown,
-  X,
-  Lock,
-} from "lucide-react";
-import { toast } from "sonner";
-
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
   Accordion,
+  AccordionContent,
   AccordionItem,
   AccordionTrigger,
-  AccordionContent,
 } from "@/components/ui/accordion";
-import { InboundEmailReplyForm } from "./inbound-email-reply-form";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
+import { InboundEmailReplyForm } from "./inbound-email-reply-form";
 
 type InboundEmailDetailProps = {
   emailId: string;
@@ -55,22 +53,6 @@ export function InboundEmailDetail({
   const [isLoading, setIsLoading] = useState(true);
   const [showReplyForm, setShowReplyForm] = useState(false);
   const replyFormRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    loadEmail();
-  }, [emailId]);
-
-  // Scroll to reply form when it opens
-  useEffect(() => {
-    if (showReplyForm && replyFormRef.current) {
-      setTimeout(() => {
-        replyFormRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }, 100);
-    }
-  }, [showReplyForm]);
 
   const loadEmail = async () => {
     setIsLoading(true);
@@ -94,17 +76,33 @@ export function InboundEmailDetail({
       if (repliesResult.success && repliesResult.data) {
         setReplies(repliesResult.data);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Fehler beim Laden der Email");
     } finally {
       setIsLoading(false);
     }
   };
 
+  useEffect(() => {
+    loadEmail();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Scroll to reply form when it opens
+  useEffect(() => {
+    if (showReplyForm && replyFormRef.current) {
+      setTimeout(() => {
+        replyFormRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, [showReplyForm]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <Loader2 className="size-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -112,7 +110,7 @@ export function InboundEmailDetail({
   if (!email) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <Mail className="h-12 w-12 text-muted-foreground mb-4" />
+        <Mail className="size-12 text-muted-foreground mb-4" />
         <p className="text-sm font-medium">Email nicht gefunden</p>
       </div>
     );
@@ -124,94 +122,124 @@ export function InboundEmailDetail({
       <div className="px-4 py-2.5 bg-background border-b">
         <div className="flex items-center gap-3 flex-wrap">
           {/* Subject */}
-          <h1 className="text-lg font-semibold text-foreground flex-shrink-0 min-w-0 truncate">
+          <h1 className="text-lg font-semibold text-foreground shrink-0 min-w-0 truncate">
             {email.subject || "(Kein Betreff)"}
           </h1>
-          
+
           {/* Separator */}
           <Separator orientation="vertical" className="h-4" />
-          
+
           {/* Sender */}
-          <div className="flex items-center gap-1.5 flex-shrink-0 min-w-0">
+          <div className="flex items-center gap-1.5 shrink-0 min-w-0">
             <span className="text-sm font-medium text-foreground truncate">
               {email.from_name || email.from_email}
             </span>
-            <Badge variant="outline" className="h-3.5 w-3.5 p-0 rounded-full bg-blue-500 border-blue-500 flex items-center justify-center flex-shrink-0">
+            <Badge
+              variant="outline"
+              className="size-3.5 p-0 rounded-full bg-blue-500 border-blue-500 flex items-center justify-center shrink-0"
+            >
               <span className="text-white text-[9px]">✓</span>
             </Badge>
           </div>
-          
+
           {/* Date */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             <span className="text-xs text-muted-foreground whitespace-nowrap">
-              {format(new Date(email.received_at), "dd.MM.yyyy, HH:mm", { locale: de })}
+              {format(new Date(email.received_at), "dd.MM.yyyy, HH:mm", {
+                locale: de,
+              })}
             </span>
             <span className="text-xs text-muted-foreground/70 whitespace-nowrap">
-              ({formatDistanceToNow(new Date(email.received_at), {
+              (
+              {formatDistanceToNow(new Date(email.received_at), {
                 addSuffix: true,
                 locale: de,
-              })})
+              })}
+              )
             </span>
           </div>
-          
+
           {/* Recipient Info */}
           <Popover>
             <PopoverTrigger asChild>
-              <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors flex-shrink-0">
+              <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0">
                 <span>an mich</span>
-                <ChevronDown className="h-3 w-3" />
+                <ChevronDown className="size-3" />
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-[500px] p-4 shadow-lg" align="start" side="bottom">
+            <PopoverContent
+              className="w-[500px] p-4 shadow-lg"
+              align="start"
+              side="bottom"
+            >
               <div className="space-y-3 text-sm">
                 <div className="flex items-start gap-4">
-                  <span className="font-medium w-24 text-muted-foreground flex-shrink-0">Von:</span>
+                  <span className="font-medium w-24 text-muted-foreground shrink-0">
+                    Von:
+                  </span>
                   <div className="min-w-0 flex-1 text-right">
                     <span className="font-semibold text-foreground">
                       {email.from_name || email.from_email}
-                    </span>
-                    {" "}
+                    </span>{" "}
                     <span className="text-muted-foreground">
                       &lt;{email.from_email}&gt;
                     </span>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <span className="font-medium w-24 text-muted-foreground flex-shrink-0">an:</span>
+                  <span className="font-medium w-24 text-muted-foreground shrink-0">
+                    an:
+                  </span>
                   <div className="min-w-0 flex-1 text-right break-all">
                     {email.to.map((to, idx) => (
-                      <div key={idx} className="text-muted-foreground">{to}</div>
+                      <div key={idx} className="text-muted-foreground">
+                        {to}
+                      </div>
                     ))}
                   </div>
                 </div>
                 {email.cc && email.cc.length > 0 && (
                   <div className="flex items-start gap-4">
-                    <span className="font-medium w-24 text-muted-foreground flex-shrink-0">CC:</span>
+                    <span className="font-medium w-24 text-muted-foreground shrink-0">
+                      CC:
+                    </span>
                     <div className="min-w-0 flex-1 text-right break-all">
                       {email.cc.map((cc, idx) => (
-                        <div key={idx} className="text-muted-foreground">{cc}</div>
+                        <div key={idx} className="text-muted-foreground">
+                          {cc}
+                        </div>
                       ))}
                     </div>
                   </div>
                 )}
                 {email.bcc && email.bcc.length > 0 && (
                   <div className="flex items-start gap-4">
-                    <span className="font-medium w-24 text-muted-foreground flex-shrink-0">BCC:</span>
+                    <span className="font-medium w-24 text-muted-foreground shrink-0">
+                      BCC:
+                    </span>
                     <div className="min-w-0 flex-1 text-right break-all">
                       {email.bcc.map((bcc, idx) => (
-                        <div key={idx} className="text-muted-foreground">{bcc}</div>
+                        <div key={idx} className="text-muted-foreground">
+                          {bcc}
+                        </div>
                       ))}
                     </div>
                   </div>
                 )}
                 <div className="flex items-start gap-4">
-                  <span className="font-medium w-24 text-muted-foreground flex-shrink-0">Datum:</span>
+                  <span className="font-medium w-24 text-muted-foreground shrink-0">
+                    Datum:
+                  </span>
                   <div className="min-w-0 flex-1 text-right text-muted-foreground">
-                    {format(new Date(email.received_at), "dd.MM.yyyy, HH:mm", { locale: de })}
+                    {format(new Date(email.received_at), "dd.MM.yyyy, HH:mm", {
+                      locale: de,
+                    })}
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <span className="font-medium w-24 text-muted-foreground flex-shrink-0">Betreff:</span>
+                  <span className="font-medium w-24 text-muted-foreground shrink-0">
+                    Betreff:
+                  </span>
                   <div className="min-w-0 flex-1 text-right text-muted-foreground break-words">
                     {email.subject || "(Kein Betreff)"}
                   </div>
@@ -219,26 +247,40 @@ export function InboundEmailDetail({
                 {email.message_id && (
                   <>
                     <div className="flex items-start gap-4">
-                      <span className="font-medium w-24 text-muted-foreground flex-shrink-0">Gesendet von:</span>
+                      <span className="font-medium w-24 text-muted-foreground shrink-0">
+                        Gesendet von:
+                      </span>
                       <div className="min-w-0 flex-1 text-right text-muted-foreground break-all">
-                        {email.message_id.includes("@") ? email.message_id.split("@")[1] : email.message_id}
+                        {email.message_id.includes("@")
+                          ? email.message_id.split("@")[1]
+                          : email.message_id}
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
-                      <span className="font-medium w-24 text-muted-foreground flex-shrink-0">Signiert von:</span>
+                      <span className="font-medium w-24 text-muted-foreground shrink-0">
+                        Signiert von:
+                      </span>
                       <div className="min-w-0 flex-1 text-right text-muted-foreground break-all">
-                        {email.message_id.includes("@") ? email.message_id.split("@")[1] : email.message_id}
+                        {email.message_id.includes("@")
+                          ? email.message_id.split("@")[1]
+                          : email.message_id}
                       </div>
                     </div>
                   </>
                 )}
                 <div className="flex items-start gap-4">
-                  <span className="font-medium w-24 text-muted-foreground flex-shrink-0">Sicherheit:</span>
+                  <span className="font-medium w-24 text-muted-foreground shrink-0">
+                    Sicherheit:
+                  </span>
                   <div className="min-w-0 flex-1 text-right">
                     <div className="flex items-center justify-end gap-2 text-muted-foreground">
-                      <Lock className="h-3 w-3 flex-shrink-0" />
+                      <Lock className="size-3 shrink-0" />
                       <span>Standardverschlüsselung (TLS)</span>
-                      <Button variant="link" size="sm" className="h-auto p-0 text-xs text-primary flex-shrink-0">
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="h-auto p-0 text-xs text-primary shrink-0"
+                      >
                         Weitere Informationen
                       </Button>
                     </div>
@@ -279,7 +321,9 @@ export function InboundEmailDetail({
             >
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold mb-1">Antwort verfassen</h3>
+                  <h3 className="text-lg font-semibold mb-1">
+                    Antwort verfassen
+                  </h3>
                   <p className="text-sm text-muted-foreground">
                     Antwort an: {email.from_name || email.from_email}
                   </p>
@@ -288,9 +332,9 @@ export function InboundEmailDetail({
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowReplyForm(false)}
-                  className="h-8 w-8 p-0"
+                  className="size-8 p-0"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="size-4" />
                 </Button>
               </div>
               <InboundEmailReplyForm
@@ -309,8 +353,11 @@ export function InboundEmailDetail({
           {email.attachments && email.attachments.length > 0 && (
             <div className="space-y-3 mt-8 pt-8 border-t border-border">
               <div className="flex items-center gap-2 text-sm font-medium">
-                <Paperclip className="h-4 w-4" />
-                <span>{email.attachments.length} Anhang{email.attachments.length > 1 ? "e" : ""}</span>
+                <Paperclip className="size-4" />
+                <span>
+                  {email.attachments.length} Anhang
+                  {email.attachments.length > 1 ? "e" : ""}
+                </span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {email.attachments.map((attachment) => (
@@ -318,8 +365,8 @@ export function InboundEmailDetail({
                     key={attachment.id}
                     className="flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors"
                   >
-                    <div className="flex-shrink-0 w-10 h-10 rounded bg-muted flex items-center justify-center">
-                      <Paperclip className="h-5 w-5 text-muted-foreground" />
+                    <div className="shrink-0 size-10 rounded bg-muted flex items-center justify-center">
+                      <Paperclip className="size-5 text-muted-foreground" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium truncate">
@@ -331,8 +378,8 @@ export function InboundEmailDetail({
                         </div>
                       )}
                     </div>
-                    <Button variant="ghost" size="sm" className="flex-shrink-0">
-                      <Download className="h-4 w-4" />
+                    <Button variant="ghost" size="sm" className="shrink-0">
+                      <Download className="size-4" />
                     </Button>
                   </div>
                 ))}
@@ -343,7 +390,12 @@ export function InboundEmailDetail({
           {/* Replies Thread - Gmail Style with Accordion */}
           {replies.length > 0 && (
             <div className="mt-8 pt-8 border-t border-border">
-              <Accordion type="single" defaultValue="replies" collapsible className="w-full">
+              <Accordion
+                type="single"
+                defaultValue="replies"
+                collapsible
+                className="w-full"
+              >
                 <AccordionItem value="replies" className="border-none">
                   <AccordionTrigger className="text-sm font-medium py-2 hover:no-underline">
                     Antworten ({replies.length})
@@ -353,7 +405,7 @@ export function InboundEmailDetail({
                       <div key={reply.id} className="space-y-3">
                         <div className="flex items-start gap-4">
                           {/* Reply Avatar */}
-                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium text-xs">
+                          <div className="shrink-0 size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium text-xs">
                             {reply.user_name
                               ? reply.user_name
                                   .split(" ")
@@ -369,7 +421,9 @@ export function InboundEmailDetail({
                                 {reply.user_name || "Unbekannt"}
                               </span>
                               <span className="text-xs text-muted-foreground">
-                                {format(new Date(reply.sent_at), "PPp", { locale: de })}
+                                {format(new Date(reply.sent_at), "PPp", {
+                                  locale: de,
+                                })}
                               </span>
                             </div>
                             <div className="text-sm text-muted-foreground mb-2">
@@ -377,7 +431,9 @@ export function InboundEmailDetail({
                             </div>
                             {reply.html_body ? (
                               <div
-                                dangerouslySetInnerHTML={{ __html: reply.html_body }}
+                                dangerouslySetInnerHTML={{
+                                  __html: reply.html_body,
+                                }}
                                 className="prose prose-sm dark:prose-invert max-w-none break-words"
                               />
                             ) : (
@@ -387,7 +443,9 @@ export function InboundEmailDetail({
                             )}
                           </div>
                         </div>
-                        {index < replies.length - 1 && <Separator className="ml-12" />}
+                        {index < replies.length - 1 && (
+                          <Separator className="ml-12" />
+                        )}
                       </div>
                     ))}
                   </AccordionContent>
@@ -408,11 +466,11 @@ export function InboundEmailDetail({
           }}
           className={`h-9 ${showReplyForm ? "bg-primary/10 text-primary" : ""}`}
         >
-          <Reply className="h-4 w-4 mr-2" />
+          <Reply className="size-4 mr-2" />
           Antworten
         </Button>
         <Button variant="outline" size="sm" className="h-9">
-          <Forward className="h-4 w-4 mr-2" />
+          <Forward className="size-4 mr-2" />
           Weiterleiten
         </Button>
       </div>

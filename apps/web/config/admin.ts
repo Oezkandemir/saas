@@ -1,4 +1,4 @@
-import { SidebarNavItem } from "types";
+import type { SidebarNavItem } from "types";
 
 export const adminSidebarLinks: SidebarNavItem[] = [
   {

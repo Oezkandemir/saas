@@ -1,19 +1,19 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Clock, Edit, Plus, Trash2, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 import {
   createTimeSlot,
   deleteTimeSlot,
   getTimeSlots,
-  updateTimeSlot,
   type TimeSlot,
+  updateTimeSlot,
 } from "@/actions/scheduling/time-slots-actions";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Clock, Edit, Plus, Trash2, Users } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import * as z from "zod";
 
 import {
   AlertDialog,
@@ -25,6 +25,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -35,22 +44,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Form,
   FormControl,
   FormDescription,
@@ -60,6 +53,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const timeSlotSchema = z.object({
   start_time: z
@@ -118,7 +118,7 @@ export function TimeSlotsManager({
       if (result.success && result.data) {
         setSlots(result.data);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("loadError") || "Fehler beim Laden der Zeitslots");
     } finally {
       setIsLoading(false);
@@ -127,7 +127,7 @@ export function TimeSlotsManager({
 
   useEffect(() => {
     loadSlots();
-  }, [eventTypeId]);
+  }, [loadSlots]);
 
   const handleOpenDialog = (slot?: TimeSlot) => {
     if (slot) {
@@ -187,11 +187,11 @@ export function TimeSlotsManager({
       toast.success(
         editingSlot
           ? t("updated") || "Zeitslot aktualisiert"
-          : t("created") || "Zeitslot erstellt",
+          : t("created") || "Zeitslot erstellt"
       );
       handleCloseDialog();
       loadSlots();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("saveError") || "Fehler beim Speichern");
     } finally {
       setIsSubmitting(false);
@@ -212,7 +212,7 @@ export function TimeSlotsManager({
       toast.success(t("deleted") || "Zeitslot gelöscht");
       setDeletingSlot(null);
       loadSlots();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("deleteError") || "Fehler beim Löschen");
     } finally {
       setIsSubmitting(false);
@@ -248,7 +248,7 @@ export function TimeSlotsManager({
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" onClick={() => handleOpenDialog()}>
-                  <Plus className="h-4 w-4 mr-1" />
+                  <Plus className="size-4 mr-1" />
                   {t("addSlot") || "Zeitslot hinzufügen"}
                 </Button>
               </DialogTrigger>
@@ -322,7 +322,7 @@ export function TimeSlotsManager({
                           <Select
                             onValueChange={(value) =>
                               field.onChange(
-                                value === "all" ? null : parseInt(value),
+                                value === "all" ? null : parseInt(value, 10)
                               )
                             }
                             value={
@@ -383,8 +383,8 @@ export function TimeSlotsManager({
                               onChange={(e) =>
                                 field.onChange(
                                   e.target.value
-                                    ? parseInt(e.target.value)
-                                    : undefined,
+                                    ? parseInt(e.target.value, 10)
+                                    : undefined
                                 )
                               }
                               value={field.value || ""}
@@ -436,7 +436,7 @@ export function TimeSlotsManager({
                   className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex items-center gap-4">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <Clock className="size-4 text-muted-foreground" />
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium">
@@ -456,7 +456,7 @@ export function TimeSlotsManager({
                       </div>
                       {slot.max_participants && (
                         <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-                          <Users className="h-3 w-3" />
+                          <Users className="size-3" />
                           <span>
                             {slot.max_participants}{" "}
                             {t("form.maxParticipants") || "Teilnehmer"}
@@ -470,17 +470,17 @@ export function TimeSlotsManager({
                       variant="ghost"
                       size="sm"
                       onClick={() => handleOpenDialog(slot)}
-                      className="h-7 w-7 p-0"
+                      className="size-7 p-0"
                     >
-                      <Edit className="h-3 w-3" />
+                      <Edit className="size-3" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setDeletingSlot(slot)}
-                      className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                      className="size-7 p-0 text-destructive hover:text-destructive"
                     >
-                      <Trash2 className="h-3 w-3" />
+                      <Trash2 className="size-3" />
                     </Button>
                   </div>
                 </div>
@@ -521,6 +521,3 @@ export function TimeSlotsManager({
     </>
   );
 }
-
-
-

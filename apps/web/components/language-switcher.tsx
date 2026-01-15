@@ -1,10 +1,9 @@
 "use client";
 
-import { useRouter as useI18nRouter, usePathname } from "@/i18n/routing";
 import { useLocale, useTranslations } from "next-intl";
-
-import { logger } from "@/lib/logger";
 import * as Select from "@/components/ui/select";
+import { useRouter as useI18nRouter, usePathname } from "@/i18n/routing";
+import { logger } from "@/lib/logger";
 
 const languages = [
   {
@@ -44,7 +43,7 @@ export function LanguageSwitcher() {
   };
 
   const currentLanguage =
-    languages.find((lang) => lang.value === locale) || languages[0];
+    languages.find((lang) => lang.value === locale) ?? languages[0]!;
 
   return (
     <Select.Root value={locale} onValueChange={switchLanguage}>

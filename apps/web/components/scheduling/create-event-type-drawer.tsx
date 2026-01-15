@@ -1,30 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { createEventType } from "@/actions/scheduling/event-types-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar, Clock, MapPin } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-
+import { createEventType } from "@/actions/scheduling/event-types-actions";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { Switch } from "@/components/ui/switch";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -36,14 +26,23 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 
 const eventTypeSchema = z.object({
   slug: z
@@ -52,7 +51,7 @@ const eventTypeSchema = z.object({
     .max(100)
     .regex(
       /^[a-z0-9-]+$/,
-      "Slug must contain only lowercase letters, numbers, and hyphens",
+      "Slug must contain only lowercase letters, numbers, and hyphens"
     ),
   title: z.string().min(1).max(200),
   description: z.string().max(1000).optional(),
@@ -163,13 +162,23 @@ export function CreateEventTypeDrawer({
 
         <div className="mt-3 flex flex-col">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
-              <Accordion type="multiple" defaultValue={["basic", "duration"]} className="w-full">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col"
+            >
+              <Accordion
+                type="multiple"
+                defaultValue={["basic", "duration"]}
+                className="w-full"
+              >
                 {/* Basic Information */}
-                <AccordionItem value="basic" className="border-b border-stroke-soft-200">
+                <AccordionItem
+                  value="basic"
+                  className="border-b border-stroke-soft-200"
+                >
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                      <Calendar className="size-3.5 text-muted-foreground" />
                       {t("form.basicInfo") || "Grundinformationen"}
                     </div>
                   </AccordionTrigger>
@@ -206,7 +215,9 @@ export function CreateEventTypeDrawer({
                         name="slug"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("form.slug") || "URL Slug"}</FormLabel>
+                            <FormLabel>
+                              {t("form.slug") || "URL Slug"}
+                            </FormLabel>
                             <FormControl>
                               <Input
                                 placeholder={
@@ -256,7 +267,7 @@ export function CreateEventTypeDrawer({
                 <AccordionItem value="duration">
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
-                      <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                      <Clock className="size-3.5 text-muted-foreground" />
                       {t("form.duration") || "Dauer"}
                     </div>
                   </AccordionTrigger>
@@ -277,7 +288,9 @@ export function CreateEventTypeDrawer({
                                 max={480}
                                 {...field}
                                 onChange={(e) =>
-                                  field.onChange(parseInt(e.target.value) || 30)
+                                  field.onChange(
+                                    parseInt(e.target.value, 10) || 30
+                                  )
                                 }
                               />
                             </FormControl>
@@ -297,7 +310,7 @@ export function CreateEventTypeDrawer({
                 <AccordionItem value="location">
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                      <MapPin className="size-3.5 text-muted-foreground" />
                       {t("form.location") || "Ort"}
                     </div>
                   </AccordionTrigger>
@@ -333,8 +346,12 @@ export function CreateEventTypeDrawer({
                                 <SelectItem value="custom_link">
                                   Custom Link
                                 </SelectItem>
-                                <SelectItem value="phone">Phone Call</SelectItem>
-                                <SelectItem value="in_person">In Person</SelectItem>
+                                <SelectItem value="phone">
+                                  Phone Call
+                                </SelectItem>
+                                <SelectItem value="in_person">
+                                  In Person
+                                </SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -377,7 +394,7 @@ export function CreateEventTypeDrawer({
                 <AccordionItem value="status">
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                      <Calendar className="size-3.5 text-muted-foreground" />
                       Status
                     </div>
                   </AccordionTrigger>
@@ -414,7 +431,7 @@ export function CreateEventTypeDrawer({
                 <AccordionItem value="pricing">
                   <AccordionTrigger className="text-sm font-semibold">
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                      <Calendar className="size-3.5 text-muted-foreground" />
                       {t("form.pricing") || "Preis"}
                     </div>
                   </AccordionTrigger>
@@ -434,13 +451,15 @@ export function CreateEventTypeDrawer({
                                   type="number"
                                   step="0.01"
                                   min={0}
-                                  placeholder={t("form.pricePlaceholder") || "0.00"}
+                                  placeholder={
+                                    t("form.pricePlaceholder") || "0.00"
+                                  }
                                   {...field}
                                   onChange={(e) =>
                                     field.onChange(
                                       e.target.value
                                         ? parseFloat(e.target.value)
-                                        : undefined,
+                                        : undefined
                                     )
                                   }
                                   value={field.value || ""}
@@ -471,7 +490,8 @@ export function CreateEventTypeDrawer({
                                   <SelectTrigger>
                                     <SelectValue
                                       placeholder={
-                                        t("form.selectCurrency") || "Währung auswählen"
+                                        t("form.selectCurrency") ||
+                                        "Währung auswählen"
                                       }
                                     />
                                   </SelectTrigger>
@@ -516,7 +536,9 @@ export function CreateEventTypeDrawer({
                     size="sm"
                     className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
                   >
-                    <span className="text-xs">{t("form.cancel") || "Abbrechen"}</span>
+                    <span className="text-xs">
+                      {t("form.cancel") || "Abbrechen"}
+                    </span>
                   </Button>
                 </div>
               </div>

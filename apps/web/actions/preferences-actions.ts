@@ -256,7 +256,7 @@ export async function getUserPreferences(): Promise<
  * Update user preferences
  */
 export async function updateUserPreferences(
-  formData: FormData,
+  formData: FormData
 ): Promise<ActionResult<ExtendedPreferences>> {
   const user = await getCurrentUser();
 

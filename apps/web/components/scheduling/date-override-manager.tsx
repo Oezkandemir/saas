@@ -1,21 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  createAvailabilityOverride,
-  deleteAvailabilityOverride,
-  getAvailabilityOverrides,
-  updateAvailabilityOverride,
-  type AvailabilityOverride,
-} from "@/actions/scheduling/availability-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
 import { Calendar, Clock, Edit, Plus, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import {
+  type AvailabilityOverride,
+  createAvailabilityOverride,
+  deleteAvailabilityOverride,
+  getAvailabilityOverrides,
+  updateAvailabilityOverride,
+} from "@/actions/scheduling/availability-actions";
 
 import {
   AlertDialog,
@@ -27,6 +27,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -36,16 +45,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -55,6 +54,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 
 const dateOverrideSchema = z
   .object({
@@ -93,7 +93,7 @@ const dateOverrideSchema = z
     {
       message:
         "Start time must be before end time, and both times must be provided together",
-    },
+    }
   );
 
 type DateOverrideFormValues = z.infer<typeof dateOverrideSchema>;
@@ -132,9 +132,9 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
       if (result.success && result.data) {
         setOverrides(result.data);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error(
-        t("loadError") || "Fehler beim Laden der Datumsüberschreibungen",
+        t("loadError") || "Fehler beim Laden der Datumsüberschreibungen"
       );
     } finally {
       setIsLoading(false);
@@ -143,7 +143,7 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
 
   useEffect(() => {
     loadOverrides();
-  }, [eventTypeId]);
+  }, [loadOverrides]);
 
   const handleOpenDialog = (override?: AvailabilityOverride) => {
     if (override) {
@@ -206,11 +206,11 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
       toast.success(
         editingOverride
           ? t("updated") || "Datumsüberschreibung aktualisiert"
-          : t("created") || "Datumsüberschreibung erstellt",
+          : t("created") || "Datumsüberschreibung erstellt"
       );
       handleCloseDialog();
       loadOverrides();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("saveError") || "Fehler beim Speichern");
     } finally {
       setIsSubmitting(false);
@@ -231,7 +231,7 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
       toast.success(t("deleted") || "Datumsüberschreibung gelöscht");
       setDeletingOverride(null);
       loadOverrides();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("deleteError") || "Fehler beim Löschen");
     } finally {
       setIsSubmitting(false);
@@ -252,7 +252,7 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
 
   // Sort overrides by date (ascending)
   const sortedOverrides = [...overrides].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
   return (
@@ -275,7 +275,7 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
                 size="sm"
                 className="gap-2"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="size-4" />
                 {t("add") || "Datumsüberschreibung hinzufügen"}
               </Button>
             </DialogTrigger>
@@ -404,14 +404,14 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
                   className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <Calendar className="size-4 text-muted-foreground" />
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium">
                           {format(
                             new Date(override.date),
                             "EEEE, d. MMMM yyyy",
-                            { locale: dateLocale },
+                            { locale: dateLocale }
                           )}
                         </span>
                         <Badge
@@ -426,7 +426,7 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
                       </div>
                       {override.start_time && override.end_time && (
                         <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-                          <Clock className="h-3 w-3" />
+                          <Clock className="size-3" />
                           <span>
                             {override.start_time.substring(0, 5)} -{" "}
                             {override.end_time.substring(0, 5)}
@@ -442,7 +442,7 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
                       onClick={() => handleOpenDialog(override)}
                       disabled={isSubmitting}
                     >
-                      <Edit className="h-4 w-4" />
+                      <Edit className="size-4" />
                     </Button>
                     <Button
                       variant="ghost"
@@ -450,7 +450,7 @@ export function DateOverrideManager({ eventTypeId }: DateOverrideManagerProps) {
                       onClick={() => setDeletingOverride(override)}
                       disabled={isSubmitting}
                     >
-                      <Trash2 className="h-4 w-4 text-destructive" />
+                      <Trash2 className="size-4 text-destructive" />
                     </Button>
                   </div>
                 </div>

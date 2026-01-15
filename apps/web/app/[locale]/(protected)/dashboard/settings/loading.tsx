@@ -8,7 +8,7 @@ export default function DashboardSettingsLoading() {
     <UnifiedPageLayout
       title="Settings"
       description="Manage account and website settings."
-      icon={<Settings className="h-4 w-4 text-primary" />}
+      icon={<Settings className="size-4 text-primary" />}
       contentClassName="divide-y divide-border/50 space-y-3 sm:space-y-4 pb-10"
     >
       <div className="pt-3 sm:pt-4">

@@ -16,7 +16,7 @@ const changePasswordSchema = z.object({
 export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 
 export async function changePassword(
-  data: ChangePasswordFormData,
+  data: ChangePasswordFormData
 ): Promise<{ success: boolean; message: string }> {
   try {
     const user = await getCurrentUser();
@@ -89,6 +89,3 @@ export async function changePassword(
     };
   }
 }
-
-
-

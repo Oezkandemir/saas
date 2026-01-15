@@ -1,23 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createEventType } from "@/actions/scheduling/event-types-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar, Clock, MapPin, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import { createEventType } from "@/actions/scheduling/event-types-actions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -36,6 +27,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
 const eventTypeSchema = z.object({
@@ -45,7 +44,7 @@ const eventTypeSchema = z.object({
     .max(100)
     .regex(
       /^[a-z0-9-]+$/,
-      "Slug must contain only lowercase letters, numbers, and hyphens",
+      "Slug must contain only lowercase letters, numbers, and hyphens"
     ),
   title: z.string().min(1).max(200),
   description: z.string().max(1000).optional(),
@@ -123,7 +122,7 @@ export function CreateEventTypeForm() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
+              <Calendar className="size-4" />
               {t("form.basicInfo") || "Basic Information"}
             </CardTitle>
             <CardDescription>
@@ -206,7 +205,7 @@ export function CreateEventTypeForm() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
+              <Clock className="size-4" />
               {t("form.duration") || "Duration"}
             </CardTitle>
             <CardDescription>
@@ -230,7 +229,7 @@ export function CreateEventTypeForm() {
                       max={480}
                       {...field}
                       onChange={(e) =>
-                        field.onChange(parseInt(e.target.value) || 30)
+                        field.onChange(parseInt(e.target.value, 10) || 30)
                       }
                     />
                   </FormControl>
@@ -249,7 +248,7 @@ export function CreateEventTypeForm() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
+              <MapPin className="size-4" />
               {t("form.location") || "Location"}
             </CardTitle>
             <CardDescription>
@@ -325,7 +324,7 @@ export function CreateEventTypeForm() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               {t("form.status") || "Status"}
             </CardTitle>
           </CardHeader>
@@ -360,7 +359,7 @@ export function CreateEventTypeForm() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               {t("form.pricing") || "Pricing"}
             </CardTitle>
             <CardDescription>
@@ -389,7 +388,7 @@ export function CreateEventTypeForm() {
                           field.onChange(
                             e.target.value
                               ? parseFloat(e.target.value)
-                              : undefined,
+                              : undefined
                           )
                         }
                         value={field.value || ""}
@@ -450,11 +449,9 @@ export function CreateEventTypeForm() {
           </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading ? (
-              <>
-                <span className="mr-2">
-                  {t("form.creating") || "Creating..."}
-                </span>
-              </>
+              <span className="mr-2">
+                {t("form.creating") || "Creating..."}
+              </span>
             ) : (
               t("form.create") || "Create Event Type"
             )}

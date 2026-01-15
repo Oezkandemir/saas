@@ -10,22 +10,29 @@ import { logger } from "@/lib/logger";
 /**
  * Helper function to get plan name from product ID
  */
-function getPlanNameFromProductId(productId: string | null | undefined): string {
+function getPlanNameFromProductId(
+  productId: string | null | undefined
+): string {
   if (!productId) return "Free";
-  
+
   for (const plan of pricingData) {
-    if (plan.polarIds?.monthly === productId || plan.polarIds?.yearly === productId) {
+    if (
+      plan.polarIds?.monthly === productId ||
+      plan.polarIds?.yearly === productId
+    ) {
       return plan.title;
     }
   }
-  
+
   return `Unknown Plan (${productId})`;
 }
 
 /**
  * Helper function to get user display info for logging
  */
-async function getUserDisplayInfo(userId: string): Promise<{ name: string; email: string } | null> {
+async function getUserDisplayInfo(
+  userId: string
+): Promise<{ name: string; email: string } | null> {
   try {
     // Get user data from users table (has email and name)
     const { data: userData } = await supabaseAdmin
@@ -33,24 +40,25 @@ async function getUserDisplayInfo(userId: string): Promise<{ name: string; email
       .select("email, name")
       .eq("id", userId)
       .single();
-    
+
     if (!userData) {
       return null;
     }
-    
+
     // Try to get display_name from user_profiles for better name
     const { data: profileData } = await supabaseAdmin
       .from("user_profiles")
       .select("display_name")
       .eq("user_id", userId)
       .single();
-    
+
     // Prioritize display_name from profile, then name from users, then email prefix
-    const displayName = profileData?.display_name || 
-                       userData.name || 
-                       userData.email?.split("@")[0] || 
-                       "Unknown";
-    
+    const displayName =
+      profileData?.display_name ||
+      userData.name ||
+      userData.email?.split("@")[0] ||
+      "Unknown";
+
     return {
       name: displayName,
       email: userData.email || "Unknown",
@@ -59,6 +67,7 @@ async function getUserDisplayInfo(userId: string): Promise<{ name: string; email
     return null;
   }
 }
+
 import {
   cancelPolarSubscription,
   getPolarSubscription,
@@ -76,7 +85,7 @@ export type ManageSubscriptionResult = {
  * Cancel user's Polar subscription
  */
 export async function cancelSubscription(
-  cancelAtPeriodEnd: boolean = true,
+  cancelAtPeriodEnd: boolean = true
 ): Promise<ManageSubscriptionResult> {
   try {
     const session = await auth();
@@ -100,7 +109,7 @@ export async function cancelSubscription(
     // Cancel subscription via Polar API
     const subscription = await cancelPolarSubscription(
       userData.polar_subscription_id,
-      cancelAtPeriodEnd,
+      cancelAtPeriodEnd
     );
 
     // Update database
@@ -118,7 +127,7 @@ export async function cancelSubscription(
 
     const userInfo = await getUserDisplayInfo(user.id);
     logger.info(
-      `Subscription canceled: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"})`,
+      `Subscription canceled: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"})`
     );
 
     return {
@@ -162,7 +171,7 @@ export async function reactivateSubscription(): Promise<ManageSubscriptionResult
 
     // Reactivate subscription via Polar API
     const subscription = await reactivatePolarSubscription(
-      userData.polar_subscription_id,
+      userData.polar_subscription_id
     );
 
     // Update database
@@ -180,7 +189,7 @@ export async function reactivateSubscription(): Promise<ManageSubscriptionResult
 
     const userInfo = await getUserDisplayInfo(user.id);
     logger.info(
-      `Subscription reactivated: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"})`,
+      `Subscription reactivated: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"})`
     );
 
     return {
@@ -201,7 +210,7 @@ export async function reactivateSubscription(): Promise<ManageSubscriptionResult
  * Update subscription plan (upgrade/downgrade)
  */
 export async function updateSubscriptionPlan(
-  newProductId: string,
+  newProductId: string
 ): Promise<ManageSubscriptionResult> {
   try {
     const session = await auth();
@@ -257,7 +266,7 @@ export async function updateSubscriptionPlan(
     // Update subscription via Polar API
     const subscription = await updatePolarSubscription(
       subscriptionId,
-      newProductId,
+      newProductId
     );
 
     // Update database
@@ -284,7 +293,7 @@ export async function updateSubscriptionPlan(
     const oldPlanName = getPlanNameFromProductId(userData.polar_product_id);
     const newPlanName = getPlanNameFromProductId(newProductId);
     logger.info(
-      `Subscription updated: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"}) → Plan changed from ${oldPlanName} to ${newPlanName}`,
+      `Subscription updated: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"}) → Plan changed from ${oldPlanName} to ${newPlanName}`
     );
 
     return {
@@ -326,7 +335,7 @@ export async function getCurrentSubscription(): Promise<ManageSubscriptionResult
 
     // Fetch subscription from Polar API
     const subscription = await getPolarSubscription(
-      userData.polar_subscription_id,
+      userData.polar_subscription_id
     );
 
     return {

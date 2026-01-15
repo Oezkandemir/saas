@@ -1,9 +1,8 @@
-import { Metadata } from "next";
 import { Code, Paintbrush, Puzzle, Settings } from "lucide-react";
+import type { Metadata } from "next";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { constructMetadata } from "@/lib/utils";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { constructMetadata } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -41,9 +40,9 @@ export default async function CustomizationPage() {
             </div>
           </div>
           <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-2">
-            <span className="flex relative w-2 h-2">
-              <span className="inline-flex absolute w-full h-full rounded-full opacity-75 animate-ping bg-primary"></span>
-              <span className="inline-flex relative w-2 h-2 rounded-full bg-primary"></span>
+            <span className="flex relative size-2">
+              <span className="inline-flex absolute size-full rounded-full opacity-75 animate-ping bg-primary"></span>
+              <span className="inline-flex relative size-2 rounded-full bg-primary"></span>
             </span>
             {t("hero.badge")}
           </div>
@@ -168,17 +167,13 @@ export default async function CustomizationPage() {
           <Card className="bg-muted">
             <CardContent className="pt-6">
               <div className="text-center">
-                <h2 className="mb-4 text-2xl font-bold">
-                  {t("cta.title")}
-                </h2>
+                <h2 className="mb-4 text-2xl font-bold">{t("cta.title")}</h2>
                 <p className="mb-6 text-muted-foreground">
                   {t("cta.description")}
                 </p>
                 <div className="flex justify-center gap-4">
                   <Button asChild>
-                    <a href="mailto:support@cenety.com">
-                      {t("cta.contact")}
-                    </a>
+                    <a href="mailto:support@cenety.com">{t("cta.contact")}</a>
                   </Button>
                 </div>
               </div>

@@ -1,5 +1,3 @@
-import * as React from "react";
-import Link from "next/link";
 import {
   Calendar,
   CheckCircle2,
@@ -7,13 +5,14 @@ import {
   CreditCard,
   XCircle,
 } from "lucide-react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
+import type * as React from "react";
 
-import { UserSubscriptionPlan } from "types";
-import { pricingData } from "@/config/subscriptions";
-import { cn, formatDate } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import type { UserSubscriptionPlan } from "types";
+import { Icons } from "@/components/shared/icons";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -21,7 +20,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Icons } from "@/components/shared/icons";
+import { pricingData } from "@/config/subscriptions";
+import { cn, formatDate } from "@/lib/utils";
 
 import { PolarPortalButton } from "./polar-portal-button";
 import { PolarPortalButtonFallback } from "./polar-portal-button-fallback";
@@ -29,7 +29,15 @@ import { PolarPortalButtonWithSubscription } from "./polar-portal-button-subscri
 
 // Default free plan as fallback
 const DEFAULT_FREE_PLAN: UserSubscriptionPlan = {
-  ...pricingData[0],
+  title: pricingData[0]?.title || "Free",
+  description: pricingData[0]?.description || "Free plan",
+  benefits: pricingData[0]?.benefits || [],
+  limitations: pricingData[0]?.limitations || [],
+  prices: pricingData[0]?.prices || { monthly: 0, yearly: 0 },
+  stripeIds: pricingData[0]?.stripeIds || {
+    monthly: null,
+    yearly: null,
+  },
   stripeCustomerId: null,
   stripeSubscriptionId: null,
   stripePriceId: null,
@@ -86,7 +94,7 @@ export function BillingInfo({
               className={cn(
                 "text-sm px-3 py-1",
                 isPaid &&
-                  "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20",
+                  "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20"
               )}
             >
               {isPaid ? (

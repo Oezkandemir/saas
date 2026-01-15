@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import {
   getCustomerByQRCode,
   trackCustomerQRCodeScan,
@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ code: string }> },
+  { params }: { params: Promise<{ code: string }> }
 ) {
   try {
     const { code } = await params;
@@ -79,7 +79,7 @@ export async function GET(
           headers: {
             "Content-Type": "text/html; charset=utf-8",
           },
-        },
+        }
       );
     }
 
@@ -310,7 +310,7 @@ export async function GET(
         headers: {
           "Content-Type": "text/html; charset=utf-8",
         },
-      },
+      }
     );
   } catch (error) {
     logger.error("QR redirect error:", error);
@@ -370,7 +370,7 @@ export async function GET(
         headers: {
           "Content-Type": "text/html; charset=utf-8",
         },
-      },
+      }
     );
   }
 }
@@ -383,5 +383,5 @@ function escapeHtml(text: string): string {
     '"': "&quot;",
     "'": "&#039;",
   };
-  return text.replace(/[&<>"']/g, (m) => map[m]);
+  return text.replace(/[&<>"']/g, (m) => map[m]!);
 }

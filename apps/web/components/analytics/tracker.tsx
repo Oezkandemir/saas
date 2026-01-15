@@ -1,15 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef } from "react";
+import { v4 as uuidv4 } from "uuid";
 import {
   recordPageView,
   trackUserInteraction,
 } from "@/actions/analytics-actions";
-import { v4 as uuidv4 } from "uuid";
-
-import { logger } from "@/lib/logger";
 import { useSupabase } from "@/components/supabase-provider";
+import { logger } from "@/lib/logger";
 
 // Type to store browser details
 type BrowserInfo = {
@@ -55,55 +54,55 @@ export function AnalyticsTracker() {
       // Use server-side API route to avoid CSP issues
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
-      
+
       try {
         const response = await fetch("/api/analytics/geolocation", {
           signal: controller.signal,
         });
-        
+
         clearTimeout(timeoutId);
 
         if (response.ok) {
-        // Check content type before parsing JSON
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          try {
-            const text = await response.text();
-            const trimmedText = text.trim();
-            let data;
-            // Try direct parse first
+          // Check content type before parsing JSON
+          const contentType = response.headers.get("content-type");
+          if (contentType?.includes("application/json")) {
             try {
-              data = JSON.parse(trimmedText);
-            } catch {
-              // If direct parse fails, try to extract JSON object
-              const jsonMatch = trimmedText.match(/\{[\s\S]*\}/);
-              if (jsonMatch) {
-                data = JSON.parse(jsonMatch[0]);
-              } else {
-                throw new Error("No valid JSON found");
+              const text = await response.text();
+              const trimmedText = text.trim();
+              let data;
+              // Try direct parse first
+              try {
+                data = JSON.parse(trimmedText);
+              } catch {
+                // If direct parse fails, try to extract JSON object
+                const jsonMatch = trimmedText.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                  data = JSON.parse(jsonMatch[0]);
+                } else {
+                  throw new Error("No valid JSON found");
+                }
               }
+              return {
+                country: data.country || null,
+                city: data.city || null,
+                region: data.region || null,
+                timezone:
+                  data.timezone ||
+                  Intl.DateTimeFormat().resolvedOptions().timeZone ||
+                  null,
+                latitude: data.latitude || null,
+                longitude: data.longitude || null,
+              };
+            } catch (_parseError) {
+              // JSON parse failed - fall through to defaults silently
             }
-            return {
-              country: data.country || null,
-              city: data.city || null,
-              region: data.region || null,
-              timezone:
-                data.timezone ||
-                Intl.DateTimeFormat().resolvedOptions().timeZone ||
-                null,
-              latitude: data.latitude || null,
-              longitude: data.longitude || null,
-            };
-          } catch (parseError) {
-            // JSON parse failed - fall through to defaults silently
           }
         }
-      }
-      } catch (fetchError) {
+      } catch (_fetchError) {
         clearTimeout(timeoutId);
         // Silent fail - return defaults
       }
-    } catch (error) {
+    } catch (_error) {
       // Silent fail - return defaults silently
     }
 
@@ -171,20 +170,20 @@ export function AnalyticsTracker() {
 
     if (chromeMatch && !ua.match(/Edg/)) {
       browserInfo.browser = "Chrome";
-      browserInfo.browserVersion = chromeMatch[1];
+      browserInfo.browserVersion = chromeMatch[1] || "unknown";
     } else if (firefoxMatch) {
       browserInfo.browser = "Firefox";
-      browserInfo.browserVersion = firefoxMatch[1];
+      browserInfo.browserVersion = firefoxMatch[1] || "unknown";
     } else if (safariMatch && !ua.match(/Chrome/)) {
       browserInfo.browser = "Safari";
-      browserInfo.browserVersion = safariMatch[1];
+      browserInfo.browserVersion = safariMatch[1] || "unknown";
     } else if (edgeMatch) {
       browserInfo.browser = "Edge";
-      browserInfo.browserVersion = edgeMatch[1];
+      browserInfo.browserVersion = edgeMatch[1] || "unknown";
     } else if (ua.indexOf("MSIE") !== -1 || ua.indexOf("Trident") !== -1) {
       browserInfo.browser = "IE";
       const ieMatch = ua.match(/(?:MSIE |rv:)(\d+)/);
-      if (ieMatch) browserInfo.browserVersion = ieMatch[1];
+      if (ieMatch) browserInfo.browserVersion = ieMatch[1] || "unknown";
     }
 
     // Detect OS and version
@@ -195,16 +194,16 @@ export function AnalyticsTracker() {
 
     if (windowsMatch) {
       browserInfo.os = "Windows";
-      browserInfo.osVersion = windowsMatch[1];
+      browserInfo.osVersion = windowsMatch[1] || "unknown";
     } else if (macMatch) {
       browserInfo.os = "MacOS";
-      browserInfo.osVersion = macMatch[1].replace(/_/g, ".");
+      browserInfo.osVersion = macMatch[1]?.replace(/_/g, ".") || "unknown";
     } else if (androidMatch) {
       browserInfo.os = "Android";
-      browserInfo.osVersion = androidMatch[1];
+      browserInfo.osVersion = androidMatch[1] || "unknown";
     } else if (iosMatch) {
       browserInfo.os = "iOS";
-      browserInfo.osVersion = iosMatch[1].replace(/_/g, ".");
+      browserInfo.osVersion = iosMatch[1]?.replace(/_/g, ".") || "unknown";
     } else if (ua.indexOf("Linux") !== -1) {
       browserInfo.os = "Linux";
     }
@@ -284,7 +283,7 @@ export function AnalyticsTracker() {
         logger.error("Error tracking page view:", error);
       }
     },
-    [session],
+    [session, getBrowserInfo, getGeolocationInfo]
   );
 
   // Set up global click tracking
@@ -399,7 +398,7 @@ export function AnalyticsTracker() {
     return () => {
       if (viewStartTimeRef.current !== null) {
         const duration = Math.floor(
-          (Date.now() - viewStartTimeRef.current) / 1000,
+          (Date.now() - viewStartTimeRef.current) / 1000
         );
         viewStartTimeRef.current = null;
 

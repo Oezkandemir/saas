@@ -1,13 +1,12 @@
-import { redirect } from "next/navigation";
 import { BarChart3 } from "lucide-react";
+import { redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { getAllPlanFeatures } from "@/lib/plan-features";
-import { getCurrentUser } from "@/lib/session";
-import { checkUsageWarnings } from "@/lib/usage-billing";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { UsageDashboard } from "@/components/plan/usage-dashboard/usage-dashboard";
 import { UsageWarnings } from "@/components/plan/usage-dashboard/usage-warnings";
+import { getAllPlanFeatures } from "@/lib/plan-features";
+import { getCurrentUser } from "@/lib/session";
+import { checkUsageWarnings } from "@/lib/usage-billing";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -39,7 +38,7 @@ export default async function UsagePage() {
     <UnifiedPageLayout
       title={t("heading")}
       description={t("subheading")}
-      icon={<BarChart3 className="w-4 h-4 text-primary" />}
+      icon={<BarChart3 className="size-4 text-primary" />}
       contentClassName="space-y-6"
     >
       {warnings.length > 0 && <UsageWarnings warnings={warnings} />}

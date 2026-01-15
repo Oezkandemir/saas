@@ -33,10 +33,17 @@ export async function exportUserData() {
       notifications,
     ] = await Promise.all([
       // User profile
-      supabase.from("users").select("*").eq("id", user.id).single(),
+      supabase
+        .from("users")
+        .select("*")
+        .eq("id", user.id)
+        .single(),
 
       // Customers
-      supabase.from("customers").select("*").eq("user_id", user.id),
+      supabase
+        .from("customers")
+        .select("*")
+        .eq("user_id", user.id),
 
       // Documents with items
       supabase
@@ -45,7 +52,10 @@ export async function exportUserData() {
         .eq("user_id", user.id),
 
       // QR Codes
-      supabase.from("qr_codes").select("*").eq("user_id", user.id),
+      supabase
+        .from("qr_codes")
+        .select("*")
+        .eq("user_id", user.id),
 
       // QR Events (if Pro user) - Fixed: First get QR code IDs, then query events
       (async () => {
@@ -67,10 +77,16 @@ export async function exportUserData() {
       })(),
 
       // Cookie consents
-      supabase.from("cookie_consents").select("*").eq("user_id", user.id),
+      supabase
+        .from("cookie_consents")
+        .select("*")
+        .eq("user_id", user.id),
 
       // Notifications
-      supabase.from("notifications").select("*").eq("user_id", user.id),
+      supabase
+        .from("notifications")
+        .select("*")
+        .eq("user_id", user.id),
     ]);
 
     // Compile all data
@@ -310,7 +326,7 @@ export async function deleteUserAccount(confirmation: string) {
 
     // Delete auth user (this will sign them out)
     const { error: deleteError } = await supabase.auth.admin.deleteUser(
-      user.id,
+      user.id
     );
 
     if (deleteError) {

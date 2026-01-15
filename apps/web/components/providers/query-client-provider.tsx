@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
 import {
   QueryClient,
   QueryClientProvider as ReactQueryClientProvider,
 } from "@tanstack/react-query";
+import { type ReactNode, useState } from "react";
 
 interface QueryClientProviderProps {
   children: ReactNode;
@@ -29,7 +29,7 @@ export function QueryClientProvider({ children }: QueryClientProviderProps) {
             retry: 1, // Retry failed mutations once
           },
         },
-      }),
+      })
   );
 
   return (

@@ -56,7 +56,7 @@ export type UpdateTeamMemberInput = {
  */
 async function isCompanyProfileOwner(
   companyProfileId: string,
-  userId: string,
+  userId: string
 ): Promise<boolean> {
   const supabase = await getSupabaseServer();
   const { data } = await supabase
@@ -73,7 +73,7 @@ async function isCompanyProfileOwner(
  * Get all team members for a company profile
  */
 export async function getCompanyProfileTeamMembers(
-  companyProfileId: string,
+  companyProfileId: string
 ): Promise<CompanyProfileMember[]> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -107,7 +107,7 @@ export async function getCompanyProfileTeamMembers(
         email,
         avatar_url
       )
-    `,
+    `
     )
     .eq("company_profile_id", companyProfileId)
     .order("created_at", { ascending: false });
@@ -131,7 +131,7 @@ export async function getCompanyProfileTeamMembers(
  * Add a team member to a company profile
  */
 export async function addCompanyProfileTeamMember(
-  input: AddTeamMemberInput,
+  input: AddTeamMemberInput
 ): Promise<CompanyProfileMember> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -139,7 +139,7 @@ export async function addCompanyProfileTeamMember(
   // Check if user is owner
   const isOwner = await isCompanyProfileOwner(
     input.company_profile_id,
-    user.id,
+    user.id
   );
   if (!isOwner) {
     throw new Error("Nur der Firmeninhaber kann Teammitglieder hinzufügen");
@@ -203,14 +203,14 @@ export async function addCompanyProfileTeamMember(
         email,
         avatar_url
       )
-    `,
+    `
     )
     .single();
 
   if (error) {
     logger.error("Error adding team member:", error);
     throw new Error(
-      error.message || "Fehler beim Hinzufügen des Teammitglieds",
+      error.message || "Fehler beim Hinzufügen des Teammitglieds"
     );
   }
 
@@ -241,7 +241,7 @@ export async function addCompanyProfileTeamMember(
       const { logger } = await import("@/lib/logger");
       logger.error(
         "Failed to create team invitation notification",
-        notificationError,
+        notificationError
       );
     }
   }
@@ -265,7 +265,7 @@ export async function addCompanyProfileTeamMember(
  */
 export async function updateCompanyProfileTeamMember(
   memberId: string,
-  input: UpdateTeamMemberInput,
+  input: UpdateTeamMemberInput
 ): Promise<CompanyProfileMember> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -285,7 +285,7 @@ export async function updateCompanyProfileTeamMember(
   // Check if user is owner
   const isOwner = await isCompanyProfileOwner(
     member.company_profile_id,
-    user.id,
+    user.id
   );
   if (!isOwner) {
     throw new Error("Nur der Firmeninhaber kann Teammitglieder bearbeiten");
@@ -318,14 +318,14 @@ export async function updateCompanyProfileTeamMember(
         email,
         avatar_url
       )
-    `,
+    `
     )
     .single();
 
   if (error) {
     logger.error("Error updating team member:", error);
     throw new Error(
-      error.message || "Fehler beim Aktualisieren des Teammitglieds",
+      error.message || "Fehler beim Aktualisieren des Teammitglieds"
     );
   }
 
@@ -347,7 +347,7 @@ export async function updateCompanyProfileTeamMember(
  * Remove a team member from a company profile
  */
 export async function removeCompanyProfileTeamMember(
-  memberId: string,
+  memberId: string
 ): Promise<void> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -367,7 +367,7 @@ export async function removeCompanyProfileTeamMember(
   // Check if user is owner
   const isOwner = await isCompanyProfileOwner(
     member.company_profile_id,
-    user.id,
+    user.id
   );
   if (!isOwner) {
     throw new Error("Nur der Firmeninhaber kann Teammitglieder entfernen");
@@ -398,7 +398,7 @@ export async function hasCompanyProfilePermission(
     | "delete_documents"
     | "edit_customers"
     | "delete_customers"
-    | "manage_team",
+    | "manage_team"
 ): Promise<boolean> {
   const user = await getCurrentUser();
   if (!user) return false;
@@ -448,7 +448,7 @@ export async function getCompanyProfilesForUser(): Promise<{
       company_profile_id,
       role,
       company_profile:company_profiles (*)
-    `,
+    `
     )
     .eq("user_id", user.id);
 

@@ -1,10 +1,9 @@
 "use server";
 
-import { UserSubscriptionPlan } from "@/types";
-
 import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
+import type { UserSubscriptionPlan } from "@/types";
 
 export async function getUserPlan(): Promise<UserSubscriptionPlan | null> {
   try {
@@ -17,7 +16,7 @@ export async function getUserPlan(): Promise<UserSubscriptionPlan | null> {
     try {
       const subscriptionPlan = await getUserSubscriptionPlan(
         user.id,
-        user.email,
+        user.email
       );
       return subscriptionPlan;
     } catch (subscriptionError) {

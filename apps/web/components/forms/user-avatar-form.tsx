@@ -1,20 +1,19 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { updateUserAvatar } from "@/actions/update-user-avatar";
-import { User } from "@/types";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
-import { userAvatarSchema } from "@/lib/validations/user";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button } from "@/components/ui/button";
+import { updateUserAvatar } from "@/actions/update-user-avatar";
 import { useAvatar } from "@/components/context/avatar-context";
 import { Icons } from "@/components/shared/icons";
+import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { userAvatarSchema } from "@/lib/validations/user";
+import type { User } from "@/types";
 
 interface UserAvatarFormProps {
   user: Pick<User, "id"> & {
@@ -28,7 +27,7 @@ export function UserAvatarForm({ user }: UserAvatarFormProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isPending, startTransition] = useTransition();
   const [previewUrl, setPreviewUrl] = useState<string | null>(
-    user.avatar_url || null,
+    user.avatar_url || null
   );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showSaveButton, setShowSaveButton] = useState(false);

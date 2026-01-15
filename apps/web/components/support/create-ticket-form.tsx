@@ -1,15 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createTicket } from "@/actions/support-ticket-actions";
 import { AlertCircle, Loader2 } from "lucide-react";
-
-import { logger } from "@/lib/logger";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { createTicket } from "@/actions/support-ticket-actions";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,6 +15,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
+import { logger } from "@/lib/logger";
 
 export function CreateTicketForm() {
   const router = useRouter();

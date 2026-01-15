@@ -1,15 +1,12 @@
 "use client";
 
+import { Loader2, Trash2, Zap } from "lucide-react";
 import { useState } from "react";
 import {
   clearOldErrors,
   optimizeDatabase,
   type QuickActionResult,
 } from "@/actions/admin-system-actions";
-import { Loader2, Trash2, Zap } from "lucide-react";
-
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +18,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 interface QuickAction {
   id: string;
@@ -41,7 +40,7 @@ export function QuickActions() {
       id: "clear-old-errors",
       title: "Alte Fehler löschen",
       description: "Löscht alle Systemfehler, die älter als 30 Tage sind",
-      icon: <Trash2 className="w-4 h-4" />,
+      icon: <Trash2 className="size-4" />,
       variant: "destructive",
       requiresConfirmation: true,
       action: async () => await clearOldErrors(30),
@@ -50,7 +49,7 @@ export function QuickActions() {
       id: "optimize-database",
       title: "Datenbank optimieren",
       description: "Führt ANALYZE aus, um Statistiken zu aktualisieren",
-      icon: <Zap className="w-4 h-4" />,
+      icon: <Zap className="size-4" />,
       variant: "default",
       requiresConfirmation: true,
       action: async () => await optimizeDatabase(),
@@ -116,9 +115,7 @@ export function QuickActions() {
                           {action.description}
                         </div>
                       </div>
-                      {isLoading && (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      )}
+                      {isLoading && <Loader2 className="size-4 animate-spin" />}
                     </div>
                   </Button>
                 </AlertDialogTrigger>
@@ -150,7 +147,7 @@ export function QuickActions() {
                     >
                       {isLoading ? (
                         <>
-                          <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                          <Loader2 className="mr-2 size-4 animate-spin" />
                           Wird ausgeführt...
                         </>
                       ) : (
@@ -188,7 +185,7 @@ export function QuickActions() {
                   </div>
                 </div>
                 {isLoading && loadingAction === action.id && (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="size-4 animate-spin" />
                 )}
               </div>
             </Button>

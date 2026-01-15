@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Cookie } from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -17,7 +17,7 @@ export function CookieSettingsButton() {
         onClick={() => setOpen(true)}
         className="w-full sm:w-auto"
       >
-        <Cookie className="mr-2 h-4 w-4" />
+        <Cookie className="mr-2 size-4" />
         Cookie-Einstellungen ändern
       </Button>
       <CookieConsent autoShow={false} open={open} onOpenChange={setOpen} />

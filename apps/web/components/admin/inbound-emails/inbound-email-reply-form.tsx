@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { replyToInboundEmail } from "@/actions/reply-to-inbound-email";
 import { AlertCircle, Loader2, Send } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
+import { replyToInboundEmail } from "@/actions/reply-to-inbound-email";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 interface InboundEmailReplyFormProps {
   inboundEmailId: string;
@@ -27,7 +27,9 @@ export function InboundEmailReplyForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [subject, setSubject] = useState(
-    originalSubject.startsWith("Re:") ? originalSubject : `Re: ${originalSubject}`,
+    originalSubject.startsWith("Re:")
+      ? originalSubject
+      : `Re: ${originalSubject}`
   );
   const [body, setBody] = useState("");
 
@@ -62,17 +64,19 @@ export function InboundEmailReplyForm({
       }
 
       toast.success(result.message || "Antwort erfolgreich gesendet");
-      
+
       // Clear form
       setBody("");
-      
+
       // Call success callback
       if (onSuccess) {
         onSuccess();
       }
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Ein unerwarteter Fehler ist aufgetreten";
+        err instanceof Error
+          ? err.message
+          : "Ein unerwarteter Fehler ist aufgetreten";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -82,64 +86,68 @@ export function InboundEmailReplyForm({
 
   return (
     <div className="bg-background rounded-lg">
-        {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
+      {error && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="size-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="reply-subject">Betreff</Label>
-            <Input
-              id="reply-subject"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="reply-subject">Betreff</Label>
+          <Input
+            id="reply-subject"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            disabled={isSubmitting}
+            placeholder="Betreff"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="reply-body">Nachricht</Label>
+          <Textarea
+            id="reply-body"
+            placeholder="Ihre Antwort..."
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            disabled={isSubmitting}
+            rows={8}
+            className="resize-none"
+          />
+        </div>
+
+        <div className="flex justify-end gap-2 pt-4 border-t">
+          {onCancel && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
               disabled={isSubmitting}
-              placeholder="Betreff"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="reply-body">Nachricht</Label>
-            <Textarea
-              id="reply-body"
-              placeholder="Ihre Antwort..."
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              disabled={isSubmitting}
-              rows={8}
-              className="resize-none"
-            />
-          </div>
-
-          <div className="flex justify-end gap-2 pt-4 border-t">
-            {onCancel && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={isSubmitting}
-              >
-                Abbrechen
-              </Button>
-            )}
-            <Button type="submit" disabled={isSubmitting || !body.trim()} className="min-w-[140px]">
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Wird gesendet...
-                </>
-              ) : (
-                <>
-                  <Send className="mr-2 h-4 w-4" />
-                  Antwort senden
-                </>
-              )}
+            >
+              Abbrechen
             </Button>
-          </div>
-        </form>
+          )}
+          <Button
+            type="submit"
+            disabled={isSubmitting || !body.trim()}
+            className="min-w-[140px]"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Wird gesendet...
+              </>
+            ) : (
+              <>
+                <Send className="mr-2 size-4" />
+                Antwort senden
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }

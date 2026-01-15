@@ -34,7 +34,7 @@ export function handleAPIError(
     defaultMessage?: string;
     logError?: boolean;
     includeDetails?: boolean;
-  } = {},
+  } = {}
 ): NextResponse<ErrorResponse> {
   const {
     defaultMessage = "An error occurred",
@@ -60,7 +60,7 @@ export function handleAPIError(
             }))
           : undefined,
       },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -83,7 +83,7 @@ export function handleAPIError(
             }
           : undefined,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 
@@ -94,7 +94,7 @@ export function handleAPIError(
         error: ErrorType.INTERNAL_ERROR,
         message: includeDetails ? error : defaultMessage,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 
@@ -105,7 +105,7 @@ export function handleAPIError(
       message: defaultMessage,
       details: includeDetails ? error : undefined,
     },
-    { status: 500 },
+    { status: 500 }
   );
 }
 
@@ -114,7 +114,7 @@ export function handleAPIError(
  */
 export function successResponse<T>(
   data: T,
-  status: number = 200,
+  status: number = 200
 ): NextResponse<T> {
   return NextResponse.json(data, { status });
 }
@@ -126,7 +126,7 @@ export function errorResponse(
   error: ErrorType | string,
   message: string,
   status: number = 500,
-  details?: unknown,
+  details?: unknown
 ): NextResponse<ErrorResponse> {
   return NextResponse.json(
     {
@@ -134,6 +134,6 @@ export function errorResponse(
       message,
       details: process.env.NODE_ENV === "development" ? details : undefined,
     },
-    { status },
+    { status }
   );
 }

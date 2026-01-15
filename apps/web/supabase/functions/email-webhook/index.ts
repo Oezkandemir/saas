@@ -5,8 +5,8 @@ import { logger } from "@/lib/logger";
 import { corsHeaders } from "../_shared/cors.ts";
 
 // Load environment variables
-const SITE_URL = Deno.env.get("SITE_URL") || "http://localhost:3000";
-const SITE_NAME = Deno.env.get("SITE_NAME") || "Next.js SaaS Starter";
+const _SITE_URL = Deno.env.get("SITE_URL") || "http://localhost:3000";
+const _SITE_NAME = Deno.env.get("SITE_NAME") || "Next.js SaaS Starter";
 const WEBHOOK_SECRET = Deno.env.get("WEBHOOK_SECRET") || "";
 
 Deno.serve(async (req) => {
@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
       logger.debug(`Processing email to ${to}, subject: ${subject}`);
 
       // Check if this is a confirmation email
-      if (subject && subject.includes("Confirm") && content) {
+      if (subject?.includes("Confirm") && content) {
         logger.debug("Found confirmation email, extracting link...");
 
         // Extract the confirmation link from the email content
@@ -82,7 +82,7 @@ Deno.serve(async (req) => {
                   name: userName,
                   actionUrl: confirmationLink,
                 },
-              },
+              }
             );
 
             if (error) {
@@ -103,13 +103,13 @@ Deno.serve(async (req) => {
                     email: to,
                     name: userName,
                   },
-                },
+                }
               );
 
               if (welcomeResult.error) {
                 logger.error(
                   "Error sending welcome email:",
-                  welcomeResult.error,
+                  welcomeResult.error
                 );
               } else {
                 logger.debug("Welcome email sent successfully");
@@ -136,7 +136,7 @@ Deno.serve(async (req) => {
           }
         } else {
           logger.error(
-            "Could not extract confirmation link from email content",
+            "Could not extract confirmation link from email content"
           );
         }
       }
@@ -153,7 +153,7 @@ Deno.serve(async (req) => {
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
+      }
     );
   }
 });

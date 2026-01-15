@@ -1,13 +1,5 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import {
-  deleteQRCode,
-  getQRCodeScanCount,
-  QRCode,
-} from "@/actions/qr-codes-actions";
 import {
   RiArrowDownSFill,
   RiArrowUpSFill,
@@ -15,25 +7,32 @@ import {
   RiMore2Line,
 } from "@remixicon/react";
 import {
+  type ColumnDef,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  useReactTable,
-  type ColumnDef,
   type SortingState,
+  useReactTable,
 } from "@tanstack/react-table";
 import { Copy, Download, Eye, Pencil, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import * as React from "react";
 import { toast } from "sonner";
-
+import {
+  deleteQRCode,
+  getQRCodeScanCount,
+  type QRCode,
+} from "@/actions/qr-codes-actions";
+import { Badge } from "@/components/ui/badge";
+import { ButtonRoot } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ButtonRoot } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   TableBody,
   TableCell,
@@ -70,7 +69,7 @@ export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
   const [scanCounts, setScanCounts] = React.useState<Record<string, number>>(
-    {},
+    {}
   );
 
   // Load scan counts for all QR codes
@@ -97,7 +96,7 @@ export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
       await deleteQRCode(id);
       toast.success(t("deleted"));
       router.refresh();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("deleteError"));
     } finally {
       setDeletingId(null);
@@ -215,7 +214,7 @@ export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
       ),
       cell: ({ row }) => (
         <div className="flex items-center gap-1">
-          <Eye className="h-4 w-4 text-muted-foreground" />
+          <Eye className="size-4 text-muted-foreground" />
           <span className="text-sm font-medium text-text-strong-950">
             {scanCounts[row.original.id] ?? "..."}
           </span>
@@ -278,16 +277,16 @@ export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => handleCopyLink(row.original.code)}>
-              <Copy className="mr-2 h-4 w-4" />
+              <Copy className="mr-2 size-4" />
               Link kopieren
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleDownload(row.original.code)}>
-              <Download className="mr-2 h-4 w-4" />
+              <Download className="mr-2 size-4" />
               QR-Code herunterladen
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href={`/dashboard/qr-codes/${row.original.id}/edit`}>
-                <Pencil className="mr-2 h-4 w-4" />
+                <Pencil className="mr-2 size-4" />
                 Bearbeiten
               </Link>
             </DropdownMenuItem>
@@ -295,7 +294,7 @@ export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
               onClick={() => handleDelete(row.original.id)}
               className="text-destructive"
             >
-              <Trash2 className="mr-2 h-4 w-4" />
+              <Trash2 className="mr-2 size-4" />
               Löschen
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -328,7 +327,7 @@ export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext(),
+                          header.getContext()
                         )}
                   </TableHead>
                 );
@@ -345,7 +344,7 @@ export function QRCodesTable({ qrCodes }: QRCodesTableProps) {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}

@@ -2,10 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { routing } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
-
 import { siteConfig } from "@/config/site";
+import { routing } from "@/i18n/routing";
 import { resend } from "@/lib/email";
 import { logger } from "@/lib/logger";
 import { generateAndUploadPDF } from "@/lib/pdf/generator-vercel";
@@ -25,7 +24,7 @@ export interface SendDocumentEmailInput {
  * Sends a document (invoice/quote) via email with PDF attachment
  */
 export async function sendDocumentEmail(
-  input: SendDocumentEmailInput,
+  input: SendDocumentEmailInput
 ): Promise<{ success: boolean; messageId?: string }> {
   try {
     const user = await getCurrentUser();
@@ -72,7 +71,7 @@ export async function sendDocumentEmail(
         throw new Error(
           error instanceof Error
             ? `Error generating PDF: ${error.message}`
-            : "Error generating PDF",
+            : "Error generating PDF"
         );
       }
     }
@@ -89,7 +88,7 @@ export async function sendDocumentEmail(
     if (buffer.length < 4 || buffer.toString("ascii", 0, 4) !== "%PDF") {
       // PDF is invalid (probably old HTML format), regenerate it
       logger.warn(
-        "Invalid PDF detected (possibly old HTML format), regenerating with pdf-lib...",
+        "Invalid PDF detected (possibly old HTML format), regenerating with pdf-lib..."
       );
       const pdfUrl = await generateAndUploadPDF(document, "");
       const supabase = await getSupabaseServer();
@@ -170,7 +169,7 @@ export async function sendDocumentEmail(
         : input.recipientEmail;
 
     logger.info(
-      `Sending ${documentType} email to ${input.recipientEmail} (actual: ${recipientEmail})`,
+      `Sending ${documentType} email to ${input.recipientEmail} (actual: ${recipientEmail})`
     );
 
     // Send email with PDF attachment
@@ -187,7 +186,7 @@ export async function sendDocumentEmail(
         },
       ],
       headers: {
-        "X-Entity-Ref-ID": new Date().getTime().toString(),
+        "X-Entity-Ref-ID": Date.now().toString(),
       },
     });
 
@@ -200,7 +199,7 @@ export async function sendDocumentEmail(
     // For now, we'll just log it
 
     logger.info(
-      `Document email sent: ${documentType} ${document.document_number} to ${input.recipientEmail}`,
+      `Document email sent: ${documentType} ${document.document_number} to ${input.recipientEmail}`
     );
 
     // Create notification for document sent
@@ -231,7 +230,7 @@ export async function sendDocumentEmail(
     throw new Error(
       error instanceof Error
         ? error.message
-        : "An error occurred while sending the email.",
+        : "An error occurred while sending the email."
     );
   }
 }

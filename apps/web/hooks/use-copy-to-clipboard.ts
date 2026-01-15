@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Check, Copy } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export function useCopyToClipboard() {
@@ -13,13 +13,10 @@ export function useCopyToClipboard() {
       setCopied(true);
       toast.success(successMessage || "In Zwischenablage kopiert");
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
+    } catch (_err) {
       toast.error("Fehler beim Kopieren");
     }
   };
 
   return { copy, copied, CopyIcon: copied ? Check : Copy };
 }
-
-
-

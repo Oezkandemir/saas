@@ -83,16 +83,16 @@ export async function getUsersWithCompanyProfiles(): Promise<{
 
     // Get users with company profiles and their statistics
     const { data, error } = await supabaseAdmin.rpc(
-      "get_users_with_company_profiles_stats",
+      "get_users_with_company_profiles_stats"
     );
 
     if (error) {
       // Fallback to manual query if RPC doesn't exist
       logger.warn("RPC function not found, using fallback query");
 
-      const { data: profiles, error: profilesError } = await supabaseAdmin.from(
-        "company_profiles",
-      ).select(`
+      const { data: profiles, error: profilesError } = await supabaseAdmin
+        .from("company_profiles")
+        .select(`
           id,
           user_id,
           company_name,
@@ -167,7 +167,7 @@ export async function getUsersWithCompanyProfiles(): Promise<{
             quote_count: quoteCount || 0,
             total_revenue: totalRevenue,
           };
-        }),
+        })
       );
 
       return { success: true, data: usersWithStats };

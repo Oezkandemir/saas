@@ -3,7 +3,7 @@
  * Script to check page_views table structure and data
  * Run with: npx tsx scripts/check-page-views.ts
  */
-import { resolve } from "path";
+import { resolve } from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import * as dotenv from "dotenv";
 
@@ -56,7 +56,7 @@ async function checkPageViews() {
     }
 
     console.log(
-      `\n📊 Found ${allData?.length || 0} records (showing first 10):`,
+      `\n📊 Found ${allData?.length || 0} records (showing first 10):`
     );
     if (allData && allData.length > 0) {
       allData.forEach((row: any, index: number) => {
@@ -81,7 +81,7 @@ async function checkPageViews() {
       console.log(`\n📈 Top pages by slug (${slugData.length} records):`);
       slugData.forEach((row: any, index: number) => {
         console.log(
-          `  ${index + 1}. ${row.slug || "NULL"}: ${row.view_count || 0} views`,
+          `  ${index + 1}. ${row.slug || "NULL"}: ${row.view_count || 0} views`
         );
       });
     } else {
@@ -112,6 +112,3 @@ checkPageViews()
     console.error("❌ Script failed:", error);
     process.exit(1);
   });
-
-
-

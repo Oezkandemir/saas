@@ -353,7 +353,7 @@ const config = {
     require("tailwindcss-animate"),
     require("@tailwindcss/typography"),
     // Custom utilities plugin
-    function ({ addUtilities }: any) {
+    ({ addUtilities }: any) => {
       addUtilities({
         ".border-subtle": {
           "border-color": "hsl(var(--border) / 0.5)",

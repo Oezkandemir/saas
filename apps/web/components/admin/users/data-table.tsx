@@ -1,25 +1,28 @@
 "use client";
 
-import * as React from "react";
 import {
-  ColumnDef,
-  ColumnFiltersState,
+  type ColumnDef,
+  type ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
+  type SortingState,
   useReactTable,
-  VisibilityState,
+  type VisibilityState,
 } from "@tanstack/react-table";
 import { Filter, Search } from "lucide-react";
-
-import { cn } from "@/lib/utils";
+import * as React from "react";
+import { UserActions } from "@/components/admin/users/user-actions";
+import { UserAvatar } from "@/components/shared/user-avatar";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -28,13 +31,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UserActions } from "@/components/admin/users/user-actions";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { UserAvatar } from "@/components/shared/user-avatar";
+import { cn } from "@/lib/utils";
 
-import { User } from "./columns";
+import type { User } from "./columns";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -49,7 +48,7 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+    []
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -144,7 +143,7 @@ export function DataTable<TData, TValue>({
           <div
             className={cn(
               "flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0",
-              !showFilters && "hidden sm:flex",
+              !showFilters && "hidden sm:flex"
             )}
           >
             <Select value={roleFilter} onValueChange={setRoleFilter}>
@@ -194,7 +193,7 @@ export function DataTable<TData, TValue>({
                 <div
                   className={cn(
                     "flex cursor-pointer items-center justify-between px-0 py-3",
-                    openItem === user.id && "border-b border-border pb-3",
+                    openItem === user.id && "border-b border-border pb-3"
                   )}
                   onClick={(e) => {
                     // Only toggle if not clicking on an action button
@@ -248,57 +247,53 @@ export function DataTable<TData, TValue>({
                   forceMount
                   className={cn(
                     "overflow-hidden pt-3 pb-4 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
-                    openItem !== user.id && "h-0 p-0",
+                    openItem !== user.id && "h-0 p-0"
                   )}
                 >
                   {openItem === user.id && (
-                    <>
-                      <div className="space-y-4">
-                        <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-                          <div>
-                            <span className="text-muted-foreground">
-                              Status:
-                            </span>{" "}
-                            <Badge
-                              variant={
-                                user.status === "banned"
-                                  ? "destructive"
-                                  : "default"
-                              }
-                              className="ml-1"
-                            >
-                              {user.status.charAt(0).toUpperCase() +
-                                user.status.slice(1)}
-                            </Badge>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">
-                              Subscription:
-                            </span>{" "}
-                            <Badge
-                              variant={
-                                user.hasSubscription ? "default" : "outline"
-                              }
-                              className="ml-1"
-                            >
-                              {user.hasSubscription ? "Active" : "None"}
-                            </Badge>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">
-                              Last Sign In:
-                            </span>{" "}
-                            <span className="text-foreground">
-                              {user.lastSignIn}
-                            </span>
-                          </div>
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Status:</span>{" "}
+                          <Badge
+                            variant={
+                              user.status === "banned"
+                                ? "destructive"
+                                : "default"
+                            }
+                            className="ml-1"
+                          >
+                            {user.status.charAt(0).toUpperCase() +
+                              user.status.slice(1)}
+                          </Badge>
                         </div>
-
-                        <div className="pt-2 border-t md:hidden">
-                          <UserActions user={user} inline={true} />
+                        <div>
+                          <span className="text-muted-foreground">
+                            Subscription:
+                          </span>{" "}
+                          <Badge
+                            variant={
+                              user.hasSubscription ? "default" : "outline"
+                            }
+                            className="ml-1"
+                          >
+                            {user.hasSubscription ? "Active" : "None"}
+                          </Badge>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">
+                            Last Sign In:
+                          </span>{" "}
+                          <span className="text-foreground">
+                            {user.lastSignIn}
+                          </span>
                         </div>
                       </div>
-                    </>
+
+                      <div className="pt-2 border-t md:hidden">
+                        <UserActions user={user} inline={true} />
+                      </div>
+                    </div>
                   )}
                 </AccordionContent>
               </AccordionItem>

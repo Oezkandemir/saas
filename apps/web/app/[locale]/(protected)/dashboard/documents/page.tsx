@@ -1,10 +1,12 @@
+import { FileText, Plus } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getDocuments, type Document } from "@/actions/documents-actions";
-import { FileText, Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
+import { type Document, getDocuments } from "@/actions/documents-actions";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { PlanLimitWarning } from "@/components/plan-limit-warning";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -13,10 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { PlanLimitWarning } from "@/components/plan-limit-warning";
+import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -43,14 +42,14 @@ export default async function DocumentsPage({
   // Sort by date (newest first)
   const sortedDocuments = documents.sort(
     (a, b) =>
-      new Date(b.document_date).getTime() - new Date(a.document_date).getTime(),
+      new Date(b.document_date).getTime() - new Date(a.document_date).getTime()
   );
 
   return (
     <UnifiedPageLayout
       title={t("title")}
       description={t("description")}
-      icon={<FileText className="h-4 w-4 text-primary" />}
+      icon={<FileText className="size-4 text-primary" />}
       actions={
         <>
           <Link href="/dashboard/documents/new?type=quote">
@@ -58,14 +57,14 @@ export default async function DocumentsPage({
               variant="outline"
               className="gap-1.5 text-xs sm:text-sm h-8 sm:h-9"
             >
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="size-3.5" />
               <span className="hidden sm:inline">{t("newQuote")}</span>
               <span className="sm:hidden">Angebot</span>
             </Button>
           </Link>
           <Link href="/dashboard/documents/new?type=invoice">
             <Button className="gap-1.5 text-xs sm:text-sm h-8 sm:h-9">
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="size-3.5" />
               <span className="hidden sm:inline">{t("newInvoice")}</span>
               <span className="sm:hidden">Rechnung</span>
             </Button>
@@ -81,7 +80,7 @@ export default async function DocumentsPage({
       <div>
         {sortedDocuments.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center border border-border rounded-lg">
-            <FileText className="h-8 w-8 text-muted-foreground mb-2" />
+            <FileText className="size-8 text-muted-foreground mb-2" />
             <p className="text-sm font-medium mb-1">{t("empty.title")}</p>
             <div className="flex gap-2 mt-3">
               <Link href="/dashboard/documents/new?type=quote">
@@ -146,7 +145,7 @@ export default async function DocumentsPage({
                           day: "2-digit",
                           month: "short",
                           year: "numeric",
-                        },
+                        }
                       )}
                     </TableCell>
                     <TableCell className="py-2.5 text-right text-sm font-medium">

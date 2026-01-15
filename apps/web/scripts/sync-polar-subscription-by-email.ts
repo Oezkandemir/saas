@@ -3,9 +3,9 @@
  * Usage: npx tsx scripts/sync-polar-subscription-by-email.ts <email>
  */
 
+import { resolve } from "node:path";
 // Load environment variables from .env.local before importing modules
 import * as dotenv from "dotenv";
-import { resolve } from "path";
 
 // Try multiple paths for .env.local (tsx might run from different directories)
 const envPaths = [
@@ -60,7 +60,10 @@ const logger = {
     }
   },
   warn: (message: string, data?: any) => {
-    console.warn(`[WARN] ${message}`, data ? JSON.stringify(data, null, 2) : "");
+    console.warn(
+      `[WARN] ${message}`,
+      data ? JSON.stringify(data, null, 2) : ""
+    );
   },
 };
 
@@ -83,7 +86,7 @@ async function getPolarHeaders() {
 async function findCustomerByEmail(email: string): Promise<string | null> {
   try {
     const headers = await getPolarHeaders();
-    
+
     // List customers and search for matching email
     const response = await fetch(`${POLAR_API_BASE_URL}/customers?limit=100`, {
       method: "GET",
@@ -120,7 +123,7 @@ async function findCustomerByEmail(email: string): Promise<string | null> {
 async function findSubscriptionsByCustomerId(customerId: string) {
   try {
     const headers = await getPolarHeaders();
-    
+
     const response = await fetch(
       `${POLAR_API_BASE_URL}/subscriptions?customer_id=${customerId}`,
       {
@@ -130,7 +133,9 @@ async function findSubscriptionsByCustomerId(customerId: string) {
     );
 
     if (!response.ok) {
-      logger.error("Failed to fetch subscriptions", { status: response.status });
+      logger.error("Failed to fetch subscriptions", {
+        status: response.status,
+      });
       return [];
     }
 
@@ -145,11 +150,16 @@ async function findSubscriptionsByCustomerId(customerId: string) {
 async function syncSubscription(userId: string, subscriptionId: string) {
   try {
     const headers = await getPolarHeaders();
-    
-    logger.info(`Fetching subscription details from Polar API: ${subscriptionId}`);
-    const response = await fetch(`${POLAR_API_BASE_URL}/subscriptions/${subscriptionId}`, {
-      headers,
-    });
+
+    logger.info(
+      `Fetching subscription details from Polar API: ${subscriptionId}`
+    );
+    const response = await fetch(
+      `${POLAR_API_BASE_URL}/subscriptions/${subscriptionId}`,
+      {
+        headers,
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text().catch(() => "");
@@ -158,7 +168,9 @@ async function syncSubscription(userId: string, subscriptionId: string) {
         statusText: response.statusText,
         error: errorText,
       });
-      throw new Error(`Failed to fetch subscription: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch subscription: ${response.status} ${response.statusText}`
+      );
     }
 
     const subscription = await response.json();
@@ -171,26 +183,26 @@ async function syncSubscription(userId: string, subscriptionId: string) {
     const productId = subscription.product_id;
     const customerId = subscription.customer_id;
     const status = subscription.status;
-    
+
     // Convert timestamps to ISO strings, handling null/undefined/invalid values
     let currentPeriodEnd: string | null = null;
     if (subscription.current_period_end) {
       const timestamp = subscription.current_period_end * 1000;
       const date = new Date(timestamp);
-      if (!isNaN(date.getTime())) {
+      if (!Number.isNaN(date.getTime())) {
         currentPeriodEnd = date.toISOString();
       }
     }
-    
+
     let currentPeriodStart: string | null = null;
     if (subscription.current_period_start) {
       const timestamp = subscription.current_period_start * 1000;
       const date = new Date(timestamp);
-      if (!isNaN(date.getTime())) {
+      if (!Number.isNaN(date.getTime())) {
         currentPeriodStart = date.toISOString();
       }
     }
-    
+
     logger.info(`Date conversion:`, {
       current_period_end_raw: subscription.current_period_end,
       current_period_end_converted: currentPeriodEnd,
@@ -224,10 +236,12 @@ async function syncSubscription(userId: string, subscriptionId: string) {
       .select("id")
       .eq("polar_subscription_id", subscriptionId)
       .maybeSingle();
-    
+
     if (checkError) {
       logger.error(`Error checking for existing subscription:`, checkError);
-      throw new Error(`Failed to check for existing subscription: ${checkError.message}`);
+      throw new Error(
+        `Failed to check for existing subscription: ${checkError.message}`
+      );
     }
 
     const subscriptionData: any = {
@@ -292,7 +306,9 @@ async function main() {
   const email = process.argv[2];
 
   if (!email) {
-    console.error("Usage: npx tsx scripts/sync-polar-subscription-by-email.ts <email>");
+    console.error(
+      "Usage: npx tsx scripts/sync-polar-subscription-by-email.ts <email>"
+    );
     process.exit(1);
   }
 
@@ -345,4 +361,3 @@ main().catch((error) => {
   logger.error("Script failed", error);
   process.exit(1);
 });
-

@@ -1,16 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { Edit, Eye, MoreVertical, Star, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 import {
-  CompanyProfileWithMembership,
+  type CompanyProfileWithMembership,
   deleteCompanyProfile,
   setDefaultProfile,
 } from "@/actions/company-profiles-actions";
-import { Edit, Eye, MoreVertical, Star, Trash2 } from "lucide-react";
-import { toast } from "sonner";
-
-import { logger } from "@/lib/logger";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,7 +27,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import { logger } from "@/lib/logger";
 
 import { CompanyProfileCard } from "./company-profile-card";
 
@@ -94,12 +93,12 @@ export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-accent rounded-md shadow-sm hover:shadow-md"
+              className="size-8 p-0 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-accent rounded-md shadow-sm hover:shadow-md"
               onClick={(e) => {
                 e.stopPropagation();
               }}
             >
-              <MoreVertical className="h-4 w-4" />
+              <MoreVertical className="size-4" />
               <span className="sr-only">Aktionen öffnen</span>
             </Button>
           </DropdownMenuTrigger>
@@ -109,7 +108,7 @@ export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
                 router.push(`/dashboard/settings/company/${profile.id}`)
               }
             >
-              <Eye className="mr-2 h-4 w-4" />
+              <Eye className="mr-2 size-4" />
               Anzeigen
             </DropdownMenuItem>
             {profile.is_owner && (
@@ -118,7 +117,7 @@ export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
                   router.push(`/dashboard/settings/company/${profile.id}/edit`)
                 }
               >
-                <Edit className="mr-2 h-4 w-4" />
+                <Edit className="mr-2 size-4" />
                 Bearbeiten
               </DropdownMenuItem>
             )}
@@ -126,7 +125,7 @@ export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => handleSetDefault(profile)}>
-                  <Star className="mr-2 h-4 w-4" />
+                  <Star className="mr-2 size-4" />
                   Als Standard festlegen
                 </DropdownMenuItem>
               </>
@@ -138,7 +137,7 @@ export function CompanyProfilesList({ profiles }: CompanyProfilesListProps) {
                   onClick={() => setProfileToDelete(profile)}
                   className="text-destructive focus:text-destructive"
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
+                  <Trash2 className="mr-2 size-4" />
                   Löschen
                 </DropdownMenuItem>
               </>

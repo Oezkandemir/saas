@@ -1,15 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  getPublicOverrides,
-  getPublicSlots,
-  rescheduleBooking,
-  type AvailableSlot,
-  type Booking,
-} from "@/actions/scheduling/bookings-actions";
-import { type EventType } from "@/actions/scheduling/event-types-actions";
 import {
   addDays,
   addMonths,
@@ -23,9 +13,27 @@ import {
 } from "date-fns";
 import { de, enUS } from "date-fns/locale";
 import { Calendar, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
+import {
+  type AvailableSlot,
+  type Booking,
+  getPublicOverrides,
+  getPublicSlots,
+  rescheduleBooking,
+} from "@/actions/scheduling/bookings-actions";
+import type { EventType } from "@/actions/scheduling/event-types-actions";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -33,20 +41,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
-import { Separator } from "@/components/ui/separator";
 
 interface RescheduleBookingDrawerProps {
   booking: Booking;
@@ -73,7 +67,7 @@ export function RescheduleBookingDrawer({
   const [slots, setSlots] = useState<AvailableSlot[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [unavailableDates, setUnavailableDates] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
   const [eventType, setEventType] = useState<EventType | null>(null);
 
@@ -233,12 +227,19 @@ export function RescheduleBookingDrawer({
         </SheetHeader>
 
         <div className="mt-3 flex flex-col">
-          <Accordion type="multiple" defaultValue={["current", "date"]} className="w-full">
+          <Accordion
+            type="multiple"
+            defaultValue={["current", "date"]}
+            className="w-full"
+          >
             {/* Current Booking Info */}
-            <AccordionItem value="current" className="border-b border-stroke-soft-200">
+            <AccordionItem
+              value="current"
+              className="border-b border-stroke-soft-200"
+            >
               <AccordionTrigger className="text-sm font-semibold">
                 <div className="flex items-center gap-2">
-                  <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                  <Clock className="size-3.5 text-muted-foreground" />
                   {t("currentBooking") || "Aktuelle Buchung"}
                 </div>
               </AccordionTrigger>
@@ -246,7 +247,7 @@ export function RescheduleBookingDrawer({
                 <div className="space-y-3 pt-1">
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                      <Clock className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                      <Clock className="size-3 text-blue-600 dark:text-blue-400" />
                       <span className="text-blue-600 dark:text-blue-400 font-medium">
                         Datum & Zeit
                       </span>
@@ -255,7 +256,7 @@ export function RescheduleBookingDrawer({
                       {format(
                         new Date(booking.start_at),
                         "EEEE, d. MMMM yyyy 'um' HH:mm",
-                        { locale: dateLocale },
+                        { locale: dateLocale }
                       )}
                     </p>
                   </div>
@@ -263,7 +264,9 @@ export function RescheduleBookingDrawer({
                     <>
                       <Separator />
                       <div className="space-y-1">
-                        <p className="text-xs text-muted-foreground">Event Type</p>
+                        <p className="text-xs text-muted-foreground">
+                          Event Type
+                        </p>
                         <p className="text-sm font-medium">
                           {booking.event_type.title}
                         </p>
@@ -278,7 +281,7 @@ export function RescheduleBookingDrawer({
             <AccordionItem value="date">
               <AccordionTrigger className="text-sm font-semibold">
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                  <Calendar className="size-3.5 text-muted-foreground" />
                   {t("selectDate") || "Datum auswählen"}
                 </div>
               </AccordionTrigger>
@@ -295,10 +298,10 @@ export function RescheduleBookingDrawer({
                             type="button"
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7"
+                            className="size-7"
                             onClick={handlePreviousMonth}
                           >
-                            <ChevronLeft className="h-4 w-4" />
+                            <ChevronLeft className="size-4" />
                           </Button>
                           <span className="text-sm font-medium min-w-[120px] text-center">
                             {format(currentMonth, "MMMM yyyy", {
@@ -309,10 +312,10 @@ export function RescheduleBookingDrawer({
                             type="button"
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7"
+                            className="size-7"
                             onClick={handleNextMonth}
                           >
-                            <ChevronRight className="h-4 w-4" />
+                            <ChevronRight className="size-4" />
                           </Button>
                         </div>
                       </div>
@@ -320,14 +323,16 @@ export function RescheduleBookingDrawer({
                     <CardContent>
                       <div className="pr-2">
                         <div className="grid grid-cols-7 gap-1 mb-2">
-                          {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((day) => (
-                            <div
-                              key={day}
-                              className="text-center text-xs font-medium text-muted-foreground p-1"
-                            >
-                              {day}
-                            </div>
-                          ))}
+                          {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map(
+                            (day) => (
+                              <div
+                                key={day}
+                                className="text-center text-xs font-medium text-muted-foreground p-1"
+                              >
+                                {day}
+                              </div>
+                            )
+                          )}
                         </div>
                         <div className="grid grid-cols-7 gap-1">
                           {calendarDates.map((date) => {
@@ -346,7 +351,9 @@ export function RescheduleBookingDrawer({
                             return (
                               <button
                                 key={date.toISOString()}
-                                onClick={() => !isDisabled && setSelectedDate(date)}
+                                onClick={() =>
+                                  !isDisabled && setSelectedDate(date)
+                                }
                                 disabled={isDisabled}
                                 className={`
                                   aspect-square p-2 text-sm rounded-md transition-colors
@@ -381,7 +388,7 @@ export function RescheduleBookingDrawer({
               <AccordionItem value="time">
                 <AccordionTrigger className="text-sm font-semibold">
                   <div className="flex items-center gap-2">
-                    <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                    <Clock className="size-3.5 text-muted-foreground" />
                     {t("selectTime") || "Zeit auswählen"}
                     {selectedDate &&
                       ` - ${format(selectedDate, "EEEE, MMMM d", {
@@ -408,7 +415,8 @@ export function RescheduleBookingDrawer({
                               const slotEnd = new Date(slot.end);
                               const isSelected =
                                 selectedSlot?.start === slot.start &&
-                                selectedSlot?.time_slot_id === slot.time_slot_id;
+                                selectedSlot?.time_slot_id ===
+                                  slot.time_slot_id;
                               const isFullyBooked =
                                 slot.available_places !== undefined &&
                                 slot.available_places === 0;
@@ -432,8 +440,8 @@ export function RescheduleBookingDrawer({
                                 >
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/20">
-                                        <Clock className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                                      <div className="flex items-center justify-center size-10 rounded-full bg-yellow-100 dark:bg-yellow-900/20">
+                                        <Clock className="size-5 text-yellow-600 dark:text-yellow-400" />
                                       </div>
                                       <div>
                                         <div className="flex items-center gap-2">
@@ -448,21 +456,24 @@ export function RescheduleBookingDrawer({
                                           </span>
                                         </div>
                                         {slot.available_places !== undefined &&
-                                          slot.max_participants !== undefined && (
+                                          slot.max_participants !==
+                                            undefined && (
                                             <div className="flex items-center gap-1 mt-1">
                                               {slot.available_places > 0 ? (
                                                 <>
-                                                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                                  <div className="size-2 rounded-full bg-green-500"></div>
                                                   <span className="text-xs text-muted-foreground">
                                                     {slot.available_places}{" "}
-                                                    {t("available") || "available"}
+                                                    {t("available") ||
+                                                      "available"}
                                                   </span>
                                                 </>
                                               ) : (
                                                 <>
-                                                  <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                                                  <div className="size-2 rounded-full bg-red-500"></div>
                                                   <span className="text-xs text-red-600 dark:text-red-400 font-medium">
-                                                    {t("fullyBooked") || "Fully Booked"}
+                                                    {t("fullyBooked") ||
+                                                      "Fully Booked"}
                                                   </span>
                                                 </>
                                               )}
@@ -471,8 +482,8 @@ export function RescheduleBookingDrawer({
                                       </div>
                                     </div>
                                     {isSelected && (
-                                      <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                                        <div className="w-2 h-2 rounded-full bg-primary-foreground"></div>
+                                      <div className="size-5 rounded-full bg-primary flex items-center justify-center">
+                                        <div className="size-2 rounded-full bg-primary-foreground"></div>
                                       </div>
                                     )}
                                   </div>
@@ -510,7 +521,9 @@ export function RescheduleBookingDrawer({
                 size="sm"
                 className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
               >
-                <span className="text-xs">{t("cancelDialogCancel") || "Abbrechen"}</span>
+                <span className="text-xs">
+                  {t("cancelDialogCancel") || "Abbrechen"}
+                </span>
               </Button>
             </div>
           </div>

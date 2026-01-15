@@ -31,7 +31,7 @@ export const env = createEnv({
     POLAR_SUCCESS_URL: z.string().url().optional(),
     // Payment provider selection: "polar" (Stripe removed)
     NEXT_PUBLIC_PAYMENT_PROVIDER: z.enum(["polar"]).optional().default("polar"),
-    
+
     // Polar Plan IDs (optional - fallback to mocks in development)
     NEXT_PUBLIC_POLAR_PRO_MONTHLY_PLAN_ID: z.string().uuid().optional(),
     NEXT_PUBLIC_POLAR_PRO_YEARLY_PLAN_ID: z.string().uuid().optional(),

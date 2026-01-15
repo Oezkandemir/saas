@@ -2,7 +2,7 @@
 
 import { Building2, Map, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Control } from "react-hook-form";
+import type { Control } from "react-hook-form";
 
 import {
   FormControl,
@@ -12,6 +12,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -19,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 
 interface CompanyBasicFieldsProps {
   control: Control<any>;
@@ -49,7 +49,7 @@ export function CompanyBasicFields({ control }: CompanyBasicFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-primary" />
+              <Building2 className="size-4 text-primary" />
               {t("companyName")} *
             </FormLabel>
             <FormControl>
@@ -68,7 +68,7 @@ export function CompanyBasicFields({ control }: CompanyBasicFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-primary" />
+              <MapPin className="size-4 text-primary" />
               {t("address")}
             </FormLabel>
             <FormControl>
@@ -149,7 +149,7 @@ export function CompanyBasicFields({ control }: CompanyBasicFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <Map className="h-4 w-4 text-primary" />
+              <Map className="size-4 text-primary" />
               {t("country")}
             </FormLabel>
             <Select

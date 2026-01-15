@@ -133,12 +133,12 @@ const generateEmailTemplate = (type: string, data: any) => {
           </body>
         </html>
       `;
-    case "newsletter":
+    case "newsletter": {
       // Create a properly encoded token - using simple encoding for compatibility
       // We're not using btoa for security but just to have a token that can be verified
       const unsubscribeToken = encodeURIComponent(data.email);
       logger.debug(
-        `Newsletter email: ${data.email}, generated token: ${unsubscribeToken}`,
+        `Newsletter email: ${data.email}, generated token: ${unsubscribeToken}`
       );
       return `
         <!DOCTYPE html>
@@ -174,6 +174,7 @@ const generateEmailTemplate = (type: string, data: any) => {
           </body>
         </html>
       `;
+    }
     case "unsubscribe":
       return `
         <!DOCTYPE html>
@@ -205,7 +206,7 @@ const generateEmailTemplate = (type: string, data: any) => {
           </body>
         </html>
       `;
-    case "team-invitation":
+    case "team-invitation": {
       const getRoleDisplayName = (role: string) => {
         switch (role) {
           case "OWNER":
@@ -260,6 +261,7 @@ const generateEmailTemplate = (type: string, data: any) => {
           </body>
         </html>
       `;
+    }
     default:
       return "";
   }
@@ -291,7 +293,7 @@ Deno.serve(async (req) => {
     // Create Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const _supabase = createClient(supabaseUrl, supabaseKey);
 
     if (!email) {
       return new Response(JSON.stringify({ error: "Email is required" }), {
@@ -367,12 +369,12 @@ Deno.serve(async (req) => {
           {
             status: 400,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
-          },
+          }
         );
       }
 
       logger.debug(
-        `Sending team invitation email: ${teamName} to ${email} as ${role}`,
+        `Sending team invitation email: ${teamName} to ${email} as ${role}`
       );
 
       subject = `You've been invited to join ${teamName} on ${SITE_NAME}`;
@@ -410,7 +412,7 @@ Deno.serve(async (req) => {
       subject: subject,
       html: htmlContent,
       headers: {
-        "X-Entity-Ref-ID": new Date().getTime() + "",
+        "X-Entity-Ref-ID": `${Date.now()}`,
       },
     };
 
@@ -446,7 +448,7 @@ Deno.serve(async (req) => {
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
+      }
     );
   }
 });

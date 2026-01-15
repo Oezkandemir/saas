@@ -3,8 +3,8 @@
  * Reads STRIPE_API_KEY from .env file and shows account details
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const stripe = require("stripe");
 
 // Read .env file manually
@@ -55,7 +55,7 @@ async function getStripeInfo() {
   }
 
   console.log("🔍 Verbinde mit Stripe Account...\n");
-  console.log("API Key gefunden:", apiKey.substring(0, 20) + "...\n");
+  console.log("API Key gefunden:", `${apiKey.substring(0, 20)}...\n`);
 
   try {
     const stripeClient = stripe(apiKey);
@@ -70,13 +70,13 @@ async function getStripeInfo() {
       "🏢 Account Name:",
       account.business_profile?.name ||
         account.display_name ||
-        "Nicht verfügbar",
+        "Nicht verfügbar"
     );
     console.log("🌍 Land:", account.country || "Nicht verfügbar");
     console.log("💳 Account Typ:", account.type || "Nicht verfügbar");
     console.log(
       "📊 Account Status:",
-      account.details_submitted ? "✅ Verifiziert" : "⚠️  Nicht verifiziert",
+      account.details_submitted ? "✅ Verifiziert" : "⚠️  Nicht verifiziert"
     );
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
 
@@ -109,7 +109,7 @@ async function getStripeInfo() {
             const intervalCount = price.recurring?.interval_count || 1;
 
             console.log(
-              `         - ${currency} ${amount} / ${intervalCount} ${interval}`,
+              `         - ${currency} ${amount} / ${intervalCount} ${interval}`
             );
             console.log(`           ✅ Price ID: ${price.id}`);
           }
@@ -151,6 +151,3 @@ async function getStripeInfo() {
 }
 
 getStripeInfo();
-
-
-

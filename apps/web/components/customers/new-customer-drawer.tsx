@@ -1,27 +1,19 @@
 "use client";
 
-import * as React from "react";
-import { useRouter } from "next/navigation";
-import {
-  createCustomer,
-  type CustomerInput,
-} from "@/actions/customers-actions";
 import { RiInformationFill } from "@remixicon/react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import * as React from "react";
 import { toast } from "sonner";
+import {
+  type CustomerInput,
+  createCustomer,
+} from "@/actions/customers-actions";
 
 import { ButtonRoot } from "@/components/ui/button";
 import { HintIcon, HintRoot } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  LabelAsterisk,
-  Label,
-  LabelSub,
-} from "@/components/ui/label";
-import {
-  TextareaCharCounter,
-  Textarea,
-} from "@/components/ui/textarea";
+import { Label, LabelAsterisk, LabelSub } from "@/components/ui/label";
 import {
   Sheet,
   SheetContent,
@@ -29,6 +21,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Textarea, TextareaCharCounter } from "@/components/ui/textarea";
 
 const Button = {
   Root: ButtonRoot,
@@ -126,96 +119,99 @@ export function NewCustomerDrawer({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
-      <SheetContent side="right" className="w-[min(400px,calc(100%-16px))] flex flex-col p-0">
+      <SheetContent
+        side="right"
+        className="w-[min(400px,calc(100%-16px))] flex flex-col p-0"
+      >
         <SheetHeader className="px-6 pt-6 pb-4">
           <SheetTitle>{tForm("newCustomer")}</SheetTitle>
         </SheetHeader>
-        
+
         <div className="overflow-y-auto flex-1 px-6 pb-4">
           {/* Form Fields */}
           <div className="space-y-3">
-              <div className="flex flex-col gap-1">
-                <LabelNS.Root htmlFor="name">
-                  Name <LabelNS.Asterisk />
-                </LabelNS.Root>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder={t("namePlaceholder")}
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  required
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <LabelNS.Root htmlFor="email">{t("email")}</LabelNS.Root>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder={t("emailPlaceholder")}
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <LabelNS.Root htmlFor="phone">{t("phone")}</LabelNS.Root>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder={t("phonePlaceholder")}
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <LabelNS.Root htmlFor="company">
-                  {t("company")} <LabelNS.Sub>(Optional)</LabelNS.Sub>
-                </LabelNS.Root>
-                <Input
-                  id="company"
-                  type="text"
-                  placeholder={t("companyPlaceholder")}
-                  value={formData.company}
-                  onChange={(e) =>
-                    setFormData({ ...formData, company: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <LabelNS.Root htmlFor="notes">
-                  {t("notes")} <LabelNS.Sub>({tForm("optional")})</LabelNS.Sub>
-                </LabelNS.Root>
-                <TextareaNS.Root
-                  placeholder={t("notesPlaceholder")}
-                  className="min-h-[50px]"
-                  id="notes"
-                  value={formData.notes ?? ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, notes: e.target.value })
-                  }
-                  maxLength={500}
-                >
-                  <TextareaNS.CharCounter
-                    current={formData.notes?.length ?? 0}
-                    max={500}
-                  />
-                </TextareaNS.Root>
-                <Hint.Root>
-                  <Hint.Icon as={RiInformationFill} />
-                  {tForm("notesHint")}
-                </Hint.Root>
-              </div>
+            <div className="flex flex-col gap-1">
+              <LabelNS.Root htmlFor="name">
+                Name <LabelNS.Asterisk />
+              </LabelNS.Root>
+              <Input
+                id="name"
+                type="text"
+                placeholder={t("namePlaceholder")}
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                required
+              />
             </div>
+
+            <div className="space-y-1.5">
+              <LabelNS.Root htmlFor="email">{t("email")}</LabelNS.Root>
+              <Input
+                id="email"
+                type="email"
+                placeholder={t("emailPlaceholder")}
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <LabelNS.Root htmlFor="phone">{t("phone")}</LabelNS.Root>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder={t("phonePlaceholder")}
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <LabelNS.Root htmlFor="company">
+                {t("company")} <LabelNS.Sub>(Optional)</LabelNS.Sub>
+              </LabelNS.Root>
+              <Input
+                id="company"
+                type="text"
+                placeholder={t("companyPlaceholder")}
+                value={formData.company}
+                onChange={(e) =>
+                  setFormData({ ...formData, company: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <LabelNS.Root htmlFor="notes">
+                {t("notes")} <LabelNS.Sub>({tForm("optional")})</LabelNS.Sub>
+              </LabelNS.Root>
+              <TextareaNS.Root
+                placeholder={t("notesPlaceholder")}
+                className="min-h-[50px]"
+                id="notes"
+                value={formData.notes ?? ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
+                maxLength={500}
+              >
+                <TextareaNS.CharCounter
+                  current={formData.notes?.length ?? 0}
+                  max={500}
+                />
+              </TextareaNS.Root>
+              <Hint.Root>
+                <Hint.Icon as={RiInformationFill} />
+                {tForm("notesHint")}
+              </Hint.Root>
+            </div>
+          </div>
         </div>
 
         {/* Footer Buttons - Fixed at bottom */}

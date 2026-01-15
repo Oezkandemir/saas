@@ -1,5 +1,5 @@
-import * as React from "react";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -36,7 +36,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               : hasSuccess
                 ? "pr-10 border-green-500 focus-visible:ring-green-500"
                 : "border-subtle focus-visible:border-border",
-            className,
+            className
           )}
           ref={ref}
           {...restProps}
@@ -50,7 +50,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
       </div>
     );
-  },
+  }
 );
 Input.displayName = "Input";
 

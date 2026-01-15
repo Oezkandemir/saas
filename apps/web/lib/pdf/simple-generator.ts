@@ -19,7 +19,7 @@ export interface SimplePDFOptions {
  */
 export async function generatePDFFromElement(
   element: HTMLElement,
-  options: SimplePDFOptions = {},
+  options: SimplePDFOptions = {}
 ): Promise<void> {
   // Store original styles
   const originalStyles: {
@@ -83,7 +83,7 @@ export async function generatePDFFromElement(
     // Validate canvas
     if (!canvas || canvas.width === 0 || canvas.height === 0) {
       throw new Error(
-        "Canvas konnte nicht erstellt werden. Das Element ist möglicherweise nicht sichtbar.",
+        "Canvas konnte nicht erstellt werden. Das Element ist möglicherweise nicht sichtbar."
       );
     }
 
@@ -125,7 +125,7 @@ export async function generatePDFFromElement(
   } catch (error) {
     logger.error("Error generating PDF:", error);
     throw new Error(
-      `Failed to generate PDF: ${error instanceof Error ? error.message : String(error)}`,
+      `Failed to generate PDF: ${error instanceof Error ? error.message : String(error)}`
     );
   } finally {
     // Restore original styles
@@ -145,7 +145,7 @@ export async function generatePDFFromElement(
  */
 export async function generatePDFFromHTML(
   html: string,
-  options: SimplePDFOptions = {},
+  options: SimplePDFOptions = {}
 ): Promise<void> {
   // Create a temporary container
   const container = document.createElement("div");

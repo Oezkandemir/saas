@@ -1,13 +1,12 @@
 "use client";
 
-import * as React from "react";
-import { DialogProps } from "@radix-ui/react-dialog";
+import type { DialogProps } from "@radix-ui/react-dialog";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Command as CommandPrimitive } from "cmdk";
 import { Search } from "lucide-react";
-
-import { cn } from "@/lib/utils";
+import * as React from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { cn } from "@/lib/utils";
 
 // Custom VisuallyHidden component to hide content visually but keep it accessible to screen readers
 const VisuallyHidden = ({ children }: { children: React.ReactNode }) => {
@@ -29,7 +28,7 @@ const Command = React.forwardRef<
     ref={ref}
     className={cn(
       "flex size-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground",
-      className,
+      className
     )}
     {...props}
   />
@@ -41,7 +40,7 @@ interface CommandDialogProps extends DialogProps {}
 const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   // Check if children already contains a CommandList component
   const containsCommandList = React.Children.toArray(children).some(
-    (child) => React.isValidElement(child) && child.type === CommandList,
+    (child) => React.isValidElement(child) && child.type === CommandList
   );
 
   return (
@@ -73,7 +72,7 @@ const CommandInput = React.forwardRef<
       ref={ref}
       className={cn(
         "placeholder:text-foreground-muted flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50",
-        className,
+        className
       )}
       {...props}
     />
@@ -90,8 +89,8 @@ const CommandMenuInput = React.forwardRef<
   <CommandPrimitive.Input
     ref={ref}
     className={cn(
-      "flex h-full w-full bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
-      className,
+      "flex size-full bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
+      className
     )}
     {...props}
   />
@@ -132,7 +131,7 @@ const CommandGroup = React.forwardRef<
     ref={ref}
     className={cn(
       "overflow-hidden p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground",
-      className,
+      className
     )}
     {...props}
   />
@@ -160,7 +159,7 @@ const CommandItem = React.forwardRef<
     ref={ref}
     className={cn(
       "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[disabled='true']:pointer-events-none data-[disabled='true']:opacity-50",
-      className,
+      className
     )}
     {...props}
   />
@@ -176,7 +175,7 @@ const CommandShortcut = ({
     <span
       className={cn(
         "ml-auto text-xs tracking-widest text-muted-foreground",
-        className,
+        className
       )}
       {...props}
     />
@@ -202,7 +201,7 @@ const CommandMenuOverlay = React.forwardRef<
     ref={ref}
     className={cn(
       "fixed inset-0 z-50 bg-background/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-      className,
+      className
     )}
     {...props}
   />
@@ -220,7 +219,7 @@ const CommandMenuContent = React.forwardRef<
       ref={ref}
       className={cn(
         "fixed left-1/2 top-1/2 z-50 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg border bg-background shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 p-0",
-        className,
+        className
       )}
       {...props}
     >
@@ -272,7 +271,7 @@ const CommandMenuFooter = React.forwardRef<
     ref={ref}
     className={cn(
       "flex items-center justify-between border-t px-5 py-3",
-      className,
+      className
     )}
     {...props}
   />
@@ -287,8 +286,8 @@ const CommandMenuFooterKeyBox = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "flex h-5 w-5 items-center justify-center rounded border bg-muted text-xs text-muted-foreground",
-      className,
+      "flex size-5 items-center justify-center rounded border bg-muted text-xs text-muted-foreground",
+      className
     )}
     {...props}
   >

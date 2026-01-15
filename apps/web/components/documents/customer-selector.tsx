@@ -1,20 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  createCustomer,
-  Customer,
-  CustomerInput,
-  getCustomers,
-} from "@/actions/customers-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import {
+  type Customer,
+  type CustomerInput,
+  createCustomer,
+  getCustomers,
+} from "@/actions/customers-actions";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -25,20 +33,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  Select as Select,
+  Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 interface CustomerSelectorProps {
   value?: string;
@@ -56,7 +56,7 @@ export function CustomerSelector({
   const t = useTranslations("Documents.customerSelector");
   const tDialog = useTranslations("Documents.customerSelector.dialog");
   const tValidation = useTranslations(
-    "Documents.customerSelector.dialog.validation",
+    "Documents.customerSelector.dialog.validation"
   );
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -74,10 +74,6 @@ export function CustomerSelector({
     company: z.string().optional(),
   });
 
-  useEffect(() => {
-    loadCustomers();
-  }, [companyProfileId]);
-
   const loadCustomers = async () => {
     try {
       setIsLoading(true);
@@ -88,12 +84,16 @@ export function CustomerSelector({
       if (value && !data.find((c) => c.id === value)) {
         onValueChange("");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error(tDialog("toast.loadError"));
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadCustomers();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const form = useForm<CustomerInput>({
     resolver: zodResolver(quickCustomerSchema),
@@ -124,7 +124,7 @@ export function CustomerSelector({
       });
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : tDialog("toast.error"),
+        error instanceof Error ? error.message : tDialog("toast.error")
       );
     } finally {
       setIsCreating(false);
@@ -175,7 +175,7 @@ export function CustomerSelector({
           {customers.length === 0 && !isLoading && (
             <SelectItem value="create-new" className="text-primary font-medium">
               <div className="flex items-center gap-2">
-                <UserPlus className="h-4 w-4" />
+                <UserPlus className="size-4" />
                 {t("createNew")}
               </div>
             </SelectItem>
@@ -199,7 +199,7 @@ export function CustomerSelector({
                 className="text-primary font-medium"
               >
                 <div className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
+                  <Plus className="size-4" />
                   {t("createNew")}
                 </div>
               </SelectItem>
@@ -212,7 +212,7 @@ export function CustomerSelector({
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <UserPlus className="h-5 w-5 text-primary" />
+              <UserPlus className="size-5 text-primary" />
               {tDialog("title")}
             </DialogTitle>
             <DialogDescription>{tDialog("description")}</DialogDescription>
@@ -305,12 +305,12 @@ export function CustomerSelector({
                 <Button type="submit" disabled={isCreating}>
                   {isCreating ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="mr-2 size-4 animate-spin" />
                       {tDialog("creating")}
                     </>
                   ) : (
                     <>
-                      <Plus className="mr-2 h-4 w-4" />
+                      <Plus className="mr-2 size-4" />
                       {tDialog("create")}
                     </>
                   )}

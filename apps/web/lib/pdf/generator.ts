@@ -34,7 +34,7 @@ async function generatePDFWithRetry(
   puppeteer: any,
   html: string,
   options: PDFOptions,
-  retries: number = 2,
+  retries: number = 2
 ): Promise<Buffer> {
   let lastError: Error | null = null;
 
@@ -71,13 +71,13 @@ async function generatePDFWithRetry(
         // Try to find an existing Chrome installation
         for (const chromePath of possibleChromePaths) {
           try {
-            const fs = await import("fs");
+            const fs = await import("node:fs");
             if (fs.existsSync(chromePath)) {
               launchOptions.executablePath = chromePath;
               logger.debug("Using system Chrome at:", chromePath);
               break;
             }
-          } catch (e) {
+          } catch (_e) {
             // Continue to next path
           }
         }
@@ -125,7 +125,7 @@ async function generatePDFWithRetry(
       });
       logger.debug(
         "PDF buffer generated successfully, size:",
-        pdfBuffer.length,
+        pdfBuffer.length
       );
 
       // Close page and browser before returning
@@ -184,10 +184,10 @@ async function generatePDFWithRetry(
       }
 
       // Wait before retry (exponential backoff)
-      const delay = Math.min(1000 * Math.pow(2, attempt), 5000);
+      const delay = Math.min(1000 * 2 ** attempt, 5000);
       logger.warn(
         `PDF generation failed (attempt ${attempt + 1}/${retries + 1}), retrying in ${delay}ms...`,
-        lastErrorMsg,
+        lastErrorMsg
       );
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
@@ -202,7 +202,7 @@ async function generatePDFWithRetry(
  */
 export async function generatePDFFromHTML(
   html: string,
-  options: PDFOptions = {},
+  options: PDFOptions = {}
 ): Promise<Buffer> {
   let puppeteer;
   try {
@@ -229,7 +229,7 @@ export async function generatePDFFromHTML(
         try {
           const jsonStr = JSON.stringify(
             error,
-            Object.getOwnPropertyNames(error),
+            Object.getOwnPropertyNames(error)
           );
           if (
             jsonStr &&
@@ -240,7 +240,7 @@ export async function generatePDFFromHTML(
           } else {
             errorMessage = `Fehler beim Laden von Puppeteer: ${err.name || "UnknownError"}`;
           }
-        } catch (jsonError) {
+        } catch (_jsonError) {
           errorMessage = `Fehler beim Laden von Puppeteer: ${err.name || "UnknownError"}`;
         }
       }
@@ -256,7 +256,7 @@ export async function generatePDFFromHTML(
         "Puppeteer not available (may be expected in some environments)",
         {
           message: errorMessage,
-        },
+        }
       );
     } else {
       logger.error("Failed to load Puppeteer:", errorMessage);
@@ -310,7 +310,7 @@ export async function generatePDFFromHTML(
         try {
           const jsonStr = JSON.stringify(
             error,
-            Object.getOwnPropertyNames(error),
+            Object.getOwnPropertyNames(error)
           );
           if (
             jsonStr &&
@@ -321,7 +321,7 @@ export async function generatePDFFromHTML(
           } else {
             errorMessage = `Fehler beim Generieren des PDFs: ${err.name || "UnknownError"}`;
           }
-        } catch (jsonError) {
+        } catch (_jsonError) {
           // If JSON.stringify fails, use a generic message with error type
           errorMessage = `Fehler beim Generieren des PDFs: ${err.name || "UnknownError"}`;
         }
@@ -337,7 +337,7 @@ export async function generatePDFFromHTML(
 export async function uploadPDFToStorage(
   pdfBuffer: Buffer,
   documentId: string,
-  userId: string,
+  userId: string
 ): Promise<string> {
   try {
     const fileName = `documents/${userId}/${documentId}.pdf`;
@@ -365,7 +365,7 @@ export async function uploadPDFToStorage(
         fileName,
       });
       throw new Error(
-        `Failed to upload PDF to storage: ${error.message || JSON.stringify(error)}`,
+        `Failed to upload PDF to storage: ${error.message || JSON.stringify(error)}`
       );
     }
 
@@ -395,7 +395,7 @@ export async function uploadPDFToStorage(
 export async function generateAndUploadPDF(
   document: Document,
   htmlContent: string,
-  options?: PDFOptions,
+  options?: PDFOptions
 ): Promise<string> {
   try {
     // Generate PDF buffer
@@ -405,7 +405,7 @@ export async function generateAndUploadPDF(
     const pdfUrl = await uploadPDFToStorage(
       pdfBuffer,
       document.id,
-      document.user_id,
+      document.user_id
     );
 
     return pdfUrl;
@@ -434,7 +434,7 @@ export async function generateAndUploadPDF(
  */
 export async function generatePDFInBackground(
   document: Document,
-  htmlContent: string,
+  htmlContent: string
 ): Promise<void> {
   try {
     const pdfUrl = await generateAndUploadPDF(document, htmlContent);
@@ -471,14 +471,14 @@ export async function generatePDFInBackground(
         "Background PDF generation skipped (Puppeteer not available)",
         {
           documentId: document.id,
-        },
+        }
       );
     } else {
       logger.warn(
         `Background PDF generation failed for document ${document.id}`,
         {
           error: errorMessage,
-        },
+        }
       );
     }
 
@@ -492,7 +492,7 @@ export async function generatePDFInBackground(
  */
 export function formatCurrency(
   amount: number,
-  currency: string = "EUR",
+  currency: string = "EUR"
 ): string {
   return new Intl.NumberFormat("de-DE", {
     style: "currency",

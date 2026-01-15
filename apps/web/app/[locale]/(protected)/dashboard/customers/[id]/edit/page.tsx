@@ -1,10 +1,9 @@
+import { User } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getCustomer } from "@/actions/customers-actions";
-import { User } from "lucide-react";
-
-import { getCurrentUser } from "@/lib/session";
 import { CustomerForm } from "@/components/customers/customer-form";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +23,7 @@ export default async function EditCustomerPage({
     <UnifiedPageLayout
       title="Kunde bearbeiten"
       description="Aktualisieren Sie die Kundendaten"
-      icon={<User className="h-4 w-4 text-primary" />}
+      icon={<User className="size-4 text-primary" />}
       showBackButton
       backHref={`/dashboard/customers/${customer.id}`}
     >

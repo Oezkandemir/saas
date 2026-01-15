@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
+import Link from "next/link";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ export function UsageWarnings({ warnings, locale = "en" }: UsageWarningsProps) {
 
   return (
     <Alert variant="destructive">
-      <AlertTriangle className="h-4 w-4" />
+      <AlertTriangle className="size-4" />
       <AlertTitle>Usage Warnings</AlertTitle>
       <AlertDescription className="space-y-2">
         <p>You are approaching your plan limits:</p>
@@ -57,6 +57,3 @@ export function UsageWarnings({ warnings, locale = "en" }: UsageWarningsProps) {
     </Alert>
   );
 }
-
-
-

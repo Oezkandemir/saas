@@ -1,17 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { Edit, Eye, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { toast } from "sonner";
 import type { DocumentTemplate } from "@/actions/document-templates-actions";
 import { deleteDocumentTemplate } from "@/actions/document-templates-actions";
-import { Edit, Eye, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
-
-import { logger } from "@/lib/logger";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,6 +19,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { logger } from "@/lib/logger";
 
 interface DocumentTemplatesListProps {
   templates: DocumentTemplate[];
@@ -69,12 +68,12 @@ export function DocumentTemplatesList({
           <div className="flex items-center gap-2">
             <Link href={`/dashboard/settings/templates/${template.id}/preview`}>
               <Button variant="ghost" size="sm">
-                <Eye className="h-4 w-4" />
+                <Eye className="size-4" />
               </Button>
             </Link>
             <Link href={`/dashboard/settings/templates/${template.id}/edit`}>
               <Button variant="ghost" size="sm">
-                <Edit className="h-4 w-4" />
+                <Edit className="size-4" />
               </Button>
             </Link>
             <AlertDialog>
@@ -84,7 +83,7 @@ export function DocumentTemplatesList({
                   size="sm"
                   disabled={deletingId === template.id}
                 >
-                  <Trash2 className="h-4 w-4 text-destructive" />
+                  <Trash2 className="size-4 text-destructive" />
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>

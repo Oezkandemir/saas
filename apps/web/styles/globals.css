@@ -399,7 +399,7 @@
 @media (max-width: 768px) {
   /* Reduce motion for better mobile performance */
   .animate-in {
-    animation-duration: 0.3s !important;
+    animation-duration: 0.3s;
   }
 
   /* Better focus states for mobile */

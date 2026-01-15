@@ -75,7 +75,7 @@ module.exports = {
         (primitive) =>
           name === primitive ||
           name === `${primitive}component` ||
-          name.includes(primitive),
+          name.includes(primitive)
       );
     }
 

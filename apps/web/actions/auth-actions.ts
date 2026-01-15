@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function trackLoginSession(
   _sessionToken: string,
-  expiresAt: number,
+  expiresAt: number
 ): Promise<{ success: boolean; message?: string }> {
   try {
     const supabase = await createClient();

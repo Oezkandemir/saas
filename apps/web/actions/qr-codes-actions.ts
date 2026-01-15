@@ -134,7 +134,7 @@ export async function createQRCode(input: QRCodeInput): Promise<QRCode> {
 
 export async function updateQRCode(
   id: string,
-  input: Partial<QRCodeInput> & { is_active?: boolean },
+  input: Partial<QRCodeInput> & { is_active?: boolean }
 ): Promise<QRCode> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -197,7 +197,7 @@ export async function trackQRCodeScan(
     referrer?: string;
     country?: string;
     ip_address?: string;
-  },
+  }
 ): Promise<void> {
   const supabase = await getSupabaseServer();
 
@@ -222,7 +222,7 @@ export async function trackQRCodeScan(
 }
 
 export async function getQRCodeEvents(
-  qrCodeId: string,
+  qrCodeId: string
 ): Promise<QRCodeEvent[]> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");

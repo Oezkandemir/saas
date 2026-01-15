@@ -1,10 +1,9 @@
-import { redirect } from "next/navigation";
 import { Building2 } from "lucide-react";
-
-import { getCurrentUser } from "@/lib/session";
-import { Card, CardContent } from "@/components/ui/card";
+import { redirect } from "next/navigation";
 import { CompanyProfileForm } from "@/components/company-settings/company-profile-form";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Card, CardContent } from "@/components/ui/card";
+import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +15,7 @@ export default async function NewCompanyProfilePage() {
     <UnifiedPageLayout
       title="Neues Firmenprofil"
       description="Erstellen Sie ein neues Firmenprofil für Ihre Dokumente"
-      icon={<Building2 className="w-4 h-4 text-primary" />}
+      icon={<Building2 className="size-4 text-primary" />}
       showBackButton
       backHref="/dashboard/settings/company"
     >

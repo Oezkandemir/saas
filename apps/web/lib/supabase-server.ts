@@ -1,12 +1,12 @@
-import { type ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+import { type CookieOptions, createServerClient } from "@supabase/ssr";
+import type { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { cookies } from "next/headers";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 import "server-only";
 
 import { logger } from "@/lib/logger";
 
-import { type Database } from "./supabase";
+import type { Database } from "./supabase";
 
 // Check if environment variables are set
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -24,7 +24,7 @@ if (!supabaseUrl || !supabaseAnonKey || !supabaseJwtSecret) {
 
 // For use on the server-side
 export const createSupabaseServerClient = (
-  cookieStore: ReadonlyRequestCookies,
+  cookieStore: ReadonlyRequestCookies
 ) => {
   try {
     const supabaseClient = createServerClient<Database>(
@@ -43,7 +43,7 @@ export const createSupabaseServerClient = (
             cookieStore.set({ name, value: "", ...options });
           },
         },
-      },
+      }
     );
     return supabaseClient;
   } catch (error) {
@@ -71,7 +71,10 @@ export const getSupabaseServer = async () => {
       return getSupabaseStatic();
     }
     // For other errors, log and fall back to static client
-    logger.warn("Error getting Supabase server instance, falling back to static client:", errorMessage);
+    logger.warn(
+      "Error getting Supabase server instance, falling back to static client:",
+      errorMessage
+    );
     return getSupabaseStatic();
   }
 };
@@ -89,7 +92,7 @@ export const getSupabaseStatic = () => {
           set: () => {},
           remove: () => {},
         },
-      },
+      }
     );
     return supabaseClient;
   } catch (error) {

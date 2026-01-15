@@ -32,7 +32,7 @@ export async function subscribeToNewsletter(data: NewsletterFormData) {
       .eq("email", validatedData.email)
       .single();
 
-    let isNewSubscriber = !existingSubscriber;
+    const isNewSubscriber = !existingSubscriber;
 
     // Only insert if not already subscribed
     if (isNewSubscriber) {
@@ -141,7 +141,7 @@ export async function subscribeToNewsletter(data: NewsletterFormData) {
     if (error instanceof z.ZodError) {
       return {
         success: false,
-        message: error.errors[0].message || "Invalid email address",
+        message: error.errors[0]?.message || "Invalid email address",
       };
     }
 

@@ -27,7 +27,7 @@ export interface LimitCheckResult {
  */
 async function getPlanLimitFromDB(
   planId: string,
-  limitType: LimitType,
+  limitType: LimitType
 ): Promise<number | null> {
   try {
     const { data, error } = await supabaseAdmin
@@ -77,7 +77,7 @@ async function getPlanIdFromKey(planKey: string): Promise<string | null> {
 async function getPlanLimit(
   planTitle: string,
   planKey: string,
-  limitType: LimitType,
+  limitType: LimitType
 ): Promise<number> {
   // Try to get from database first
   const planId = await getPlanIdFromKey(planKey);
@@ -143,7 +143,7 @@ async function getPlanLimit(
  */
 export async function checkPlanLimit(
   userId: string,
-  limitType: LimitType,
+  limitType: LimitType
 ): Promise<LimitCheckResult> {
   try {
     const subscriptionPlan = await getUserSubscriptionPlan(userId);
@@ -151,7 +151,7 @@ export async function checkPlanLimit(
     const limit = await getPlanLimit(
       subscriptionPlan.title,
       planKey,
-      limitType,
+      limitType
     );
 
     // Unlimited plans don't need checking
@@ -382,7 +382,7 @@ export async function checkPlanLimit(
  */
 export async function enforcePlanLimit(
   userId: string,
-  limitType: LimitType,
+  limitType: LimitType
 ): Promise<void> {
   const result = await checkPlanLimit(userId, limitType);
 

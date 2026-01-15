@@ -1,15 +1,14 @@
+import { Calendar } from "lucide-react";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import {
   getBookingStatistics,
   listBookings,
 } from "@/actions/scheduling/bookings-actions";
 import { getEventTypes } from "@/actions/scheduling/event-types-actions";
-import { Calendar } from "lucide-react";
-import { getTranslations } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { SchedulingDashboard } from "@/components/scheduling/scheduling-dashboard";
+import { getCurrentUser } from "@/lib/session";
 
 export const revalidate = 60;
 
@@ -47,7 +46,7 @@ export default async function SchedulingPage() {
     <UnifiedPageLayout
       title={t("title")}
       description={t("description")}
-      icon={<Calendar className="w-4 h-4 text-primary" />}
+      icon={<Calendar className="size-4 text-primary" />}
       contentClassName=""
     >
       <SchedulingDashboard

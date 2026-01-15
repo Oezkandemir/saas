@@ -1,6 +1,3 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { UserSubscriptionPlan } from "@/types";
 import {
   ArrowRight,
   Bell,
@@ -21,14 +18,19 @@ import {
   XCircle,
   Zap,
 } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { logger } from "@/lib/logger";
-import { getAllPlanFeatures, type PlanFeaturesInfo } from "@/lib/plan-features";
-import { getCurrentUser } from "@/lib/session";
-import { getUserSubscriptionPlan } from "@/lib/subscription";
-import { createClient } from "@/lib/supabase/server";
-import { constructMetadata } from "@/lib/utils";
+import { UserAvatarForm } from "@/components/forms/user-avatar-form";
+import { UserNameForm } from "@/components/forms/user-name-form";
+import { AccountDeletion } from "@/components/gdpr/account-deletion";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -37,17 +39,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
-import { UserAvatarForm } from "@/components/forms/user-avatar-form";
-import { UserNameForm } from "@/components/forms/user-name-form";
-import { AccountDeletion } from "@/components/gdpr/account-deletion";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Label } from "@/components/ui/label";
+import { logger } from "@/lib/logger";
+import { getAllPlanFeatures, type PlanFeaturesInfo } from "@/lib/plan-features";
+import { getCurrentUser } from "@/lib/session";
+import { getUserSubscriptionPlan } from "@/lib/subscription";
+import { createClient } from "@/lib/supabase/server";
+import { constructMetadata } from "@/lib/utils";
+import type { UserSubscriptionPlan } from "@/types";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -145,7 +144,7 @@ export default async function SettingsPage() {
     <UnifiedPageLayout
       title={t("heading")}
       description={t("text")}
-      icon={<Settings className="w-4 h-4 text-primary" />}
+      icon={<Settings className="size-4 text-primary" />}
       contentClassName="space-y-6"
     >
       {/* Quick Overview Cards */}
@@ -228,65 +227,60 @@ export default async function SettingsPage() {
                   className="flex gap-1 items-center text-xs text-primary hover:underline"
                 >
                   {t("subscription.manageBilling")}
-                  <ArrowRight className="w-3 h-3" />
+                  <ArrowRight className="size-3" />
                 </Link>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {planFeatures &&
-          planFeatures.features &&
-          planFeatures.features.length > 0 && (
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-center">
-                  <div className="flex gap-2 items-center">
-                    <div className="flex justify-center items-center rounded-lg size-8 bg-primary/10">
-                      <Zap className="size-4 text-primary" />
-                    </div>
-                    <CardTitle className="text-sm font-medium">
-                      {t("features.title")}
-                    </CardTitle>
+        {planFeatures?.features && planFeatures.features.length > 0 && (
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex justify-between items-center">
+                <div className="flex gap-2 items-center">
+                  <div className="flex justify-center items-center rounded-lg size-8 bg-primary/10">
+                    <Zap className="size-4 text-primary" />
                   </div>
+                  <CardTitle className="text-sm font-medium">
+                    {t("features.title")}
+                  </CardTitle>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-1 text-xs text-muted-foreground">
-                  {planFeatures.features
-                    .filter((feature) => {
-                      return (
-                        feature &&
-                        feature.limit &&
-                        typeof feature.limit.current === "number" &&
-                        feature.limit.max !== undefined
-                      );
-                    })
-                    .slice(0, 3)
-                    .map((feature) => {
-                      const limit = feature.limit!;
-                      return (
-                        <div
-                          key={feature.name || Math.random()}
-                          className="flex justify-between items-center"
-                        >
-                          <span className="truncate">
-                            {feature.name || "Unknown"}
-                          </span>
-                          <span className="ml-2 font-medium shrink-0">
-                            {limit.current} /{" "}
-                            {limit.max === "unlimited"
-                              ? "∞"
-                              : String(limit.max)}
-                          </span>
-                        </div>
-                      );
-                    })
-                    .filter(Boolean)}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1 text-xs text-muted-foreground">
+                {planFeatures.features
+                  .filter((feature) => {
+                    return (
+                      feature?.limit &&
+                      typeof feature.limit.current === "number" &&
+                      feature.limit.max !== undefined
+                    );
+                  })
+                  .slice(0, 3)
+                  .map((feature) => {
+                    const limit = feature.limit!;
+                    return (
+                      <div
+                        key={feature.name || Math.random()}
+                        className="flex justify-between items-center"
+                      >
+                        <span className="truncate">
+                          {feature.name || "Unknown"}
+                        </span>
+                        <span className="ml-2 font-medium shrink-0">
+                          {limit.current} /{" "}
+                          {limit.max === "unlimited" ? "∞" : String(limit.max)}
+                        </span>
+                      </div>
+                    );
+                  })
+                  .filter(Boolean)}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Profile Section */}
@@ -299,7 +293,12 @@ export default async function SettingsPage() {
           <CardDescription>{t("profile.description")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Accordion type="single" defaultValue="profile" collapsible className="w-full">
+          <Accordion
+            type="single"
+            defaultValue="profile"
+            collapsible
+            className="w-full"
+          >
             <AccordionItem value="profile">
               <AccordionTrigger className="flex items-center gap-2">
                 <UserCircle className="size-4 text-muted-foreground" />
@@ -313,7 +312,10 @@ export default async function SettingsPage() {
                       {t("profilePicture.label")}
                     </Label>
                     <UserAvatarForm
-                      user={{ id: user.id, avatar_url: user.user_metadata?.avatar_url }}
+                      user={{
+                        id: user.id,
+                        avatar_url: user.user_metadata?.avatar_url,
+                      }}
                     />
                   </div>
 
@@ -321,10 +323,15 @@ export default async function SettingsPage() {
 
                   {/* Name Section */}
                   <div className="space-y-3">
-                    <Label className="text-sm font-medium text-foreground" htmlFor="name">
+                    <Label
+                      className="text-sm font-medium text-foreground"
+                      htmlFor="name"
+                    >
                       {t("userName.label")}
                     </Label>
-                    <UserNameForm user={{ id: user.id, name: user.name || "" }} />
+                    <UserNameForm
+                      user={{ id: user.id, name: user.name || "" }}
+                    />
                   </div>
                 </div>
               </AccordionContent>
@@ -380,14 +387,18 @@ export default async function SettingsPage() {
               <Key className="size-5 text-primary" />
               <CardTitle>{t("apiIntegrations.title")}</CardTitle>
             </div>
-            <CardDescription>{t("apiIntegrations.description")}</CardDescription>
+            <CardDescription>
+              {t("apiIntegrations.description")}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
                 <div className="flex gap-2 items-center">
                   <Key className="size-4 text-muted-foreground" />
-                  <span className="text-sm">{t("apiIntegrations.apiKeys")}</span>
+                  <span className="text-sm">
+                    {t("apiIntegrations.apiKeys")}
+                  </span>
                 </div>
                 <Badge variant="outline" className="text-xs">
                   {t("comingSoon")}
@@ -396,7 +407,9 @@ export default async function SettingsPage() {
               <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
                 <div className="flex gap-2 items-center">
                   <Webhook className="size-4 text-muted-foreground" />
-                  <span className="text-sm">{t("apiIntegrations.webhooks")}</span>
+                  <span className="text-sm">
+                    {t("apiIntegrations.webhooks")}
+                  </span>
                 </div>
                 <Badge variant="outline" className="text-xs">
                   {t("comingSoon")}
@@ -412,14 +425,18 @@ export default async function SettingsPage() {
               <FileText className="size-5 text-primary" />
               <CardTitle>{t("documentsExport.title")}</CardTitle>
             </div>
-            <CardDescription>{t("documentsExport.description")}</CardDescription>
+            <CardDescription>
+              {t("documentsExport.description")}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
                 <div className="flex gap-2 items-center">
                   <FileText className="size-4 text-muted-foreground" />
-                  <span className="text-sm">{t("documentsExport.exportFormats")}</span>
+                  <span className="text-sm">
+                    {t("documentsExport.exportFormats")}
+                  </span>
                 </div>
                 <Badge variant="outline" className="text-xs">
                   {t("comingSoon")}
@@ -428,14 +445,16 @@ export default async function SettingsPage() {
               <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
                 <div className="flex gap-2 items-center">
                   <Globe className="size-4 text-muted-foreground" />
-                  <span className="text-sm">{t("documentsExport.languageRegion")}</span>
+                  <span className="text-sm">
+                    {t("documentsExport.languageRegion")}
+                  </span>
                 </div>
                 <Link
                   href="/dashboard/settings/preferences"
                   className="flex gap-1 items-center text-xs text-primary hover:underline"
                 >
                   {t("manage")}
-                  <ArrowRight className="w-3 h-3" />
+                  <ArrowRight className="size-3" />
                 </Link>
               </div>
             </div>

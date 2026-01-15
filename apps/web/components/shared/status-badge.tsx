@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import { Badge as BadgeComponent } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export type DocumentStatus =
   | "draft"

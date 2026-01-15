@@ -62,7 +62,7 @@ export type DocumentTemplateInput = {
 };
 
 export async function getDocumentTemplates(
-  type?: DocumentType,
+  type?: DocumentType
 ): Promise<DocumentTemplate[]> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -86,7 +86,7 @@ export async function getDocumentTemplates(
 }
 
 export async function getDocumentTemplate(
-  id: string,
+  id: string
 ): Promise<DocumentTemplate | null> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -107,7 +107,7 @@ export async function getDocumentTemplate(
 }
 
 export async function getDefaultTemplate(
-  type: DocumentType,
+  type: DocumentType
 ): Promise<DocumentTemplate | null> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -129,7 +129,7 @@ export async function getDefaultTemplate(
 }
 
 export async function createDocumentTemplate(
-  input: DocumentTemplateInput,
+  input: DocumentTemplateInput
 ): Promise<DocumentTemplate> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -183,7 +183,7 @@ export async function createDocumentTemplate(
 
 export async function updateDocumentTemplate(
   id: string,
-  input: Partial<DocumentTemplateInput>,
+  input: Partial<DocumentTemplateInput>
 ): Promise<DocumentTemplate> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");

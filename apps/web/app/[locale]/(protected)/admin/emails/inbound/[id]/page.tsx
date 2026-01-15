@@ -1,10 +1,10 @@
+import { Mail } from "lucide-react";
 import { redirect } from "next/navigation";
+import { getLocale, setRequestLocale } from "next-intl/server";
+import { InboundEmailDetail } from "@/components/admin/inbound-emails/inbound-email-detail";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { Mail } from "lucide-react";
-import { getLocale, setRequestLocale } from "next-intl/server";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { InboundEmailDetail } from "@/components/admin/inbound-emails/inbound-email-detail";
 
 type Props = {
   params: Promise<{ id: string; locale: string }>;
@@ -37,12 +37,10 @@ export default async function InboundEmailDetailPage(props: Props) {
     <UnifiedPageLayout
       title="E-Mail-Details"
       description="Details einer eingehenden Email"
-      icon={<Mail className="h-4 w-4 text-primary" />}
+      icon={<Mail className="size-4 text-primary" />}
       contentClassName="space-y-6 pb-10"
     >
-      <InboundEmailDetail 
-        emailId={params.id}
-      />
+      <InboundEmailDetail emailId={params.id} />
     </UnifiedPageLayout>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   Download,
   FileText,
@@ -10,8 +9,7 @@ import {
   ZoomOut,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-
-import { logger } from "@/lib/logger";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { logger } from "@/lib/logger";
 
 interface PDFPreviewProps {
   documentId: string;
@@ -41,21 +40,10 @@ export function PDFPreview({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPdfUrl, setCurrentPdfUrl] = useState<string | null>(
-    pdfUrl || null,
+    pdfUrl || null
   );
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showPdfPreview, setShowPdfPreview] = useState(showPreviewByDefault); // Neu: Steuerung der PDF-Anzeige
-
-  // Fetch PDF URL if not provided
-  useEffect(() => {
-    if (!currentPdfUrl && documentId && showPdfPreview) {
-      handleFetchPDF();
-    }
-  }, [documentId, currentPdfUrl, showPdfPreview]);
-
-  const handleFetchPDF = async () => {
-    await fetchPDFUrl(0);
-  };
 
   const fetchPDFUrl = async (retryCount = 0): Promise<void> => {
     setLoading(true);
@@ -67,10 +55,10 @@ export function PDFPreview({
       let data;
       try {
         data = await response.json();
-      } catch (jsonError) {
+      } catch (_jsonError) {
         const text = await response.text();
         throw new Error(
-          `Server error: ${response.status} ${response.statusText}. ${text.substring(0, 200)}`,
+          `Server error: ${response.status} ${response.statusText}. ${text.substring(0, 200)}`
         );
       }
 
@@ -115,10 +103,10 @@ export function PDFPreview({
 
         if (isRetryable && retryCount < 2) {
           logger.debug(
-            `PDF generation failed, retrying... (${retryCount + 1}/2)`,
+            `PDF generation failed, retrying... (${retryCount + 1}/2)`
           );
           await new Promise((resolve) =>
-            setTimeout(resolve, 1000 * (retryCount + 1)),
+            setTimeout(resolve, 1000 * (retryCount + 1))
           );
           return fetchPDFUrl(retryCount + 1);
         }
@@ -153,6 +141,17 @@ export function PDFPreview({
       setLoading(false);
     }
   };
+
+  const handleFetchPDF = async () => {
+    await fetchPDFUrl(0);
+  };
+
+  // Fetch PDF URL if not provided
+  useEffect(() => {
+    if (!currentPdfUrl && documentId && showPdfPreview) {
+      handleFetchPDF();
+    }
+  }, [documentId, currentPdfUrl, showPdfPreview]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDownload = async () => {
     if (currentPdfUrl) {
@@ -198,12 +197,12 @@ export function PDFPreview({
         >
           {loading ? (
             <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              <Loader2 className="size-4 mr-2 animate-spin" />
               {t("loading")}
             </>
           ) : (
             <>
-              <FileText className="h-4 w-4 mr-2" />
+              <FileText className="size-4 mr-2" />
               {t("button")}
             </>
           )}
@@ -221,7 +220,7 @@ export function PDFPreview({
               </DialogHeader>
               {loading && !currentPdfUrl ? (
                 <div className="flex items-center justify-center h-full">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                  <Loader2 className="size-8 animate-spin text-muted-foreground" />
                   <span className="ml-2 text-muted-foreground">
                     {t("generating")}
                   </span>
@@ -239,10 +238,10 @@ export function PDFPreview({
                   </Button>
                 </div>
               ) : currentPdfUrl ? (
-                <div className="w-full h-full flex items-center justify-center bg-muted/50">
+                <div className="size-full flex items-center justify-center bg-muted/50">
                   <iframe
                     src={`${currentPdfUrl}#toolbar=1&navpanes=1&scrollbar=1`}
-                    className="w-full h-full border-0"
+                    className="size-full border-0"
                     title="PDF Fullscreen Preview"
                   />
                 </div>
@@ -258,7 +257,7 @@ export function PDFPreview({
   if (!showPdfPreview) {
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center space-y-4 border-2 border-dashed border-muted rounded-lg">
-        <FileText className="h-16 w-16 text-muted-foreground" />
+        <FileText className="size-16 text-muted-foreground" />
         <div>
           <p className="text-lg font-semibold mb-2">{t("button")}</p>
           <p className="text-sm text-muted-foreground mb-4">
@@ -270,7 +269,7 @@ export function PDFPreview({
           variant="default"
           size="lg"
         >
-          <FileText className="h-4 w-4 mr-2" />
+          <FileText className="size-4 mr-2" />
           {t("showPreview")}
         </Button>
       </div>
@@ -280,7 +279,7 @@ export function PDFPreview({
   if (loading && !currentPdfUrl) {
     return (
       <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
         <span className="ml-2 text-muted-foreground">{t("loading")}</span>
       </div>
     );
@@ -332,7 +331,7 @@ export function PDFPreview({
             onClick={handleZoomOut}
             disabled={scale <= 50}
           >
-            <ZoomOut className="h-4 w-4" />
+            <ZoomOut className="size-4" />
           </Button>
           <span className="text-sm font-medium min-w-[60px] text-center">
             {scale}%
@@ -343,7 +342,7 @@ export function PDFPreview({
             onClick={handleZoomIn}
             disabled={scale >= 200}
           >
-            <ZoomIn className="h-4 w-4" />
+            <ZoomIn className="size-4" />
           </Button>
           <Button variant="outline" size="sm" onClick={handleFitToWidth}>
             Fit
@@ -353,12 +352,12 @@ export function PDFPreview({
             size="sm"
             onClick={() => setIsFullscreen(true)}
           >
-            <Maximize2 className="h-4 w-4" />
+            <Maximize2 className="size-4" />
           </Button>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={handleDownload}>
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="size-4 mr-2" />
             Download
           </Button>
         </div>
@@ -368,13 +367,13 @@ export function PDFPreview({
       <div className="flex-1 overflow-auto bg-muted/30 p-4 flex justify-center">
         {loading ? (
           <div className="flex items-center justify-center p-8">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <Loader2 className="size-8 animate-spin text-muted-foreground" />
             <span className="ml-2 text-muted-foreground">{t("loading")}</span>
           </div>
         ) : (
           <iframe
             src={`${currentPdfUrl}#toolbar=1&navpanes=1&scrollbar=1&zoom=${scale}`}
-            className="w-full h-full min-h-[600px] border-0 rounded shadow-lg"
+            className="size-full min-h-[600px] border-0 rounded shadow-lg"
             title={t("iframeTitle")}
             onLoad={() => setLoading(false)}
             onLoadStart={() => setLoading(true)}
@@ -395,7 +394,7 @@ export function PDFPreview({
             onClick={handleZoomOut}
             disabled={scale <= 50}
           >
-            <ZoomOut className="h-4 w-4" />
+            <ZoomOut className="size-4" />
           </Button>
           <span className="text-sm font-medium min-w-[60px] text-center">
             {scale}%
@@ -406,7 +405,7 @@ export function PDFPreview({
             onClick={handleZoomIn}
             disabled={scale >= 200}
           >
-            <ZoomIn className="h-4 w-4" />
+            <ZoomIn className="size-4" />
           </Button>
           <Button variant="outline" size="sm" onClick={handleFitToWidth}>
             Fit
@@ -414,7 +413,7 @@ export function PDFPreview({
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={handleDownload}>
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="size-4 mr-2" />
             Download
           </Button>
           <Button
@@ -431,7 +430,7 @@ export function PDFPreview({
       <div className="flex-1 overflow-hidden">
         <iframe
           src={`${currentPdfUrl}#toolbar=1&navpanes=1&scrollbar=1&zoom=${scale}`}
-          className="w-full h-full border-0"
+          className="size-full border-0"
           title="PDF Preview"
         />
       </div>

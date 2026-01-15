@@ -1,15 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import { UserSubscriptionPlan } from "@/types";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
+import { ComparePlans } from "@/components/pricing/compare-plans";
+import { PricingCards } from "@/components/pricing/pricing-cards";
+import { PricingFaq } from "@/components/pricing/pricing-faq";
 import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { constructMetadata, resolveStaticPath } from "@/lib/utils";
-import { ComparePlans } from "@/components/pricing/compare-plans";
-import { PricingCards } from "@/components/pricing/pricing-cards";
-import { PricingFaq } from "@/components/pricing/pricing-faq";
+import type { UserSubscriptionPlan } from "@/types";
 
 export const dynamic = "force-dynamic";
 
@@ -60,7 +59,7 @@ export default async function PricingPage() {
 
   try {
     // Only try to get subscription plan if user is logged in
-    if (user && user.id) {
+    if (user?.id) {
       subscriptionPlan = await getUserSubscriptionPlan(user.id);
     }
   } catch (error) {
@@ -75,9 +74,9 @@ export default async function PricingPage() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
         <div className="container flex relative z-10 flex-col gap-6 items-center text-center duration-700 animate-in fade-in slide-in-from-top-4">
           <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-2">
-            <span className="flex relative w-2 h-2">
-              <span className="inline-flex absolute w-full h-full rounded-full opacity-75 animate-ping bg-primary"></span>
-              <span className="inline-flex relative w-2 h-2 rounded-full bg-primary"></span>
+            <span className="flex relative size-2">
+              <span className="inline-flex absolute size-full rounded-full opacity-75 animate-ping bg-primary"></span>
+              <span className="inline-flex relative size-2 rounded-full bg-primary"></span>
             </span>
             {t("heroBadge")}
           </div>

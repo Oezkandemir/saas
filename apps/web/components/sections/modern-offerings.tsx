@@ -108,7 +108,7 @@ export default async function ModernOfferings() {
                 </ul>
 
                 {/* Decorative elements */}
-                <div className="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/2 rounded-full bg-gradient-to-br from-primary/20 to-transparent blur-3xl opacity-0 transition-opacity group-hover:opacity-100" />
+                <div className="absolute right-0 top-0 size-32 -translate-y-1/2 translate-x-1/2 rounded-full bg-gradient-to-br from-primary/20 to-transparent blur-3xl opacity-0 transition-opacity group-hover:opacity-100" />
               </div>
             );
           })}

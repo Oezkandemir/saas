@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
-import { logger } from "@/lib/logger";
 
 export type InboundEmail = {
   id: string;
@@ -66,13 +66,11 @@ type ActionResult<T> = {
 /**
  * Get all inbound emails with pagination
  */
-export async function getInboundEmails(
-  options?: {
-    page?: number;
-    limit?: number;
-    filter?: "all" | "unread" | "read";
-  },
-): Promise<ActionResult<{ emails: InboundEmail[]; total: number }>> {
+export async function getInboundEmails(options?: {
+  page?: number;
+  limit?: number;
+  filter?: "all" | "unread" | "read";
+}): Promise<ActionResult<{ emails: InboundEmail[]; total: number }>> {
   try {
     const user = await getCurrentUser();
     if (!user || user.role !== "ADMIN") {
@@ -189,7 +187,7 @@ export async function getInboundEmails(
  * Get a single inbound email by ID
  */
 export async function getInboundEmailById(
-  id: string,
+  id: string
 ): Promise<ActionResult<InboundEmail>> {
   try {
     const user = await getCurrentUser();
@@ -258,9 +256,7 @@ export async function getInboundEmailById(
 /**
  * Mark email as read
  */
-export async function markEmailAsRead(
-  id: string,
-): Promise<ActionResult<void>> {
+export async function markEmailAsRead(id: string): Promise<ActionResult<void>> {
   try {
     const user = await getCurrentUser();
     if (!user || user.role !== "ADMIN") {
@@ -302,7 +298,7 @@ export async function markEmailAsRead(
  * Mark email as unread
  */
 export async function markEmailAsUnread(
-  id: string,
+  id: string
 ): Promise<ActionResult<void>> {
   try {
     const user = await getCurrentUser();
@@ -345,7 +341,7 @@ export async function markEmailAsUnread(
  * Delete an inbound email
  */
 export async function deleteInboundEmail(
-  id: string,
+  id: string
 ): Promise<ActionResult<void>> {
   try {
     const user = await getCurrentUser();
@@ -503,7 +499,7 @@ export async function getInboundEmailStats(): Promise<
  * Get replies for an inbound email
  */
 export async function getInboundEmailReplies(
-  inboundEmailId: string,
+  inboundEmailId: string
 ): Promise<ActionResult<InboundEmailReply[]>> {
   try {
     const user = await getCurrentUser();

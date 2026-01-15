@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { subscribeToNewsletter } from "@/actions/newsletter";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { subscribeToNewsletter } from "@/actions/newsletter";
+import { useNotificationsContext } from "@/components/context/notifications-context";
+import { useSupabase } from "@/components/supabase-provider";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -19,8 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useNotificationsContext } from "@/components/context/notifications-context";
-import { useSupabase } from "@/components/supabase-provider";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export function NewsletterForm() {
   const t = useTranslations("Newsletter");
@@ -65,7 +64,7 @@ export function NewsletterForm() {
           description: result.message,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("errorTitle"), {
         description: t("errorDescription"),
       });
@@ -80,9 +79,7 @@ export function NewsletterForm() {
         <h3 className="text-sm font-semibold text-foreground">
           {t("subscribeLabel")}
         </h3>
-        <p className="mt-1 text-xs text-muted-foreground">
-          {t("description")}
-        </p>
+        <p className="mt-1 text-xs text-muted-foreground">{t("description")}</p>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-0">
@@ -112,7 +109,9 @@ export function NewsletterForm() {
                       {isLoading ? (
                         <>
                           <LoadingSpinner size="sm" variant="primary" />
-                          <span className="sr-only">{t("subscribingButton")}</span>
+                          <span className="sr-only">
+                            {t("subscribingButton")}
+                          </span>
                         </>
                       ) : (
                         t("subscribeButton")

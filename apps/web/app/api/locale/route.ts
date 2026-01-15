@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { routing } from "@/i18n/routing";
 
 import { applyAPIMiddleware } from "@/lib/api-middleware";
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     logger.error("Error saving locale preference:", error);
     return NextResponse.json(
       { error: "Failed to save locale preference" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

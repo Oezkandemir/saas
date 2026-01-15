@@ -1,5 +1,3 @@
-import { notFound, redirect } from "next/navigation";
-import { getBooking } from "@/actions/scheduling/bookings-actions";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
 import {
@@ -12,20 +10,16 @@ import {
   Users,
   XCircle,
 } from "lucide-react";
+import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
-import { formatDurationHours } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { getBooking } from "@/actions/scheduling/bookings-actions";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { BookingActions } from "@/components/scheduling/booking-actions";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { getCurrentUser } from "@/lib/session";
+import { formatDurationHours } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
@@ -56,7 +50,7 @@ export default async function BookingDetailPage({
     <UnifiedPageLayout
       title={t("title") || "Booking Details"}
       description={booking.event_type?.title || ""}
-      icon={<Calendar className="h-4 w-4 text-primary" />}
+      icon={<Calendar className="size-4 text-primary" />}
       showBackButton
       backHref="/dashboard/scheduling"
       actions={<BookingActions booking={booking} />}
@@ -67,12 +61,12 @@ export default async function BookingDetailPage({
         <Badge variant={booking.status === "scheduled" ? "default" : "outline"}>
           {booking.status === "scheduled" ? (
             <>
-              <CheckCircle2 className="mr-1 h-3 w-3" />
+              <CheckCircle2 className="mr-1 size-3" />
               {t("status.scheduled") || "Scheduled"}
             </>
           ) : (
             <>
-              <XCircle className="mr-1 h-3 w-3" />
+              <XCircle className="mr-1 size-3" />
               {t("status.canceled") || "Canceled"}
             </>
           )}
@@ -101,7 +95,7 @@ export default async function BookingDetailPage({
 
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground flex items-center gap-2">
-                <Clock className="h-3 w-3" />
+                <Clock className="size-3" />
                 {t("date") || "Date"}
               </p>
               <p className="text-sm font-medium">
@@ -159,7 +153,7 @@ export default async function BookingDetailPage({
                       {
                         style: "currency",
                         currency: booking.price_currency || "EUR",
-                      },
+                      }
                     ).format(booking.price_amount)}
                   </p>
                 </div>
@@ -178,7 +172,7 @@ export default async function BookingDetailPage({
           <CardContent className="space-y-4">
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground flex items-center gap-2">
-                <User className="h-3 w-3" />
+                <User className="size-3" />
                 {t("name") || "Name"}
               </p>
               <p className="text-sm font-medium">{booking.invitee_name}</p>
@@ -188,7 +182,7 @@ export default async function BookingDetailPage({
 
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground flex items-center gap-2">
-                <Mail className="h-3 w-3" />
+                <Mail className="size-3" />
                 {t("email") || "Email"}
               </p>
               <p className="text-sm font-medium">{booking.invitee_email}</p>
@@ -199,7 +193,7 @@ export default async function BookingDetailPage({
                 <Separator />
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground flex items-center gap-2">
-                    <MessageSquare className="h-3 w-3" />
+                    <MessageSquare className="size-3" />
                     {t("notes") || "Notes"}
                   </p>
                   <p className="text-sm">{booking.invitee_notes}</p>
@@ -212,7 +206,7 @@ export default async function BookingDetailPage({
                 <Separator />
                 <div className="space-y-2">
                   <p className="text-xs text-muted-foreground flex items-center gap-2">
-                    <Users className="h-3 w-3" />
+                    <Users className="size-3" />
                     {t("participants") || "Participants"} (
                     {booking.number_of_participants})
                   </p>
@@ -221,15 +215,12 @@ export default async function BookingDetailPage({
                       1. {booking.invitee_name}
                     </p>
                     {booking.participant_names &&
-                      booking.participant_names.length > 0 && (
-                        <>
-                          {booking.participant_names.map((name, index) => (
-                            <p key={index} className="text-sm font-medium">
-                              {index + 2}. {name}
-                            </p>
-                          ))}
-                        </>
-                      )}
+                      booking.participant_names.length > 0 &&
+                      booking.participant_names.map((name, index) => (
+                        <p key={index} className="text-sm font-medium">
+                          {index + 2}. {name}
+                        </p>
+                      ))}
                   </div>
                 </div>
               </>

@@ -1,8 +1,5 @@
 "use client";
 
-import * as React from "react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
@@ -12,10 +9,9 @@ import {
   QrCode,
   Sparkles,
 } from "lucide-react";
-
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
+import * as React from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,6 +22,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/components/ui/use-toast";
 
 interface OnboardingWizardProps {
   onComplete: () => void;
@@ -119,7 +118,7 @@ export function OnboardingWizard({
 
       onComplete();
       router.push("/dashboard");
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: "Fehler",
@@ -144,8 +143,8 @@ export function OnboardingWizard({
       case 0:
         return (
           <div className="space-y-6 py-8 text-center">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20">
-              <Sparkles className="h-10 w-10 text-blue-600 dark:text-blue-400" />
+            <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20">
+              <Sparkles className="size-10 text-blue-600 dark:text-blue-400" />
             </div>
             <div className="space-y-2">
               <h2 className="text-2xl font-bold">Willkommen bei Cenety!</h2>
@@ -155,21 +154,21 @@ export function OnboardingWizard({
             </div>
             <div className="grid gap-4 pt-4 text-left sm:grid-cols-3">
               <div className="rounded-lg border p-4">
-                <Building2 className="mb-2 h-6 w-6 text-blue-600" />
+                <Building2 className="mb-2 size-6 text-blue-600" />
                 <h3 className="font-semibold">Kundenverwaltung</h3>
                 <p className="text-sm text-muted-foreground">
                   Verwalten Sie alle Kundendaten zentral
                 </p>
               </div>
               <div className="rounded-lg border p-4">
-                <FileText className="mb-2 h-6 w-6 text-green-600" />
+                <FileText className="mb-2 size-6 text-green-600" />
                 <h3 className="font-semibold">Dokumente</h3>
                 <p className="text-sm text-muted-foreground">
                   Erstellen Sie Angebote und Rechnungen
                 </p>
               </div>
               <div className="rounded-lg border p-4">
-                <QrCode className="mb-2 h-6 w-6 text-purple-600" />
+                <QrCode className="mb-2 size-6 text-purple-600" />
                 <h3 className="font-semibold">QR-Codes</h3>
                 <p className="text-sm text-muted-foreground">
                   Dynamische QR-Codes mit Analytics
@@ -344,8 +343,8 @@ export function OnboardingWizard({
       case 3:
         return (
           <div className="space-y-6 py-8 text-center">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20">
-              <Check className="h-10 w-10 text-green-600 dark:text-green-400" />
+            <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20">
+              <Check className="size-10 text-green-600 dark:text-green-400" />
             </div>
             <div className="space-y-2">
               <h2 className="text-2xl font-bold">Alles bereit!</h2>
@@ -357,15 +356,15 @@ export function OnboardingWizard({
               <h3 className="mb-4 font-semibold">Nächste Schritte:</h3>
               <ul className="space-y-2 text-left text-sm">
                 <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-green-600" />
+                  <Check className="size-4 text-green-600" />
                   Erkunden Sie Ihr Dashboard
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-green-600" />
+                  <Check className="size-4 text-green-600" />
                   Erstellen Sie Ihr erstes Dokument
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-green-600" />
+                  <Check className="size-4 text-green-600" />
                   Generieren Sie Ihren ersten QR-Code
                 </li>
               </ul>
@@ -386,16 +385,16 @@ export function OnboardingWizard({
             <Progress value={progress} className="h-2" />
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20">
-              {steps[currentStep].icon &&
-                React.createElement(steps[currentStep].icon, {
+            <div className="flex size-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20">
+              {steps[currentStep]?.icon &&
+                React.createElement(steps[currentStep]?.icon, {
                   className: "h-6 w-6 text-blue-600 dark:text-blue-400",
                 })}
             </div>
             <div>
-              <CardTitle>{steps[currentStep].title}</CardTitle>
+              <CardTitle>{steps[currentStep]?.title}</CardTitle>
               <CardDescription>
-                {steps[currentStep].description}
+                {steps[currentStep]?.description}
               </CardDescription>
             </div>
           </div>
@@ -407,7 +406,7 @@ export function OnboardingWizard({
           <div>
             {currentStep > 0 && currentStep < steps.length - 1 && (
               <Button variant="ghost" onClick={handleBack}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className="mr-2 size-4" />
                 Zurück
               </Button>
             )}
@@ -424,7 +423,7 @@ export function OnboardingWizard({
               ) : (
                 <>
                   Weiter
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 size-4" />
                 </>
               )}
             </Button>

@@ -1,16 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { sendDocumentEmail } from "@/actions/documents-email-actions";
 import { Loader2, Mail } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
+import { sendDocumentEmail } from "@/actions/documents-email-actions";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +17,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 interface DocumentEmailButtonProps {
   documentId: string;
@@ -70,7 +70,7 @@ export function DocumentEmailButton({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-1.5 h-8">
-          <Mail className="h-3.5 w-3.5" />
+          <Mail className="size-3.5" />
           <span className="hidden sm:inline">{t("button")}</span>
         </Button>
       </DialogTrigger>
@@ -122,12 +122,12 @@ export function DocumentEmailButton({
           <Button onClick={handleSend} disabled={loading || !email}>
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 size-4 animate-spin" />
                 {t("sending")}
               </>
             ) : (
               <>
-                <Mail className="mr-2 h-4 w-4" />
+                <Mail className="mr-2 size-4" />
                 {t("send")}
               </>
             )}

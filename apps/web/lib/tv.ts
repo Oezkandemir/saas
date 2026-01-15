@@ -5,7 +5,7 @@
  * Used for creating component variants with Tailwind classes
  */
 
-import { clsx, type ClassValue } from "clsx";
+import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 type Variants = Record<string, Record<string, ClassValue>>;

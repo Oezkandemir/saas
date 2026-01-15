@@ -1,6 +1,6 @@
+import { type CookieOptions, createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 import { logger } from "@/lib/logger";
 
@@ -23,7 +23,7 @@ export async function POST() {
             cookieStore.delete({ name, ...options });
           },
         },
-      },
+      }
     );
 
     const { error } = await supabase.auth.signOut();
@@ -37,7 +37,7 @@ export async function POST() {
     logger.error("Error during sign out:", error);
     return NextResponse.json(
       { error: "An unexpected error occurred" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

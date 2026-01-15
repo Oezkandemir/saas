@@ -1,22 +1,16 @@
-import { redirect } from "next/navigation";
 import { CheckCircle2, Monitor, Shield, XCircle } from "lucide-react";
+import { redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
-import { createClient } from "@/lib/supabase/server";
-import { constructMetadata } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { ActiveSessions } from "@/components/security/active-sessions";
 import { ChangePassword } from "@/components/security/change-password";
 import { LoginHistory } from "@/components/security/login-history";
 import { TwoFactorAuth } from "@/components/security/two-factor-auth";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getCurrentUser } from "@/lib/session";
+import { createClient } from "@/lib/supabase/server";
+import { constructMetadata } from "@/lib/utils";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -44,7 +38,7 @@ export default async function SecuritySettingsPage() {
     <UnifiedPageLayout
       title={t("settingsTitle")}
       description={t("detailedDescription")}
-      icon={<Shield className="w-4 h-4 text-primary" />}
+      icon={<Shield className="size-4 text-primary" />}
       contentClassName="space-y-6 pb-10"
     >
       {/* Security Overview Cards */}

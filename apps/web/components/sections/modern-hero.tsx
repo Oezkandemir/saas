@@ -1,10 +1,9 @@
-import { Link } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
-
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { buttonVariants } from "@/components/ui/button";
+import { Link } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
 
 export default async function ModernHero() {
   const t = await getTranslations("Hero");
@@ -13,9 +12,9 @@ export default async function ModernHero() {
     <section className="relative overflow-hidden border-b bg-gradient-to-br from-background via-background to-muted/30">
       {/* Animated background decoration */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-0 h-[600px] w-[600px] -translate-x-1/2 animate-pulse rounded-full bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-pink-500/30 blur-3xl" />
-        <div className="absolute right-0 top-1/2 h-[500px] w-[500px] -translate-y-1/2 animate-pulse rounded-full bg-gradient-to-r from-indigo-500/30 to-purple-500/30 blur-3xl delay-1000" />
-        <div className="absolute bottom-0 left-0 h-[400px] w-[400px] animate-pulse rounded-full bg-gradient-to-r from-pink-500/20 to-blue-500/20 blur-3xl delay-500" />
+        <div className="absolute left-1/2 top-0 size-[600px] -translate-x-1/2 animate-pulse rounded-full bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-pink-500/30 blur-3xl" />
+        <div className="absolute right-0 top-1/2 size-[500px] -translate-y-1/2 animate-pulse rounded-full bg-gradient-to-r from-indigo-500/30 to-purple-500/30 blur-3xl delay-1000" />
+        <div className="absolute bottom-0 left-0 size-[400px] animate-pulse rounded-full bg-gradient-to-r from-pink-500/20 to-blue-500/20 blur-3xl delay-500" />
       </div>
 
       {/* Grid pattern overlay */}
@@ -26,7 +25,7 @@ export default async function ModernHero() {
           {/* Badge with glassmorphism */}
           <div className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-primary/20 bg-background/60 px-4 py-2 text-xs font-medium backdrop-blur-xl shadow-lg transition-all hover:border-primary/40 hover:bg-background/80 sm:mb-8 sm:px-5 sm:py-2.5 sm:text-sm">
             <span className="relative flex size-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
             </span>
             <span>{t("badge")}</span>
@@ -56,11 +55,14 @@ export default async function ModernHero() {
               className={cn(
                 buttonVariants({ size: "lg" }),
                 "group relative gap-2 px-6 py-5 text-sm font-semibold shadow-2xl transition-all hover:scale-105 hover:shadow-primary/25 sm:px-8 sm:py-6 sm:text-base rounded-full",
-                "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700",
+                "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               )}
             >
               <span>{t("ctaPrimary")}</span>
-              <Icons.arrowRight className="size-4 transition-transform group-hover:translate-x-1 sm:size-5" aria-hidden="true" />
+              <Icons.arrowRight
+                className="size-4 transition-transform group-hover:translate-x-1 sm:size-5"
+                aria-hidden="true"
+              />
             </Link>
             <Link
               href="/dashboard"
@@ -70,10 +72,13 @@ export default async function ModernHero() {
                   variant: "outline",
                   size: "lg",
                 }),
-                "group gap-2 border-2 px-6 py-5 text-sm font-semibold backdrop-blur-sm transition-all hover:scale-105 hover:bg-background/80 sm:px-8 sm:py-6 sm:text-base rounded-full",
+                "group gap-2 border-2 px-6 py-5 text-sm font-semibold backdrop-blur-sm transition-all hover:scale-105 hover:bg-background/80 sm:px-8 sm:py-6 sm:text-base rounded-full"
               )}
             >
-              <Icons.play className="size-4 transition-transform group-hover:scale-110 sm:size-5" aria-hidden="true" />
+              <Icons.play
+                className="size-4 transition-transform group-hover:scale-110 sm:size-5"
+                aria-hidden="true"
+              />
               <span>{t("ctaSecondary")}</span>
             </Link>
           </div>

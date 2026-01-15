@@ -1,11 +1,10 @@
 import "server-only";
 
+import { Resend } from "resend";
+import { siteConfig } from "@/config/site";
 import { BookingConfirmationEmail } from "@/emails/booking-confirmation-email";
 import { MagicLinkEmail } from "@/emails/magic-link-email";
-import { Resend } from "resend";
-
 import { env } from "@/env.mjs";
-import { siteConfig } from "@/config/site";
 import { logger } from "@/lib/logger";
 
 import { getServerUserByEmail, getServerUserById } from "./db-admin";
@@ -76,7 +75,7 @@ export const sendEmailWithEdgeFunction = async ({
           logger.error("Resend API fallback error", error);
         } else {
           logger.info(
-            "Successfully sent welcome email via Resend API fallback",
+            "Successfully sent welcome email via Resend API fallback"
           );
           return data;
         }
@@ -97,7 +96,7 @@ export const sendVerificationRequest = async ({
   const user = await getServerUserByEmail(identifier);
   if (!user || !user.name) return;
 
-  const userVerified = user?.emailVerified ? true : false;
+  const userVerified = !!user?.emailVerified;
   const authSubject = userVerified
     ? `Sign-in link for ${siteConfig.name}`
     : "Activate your account";
@@ -115,7 +114,7 @@ export const sendVerificationRequest = async ({
       return;
     } catch (edgeFunctionError) {
       logger.warn(
-        `Edge function failed, falling back to Resend direct. Error: ${edgeFunctionError instanceof Error ? edgeFunctionError.message : String(edgeFunctionError)}`,
+        `Edge function failed, falling back to Resend direct. Error: ${edgeFunctionError instanceof Error ? edgeFunctionError.message : String(edgeFunctionError)}`
       );
       // Continue with direct Resend API fallback
     }
@@ -137,7 +136,7 @@ export const sendVerificationRequest = async ({
       // Set this to prevent Gmail from threading emails.
       // More info: https://resend.com/changelog/custom-email-headers
       headers: {
-        "X-Entity-Ref-ID": new Date().getTime() + "",
+        "X-Entity-Ref-ID": `${Date.now()}`,
       },
     });
 
@@ -146,7 +145,7 @@ export const sendVerificationRequest = async ({
     }
 
     // logger.debug(data)
-  } catch (error) {
+  } catch (_error) {
     throw new Error("Failed to send verification email.");
   }
 };
@@ -244,13 +243,13 @@ export const sendBookingConfirmationEmail = async ({
 }) => {
   try {
     logger.info(
-      `sendBookingConfirmationEmail called - inviteeEmail: ${inviteeEmail}, eventTitle: ${eventTitle}`,
+      `sendBookingConfirmationEmail called - inviteeEmail: ${inviteeEmail}, eventTitle: ${eventTitle}`
     );
 
     // Check if Resend is configured
     if (!env.RESEND_API_KEY) {
       logger.error(
-        "RESEND_API_KEY is not configured, cannot send booking confirmation email",
+        "RESEND_API_KEY is not configured, cannot send booking confirmation email"
       );
       return { success: false, error: "Email service not configured" };
     }
@@ -280,9 +279,9 @@ export const sendBookingConfirmationEmail = async ({
     if (fromEmail && typeof fromEmail === "string" && fromEmail.includes("@")) {
       // Extract email from format like "Name <email@example.com>" or just "email@example.com"
       const emailMatch = fromEmail.match(
-        /<?([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,})>?/,
+        /<?([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,})>?/
       );
-      if (emailMatch && emailMatch[1]) {
+      if (emailMatch?.[1]) {
         validFromEmail = emailMatch[1];
       } else if (fromEmail.includes("@") && !fromEmail.includes("<")) {
         validFromEmail = fromEmail.trim();
@@ -316,7 +315,7 @@ export const sendBookingConfirmationEmail = async ({
     } else if (emailOnlyRegex.test(validFromEmail)) {
       // Fallback to email only if name format is invalid
       logger.warn(
-        `Invalid from field format, using email only - fromField: ${fromField}, sanitizedName: ${sanitizedName}, validFromEmail: ${validFromEmail}`,
+        `Invalid from field format, using email only - fromField: ${fromField}, sanitizedName: ${sanitizedName}, validFromEmail: ${validFromEmail}`
       );
       finalFromField = validFromEmail;
     } else {
@@ -329,7 +328,7 @@ export const sendBookingConfirmationEmail = async ({
     }
 
     logger.info(
-      `Sending booking confirmation email to ${inviteeEmail} (actual recipient: ${recipientEmail}), fromEmail: ${validFromEmail}, fromField: ${finalFromField}, sanitizedName: ${sanitizedName}, hasResendKey: ${!!env.RESEND_API_KEY}, hostUserId: ${hostUserId}, eventTitle: ${eventTitle}, eventSlug: ${eventSlug}`,
+      `Sending booking confirmation email to ${inviteeEmail} (actual recipient: ${recipientEmail}), fromEmail: ${validFromEmail}, fromField: ${finalFromField}, sanitizedName: ${sanitizedName}, hasResendKey: ${!!env.RESEND_API_KEY}, hostUserId: ${hostUserId}, eventTitle: ${eventTitle}, eventSlug: ${eventSlug}`
     );
 
     // Send email via Resend - use validated from field
@@ -359,7 +358,7 @@ export const sendBookingConfirmationEmail = async ({
         rescheduleToken,
       }),
       headers: {
-        "X-Entity-Ref-ID": new Date().getTime().toString(),
+        "X-Entity-Ref-ID": Date.now().toString(),
       },
     });
 
@@ -386,7 +385,7 @@ export const sendBookingConfirmationEmail = async ({
     }
 
     logger.info(
-      `Booking confirmation email sent successfully - inviteeEmail: ${inviteeEmail}, recipientEmail: ${recipientEmail}, messageId: ${data.id}, fromEmail: ${validFromEmail}, fromField: ${finalFromField}`,
+      `Booking confirmation email sent successfully - inviteeEmail: ${inviteeEmail}, recipientEmail: ${recipientEmail}, messageId: ${data.id}, fromEmail: ${validFromEmail}, fromField: ${finalFromField}`
     );
 
     return { success: true, messageId: data.id };

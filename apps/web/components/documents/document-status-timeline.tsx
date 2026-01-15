@@ -1,28 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { updateDocument } from "@/actions/documents-actions";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
 import { ChevronDown, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
-
-import { Button } from "@/components/ui/button";
+import { updateDocument } from "@/actions/documents-actions";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  type DocumentStatus,
+  StatusBadge,
+} from "@/components/shared/status-badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenuRoot as DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DocumentStatus, StatusBadge } from "@/components/shared/status-badge";
 
 interface DocumentStatusTimelineProps {
   documentId: string;
@@ -73,7 +70,7 @@ export function DocumentStatusTimeline({
 
   // Verfügbare nächste Status für Dropdown
   const availableStatuses = Object.entries(statusOptions).filter(
-    ([_, option]) => option.availableFor.includes(type),
+    ([_, option]) => option.availableFor.includes(type)
   ) as [DocumentStatus, (typeof statusOptions)[DocumentStatus]][];
 
   const handleStatusChange = async (newStatus: DocumentStatus) => {
@@ -83,10 +80,10 @@ export function DocumentStatusTimeline({
     try {
       await updateDocument(documentId, { status: newStatus });
       toast.success(
-        t("toast.statusChanged", { status: statusOptions[newStatus].label }),
+        t("toast.statusChanged", { status: statusOptions[newStatus].label })
       );
       router.refresh();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("toast.changeError"));
     } finally {
       setIsUpdating(false);
@@ -97,7 +94,7 @@ export function DocumentStatusTimeline({
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="flex gap-2 items-center text-base">
-          <Clock className="w-4 h-4" />
+          <Clock className="size-4" />
           {t("title")}
         </CardTitle>
       </CardHeader>
@@ -113,7 +110,7 @@ export function DocumentStatusTimeline({
                 <div key={status} className="flex gap-3 items-start">
                   <div className="flex flex-col items-center pt-0.5">
                     <div
-                      className={`w-2.5 h-2.5 rounded-full shrink-0 ${
+                      className={`size-2.5 rounded-full shrink-0 ${
                         isCurrent
                           ? "bg-primary ring-2 ring-primary/20"
                           : "bg-muted-foreground/40"
@@ -169,7 +166,7 @@ export function DocumentStatusTimeline({
                 size="sm"
               >
                 <span className="text-sm">{t("changeStatus")}</span>
-                <ChevronDown className="h-3.5 w-3.5 opacity-50" />
+                <ChevronDown className="size-3.5 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">

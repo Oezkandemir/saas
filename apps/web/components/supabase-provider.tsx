@@ -1,11 +1,11 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
-import { type Session } from "@supabase/supabase-js";
+import type { Session } from "@supabase/supabase-js";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import { logger } from "@/lib/logger";
-import { type Database } from "@/lib/supabase";
+import type { Database } from "@/lib/supabase";
 
 type SupabaseContextType = {
   supabase: ReturnType<typeof createBrowserClient<Database>>;
@@ -13,7 +13,7 @@ type SupabaseContextType = {
 };
 
 const SupabaseContext = createContext<SupabaseContextType | undefined>(
-  undefined,
+  undefined
 );
 
 export function SupabaseProvider({ children }: { children: React.ReactNode }) {
@@ -25,7 +25,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       throw new Error(
         `Supabase environment variables are missing:
         NEXT_PUBLIC_SUPABASE_URL: ${supabaseUrl ? "defined" : "missing"}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${supabaseAnonKey ? "defined" : "missing"}`,
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${supabaseAnonKey ? "defined" : "missing"}`
       );
     }
 

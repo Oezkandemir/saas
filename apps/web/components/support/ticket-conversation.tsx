@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import type { TicketMessage } from "@/actions/support-ticket-actions";
 import { TicketMessageItem } from "@/components/support/ticket-message";
 import { TicketReplyForm } from "@/components/support/ticket-reply-form";
 import { TypingIndicator } from "@/components/support/typing-indicator";
 import { useTicketMessages } from "@/hooks/use-ticket-messages";
 import { useTypingIndicator } from "@/hooks/use-typing-indicator";
-import type { TicketMessage } from "@/actions/support-ticket-actions";
 
 interface TicketConversationProps {
   ticketId: string;
@@ -27,14 +27,15 @@ export function TicketConversation({
 }: TicketConversationProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const { messages, error: messagesError, addMessageOptimistically } = useTicketMessages(
-    ticketId,
-    initialMessages,
-  );
+  const {
+    messages,
+    error: messagesError,
+    addMessageOptimistically,
+  } = useTicketMessages(ticketId, initialMessages);
   const { typingUsers } = useTypingIndicator(
     ticketId,
     currentUserId,
-    currentUserName,
+    currentUserName
   );
 
   // Auto-scroll to bottom when new messages arrive
@@ -50,7 +51,7 @@ export function TicketConversation({
         messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
       }
     }
-  }, [messages]);
+  }, []);
 
   // Scroll to bottom on initial load
   useEffect(() => {
@@ -69,9 +70,7 @@ export function TicketConversation({
       >
         {messages.length === 0 ? (
           <div className="py-8 text-center">
-            <p className="font-medium text-muted-foreground">
-              No messages yet
-            </p>
+            <p className="font-medium text-muted-foreground">No messages yet</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Our support team will respond within 2-4 hours
             </p>
@@ -127,4 +126,3 @@ export function TicketConversation({
     </div>
   );
 }
-

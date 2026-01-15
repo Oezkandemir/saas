@@ -1,4 +1,4 @@
-import { User } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
 
 import { supabaseAdmin } from "@/lib/db-admin";
 import { logger } from "@/lib/logger";
@@ -47,7 +47,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
           // Log as warning, not error - these are often harmless
           logger.warn(
             `Connection error while checking user ${user.id} (likely aborted request):`,
-            fetchError.message || fetchError,
+            fetchError.message || fetchError
           );
           // Return null to allow retry or graceful degradation
           return null;
@@ -73,7 +73,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
 
         if (userByEmail) {
           logger.info(
-            `Found user with same email but different ID. Email: ${user.email}, DB ID: ${userByEmail.id}, Auth ID: ${user.id}`,
+            `Found user with same email but different ID. Email: ${user.email}, DB ID: ${userByEmail.id}, Auth ID: ${user.id}`
           );
 
           // Try to update the user ID to match the auth ID
@@ -87,7 +87,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
               logger.error("Could not update user ID:", updateError);
             } else {
               logger.info(
-                `Updated user ID from ${userByEmail.id} to ${user.id}`,
+                `Updated user ID from ${userByEmail.id} to ${user.id}`
               );
               return user;
             }
@@ -109,7 +109,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
         if (isConnectionError) {
           logger.warn(
             "Connection error during email lookup (likely aborted request):",
-            emailLookupError,
+            emailLookupError
           );
         } else {
           logger.error("Error during email lookup:", emailLookupError);
@@ -119,7 +119,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
 
     // Stripe is deprecated - we use Polar.sh now
     // No Stripe customer creation needed
-    let stripeCustomerId: string | null = null;
+    const stripeCustomerId: string | null = null;
 
     // Try direct insert without email if it's causing conflicts
     logger.info(`Creating new user record for ${user.id}`);
@@ -162,7 +162,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
             insertError.message?.includes("users_pkey"))
         ) {
           logger.info(
-            `User ${user.id} already exists (race condition), fetching existing user`,
+            `User ${user.id} already exists (race condition), fetching existing user`
           );
 
           // Fetch the existing user to preserve their role
@@ -175,13 +175,13 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
           if (fetchError) {
             logger.error(
               "Error fetching existing user after conflict:",
-              fetchError,
+              fetchError
             );
             return null;
           }
 
           logger.info(
-            `Retrieved existing user ${user.id} with role ${existingUser?.role}`,
+            `Retrieved existing user ${user.id} with role ${existingUser?.role}`
           );
           return existingUser;
         }
@@ -192,7 +192,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
           insertError.details?.includes("email")
         ) {
           logger.info(
-            "Trying insert without email due to uniqueness constraint",
+            "Trying insert without email due to uniqueness constraint"
           );
 
           // Remove email from userData
@@ -220,7 +220,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
 
               if (existingUser) {
                 logger.info(
-                  `Retrieved existing user ${user.id} after email conflict`,
+                  `Retrieved existing user ${user.id} after email conflict`
                 );
                 return existingUser;
               }
@@ -228,13 +228,13 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
 
             logger.error(
               "Error creating user without email:",
-              insertNoEmailError,
+              insertNoEmailError
             );
             return null;
           }
 
           logger.info(
-            `Successfully created user record for ${user.id} without email`,
+            `Successfully created user record for ${user.id} without email`
           );
           return userWithoutEmail;
         }
@@ -258,7 +258,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
       if (isConnectionError) {
         logger.warn(
           "Connection error during user insert (likely aborted request):",
-          insertError,
+          insertError
         );
         // Return null to allow retry
         return null;
@@ -290,7 +290,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
               minimalError.message?.includes("users_pkey"))
           ) {
             logger.info(
-              `User ${user.id} already exists, fetching to preserve role`,
+              `User ${user.id} already exists, fetching to preserve role`
             );
             const { data: existingUser } = await supabaseAdmin
               .from("users")
@@ -323,7 +323,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
         if (isConnectionError) {
           logger.warn(
             "Connection error during minimal user insert (likely aborted request):",
-            minimalError,
+            minimalError
           );
         } else {
           logger.error("Exception during minimal user insert:", minimalError);
@@ -333,8 +333,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
     }
   } catch (error) {
     // Handle connection errors gracefully
-    const errorMessage =
-      error instanceof Error ? error.message : String(error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     const isConnectionError =
       errorMessage.includes("ECONNRESET") ||
       errorMessage.includes("aborted") ||
@@ -343,7 +342,7 @@ export async function syncUserWithDatabase(user: User): Promise<User | null> {
     if (isConnectionError) {
       logger.warn(
         "Connection error in syncUserWithDatabase (likely aborted request):",
-        error,
+        error
       );
     } else {
       logger.error("Unexpected error in syncUserWithDatabase:", error);

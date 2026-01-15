@@ -1,7 +1,6 @@
-import { ReactNode } from "react";
-
-import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { cn } from "@/lib/utils";
 
 interface PageHeaderProps {
   title: string;
@@ -34,6 +33,3 @@ export function PageHeader({
     </div>
   );
 }
-
-
-

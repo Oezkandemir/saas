@@ -1,16 +1,14 @@
 "use client";
 
+import { format } from "date-fns";
+import { de, enUS } from "date-fns/locale";
+import { Calendar, CheckCircle2, MapPin, Shield, XCircle } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import {
   getLoginHistory,
   type LoginHistoryEntry,
 } from "@/actions/security-actions";
-import { format } from "date-fns";
-import { de, enUS } from "date-fns/locale";
-import { Calendar, CheckCircle2, MapPin, Shield, XCircle } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
-
-import { logger } from "@/lib/logger";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -19,6 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { logger } from "@/lib/logger";
 
 export function LoginHistory() {
   const t = useTranslations("Security.loginHistory");
@@ -26,10 +25,6 @@ export function LoginHistory() {
   const dateLocale = locale === "de" ? de : enUS;
   const [history, setHistory] = useState<LoginHistoryEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    loadHistory();
-  }, []);
 
   const loadHistory = async () => {
     setIsLoading(true);
@@ -44,6 +39,10 @@ export function LoginHistory() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadHistory();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getLocationInfo = (entry: LoginHistoryEntry) => {
     if (entry.locationInfo && typeof entry.locationInfo === "object") {
@@ -109,9 +108,7 @@ export function LoginHistory() {
                 <div className="flex-1 min-w-0 space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-medium break-words">
-                      {entry.success
-                        ? t("successfulLogin")
-                        : t("failedLogin")}
+                      {entry.success ? t("successfulLogin") : t("failedLogin")}
                     </span>
                     {entry.twoFactorUsed && (
                       <Badge variant="outline" className="text-xs shrink-0">

@@ -52,7 +52,7 @@ export type TimeSlot = {
  * Create a new time slot
  */
 export async function createTimeSlot(
-  input: z.infer<typeof timeSlotSchema>,
+  input: z.infer<typeof timeSlotSchema>
 ): Promise<ActionResult<TimeSlot>> {
   const user = await getCurrentUser();
 
@@ -136,7 +136,7 @@ export async function createTimeSlot(
  * Update a time slot
  */
 export async function updateTimeSlot(
-  input: z.infer<typeof timeSlotUpdateSchema>,
+  input: z.infer<typeof timeSlotUpdateSchema>
 ): Promise<ActionResult<TimeSlot>> {
   const user = await getCurrentUser();
 
@@ -182,7 +182,7 @@ export async function updateTimeSlot(
 
     revalidatePath("/scheduling");
     revalidatePath(
-      `/scheduling/event-types/${(timeSlot as any).event_type_id}`,
+      `/scheduling/event-types/${(timeSlot as any).event_type_id}`
     );
 
     return {
@@ -253,7 +253,7 @@ export async function deleteTimeSlot(id: string): Promise<ActionResult<null>> {
 
     revalidatePath("/scheduling");
     revalidatePath(
-      `/scheduling/event-types/${(timeSlot as any).event_type_id}`,
+      `/scheduling/event-types/${(timeSlot as any).event_type_id}`
     );
 
     return {
@@ -273,7 +273,7 @@ export async function deleteTimeSlot(id: string): Promise<ActionResult<null>> {
  * Get all time slots for an event type
  */
 export async function getTimeSlots(
-  eventTypeId: string,
+  eventTypeId: string
 ): Promise<ActionResult<TimeSlot[]>> {
   const user = await getCurrentUser();
 
@@ -339,7 +339,7 @@ export async function applyTimeSlotsToAllEvents(
     end_time: string;
     day_of_week: number | null;
     max_participants: number | null;
-  }>,
+  }>
 ): Promise<ActionResult<{ created: number; errors: string[] }>> {
   const user = await getCurrentUser();
 
@@ -382,7 +382,7 @@ export async function applyTimeSlotsToAllEvents(
         // Validate time range
         if (timeSlot.start_time >= timeSlot.end_time) {
           errors.push(
-            `Invalid time range for event ${eventType.id}: ${timeSlot.start_time} - ${timeSlot.end_time}`,
+            `Invalid time range for event ${eventType.id}: ${timeSlot.start_time} - ${timeSlot.end_time}`
           );
           continue;
         }
@@ -397,7 +397,7 @@ export async function applyTimeSlotsToAllEvents(
 
         if (error) {
           errors.push(
-            `Failed to create slot for event ${eventType.id}: ${error.message}`,
+            `Failed to create slot for event ${eventType.id}: ${error.message}`
           );
         } else {
           created++;
@@ -431,7 +431,7 @@ export async function getBookedParticipantsCount(
   timeSlotId: string,
   date: string, // YYYY-MM-DD format
   startTime: string, // HH:MM:SS format
-  endTime: string, // HH:MM:SS format
+  endTime: string // HH:MM:SS format
 ): Promise<ActionResult<number>> {
   try {
     const supabase = await createClient();
@@ -443,7 +443,7 @@ export async function getBookedParticipantsCount(
         p_date: date,
         p_start_time: startTime,
         p_end_time: endTime,
-      },
+      }
     );
 
     if (error) {

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { DeepPartial, FieldValues, UseFormReturn } from "react-hook-form";
+import type { DeepPartial, FieldValues, UseFormReturn } from "react-hook-form";
 
 import { logger } from "@/lib/logger";
 

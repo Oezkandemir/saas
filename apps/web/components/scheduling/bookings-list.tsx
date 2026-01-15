@@ -1,9 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import type { Booking } from "@/actions/scheduling/bookings-actions";
-import type { EventType } from "@/actions/scheduling/event-types-actions";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
 import {
@@ -15,8 +11,13 @@ import {
   User,
   X,
 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-
+import { useState } from "react";
+import type { Booking } from "@/actions/scheduling/bookings-actions";
+import type { EventType } from "@/actions/scheduling/event-types-actions";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -24,8 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 import { BookingDrawer } from "./booking-drawer";
 
@@ -42,13 +41,13 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
   const dateLocale = locale === "de" ? de : enUS;
 
   const [statusFilter, setStatusFilter] = useState<string>(
-    searchParams.get("status") || "all",
+    searchParams.get("status") || "all"
   );
   const [eventTypeFilter, setEventTypeFilter] = useState<string>(
-    searchParams.get("event_type_id") || "all",
+    searchParams.get("event_type_id") || "all"
   );
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
-    null,
+    null
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -106,16 +105,16 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
     });
 
   const scheduledBookings = filteredBookings.filter(
-    (b) => b.status === "scheduled",
+    (b) => b.status === "scheduled"
   );
   const canceledBookings = filteredBookings.filter(
-    (b) => b.status === "canceled",
+    (b) => b.status === "canceled"
   );
   const upcomingBookings = scheduledBookings.filter(
-    (b) => new Date(b.start_at) > new Date(),
+    (b) => new Date(b.start_at) > new Date()
   );
   const pastBookings = scheduledBookings.filter(
-    (b) => new Date(b.start_at) <= new Date(),
+    (b) => new Date(b.start_at) <= new Date()
   );
 
   const hasActiveFilters = statusFilter !== "all" || eventTypeFilter !== "all";
@@ -125,7 +124,7 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
       {/* Filters */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Filter className="size-4 text-muted-foreground" />
           <span className="text-sm font-medium">
             {t("bookings.filter") || "Filter"}:
           </span>
@@ -171,7 +170,7 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
 
         {hasActiveFilters && (
           <Button variant="ghost" size="sm" onClick={clearFilters}>
-            <X className="h-4 w-4 mr-2" />
+            <X className="size-4 mr-2" />
             {t("bookings.clearFilters") || "Filter zurücksetzen"}
           </Button>
         )}
@@ -214,7 +213,7 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
       {/* Bookings List */}
       {filteredBookings.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-center border border-dashed rounded-lg">
-          <Calendar className="h-8 w-8 text-muted-foreground mb-3" />
+          <Calendar className="size-8 text-muted-foreground mb-3" />
           <p className="text-sm text-muted-foreground">
             {t("bookings.empty") || "Keine Buchungen gefunden"}
           </p>
@@ -254,11 +253,11 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
                 className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
               >
                 <div className="flex items-start gap-4 flex-1 min-w-0">
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     <div
-                      className={`w-12 h-12 rounded-lg flex items-center justify-center ${iconBgClass}`}
+                      className={`size-12 rounded-lg flex items-center justify-center ${iconBgClass}`}
                     >
-                      <Calendar className={`h-6 w-6 ${iconTextClass}`} />
+                      <Calendar className={`size-6 ${iconTextClass}`} />
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
@@ -276,7 +275,7 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
                     </div>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground mb-1">
                       <div className="flex items-center gap-1">
-                        <Mail className="h-3 w-3" />
+                        <Mail className="size-3" />
                         <span className="truncate">
                           {booking.invitee_email}
                         </span>
@@ -291,7 +290,7 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
                     </div>
                     <div className="flex items-center gap-4 text-xs flex-wrap">
                       <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
-                        <Clock className="h-3 w-3" />
+                        <Clock className="size-3" />
                         <span className="font-medium">
                           {t("bookings.eventDate") || "Event"}:{" "}
                           {format(startDate, "EEEE, d. MMMM yyyy", {
@@ -307,20 +306,20 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
                       </div>
                       {booking.created_at && (
                         <div className="flex items-center gap-1 text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
+                          <Calendar className="size-3" />
                           <span>
                             {t("bookings.bookedAt") || "Gebucht am"}:{" "}
                             {format(
                               new Date(booking.created_at),
                               "d. MMMM yyyy 'um' HH:mm",
-                              { locale: dateLocale },
+                              { locale: dateLocale }
                             )}
                           </span>
                         </div>
                       )}
                       {booking.number_of_participants > 1 && (
                         <div className="flex items-center gap-1">
-                          <User className="h-3 w-3" />
+                          <User className="size-3" />
                           <span>
                             {booking.number_of_participants}{" "}
                             {t("bookings.participants") || "Teilnehmer"}
@@ -330,7 +329,7 @@ export function BookingsList({ bookings, eventTypes }: BookingsListProps) {
                     </div>
                   </div>
                 </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0 ml-4" />
+                <ChevronRight className="size-5 text-muted-foreground shrink-0 ml-4" />
               </div>
             );
           })}

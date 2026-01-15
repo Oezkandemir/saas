@@ -1,16 +1,14 @@
 "use client";
 
+import { ArrowRight, Calendar, Clock, Euro } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import type { EventType } from "@/actions/scheduling/event-types-actions";
-import { ArrowRight, Clock, Euro, Calendar } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-
-import { logger } from "@/lib/logger";
-import { formatDuration } from "@/lib/utils";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import type { EventType } from "@/actions/scheduling/event-types-actions";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { logger } from "@/lib/logger";
+import { cn, formatDuration } from "@/lib/utils";
 
 interface CourseCardProps {
   eventType: EventType & {
@@ -53,7 +51,7 @@ export function CourseCard({ eventType }: CourseCardProps) {
       className={cn(
         "group relative flex flex-col overflow-hidden rounded-2xl border-2 transition-all duration-300",
         "hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1",
-        "border-border bg-card hover:border-primary/20",
+        "border-border bg-card hover:border-primary/20"
       )}
     >
       {/* Header */}
@@ -76,7 +74,7 @@ export function CourseCard({ eventType }: CourseCardProps) {
         <div className="absolute top-4 right-4 flex flex-col gap-2 items-end z-10">
           {durationText && (
             <Badge className="bg-primary text-primary-foreground shadow-md text-xs flex items-center gap-1">
-              <Clock className="h-3 w-3" />
+              <Clock className="size-3" />
               {durationText}
             </Badge>
           )}
@@ -84,8 +82,8 @@ export function CourseCard({ eventType }: CourseCardProps) {
 
         <div className="relative flex items-start justify-between mb-4">
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 shrink-0 bg-primary/10 text-primary">
-              <Calendar className="h-6 w-6" />
+            <div className="flex items-center justify-center size-12 rounded-xl transition-all duration-300 shrink-0 bg-primary/10 text-primary">
+              <Calendar className="size-6" />
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="text-lg font-semibold line-clamp-2 transition-colors duration-200 group-hover:text-primary">
@@ -101,7 +99,7 @@ export function CourseCard({ eventType }: CourseCardProps) {
             <div className="flex items-baseline">
               {hasPrice ? (
                 <>
-                  <Euro className="h-5 w-5 text-muted-foreground mr-1" />
+                  <Euro className="size-5 text-muted-foreground mr-1" />
                   <span className="text-4xl font-bold tracking-tight">
                     {priceText}
                   </span>
@@ -139,11 +137,11 @@ export function CourseCard({ eventType }: CourseCardProps) {
                 variant: "default",
                 size: "lg",
               }),
-              "w-full group/btn",
+              "w-full group/btn"
             )}
           >
             {t("bookNow")}
-            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+            <ArrowRight className="ml-2 size-4 transition-transform group-hover/btn:translate-x-1" />
           </Link>
         </div>
       </div>

@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
-
-import { cn } from "@/lib/utils";
+import { useState } from "react";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { cn } from "@/lib/utils";
 
 interface FAQItem {
   question: string;
@@ -69,7 +68,7 @@ export default function ModernFAQ() {
                 <Icons.chevronRight
                   className={cn(
                     "size-6 shrink-0 text-muted-foreground transition-all duration-300",
-                    openIndex === index && "rotate-90 text-primary",
+                    openIndex === index && "rotate-90 text-primary"
                   )}
                 />
               </button>
@@ -78,7 +77,7 @@ export default function ModernFAQ() {
                   "overflow-hidden transition-all duration-500 ease-in-out",
                   openIndex === index
                     ? "max-h-96 opacity-100"
-                    : "max-h-0 opacity-0",
+                    : "max-h-0 opacity-0"
                 )}
               >
                 <div className="px-6 pb-6 leading-relaxed text-muted-foreground">

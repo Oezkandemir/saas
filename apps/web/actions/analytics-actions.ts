@@ -75,13 +75,13 @@ export async function getAnalyticsData() {
     const getUserStats = async () => {
       // Use optimized SQL aggregation instead of fetching all users
       const { data, error } = await supabaseAdmin.rpc(
-        "get_user_stats_aggregated",
+        "get_user_stats_aggregated"
       );
 
       if (error) {
         // Fallback to basic query if function doesn't exist
         logger.warn(
-          "get_user_stats_aggregated function not found, using fallback",
+          "get_user_stats_aggregated function not found, using fallback"
         );
         const { data: users, error: usersError } = await supabaseAdmin
           .from("users")
@@ -92,10 +92,10 @@ export async function getAnalyticsData() {
         const totalUsers = users.length;
         const adminCount = users.filter((user) => user.role === "ADMIN").length;
         const bannedCount = users.filter(
-          (user) => user.status === "banned",
+          (user) => user.status === "banned"
         ).length;
         const subscribersCount = users.filter(
-          (user) => user.polar_subscription_id !== null,
+          (user) => user.polar_subscription_id !== null
         ).length;
 
         return {
@@ -127,13 +127,13 @@ export async function getAnalyticsData() {
     const getUserGrowth = async () => {
       // Use SQL aggregation for better performance
       const { data, error } = await supabaseAdmin.rpc(
-        "get_user_growth_by_month",
+        "get_user_growth_by_month"
       );
 
       if (error) {
         // Fallback to basic query if function doesn't exist
         logger.warn(
-          "get_user_growth_by_month function not found, using fallback",
+          "get_user_growth_by_month function not found, using fallback"
         );
         const { data: users, error: usersError } = await supabaseAdmin
           .from("users")
@@ -172,13 +172,13 @@ export async function getAnalyticsData() {
       try {
         // Use optimized SQL aggregation
         const { data, error } = await supabaseAdmin.rpc(
-          "get_ticket_stats_aggregated",
+          "get_ticket_stats_aggregated"
         );
 
         if (error) {
           // Fallback to basic query if function doesn't exist
           logger.warn(
-            "get_ticket_stats_aggregated function not found, using fallback",
+            "get_ticket_stats_aggregated function not found, using fallback"
           );
           const { data: tickets, error: ticketsError } = await supabaseAdmin
             .from("support_tickets")
@@ -186,7 +186,7 @@ export async function getAnalyticsData() {
 
           if (ticketsError) {
             logger.warn(
-              `Error fetching ticket stats: ${ticketsError instanceof Error ? ticketsError.message : String(ticketsError)}`,
+              `Error fetching ticket stats: ${ticketsError instanceof Error ? ticketsError.message : String(ticketsError)}`
             );
             return {
               open: 0,
@@ -231,7 +231,7 @@ export async function getAnalyticsData() {
         };
       } catch (error) {
         logger.warn(
-          `Error in getTicketStats: ${error instanceof Error ? error.message : String(error)}`,
+          `Error in getTicketStats: ${error instanceof Error ? error.message : String(error)}`
         );
         return {
           open: 0,
@@ -253,7 +253,7 @@ export async function getAnalyticsData() {
 
         if (error) {
           logger.warn(
-            `Error fetching login history (table may not exist): ${error instanceof Error ? error.message : String(error)}`,
+            `Error fetching login history (table may not exist): ${error instanceof Error ? error.message : String(error)}`
           );
           return [];
         }
@@ -271,7 +271,7 @@ export async function getAnalyticsData() {
 
         if (usersError) {
           logger.warn(
-            `Error fetching user emails: ${usersError instanceof Error ? usersError.message : String(usersError)}`,
+            `Error fetching user emails: ${usersError instanceof Error ? usersError.message : String(usersError)}`
           );
           return data.map((login) => ({
             type: "login",
@@ -286,7 +286,7 @@ export async function getAnalyticsData() {
             acc[user.id] = user.email;
             return acc;
           },
-          {} as Record<string, string>,
+          {} as Record<string, string>
         );
 
         return data.map((login) => ({
@@ -297,7 +297,7 @@ export async function getAnalyticsData() {
         }));
       } catch (error) {
         logger.warn(
-          `Error in getRecentLogins: ${error instanceof Error ? error.message : String(error)}`,
+          `Error in getRecentLogins: ${error instanceof Error ? error.message : String(error)}`
         );
         return [];
       }
@@ -331,7 +331,7 @@ export async function getAnalyticsData() {
           logger.debug(`Found ${data.length} popular pages from RPC function`);
           const result = data
             .filter(
-              (page: any) => page.page_path && page.page_path.trim() !== "",
+              (page: any) => page.page_path && page.page_path.trim() !== ""
             )
             .map((page: any) => ({
               page_path: String(page.page_path || "").trim(),
@@ -344,7 +344,7 @@ export async function getAnalyticsData() {
 
           if (result.length > 0) {
             logger.debug(
-              `Returning ${result.length} filtered popular pages from RPC`,
+              `Returning ${result.length} filtered popular pages from RPC`
             );
             return result;
           }
@@ -352,7 +352,7 @@ export async function getAnalyticsData() {
 
         if (error) {
           logger.warn(
-            `RPC function error, falling back: ${error instanceof Error ? error.message : String(error)}`,
+            `RPC function error, falling back: ${error instanceof Error ? error.message : String(error)}`
           );
         }
 
@@ -367,7 +367,7 @@ export async function getAnalyticsData() {
 
         if (sqlError) {
           logger.warn(
-            `Error fetching page views: ${sqlError instanceof Error ? sqlError.message : String(sqlError)}`,
+            `Error fetching page views: ${sqlError instanceof Error ? sqlError.message : String(sqlError)}`
           );
           return [];
         }
@@ -378,7 +378,7 @@ export async function getAnalyticsData() {
         }
 
         logger.debug(
-          `Found ${sqlData.length} page view records for aggregation`,
+          `Found ${sqlData.length} page view records for aggregation`
         );
 
         // Aggregate manually
@@ -426,7 +426,7 @@ export async function getAnalyticsData() {
           .slice(0, 50);
 
         logger.debug(
-          `Returning ${result.length} popular pages from manual aggregation`,
+          `Returning ${result.length} popular pages from manual aggregation`
         );
         return result;
       } catch (error) {
@@ -477,7 +477,7 @@ export async function getAnalyticsData() {
         };
 
     logger.debug(
-      `Enhanced analytics has ${enhancedDetailedAnalytics.popular_pages.length} popular pages`,
+      `Enhanced analytics has ${enhancedDetailedAnalytics.popular_pages.length} popular pages`
     );
 
     return {
@@ -522,7 +522,7 @@ export async function getDetailedAnalytics(daysRange = 30) {
 
     if (error) {
       logger.warn(
-        `Error calling get_detailed_analytics function: ${error instanceof Error ? error.message : String(error)}`,
+        `Error calling get_detailed_analytics function: ${error instanceof Error ? error.message : String(error)}`
       );
       // Return default empty data instead of error
       return {
@@ -648,7 +648,7 @@ export async function recordPageView(pageViewData: PageViewData) {
  * Track a user interaction (click, form submission, etc.) with enhanced data
  */
 export async function trackUserInteraction(
-  interactionData: UserInteractionData,
+  interactionData: UserInteractionData
 ) {
   try {
     const supabase = await createClient();
@@ -702,12 +702,12 @@ export async function getRealtimeActiveUsers() {
     }
 
     const { data, error } = await supabaseAdmin.rpc(
-      "get_realtime_active_users",
+      "get_realtime_active_users"
     );
 
     if (error) {
       logger.warn(
-        `Error fetching realtime active users: ${error instanceof Error ? error.message : String(error)}`,
+        `Error fetching realtime active users: ${error instanceof Error ? error.message : String(error)}`
       );
       return { success: true, data: [] };
     }
@@ -738,7 +738,7 @@ export async function getRealtimePageViews() {
 
     if (error) {
       logger.warn(
-        `Error fetching realtime page views: ${error instanceof Error ? error.message : String(error)}`,
+        `Error fetching realtime page views: ${error instanceof Error ? error.message : String(error)}`
       );
       return { success: true, data: [] };
     }
@@ -771,7 +771,7 @@ export async function getGeolocationStats(days = 30) {
 
     if (error) {
       logger.warn(
-        `Error fetching geolocation stats: ${error instanceof Error ? error.message : String(error)}`,
+        `Error fetching geolocation stats: ${error instanceof Error ? error.message : String(error)}`
       );
       return { success: true, data: [] };
     }
@@ -804,7 +804,7 @@ export async function getDeviceStatistics(days = 30) {
 
     if (error) {
       logger.warn(
-        `Error fetching device statistics: ${error instanceof Error ? error.message : String(error)}`,
+        `Error fetching device statistics: ${error instanceof Error ? error.message : String(error)}`
       );
       return { success: true, data: [] };
     }
@@ -835,12 +835,12 @@ export async function getUserActivityTimeline(hours = 24) {
       "get_user_activity_timeline",
       {
         p_hours: hours,
-      },
+      }
     );
 
     if (error) {
       logger.warn(
-        `Error fetching user activity timeline: ${error instanceof Error ? error.message : String(error)}`,
+        `Error fetching user activity timeline: ${error instanceof Error ? error.message : String(error)}`
       );
       return { success: true, data: [] };
     }

@@ -20,7 +20,7 @@ export type responseAction = {
  * @returns Promise that redirects to Polar checkout
  */
 export async function generateUserPolar(
-  productId: string,
+  productId: string
 ): Promise<responseAction> {
   let checkoutUrl: string = "";
 
@@ -36,7 +36,7 @@ export async function generateUserPolar(
     if (!env.POLAR_ACCESS_TOKEN || env.POLAR_ACCESS_TOKEN.length === 0) {
       logger.error("Polar access token is not set or is empty");
       throw new Error(
-        "Polar is not configured. Please set POLAR_ACCESS_TOKEN in your environment variables.",
+        "Polar is not configured. Please set POLAR_ACCESS_TOKEN in your environment variables."
       );
     }
 
@@ -46,7 +46,7 @@ export async function generateUserPolar(
     }
 
     logger.info(
-      `Creating Polar checkout for user ${user.id} with email ${user.email} for product ID ${productId}`,
+      `Creating Polar checkout for user ${user.id} with email ${user.email} for product ID ${productId}`
     );
 
     // Construct the Polar checkout URL with products query parameter and user info
@@ -79,7 +79,7 @@ export async function generateUserPolar(
     }
 
     throw new Error(
-      error.message || "Failed to generate Polar checkout session",
+      error.message || "Failed to generate Polar checkout session"
     );
   }
 

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 import { env } from "@/env.mjs";
 import { logger } from "@/lib/logger";
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   if (!products) {
     return NextResponse.json(
       { error: "Missing products in query params" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     logger.error("No checkout URL returned from Polar.sh", checkoutData);
     return NextResponse.json(
       { error: "No checkout URL returned from Polar.sh" },
-      { status: 500 },
+      { status: 500 }
     );
   } catch (error: any) {
     logger.error("Error creating Polar checkout", error);
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
             "Please complete the payment setup in your Polar.sh dashboard. Go to Settings > Payment Methods and connect a payment provider (e.g., Stripe).",
           details: errorMessage,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
         error: "Failed to create checkout session",
         message: errorMessage,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

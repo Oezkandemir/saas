@@ -1,9 +1,10 @@
 // @ts-nocheck
 // TODO: Fix this when we turn strict mode on.
-import { cache } from "react";
-import { unstable_cache, unstable_noStore } from "next/cache";
 
-import { UserSubscriptionPlan } from "types";
+import { unstable_cache, unstable_noStore } from "next/cache";
+import { cache } from "react";
+
+import type { UserSubscriptionPlan } from "types";
 import { pricingData } from "@/config/subscriptions";
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
@@ -24,7 +25,7 @@ const DEFAULT_FREE_PLAN: UserSubscriptionPlan = {
 async function _getUserSubscriptionPlanInternal(
   userId: string,
   userEmail?: string,
-  skipCache?: boolean,
+  skipCache?: boolean
 ): Promise<UserSubscriptionPlan> {
   // If no userId provided, return the default free plan
   if (!userId) {
@@ -46,7 +47,7 @@ async function _getUserSubscriptionPlanInternal(
     const userResult = await supabaseAdmin
       .from("users")
       .select(
-        "id, email, polar_customer_id, polar_subscription_id, polar_product_id, polar_current_period_end, payment_provider",
+        "id, email, polar_customer_id, polar_subscription_id, polar_product_id, polar_current_period_end, payment_provider"
       )
       .eq("id", userId)
       .single();
@@ -59,19 +60,19 @@ async function _getUserSubscriptionPlanInternal(
     // If user not found by ID and we have an email, try to find by email
     if ((!userData || error) && userEmail) {
       logger.info(
-        `User not found by ID ${userId}, trying with email ${userEmail}`,
+        `User not found by ID ${userId}, trying with email ${userEmail}`
       );
       const emailResult = await supabaseAdmin
         .from("users")
         .select(
-          "id, email, polar_customer_id, polar_subscription_id, polar_product_id, polar_current_period_end, payment_provider",
+          "id, email, polar_customer_id, polar_subscription_id, polar_product_id, polar_current_period_end, payment_provider"
         )
         .eq("email", userEmail)
         .single();
 
       if (emailResult.data && !emailResult.error) {
         logger.info(
-          `Found user by email ${userEmail} with ID ${emailResult.data.id}`,
+          `Found user by email ${userEmail} with ID ${emailResult.data.id}`
         );
         userData = emailResult.data;
         error = null;
@@ -85,7 +86,7 @@ async function _getUserSubscriptionPlanInternal(
         if (updateResult.error) {
           logger.error(
             `Failed to update user ID from ${userData.id} to ${userId}`,
-            updateResult.error,
+            updateResult.error
           );
         } else {
           logger.info(`Updated user ID from ${userData.id} to ${userId}`);
@@ -97,14 +98,14 @@ async function _getUserSubscriptionPlanInternal(
     // If user not found, return the default free plan instead of throwing an error
     if (error || !userData) {
       logger.warn(
-        `User with id ${userId} not found in Supabase database: ${error?.message || "No data returned"}`,
+        `User with id ${userId} not found in Supabase database: ${error?.message || "No data returned"}`
       );
       return DEFAULT_FREE_PLAN;
     }
 
     // Use Polar only (Stripe is deprecated)
     const paymentProvider = userData.payment_provider || "polar";
-    const isPolar = true; // Always use Polar now
+    const _isPolar = true; // Always use Polar now
 
     // Map Supabase column names to our expected format
     const user: any = {
@@ -128,7 +129,7 @@ async function _getUserSubscriptionPlanInternal(
     // User subscription data loaded
 
     // Check if user is on a paid plan (Polar only)
-    const currentPeriodEnd = user.polarCurrentPeriodEnd;
+    const _currentPeriodEnd = user.polarCurrentPeriodEnd;
     const productId = user.polarProductId;
 
     // For Polar: if product_id exists, consider it paid
@@ -165,12 +166,12 @@ async function _getUserSubscriptionPlanInternal(
             monthlyId: plan.polarIds?.monthly,
             yearlyId: plan.polarIds?.yearly,
           })),
-        },
+        }
       );
       // Don't assign a fallback plan - this is a configuration error
       // Return free plan instead to prevent showing wrong plan
       logger.warn(
-        "Returning free plan due to product ID mismatch. Please check configuration.",
+        "Returning free plan due to product ID mismatch. Please check configuration."
       );
     }
 
@@ -197,7 +198,7 @@ async function _getUserSubscriptionPlanInternal(
         const { data: subData } = await supabaseAdmin
           .from("subscriptions")
           .select(
-            "status, cancel_at_period_end, current_period_start, created_at",
+            "status, cancel_at_period_end, current_period_start, created_at"
           )
           .eq("polar_subscription_id", user.polarSubscriptionId)
           .single();
@@ -209,7 +210,7 @@ async function _getUserSubscriptionPlanInternal(
           // Store period start if available
           if (subData.current_period_start && !user.polarCurrentPeriodStart) {
             user.polarCurrentPeriodStart = new Date(
-              subData.current_period_start,
+              subData.current_period_start
             );
           }
           // Store created_at as subscription start date
@@ -260,7 +261,7 @@ export const getUserSubscriptionPlan = cache(
   unstable_cache(
     async (
       userId: string,
-      userEmail?: string,
+      userEmail?: string
     ): Promise<UserSubscriptionPlan> => {
       return _getUserSubscriptionPlanInternal(userId, userEmail, false);
     },
@@ -268,6 +269,6 @@ export const getUserSubscriptionPlan = cache(
     {
       revalidate: 10, // Cache for 10 seconds (reduced for better real-time updates)
       tags: ["subscription-plan"],
-    },
-  ),
+    }
+  )
 );

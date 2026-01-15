@@ -1,7 +1,7 @@
 "use client";
 
 import { CreditCard, Hash, Landmark, User } from "lucide-react";
-import { Control } from "react-hook-form";
+import type { Control } from "react-hook-form";
 
 import {
   FormControl,
@@ -27,7 +27,7 @@ export function CompanyBankFields({ control }: CompanyBankFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <Landmark className="h-4 w-4 text-primary" />
+              <Landmark className="size-4 text-primary" />
               Bankname
             </FormLabel>
             <FormControl>
@@ -50,7 +50,7 @@ export function CompanyBankFields({ control }: CompanyBankFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <User className="h-4 w-4 text-primary" />
+              <User className="size-4 text-primary" />
               Kontoinhaber
             </FormLabel>
             <FormControl>
@@ -75,7 +75,7 @@ export function CompanyBankFields({ control }: CompanyBankFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <CreditCard className="h-4 w-4 text-primary" />
+              <CreditCard className="size-4 text-primary" />
               IBAN
             </FormLabel>
             <FormControl>
@@ -104,7 +104,7 @@ export function CompanyBankFields({ control }: CompanyBankFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <Hash className="h-4 w-4 text-primary" />
+              <Hash className="size-4 text-primary" />
               BIC / SWIFT
             </FormLabel>
             <FormControl>
@@ -125,7 +125,7 @@ export function CompanyBankFields({ control }: CompanyBankFieldsProps) {
       {/* Info Box */}
       <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 p-4 border border-blue-200 dark:border-blue-900">
         <div className="flex gap-3">
-          <Landmark className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+          <Landmark className="size-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
           <div className="space-y-1">
             <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
               Bankdaten für Rechnungen

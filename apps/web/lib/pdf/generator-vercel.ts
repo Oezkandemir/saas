@@ -23,14 +23,14 @@ export interface PDFOptions {
  */
 export async function generatePDFFromHTML(
   _html: string,
-  _options: PDFOptions = {},
+  _options: PDFOptions = {}
 ): Promise<Buffer> {
   // This function is kept for compatibility but we use generatePDFFromDocument instead
   // HTML-based generation is not supported with @react-pdf/renderer
   // We need to use the React component approach
   throw new Error(
     "generatePDFFromHTML wird nicht mehr unterstützt.\n\n" +
-      "Bitte verwenden Sie generatePDFFromDocument mit React-PDF-Komponenten.",
+      "Bitte verwenden Sie generatePDFFromDocument mit React-PDF-Komponenten."
   );
 }
 
@@ -40,7 +40,7 @@ export async function generatePDFFromHTML(
 export async function uploadPDFToStorage(
   pdfBuffer: Buffer,
   documentId: string,
-  userId: string,
+  userId: string
 ): Promise<string> {
   try {
     const fileName = `documents/${userId}/${documentId}.pdf`;
@@ -68,7 +68,7 @@ export async function uploadPDFToStorage(
         fileName,
       });
       throw new Error(
-        `Failed to upload PDF to storage: ${error.message || JSON.stringify(error)}`,
+        `Failed to upload PDF to storage: ${error.message || JSON.stringify(error)}`
       );
     }
 
@@ -99,7 +99,7 @@ export async function uploadPDFToStorage(
 export async function generateAndUploadPDF(
   document: Document,
   _htmlContent: string, // Kept for compatibility but not used
-  _options?: PDFOptions,
+  _options?: PDFOptions
 ): Promise<string> {
   try {
     logger.debug("Starting PDF generation for document:", document.id);
@@ -143,11 +143,11 @@ export async function generateAndUploadPDF(
     const pdfHeader = pdfBuffer.toString(
       "ascii",
       0,
-      Math.min(4, pdfBuffer.length),
+      Math.min(4, pdfBuffer.length)
     );
     if (pdfHeader !== "%PDF") {
       throw new Error(
-        `Invalid PDF generated. Header: ${pdfHeader}, Buffer length: ${pdfBuffer.length}`,
+        `Invalid PDF generated. Header: ${pdfHeader}, Buffer length: ${pdfBuffer.length}`
       );
     }
 
@@ -160,7 +160,7 @@ export async function generateAndUploadPDF(
     const pdfUrl = await uploadPDFToStorage(
       pdfBuffer,
       document.id,
-      document.user_id,
+      document.user_id
     );
 
     logger.debug("PDF uploaded successfully, URL:", pdfUrl);
@@ -194,7 +194,7 @@ export async function generateAndUploadPDF(
  */
 export async function generatePDFInBackground(
   document: Document,
-  htmlContent: string,
+  htmlContent: string
 ): Promise<void> {
   try {
     const pdfUrl = await generateAndUploadPDF(document, htmlContent);
@@ -226,12 +226,12 @@ export async function generatePDFInBackground(
       errorMessage.includes("Puppeteer not available")
     ) {
       logger.debug(
-        `Background PDF generation skipped (Puppeteer not available) for document ${document.id}`,
+        `Background PDF generation skipped (Puppeteer not available) for document ${document.id}`
       );
     } else {
       logger.warn(
         `Background PDF generation failed for document ${document.id}:`,
-        errorMessage,
+        errorMessage
       );
     }
     // Don't throw - let the document creation/update succeed even if PDF generation fails
@@ -243,7 +243,7 @@ export async function generatePDFInBackground(
  */
 export function formatCurrency(
   amount: number,
-  currency: string = "EUR",
+  currency: string = "EUR"
 ): string {
   return new Intl.NumberFormat("de-DE", {
     style: "currency",

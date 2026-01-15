@@ -1,5 +1,5 @@
 import { revalidatePath } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { getDocument } from "@/actions/documents-actions";
 
 import { applyAPIMiddleware } from "@/lib/api-middleware";
@@ -16,7 +16,7 @@ export const maxDuration = 60; // 60 seconds - needed for PDF generation
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // SECURITY: Apply middleware (auth + rate limiting)
@@ -40,7 +40,7 @@ export async function GET(
     if (!document) {
       return NextResponse.json(
         { error: "Document not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -70,7 +70,7 @@ export async function GET(
         } catch (error) {
           // Error fetching PDF, regenerate it
           logger.warn(
-            `Error validating PDF, regenerating: ${error instanceof Error ? error.message : String(error)}`,
+            `Error validating PDF, regenerating: ${error instanceof Error ? error.message : String(error)}`
           );
         }
       }
@@ -116,7 +116,7 @@ export async function GET(
         details:
           process.env.NODE_ENV === "development" ? errorMessage : undefined,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -127,7 +127,7 @@ export async function GET(
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // SECURITY: Apply middleware (auth + rate limiting)
@@ -151,7 +151,7 @@ export async function POST(
     if (!document) {
       return NextResponse.json(
         { error: "Document not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -194,7 +194,7 @@ export async function POST(
         details:
           process.env.NODE_ENV === "development" ? errorMessage : undefined,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

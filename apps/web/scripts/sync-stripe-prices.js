@@ -14,8 +14,8 @@
  * - Output the Price IDs to add to .env.local
  */
 
-const path = require("path");
-const fs = require("fs");
+const path = require("node:path");
+const fs = require("node:fs");
 
 // Try multiple paths for .env.local
 const envPaths = [
@@ -73,12 +73,12 @@ async function findOrCreateProduct(name, description) {
   // First, try to find existing product
   const products = await stripe.products.list({ limit: 100 });
   const existingProduct = products.data.find(
-    (p) => p.name === name && !p.deleted,
+    (p) => p.name === name && !p.deleted
   );
 
   if (existingProduct) {
     console.log(
-      `   ✅ Found existing product: ${name} (${existingProduct.id})`,
+      `   ✅ Found existing product: ${name} (${existingProduct.id})`
     );
 
     // Update description if it's different
@@ -107,7 +107,7 @@ async function findOrCreatePrice(
   amount,
   currency,
   interval,
-  intervalCount,
+  intervalCount
 ) {
   // First, check if a price with these exact parameters already exists
   const prices = await stripe.prices.list({
@@ -123,12 +123,12 @@ async function findOrCreatePrice(
       p.unit_amount === amount &&
       p.currency === currency &&
       p.recurring?.interval === interval &&
-      p.recurring?.interval_count === intervalCount,
+      p.recurring?.interval_count === intervalCount
   );
 
   if (existingPrice) {
     console.log(
-      `      ✅ Found existing price: ${(amount / 100).toFixed(2)} ${currency.toUpperCase()} / ${intervalCount} ${interval} (${existingPrice.id})`,
+      `      ✅ Found existing price: ${(amount / 100).toFixed(2)} ${currency.toUpperCase()} / ${intervalCount} ${interval} (${existingPrice.id})`
     );
     return existingPrice;
   }
@@ -145,7 +145,7 @@ async function findOrCreatePrice(
   });
 
   console.log(
-    `      ✅ Created new price: ${(amount / 100).toFixed(2)} ${currency.toUpperCase()} / ${intervalCount} ${interval} (${price.id})`,
+    `      ✅ Created new price: ${(amount / 100).toFixed(2)} ${currency.toUpperCase()} / ${intervalCount} ${interval} (${price.id})`
   );
   return price;
 }
@@ -155,16 +155,18 @@ async function syncStripePrices() {
   if (!process.env.STRIPE_API_KEY) {
     console.error("❌ STRIPE_API_KEY nicht gefunden");
     console.error(
-      "   Bitte setzen Sie STRIPE_API_KEY in Ihrer .env.local Datei",
+      "   Bitte setzen Sie STRIPE_API_KEY in Ihrer .env.local Datei"
     );
 
     // Debug info
     const envKeys = Object.keys(process.env).filter((k) =>
-      k.includes("STRIPE"),
+      k.includes("STRIPE")
     );
     if (envKeys.length > 0) {
       console.log("\n   Gefundene Stripe-Variablen:");
-      envKeys.forEach((k) => console.log(`     - ${k}`));
+      for (const k of envKeys) {
+        console.log(`     - ${k}`);
+      }
     }
     return;
   }
@@ -174,7 +176,7 @@ async function syncStripePrices() {
 
   console.log(`🚀 Stripe Price Sync (${mode}-Modus)\n`);
   console.log(
-    `   API Key: ${process.env.STRIPE_API_KEY.substring(0, 12)}...${process.env.STRIPE_API_KEY.substring(process.env.STRIPE_API_KEY.length - 4)}\n`,
+    `   API Key: ${process.env.STRIPE_API_KEY.substring(0, 12)}...${process.env.STRIPE_API_KEY.substring(process.env.STRIPE_API_KEY.length - 4)}\n`
   );
 
   const results = {};
@@ -186,7 +188,7 @@ async function syncStripePrices() {
       // Find or create product
       const product = await findOrCreateProduct(
         config.productName,
-        config.productDescription,
+        config.productDescription
       );
 
       results[config.productName] = {
@@ -205,7 +207,7 @@ async function syncStripePrices() {
           priceConfigItem.amount,
           priceConfigItem.currency,
           priceConfigItem.interval,
-          priceConfigItem.intervalCount,
+          priceConfigItem.intervalCount
         );
 
         results[config.productName].prices[interval] = {
@@ -221,7 +223,7 @@ async function syncStripePrices() {
     }
 
     // Output results
-    console.log("\n" + "=".repeat(60));
+    console.log(`\n${"=".repeat(60)}`);
     console.log("✅ SYNC ABGESCHLOSSEN\n");
     console.log("📝 Fügen Sie diese Price IDs zu Ihrer .env.local hinzu:\n");
 
@@ -241,7 +243,7 @@ async function syncStripePrices() {
         const currency = priceInfo.currency.toUpperCase();
         const envVar = priceInfo.envVar;
         console.log(
-          `${envVar}=${priceInfo.priceId}  # ${currency} ${amount} / ${interval}`,
+          `${envVar}=${priceInfo.priceId}  # ${currency} ${amount} / ${interval}`
         );
       }
       console.log("");

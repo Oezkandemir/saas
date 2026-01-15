@@ -1,4 +1,4 @@
-import { LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 import { ModernPageHeader } from "@/components/layout/modern-page-header";
 
@@ -25,7 +25,7 @@ export function DashboardHeader({
     <ModernPageHeader
       title={heading}
       description={text}
-      icon={Icon ? <Icon className="h-5 w-5 text-primary" /> : undefined}
+      icon={Icon ? <Icon className="size-5 text-primary" /> : undefined}
       showBackButton={showBackButton}
       backHref={backHref}
       actions={actions || children}

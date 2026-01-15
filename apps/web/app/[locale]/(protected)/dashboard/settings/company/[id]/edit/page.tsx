@@ -1,11 +1,10 @@
+import { Building2 } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 import { getCompanyProfile } from "@/actions/company-profiles-actions";
-import { Building2 } from "lucide-react";
-
-import { getCurrentUser } from "@/lib/session";
-import { Card, CardContent } from "@/components/ui/card";
 import { CompanyProfileForm } from "@/components/company-settings/company-profile-form";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Card, CardContent } from "@/components/ui/card";
+import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +24,7 @@ export default async function EditCompanyProfilePage({
     <UnifiedPageLayout
       title={`Profil bearbeiten: ${profile.profile_name}`}
       description="Aktualisieren Sie die Informationen dieses Firmenprofils"
-      icon={<Building2 className="h-4 w-4 text-primary" />}
+      icon={<Building2 className="size-4 text-primary" />}
       showBackButton
       backHref={`/dashboard/settings/company/${profile.id}`}
     >

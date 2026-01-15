@@ -1,11 +1,10 @@
-import { redirect } from "next/navigation";
-import { getUserPreferences } from "@/actions/preferences-actions";
 import { Settings } from "lucide-react";
+import { redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { constructMetadata } from "@/lib/utils";
+import { getUserPreferences } from "@/actions/preferences-actions";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { PreferencesPanel } from "@/components/settings/preferences-panel";
+import { constructMetadata } from "@/lib/utils";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -32,7 +31,7 @@ export default async function PreferencesPage() {
     <UnifiedPageLayout
       title={t("title")}
       description={t("applicationPreferencesDescription")}
-      icon={<Settings className="h-4 w-4 text-primary" />}
+      icon={<Settings className="size-4 text-primary" />}
       contentClassName="max-w-4xl"
     >
       <PreferencesPanel initialPreferences={result.data} />

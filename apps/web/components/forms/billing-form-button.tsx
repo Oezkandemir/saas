@@ -1,14 +1,13 @@
 "use client";
 
 import { useTransition } from "react";
-import { generateUserPolar } from "@/actions/generate-user-polar";
-import { SubscriptionPlan, UserSubscriptionPlan } from "@/types";
 import { toast } from "sonner";
-
-import { logger } from "@/lib/logger";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button } from "@/components/ui/button";
+import { generateUserPolar } from "@/actions/generate-user-polar";
 import { Icons } from "@/components/shared/icons";
+import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { logger } from "@/lib/logger";
+import type { SubscriptionPlan, UserSubscriptionPlan } from "@/types";
 
 interface BillingFormButtonProps {
   offer: SubscriptionPlan;
@@ -21,7 +20,7 @@ export function BillingFormButton({
   offer,
   subscriptionPlan,
 }: BillingFormButtonProps) {
-  let [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const userCurrentProductId = subscriptionPlan.polarProductId;
   const selectedPolarId = offer.polarIds?.[year ? "yearly" : "monthly"];
@@ -34,7 +33,7 @@ export function BillingFormButton({
     if (!selectedPolarId) {
       toast.error(
         "Dieser Plan ist noch nicht verfügbar. Bitte konfigurieren Sie die Polar Product IDs.",
-        { duration: 8000 },
+        { duration: 8000 }
       );
       return;
     }
@@ -86,21 +85,17 @@ export function BillingFormButton({
         </>
       ) : isDisabled ? (
         <>Not Available</>
+      ) : isCurrentPlan ? (
+        <>
+          <Icons.check className="mr-2 size-4" /> Current Plan
+        </>
+      ) : subscriptionPlan.isPaid ? (
+        <>
+          <Icons.billing className="mr-2 size-4" /> Change Plan
+        </>
       ) : (
         <>
-          {isCurrentPlan ? (
-            <>
-              <Icons.check className="mr-2 size-4" /> Current Plan
-            </>
-          ) : subscriptionPlan.isPaid ? (
-            <>
-              <Icons.billing className="mr-2 size-4" /> Change Plan
-            </>
-          ) : (
-            <>
-              <Icons.arrowRight className="mr-2 size-4" /> Upgrade
-            </>
-          )}
+          <Icons.arrowRight className="mr-2 size-4" /> Upgrade
         </>
       )}
     </Button>

@@ -1,9 +1,9 @@
+import { FileText, Plus } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getDocumentTemplates } from "@/actions/document-templates-actions";
-import { FileText, Plus } from "lucide-react";
-
-import { getCurrentUser } from "@/lib/session";
+import { DocumentTemplatesList } from "@/components/documents/document-templates-list";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,8 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DocumentTemplatesList } from "@/components/documents/document-templates-list";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -30,11 +29,11 @@ export default async function TemplatesPage() {
     <UnifiedPageLayout
       title="Rechnungs-Templates"
       description="Verwalten Sie Ihre Rechnungs- und Angebots-Templates mit individuellem Branding"
-      icon={<FileText className="h-4 w-4 text-primary" />}
+      icon={<FileText className="size-4 text-primary" />}
       actions={
         <Link href="/dashboard/settings/templates/new">
           <Button className="gap-2">
-            <Plus className="h-4 w-4" />
+            <Plus className="size-4" />
             Neues Template
           </Button>
         </Link>

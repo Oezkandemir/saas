@@ -1,10 +1,9 @@
 import Image from "next/image";
-import { InfoLdg } from "@/types";
 import { getTranslations } from "next-intl/server";
-
-import { cn } from "@/lib/utils";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { cn } from "@/lib/utils";
+import type { InfoLdg } from "@/types";
 
 interface InfoLandingProps {
   data: InfoLdg;
@@ -37,7 +36,7 @@ export default async function InfoLanding({
   // Function to get localized list item content
   const getLocalizedListItem = (
     item: { title: string; description: string; icon?: string },
-    index: number,
+    index: number
   ) => {
     const itemKey = itemKeyMap[infoKey]?.[index];
 
@@ -95,7 +94,7 @@ export default async function InfoLanding({
         <div
           className={cn(
             "overflow-hidden rounded-xl border lg:-m-4",
-            reverse ? "order-1" : "order-2",
+            reverse ? "order-1" : "order-2"
           )}
         >
           <div className="aspect-video">

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 import { logger } from "@/lib/logger";
 import { createLoginSession } from "@/lib/session-tracking";
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     logger.error("Error in auth callback:", error);
     return NextResponse.redirect(
-      new URL("/login?error=callback_error", request.url),
+      new URL("/login?error=callback_error", request.url)
     );
   }
 }

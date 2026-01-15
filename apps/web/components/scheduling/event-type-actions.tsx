@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { Copy, Power, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { toast } from "sonner";
 import {
   deleteEventType,
   duplicateEventType,
-  toggleEventType,
   type EventType,
+  toggleEventType,
 } from "@/actions/scheduling/event-types-actions";
-import { Copy, Power, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
 
 import {
   AlertDialog,
@@ -51,11 +51,11 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
       toast.success(
         eventType.is_active
           ? t("deactivated") || "Event type deactivated"
-          : t("activated") || "Event type activated",
+          : t("activated") || "Event type activated"
       );
 
       router.refresh();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("toggleError") || "Failed to update event type");
     } finally {
       setIsToggling(false);
@@ -82,7 +82,7 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
 
       router.push(`/dashboard/scheduling/event-types/${result.data?.id}`);
       router.refresh();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("duplicateError") || "Failed to duplicate event type");
     } finally {
       setIsDuplicating(false);
@@ -104,7 +104,7 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
       toast.success(t("deleted") || "Event type deleted");
       router.push("/dashboard/scheduling");
       router.refresh();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("deleteError") || "Failed to delete event type");
     } finally {
       setIsDeleting(false);
@@ -122,7 +122,7 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
           disabled={isToggling}
           className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
         >
-          <Power className="h-3.5 w-3.5" />
+          <Power className="size-3.5" />
           <span className="text-xs">
             {eventType.is_active
               ? t("deactivate") || "Deaktivieren"
@@ -136,10 +136,8 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
           disabled={isDuplicating}
           className="gap-1.5 w-full bg-foreground text-background hover:bg-foreground/90"
         >
-          <Copy className="h-3.5 w-3.5" />
-          <span className="text-xs">
-            {t("duplicate") || "Duplizieren"}
-          </span>
+          <Copy className="size-3.5" />
+          <span className="text-xs">{t("duplicate") || "Duplizieren"}</span>
         </Button>
         <Button
           variant="default"
@@ -147,7 +145,7 @@ export function EventTypeActions({ eventType }: EventTypeActionsProps) {
           onClick={() => setShowDeleteDialog(true)}
           className="gap-1.5 w-full bg-foreground text-background hover:bg-destructive hover:text-destructive-foreground font-medium"
         >
-          <Trash2 className="h-3.5 w-3.5" />
+          <Trash2 className="size-3.5" />
           <span className="text-xs">{t("delete") || "Löschen"}</span>
         </Button>
       </div>

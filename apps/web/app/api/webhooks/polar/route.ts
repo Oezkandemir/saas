@@ -1,30 +1,36 @@
 import { revalidateTag } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
-
-import { env } from "@/env.mjs";
+import { type NextRequest, NextResponse } from "next/server";
 import { pricingData } from "@/config/subscriptions";
+import { env } from "@/env.mjs";
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
 
 /**
  * Helper function to get plan name from product ID
  */
-function getPlanNameFromProductId(productId: string | null | undefined): string {
+function getPlanNameFromProductId(
+  productId: string | null | undefined
+): string {
   if (!productId) return "Free";
-  
+
   for (const plan of pricingData) {
-    if (plan.polarIds?.monthly === productId || plan.polarIds?.yearly === productId) {
+    if (
+      plan.polarIds?.monthly === productId ||
+      plan.polarIds?.yearly === productId
+    ) {
       return plan.title;
     }
   }
-  
+
   return `Unknown Plan (${productId})`;
 }
 
 /**
  * Helper function to get user display info for logging
  */
-async function getUserDisplayInfo(userId: string): Promise<{ name: string; email: string } | null> {
+async function getUserDisplayInfo(
+  userId: string
+): Promise<{ name: string; email: string } | null> {
   try {
     // Get user data from users table (has email and name)
     const { data: userData } = await supabaseAdmin
@@ -32,24 +38,25 @@ async function getUserDisplayInfo(userId: string): Promise<{ name: string; email
       .select("email, name")
       .eq("id", userId)
       .single();
-    
+
     if (!userData) {
       return null;
     }
-    
+
     // Try to get display_name from user_profiles for better name
     const { data: profileData } = await supabaseAdmin
       .from("user_profiles")
       .select("display_name")
       .eq("user_id", userId)
       .single();
-    
+
     // Prioritize display_name from profile, then name from users, then email prefix
-    const displayName = profileData?.display_name || 
-                       userData.name || 
-                       userData.email?.split("@")[0] || 
-                       "Unknown";
-    
+    const displayName =
+      profileData?.display_name ||
+      userData.name ||
+      userData.email?.split("@")[0] ||
+      "Unknown";
+
     return {
       name: displayName,
       email: userData.email || "Unknown",
@@ -76,7 +83,7 @@ export async function POST(req: NextRequest) {
     const event = JSON.parse(body);
 
     logger.info(
-      `Processing Polar webhook event: ${event.type}, eventId: ${event.id}, eventType: ${event.type}`,
+      `Processing Polar webhook event: ${event.type}, eventId: ${event.id}, eventType: ${event.type}`
     );
 
     switch (event.type) {
@@ -102,7 +109,7 @@ export async function POST(req: NextRequest) {
     logger.error("Error processing Polar webhook", error);
     return NextResponse.json(
       { error: "Webhook processing failed", message: error.message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -119,7 +126,7 @@ async function handleCheckoutSucceeded(data: any) {
 
     const planName = getPlanNameFromProductId(productId);
     logger.info(
-      `Checkout succeeded: Email ${customerEmail} → Plan: ${planName}`,
+      `Checkout succeeded: Email ${customerEmail} → Plan: ${planName}`
     );
 
     if (!customerEmail) {
@@ -164,11 +171,12 @@ async function handleSubscriptionUpdated(data: any) {
     const subscriptionId = subscription.id;
     const customerId = subscription.customer_id;
     const productId = subscription.product_id;
-    const customerEmail = subscription.customer?.email || subscription.customer_email;
+    const customerEmail =
+      subscription.customer?.email || subscription.customer_email;
 
     const planName = getPlanNameFromProductId(productId);
     logger.info(
-      `Subscription updated: ${planName} (${productId}), status: ${subscription.status}, customerEmail: ${customerEmail}`,
+      `Subscription updated: ${planName} (${productId}), status: ${subscription.status}, customerEmail: ${customerEmail}`
     );
 
     let userData: { id: string } | null = null;
@@ -189,7 +197,7 @@ async function handleSubscriptionUpdated(data: any) {
     // If not found by customer ID, try to find by subscription ID
     if ((userError || !userData) && subscriptionId) {
       logger.info(
-        `User not found by customer ID, trying subscription ID: ${subscriptionId}`,
+        `User not found by customer ID, trying subscription ID: ${subscriptionId}`
       );
       const result = await supabaseAdmin
         .from("users")
@@ -204,7 +212,7 @@ async function handleSubscriptionUpdated(data: any) {
     // If still not found, try subscriptions table
     if ((userError || !userData) && subscriptionId) {
       logger.info(
-        `User not found in users table, trying subscriptions table: ${subscriptionId}`,
+        `User not found in users table, trying subscriptions table: ${subscriptionId}`
       );
       const result = await supabaseAdmin
         .from("subscriptions")
@@ -227,7 +235,7 @@ async function handleSubscriptionUpdated(data: any) {
     // If still not found and we have customer email, try to find by email
     if ((userError || !userData) && customerEmail) {
       logger.info(
-        `User not found by subscription ID, trying email: ${customerEmail}`,
+        `User not found by subscription ID, trying email: ${customerEmail}`
       );
       const result = await supabaseAdmin
         .from("users")
@@ -242,7 +250,7 @@ async function handleSubscriptionUpdated(data: any) {
     if (userError || !userData) {
       logger.error(
         `User not found for subscription: ${subscriptionId}, customerId: ${customerId}, email: ${customerEmail}`,
-        userError,
+        userError
       );
       return;
     }
@@ -256,7 +264,7 @@ async function handleSubscriptionUpdated(data: any) {
     // Get user display info for logging
     const userInfo = await getUserDisplayInfo(userData.id);
     logger.info(
-      `Successfully synced subscription: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || customerEmail}) → Plan: ${planName}`,
+      `Successfully synced subscription: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || customerEmail}) → Plan: ${planName}`
     );
   } catch (error: any) {
     logger.error("Error handling subscription updated", error);
@@ -282,7 +290,7 @@ async function handleSubscriptionCanceled(data: any) {
     if (userError || !userData) {
       logger.error(
         `User not found for canceled subscription: ${subscriptionId}`,
-        userError,
+        userError
       );
       return;
     }
@@ -291,7 +299,7 @@ async function handleSubscriptionCanceled(data: any) {
     const userInfo = await getUserDisplayInfo(userData.id);
     const planName = getPlanNameFromProductId(userData.polar_product_id);
     logger.info(
-      `Subscription canceled: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"}) → Plan: ${planName}`,
+      `Subscription canceled: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"}) → Plan: ${planName}`
     );
 
     // Update user subscription to canceled
@@ -401,7 +409,7 @@ async function syncPolarSubscription(userId: string, subscriptionId: string) {
     const userInfo = await getUserDisplayInfo(userId);
     const planName = getPlanNameFromProductId(productId);
     logger.info(
-      `Synced Polar subscription: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"}) → Plan: ${planName}, Status: ${status}`,
+      `Synced Polar subscription: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"}) → Plan: ${planName}, Status: ${status}`
     );
   } catch (error: any) {
     logger.error("Error syncing Polar subscription", error);
@@ -420,7 +428,7 @@ async function updateUserPolarData(
     polar_product_id?: string | null;
     polar_current_period_end?: string | null;
     payment_provider?: string;
-  },
+  }
 ) {
   const { error } = await supabaseAdmin
     .from("users")

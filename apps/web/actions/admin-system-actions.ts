@@ -92,7 +92,7 @@ export async function getDatabaseTableStats(): Promise<{
           indexSize,
           totalSize,
         };
-      } catch (error) {
+      } catch (_error) {
         // Skip tables that don't exist or have errors
         return null;
       }
@@ -129,7 +129,7 @@ export async function getSystemMetrics(): Promise<{
       .select("*")
       .gte(
         "created_at",
-        new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+        new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
       )
       .order("created_at", { ascending: false })
       .limit(100);
@@ -207,7 +207,7 @@ export async function getDatabaseInfo(): Promise<{
  * Clear old system errors
  */
 export async function clearOldErrors(
-  daysOld: number = 30,
+  daysOld: number = 30
 ): Promise<QuickActionResult> {
   try {
     const user = await getCurrentUser();
@@ -338,12 +338,12 @@ export async function getStorageStats(): Promise<{
           size: formatBytes(totalSize),
           fileCount: files?.length || 0,
         };
-      }),
+      })
     );
 
     const totalSize = bucketStats.reduce(
       (sum, bucket) => sum + parseBytes(bucket.size),
-      0,
+      0
     );
 
     return {
@@ -402,7 +402,7 @@ function formatBytes(bytes: number): string {
   const k = 1024;
   const sizes = ["B", "KB", "MB", "GB", "TB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+  return `${Math.round((bytes / k ** i) * 100) / 100} ${sizes[i]}`;
 }
 
 function parseBytes(sizeStr: string): number {

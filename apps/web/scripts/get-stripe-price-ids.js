@@ -49,7 +49,7 @@ async function getPriceIds() {
         const intervalCount = price.recurring?.interval_count || 1;
 
         console.log(
-          `      - ${currency} ${amount} / ${intervalCount} ${interval}`,
+          `      - ${currency} ${amount} / ${intervalCount} ${interval}`
         );
         console.log(`        Price ID: ${price.id}`);
         console.log(`        ✅ Use this ID in your .env.local\n`);
@@ -57,7 +57,7 @@ async function getPriceIds() {
     }
 
     console.log(
-      "\n📝 Copy the Price IDs above and add them to your .env.local:",
+      "\n📝 Copy the Price IDs above and add them to your .env.local:"
     );
     console.log("   NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID=price_xxxxx");
     console.log("   NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID=price_xxxxx");
@@ -72,6 +72,3 @@ async function getPriceIds() {
 }
 
 getPriceIds();
-
-
-

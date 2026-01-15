@@ -79,7 +79,7 @@ export type AvailabilityOverride = {
  * Upsert weekly availability rule (create or update)
  */
 export async function upsertWeeklyAvailability(
-  input: z.infer<typeof weeklyAvailabilitySchema>,
+  input: z.infer<typeof weeklyAvailabilitySchema>
 ): Promise<ActionResult<AvailabilityRule>> {
   const user = await getCurrentUser();
 
@@ -211,7 +211,7 @@ export async function upsertWeeklyAvailability(
  * Delete a weekly availability rule
  */
 export async function deleteWeeklyAvailability(
-  id: string,
+  id: string
 ): Promise<ActionResult<null>> {
   const user = await getCurrentUser();
 
@@ -259,7 +259,7 @@ export async function deleteWeeklyAvailability(
  * Get all weekly availability rules for the current user
  */
 export async function getWeeklyAvailability(
-  eventTypeId?: string,
+  eventTypeId?: string
 ): Promise<ActionResult<AvailabilityRule[]>> {
   const user = await getCurrentUser();
 
@@ -319,7 +319,7 @@ export async function getWeeklyAvailability(
  * Create an availability override (holiday, special day, etc.)
  */
 export async function createAvailabilityOverride(
-  input: z.infer<typeof availabilityOverrideSchema>,
+  input: z.infer<typeof availabilityOverrideSchema>
 ): Promise<ActionResult<AvailabilityOverride>> {
   const user = await getCurrentUser();
 
@@ -443,7 +443,7 @@ export async function createAvailabilityOverride(
  */
 export async function updateAvailabilityOverride(
   id: string,
-  input: z.infer<typeof availabilityOverrideSchema>,
+  input: z.infer<typeof availabilityOverrideSchema>
 ): Promise<ActionResult<AvailabilityOverride>> {
   const user = await getCurrentUser();
 
@@ -551,7 +551,7 @@ export async function updateAvailabilityOverride(
  * Delete an availability override
  */
 export async function deleteAvailabilityOverride(
-  id: string,
+  id: string
 ): Promise<ActionResult<null>> {
   const user = await getCurrentUser();
 
@@ -599,7 +599,7 @@ export async function deleteAvailabilityOverride(
  * Get all availability overrides for the current user, optionally filtered by event_type_id
  */
 export async function getAvailabilityOverrides(
-  eventTypeId?: string,
+  eventTypeId?: string
 ): Promise<ActionResult<AvailabilityOverride[]>> {
   const user = await getCurrentUser();
 

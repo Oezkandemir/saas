@@ -1,6 +1,6 @@
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { getPublicSystemStatus } from "@/actions/public-system-status";
 import { Link } from "@/i18n/routing";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 export async function SystemStatusLink() {
   try {
@@ -27,7 +27,7 @@ export async function SystemStatusLink() {
         )}
       </Link>
     );
-  } catch (error) {
+  } catch (_error) {
     // On error, show neutral status
     return (
       <Link

@@ -1,16 +1,15 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import {
   createContext,
-  ReactNode,
+  type ReactNode,
   useContext,
   useEffect,
   useState,
 } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-
-import { logger } from "@/lib/logger";
 import { useSupabase } from "@/components/supabase-provider";
+import { logger } from "@/lib/logger";
 
 type NotificationsContextType = {
   refetchAll: () => Promise<void>;
@@ -89,13 +88,13 @@ export function NotificationsProvider({
 
     window.addEventListener(
       "notifications-changed",
-      handleNotificationsChanged,
+      handleNotificationsChanged
     );
 
     return () => {
       window.removeEventListener(
         "notifications-changed",
-        handleNotificationsChanged,
+        handleNotificationsChanged
       );
     };
   }, [userId, queryClient]);

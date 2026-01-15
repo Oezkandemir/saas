@@ -77,7 +77,7 @@ export async function getSystemStatusOverview(): Promise<
  */
 export async function getRecentErrors(
   limit: number = 50,
-  component?: SystemComponent,
+  component?: SystemComponent
 ): Promise<
   | { success: true; errors: SystemErrorRecord[] }
   | { success: false; message: string }
@@ -144,7 +144,7 @@ export async function getRecentErrors(
  * Mark error as resolved
  */
 export async function resolveError(
-  errorId: string,
+  errorId: string
 ): Promise<{ success: boolean; message: string }> {
   try {
     const supabase = await createClient();
@@ -355,7 +355,7 @@ export async function performHealthCheck(): Promise<{
  * @param limit Number of errors to delete (default: 50)
  */
 export async function deleteOldestErrors(
-  limit: number = 50,
+  limit: number = 50
 ): Promise<{ success: boolean; message: string; count?: number }> {
   try {
     const supabase = await createClient();
@@ -425,7 +425,7 @@ export async function deleteOldestErrors(
  * @param daysOld Number of days old errors should be before deletion
  */
 export async function deleteOldResolvedErrors(
-  daysOld: number = 30,
+  daysOld: number = 30
 ): Promise<{ success: boolean; message: string; count?: number }> {
   try {
     const supabase = await createClient();

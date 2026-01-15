@@ -1,19 +1,16 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { Customer } from "@/actions/customers-actions";
-import { sendCustomerEmail } from "@/actions/send-customer-email";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Mail, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import type { Customer } from "@/actions/customers-actions";
+import { sendCustomerEmail } from "@/actions/send-customer-email";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +20,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 type EmailFormValues = {
   subject: string;
@@ -96,7 +96,7 @@ export function SendEmailDialog({ customer, trigger }: SendEmailDialogProps) {
       <DialogTrigger asChild>
         {trigger || (
           <Button variant="outline" size="sm" className="gap-2">
-            <Mail className="h-4 w-4" />
+            <Mail className="size-4" />
             {t("send")}
           </Button>
         )}
@@ -104,7 +104,7 @@ export function SendEmailDialog({ customer, trigger }: SendEmailDialogProps) {
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
+            <Mail className="size-5" />
             {t("title", { name: customer.name })}
           </DialogTitle>
           <DialogDescription>
@@ -154,12 +154,12 @@ export function SendEmailDialog({ customer, trigger }: SendEmailDialogProps) {
             <Button type="submit" disabled={isPending} className="gap-2">
               {isPending ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="size-4 animate-spin" />
                   {t("sending")}
                 </>
               ) : (
                 <>
-                  <Send className="h-4 w-4" />
+                  <Send className="size-4" />
                   {t("send")}
                 </>
               )}

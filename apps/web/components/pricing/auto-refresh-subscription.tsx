@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
 import { getUserPlan } from "@/actions/get-user-plan";
 import { refreshSubscription } from "@/actions/refresh-subscription";
-import { toast } from "sonner";
 
 import { logger } from "@/lib/logger";
 
@@ -12,7 +12,7 @@ import { logger } from "@/lib/logger";
  * Automatically refreshes subscription data periodically when user is authenticated
  * This ensures that changes made in Polar Customer Portal are reflected automatically
  * Works globally across all pages, not just billing page
- * 
+ *
  * Note: Uses polling instead of Realtime because subscription updates come from
  * external Polar API webhooks, not direct database changes. Polling interval is
  * optimized to balance freshness with server load.
@@ -49,7 +49,7 @@ export function AutoRefreshSubscription() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [router, pathname]);
+  }, [pathname, checkAndRefresh]);
 
   async function checkAndRefresh() {
     // Prevent multiple simultaneous refreshes

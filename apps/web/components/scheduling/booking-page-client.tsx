@@ -1,12 +1,5 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import {
-  getPublicOverrides,
-  getPublicSlots,
-  type AvailableSlot,
-} from "@/actions/scheduling/bookings-actions";
-import type { EventType } from "@/actions/scheduling/event-types-actions";
 import {
   addDays,
   addMonths,
@@ -37,14 +30,16 @@ import {
   Video,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import {
+  type AvailableSlot,
+  getPublicOverrides,
+  getPublicSlots,
+} from "@/actions/scheduling/bookings-actions";
+import type { EventType } from "@/actions/scheduling/event-types-actions";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { BookingFormDrawer } from "./booking-form-drawer";
 
@@ -70,11 +65,11 @@ export function BookingPageClient({
   // Use initialDate from server (which is already the next available date)
   const initialDateObj = new Date(initialDate);
   initialDateObj.setHours(0, 0, 0, 0);
-  
+
   // Today's date for comparison (to mark today and disable past dates)
   const todayDate = new Date();
   todayDate.setHours(0, 0, 0, 0);
-  
+
   const [selectedDate, setSelectedDate] = useState(initialDateObj);
   const [currentMonth, setCurrentMonth] = useState(() => {
     return startOfMonth(initialDateObj);
@@ -83,7 +78,7 @@ export function BookingPageClient({
   const [slots, setSlots] = useState<AvailableSlot[]>(initialSlots);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [unavailableDates, setUnavailableDates] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -121,14 +116,14 @@ export function BookingPageClient({
         } else {
           setSlots([]);
         }
-      } catch (error) {
+      } catch (_error) {
         setSlots([]);
       } finally {
         setIsLoadingSlots(false);
         setSelectedSlot(null);
       }
     },
-    [eventType.slug],
+    [eventType.slug]
   );
 
   // Load slots when date changes - use transition for non-blocking updates
@@ -137,7 +132,7 @@ export function BookingPageClient({
     if (isInitialMount.current) {
       const currentDateStr = format(selectedDate, "yyyy-MM-dd");
       const initialDateStr = format(new Date(initialDate), "yyyy-MM-dd");
-      
+
       // If it's the initial date and we have slots, skip loading
       if (currentDateStr === initialDateStr && initialSlots.length > 0) {
         isInitialMount.current = false;
@@ -150,13 +145,7 @@ export function BookingPageClient({
     startTransition(() => {
       loadSlotsForDate(selectedDate);
     });
-  }, [
-    selectedDate,
-    eventType.slug,
-    loadSlotsForDate,
-    initialDate,
-    initialSlots.length,
-  ]);
+  }, [selectedDate, loadSlotsForDate, initialDate, initialSlots.length]);
 
   // Generate calendar dates for current month
   const monthStart = startOfMonth(currentMonth);
@@ -234,7 +223,7 @@ export function BookingPageClient({
             size="sm"
             className="flex gap-2 items-center"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="size-4" />
             <span>{t("back") || "Zurück"}</span>
           </Button>
         </div>
@@ -244,8 +233,8 @@ export function BookingPageClient({
           <CardContent className="pt-3 pb-2 sm:pt-4 sm:pb-3">
             <div className="flex gap-2 justify-between items-center sm:gap-4">
               <div className="flex flex-1 gap-2 items-center min-w-0 sm:gap-3">
-                <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 rounded-lg sm:w-10 sm:h-10 bg-primary/10">
-                  <Calendar className="w-4 h-4 sm:h-5 sm:w-5 text-primary" />
+                <div className="flex shrink-0 justify-center items-center size-8 rounded-lg sm:size-10 bg-primary/10">
+                  <Calendar className="size-4 sm:size-5 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h1 className="text-lg font-bold truncate sm:text-xl">
@@ -253,7 +242,7 @@ export function BookingPageClient({
                   </h1>
                   {eventType.owner.name && (
                     <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                      <User className="w-3 h-3" />
+                      <User className="size-3" />
                       {t("with") || "with"} {eventType.owner.name}
                     </p>
                   )}
@@ -270,14 +259,14 @@ export function BookingPageClient({
 
         {/* Slim Event Details Grid */}
         <div
-          className={`grid gap-2 grid-cols-2 sm:grid-cols-2 ${selectedSlot && selectedSlot.max_participants && selectedSlot.available_places !== undefined ? "md:grid-cols-2 lg:grid-cols-4" : "md:grid-cols-2 lg:grid-cols-3"}`}
+          className={`grid gap-2 grid-cols-2 sm:grid-cols-2 ${selectedSlot?.max_participants && selectedSlot.available_places !== undefined ? "md:grid-cols-2 lg:grid-cols-4" : "md:grid-cols-2 lg:grid-cols-3"}`}
         >
           {/* Duration */}
           <Card>
-            <CardContent className="pt-3 pb-3">
+            <CardContent className="py-3">
               <div className="flex gap-2 items-center">
                 <div className="p-1.5 rounded-md bg-blue-100 dark:bg-blue-900/20">
-                  <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <Clock className="size-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-muted-foreground mb-0.5">
@@ -294,10 +283,10 @@ export function BookingPageClient({
           {/* Price */}
           {eventType.price_amount && (
             <Card>
-              <CardContent className="pt-3 pb-3">
+              <CardContent className="py-3">
                 <div className="flex gap-2 items-center">
                   <div className="p-1.5 rounded-md bg-green-100 dark:bg-green-900/20">
-                    <CurrencyIcon className="w-4 h-4 text-green-600 dark:text-green-400" />
+                    <CurrencyIcon className="size-4 text-green-600 dark:text-green-400" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-muted-foreground mb-0.5">
@@ -319,10 +308,10 @@ export function BookingPageClient({
           {/* Location Type */}
           {eventType.location_type && (
             <Card>
-              <CardContent className="pt-3 pb-3">
+              <CardContent className="py-3">
                 <div className="flex gap-2 items-center">
                   <div className="p-1.5 rounded-md bg-purple-100 dark:bg-purple-900/20">
-                    <LocationIcon className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <LocationIcon className="size-4 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-muted-foreground mb-0.5">
@@ -343,14 +332,13 @@ export function BookingPageClient({
           )}
 
           {/* Participants Info */}
-          {selectedSlot &&
-            selectedSlot.max_participants &&
+          {selectedSlot?.max_participants &&
             selectedSlot.available_places !== undefined && (
               <Card>
-                <CardContent className="pt-3 pb-3">
+                <CardContent className="py-3">
                   <div className="flex gap-2 items-center">
                     <div className="p-1.5 rounded-md bg-orange-100 dark:bg-orange-900/20">
-                      <Users className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                      <Users className="size-4 text-orange-600 dark:text-orange-400" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-muted-foreground mb-0.5">
@@ -386,10 +374,10 @@ export function BookingPageClient({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="w-6 h-6 sm:h-7 sm:w-7"
+                    className="size-6 sm:size-7"
                     onClick={handlePreviousMonth}
                   >
-                    <ChevronLeft className="w-3 h-3 sm:h-4 sm:w-4" />
+                    <ChevronLeft className="size-3 sm:size-4" />
                   </Button>
                   <span className="text-xs sm:text-sm font-medium min-w-[100px] sm:min-w-[120px] text-center">
                     {format(currentMonth, "MMMM yyyy", { locale: dateLocale })}
@@ -398,10 +386,10 @@ export function BookingPageClient({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="w-6 h-6 sm:h-7 sm:w-7"
+                    className="size-6 sm:size-7"
                     onClick={handleNextMonth}
                   >
-                    <ChevronRight className="w-3 h-3 sm:h-4 sm:w-4" />
+                    <ChevronRight className="size-3 sm:size-4" />
                   </Button>
                 </div>
               </div>
@@ -450,7 +438,8 @@ export function BookingPageClient({
                                   ? "font-semibold bg-muted hover:bg-muted/80 active:bg-primary/20"
                                   : isCurrentMonth
                                     ? "hover:bg-muted active:bg-primary/20"
-                                    : ""}`}
+                                    : ""
+                          }`}
                       >
                         {format(date, "d", { locale: dateLocale })}
                       </button>
@@ -478,7 +467,7 @@ export function BookingPageClient({
               {isLoadingSlots || isPending ? (
                 <div className="py-6 text-center sm:py-8 text-muted-foreground">
                   <div className="flex flex-col gap-2 items-center">
-                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                    <Loader2 className="size-5 animate-spin text-primary" />
                     <span className="text-sm">
                       {t("loadingSlots") || "Loading available times..."}
                     </span>
@@ -494,7 +483,7 @@ export function BookingPageClient({
                     const slotStart = new Date(slot.start);
                     const slotEnd = new Date(slot.end);
                     const durationMinutes = Math.round(
-                      (slotEnd.getTime() - slotStart.getTime()) / (1000 * 60),
+                      (slotEnd.getTime() - slotStart.getTime()) / (1000 * 60)
                     );
                     const durationHours = Math.floor(durationMinutes / 60);
                     const durationMins = durationMinutes % 60;
@@ -530,8 +519,8 @@ export function BookingPageClient({
                       >
                         <div className="flex gap-2 justify-between items-center sm:gap-3">
                           <div className="flex flex-1 gap-2 items-center min-w-0 sm:gap-3">
-                            <div className="flex flex-shrink-0 justify-center items-center w-8 h-8 bg-yellow-100 rounded-full sm:w-10 sm:h-10 dark:bg-yellow-900/20">
-                              <Clock className="w-4 h-4 text-yellow-600 sm:h-5 sm:w-5 dark:text-yellow-400" />
+                            <div className="flex shrink-0 justify-center items-center size-8 bg-yellow-100 rounded-full sm:size-10 dark:bg-yellow-900/20">
+                              <Clock className="size-4 text-yellow-600 sm:size-5 dark:text-yellow-400" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex gap-2 items-center">
@@ -553,7 +542,7 @@ export function BookingPageClient({
                                   <div className="flex items-center gap-1 mt-0.5 sm:mt-1">
                                     {slot.available_places > 0 ? (
                                       <>
-                                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
+                                        <div className="size-1.5 sm:size-2 rounded-full bg-green-500 shrink-0"></div>
                                         <span className="text-[10px] sm:text-xs text-muted-foreground truncate">
                                           {t("availablePlaces", {
                                             places: slot.available_places,
@@ -563,7 +552,7 @@ export function BookingPageClient({
                                       </>
                                     ) : (
                                       <>
-                                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-500 flex-shrink-0"></div>
+                                        <div className="size-1.5 sm:size-2 rounded-full bg-red-500 shrink-0"></div>
                                         <span className="text-[10px] sm:text-xs text-red-600 dark:text-red-400 font-medium">
                                           {t("fullyBooked") || "Ausgebucht"}
                                         </span>
@@ -575,7 +564,9 @@ export function BookingPageClient({
                           </div>
                           <Button
                             onClick={() => handleSlotSelect(slot)}
-                            className={isSelected ? "flex-shrink-0 bg-primary" : "flex-shrink-0"}
+                            className={
+                              isSelected ? "shrink-0 bg-primary" : "shrink-0"
+                            }
                             size="sm"
                             disabled={
                               slot.available_places !== undefined &&

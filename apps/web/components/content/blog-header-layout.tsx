@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useParams } from "next/navigation";
-import { Link } from "@/i18n/routing";
 import { Check, List } from "lucide-react";
+import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { Drawer } from "vaul";
+import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 import { BLOG_CATEGORIES } from "@/config/blog";
+import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 export function BlogHeaderLayout() {
   const [open, setOpen] = useState(false);
@@ -36,10 +36,7 @@ export function BlogHeaderLayout() {
         </div>
 
         <nav className="mt-8 hidden w-full md:flex">
-          <ul
-            role="list"
-            className="flex w-full flex-1 gap-x-2 border-b text-[15px] text-muted-foreground"
-          >
+          <ul className="flex w-full flex-1 gap-x-2 border-b text-[15px] text-muted-foreground">
             <CategoryLink title={t("all")} href="/blog" active={!slug} />
             {BLOG_CATEGORIES.map((category) => (
               <CategoryLink
@@ -70,7 +67,7 @@ export function BlogHeaderLayout() {
             <div className="sticky top-0 z-20 flex w-full items-center justify-center bg-inherit">
               <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
             </div>
-            <ul role="list" className="mb-14 w-full p-3 text-muted-foreground">
+            <ul className="mb-14 w-full p-3 text-muted-foreground">
               <CategoryLink
                 title={t("all")}
                 href="/blog"
@@ -126,7 +123,7 @@ const CategoryLink = ({
             {
               "border-purple-600 text-foreground dark:border-purple-400/80":
                 active,
-            },
+            }
           )}
         >
           <div className="px-3 pb-3">{title}</div>

@@ -1,9 +1,10 @@
 "use client";
 
-import type { PlanUser } from "@/actions/admin-plan-actions";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
-
+import type { PlanUser } from "@/actions/admin-plan-actions";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -12,11 +13,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Avatar,
-  AvatarFallback,
-} from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 
 interface PlanUsersTableProps {
   users: PlanUser[];
@@ -48,7 +44,7 @@ export function PlanUsersTable({ users }: PlanUsersTableProps) {
     {} as Record<
       string,
       { plan_title: string; plan_key: string; users: PlanUser[] }
-    >,
+    >
   );
 
   return (
@@ -77,7 +73,7 @@ export function PlanUsersTable({ users }: PlanUsersTableProps) {
                 <TableRow key={user.user_id}>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <Avatar className="h-6 w-6">
+                      <Avatar className="size-6">
                         <AvatarFallback className="text-xs">
                           {user.user_name
                             ? user.user_name
@@ -86,7 +82,7 @@ export function PlanUsersTable({ users }: PlanUsersTableProps) {
                                 .join("")
                                 .toUpperCase()
                                 .slice(0, 2)
-                            : user.user_email[0].toUpperCase()}
+                            : user.user_email[0]?.toUpperCase() || "?"}
                         </AvatarFallback>
                       </Avatar>
                       <span className="font-medium text-sm">
@@ -135,13 +131,13 @@ export function PlanUsersTable({ users }: PlanUsersTableProps) {
                       format(
                         new Date(user.polar_current_period_end),
                         "dd.MM.yyyy",
-                        { locale: de },
+                        { locale: de }
                       )
                     ) : user.stripe_current_period_end ? (
                       format(
                         new Date(user.stripe_current_period_end),
                         "dd.MM.yyyy",
-                        { locale: de },
+                        { locale: de }
                       )
                     ) : (
                       <span className="text-muted-foreground">-</span>

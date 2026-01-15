@@ -12,7 +12,7 @@ export async function loadPuppeteer() {
     const moduleName = "puppeteer";
 
     // Create a dynamic import using a template literal to prevent static analysis
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval
+
     const dynamicImport = new Function("specifier", "return import(specifier)");
 
     const puppeteerModule = await dynamicImport(moduleName);
@@ -27,7 +27,7 @@ export async function loadPuppeteer() {
 
     if (typeof puppeteer.launch !== "function") {
       throw new Error(
-        "Puppeteer module loaded but launch function is not available",
+        "Puppeteer module loaded but launch function is not available"
       );
     }
 
@@ -50,14 +50,14 @@ export async function loadPuppeteer() {
           "  cd apps/web\n" +
           "  pnpm install puppeteer\n\n" +
           "Nach der Installation starten Sie den Server neu.\n\n" +
-          `Originalfehler: ${errorMessage}`,
+          `Originalfehler: ${errorMessage}`
       );
     }
 
     throw new Error(
       `Fehler beim Laden von Puppeteer: ${errorMessage}\n\n` +
         "Stellen Sie sicher, dass Puppeteer installiert ist:\n" +
-        "  cd apps/web && pnpm install puppeteer",
+        "  cd apps/web && pnpm install puppeteer"
     );
   }
 }

@@ -1,10 +1,9 @@
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-
+import { POST } from "@/app/api/admin/update-user-role/route";
 import { requireCSRFToken } from "@/lib/csrf";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { getCurrentUser } from "@/lib/session";
-import { POST } from "@/app/api/admin/update-user-role/route";
 
 // Mock dependencies
 vi.mock("@/lib/session");
@@ -30,7 +29,7 @@ vi.mock("@/lib/db-admin", () => ({
                 user_metadata: {},
               },
             },
-          }),
+          })
         ),
         updateUserById: vi.fn(() => Promise.resolve({ error: null })),
       },
@@ -52,7 +51,7 @@ describe("Admin Route - Update User Role", () => {
       {
         method: "POST",
         body: JSON.stringify({ userId: "user-123", role: "USER" }),
-      },
+      }
     );
 
     const response = await POST(request);
@@ -72,7 +71,7 @@ describe("Admin Route - Update User Role", () => {
       {
         method: "POST",
         body: JSON.stringify({ userId: "user-456", role: "USER" }),
-      },
+      }
     );
 
     const response = await POST(request);
@@ -92,7 +91,7 @@ describe("Admin Route - Update User Role", () => {
       {
         method: "POST",
         body: JSON.stringify({ userId: "user-123", role: "USER" }),
-      },
+      }
     );
 
     const response = await POST(request);
@@ -118,7 +117,7 @@ describe("Admin Route - Update User Role", () => {
       {
         method: "POST",
         body: JSON.stringify({ userId: "user-123", role: "USER" }),
-      },
+      }
     );
 
     const response = await POST(request);
@@ -144,7 +143,7 @@ describe("Admin Route - Update User Role", () => {
       {
         method: "POST",
         body: JSON.stringify({ userId: "invalid-uuid", role: "USER" }),
-      },
+      }
     );
 
     const response = await POST(request);
@@ -170,7 +169,7 @@ describe("Admin Route - Update User Role", () => {
       {
         method: "POST",
         body: JSON.stringify({ userId: "admin-123", role: "USER" }),
-      },
+      }
     );
 
     const response = await POST(request);
@@ -201,7 +200,7 @@ describe("Admin Route - Update User Role", () => {
           userId: "550e8400-e29b-41d4-a716-446655440000",
           role: "USER",
         }),
-      },
+      }
     );
 
     const response = await POST(request);

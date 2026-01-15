@@ -1,29 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Crown, Search, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import {
   getUserStats,
   searchUsers,
   type UserSearchResult,
 } from "@/actions/user-search-actions";
-import { Crown, Search, Users } from "lucide-react";
-
-import { logger } from "@/lib/logger";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { logger } from "@/lib/logger";
 
 export function UserSearch() {
   const router = useRouter();
@@ -92,7 +83,7 @@ export function UserSearch() {
       const filtered = users.filter(
         (user) =>
           user.name?.toLowerCase().includes(query) ||
-          user.email?.toLowerCase().includes(query),
+          user.email?.toLowerCase().includes(query)
       );
       setFilteredUsers(filtered);
     }

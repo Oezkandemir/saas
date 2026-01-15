@@ -1,14 +1,13 @@
 import { Shield } from "lucide-react";
-
-import { Skeleton } from "@/components/ui/skeleton";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminPanelLoading() {
   return (
     <UnifiedPageLayout
       title="Admin Panel"
       description="Access only for users with ADMIN role."
-      icon={<Shield className="w-4 h-4 text-primary" />}
+      icon={<Shield className="size-4 text-primary" />}
       contentClassName="space-y-6"
     >
       {/* Statistics */}

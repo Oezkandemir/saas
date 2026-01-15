@@ -1,9 +1,9 @@
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getUserNotifications,
   markAllNotificationsAsRead,
 } from "@/actions/user-profile-actions";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { NotificationsPopover } from "@/components/shared/notifications-popover";
 
@@ -98,7 +98,7 @@ describe("NotificationsPopover", () => {
     render(
       <NotificationsPopover>
         <button>Test Trigger</button>
-      </NotificationsPopover>,
+      </NotificationsPopover>
     );
 
     expect(screen.getByText("Test Trigger")).toBeInTheDocument();
@@ -108,7 +108,7 @@ describe("NotificationsPopover", () => {
     render(
       <NotificationsPopover>
         <button>Test Trigger</button>
-      </NotificationsPopover>,
+      </NotificationsPopover>
     );
 
     // Initially the content should not be visible
@@ -127,7 +127,7 @@ describe("NotificationsPopover", () => {
     render(
       <NotificationsPopover>
         <button>Test Trigger</button>
-      </NotificationsPopover>,
+      </NotificationsPopover>
     );
 
     // Open the popover
@@ -144,7 +144,7 @@ describe("NotificationsPopover", () => {
     render(
       <NotificationsPopover>
         <button>Test Trigger</button>
-      </NotificationsPopover>,
+      </NotificationsPopover>
     );
 
     // Open the popover
@@ -160,7 +160,7 @@ describe("NotificationsPopover", () => {
     render(
       <NotificationsPopover>
         <button>Test Trigger</button>
-      </NotificationsPopover>,
+      </NotificationsPopover>
     );
 
     // Open the popover

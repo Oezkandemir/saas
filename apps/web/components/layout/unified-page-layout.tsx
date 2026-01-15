@@ -1,11 +1,11 @@
 "use client";
 
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
 import { ModernPageHeader } from "./modern-page-header";
-import { StatusBar, StatusBarItem } from "./status-bar";
+import { StatusBar, type StatusBarItem } from "./status-bar";
 
 interface UnifiedPageLayoutProps {
   title: string;
@@ -36,7 +36,7 @@ export function UnifiedPageLayout({
     <div className={cn("flex flex-col h-full", className)}>
       {/* Page Header - Directly below main header, border-bottom for separation, symmetric padding */}
       <div className="bg-background border-b border-border">
-        <div className="px-4 xl:px-8 pt-[5px] pb-[5px]">
+        <div className="px-4 xl:px-8 py-[5px]">
           <ModernPageHeader
             title={title}
             description={description}
@@ -61,8 +61,8 @@ export function UnifiedPageLayout({
       {/* Content - Konsistente Padding, reduzierte Gaps */}
       <div
         className={cn(
-          "flex-1 overflow-y-auto px-4 xl:px-8 py-4 sm:py-6",
-          contentClassName,
+          "flex-1 overflow-y-auto p-4 xl:px-8 sm:py-6",
+          contentClassName
         )}
       >
         {children}

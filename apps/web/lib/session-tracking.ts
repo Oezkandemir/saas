@@ -12,7 +12,7 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function createLoginSession(
   userId: string,
-  expiresAt: Date,
+  expiresAt: Date
 ): Promise<void> {
   try {
     const supabase = await createClient();
@@ -68,7 +68,7 @@ export async function createLoginSession(
  * @param sessionToken Session token
  */
 export async function updateSessionActivity(
-  _sessionToken: string,
+  _sessionToken: string
 ): Promise<void> {
   try {
     const supabase = await createClient();
@@ -89,7 +89,7 @@ export async function updateSessionActivity(
  */
 export async function logFailedLogin(
   userId: string | null,
-  failureReason: string,
+  failureReason: string
 ): Promise<void> {
   try {
     const supabase = await createClient();
@@ -126,7 +126,7 @@ export async function logFailedLogin(
  * @param sessionToken Session token from Supabase
  */
 export async function updateLoginHistoryWith2FA(
-  _sessionToken: string,
+  _sessionToken: string
 ): Promise<void> {
   try {
     const supabase = await createClient();

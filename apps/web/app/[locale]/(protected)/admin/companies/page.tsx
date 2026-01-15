@@ -1,11 +1,16 @@
+import { Building2 } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getUsersWithCompanyProfiles } from "@/actions/admin-company-profiles-actions";
-import { Building2 } from "lucide-react";
 import { getLocale, setRequestLocale } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
-import { constructMetadata } from "@/lib/utils";
+import { getUsersWithCompanyProfiles } from "@/actions/admin-company-profiles-actions";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -14,14 +19,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { getCurrentUser } from "@/lib/session";
+import { constructMetadata } from "@/lib/utils";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -60,7 +59,7 @@ export default async function AdminCompaniesPage(props: Props) {
       <UnifiedPageLayout
         title="Firmenprofile"
         description="Übersicht aller Nutzer mit Firmenprofilen"
-        icon={<Building2 className="h-4 w-4 text-primary" />}
+        icon={<Building2 className="size-4 text-primary" />}
       >
         <Card>
           <CardContent className="pt-8 text-center">
@@ -82,18 +81,18 @@ export default async function AdminCompaniesPage(props: Props) {
   const totalCompanies = companies.length;
   const totalCustomers = companies.reduce(
     (sum, c) => sum + (c.customer_count || 0),
-    0,
+    0
   );
   const totalRevenue = companies.reduce(
     (sum, c) => sum + (c.total_revenue || 0),
-    0,
+    0
   );
 
   return (
     <UnifiedPageLayout
       title="Firmenprofile"
       description="Übersicht aller Nutzer mit Firmenprofilen"
-      icon={<Building2 className="h-4 w-4 text-primary" />}
+      icon={<Building2 className="size-4 text-primary" />}
       contentClassName="space-y-6"
     >
       {/* Primary Metric */}

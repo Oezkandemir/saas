@@ -9,7 +9,7 @@
 export function getAriaLabel(
   label: string,
   required?: boolean,
-  description?: string,
+  description?: string
 ): string {
   let ariaLabel = label;
   if (required) {
@@ -27,7 +27,7 @@ export function getAriaLabel(
 export function getAriaDescribedBy(
   descriptionId?: string,
   errorId?: string,
-  helpId?: string,
+  helpId?: string
 ): string | undefined {
   const ids = [descriptionId, errorId, helpId].filter(Boolean);
   return ids.length > 0 ? ids.join(" ") : undefined;
@@ -65,7 +65,7 @@ export const keyboardHandlers = {
       onUp?: () => void,
       onDown?: () => void,
       onLeft?: () => void,
-      onRight?: () => void,
+      onRight?: () => void
     ) =>
     (e: React.KeyboardEvent) => {
       switch (e.key) {
@@ -98,7 +98,7 @@ export const focusManagement = {
    */
   trapFocus: (element: HTMLElement) => {
     const focusableElements = element.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
     const firstElement = focusableElements[0] as HTMLElement;
     const lastElement = focusableElements[
@@ -148,7 +148,7 @@ export const announce = {
    */
   toScreenReader: (
     message: string,
-    priority: "polite" | "assertive" = "polite",
+    priority: "polite" | "assertive" = "polite"
   ) => {
     const announcement = document.createElement("div");
     announcement.setAttribute("role", "status");
@@ -225,12 +225,12 @@ export function isFocusable(element: HTMLElement): boolean {
  */
 export function getNextFocusable(
   container: HTMLElement,
-  currentElement: HTMLElement,
+  currentElement: HTMLElement
 ): HTMLElement | null {
   const focusableElements = Array.from(
     container.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-    ),
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )
   );
 
   const currentIndex = focusableElements.indexOf(currentElement);
@@ -242,12 +242,12 @@ export function getNextFocusable(
  */
 export function getPreviousFocusable(
   container: HTMLElement,
-  currentElement: HTMLElement,
+  currentElement: HTMLElement
 ): HTMLElement | null {
   const focusableElements = Array.from(
     container.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-    ),
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )
   );
 
   const currentIndex = focusableElements.indexOf(currentElement);
@@ -257,6 +257,3 @@ export function getPreviousFocusable(
     null
   );
 }
-
-
-

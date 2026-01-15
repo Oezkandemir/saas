@@ -62,7 +62,7 @@ export async function sendCustomerEmail(input: SendCustomerEmailInput) {
     if (!process.env.RESEND_API_KEY) {
       logger.warn("RESEND_API_KEY is not configured");
       throw new Error(
-        "E-Mail-Dienst ist nicht konfiguriert. Bitte kontaktieren Sie den Administrator.",
+        "E-Mail-Dienst ist nicht konfiguriert. Bitte kontaktieren Sie den Administrator."
       );
     }
 
@@ -74,7 +74,7 @@ export async function sendCustomerEmail(input: SendCustomerEmailInput) {
         : customer.email;
 
     logger.info(
-      `Sending email to ${customer.email} (actual recipient: ${recipientEmail})`,
+      `Sending email to ${customer.email} (actual recipient: ${recipientEmail})`
     );
 
     // Send email via Resend
@@ -85,7 +85,7 @@ export async function sendCustomerEmail(input: SendCustomerEmailInput) {
       subject: input.subject,
       html: htmlContent,
       headers: {
-        "X-Entity-Ref-ID": new Date().getTime().toString(),
+        "X-Entity-Ref-ID": Date.now().toString(),
       },
     });
 
@@ -105,7 +105,7 @@ export async function sendCustomerEmail(input: SendCustomerEmailInput) {
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Ein Fehler ist beim Senden der E-Mail aufgetreten.",
+        : "Ein Fehler ist beim Senden der E-Mail aufgetreten."
     );
   }
 }

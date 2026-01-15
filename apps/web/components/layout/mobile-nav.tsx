@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Menu, X } from "lucide-react";
-
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Icons } from "@/components/shared/icons";
+import { useSupabase } from "@/components/supabase-provider";
 import { marketingConfig } from "@/config/marketing";
 import { siteConfig } from "@/config/site";
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
-import { Icons } from "@/components/shared/icons";
-import { useSupabase } from "@/components/supabase-provider";
 
 export function NavMobile() {
   const { session, supabase } = useSupabase();
@@ -61,7 +60,7 @@ export function NavMobile() {
         onClick={() => setOpen(!open)}
         className={cn(
           "fixed right-16 top-2.5 z-50 rounded-full p-2 transition-colors duration-200 hover:bg-muted focus:outline-none active:bg-muted md:hidden",
-          open && "hover:bg-muted active:bg-muted",
+          open && "hover:bg-muted active:bg-muted"
         )}
       >
         {open ? (
@@ -74,7 +73,7 @@ export function NavMobile() {
       <nav
         className={cn(
           "fixed inset-0 z-20 hidden w-full overflow-auto bg-background px-5 py-16 lg:hidden",
-          open && "block",
+          open && "block"
         )}
       >
         <ul className="grid divide-y divide-muted">
@@ -142,7 +141,6 @@ export function NavMobile() {
             </>
           )}
         </ul>
-
 
         <div className="mt-5 flex items-center justify-end space-x-4">
           <Link href={siteConfig.links.github} target="_blank" rel="noreferrer">

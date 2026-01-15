@@ -1,13 +1,5 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { type Booking } from "@/actions/scheduling/bookings-actions";
-import {
-  toggleEventType,
-  type EventType,
-} from "@/actions/scheduling/event-types-actions";
 import {
   BookOpen,
   Calendar,
@@ -24,14 +16,21 @@ import {
   TrendingUp,
   XCircle,
 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
-
-import { getURL } from "@/lib/utils";
+import type { Booking } from "@/actions/scheduling/bookings-actions";
+import {
+  type EventType,
+  toggleEventType,
+} from "@/actions/scheduling/event-types-actions";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { getURL } from "@/lib/utils";
 
 import { BookingDrawer } from "./booking-drawer";
 import { BookingsList } from "./bookings-list";
@@ -65,12 +64,12 @@ export function SchedulingDashboard({
   const [isPending, startTransition] = useTransition();
   const [copiedLinks, setCopiedLinks] = useState<Record<string, boolean>>({});
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
-    null,
+    null
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [createDrawerOpen, setCreateDrawerOpen] = useState(false);
   const [selectedEventTypeId, setSelectedEventTypeId] = useState<string | null>(
-    null,
+    null
   );
   const [eventTypeDrawerOpen, setEventTypeDrawerOpen] = useState(false);
 
@@ -85,7 +84,7 @@ export function SchedulingDashboard({
     now.getDate(),
     0,
     0,
-    0,
+    0
   );
   const todayEnd = new Date(
     now.getFullYear(),
@@ -94,12 +93,12 @@ export function SchedulingDashboard({
     23,
     59,
     59,
-    999,
+    999
   );
 
   // All scheduled bookings (include bookings without status or with status "scheduled")
   const scheduledBookings = bookings.filter(
-    (b) => !b.status || b.status === "scheduled",
+    (b) => !b.status || b.status === "scheduled"
   );
 
   // Today's bookings: all bookings that start today (scheduled)
@@ -109,7 +108,7 @@ export function SchedulingDashboard({
       return startDate >= todayStart && startDate <= todayEnd;
     })
     .sort(
-      (a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime(),
+      (a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime()
     );
 
   // Upcoming bookings: all future bookings (excluding today's bookings which are shown separately)
@@ -119,7 +118,7 @@ export function SchedulingDashboard({
       return startDate > todayEnd;
     })
     .sort(
-      (a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime(),
+      (a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime()
     );
 
   // Past bookings: all past bookings
@@ -129,7 +128,7 @@ export function SchedulingDashboard({
       return startDate < todayStart;
     })
     .sort(
-      (a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime(),
+      (a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime()
     );
 
   const isLive = activeEventTypes.length > 0;
@@ -141,7 +140,7 @@ export function SchedulingDashboard({
         toast.success(
           eventType.is_active
             ? t("eventTypes.deactivated") || "Event Type deaktiviert"
-            : t("eventTypes.activated") || "Event Type aktiviert",
+            : t("eventTypes.activated") || "Event Type aktiviert"
         );
         router.refresh();
       } else {
@@ -153,14 +152,14 @@ export function SchedulingDashboard({
   const handleGoLive = async () => {
     if (activeEventTypes.length === eventTypes.length) {
       toast.info(
-        t("dashboard.alreadyLive") || "Alle Event Types sind bereits aktiv",
+        t("dashboard.alreadyLive") || "Alle Event Types sind bereits aktiv"
       );
       return;
     }
 
     startTransition(async () => {
       const promises = inactiveEventTypes.map((et) =>
-        toggleEventType(et.id, true),
+        toggleEventType(et.id, true)
       );
       const results = await Promise.all(promises);
       const successCount = results.filter((r) => r.success).length;
@@ -168,7 +167,7 @@ export function SchedulingDashboard({
       if (successCount > 0) {
         toast.success(
           t("dashboard.goLiveSuccess", { count: successCount }) ||
-            `${successCount} Event Type(s) aktiviert`,
+            `${successCount} Event Type(s) aktiviert`
         );
         router.refresh();
       } else {
@@ -180,15 +179,14 @@ export function SchedulingDashboard({
   const handlePauseAll = async () => {
     if (activeEventTypes.length === 0) {
       toast.info(
-        t("dashboard.alreadyPaused") ||
-          "Alle Event Types sind bereits pausiert",
+        t("dashboard.alreadyPaused") || "Alle Event Types sind bereits pausiert"
       );
       return;
     }
 
     startTransition(async () => {
       const promises = activeEventTypes.map((et) =>
-        toggleEventType(et.id, false),
+        toggleEventType(et.id, false)
       );
       const results = await Promise.all(promises);
       const successCount = results.filter((r) => r.success).length;
@@ -196,7 +194,7 @@ export function SchedulingDashboard({
       if (successCount > 0) {
         toast.success(
           t("dashboard.pauseSuccess", { count: successCount }) ||
-            `${successCount} Event Type(s) pausiert`,
+            `${successCount} Event Type(s) pausiert`
         );
         router.refresh();
       } else {
@@ -219,7 +217,7 @@ export function SchedulingDashboard({
       setTimeout(() => {
         setCopiedLinks((prev) => ({ ...prev, [eventType.id]: false }));
       }, 2000);
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("dashboard.copyError") || "Fehler beim Kopieren");
     }
   };
@@ -233,7 +231,7 @@ export function SchedulingDashboard({
         <div className="flex items-center gap-3">
           {isLive ? (
             <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-              <CheckCircle2 className="h-5 w-5" />
+              <CheckCircle2 className="size-5" />
               <span className="text-sm font-medium">
                 {activeEventTypes.length} / {eventTypes.length}{" "}
                 {t("dashboard.activeEventTypes") || "aktiv"}
@@ -241,7 +239,7 @@ export function SchedulingDashboard({
             </div>
           ) : (
             <div className="flex items-center gap-2 text-muted-foreground">
-              <XCircle className="h-5 w-5" />
+              <XCircle className="size-5" />
               <span className="text-sm font-medium">
                 {t("dashboard.pausedStatus") || "Pausiert"}
               </span>
@@ -257,9 +255,9 @@ export function SchedulingDashboard({
               disabled={isPending || activeEventTypes.length === 0}
             >
               {isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <Loader2 className="size-4 animate-spin mr-2" />
               ) : (
-                <PowerOff className="h-4 w-4 mr-2" />
+                <PowerOff className="size-4 mr-2" />
               )}
               {t("dashboard.pauseAll") || "Alle pausieren"}
             </Button>
@@ -270,15 +268,15 @@ export function SchedulingDashboard({
               disabled={isPending || eventTypes.length === 0}
             >
               {isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <Loader2 className="size-4 animate-spin mr-2" />
               ) : (
-                <Rocket className="h-4 w-4 mr-2" />
+                <Rocket className="size-4 mr-2" />
               )}
               {t("dashboard.goLive") || "Live gehen"}
             </Button>
           )}
           <Button size="sm" onClick={() => setCreateDrawerOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="size-4 mr-2" />
             {t("eventTypes.createNew") || "Neu"}
           </Button>
         </div>
@@ -288,15 +286,15 @@ export function SchedulingDashboard({
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
-            <LayoutDashboard className="h-4 w-4" />
+            <LayoutDashboard className="size-4" />
             {t("tabs.dashboard") || "Dashboard"}
           </TabsTrigger>
           <TabsTrigger value="bookings" className="flex items-center gap-2">
-            <BookOpen className="h-4 w-4" />
+            <BookOpen className="size-4" />
             {t("bookings.title") || "Buchungen"}
           </TabsTrigger>
           <TabsTrigger value="events" className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
+            <Calendar className="size-4" />
             {t("eventTypes.title") || "Events"}
           </TabsTrigger>
         </TabsList>
@@ -317,7 +315,7 @@ export function SchedulingDashboard({
                       {statistics.totalBookings}
                     </p>
                   </div>
-                  <Calendar className="h-5 w-5 text-muted-foreground" />
+                  <Calendar className="size-5 text-muted-foreground" />
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
                   <div>
@@ -328,7 +326,7 @@ export function SchedulingDashboard({
                       {statistics.todayBookings}
                     </p>
                   </div>
-                  <Calendar className="h-5 w-5 text-muted-foreground" />
+                  <Calendar className="size-5 text-muted-foreground" />
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
                   <div>
@@ -339,7 +337,7 @@ export function SchedulingDashboard({
                       {statistics.yesterdayBookings}
                     </p>
                   </div>
-                  <Calendar className="h-5 w-5 text-muted-foreground" />
+                  <Calendar className="size-5 text-muted-foreground" />
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
                   <div>
@@ -351,7 +349,7 @@ export function SchedulingDashboard({
                       {statistics.totalRevenue.toFixed(2)} {statistics.currency}
                     </p>
                   </div>
-                  <TrendingUp className="h-5 w-5 text-muted-foreground" />
+                  <TrendingUp className="size-5 text-muted-foreground" />
                 </div>
               </div>
 
@@ -366,7 +364,7 @@ export function SchedulingDashboard({
                       {statistics.todayRevenue.toFixed(2)} {statistics.currency}
                     </p>
                   </div>
-                  <TrendingUp className="h-5 w-5 text-muted-foreground" />
+                  <TrendingUp className="size-5 text-muted-foreground" />
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
                   <div>
@@ -379,7 +377,7 @@ export function SchedulingDashboard({
                       {statistics.currency}
                     </p>
                   </div>
-                  <TrendingUp className="h-5 w-5 text-muted-foreground" />
+                  <TrendingUp className="size-5 text-muted-foreground" />
                 </div>
               </div>
             </>
@@ -432,7 +430,7 @@ export function SchedulingDashboard({
                               </span>{" "}
                               <span className="text-green-600 dark:text-green-400 font-medium">
                                 {new Date(
-                                  booking.created_at,
+                                  booking.created_at
                                 ).toLocaleDateString(undefined, {
                                   day: "2-digit",
                                   month: "short",
@@ -445,7 +443,7 @@ export function SchedulingDashboard({
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                      <div className="flex items-center gap-2 ml-4 shrink-0">
                         <div className="text-right">
                           <p className="text-sm font-medium">
                             {startDate.toLocaleTimeString(undefined, {
@@ -462,13 +460,13 @@ export function SchedulingDashboard({
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-8 w-8 p-0"
+                          className="size-8 p-0"
                           onClick={() => {
                             setSelectedBookingId(booking.id);
                             setDrawerOpen(true);
                           }}
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="size-4" />
                         </Button>
                       </div>
                     </div>
@@ -536,7 +534,7 @@ export function SchedulingDashboard({
                                 </span>{" "}
                                 <span className="text-green-600 dark:text-green-400 font-medium">
                                   {new Date(
-                                    booking.created_at,
+                                    booking.created_at
                                   ).toLocaleDateString(undefined, {
                                     day: "2-digit",
                                     month: "short",
@@ -550,7 +548,7 @@ export function SchedulingDashboard({
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                      <div className="flex items-center gap-2 ml-4 shrink-0">
                         <div className="text-right">
                           {booking.event_type && (
                             <p className="text-xs text-muted-foreground truncate">
@@ -561,13 +559,13 @@ export function SchedulingDashboard({
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-8 w-8 p-0"
+                          className="size-8 p-0"
                           onClick={() => {
                             setSelectedBookingId(booking.id);
                             setDrawerOpen(true);
                           }}
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="size-4" />
                         </Button>
                       </div>
                     </div>
@@ -635,7 +633,7 @@ export function SchedulingDashboard({
                                 </span>{" "}
                                 <span className="text-green-600 dark:text-green-400 font-medium">
                                   {new Date(
-                                    booking.created_at,
+                                    booking.created_at
                                   ).toLocaleDateString(undefined, {
                                     day: "2-digit",
                                     month: "short",
@@ -649,7 +647,7 @@ export function SchedulingDashboard({
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                      <div className="flex items-center gap-2 ml-4 shrink-0">
                         <div className="text-right">
                           {booking.event_type && (
                             <p className="text-xs text-muted-foreground truncate">
@@ -660,13 +658,13 @@ export function SchedulingDashboard({
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-8 w-8 p-0"
+                          className="size-8 p-0"
                           onClick={() => {
                             setSelectedBookingId(booking.id);
                             setDrawerOpen(true);
                           }}
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="size-4" />
                         </Button>
                       </div>
                     </div>
@@ -692,7 +690,7 @@ export function SchedulingDashboard({
             </div>
             {eventTypes.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center border border-dashed rounded-lg">
-                <Calendar className="h-8 w-8 text-muted-foreground mb-3" />
+                <Calendar className="size-8 text-muted-foreground mb-3" />
                 <p className="text-sm text-muted-foreground mb-4">
                   {t("eventTypes.empty") || "Noch keine Event Types erstellt"}
                 </p>
@@ -747,24 +745,24 @@ export function SchedulingDashboard({
                         variant="ghost"
                         size="sm"
                         onClick={() => handleCopyLink(eventType)}
-                        className="h-8 w-8 p-0"
+                        className="size-8 p-0"
                       >
                         {copiedLinks[eventType.id] ? (
-                          <Check className="h-4 w-4 text-green-500" />
+                          <Check className="size-4 text-green-500" />
                         ) : (
-                          <Copy className="h-4 w-4" />
+                          <Copy className="size-4" />
                         )}
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-8 w-8 p-0"
+                        className="size-8 p-0"
                         onClick={() => {
                           setSelectedEventTypeId(eventType.id);
                           setEventTypeDrawerOpen(true);
                         }}
                       >
-                        <Settings className="h-4 w-4" />
+                        <Settings className="size-4" />
                       </Button>
                     </div>
                   </div>

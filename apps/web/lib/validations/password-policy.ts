@@ -24,7 +24,7 @@ export const DEFAULT_PASSWORD_POLICY: PasswordPolicy = {
  */
 export function validatePassword(
   password: string,
-  policy: PasswordPolicy = DEFAULT_PASSWORD_POLICY,
+  policy: PasswordPolicy = DEFAULT_PASSWORD_POLICY
 ): {
   isValid: boolean;
   errors: string[];
@@ -36,7 +36,7 @@ export function validatePassword(
   // Length check
   if (password.length < policy.minLength) {
     errors.push(
-      `Password must be at least ${policy.minLength} characters long`,
+      `Password must be at least ${policy.minLength} characters long`
     );
   } else {
     strengthScore += 1;
@@ -66,7 +66,7 @@ export function validatePassword(
   // Special characters check
   if (
     policy.requireSpecialChars &&
-    !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+    !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)
   ) {
     errors.push("Password must contain at least one special character");
   } else if (policy.requireSpecialChars) {
@@ -103,12 +103,12 @@ export const passwordSchema = z
   .string()
   .min(
     DEFAULT_PASSWORD_POLICY.minLength,
-    `Password must be at least ${DEFAULT_PASSWORD_POLICY.minLength} characters`,
+    `Password must be at least ${DEFAULT_PASSWORD_POLICY.minLength} characters`
   )
   .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
   .regex(/[a-z]/, "Password must contain at least one lowercase letter")
   .regex(/[0-9]/, "Password must contain at least one number")
   .regex(
-    /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/,
-    "Password must contain at least one special character",
+    /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/,
+    "Password must contain at least one special character"
   );

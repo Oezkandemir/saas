@@ -1,14 +1,5 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import {
-  convertQuoteToInvoice,
-  deleteDocument,
-  Document,
-  duplicateDocument,
-} from "@/actions/documents-actions";
 import {
   RiArrowDownSFill,
   RiArrowUpSFill,
@@ -16,18 +7,34 @@ import {
   RiMore2Line,
 } from "@remixicon/react";
 import {
+  type ColumnDef,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  useReactTable,
-  type ColumnDef,
   type SortingState,
+  useReactTable,
 } from "@tanstack/react-table";
 import { Check, Copy, FileDown, Pencil, Search, Trash2, X } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import * as React from "react";
 import { toast } from "sonner";
-
+import {
+  convertQuoteToInvoice,
+  type Document,
+  deleteDocument,
+  duplicateDocument,
+} from "@/actions/documents-actions";
+import { StatusBadge as DocumentBadge } from "@/components/shared/status-badge";
 import { ButtonRoot } from "@/components/ui/button";
+import {
+  DropdownMenuRoot as DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   TableBody,
   TableCell,
@@ -37,14 +44,6 @@ import {
   TableRow,
   TableRowDivider,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import {
-  DropdownMenuRoot as DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { StatusBadge as DocumentBadge } from "@/components/shared/status-badge";
 
 interface DocumentsTableProps {
   documents: Document[];
@@ -65,7 +64,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = React.useState<string | null>(
-    null,
+    null
   );
   const [convertingId, setConvertingId] = React.useState<string | null>(null);
   const [duplicatingId, setDuplicatingId] = React.useState<string | null>(null);
@@ -91,7 +90,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
       await deleteDocument(id);
       toast.success(t("toast.deleted"));
       router.refresh();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("toast.deleteError"));
     } finally {
       setDeletingId(null);
@@ -104,7 +103,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
       await convertQuoteToInvoice(id);
       toast.success(t("toast.converted"));
       router.refresh();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("toast.convertError"));
     } finally {
       setConvertingId(null);
@@ -117,7 +116,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
       await duplicateDocument(id);
       toast.success(t("toast.duplicated"));
       router.refresh();
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("toast.duplicateError"));
     } finally {
       setDuplicatingId(null);
@@ -257,9 +256,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
           </button>
         </div>
       ),
-      cell: ({ row }) => (
-        <DocumentBadge status={row.original.status as any} />
-      ),
+      cell: ({ row }) => <DocumentBadge status={row.original.status as any} />,
     },
     {
       id: "amount",
@@ -297,7 +294,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
                 onClick={() => handleDelete(row.original.id)}
                 disabled={deletingId === row.original.id}
               >
-                <Check className="h-3.5 w-3.5 text-destructive" />
+                <Check className="size-3.5 text-destructive" />
               </ButtonRoot>
               <ButtonRoot
                 variant="ghost"
@@ -305,7 +302,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
                 onClick={() => setConfirmDeleteId(null)}
                 disabled={deletingId === row.original.id}
               >
-                <X className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
+                <X className="size-3.5 text-muted-foreground hover:text-foreground" />
               </ButtonRoot>
             </>
           ) : (
@@ -319,7 +316,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
                 duplicatingId === row.original.id
               }
             >
-              <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
+              <Trash2 className="size-3.5 text-muted-foreground hover:text-destructive" />
             </ButtonRoot>
           )}
         </div>
@@ -346,13 +343,13 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
               <Link href={`/dashboard/documents/${row.original.id}`}>
-                <FileDown className="mr-2 h-4 w-4" />
+                <FileDown className="mr-2 size-4" />
                 {t("actions.view")}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href={`/dashboard/documents/${row.original.id}/edit`}>
-                <Pencil className="mr-2 h-4 w-4" />
+                <Pencil className="mr-2 size-4" />
                 {t("actions.edit")}
               </Link>
             </DropdownMenuItem>
@@ -360,7 +357,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
               onClick={() => handleDuplicate(row.original.id)}
               disabled={duplicatingId === row.original.id}
             >
-              <Copy className="mr-2 h-4 w-4" />
+              <Copy className="mr-2 size-4" />
               {t("actions.duplicate")}
             </DropdownMenuItem>
             {row.original.type === "quote" && (
@@ -368,7 +365,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
                 onClick={() => handleConvert(row.original.id)}
                 disabled={convertingId === row.original.id}
               >
-                <FileDown className="mr-2 h-4 w-4" />
+                <FileDown className="mr-2 size-4" />
                 {t("actions.convertToInvoice")}
               </DropdownMenuItem>
             )}
@@ -394,7 +391,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
       {/* Search and Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
             placeholder={t("searchPlaceholder")}
             value={searchQuery}
@@ -436,7 +433,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext(),
+                              header.getContext()
                             )}
                       </TableHead>
                     );
@@ -453,7 +450,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
                         <TableCell key={cell.id}>
                           {flexRender(
                             cell.column.columnDef.cell,
-                            cell.getContext(),
+                            cell.getContext()
                           )}
                         </TableCell>
                       ))}

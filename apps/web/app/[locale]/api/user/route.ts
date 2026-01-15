@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
 import { applyAPIMiddleware } from "@/lib/api-middleware";
 import { supabaseAdmin } from "@/lib/db";

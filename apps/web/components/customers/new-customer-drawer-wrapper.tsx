@@ -14,7 +14,7 @@ export function NewCustomerDrawerWrapper() {
     <NewCustomerDrawer
       trigger={
         <ButtonRoot className="gap-1.5 text-xs sm:text-sm h-8 sm:h-9">
-          <Plus className="h-3.5 w-3.5" />
+          <Plus className="size-3.5" />
           <span className="hidden sm:inline">{t("newCustomer")}</span>
           <span className="sm:hidden">{t("new")}</span>
         </ButtonRoot>

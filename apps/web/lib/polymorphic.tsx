@@ -5,7 +5,7 @@
  * while maintaining type safety
  */
 
-import * as React from "react";
+import type * as React from "react";
 
 type PolymorphicRef<C extends React.ElementType> =
   React.ComponentPropsWithRef<C>["ref"];
@@ -31,7 +31,7 @@ export type PolymorphicComponent<
   DefaultElement extends React.ElementType,
   Props = {},
 > = <C extends React.ElementType = DefaultElement>(
-  props: PolymorphicComponentPropWithRef<C, Props>,
+  props: PolymorphicComponentPropWithRef<C, Props>
 ) => React.ReactElement | null;
 
 export function createPolymorphicComponent<
@@ -40,10 +40,7 @@ export function createPolymorphicComponent<
 >(
   component: React.ForwardRefExoticComponent<
     PolymorphicComponentPropWithRef<DefaultElement, Props>
-  >,
+  >
 ): PolymorphicComponent<DefaultElement, Props> {
   return component as PolymorphicComponent<DefaultElement, Props>;
 }
-
-
-

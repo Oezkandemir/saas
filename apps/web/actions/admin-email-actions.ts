@@ -1,7 +1,7 @@
 "use server";
 
-import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
+import { env } from "@/env.mjs";
 import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseClient } from "@/lib/supabase";
@@ -111,7 +111,7 @@ export async function testResendConnection(): Promise<{
 
 export async function sendTestEmail(
   templateType: EmailTemplate["type"],
-  testEmail: string,
+  testEmail: string
 ): Promise<{
   success: boolean;
   message: string;
@@ -170,7 +170,7 @@ export async function sendTestEmail(
     }
 
     logger.info(
-      `Test email sent successfully for template ${templateType} to ${testEmail}`,
+      `Test email sent successfully for template ${templateType} to ${testEmail}`
     );
     return {
       success: true,

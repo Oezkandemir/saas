@@ -1,14 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import type {
-  EmailTemplate,
-  ResendConfigStatus,
-} from "@/actions/admin-email-actions";
-import {
-  sendTestEmail,
-  testResendConnection,
-} from "@/actions/admin-email-actions";
 import {
   AlertCircle,
   CheckCircle2,
@@ -17,12 +8,20 @@ import {
   Send,
   XCircle,
 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
+import type {
+  EmailTemplate,
+  ResendConfigStatus,
+} from "@/actions/admin-email-actions";
+import {
+  sendTestEmail,
+  testResendConnection,
+} from "@/actions/admin-email-actions";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -31,6 +30,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type EmailTemplatesProps = {
   templates: EmailTemplate[];
@@ -85,7 +85,7 @@ export function EmailTemplates({
       } else {
         toast.error(result.message);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Fehler beim Senden der Test-E-Mail");
     } finally {
       setTestingEmail(null);
@@ -97,21 +97,21 @@ export function EmailTemplates({
       case "configured":
         return (
           <Badge variant="default" className="bg-green-500">
-            <CheckCircle2 className="mr-1 h-3 w-3" />
+            <CheckCircle2 className="mr-1 size-3" />
             Konfiguriert
           </Badge>
         );
       case "partial":
         return (
           <Badge variant="default" className="bg-yellow-500">
-            <AlertCircle className="mr-1 h-3 w-3" />
+            <AlertCircle className="mr-1 size-3" />
             Teilweise
           </Badge>
         );
       case "not_configured":
         return (
           <Badge variant="destructive">
-            <XCircle className="mr-1 h-3 w-3" />
+            <XCircle className="mr-1 size-3" />
             Nicht konfiguriert
           </Badge>
         );
@@ -125,7 +125,7 @@ export function EmailTemplates({
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span className="flex items-center gap-2">
-              <Mail className="h-5 w-5" />
+              <Mail className="size-5" />
               Resend Konfiguration
             </span>
             {getBadge()}
@@ -143,7 +143,7 @@ export function EmailTemplates({
                   variant="outline"
                   className="bg-green-500/10 text-green-700 dark:text-green-400"
                 >
-                  <CheckCircle2 className="mr-1 h-3 w-3" />
+                  <CheckCircle2 className="mr-1 size-3" />
                   Gesetzt
                 </Badge>
               ) : (
@@ -151,7 +151,7 @@ export function EmailTemplates({
                   variant="outline"
                   className="bg-red-500/10 text-red-700 dark:text-red-400"
                 >
-                  <XCircle className="mr-1 h-3 w-3" />
+                  <XCircle className="mr-1 size-3" />
                   Nicht gesetzt
                 </Badge>
               )}
@@ -163,7 +163,7 @@ export function EmailTemplates({
                   variant="outline"
                   className="bg-green-500/10 text-green-700 dark:text-green-400"
                 >
-                  <CheckCircle2 className="mr-1 h-3 w-3" />
+                  <CheckCircle2 className="mr-1 size-3" />
                   Gesetzt
                 </Badge>
               ) : (
@@ -171,7 +171,7 @@ export function EmailTemplates({
                   variant="outline"
                   className="bg-red-500/10 text-red-700 dark:text-red-400"
                 >
-                  <XCircle className="mr-1 h-3 w-3" />
+                  <XCircle className="mr-1 size-3" />
                   Nicht gesetzt
                 </Badge>
               )}
@@ -180,7 +180,7 @@ export function EmailTemplates({
 
           {configStatus.status !== "configured" && (
             <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
+              <AlertCircle className="size-4" />
               <AlertTitle>Konfiguration unvollständig</AlertTitle>
               <AlertDescription>{configStatus.message}</AlertDescription>
             </Alert>
@@ -191,9 +191,9 @@ export function EmailTemplates({
               variant={connectionTestResult.success ? "default" : "destructive"}
             >
               {connectionTestResult.success ? (
-                <CheckCircle2 className="h-4 w-4" />
+                <CheckCircle2 className="size-4" />
               ) : (
-                <XCircle className="h-4 w-4" />
+                <XCircle className="size-4" />
               )}
               <AlertTitle>
                 {connectionTestResult.success
@@ -215,12 +215,12 @@ export function EmailTemplates({
           >
             {testingConnection ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 size-4 animate-spin" />
                 Teste Verbindung...
               </>
             ) : (
               <>
-                <Send className="mr-2 h-4 w-4" />
+                <Send className="mr-2 size-4" />
                 Resend-Verbindung testen
               </>
             )}
@@ -292,12 +292,12 @@ export function EmailTemplates({
                 >
                   {testingEmail === template.id ? (
                     <>
-                      <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                      <Loader2 className="mr-2 size-3 animate-spin" />
                       Sende...
                     </>
                   ) : (
                     <>
-                      <Send className="mr-2 h-3 w-3" />
+                      <Send className="mr-2 size-3" />
                       Test-E-Mail senden
                     </>
                   )}

@@ -1,11 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { exportUserData, exportUserDataCSV } from "@/actions/gdpr-actions";
 import { Download, FileJson, FileSpreadsheet, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-
-import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import { exportUserData, exportUserDataCSV } from "@/actions/gdpr-actions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 
 export function DataExport() {
   const t = useTranslations("GDPR.dataExport");
@@ -49,7 +48,7 @@ export function DataExport() {
         title: t("toast.exportSuccess"),
         description: t("toast.exportSuccessJSON"),
       });
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: t("toast.exportFailed"),
@@ -100,7 +99,7 @@ export function DataExport() {
         title: t("toast.exportSuccess"),
         description: t("toast.exportSuccessCSV"),
       });
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: t("toast.exportFailed"),
@@ -115,7 +114,7 @@ export function DataExport() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Download className="h-5 w-5" />
+          <Download className="size-5" />
           {t("title")}
         </CardTitle>
         <CardDescription>{t("description")}</CardDescription>
@@ -142,12 +141,12 @@ export function DataExport() {
           >
             {isExporting ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 size-4 animate-spin" />
                 {t("exporting")}
               </>
             ) : (
               <>
-                <FileJson className="mr-2 h-4 w-4" />
+                <FileJson className="mr-2 size-4" />
                 {t("exportJSON")}
               </>
             )}
@@ -161,12 +160,12 @@ export function DataExport() {
           >
             {isExporting ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 size-4 animate-spin" />
                 {t("exporting")}
               </>
             ) : (
               <>
-                <FileSpreadsheet className="mr-2 h-4 w-4" />
+                <FileSpreadsheet className="mr-2 size-4" />
                 {t("exportCSV")}
               </>
             )}

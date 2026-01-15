@@ -43,7 +43,7 @@ export type CustomerInput = {
 };
 
 export async function getCustomers(
-  companyProfileId?: string,
+  companyProfileId?: string
 ): Promise<Customer[]> {
   try {
     const user = await getCurrentUser();
@@ -92,7 +92,7 @@ export async function getCustomers(
         .select("*")
         .eq("user_id", user.id)
         .or(
-          `company_profile_id.eq.${companyProfileId},company_profile_id.is.null`,
+          `company_profile_id.eq.${companyProfileId},company_profile_id.is.null`
         )
         .order("created_at", { ascending: false });
 
@@ -141,9 +141,9 @@ export async function getCustomers(
       try {
         logger.error(
           "Raw Supabase error object:",
-          JSON.stringify(error, Object.getOwnPropertyNames(error), 2),
+          JSON.stringify(error, Object.getOwnPropertyNames(error), 2)
         );
-      } catch (e) {
+      } catch (_e) {
         logger.error("Raw Supabase error object (stringified):", String(error));
         logger.error("Error object type:", typeof error);
         logger.error("Error object constructor:", error?.constructor?.name);
@@ -189,7 +189,7 @@ export async function getCustomers(
     try {
       logger.error(
         "Raw caught error:",
-        JSON.stringify(error, Object.getOwnPropertyNames(error), 2),
+        JSON.stringify(error, Object.getOwnPropertyNames(error), 2)
       );
     } catch {
       logger.error("Raw caught error (stringified):", String(error));
@@ -356,14 +356,14 @@ export async function createCustomer(input: CustomerInput): Promise<Customer> {
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+        : "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
     );
   }
 }
 
 export async function updateCustomer(
   id: string,
-  input: CustomerInput,
+  input: CustomerInput
 ): Promise<Customer> {
   try {
     const user = await getCurrentUser();
@@ -450,7 +450,7 @@ export async function updateCustomer(
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+        : "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
     );
   }
 }
@@ -483,7 +483,7 @@ export async function deleteCustomer(id: string): Promise<void> {
     if (error) {
       if (error.code === "23503") {
         throw new Error(
-          "Kunde kann nicht gelöscht werden, da er noch verwendet wird",
+          "Kunde kann nicht gelöscht werden, da er noch verwendet wird"
         );
       }
       throw new Error(`Fehler beim Löschen: ${error.message}`);
@@ -507,7 +507,7 @@ export async function deleteCustomer(id: string): Promise<void> {
         const { logger } = await import("@/lib/logger");
         logger.error(
           "Failed to create customer notification",
-          notificationError,
+          notificationError
         );
       }
     }
@@ -517,7 +517,7 @@ export async function deleteCustomer(id: string): Promise<void> {
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Ein Fehler ist beim Löschen aufgetreten. Bitte versuchen Sie es erneut.",
+        : "Ein Fehler ist beim Löschen aufgetreten. Bitte versuchen Sie es erneut."
     );
   }
 }
@@ -533,7 +533,7 @@ export async function trackCustomerQRCodeScan(
     referrer?: string;
     country?: string;
     ip_address?: string;
-  },
+  }
 ): Promise<void> {
   try {
     // Use static client for public tracking (no authentication required)
@@ -558,7 +558,7 @@ export async function trackCustomerQRCodeScan(
  * Get customer by QR code (public function for QR code scanning)
  */
 export async function getCustomerByQRCode(
-  qrCode: string,
+  qrCode: string
 ): Promise<Customer | null> {
   try {
     const supabase = getSupabaseStatic();

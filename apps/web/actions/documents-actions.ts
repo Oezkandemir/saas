@@ -77,7 +77,7 @@ export type DocumentInput = {
 export async function getDocuments(
   type?: DocumentType,
   customerId?: string,
-  companyProfileId?: string,
+  companyProfileId?: string
 ): Promise<Document[]> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -90,7 +90,7 @@ export async function getDocuments(
       *,
       customer:customers(id, name, email, address_line1, address_line2, city, postal_code, country),
       document_items(*)
-    `,
+    `
   );
 
   if (companyProfileId) {
@@ -133,7 +133,7 @@ export async function getDocuments(
   const documentsWithItems = (data || []).map((doc) => {
     const items = (doc.document_items || []).sort(
       (a: DocumentItem, b: DocumentItem) =>
-        (a.position || 0) - (b.position || 0),
+        (a.position || 0) - (b.position || 0)
     );
     return { ...doc, items };
   });
@@ -147,7 +147,7 @@ export async function getDocuments(
 async function checkDocumentPermission(
   documentId: string,
   userId: string,
-  permission: "view" | "edit_documents" | "delete_documents",
+  permission: "view" | "edit_documents" | "delete_documents"
 ): Promise<boolean> {
   const supabase = await getSupabaseServer();
 
@@ -171,7 +171,7 @@ async function checkDocumentPermission(
   if (document.company_profile_id) {
     return await hasCompanyProfilePermission(
       document.company_profile_id,
-      permission === "view" ? "view" : permission,
+      permission === "view" ? "view" : permission
     );
   }
 
@@ -199,7 +199,7 @@ export async function getDocument(id: string): Promise<Document | null> {
       *,
       customer:customers(id, name, email, address_line1, address_line2, city, postal_code, country),
       document_items(*)
-    `,
+    `
     )
     .eq("id", id)
     .single();
@@ -216,7 +216,7 @@ export async function getDocument(id: string): Promise<Document | null> {
 
   // Items are already loaded via join, just need to sort them
   const items = (data.document_items || []).sort(
-    (a: DocumentItem, b: DocumentItem) => (a.position || 0) - (b.position || 0),
+    (a: DocumentItem, b: DocumentItem) => (a.position || 0) - (b.position || 0)
   );
 
   return { ...data, items };
@@ -224,7 +224,7 @@ export async function getDocument(id: string): Promise<Document | null> {
 
 export async function createDocument(
   type: DocumentType,
-  input: DocumentInput,
+  input: DocumentInput
 ): Promise<Document> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -260,7 +260,7 @@ export async function createDocument(
     {
       p_user_id: user.id,
       p_type: type,
-    },
+    }
   );
 
   if (docNumberError) throw docNumberError;
@@ -343,7 +343,7 @@ export async function createDocument(
                 async (err) => {
                   const { logger } = await import("@/lib/logger");
                   logger.error("Background PDF generation failed:", err);
-                },
+                }
               );
             })
             .catch(async (err) => {
@@ -370,7 +370,7 @@ export async function updateDocument(
   input: Partial<DocumentInput> & {
     status?: DocumentStatus;
     company_profile_id?: string;
-  },
+  }
 ): Promise<Document> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -379,7 +379,7 @@ export async function updateDocument(
   const hasAccess = await checkDocumentPermission(
     id,
     user.id,
-    "edit_documents",
+    "edit_documents"
   );
   if (!hasAccess) {
     throw new Error("Keine Berechtigung zum Bearbeiten dieses Dokuments");
@@ -505,7 +505,7 @@ export async function updateDocument(
 }
 
 export async function convertQuoteToInvoice(
-  quoteId: string,
+  quoteId: string
 ): Promise<Document> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -523,7 +523,7 @@ export async function convertQuoteToInvoice(
     {
       p_user_id: user.id,
       p_type: "invoice",
-    },
+    }
   );
 
   if (docNumberError) throw docNumberError;
@@ -581,7 +581,7 @@ export async function convertQuoteToInvoice(
               generatePDFInBackground(completeInvoice, htmlContent).catch(
                 (err) => {
                   logger.error("Background PDF generation failed:", err);
-                },
+                }
               );
             })
             .catch((err) => {
@@ -608,7 +608,7 @@ export async function deleteDocument(id: string): Promise<void> {
   const hasAccess = await checkDocumentPermission(
     id,
     user.id,
-    "delete_documents",
+    "delete_documents"
   );
   if (!hasAccess) {
     throw new Error("Keine Berechtigung zum Löschen dieses Dokuments");
@@ -684,7 +684,7 @@ export async function duplicateDocument(id: string): Promise<Document> {
     {
       p_user_id: user.id,
       p_type: originalDoc.type,
-    },
+    }
   );
 
   if (docNumberError) throw docNumberError;

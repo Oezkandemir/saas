@@ -85,7 +85,7 @@ export interface TeamInvitationNotificationParams {
  * Create a notification using the database function
  */
 export async function createNotification(
-  params: CreateNotificationParams,
+  params: CreateNotificationParams
 ): Promise<string | null> {
   try {
     const supabase = await createClient();
@@ -132,7 +132,7 @@ export async function createNotification(
  * Create a document notification
  */
 export async function createDocumentNotification(
-  params: DocumentNotificationParams,
+  params: DocumentNotificationParams
 ): Promise<string | null> {
   try {
     const supabase = await createClient();
@@ -163,7 +163,7 @@ export async function createDocumentNotification(
           "message" in error
         ) {
           errorDetails = new Error(
-            String((error as { message: unknown }).message),
+            String((error as { message: unknown }).message)
           );
         } else {
           errorDetails = new Error(String(error));
@@ -198,7 +198,7 @@ export async function createDocumentNotification(
  * Create a customer notification
  */
 export async function createCustomerNotification(
-  params: CustomerNotificationParams,
+  params: CustomerNotificationParams
 ): Promise<string | null> {
   try {
     const supabase = await createClient();
@@ -227,7 +227,7 @@ export async function createCustomerNotification(
           "message" in error
         ) {
           errorDetails = new Error(
-            String((error as { message: unknown }).message),
+            String((error as { message: unknown }).message)
           );
         } else {
           errorDetails = new Error(String(error));
@@ -262,7 +262,7 @@ export async function createCustomerNotification(
  * Create a subscription notification
  */
 export async function createSubscriptionNotification(
-  params: SubscriptionNotificationParams,
+  params: SubscriptionNotificationParams
 ): Promise<string | null> {
   try {
     const supabase = await createClient();
@@ -273,7 +273,7 @@ export async function createSubscriptionNotification(
         p_action: params.action,
         p_plan_name: params.planName || null,
         p_details: params.details || null,
-      },
+      }
     );
 
     if (error) {
@@ -310,7 +310,7 @@ export async function createSubscriptionNotification(
  * Create a security notification
  */
 export async function createSecurityNotification(
-  params: SecurityNotificationParams,
+  params: SecurityNotificationParams
 ): Promise<string | null> {
   try {
     const supabase = await createClient();
@@ -354,7 +354,7 @@ export async function createSecurityNotification(
  * Create a welcome notification for new users
  */
 export async function createWelcomeNotification(
-  userId: string,
+  userId: string
 ): Promise<string | null> {
   try {
     const supabase = await createClient();
@@ -396,7 +396,7 @@ export async function createWelcomeNotification(
  * Create a team invitation notification
  */
 export async function createTeamInvitationNotification(
-  params: TeamInvitationNotificationParams,
+  params: TeamInvitationNotificationParams
 ): Promise<string | null> {
   try {
     const roleLabels: Record<string, string> = {
@@ -442,7 +442,7 @@ export async function createBillingNotification(
   userId: string,
   title: string,
   content: string,
-  actionUrl?: string,
+  actionUrl?: string
 ): Promise<string | null> {
   return createNotification({
     userId,
@@ -460,7 +460,7 @@ export async function createSupportNotification(
   userId: string,
   title: string,
   content: string,
-  actionUrl?: string,
+  actionUrl?: string
 ): Promise<string | null> {
   return createNotification({
     userId,
@@ -478,7 +478,7 @@ export async function createSuccessNotification(
   userId: string,
   title: string,
   content: string,
-  actionUrl?: string,
+  actionUrl?: string
 ): Promise<string | null> {
   return createNotification({
     userId,
@@ -496,7 +496,7 @@ export async function createSystemNotification(
   userId: string,
   title: string,
   content: string,
-  actionUrl?: string,
+  actionUrl?: string
 ): Promise<string | null> {
   return createNotification({
     userId,

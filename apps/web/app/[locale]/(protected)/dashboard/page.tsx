@@ -1,7 +1,3 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { getCustomers, type Customer } from "@/actions/customers-actions";
-import { getDocuments, type Document } from "@/actions/documents-actions";
 import {
   ArrowRight,
   Calendar,
@@ -11,9 +7,14 @@ import {
   QrCode,
   Users,
 } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
+import { type Customer, getCustomers } from "@/actions/customers-actions";
+import { type Document, getDocuments } from "@/actions/documents-actions";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -22,9 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { getCurrentUser } from "@/lib/session";
 
 // ISR: Revalidate every 60 seconds for fresh data
 export const revalidate = 60;
@@ -44,7 +43,7 @@ export default async function DashboardPage() {
   const quotes = documents.filter((d) => d.type === "quote");
   const invoices = documents.filter((d) => d.type === "invoice");
   const openQuotes = quotes.filter(
-    (d) => d.status === "draft" || d.status === "sent",
+    (d) => d.status === "draft" || d.status === "sent"
   );
   const unpaidInvoices = invoices.filter((d) => d.status !== "paid");
   const paidInvoices = invoices.filter((d) => d.status === "paid");
@@ -54,12 +53,12 @@ export default async function DashboardPage() {
     .sort(
       (a, b) =>
         new Date(b.document_date).getTime() -
-        new Date(a.document_date).getTime(),
+        new Date(a.document_date).getTime()
     );
 
   const totalRevenue = paidInvoices.reduce(
     (sum, inv) => sum + (inv.total || 0),
-    0,
+    0
   );
 
   // Maximal 3 KPIs: Customers, Open Quotes, Unpaid Invoices
@@ -85,7 +84,7 @@ export default async function DashboardPage() {
     <UnifiedPageLayout
       title={t("heading")}
       description={t("welcome", { name: user.name || user.email || "" })}
-      icon={<LayoutDashboard className="h-4 w-4 text-primary" />}
+      icon={<LayoutDashboard className="size-4 text-primary" />}
       contentClassName=""
     >
       {/* 1. Primary Metric - Single Focus */}
@@ -127,7 +126,7 @@ export default async function DashboardPage() {
           >
             <div className="flex items-start gap-3">
               <div className="p-2 rounded-lg bg-green-500/10 group-hover:bg-green-500/20 transition-colors">
-                <Users className="h-4 w-4 text-green-500" />
+                <Users className="size-4 text-green-500" />
               </div>
               <div className="flex-1">
                 <h3 className="text-sm font-semibold mb-1 group-hover:text-primary transition-colors">
@@ -137,7 +136,7 @@ export default async function DashboardPage() {
                   {t("quickActions.newCustomerDescription")}
                 </p>
               </div>
-              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
             </div>
           </Link>
 
@@ -147,7 +146,7 @@ export default async function DashboardPage() {
           >
             <div className="flex items-start gap-3">
               <div className="p-2 rounded-lg bg-purple-500/10 group-hover:bg-purple-500/20 transition-colors">
-                <FileText className="h-4 w-4 text-purple-500" />
+                <FileText className="size-4 text-purple-500" />
               </div>
               <div className="flex-1">
                 <h3 className="text-sm font-semibold mb-1 group-hover:text-primary transition-colors">
@@ -157,7 +156,7 @@ export default async function DashboardPage() {
                   {t("quickActions.newDocumentDescription")}
                 </p>
               </div>
-              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
             </div>
           </Link>
 
@@ -167,7 +166,7 @@ export default async function DashboardPage() {
           >
             <div className="flex items-start gap-3">
               <div className="p-2 rounded-lg bg-orange-500/10 group-hover:bg-orange-500/20 transition-colors">
-                <QrCode className="h-4 w-4 text-orange-500" />
+                <QrCode className="size-4 text-orange-500" />
               </div>
               <div className="flex-1">
                 <h3 className="text-sm font-semibold mb-1 group-hover:text-primary transition-colors">
@@ -177,7 +176,7 @@ export default async function DashboardPage() {
                   {t("quickActions.newQrCodeDescription")}
                 </p>
               </div>
-              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
             </div>
           </Link>
 
@@ -187,7 +186,7 @@ export default async function DashboardPage() {
           >
             <div className="flex items-start gap-3">
               <div className="p-2 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors">
-                <Calendar className="h-4 w-4 text-blue-500" />
+                <Calendar className="size-4 text-blue-500" />
               </div>
               <div className="flex-1">
                 <h3 className="text-sm font-semibold mb-1 group-hover:text-primary transition-colors">
@@ -197,7 +196,7 @@ export default async function DashboardPage() {
                   {t("quickActions.schedulingDescription")}
                 </p>
               </div>
-              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
             </div>
           </Link>
         </div>
@@ -210,14 +209,14 @@ export default async function DashboardPage() {
           <div className="flex items-center gap-2">
             <Link href="/dashboard/documents/new">
               <Button size="sm" className="h-7 text-xs">
-                <Plus className="h-3 w-3 mr-1" />
+                <Plus className="size-3 mr-1" />
                 {t("recent.create")}
               </Button>
             </Link>
             <Link href="/dashboard/documents">
               <Button variant="ghost" size="sm" className="h-7 text-xs -mr-2">
                 {t("recent.all")}
-                <ArrowRight className="ml-1 h-3 w-3" />
+                <ArrowRight className="ml-1 size-3" />
               </Button>
             </Link>
           </div>
@@ -225,7 +224,7 @@ export default async function DashboardPage() {
 
         {recentDocuments.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <FileText className="h-6 w-6 text-muted-foreground mb-3" />
+            <FileText className="size-6 text-muted-foreground mb-3" />
             <p className="text-sm text-muted-foreground mb-4">
               {t("recent.noDocuments")}
             </p>

@@ -1,27 +1,20 @@
 "use client";
 
-import * as React from "react";
-import { useRouter } from "next/navigation";
-import {
-  updateCustomer,
-  type Customer,
-  type CustomerInput,
-} from "@/actions/customers-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileText, MapPin, User, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import * as React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import {
+  type Customer,
+  type CustomerInput,
+  updateCustomer,
+} from "@/actions/customers-actions";
 
 import { ButtonIcon, ButtonRoot } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
 import {
   Drawer,
   DrawerBody,
@@ -32,6 +25,8 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { Form } from "@/components/ui/form";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
   CustomerAdditionalInfoStep,
@@ -153,7 +148,7 @@ export function EditCustomerDrawer({
       form.reset(normalizedCustomer);
       setActiveTab("personal");
     }
-  }, [open, customer.id]);
+  }, [open, form.reset, normalizedCustomer]);
 
   return (
     <DrawerNS.Root open={open} onOpenChange={setOpen} direction="right">
@@ -170,8 +165,8 @@ export function EditCustomerDrawer({
                 Kunde bearbeiten
               </DrawerNS.Title>
               <DrawerNS.Close asChild>
-                <Button.Root variant="ghost" size="icon" className="h-8 w-8">
-                  <X className="h-4 w-4" />
+                <Button.Root variant="ghost" size="icon" className="size-8">
+                  <X className="size-4" />
                 </Button.Root>
               </DrawerNS.Close>
             </div>
@@ -194,21 +189,21 @@ export function EditCustomerDrawer({
                         value="personal"
                         className="data-[state=active]:border-b-2 data-[state=active]:border-text-strong-950 rounded-none"
                       >
-                        <User className="h-4 w-4 mr-2" />
+                        <User className="size-4 mr-2" />
                         {tFields("personalInfo")}
                       </TabsNS.Trigger>
                       <TabsNS.Trigger
                         value="address"
                         className="data-[state=active]:border-b-2 data-[state=active]:border-text-strong-950 rounded-none"
                       >
-                        <MapPin className="h-4 w-4 mr-2" />
+                        <MapPin className="size-4 mr-2" />
                         {tFields("address")}
                       </TabsNS.Trigger>
                       <TabsNS.Trigger
                         value="additional"
                         className="data-[state=active]:border-b-2 data-[state=active]:border-text-strong-950 rounded-none"
                       >
-                        <FileText className="h-4 w-4 mr-2" />
+                        <FileText className="size-4 mr-2" />
                         {tFields("additionalInfo")}
                       </TabsNS.Trigger>
                     </TabsNS.List>

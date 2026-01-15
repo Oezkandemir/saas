@@ -79,7 +79,7 @@ async function getPolarOrganizationSlug(): Promise<string> {
  * @returns Customer portal URL with session token
  */
 export async function generatePolarCustomerPortalLink(
-  customerId: string,
+  customerId: string
 ): Promise<string> {
   try {
     if (!customerId) {
@@ -118,7 +118,7 @@ export async function generatePolarCustomerPortalLink(
         errorData.error?.message ||
           errorData.error ||
           errorData.detail ||
-          `HTTP ${response.status}: Failed to create customer session`,
+          `HTTP ${response.status}: Failed to create customer session`
       );
     }
 
@@ -132,7 +132,7 @@ export async function generatePolarCustomerPortalLink(
     // Return the customer portal URL if API provides it directly
     if (sessionData.customer_portal_url) {
       logger.info(
-        `Generated Polar customer portal link for customer ${customerId}`,
+        `Generated Polar customer portal link for customer ${customerId}`
       );
       return sessionData.customer_portal_url;
     }
@@ -155,7 +155,7 @@ export async function generatePolarCustomerPortalLink(
         orgSlug = envOrgSlug;
       } else {
         throw new Error(
-          "Could not determine organization slug. Please set POLAR_ORGANIZATION_SLUG in environment variables.",
+          "Could not determine organization slug. Please set POLAR_ORGANIZATION_SLUG in environment variables."
         );
       }
     }
@@ -168,7 +168,7 @@ export async function generatePolarCustomerPortalLink(
       {
         orgSlug,
         portalUrl,
-      },
+      }
     );
 
     return portalUrl;
@@ -266,7 +266,7 @@ export async function createPolarCheckout(params: {
         .catch(() => ({ error: "Unknown error" }));
       logger.error("Polar.sh checkout creation failed", errorData);
       throw new Error(
-        errorData.error || `HTTP ${response.status}: Failed to create checkout`,
+        errorData.error || `HTTP ${response.status}: Failed to create checkout`
       );
     }
 
@@ -291,7 +291,7 @@ export async function getPolarProduct(productId: string) {
       {
         method: "GET",
         headers,
-      },
+      }
     );
 
     if (!response.ok) {
@@ -300,7 +300,7 @@ export async function getPolarProduct(productId: string) {
         .catch(() => ({ error: "Unknown error" }));
       logger.error("Failed to fetch Polar product", errorData);
       throw new Error(
-        errorData.error || `HTTP ${response.status}: Failed to fetch product`,
+        errorData.error || `HTTP ${response.status}: Failed to fetch product`
       );
     }
 
@@ -324,7 +324,7 @@ export async function getPolarSubscription(subscriptionId: string) {
       {
         method: "GET",
         headers,
-      },
+      }
     );
 
     if (!response.ok) {
@@ -334,7 +334,7 @@ export async function getPolarSubscription(subscriptionId: string) {
       logger.error("Failed to fetch Polar subscription", errorData);
       throw new Error(
         errorData.error ||
-          `HTTP ${response.status}: Failed to fetch subscription`,
+          `HTTP ${response.status}: Failed to fetch subscription`
       );
     }
 
@@ -351,7 +351,7 @@ export async function getPolarSubscription(subscriptionId: string) {
  * This is useful when we have a subscription but not the customer ID
  */
 export async function getCustomerIdFromSubscription(
-  subscriptionId: string,
+  subscriptionId: string
 ): Promise<string | null> {
   try {
     const subscription = await getPolarSubscription(subscriptionId);
@@ -367,7 +367,7 @@ export async function getCustomerIdFromSubscription(
  * This is a fallback when customer ID is not in database
  */
 export async function findCustomerIdByEmail(
-  email: string,
+  email: string
 ): Promise<string | null> {
   try {
     const headers = getPolarHeaders();
@@ -379,7 +379,7 @@ export async function findCustomerIdByEmail(
       {
         method: "GET",
         headers,
-      },
+      }
     );
 
     if (!response.ok) {
@@ -418,7 +418,7 @@ export async function findCustomerIdByEmail(
  */
 export async function cancelPolarSubscription(
   subscriptionId: string,
-  cancelAtPeriodEnd: boolean = true,
+  cancelAtPeriodEnd: boolean = true
 ) {
   try {
     const headers = getPolarHeaders();
@@ -433,7 +433,7 @@ export async function cancelPolarSubscription(
         method: "POST",
         headers,
         body: JSON.stringify(body),
-      },
+      }
     );
 
     if (!response.ok) {
@@ -443,7 +443,7 @@ export async function cancelPolarSubscription(
       logger.error("Failed to cancel Polar subscription", errorData);
       throw new Error(
         errorData.error ||
-          `HTTP ${response.status}: Failed to cancel subscription`,
+          `HTTP ${response.status}: Failed to cancel subscription`
       );
     }
 
@@ -467,7 +467,7 @@ export async function reactivatePolarSubscription(subscriptionId: string) {
       {
         method: "POST",
         headers,
-      },
+      }
     );
 
     if (!response.ok) {
@@ -477,7 +477,7 @@ export async function reactivatePolarSubscription(subscriptionId: string) {
       logger.error("Failed to reactivate Polar subscription", errorData);
       throw new Error(
         errorData.error ||
-          `HTTP ${response.status}: Failed to reactivate subscription`,
+          `HTTP ${response.status}: Failed to reactivate subscription`
       );
     }
 
@@ -494,7 +494,7 @@ export async function reactivatePolarSubscription(subscriptionId: string) {
  */
 export async function updatePolarSubscription(
   subscriptionId: string,
-  productId: string,
+  productId: string
 ) {
   try {
     const headers = getPolarHeaders();
@@ -509,7 +509,7 @@ export async function updatePolarSubscription(
         method: "PATCH",
         headers,
         body: JSON.stringify(body),
-      },
+      }
     );
 
     if (!response.ok) {
@@ -519,7 +519,7 @@ export async function updatePolarSubscription(
       logger.error("Failed to update Polar subscription", errorData);
       throw new Error(
         errorData.error ||
-          `HTTP ${response.status}: Failed to update subscription`,
+          `HTTP ${response.status}: Failed to update subscription`
       );
     }
 

@@ -1,16 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  addCompanyProfileTeamMember,
-  AddTeamMemberInput,
-  CompanyProfileMember,
-  CompanyProfileRole,
-  getCompanyProfileTeamMembers,
-  removeCompanyProfileTeamMember,
-  updateCompanyProfileTeamMember,
-  UpdateTeamMemberInput,
-} from "@/actions/company-profile-team-actions";
 import {
   Edit,
   FileEdit,
@@ -24,23 +13,21 @@ import {
   Users,
   UserX,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
-import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+  type AddTeamMemberInput,
+  addCompanyProfileTeamMember,
+  type CompanyProfileMember,
+  type CompanyProfileRole,
+  getCompanyProfileTeamMembers,
+  removeCompanyProfileTeamMember,
+  type UpdateTeamMemberInput,
+  updateCompanyProfileTeamMember,
+} from "@/actions/company-profile-team-actions";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -48,17 +35,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Drawer,
   DrawerBody,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
-  Drawer,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface CompanyProfileTeamManagementProps {
   companyProfileId: string;
@@ -115,10 +110,6 @@ export function CompanyProfileTeamManagement({
     can_manage_team: false,
   });
 
-  useEffect(() => {
-    loadMembers();
-  }, [companyProfileId]);
-
   const loadMembers = async () => {
     try {
       setLoading(true);
@@ -128,12 +119,16 @@ export function CompanyProfileTeamManagement({
       toast.error(
         error instanceof Error
           ? error.message
-          : "Fehler beim Laden der Teammitglieder",
+          : "Fehler beim Laden der Teammitglieder"
       );
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadMembers();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAddMember = async () => {
     if (!newMemberEmail.trim()) {
@@ -167,7 +162,7 @@ export function CompanyProfileTeamManagement({
       toast.error(
         error instanceof Error
           ? error.message
-          : "Fehler beim Hinzufügen des Teammitglieds",
+          : "Fehler beim Hinzufügen des Teammitglieds"
       );
     } finally {
       setAddingMember(false);
@@ -193,7 +188,7 @@ export function CompanyProfileTeamManagement({
       toast.error(
         error instanceof Error
           ? error.message
-          : "Fehler beim Aktualisieren des Teammitglieds",
+          : "Fehler beim Aktualisieren des Teammitglieds"
       );
     } finally {
       setEditingMember(null);
@@ -214,7 +209,7 @@ export function CompanyProfileTeamManagement({
       toast.error(
         error instanceof Error
           ? error.message
-          : "Fehler beim Entfernen des Teammitglieds",
+          : "Fehler beim Entfernen des Teammitglieds"
       );
     } finally {
       setRemovingMember(null);
@@ -236,7 +231,7 @@ export function CompanyProfileTeamManagement({
 
   const updatePermissionsByRole = (
     role: CompanyProfileRole,
-    setPermissions: (perms: any) => void,
+    setPermissions: (perms: any) => void
   ) => {
     switch (role) {
       case "owner":
@@ -280,8 +275,8 @@ export function CompanyProfileTeamManagement({
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                <Users className="h-5 w-5" />
+              <div className="flex size-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                <Users className="size-5" />
               </div>
               Team-Mitglieder
             </CardTitle>
@@ -297,7 +292,7 @@ export function CompanyProfileTeamManagement({
           >
             <DrawerTrigger asChild>
               <Button size="sm" className="gap-2">
-                <UserPlus className="h-4 w-4" />
+                <UserPlus className="size-4" />
                 Mitglied hinzufügen
               </Button>
             </DrawerTrigger>
@@ -332,7 +327,7 @@ export function CompanyProfileTeamManagement({
                           setNewMemberRole(value as CompanyProfileRole);
                           updatePermissionsByRole(
                             value as CompanyProfileRole,
-                            setNewMemberPermissions,
+                            setNewMemberPermissions
                           );
                         }}
                       >
@@ -369,7 +364,7 @@ export function CompanyProfileTeamManagement({
                             htmlFor="edit-docs"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
-                            <FileEdit className="h-4 w-4 text-text-sub-600" />
+                            <FileEdit className="size-4 text-text-sub-600" />
                             Dokumente bearbeiten
                           </Label>
                         </div>
@@ -388,7 +383,7 @@ export function CompanyProfileTeamManagement({
                             htmlFor="delete-docs"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
-                            <FileX className="h-4 w-4 text-text-sub-600" />
+                            <FileX className="size-4 text-text-sub-600" />
                             Dokumente löschen
                           </Label>
                         </div>
@@ -407,7 +402,7 @@ export function CompanyProfileTeamManagement({
                             htmlFor="edit-customers"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
-                            <UserCheck className="h-4 w-4 text-text-sub-600" />
+                            <UserCheck className="size-4 text-text-sub-600" />
                             Kunden bearbeiten
                           </Label>
                         </div>
@@ -426,7 +421,7 @@ export function CompanyProfileTeamManagement({
                             htmlFor="delete-customers"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
-                            <UserX className="h-4 w-4 text-text-sub-600" />
+                            <UserX className="size-4 text-text-sub-600" />
                             Kunden löschen
                           </Label>
                         </div>
@@ -445,7 +440,7 @@ export function CompanyProfileTeamManagement({
                             htmlFor="manage-team"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
-                            <Settings className="h-4 w-4 text-text-sub-600" />
+                            <Settings className="size-4 text-text-sub-600" />
                             Team verwalten
                           </Label>
                         </div>
@@ -468,12 +463,12 @@ export function CompanyProfileTeamManagement({
                   >
                     {addingMember ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2 className="mr-2 size-4 animate-spin" />
                         Wird hinzugefügt...
                       </>
                     ) : (
                       <>
-                        <UserPlus className="mr-2 h-4 w-4" />
+                        <UserPlus className="mr-2 size-4" />
                         Hinzufügen
                       </>
                     )}
@@ -487,11 +482,11 @@ export function CompanyProfileTeamManagement({
       <CardContent>
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <Loader2 className="size-8 animate-spin text-muted-foreground" />
           </div>
         ) : members.length === 0 ? (
           <div className="py-12 text-center">
-            <Users className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+            <Users className="size-12 mx-auto text-muted-foreground/30 mb-3" />
             <p className="text-sm text-muted-foreground mb-4">
               Noch keine Teammitglieder hinzugefügt
             </p>
@@ -500,7 +495,7 @@ export function CompanyProfileTeamManagement({
               variant="outline"
               onClick={() => setAddDrawerOpen(true)}
             >
-              <UserPlus className="h-4 w-4 mr-2" />
+              <UserPlus className="size-4 mr-2" />
               Erstes Mitglied hinzufügen
             </Button>
           </div>
@@ -512,7 +507,7 @@ export function CompanyProfileTeamManagement({
                 className="flex items-center justify-between gap-4 rounded-lg border p-4 hover:bg-muted/50 transition-colors"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <Avatar className="h-10 w-10">
+                  <Avatar className="size-10">
                     <AvatarImage
                       src={member.user?.avatar_url || undefined}
                       alt={member.user?.name || "User"}
@@ -530,7 +525,7 @@ export function CompanyProfileTeamManagement({
                     </p>
                   </div>
                   <Badge variant="outline" className="flex items-center gap-1">
-                    {member.role === "owner" && <Shield className="h-3 w-3" />}
+                    {member.role === "owner" && <Shield className="size-3" />}
                     {roleLabels[member.role]}
                   </Badge>
                 </div>
@@ -540,7 +535,7 @@ export function CompanyProfileTeamManagement({
                     variant="ghost"
                     onClick={() => openEditDialog(member)}
                   >
-                    <Edit className="h-4 w-4" />
+                    <Edit className="size-4" />
                   </Button>
                   {member.role !== "owner" && (
                     <Button
@@ -550,9 +545,9 @@ export function CompanyProfileTeamManagement({
                       disabled={removingMember === member.id}
                     >
                       {removingMember === member.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="size-4 animate-spin" />
                       ) : (
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                        <Trash2 className="size-4 text-destructive" />
                       )}
                     </Button>
                   )}
@@ -589,7 +584,7 @@ export function CompanyProfileTeamManagement({
                           setEditMemberRole(value as CompanyProfileRole);
                           updatePermissionsByRole(
                             value as CompanyProfileRole,
-                            setEditMemberPermissions,
+                            setEditMemberPermissions
                           );
                         }}
                       >
@@ -626,7 +621,7 @@ export function CompanyProfileTeamManagement({
                             htmlFor="edit-docs-edit"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
-                            <FileEdit className="h-4 w-4 text-text-sub-600" />
+                            <FileEdit className="size-4 text-text-sub-600" />
                             Dokumente bearbeiten
                           </Label>
                         </div>
@@ -645,7 +640,7 @@ export function CompanyProfileTeamManagement({
                             htmlFor="delete-docs-edit"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
-                            <FileX className="h-4 w-4 text-text-sub-600" />
+                            <FileX className="size-4 text-text-sub-600" />
                             Dokumente löschen
                           </Label>
                         </div>
@@ -664,7 +659,7 @@ export function CompanyProfileTeamManagement({
                             htmlFor="edit-customers-edit"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
-                            <UserCheck className="h-4 w-4 text-text-sub-600" />
+                            <UserCheck className="size-4 text-text-sub-600" />
                             Kunden bearbeiten
                           </Label>
                         </div>
@@ -683,7 +678,7 @@ export function CompanyProfileTeamManagement({
                             htmlFor="delete-customers-edit"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
-                            <UserX className="h-4 w-4 text-text-sub-600" />
+                            <UserX className="size-4 text-text-sub-600" />
                             Kunden löschen
                           </Label>
                         </div>
@@ -702,7 +697,7 @@ export function CompanyProfileTeamManagement({
                             htmlFor="manage-team-edit"
                             className="flex items-center gap-2 cursor-pointer text-paragraph-sm text-text-strong-950"
                           >
-                            <Settings className="h-4 w-4 text-text-sub-600" />
+                            <Settings className="size-4 text-text-sub-600" />
                             Team verwalten
                           </Label>
                         </div>
@@ -726,12 +721,12 @@ export function CompanyProfileTeamManagement({
                 >
                   {editingMember ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="mr-2 size-4 animate-spin" />
                       Wird aktualisiert...
                     </>
                   ) : (
                     <>
-                      <Edit className="mr-2 h-4 w-4" />
+                      <Edit className="mr-2 size-4" />
                       Aktualisieren
                     </>
                   )}

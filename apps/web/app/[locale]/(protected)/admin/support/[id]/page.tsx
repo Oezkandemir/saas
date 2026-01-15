@@ -1,13 +1,11 @@
-import { notFound, redirect } from "next/navigation";
-import { getTicketWithMessages } from "@/actions/support-ticket-actions";
 import { formatDistance } from "date-fns";
 import { MessageSquare } from "lucide-react";
+import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-
-import { logger } from "@/lib/logger";
-import { getCurrentUser } from "@/lib/session";
-import { constructMetadata } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
+import { getTicketWithMessages } from "@/actions/support-ticket-actions";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { TicketConversation } from "@/components/support/ticket-conversation";
+import { TicketStatusUpdater } from "@/components/support/ticket-status-updater";
 import {
   Card,
   CardContent,
@@ -16,9 +14,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { TicketConversation } from "@/components/support/ticket-conversation";
-import { TicketStatusUpdater } from "@/components/support/ticket-status-updater";
+import { Separator } from "@/components/ui/separator";
+import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
+import { constructMetadata } from "@/lib/utils";
 
 export async function generateMetadata({
   params,
@@ -75,7 +74,7 @@ export default async function AdminTicketPage({
     <UnifiedPageLayout
       title={ticket.subject}
       description={`${t("ticketFrom")} ${ticket.user?.name || t("user")} (${ticket.user?.email || t("noEmail")})`}
-      icon={<MessageSquare className="h-4 w-4 text-primary" />}
+      icon={<MessageSquare className="size-4 text-primary" />}
       showBackButton
       backHref="/admin/support"
       actions={

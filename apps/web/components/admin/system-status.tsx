@@ -1,10 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  getSystemStatusOverview,
-  performHealthCheck,
-} from "@/actions/system-monitoring-actions";
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
 import {
@@ -15,16 +10,20 @@ import {
   RefreshCw,
   XCircle,
 } from "lucide-react";
-
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import {
+  getSystemStatusOverview,
+  performHealthCheck,
+} from "@/actions/system-monitoring-actions";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ComponentStatus {
   component: string;
@@ -42,10 +41,6 @@ export function SystemStatus() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useEffect(() => {
-    loadStatus();
-  }, []);
-
   const loadStatus = async () => {
     setIsLoading(true);
     try {
@@ -60,7 +55,7 @@ export function SystemStatus() {
           description: result.message,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: "Fehler",
@@ -70,6 +65,10 @@ export function SystemStatus() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadStatus();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -82,7 +81,7 @@ export function SystemStatus() {
         title: "Status aktualisiert",
         description: "System-Status wurde erfolgreich aktualisiert",
       });
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: "Fehler",

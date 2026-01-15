@@ -2,7 +2,7 @@
 
 import {
   createContext,
-  ReactNode,
+  type ReactNode,
   useContext,
   useEffect,
   useState,
@@ -23,7 +23,7 @@ const AvatarContext = createContext<AvatarContextType>({
 export function AvatarProvider({ children }: { children: ReactNode }) {
   const { session } = useSupabase();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(
-    session?.user?.user_metadata?.avatar_url || null,
+    session?.user?.user_metadata?.avatar_url || null
   );
 
   // Keep avatar in sync with session changes

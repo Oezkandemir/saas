@@ -21,7 +21,7 @@ export interface OverageCharge {
  * Get usage billing configuration for a plan
  */
 export async function getUsageBillingConfig(
-  userId: string,
+  userId: string
 ): Promise<UsageBillingConfig | null> {
   try {
     const plan = await getUserSubscriptionPlan(userId);
@@ -54,7 +54,7 @@ export async function calculateOverageCharges(
     "documents",
     "api_calls",
     "email_sends",
-  ],
+  ]
 ): Promise<OverageCharge[]> {
   const config = await getUsageBillingConfig(userId);
 
@@ -105,7 +105,7 @@ export async function recordUsageForBilling(
   userId: string,
   metricType: string,
   metricValue: number = 1,
-  metadata?: Record<string, any>,
+  metadata?: Record<string, any>
 ): Promise<void> {
   try {
     const supabase = await getSupabaseServer();
@@ -139,7 +139,7 @@ export async function recordUsageForBilling(
  */
 export async function checkUsageWarnings(
   userId: string,
-  warningThreshold: number = 80, // Warn at 80% of limit
+  warningThreshold: number = 80 // Warn at 80% of limit
 ): Promise<
   Array<{
     limitType: LimitType;

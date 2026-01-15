@@ -1,7 +1,7 @@
 "use client";
 
 import { Building, FileText, Scale } from "lucide-react";
-import { Control } from "react-hook-form";
+import type { Control } from "react-hook-form";
 
 import {
   FormControl,
@@ -27,7 +27,7 @@ export function CompanyLegalFields({ control }: CompanyLegalFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-primary" />
+              <FileText className="size-4 text-primary" />
               Umsatzsteuer-Identifikationsnummer (USt-IdNr.)
             </FormLabel>
             <FormControl>
@@ -52,7 +52,7 @@ export function CompanyLegalFields({ control }: CompanyLegalFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <Scale className="h-4 w-4 text-primary" />
+              <Scale className="size-4 text-primary" />
               Steuernummer
             </FormLabel>
             <FormControl>
@@ -77,7 +77,7 @@ export function CompanyLegalFields({ control }: CompanyLegalFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <Building className="h-4 w-4 text-primary" />
+              <Building className="size-4 text-primary" />
               Handelsregisternummer
             </FormLabel>
             <FormControl>

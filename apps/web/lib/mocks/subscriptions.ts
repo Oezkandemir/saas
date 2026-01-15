@@ -1,9 +1,9 @@
 /**
  * MOCK DATA - Development/Testing Only
- * 
+ *
  * This file contains hardcoded mock values for development and testing purposes.
  * These values should NEVER be used in production.
- * 
+ *
  * In production, use environment variables from env.mjs
  */
 

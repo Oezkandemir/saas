@@ -1,14 +1,13 @@
 "use client";
 
-import * as React from "react";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
-import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
-
+import * as React from "react";
+import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
-import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
 
 export interface Step<T extends FieldValues> {
   id: string;
@@ -44,7 +43,7 @@ export function MultiStepForm<T extends FieldValues>({
   const t = useTranslations("Common.multiStepForm");
   const [currentStep, setCurrentStep] = React.useState(defaultStep);
   const [completedSteps, setCompletedSteps] = React.useState<Set<number>>(
-    new Set(),
+    new Set()
   );
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -53,10 +52,14 @@ export function MultiStepForm<T extends FieldValues>({
   const isFirstStep = currentStep === 0;
   const progress = ((currentStep + 1) / steps.length) * 100;
 
+  if (!currentStepData) {
+    return null;
+  }
+
   // Validate current step before moving forward
   const validateStep = async (stepIndex: number): Promise<boolean> => {
     const step = steps[stepIndex];
-    if (!step.fields || step.fields.length === 0) {
+    if (!step || !step.fields || step.fields.length === 0) {
       return true;
     }
 
@@ -138,7 +141,7 @@ export function MultiStepForm<T extends FieldValues>({
 
     for (let i = 0; i < steps.length; i++) {
       const step = steps[i];
-      if (!step.fields || step.fields.length === 0) {
+      if (!step || !step.fields || step.fields.length === 0) {
         // Step has no fields to validate, skip it
         continue;
       }
@@ -159,7 +162,8 @@ export function MultiStepForm<T extends FieldValues>({
 
       // Show error toast
       const stepTitle =
-        steps[firstInvalidStep]?.title || t("stepNumber", { number: firstInvalidStep + 1 });
+        steps[firstInvalidStep]?.title ||
+        t("stepNumber", { number: firstInvalidStep + 1 });
       const { toast } = await import("sonner");
       toast.error(t("fillAllRequiredFields"), {
         description: t("completeStep", { stepTitle }),
@@ -177,7 +181,7 @@ export function MultiStepForm<T extends FieldValues>({
         if (firstErrorField) {
           // Find which step contains this field
           const errorStepIndex = steps.findIndex((step) =>
-            step.fields?.some((field) => field === firstErrorField),
+            step.fields?.some((field) => field === firstErrorField)
           );
           if (errorStepIndex !== -1) {
             setCurrentStep(errorStepIndex);
@@ -196,10 +200,7 @@ export function MultiStepForm<T extends FieldValues>({
       // Don't close form on error - let user fix it
       const { toast } = await import("sonner");
       toast.error(t("saveError"), {
-        description:
-          error instanceof Error
-            ? error.message
-            : t("tryAgain"),
+        description: error instanceof Error ? error.message : t("tryAgain"),
       });
     } finally {
       setIsSubmitting(false);
@@ -217,7 +218,9 @@ export function MultiStepForm<T extends FieldValues>({
             <span>
               {t("stepOf", { current: currentStep + 1, total: steps.length })}
             </span>
-            <span>{t("percentComplete", { percent: Math.round(progress) })}</span>
+            <span>
+              {t("percentComplete", { percent: Math.round(progress) })}
+            </span>
           </div>
           <Progress value={progress} className="h-2" />
         </div>
@@ -249,9 +252,12 @@ export function MultiStepForm<T extends FieldValues>({
                       !isCompleted &&
                         !isActive &&
                         "border-muted bg-background text-muted-foreground hover:border-primary/50 hover:bg-accent",
-                      "cursor-pointer hover:scale-110 active:scale-95",
+                      "cursor-pointer hover:scale-110 active:scale-95"
                     )}
-                    aria-label={t("goToStep", { number: index + 1, title: step.title })}
+                    aria-label={t("goToStep", {
+                      number: index + 1,
+                      title: step.title,
+                    })}
                     title={`${step.title}${step.description ? ` - ${step.description}` : ""}`}
                   >
                     {isCompleted && !isActive ? (
@@ -272,7 +278,7 @@ export function MultiStepForm<T extends FieldValues>({
                     className={cn(
                       "flex-1 h-0.5 transition-colors",
                       "mx-2 sm:mx-3 md:mx-4",
-                      isCompleted ? "bg-primary" : "bg-muted",
+                      isCompleted ? "bg-primary" : "bg-muted"
                     )}
                   />
                 )}
@@ -299,9 +305,12 @@ export function MultiStepForm<T extends FieldValues>({
                   "flex-1 h-1.5 rounded-full transition-all",
                   isActive && "bg-primary h-2",
                   isCompleted && !isActive && "bg-primary/50",
-                  !isCompleted && !isActive && "bg-muted",
+                  !isCompleted && !isActive && "bg-muted"
                 )}
-                aria-label={t("goToStep", { number: index + 1, title: step.title })}
+                aria-label={t("goToStep", {
+                  number: index + 1,
+                  title: step.title,
+                })}
               />
             );
           })}
@@ -369,12 +378,11 @@ export function MultiStepForm<T extends FieldValues>({
                     form.setFocus(firstError as Path<T>);
                   }
                   const { toast } = await import("sonner");
-                  toast.error(
-                    t("fillAllRequiredFields"),
-                    {
-                      description: t("completeStep", { stepTitle: currentStepData.title }),
-                    },
-                  );
+                  toast.error(t("fillAllRequiredFields"), {
+                    description: t("completeStep", {
+                      stepTitle: currentStepData.title,
+                    }),
+                  });
                   return;
                 }
                 // Manually call handleSubmit with a synthetic event

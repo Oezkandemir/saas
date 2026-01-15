@@ -1,16 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { AlertCircle, CheckCircle2, Loader2, Shield } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import {
   disableTwoFactor,
   getTwoFactorStatus,
   regenerateBackupCodes,
 } from "@/actions/two-factor-actions";
-import { AlertCircle, CheckCircle2, Loader2, Shield } from "lucide-react";
-import { useTranslations } from "next-intl";
-
-import { logger } from "@/lib/logger";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,10 +20,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -34,6 +30,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
+import { logger } from "@/lib/logger";
 
 import { TwoFactorSetup } from "./two-factor-setup";
 
@@ -50,10 +49,6 @@ export function TwoFactorAuth() {
   const [isDisabling, setIsDisabling] = useState(false);
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
   const [showBackupCodes, setShowBackupCodes] = useState(false);
-
-  useEffect(() => {
-    loadStatus();
-  }, []);
 
   const loadStatus = async () => {
     setIsLoading(true);
@@ -90,6 +85,10 @@ export function TwoFactorAuth() {
     }
   };
 
+  useEffect(() => {
+    loadStatus();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleDisable = async () => {
     if (!password) {
       toast({
@@ -122,7 +121,7 @@ export function TwoFactorAuth() {
           description: result.message,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: t("error"),
@@ -151,7 +150,7 @@ export function TwoFactorAuth() {
           description: result.message,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: t("error"),
@@ -274,7 +273,9 @@ export function TwoFactorAuth() {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>{t("disableConfirmTitle")}</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    {t("disableConfirmTitle")}
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
                     {t("disableConfirmDescription")}
                   </AlertDialogDescription>

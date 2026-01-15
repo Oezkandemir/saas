@@ -1,5 +1,5 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { type CookieOptions, createServerClient } from "@supabase/ssr";
+import { type NextRequest, NextResponse } from "next/server";
 import createIntlMiddleware from "next-intl/middleware";
 
 import { routing } from "./i18n/routing";
@@ -107,7 +107,7 @@ export default async function proxy(request: NextRequest) {
           });
         },
       },
-    },
+    }
   );
 
   // Get the locale from the request pathname
@@ -117,7 +117,7 @@ export default async function proxy(request: NextRequest) {
   const {
     data: { user: authUser },
   } = await supabase.auth.getUser();
-  
+
   // Get session only if needed for route checks (session is less secure but OK for route protection)
   const {
     data: { session },
@@ -127,10 +127,10 @@ export default async function proxy(request: NextRequest) {
   const protectedRoutes = ["/dashboard", "/settings", "/account", "/admin"];
   const authRoutes = ["/login", "/register", "/auth"];
   const isProtectedRoute = protectedRoutes.some((route) =>
-    pathnameWithoutLocale.startsWith(route),
+    pathnameWithoutLocale.startsWith(route)
   );
   const isAuthRoute = authRoutes.some((route) =>
-    pathnameWithoutLocale.startsWith(route),
+    pathnameWithoutLocale.startsWith(route)
   );
 
   // Get current locale
@@ -199,7 +199,7 @@ export default async function proxy(request: NextRequest) {
 
       // Update cache asynchronously (don't await)
       Promise.resolve(
-        supabase.from("users").select("role").eq("id", authUser.id).single(),
+        supabase.from("users").select("role").eq("id", authUser.id).single()
       )
         .then(({ data: userData, error }) => {
           if (!error && userData?.role) {
@@ -217,7 +217,7 @@ export default async function proxy(request: NextRequest) {
       request.nextUrl.searchParams.get("redirectTo") || "/dashboard"; // Always redirect to dashboard, let AuthLayout handle admin redirect
 
     return NextResponse.redirect(
-      new URL(`/${locale}${redirectTo}`, request.url),
+      new URL(`/${locale}${redirectTo}`, request.url)
     );
   }
 
@@ -228,14 +228,14 @@ export default async function proxy(request: NextRequest) {
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   response.headers.set(
     "Permissions-Policy",
-    "geolocation=(), microphone=(), camera=()",
+    "geolocation=(), microphone=(), camera=()"
   );
 
   // Add HSTS header for HTTPS
   if (request.nextUrl.protocol === "https:") {
     response.headers.set(
       "Strict-Transport-Security",
-      "max-age=31536000; includeSubDomains; preload",
+      "max-age=31536000; includeSubDomains; preload"
     );
   }
 

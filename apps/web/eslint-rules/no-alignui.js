@@ -7,7 +7,8 @@ module.exports = {
   meta: {
     type: "problem",
     docs: {
-      description: "Disallow AlignUI/AliGUI imports. Use shadcn/ui components only.",
+      description:
+        "Disallow AlignUI/AliGUI imports. Use shadcn/ui components only.",
       category: "Best Practices",
       recommended: true,
     },

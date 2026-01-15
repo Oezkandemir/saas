@@ -44,7 +44,7 @@ const TableFooter = React.forwardRef<
     ref={ref}
     className={cn(
       "border-t bg-muted/50 font-medium [&>tr]:last:border-b-0",
-      className,
+      className
     )}
     {...props}
   />
@@ -59,7 +59,7 @@ const TableRow = React.forwardRef<
     ref={ref}
     className={cn(
       "border-b border-border transition-colors hover:bg-muted/30 data-[state=selected]:bg-muted",
-      className,
+      className
     )}
     {...props}
   />
@@ -74,7 +74,7 @@ const TableHead = React.forwardRef<
     ref={ref}
     className={cn(
       "h-12 px-4 text-left align-middle font-semibold text-sm text-muted-foreground [&:has([role=checkbox])]:pr-0",
-      className,
+      className
     )}
     {...props}
   />
@@ -110,11 +110,7 @@ const TableRowDivider = React.forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement>
 >(({ className, ...props }, ref) => (
-  <tr
-    ref={ref}
-    className={cn("h-px bg-border", className)}
-    {...props}
-  >
+  <tr ref={ref} className={cn("h-px bg-border", className)} {...props}>
     <td colSpan={1000} className="h-px p-0" />
   </tr>
 ));

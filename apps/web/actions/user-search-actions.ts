@@ -34,7 +34,7 @@ export type SearchResults = {
 export async function searchUsers(
   filters: SearchFilters = {},
   page = 1,
-  limit = 20,
+  limit = 20
 ): Promise<SearchResults> {
   try {
     const currentUser = await getCurrentUser();
@@ -101,7 +101,7 @@ export async function searchUsers(
  * Get suggested users (recent users)
  */
 export async function getSuggestedUsers(
-  limit = 10,
+  limit = 10
 ): Promise<UserSearchResult[]> {
   try {
     const currentUser = await getCurrentUser();
@@ -122,7 +122,7 @@ export async function getSuggestedUsers(
         avatar_url,
         role,
         created_at
-      `,
+      `
       )
       .neq("id", currentUser.id)
       .order("created_at", { ascending: false })

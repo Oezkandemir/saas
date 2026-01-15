@@ -1,9 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import { Role } from "@/actions/role-actions";
 import { Plus, Shield, UserCog } from "lucide-react";
-
+import { useState } from "react";
+import type { Role } from "@/actions/role-actions";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -20,15 +28,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 import { RoleForm } from "./role-form";
 
@@ -66,7 +65,7 @@ export function RoleList({ initialRoles, locale }: RoleListProps) {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button>
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 size-4" />
               Rolle erstellen
             </Button>
           </DialogTrigger>
@@ -88,13 +87,13 @@ export function RoleList({ initialRoles, locale }: RoleListProps) {
       {roles.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <UserCog className="mb-4 h-12 w-12 text-muted-foreground" />
+            <UserCog className="mb-4 size-12 text-muted-foreground" />
             <CardTitle className="mb-2">Keine Rollen vorhanden</CardTitle>
             <CardDescription className="mb-4 text-center">
               Erstellen Sie Ihre erste Rolle, um Berechtigungen zu verwalten
             </CardDescription>
             <Button onClick={() => setIsDialogOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 size-4" />
               Rolle erstellen
             </Button>
           </CardContent>
@@ -131,7 +130,7 @@ export function RoleList({ initialRoles, locale }: RoleListProps) {
                     <TableCell>
                       {role.is_system_role ? (
                         <Badge variant="secondary">
-                          <Shield className="mr-1 h-3 w-3" />
+                          <Shield className="mr-1 size-3" />
                           System
                         </Badge>
                       ) : (
@@ -159,12 +158,12 @@ export function RoleList({ initialRoles, locale }: RoleListProps) {
                           </span>
                         )}
                         {Object.entries(role.permissions || {}).filter(
-                          ([, value]) => value === true,
+                          ([, value]) => value === true
                         ).length > 3 && (
                           <Badge variant="outline" className="text-xs">
                             +
                             {Object.entries(role.permissions || {}).filter(
-                              ([, value]) => value === true,
+                              ([, value]) => value === true
                             ).length - 3}
                           </Badge>
                         )}

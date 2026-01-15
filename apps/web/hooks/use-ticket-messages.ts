@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useQueryClient } from "@tanstack/react-query";
-
-import { logger } from "@/lib/logger";
-import { useSupabase } from "@/components/supabase-provider";
+import { useEffect, useRef, useState } from "react";
 import type { TicketMessage } from "@/actions/support-ticket-actions";
+import { useSupabase } from "@/components/supabase-provider";
+import { logger } from "@/lib/logger";
 
 export interface UseTicketMessagesResult {
   messages: TicketMessage[];
@@ -22,7 +21,7 @@ export interface UseTicketMessagesResult {
  */
 export function useTicketMessages(
   ticketId: string,
-  initialMessages: TicketMessage[] = [],
+  initialMessages: TicketMessage[] = []
 ): UseTicketMessagesResult {
   const supabaseContext = useSupabase();
   const queryClient = useQueryClient();
@@ -68,7 +67,7 @@ export function useTicketMessages(
       // Channel exists but is not active, clean it up
       try {
         supabase.removeChannel(channelRef.current);
-      } catch (err) {
+      } catch (_err) {
         // Ignore cleanup errors
       }
       channelRef.current = null;
@@ -92,7 +91,7 @@ export function useTicketMessages(
         // Channel exists but is not active, clean it up first
         try {
           await supabase.removeChannel(channelRef.current);
-        } catch (err) {
+        } catch (_err) {
           // Ignore cleanup errors
         }
         channelRef.current = null;
@@ -105,8 +104,10 @@ export function useTicketMessages(
         // Create new channel for real-time ticket messages
         // Use consistent channel name per ticket (not timestamp-based) to avoid conflicts
         const channelName = `ticket-messages:${ticketId}`;
-        
-        logger.debug(`🔌 Setting up realtime subscription for ticket ${ticketId}`);
+
+        logger.debug(
+          `🔌 Setting up realtime subscription for ticket ${ticketId}`
+        );
 
         // Create channel instance first
         // For postgres_changes, we don't need broadcast/presence config
@@ -114,7 +115,7 @@ export function useTicketMessages(
 
         // Set channel ref IMMEDIATELY after creation to prevent race conditions
         channelRef.current = channel;
-        
+
         console.log(`[Realtime] Created channel: ${channelName}`);
 
         // Configure channel event handlers
@@ -133,13 +134,19 @@ export function useTicketMessages(
               logger.debug("📨 Received new message via realtime:", payload);
               console.log("[Realtime] 📨 Received message payload:", payload);
               console.log("[Realtime] Payload type:", typeof payload);
-              console.log("[Realtime] Payload keys:", Object.keys(payload || {}));
-              
+              console.log(
+                "[Realtime] Payload keys:",
+                Object.keys(payload || {})
+              );
+
               if (!payload || !payload.new) {
-                console.error("[Realtime] ❌ Invalid payload structure:", payload);
+                console.error(
+                  "[Realtime] ❌ Invalid payload structure:",
+                  payload
+                );
                 return;
               }
-              
+
               const newMessage = payload.new as {
                 id: string;
                 ticket_id: string;
@@ -153,25 +160,35 @@ export function useTicketMessages(
                 id: newMessage.id,
                 ticket_id: newMessage.ticket_id,
                 user_id: newMessage.user_id,
-                message: newMessage.message?.substring(0, 50) + "...",
+                message: `${newMessage.message?.substring(0, 50)}...`,
               });
 
               // Verify this message is for the current ticket (should already be filtered, but double-check)
               if (newMessage.ticket_id !== ticketId) {
-                logger.debug(`Message ticket_id ${newMessage.ticket_id} doesn't match current ticket ${ticketId}`);
-                console.log(`[Realtime] ⏭️ Skipping message - ticket_id mismatch: ${newMessage.ticket_id} vs ${ticketId}`);
+                logger.debug(
+                  `Message ticket_id ${newMessage.ticket_id} doesn't match current ticket ${ticketId}`
+                );
+                console.log(
+                  `[Realtime] ⏭️ Skipping message - ticket_id mismatch: ${newMessage.ticket_id} vs ${ticketId}`
+                );
                 return;
               }
-              
-              console.log(`[Realtime] ✅ Processing message ${newMessage.id} for ticket ${ticketId} from user ${newMessage.user_id}`);
+
+              console.log(
+                `[Realtime] ✅ Processing message ${newMessage.id} for ticket ${ticketId} from user ${newMessage.user_id}`
+              );
 
               // Process ALL messages, including own messages
               // This ensures both users see messages immediately via realtime
               // The duplicate check below will prevent adding the same message twice
               // IMPORTANT: Don't filter out own messages - we want to see them immediately via realtime
 
-              logger.debug(`✅ Processing new message ${newMessage.id} for ticket ${ticketId} from user ${newMessage.user_id}`);
-              console.log(`[Realtime] ✅ Processing message ${newMessage.id} - is own: ${newMessage.user_id === userId}`);
+              logger.debug(
+                `✅ Processing new message ${newMessage.id} for ticket ${ticketId} from user ${newMessage.user_id}`
+              );
+              console.log(
+                `[Realtime] ✅ Processing message ${newMessage.id} - is own: ${newMessage.user_id === userId}`
+              );
 
               // Add message immediately (optimistic update) to show it right away
               // We'll fetch user data in the background
@@ -189,7 +206,9 @@ export function useTicketMessages(
               setMessages((prev) => {
                 // Check if message already exists (prevent duplicates)
                 if (prev.some((msg) => msg.id === newMessage.id)) {
-                  logger.debug(`Message ${newMessage.id} already exists, skipping`);
+                  logger.debug(
+                    `Message ${newMessage.id} already exists, skipping`
+                  );
                   return prev;
                 }
                 logger.debug(`Adding new message ${newMessage.id} to state`);
@@ -199,7 +218,7 @@ export function useTicketMessages(
               // Scroll to bottom immediately
               setTimeout(() => {
                 const messagesContainer = document.getElementById(
-                  "ticket-messages-container",
+                  "ticket-messages-container"
                 );
                 if (messagesContainer) {
                   messagesContainer.scrollTo({
@@ -217,13 +236,16 @@ export function useTicketMessages(
                     `
                     *,
                     user:users(name, email, avatar_url)
-                  `,
+                  `
                   )
                   .eq("id", newMessage.id)
                   .single();
 
                 if (fetchError || !messageData) {
-                  logger.warn("Failed to fetch new message details:", fetchError);
+                  logger.warn(
+                    "Failed to fetch new message details:",
+                    fetchError
+                  );
                   // Keep the temp message even if fetch fails
                   return;
                 }
@@ -233,10 +255,12 @@ export function useTicketMessages(
                   return prev.map((msg) =>
                     msg.id === newMessage.id
                       ? (messageData as TicketMessage)
-                      : msg,
+                      : msg
                   );
                 });
-                logger.debug(`✅ Updated message ${newMessage.id} with user data`);
+                logger.debug(
+                  `✅ Updated message ${newMessage.id} with user data`
+                );
               } catch (err) {
                 logger.error("Error fetching message user data:", err);
                 // Keep the temp message even if fetch fails
@@ -244,7 +268,7 @@ export function useTicketMessages(
             } catch (err) {
               logger.error("Error processing realtime message payload:", err);
             }
-          },
+          }
         );
 
         // Check again before subscribing to ensure channel hasn't been cleaned up or already subscribed
@@ -254,7 +278,7 @@ export function useTicketMessages(
           // Clean up the channel we created but won't use
           try {
             await supabase.removeChannel(channel);
-          } catch (cleanupErr) {
+          } catch (_cleanupErr) {
             // Ignore cleanup errors
           }
           return;
@@ -270,43 +294,70 @@ export function useTicketMessages(
         }
 
         // Subscribe to the channel with detailed logging
-        console.log(`[Realtime] 🔌 Attempting to subscribe to ticket ${ticketId}...`);
+        console.log(
+          `[Realtime] 🔌 Attempting to subscribe to ticket ${ticketId}...`
+        );
         channel.subscribe((status, err) => {
           // Reset setup flag in all cases
           isSettingUpRef.current = false;
 
-          console.log(`[Realtime] 📡 Subscription status for ticket ${ticketId}:`, status, err ? JSON.stringify(err, null, 2) : "");
+          console.log(
+            `[Realtime] 📡 Subscription status for ticket ${ticketId}:`,
+            status,
+            err ? JSON.stringify(err, null, 2) : ""
+          );
 
           if (status === "SUBSCRIBED") {
             isSubscribedRef.current = true;
             setError(null);
-            logger.debug(`✅ Successfully subscribed to ticket messages channel for ticket ${ticketId}`);
-            console.log(`[Realtime] ✅ Successfully subscribed to ticket ${ticketId} messages`);
+            logger.debug(
+              `✅ Successfully subscribed to ticket messages channel for ticket ${ticketId}`
+            );
+            console.log(
+              `[Realtime] ✅ Successfully subscribed to ticket ${ticketId} messages`
+            );
             console.log(`[Realtime] Channel state:`, channel.state);
             console.log(`[Realtime] Channel name: ${channelName}`);
-            console.log(`[Realtime] Listening for INSERT events on support_ticket_messages with filter: ticket_id=eq.${ticketId}`);
+            console.log(
+              `[Realtime] Listening for INSERT events on support_ticket_messages with filter: ticket_id=eq.${ticketId}`
+            );
           } else if (status === "CHANNEL_ERROR") {
             isSubscribedRef.current = false;
             logger.error(`❌ Channel error for ticket ${ticketId}:`, err);
-            console.error(`[Realtime] ❌ Channel error for ticket ${ticketId}:`, err);
-            console.error(`[Realtime] Error details:`, JSON.stringify(err, null, 2));
+            console.error(
+              `[Realtime] ❌ Channel error for ticket ${ticketId}:`,
+              err
+            );
+            console.error(
+              `[Realtime] Error details:`,
+              JSON.stringify(err, null, 2)
+            );
             // Only log error if err is actually provided and meaningful
             if (err) {
-              logger.error("Error subscribing to ticket messages channel:", err);
+              logger.error(
+                "Error subscribing to ticket messages channel:",
+                err
+              );
             } else {
-              logger.warn("Ticket messages channel error (no details provided)");
+              logger.warn(
+                "Ticket messages channel error (no details provided)"
+              );
             }
             setError("Failed to connect to real-time updates");
           } else if (status === "TIMED_OUT") {
             isSubscribedRef.current = false;
             logger.warn("Ticket messages channel subscription timed out");
-            console.warn(`[Realtime] ⏱️ Subscription timed out for ticket ${ticketId}`);
+            console.warn(
+              `[Realtime] ⏱️ Subscription timed out for ticket ${ticketId}`
+            );
           } else if (status === "CLOSED") {
             isSubscribedRef.current = false;
             logger.debug("Ticket messages channel closed");
             console.log(`[Realtime] 🔒 Channel closed for ticket ${ticketId}`);
           } else {
-            console.log(`[Realtime] ⚠️ Unknown status "${status}" for ticket ${ticketId}`);
+            console.log(
+              `[Realtime] ⚠️ Unknown status "${status}" for ticket ${ticketId}`
+            );
           }
         });
       } catch (err) {
@@ -316,7 +367,7 @@ export function useTicketMessages(
         if (channelRef.current && supabase) {
           try {
             await supabase.removeChannel(channelRef.current);
-          } catch (cleanupErr) {
+          } catch (_cleanupErr) {
             // Ignore cleanup errors
           }
         }
@@ -327,7 +378,9 @@ export function useTicketMessages(
         } else if (err) {
           logger.error("❌ Failed to set up real-time ticket messages:", err);
         } else {
-          logger.warn("Failed to set up real-time ticket messages (no error details)");
+          logger.warn(
+            "Failed to set up real-time ticket messages (no error details)"
+          );
         }
         setError("Failed to set up real-time updates");
       }
@@ -344,14 +397,14 @@ export function useTicketMessages(
           if (channelState === "joined" || channelState === "joining") {
             supabase.removeChannel(channelRef.current);
           }
-        } catch (err) {
+        } catch (_err) {
           // Ignore cleanup errors
         }
         channelRef.current = null;
         isSubscribedRef.current = false;
       }
     };
-  }, [ticketId, userId, supabase, queryClient]);
+  }, [ticketId, userId, supabase]);
 
   // Update messages when initialMessages change
   useEffect(() => {
@@ -375,7 +428,7 @@ export function useTicketMessages(
             `
             *,
             user:users(name, email, avatar_url)
-          `,
+          `
           )
           .eq("ticket_id", ticketId)
           .order("created_at", { ascending: true });
@@ -385,12 +438,12 @@ export function useTicketMessages(
             // Check if we have new messages
             const prevIds = new Set(prev.map((m) => m.id));
             const newMessages = latestMessages.filter(
-              (m) => !prevIds.has(m.id),
+              (m) => !prevIds.has(m.id)
             ) as TicketMessage[];
 
             if (newMessages.length > 0) {
               console.log(
-                `[Fallback Polling] ✅ Found ${newMessages.length} new message(s) via polling`,
+                `[Fallback Polling] ✅ Found ${newMessages.length} new message(s) via polling`
               );
               // Return all messages (latestMessages is already sorted)
               return latestMessages as TicketMessage[];
@@ -429,7 +482,9 @@ export function useTicketMessages(
     setMessages((prev) => {
       // Check if message already exists (prevent duplicates)
       if (prev.some((msg) => msg.id === message.id)) {
-        logger.debug(`Message ${message.id} already exists, skipping optimistic add`);
+        logger.debug(
+          `Message ${message.id} already exists, skipping optimistic add`
+        );
         return prev;
       }
       logger.debug(`Adding message ${message.id} optimistically`);
@@ -440,7 +495,7 @@ export function useTicketMessages(
     // Scroll to bottom
     setTimeout(() => {
       const messagesContainer = document.getElementById(
-        "ticket-messages-container",
+        "ticket-messages-container"
       );
       if (messagesContainer) {
         messagesContainer.scrollTo({
@@ -459,4 +514,3 @@ export function useTicketMessages(
     addMessageOptimistically,
   };
 }
-

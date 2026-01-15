@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { deleteCustomer } from "@/actions/customers-actions";
 import { Loader2, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
-
-import { Button } from "@/components/ui/button";
+import { deleteCustomer } from "@/actions/customers-actions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,16 +17,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 interface DeleteCustomerButtonProps {
   customerId: string;
   customerName: string;
-  variant?:
-    | "default"
-    | "secondary"
-    | "destructive"
-    | "outline"
-    | "ghost";
+  variant?: "default" | "secondary" | "destructive" | "outline" | "ghost";
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
   onDeleted?: () => void;
@@ -82,9 +76,9 @@ export function DeleteCustomerButton({
           className={`gap-1.5 ${className || ""}`}
         >
           {isDeleting ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            <Loader2 className="size-3.5 animate-spin" />
           ) : (
-            <Trash2 className="h-3.5 w-3.5" />
+            <Trash2 className="size-3.5" />
           )}
           <span className="text-xs">{t("table.delete")}</span>
         </Button>
@@ -107,7 +101,7 @@ export function DeleteCustomerButton({
           >
             {isDeleting ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 size-4 animate-spin" />
                 {t("table.deleting")}
               </>
             ) : (

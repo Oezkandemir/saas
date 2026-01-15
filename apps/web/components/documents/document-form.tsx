@@ -1,15 +1,5 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { CompanyProfile } from "@/actions/company-profiles-actions";
-import {
-  createDocument,
-  Document,
-  DocumentInput,
-  DocumentType,
-  updateDocument,
-} from "@/actions/documents-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   FileText,
@@ -19,11 +9,22 @@ import {
   ShoppingCart,
   Trash2,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-
+import type { CompanyProfile } from "@/actions/company-profiles-actions";
+import {
+  createDocument,
+  type Document,
+  type DocumentInput,
+  type DocumentType,
+  updateDocument,
+} from "@/actions/documents-actions";
+import { CompanyProfileSelector } from "@/components/company-settings/company-profile-selector";
+import { CustomerSelector } from "@/components/documents/customer-selector";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -32,7 +33,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import {
   Form,
   FormControl,
@@ -43,9 +43,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { CompanyProfileSelector } from "@/components/company-settings/company-profile-selector";
-import { CustomerSelector } from "@/components/documents/customer-selector";
 
 // Schema will be created inside component to access translations
 
@@ -65,7 +64,7 @@ export function DocumentForm({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<CompanyProfile | null>(
-    null,
+    null
   );
   const [selectedProfileId, setSelectedProfileId] = useState<string>("");
 
@@ -81,7 +80,7 @@ export function DocumentForm({
           description: z.string().min(1, tValidation("descriptionRequired")),
           quantity: z.number().min(0.01),
           unit_price: z.number().min(0),
-        }),
+        })
       )
       .min(1, tValidation("atLeastOneItem")),
   });
@@ -89,12 +88,12 @@ export function DocumentForm({
   // Calculate due date based on document date and payment days from profile
   const calculateDueDate = (
     docDate: string,
-    paymentDays?: number | null,
+    paymentDays?: number | null
   ): string => {
     if (!docDate || !paymentDays) return "";
     const date = new Date(docDate);
     date.setDate(date.getDate() + (paymentDays || 14));
-    return date.toISOString().split("T")[0];
+    return date.toISOString().split("T")[0] || "";
   };
 
   // Normalize document data: convert null/undefined values to empty strings for form inputs
@@ -157,7 +156,7 @@ export function DocumentForm({
         form.setValue("due_date", dueDate);
       }
     }
-  }, [selectedProfile, documentDate, document, form]);
+  }, [selectedProfile, documentDate, document, form, calculateDueDate]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -220,7 +219,7 @@ export function DocumentForm({
       }
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : t("toast.saveError"),
+        error instanceof Error ? error.message : t("toast.saveError")
       );
       setIsLoading(false); // Only reset loading on error
     }
@@ -232,8 +231,8 @@ export function DocumentForm({
       <Card className="border-2 shadow-lg">
         <CardHeader className="pb-4">
           <div className="flex gap-3 items-center">
-            <div className="flex justify-center items-center w-10 h-10 rounded-lg bg-primary/10">
-              <FileText className="w-5 h-5 text-primary" />
+            <div className="flex justify-center items-center size-10 rounded-lg bg-primary/10">
+              <FileText className="size-5 text-primary" />
             </div>
             <div>
               <CardTitle className="text-xl">
@@ -259,7 +258,7 @@ export function DocumentForm({
               {/* Company Profile Section */}
               <div className="space-y-3">
                 <div className="flex gap-2 items-center">
-                  <Receipt className="w-4 h-4 text-muted-foreground" />
+                  <Receipt className="size-4 text-muted-foreground" />
                   <FormLabel className="text-base font-semibold">
                     {t("companyProfile.label")}
                   </FormLabel>
@@ -324,7 +323,7 @@ export function DocumentForm({
                                 selectedProfile.default_payment_days ?? 14;
                               const dueDate = calculateDueDate(
                                 e.target.value,
-                                paymentDays,
+                                paymentDays
                               );
                               if (dueDate) {
                                 form.setValue("due_date", dueDate);
@@ -356,7 +355,7 @@ export function DocumentForm({
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <div className="flex gap-2 items-center">
-                    <ShoppingCart className="w-4 h-4 text-muted-foreground" />
+                    <ShoppingCart className="size-4 text-muted-foreground" />
                     <FormLabel className="text-base font-semibold">
                       {t("items.label")}
                     </FormLabel>
@@ -369,7 +368,7 @@ export function DocumentForm({
                       append({ description: "", quantity: 1, unit_price: 0 })
                     }
                   >
-                    <Plus className="mr-2 w-4 h-4" />
+                    <Plus className="mr-2 size-4" />
                     {t("items.addButton")}
                   </Button>
                 </div>
@@ -396,7 +395,7 @@ export function DocumentForm({
                                     <FormControl>
                                       <Input
                                         placeholder={t(
-                                          "itemDescriptionPlaceholder",
+                                          "itemDescriptionPlaceholder"
                                         )}
                                         {...field}
                                         className="h-10"
@@ -422,7 +421,7 @@ export function DocumentForm({
                                         {...field}
                                         onChange={(e) =>
                                           field.onChange(
-                                            parseFloat(e.target.value) || 0,
+                                            parseFloat(e.target.value) || 0
                                           )
                                         }
                                         className="h-10"
@@ -448,7 +447,7 @@ export function DocumentForm({
                                         {...field}
                                         onChange={(e) =>
                                           field.onChange(
-                                            parseFloat(e.target.value) || 0,
+                                            parseFloat(e.target.value) || 0
                                           )
                                         }
                                         className="h-10"
@@ -467,7 +466,7 @@ export function DocumentForm({
                                     {
                                       style: "currency",
                                       currency: "EUR",
-                                    },
+                                    }
                                   )}
                                 </div>
                                 <div className="text-xs text-muted-foreground">
@@ -480,9 +479,9 @@ export function DocumentForm({
                                 size="icon"
                                 onClick={() => remove(index)}
                                 disabled={fields.length === 1}
-                                className="w-10 h-10 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                className="size-10 text-destructive hover:text-destructive hover:bg-destructive/10"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="size-4" />
                               </Button>
                             </div>
                           </div>
@@ -597,12 +596,12 @@ export function DocumentForm({
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                      <Loader2 className="mr-2 size-4 animate-spin" />
                       {document ? t("saving") : t("creating")}
                     </>
                   ) : (
                     <>
-                      <FileText className="mr-2 w-4 h-4" />
+                      <FileText className="mr-2 size-4" />
                       {document ? t("saveChanges") : t("createDocument")}
                     </>
                   )}

@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-import { useRouter } from "next/navigation";
 import {
   RiArrowDownLine,
   RiArrowUpLine,
@@ -12,13 +10,14 @@ import {
   RiPriceTagLine,
   RiSearch2Line,
 } from "@remixicon/react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-
+import React from "react";
+import { ButtonIcon, ButtonRoot } from "@/components/ui/button";
+import { CommandMenu } from "@/components/ui/command";
+import { Kbd } from "@/components/ui/kbd";
 import { marketingConfig } from "@/config/marketing";
 import { cn } from "@/lib/utils";
-import { ButtonIcon, ButtonRoot } from "@/components/ui/button";
-import { Kbd } from "@/components/ui/kbd";
-import { CommandMenu } from "@/components/ui/command";
 
 // Create namespace object for Button pattern
 const Button = {
@@ -89,7 +88,7 @@ export function MarketingCommandMenu() {
       setOpen(false);
       router.push(href);
     },
-    [router],
+    [router]
   );
 
   // Gruppiere Items nach Kategorie
@@ -98,10 +97,10 @@ export function MarketingCommandMenu() {
       if (!acc[item.category]) {
         acc[item.category] = [];
       }
-      acc[item.category].push(item);
+      acc[item.category]?.push(item);
       return acc;
     },
-    {} as Record<string, MarketingCommandMenuItem[]>,
+    {} as Record<string, MarketingCommandMenuItem[]>
   );
 
   return (
@@ -115,7 +114,7 @@ export function MarketingCommandMenu() {
               <RiSearch2Line
                 className={cn(
                   "size-5 shrink-0 text-muted-foreground transition-colors",
-                  "group-focus-within/cmd-input:text-primary",
+                  "group-focus-within/cmd-input:text-primary"
                 )}
               />
               <CommandMenu.Input placeholder="Suche oder springe zu..." />

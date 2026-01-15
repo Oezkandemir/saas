@@ -1,9 +1,9 @@
 "use client";
 
-import type { PlanMigration } from "@/actions/admin-plan-actions";
 import { formatDistance } from "date-fns";
 import { de } from "date-fns/locale";
-
+import type { PlanMigration } from "@/actions/admin-plan-actions";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -12,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 
 interface PlanMigrationsTableProps {
   migrations: PlanMigration[];

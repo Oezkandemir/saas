@@ -66,7 +66,7 @@ export const DEFAULT_COMPANY_INFO: CompanyInfo = {
  * Converts a CompanyProfile to CompanyInfo format for PDF generation
  */
 export function convertCompanyProfileToInfo(
-  profile: CompanyProfile | null | undefined,
+  profile: CompanyProfile | null | undefined
 ): CompanyInfo | undefined {
   if (!profile) return undefined;
 
@@ -102,7 +102,7 @@ export function convertCompanyProfileToInfo(
  */
 export function generateInvoiceHTML(
   document: Document,
-  options: InvoiceTemplateOptions = {},
+  options: InvoiceTemplateOptions = {}
 ): string {
   const companyInfo = { ...DEFAULT_COMPANY_INFO, ...options.companyInfo };
   const isInvoice = document.type === "invoice";
@@ -121,7 +121,7 @@ export function generateInvoiceHTML(
           <td style="text-align: right; padding: 12px; font-size: 11pt; color: #111827;">${formatCurrency(item.unit_price)}</td>
           <td style="text-align: right; padding: 12px; font-size: 11pt; color: #111827; font-weight: 600;">${formatCurrency(item.quantity * item.unit_price)}</td>
         </tr>
-      `,
+      `
           )
           .join("")
       : "";
@@ -367,7 +367,7 @@ export function generateInvoiceHTML(
  */
 export async function generateInvoiceHTMLAsync(
   document: Document,
-  options: InvoiceTemplateOptions = {},
+  options: InvoiceTemplateOptions = {}
 ): Promise<string> {
   // If companyInfo is already provided, use it
   if (options.companyInfo) {

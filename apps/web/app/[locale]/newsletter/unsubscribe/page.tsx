@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { unsubscribeFromNewsletter } from "@/actions/newsletter";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
-import { logger } from "@/lib/logger";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { unsubscribeFromNewsletter } from "@/actions/newsletter";
+import { Icons } from "@/components/shared/icons";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,7 +15,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Icons } from "@/components/shared/icons";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { logger } from "@/lib/logger";
 
 export default function NewsletterUnsubscribe() {
   const t = useTranslations("Newsletter");
@@ -38,7 +37,7 @@ export default function NewsletterUnsubscribe() {
         const token = searchParams.get("token");
 
         logger.debug(
-          `Unsubscribe attempt - email: ${email}, token: ${token ? "provided" : "missing"}`,
+          `Unsubscribe attempt - email: ${email}, token: ${token ? "provided" : "missing"}`
         );
         setDebugInfo(`Attempting to unsubscribe: ${email}`);
 

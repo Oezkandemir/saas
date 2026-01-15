@@ -1,12 +1,12 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  type CustomerInput,
   createCustomer,
   deleteCustomer,
   getCustomer,
   getCustomers,
   updateCustomer,
-  type CustomerInput,
 } from "@/actions/customers-actions";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { enforcePlanLimit } from "@/lib/plan-limits";
 import { getCurrentUser } from "@/lib/session";
@@ -100,7 +100,7 @@ describe("Customers Actions", () => {
 
       expect(mockSupabase.eq).toHaveBeenCalledWith(
         "company_profile_id",
-        "company-profile-123",
+        "company-profile-123"
       );
     });
 
@@ -189,7 +189,7 @@ describe("Customers Actions", () => {
       vi.mocked(getSupabaseServer).mockResolvedValue(mockSupabase as any);
 
       await expect(createCustomer(customerInput)).rejects.toThrow(
-        "Unauthorized",
+        "Unauthorized"
       );
     });
 
@@ -250,7 +250,7 @@ describe("Customers Actions", () => {
       vi.mocked(getSupabaseServer).mockResolvedValue(mockSupabase as any);
 
       await expect(updateCustomer("customer-123", updateInput)).rejects.toThrow(
-        "Unauthorized",
+        "Unauthorized"
       );
     });
 
@@ -286,7 +286,7 @@ describe("Customers Actions", () => {
       vi.mocked(getSupabaseServer).mockResolvedValue(mockSupabase as any);
 
       await expect(deleteCustomer("customer-123")).rejects.toThrow(
-        "Unauthorized",
+        "Unauthorized"
       );
     });
 
@@ -306,6 +306,3 @@ describe("Customers Actions", () => {
     });
   });
 });
-
-
-

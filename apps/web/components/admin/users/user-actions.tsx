@@ -1,17 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { MoreHorizontal, Shield, Trash, Unlock, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 import {
   deleteUser,
   toggleUserAdminStatus,
   toggleUserBanStatus,
 } from "@/actions/admin-user-actions";
-import { MoreHorizontal, Shield, Trash, Unlock, X } from "lucide-react";
-import { useTranslations } from "next-intl";
-
-import { logger } from "@/lib/logger";
-import { cn } from "@/lib/utils";
+import { UserAvatar } from "@/components/shared/user-avatar";
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -30,10 +29,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { UserAvatar } from "@/components/shared/user-avatar";
+import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
 
-import { User } from "./columns";
+import type { User } from "./columns";
 
 interface UserActionsProps {
   user: User;
@@ -197,7 +196,7 @@ export function UserActions({
                 : "text-purple-600 hover:text-purple-700",
               loading
                 ? "cursor-not-allowed opacity-50"
-                : "cursor-pointer hover:bg-muted",
+                : "cursor-pointer hover:bg-muted"
             )}
           >
             <Shield className="size-4" />
@@ -233,7 +232,7 @@ export function UserActions({
                 : "text-amber-600 hover:text-amber-700",
               loading
                 ? "cursor-not-allowed opacity-50"
-                : "cursor-pointer hover:bg-muted",
+                : "cursor-pointer hover:bg-muted"
             )}
           >
             {user.status === "banned" ? (
@@ -270,7 +269,7 @@ export function UserActions({
               isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
               loading
                 ? "cursor-not-allowed opacity-50"
-                : "cursor-pointer hover:bg-muted",
+                : "cursor-pointer hover:bg-muted"
             )}
           >
             <Trash className="size-4" />

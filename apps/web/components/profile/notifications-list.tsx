@@ -1,12 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import {
-  markNotificationAsRead,
-  UserNotification,
-} from "@/actions/user-profile-actions";
 import { formatDistance } from "date-fns";
 import { de } from "date-fns/locale";
 import {
@@ -24,13 +17,19 @@ import {
   Trash2,
   Users,
 } from "lucide-react";
-
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import {
+  markNotificationAsRead,
+  type UserNotification,
+} from "@/actions/user-profile-actions";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 
 import { DeleteNotificationButton } from "./delete-notification-button";
 
@@ -43,19 +42,19 @@ const getActionIcon = (action?: string, type?: string) => {
   if (action) {
     switch (action.toLowerCase()) {
       case "created":
-        return <Plus className="h-3.5 w-3.5" />;
+        return <Plus className="size-3.5" />;
       case "updated":
-        return <Edit className="h-3.5 w-3.5" />;
+        return <Edit className="size-3.5" />;
       case "deleted":
-        return <Trash2 className="h-3.5 w-3.5" />;
+        return <Trash2 className="size-3.5" />;
       case "sent":
-        return <ArrowRight className="h-3.5 w-3.5" />;
+        return <ArrowRight className="size-3.5" />;
       case "paid":
-        return <CheckCircle2 className="h-3.5 w-3.5" />;
+        return <CheckCircle2 className="size-3.5" />;
       case "overdue":
-        return <Clock className="h-3.5 w-3.5" />;
+        return <Clock className="size-3.5" />;
       default:
-        return <Sparkles className="h-3.5 w-3.5" />;
+        return <Sparkles className="size-3.5" />;
     }
   }
 
@@ -63,25 +62,25 @@ const getActionIcon = (action?: string, type?: string) => {
   const normalizedType = type?.toUpperCase() || "";
   switch (normalizedType) {
     case "SYSTEM":
-      return <Info className="h-3.5 w-3.5" />;
+      return <Info className="size-3.5" />;
     case "BILLING":
-      return <CreditCard className="h-3.5 w-3.5" />;
+      return <CreditCard className="size-3.5" />;
     case "SUPPORT":
-      return <Info className="h-3.5 w-3.5" />;
+      return <Info className="size-3.5" />;
     case "SUCCESS":
-      return <CheckCircle2 className="h-3.5 w-3.5" />;
+      return <CheckCircle2 className="size-3.5" />;
     case "WELCOME":
-      return <Gift className="h-3.5 w-3.5" />;
+      return <Gift className="size-3.5" />;
     case "TEAM":
-      return <Users className="h-3.5 w-3.5" />;
+      return <Users className="size-3.5" />;
     case "CUSTOMER":
-      return <Users className="h-3.5 w-3.5" />;
+      return <Users className="size-3.5" />;
     case "DOCUMENT":
-      return <FileText className="h-3.5 w-3.5" />;
+      return <FileText className="size-3.5" />;
     case "INVOICE":
-      return <FileText className="h-3.5 w-3.5" />;
+      return <FileText className="size-3.5" />;
     default:
-      return <Bell className="h-3.5 w-3.5" />;
+      return <Bell className="size-3.5" />;
   }
 };
 
@@ -201,7 +200,7 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
                 "group transition-all duration-200 hover:shadow-md",
                 notification.read
                   ? "bg-muted/20 border-muted"
-                  : "bg-background border-border shadow-sm",
+                  : "bg-background border-border shadow-sm"
               )}
             >
               <CardContent className="p-4">
@@ -211,7 +210,7 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
                     className={cn(
                       "mt-0.5 shrink-0 rounded-md p-1.5",
                       getActionColor(action),
-                      !notification.read && "bg-muted/50",
+                      !notification.read && "bg-muted/50"
                     )}
                   >
                     {getActionIcon(action, notification.type)}
@@ -226,7 +225,7 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
                           <h3
                             className={cn(
                               "text-sm font-medium leading-tight",
-                              !notification.read && "font-semibold",
+                              !notification.read && "font-semibold"
                             )}
                           >
                             {notification.title}
@@ -283,11 +282,11 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
                     <div className="flex items-center justify-between gap-2 pt-1 border-t border-border/50">
                       <div className="flex items-center gap-3 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
+                          <Clock className="size-3" />
                           {formatDistance(
                             new Date(notification.created_at),
                             new Date(),
-                            { addSuffix: true, locale: de },
+                            { addSuffix: true, locale: de }
                           )}
                         </span>
                         <Badge
@@ -307,7 +306,7 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
                               className="h-7 px-2 text-xs"
                             >
                               Öffnen
-                              <ArrowRight className="ml-1 h-3 w-3" />
+                              <ArrowRight className="ml-1 size-3" />
                             </Button>
                           </Link>
                         )}
@@ -321,9 +320,9 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
                             title="Als gelesen markieren"
                           >
                             {loadingId === notification.id ? (
-                              <Clock className="h-3 w-3 animate-spin" />
+                              <Clock className="size-3 animate-spin" />
                             ) : (
-                              <CheckCircle2 className="h-3 w-3" />
+                              <CheckCircle2 className="size-3" />
                             )}
                           </Button>
                         )}
@@ -342,8 +341,8 @@ export function NotificationsList({ notifications }: NotificationsListProps) {
       ) : (
         <Card className="border-2 border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-16">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted mb-4">
-              <Bell className="h-8 w-8 text-muted-foreground" />
+            <div className="flex size-16 items-center justify-center rounded-full bg-muted mb-4">
+              <Bell className="size-8 text-muted-foreground" />
             </div>
             <h3 className="mb-2 text-lg font-semibold">
               Keine Benachrichtigungen

@@ -1,18 +1,16 @@
+import { CreditCard } from "lucide-react";
 import { redirect } from "next/navigation";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import {
   getAllPlans,
   getPlanMigrations,
   getPlanStatistics,
   getUsersByPlan,
 } from "@/actions/admin-plan-actions";
-import { CreditCard } from "lucide-react";
-import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlanMigrationsTable } from "@/components/admin/plans/plan-migrations-table";
 import { PlanStatisticsTable } from "@/components/admin/plans/plan-statistics-table";
 import { PlanUsersTable } from "@/components/admin/plans/plan-users-table";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import {
   Card,
   CardContent,
@@ -20,7 +18,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getCurrentUser } from "@/lib/session";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -75,22 +74,22 @@ export default async function AdminPlansPage(props: Props) {
   // Calculate totals
   const totalMRR = statistics.reduce(
     (sum, stat) => sum + Number(stat.mrr || 0),
-    0,
+    0
   );
   const totalARR = statistics.reduce(
     (sum, stat) => sum + Number(stat.arr || 0),
-    0,
+    0
   );
   const totalUsers = statistics.reduce(
     (sum, stat) => sum + Number(stat.user_count || 0),
-    0,
+    0
   );
 
   return (
     <UnifiedPageLayout
       title={t("heading")}
       description={t("subheading")}
-      icon={<CreditCard className="w-4 h-4 text-primary" />}
+      icon={<CreditCard className="size-4 text-primary" />}
       contentClassName="space-y-6"
     >
       {/* Primary Metric */}

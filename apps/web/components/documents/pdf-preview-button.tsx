@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Eye, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -36,7 +36,7 @@ export function PDFPreviewButton({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPdfUrl, setCurrentPdfUrl] = useState<string | null>(
-    pdfUrl || null,
+    pdfUrl || null
   );
   const [directPdfUrl, setDirectPdfUrl] = useState<string | null>(null);
 
@@ -63,12 +63,6 @@ export function PDFPreviewButton({
     }
   }, [documentId]);
 
-  useEffect(() => {
-    if (open && !directPdfUrl && !currentPdfUrl) {
-      fetchPDFUrl();
-    }
-  }, [open, directPdfUrl, currentPdfUrl]);
-
   const fetchPDFUrl = async () => {
     setLoading(true);
     setError(null);
@@ -81,7 +75,7 @@ export function PDFPreviewButton({
           .json()
           .catch(() => ({ error: "Unknown error" }));
         throw new Error(
-          errorData.message || errorData.error || "Failed to generate PDF",
+          errorData.message || errorData.error || "Failed to generate PDF"
         );
       }
 
@@ -102,7 +96,7 @@ export function PDFPreviewButton({
             pdfUrl: data.pdfUrl,
             proxyUrl,
             timestamp: Date.now(),
-          }),
+          })
         );
       }
 
@@ -119,6 +113,12 @@ export function PDFPreviewButton({
     }
   };
 
+  useEffect(() => {
+    if (open && !directPdfUrl && !currentPdfUrl) {
+      fetchPDFUrl();
+    }
+  }, [open, directPdfUrl, currentPdfUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <>
       <Button
@@ -127,7 +127,7 @@ export function PDFPreviewButton({
         onClick={() => setOpen(true)}
         className="gap-1.5 h-8"
       >
-        <Eye className="h-3.5 w-3.5" />
+        <Eye className="size-3.5" />
         <span className="hidden sm:inline">{t("button")}</span>
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -139,7 +139,7 @@ export function PDFPreviewButton({
           <div className="overflow-auto max-h-[calc(90vh-120px)] p-6 bg-muted/30">
             {loading && !currentPdfUrl ? (
               <div className="flex items-center justify-center h-[600px]">
-                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                <Loader2 className="size-8 animate-spin text-muted-foreground" />
                 <span className="ml-2 text-muted-foreground">
                   {t("loading")}
                 </span>

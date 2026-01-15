@@ -1,18 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { Customer } from "@/actions/customers-actions";
 import { formatDistanceToNow } from "date-fns";
 import { de, enUS } from "date-fns/locale";
 import { Calendar, Edit, FileText, Mail, Phone, Plus } from "lucide-react";
+import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import type { Customer } from "@/actions/customers-actions";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Activity {
   id: string;
@@ -76,17 +71,17 @@ export function CustomerActivityTimeline({
   const getActivityIcon = (type: Activity["type"]) => {
     switch (type) {
       case "document":
-        return <FileText className="h-4 w-4" />;
+        return <FileText className="size-4" />;
       case "email":
-        return <Mail className="h-4 w-4" />;
+        return <Mail className="size-4" />;
       case "phone":
-        return <Phone className="h-4 w-4" />;
+        return <Phone className="size-4" />;
       case "edit":
-        return <Edit className="h-4 w-4" />;
+        return <Edit className="size-4" />;
       case "created":
-        return <Plus className="h-4 w-4" />;
+        return <Plus className="size-4" />;
       default:
-        return <Calendar className="h-4 w-4" />;
+        return <Calendar className="size-4" />;
     }
   };
 
@@ -112,7 +107,7 @@ export function CustomerActivityTimeline({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
+            <Calendar className="size-5" />
             {t("title")}
           </CardTitle>
         </CardHeader>
@@ -129,19 +124,19 @@ export function CustomerActivityTimeline({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Calendar className="h-5 w-5" />
+          <Calendar className="size-5" />
           {t("titleWithCount", { count: activities.length })}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="relative">
-          <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-border" />
+          <div className="absolute left-6 inset-y-0 w-0.5 bg-border" />
           <div className="space-y-6">
             {activities.map((activity) => (
               <div key={activity.id} className="relative flex gap-4">
                 <div
-                  className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-background ${getActivityColor(
-                    activity.type,
+                  className={`relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-background ${getActivityColor(
+                    activity.type
                   )} text-white`}
                 >
                   {getActivityIcon(activity.type)}

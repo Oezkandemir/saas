@@ -1,17 +1,11 @@
-import { Metadata } from "next";
 import { GitBranch } from "lucide-react";
+import type { Metadata } from "next";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { constructMetadata } from "@/lib/utils";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { constructMetadata } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -85,9 +79,9 @@ export default async function ChangelogPage() {
             </div>
           </div>
           <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-2">
-            <span className="flex relative w-2 h-2">
-              <span className="inline-flex absolute w-full h-full rounded-full opacity-75 animate-ping bg-primary"></span>
-              <span className="inline-flex relative w-2 h-2 rounded-full bg-primary"></span>
+            <span className="flex relative size-2">
+              <span className="inline-flex absolute size-full rounded-full opacity-75 animate-ping bg-primary"></span>
+              <span className="inline-flex relative size-2 rounded-full bg-primary"></span>
             </span>
             {t("hero.badge")}
           </div>
@@ -108,7 +102,9 @@ export default async function ChangelogPage() {
                 <div className="flex items-baseline justify-between">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <CardTitle className="text-2xl">{release.version}</CardTitle>
+                      <CardTitle className="text-2xl">
+                        {release.version}
+                      </CardTitle>
                       <Badge variant="outline">{release.date}</Badge>
                     </div>
                     <h3 className="text-lg font-semibold">{release.title}</h3>
@@ -143,9 +139,7 @@ export default async function ChangelogPage() {
                   ))}
                 </div>
               </CardContent>
-              {index < releases.length - 1 && (
-                <Separator className="mt-6" />
-              )}
+              {index < releases.length - 1 && <Separator className="mt-6" />}
             </Card>
           ))}
         </div>

@@ -1,21 +1,20 @@
 "use client";
 
+import { CheckCircle2, Loader2, RefreshCw, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   getEnvironmentInfo,
   getStorageStats,
 } from "@/actions/admin-system-actions";
-import { CheckCircle2, Loader2, RefreshCw, XCircle } from "lucide-react";
-
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 
 export function EnvironmentInfo() {
   const { toast } = useToast();
@@ -38,10 +37,6 @@ export function EnvironmentInfo() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useEffect(() => {
-    loadInfo();
-  }, []);
-
   const loadInfo = async () => {
     setIsLoading(true);
     try {
@@ -57,7 +52,7 @@ export function EnvironmentInfo() {
       if (storageResult.success && storageResult.data) {
         setStorageStats(storageResult.data);
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: "Fehler",
@@ -68,6 +63,10 @@ export function EnvironmentInfo() {
     }
   };
 
+  useEffect(() => {
+    loadInfo();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
@@ -76,7 +75,7 @@ export function EnvironmentInfo() {
         title: "Aktualisiert",
         description: "Umgebungsinformationen wurden aktualisiert",
       });
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: "Fehler",
@@ -159,12 +158,12 @@ export function EnvironmentInfo() {
                 <div className="flex gap-2 items-center mt-1">
                   {envInfo.hasServiceKey ? (
                     <>
-                      <CheckCircle2 className="w-4 h-4 text-green-500" />
+                      <CheckCircle2 className="size-4 text-green-500" />
                       <span className="text-sm text-green-500">Gesetzt</span>
                     </>
                   ) : (
                     <>
-                      <XCircle className="w-4 h-4 text-red-500" />
+                      <XCircle className="size-4 text-red-500" />
                       <span className="text-sm text-red-500">
                         Nicht gesetzt
                       </span>
@@ -177,12 +176,12 @@ export function EnvironmentInfo() {
                 <div className="flex gap-2 items-center mt-1">
                   {envInfo.hasAnonKey ? (
                     <>
-                      <CheckCircle2 className="w-4 h-4 text-green-500" />
+                      <CheckCircle2 className="size-4 text-green-500" />
                       <span className="text-sm text-green-500">Gesetzt</span>
                     </>
                   ) : (
                     <>
-                      <XCircle className="w-4 h-4 text-red-500" />
+                      <XCircle className="size-4 text-red-500" />
                       <span className="text-sm text-red-500">
                         Nicht gesetzt
                       </span>

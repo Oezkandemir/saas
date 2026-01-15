@@ -61,10 +61,10 @@ const DrawerContent = React.forwardRef<
           side === "top" || side === "bottom"
             ? "h-auto max-h-[85vh] border"
             : side === "right"
-            ? "h-full w-auto max-w-[90vw] border-l"
-            : "h-full w-auto max-w-[90vw] border-r",
+              ? "h-full w-auto max-w-[90vw] border-l"
+              : "h-full w-auto max-w-[90vw] border-r",
           sideClasses[side],
-          className,
+          className
         )}
         {...props}
       >
@@ -108,7 +108,7 @@ const DrawerTitle = React.forwardRef<
     ref={ref}
     className={cn(
       "text-lg font-semibold leading-none tracking-tight",
-      className,
+      className
     )}
     {...props}
   />
@@ -132,10 +132,7 @@ const DrawerBody = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn("flex-1 overflow-y-auto p-4", className)}
-    {...props}
-  />
+  <div className={cn("flex-1 overflow-y-auto p-4", className)} {...props} />
 );
 DrawerBody.displayName = "DrawerBody";
 

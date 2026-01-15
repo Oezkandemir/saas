@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
-import dynamic from "next/dynamic";
 import type { ColumnDef } from "@tanstack/react-table";
+import dynamic from "next/dynamic";
+import type React from "react";
 
 // Dynamic import for heavy DataTable component with SSR disabled
 const DataTable = dynamic(
@@ -17,7 +17,7 @@ const DataTable = dynamic(
       </div>
     ),
     ssr: false,
-  },
+  }
 ) as <TData, TValue>(props: {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];

@@ -1,12 +1,11 @@
-import { Link } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
-
-import { env } from "@/env.mjs";
+import { Icons } from "@/components/shared/icons";
+import { buttonVariants } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
+import { env } from "@/env.mjs";
+import { Link } from "@/i18n/routing";
 import { logger } from "@/lib/logger";
 import { cn, nFormatter } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
-import { Icons } from "@/components/shared/icons";
 
 export default async function HeroLanding() {
   let stars = 0;
@@ -23,7 +22,7 @@ export default async function HeroLanding() {
         }),
         // data will revalidate every hour
         next: { revalidate: 3600 },
-      },
+      }
     );
 
     if (response.ok) {
@@ -44,7 +43,7 @@ export default async function HeroLanding() {
           href="https://twitter.com/miickasmt/status/1810465801649938857"
           className={cn(
             buttonVariants({ variant: "outline", size: "sm" }),
-            "px-4 rounded-full",
+            "px-4 rounded-full"
           )}
           target="_blank"
         >
@@ -89,7 +88,7 @@ export default async function HeroLanding() {
                 variant: "outline",
                 size: "lg",
               }),
-              "px-5 rounded-full",
+              "px-5 rounded-full"
             )}
           >
             <Icons.gitHub className="mr-2 size-4" />

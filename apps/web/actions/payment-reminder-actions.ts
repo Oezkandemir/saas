@@ -86,7 +86,7 @@ export async function sendPaymentReminder(reminderId: string) {
           *,
           customers (*)
         )
-      `,
+      `
       )
       .eq("id", reminderId)
       .single();
@@ -230,8 +230,8 @@ export async function autoCreateRemindersForOverdue() {
       if (!existing) {
         // Create first reminder
         const daysOverdue = Math.floor(
-          (new Date().getTime() - new Date(doc.due_date).getTime()) /
-            (1000 * 60 * 60 * 24),
+          (Date.now() - new Date(doc.due_date).getTime()) /
+            (1000 * 60 * 60 * 24)
         );
 
         let reminderType: PaymentReminderData["reminderType"] = "reminder";
@@ -252,7 +252,7 @@ export async function autoCreateRemindersForOverdue() {
           documentId: doc.id,
           reminderType,
           reminderLevel,
-          scheduledDate: new Date().toISOString().split("T")[0],
+          scheduledDate: new Date().toISOString().split("T")[0]!,
           feeAmount: reminderLevel > 1 ? 5.0 : 0,
         });
 

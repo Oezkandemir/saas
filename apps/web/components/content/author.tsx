@@ -1,8 +1,7 @@
 import Link from "next/link";
-
+import { BlurImage } from "@/components/shared/blur-image";
 import { BLOG_AUTHORS } from "@/config/blog";
 import { getBlurDataURL } from "@/lib/utils";
-import { BlurImage } from "@/components/shared/blur-image";
 
 export default async function Author({
   username,

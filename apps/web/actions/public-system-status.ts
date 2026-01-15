@@ -44,7 +44,7 @@ export async function getPublicSystemStatus(): Promise<{
       hasErrors,
       overallStatus,
     };
-  } catch (error) {
+  } catch (_error) {
     // On error, assume operational to not cause panic
     return {
       hasErrors: false,

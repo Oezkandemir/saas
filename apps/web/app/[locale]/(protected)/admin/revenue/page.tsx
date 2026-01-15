@@ -1,9 +1,16 @@
-import { redirect } from "next/navigation";
-import { getRevenueAnalytics } from "@/actions/revenue-analytics-actions";
 import { DollarSign } from "lucide-react";
+import { redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
+import { getRevenueAnalytics } from "@/actions/revenue-analytics-actions";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -13,15 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { getCurrentUser } from "@/lib/session";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -68,7 +67,7 @@ export default async function AdminRevenuePage(props: Props) {
       <UnifiedPageLayout
         title={t("title")}
         description={t("description")}
-        icon={<DollarSign className="h-4 w-4 text-primary" />}
+        icon={<DollarSign className="size-4 text-primary" />}
       >
         <Card>
           <CardContent className="pt-8 text-center">
@@ -91,7 +90,7 @@ export default async function AdminRevenuePage(props: Props) {
     <UnifiedPageLayout
       title={t("title")}
       description={t("description")}
-      icon={<DollarSign className="h-4 w-4 text-primary" />}
+      icon={<DollarSign className="size-4 text-primary" />}
       contentClassName="space-y-6"
     >
       {/* Primary Metric */}
@@ -179,7 +178,7 @@ export default async function AdminRevenuePage(props: Props) {
                             {
                               month: "short",
                               year: "numeric",
-                            },
+                            }
                           )}
                         </TableCell>
                         <TableCell className="text-right font-semibold">
@@ -197,7 +196,7 @@ export default async function AdminRevenuePage(props: Props) {
                             {
                               style: "currency",
                               currency: "EUR",
-                            },
+                            }
                           )}
                         </TableCell>
                       </TableRow>
@@ -267,7 +266,7 @@ export default async function AdminRevenuePage(props: Props) {
                               {
                                 style: "currency",
                                 currency: "EUR",
-                              },
+                              }
                             )}
                           </TableCell>
                         </TableRow>

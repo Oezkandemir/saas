@@ -804,7 +804,7 @@
       "update": "Update Role",
       "delete": "Delete Role",
       "name": "Name",
-      "description": "Description",
+      "roleDescription": "Description",
       "permissions": "Permissions",
       "isSystemRole": "System Role",
       "assignRole": "Assign Role",
@@ -1591,12 +1591,6 @@
       "title": "No Teams Found",
       "description": "You don't have any teams yet. Create your first team to start collaborating."
     },
-    "roles": {
-      "owner": "Owner",
-      "admin": "Admin",
-      "member": "Member",
-      "guest": "Guest"
-    },
     "teamDetail": {
       "meta": {
         "title": "Team Details"
@@ -1604,7 +1598,6 @@
       "noDescription": "No description provided",
       "createdAt": "Created {time}",
       "members": "members",
-      "projects": "projects",
       "stats": {
         "members": "Members",
         "projects": "Projects",
@@ -2200,12 +2193,6 @@
       "allPrices": "All prices are in Euro. Our General Terms and Conditions apply.",
       "electronic": "This document was created electronically and is valid without signature."
     },
-    "email": {
-      "invoiceSubject": "Invoice {number}",
-      "quoteSubject": "Quote {number}",
-      "invoiceBody": "Dear Sir or Madam,\n\nPlease find attached invoice {number}.\n\nIf you have any questions, please do not hesitate to contact us.\n\nBest regards\n{name}",
-      "quoteBody": "Dear Sir or Madam,\n\nPlease find attached our quote {number}.\n\nWe look forward to your feedback.\n\nBest regards\n{name}"
-    },
     "page": {
       "title": "Documents",
       "description": "Manage your quotes and invoices. Create professional documents in minutes.",
@@ -2319,15 +2306,6 @@
         "overdue": "Overdue"
       }
     },
-    "pdfDownload": {
-      "button": "Download",
-      "generating": "Generating...",
-      "success": "PDF downloaded successfully",
-      "errors": {
-        "loadError": "Error loading PDF",
-        "generateError": "Error generating PDF"
-      }
-    },
     "pdfPreview": {
       "button": "Preview",
       "title": "PDF Preview: {number}",
@@ -2375,6 +2353,15 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "deleteError": "Error deleting template"
+    },
+    "pdfDownload": {
+      "button": "Download",
+      "generating": "Generating...",
+      "success": "PDF downloaded successfully",
+      "errors": {
+        "loadError": "Error loading PDF",
+        "generateError": "Error generating PDF"
+      }
     },
     "delete": {
       "button": "Delete",
@@ -2517,15 +2504,6 @@
         "dateRequired": "Date is required",
         "descriptionRequired": "Description is required",
         "atLeastOneItem": "At least one item is required"
-      }
-    },
-    "pdfDownload": {
-      "button": "Download",
-      "generating": "Generating...",
-      "success": "PDF downloaded successfully",
-      "errors": {
-        "loadError": "Error loading PDF",
-        "generateError": "Error generating PDF"
       }
     }
   },

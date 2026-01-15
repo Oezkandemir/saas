@@ -1,16 +1,14 @@
 import { cookies } from "next/headers";
-import { routing } from "@/i18n/routing";
 import { NextIntlClientProvider } from "next-intl";
+import { routing } from "@/i18n/routing";
 
 // ⚡ PERFORMANCE: CSS is loaded automatically by Next.js
 // Import moved to ensure it's not render-blocking
 import "@/styles/globals.css";
 
+import { ThemeProvider } from "next-themes";
 // ⚡ PERFORMANCE: Only load critical fonts - reduced from 5 to 2 fonts
 import { fontHeading, fontSans } from "@/assets/fonts";
-import { ThemeProvider } from "next-themes";
-
-import { cn, constructMetadata } from "@/lib/utils";
 import { AvatarProvider } from "@/components/context/avatar-context";
 import { NotificationsProvider } from "@/components/context/notifications-context";
 import { ErrorBoundary } from "@/components/error-boundary";
@@ -19,6 +17,7 @@ import { DynamicProviders } from "@/components/providers/dynamic-providers";
 import { QueryClientProvider } from "@/components/providers/query-client-provider";
 import { ThemeSyncProvider } from "@/components/providers/theme-sync-provider";
 import { SupabaseProvider } from "@/components/supabase-provider";
+import { cn, constructMetadata } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -68,11 +67,11 @@ export default async function RootLayout({
         />
         <link rel="dns-prefetch" href="https://*.supabase.co" />
         <link rel="dns-prefetch" href="https://vercel.live" />
-        
+
         {/* ⚡ PERFORMANCE: Prefetch critical routes */}
         <link rel="prefetch" href="/pricing" as="document" />
         <link rel="prefetch" href="/dashboard" as="document" />
-        
+
         {/* Fonts are automatically loaded via next/font/local in assets/fonts/index.ts */}
         {/* Next.js handles font optimization automatically with display: swap */}
 
@@ -80,15 +79,18 @@ export default async function RootLayout({
         {process.env.NODE_ENV === "production" && (
           <link rel="manifest" href="/site.webmanifest" />
         )}
-        
+
         {/* ⚡ SEO: Robots meta tag */}
-        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta
+          name="robots"
+          content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+        />
       </head>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
           fontSans.variable,
-          fontHeading.variable,
+          fontHeading.variable
         )}
       >
         <ErrorBoundary>

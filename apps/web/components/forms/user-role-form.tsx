@@ -1,17 +1,16 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { updateUserRole, type FormData } from "@/actions/update-user-role";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
-import { userRoleSchema } from "@/lib/validations/user";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { type FormData, updateUserRole } from "@/actions/update-user-role";
+import { SectionColumns } from "@/components/dashboard/section-columns";
 import { Button } from "@/components/ui/button";
 import { Form, FormField } from "@/components/ui/form";
-import { SectionColumns } from "@/components/dashboard/section-columns";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { userRoleSchema } from "@/lib/validations/user";
 
 export enum UserRole {
   USER = "USER",

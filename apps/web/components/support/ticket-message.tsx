@@ -1,16 +1,11 @@
 "use client";
 
-import { TicketMessage } from "@/actions/support-ticket-actions";
 import { formatDistance } from "date-fns";
-import { ShieldCheck, Clock } from "lucide-react";
-
-import { cn } from "@/lib/utils";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Clock, ShieldCheck } from "lucide-react";
+import type { TicketMessage } from "@/actions/support-ticket-actions";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface TicketMessageProps {
   message: TicketMessage;
@@ -27,7 +22,7 @@ export function TicketMessageItem({
   const formattedTime = formatDistance(
     new Date(message.created_at),
     new Date(),
-    { addSuffix: true },
+    { addSuffix: true }
   );
 
   // Get user's initials for avatar fallback
@@ -49,15 +44,13 @@ export function TicketMessageItem({
   // Determine alignment based on view type
   // Admin view: admin messages right, user messages left
   // User view: current user messages right, others left
-  const alignRight = isAdminView
-    ? isAdmin
-    : isCurrentUser && !isAdmin;
+  const alignRight = isAdminView ? isAdmin : isCurrentUser && !isAdmin;
 
   return (
     <div
       className={cn(
         "mb-4 flex w-full gap-3",
-        alignRight ? "justify-end" : "justify-start",
+        alignRight ? "justify-end" : "justify-start"
       )}
     >
       {/* For left-aligned messages: Avatar on left */}
@@ -73,7 +66,7 @@ export function TicketMessageItem({
       <div
         className={cn(
           "flex max-w-[80%] flex-col animate-in fade-in slide-in-from-bottom-2 duration-300",
-          alignRight ? "items-end" : "items-start",
+          alignRight ? "items-end" : "items-start"
         )}
       >
         {/* Message sender info - Order: Avatar → Username → Badge → Timestamp */}
@@ -81,7 +74,7 @@ export function TicketMessageItem({
         <div
           className={cn(
             "mb-1.5 flex items-center gap-2 flex-wrap",
-            alignRight && "flex-row-reverse",
+            alignRight && "flex-row-reverse"
           )}
         >
           {/* Avatar inline for right-aligned messages */}
@@ -109,7 +102,7 @@ export function TicketMessageItem({
           )}
 
           <span className="text-xs text-muted-foreground flex items-center gap-1">
-            <Clock className="h-3 w-3" />
+            <Clock className="size-3" />
             {formattedTime}
           </span>
         </div>
@@ -122,7 +115,7 @@ export function TicketMessageItem({
               ? "border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/50"
               : alignRight && isCurrentUser && !isAdmin
                 ? "bg-primary text-primary-foreground"
-                : "bg-muted",
+                : "bg-muted"
           )}
         >
           {message.message}

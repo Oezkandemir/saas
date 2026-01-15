@@ -1,10 +1,9 @@
-import { Metadata } from "next";
-import { clsx, type ClassValue } from "clsx";
+import { type ClassValue, clsx } from "clsx";
 import ms from "ms";
+import type { Metadata } from "next";
 import { twMerge } from "tailwind-merge";
-
-import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
+import { env } from "@/env.mjs";
 
 /**
  * cn Utility
@@ -14,13 +13,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Re-export utility functions for convenience
-export { tv } from "./tv";
-export { recursiveCloneChildren } from "./recursive-clone-children";
 export {
   createPolymorphicComponent,
   type PolymorphicComponent,
 } from "./polymorphic";
+export { recursiveCloneChildren } from "./recursive-clone-children";
+// Re-export utility functions for convenience
+export { tv } from "./tv";
 
 export function constructMetadata({
   title = siteConfig.name,
@@ -183,7 +182,7 @@ export function formatDuration(minutes: number, locale: string = "de"): string {
  */
 export function formatDurationHours(
   hours: number,
-  locale: string = "de",
+  locale: string = "de"
 ): string {
   // Round to nearest half hour
   const roundedHours = Math.round(hours * 2) / 2;
@@ -244,14 +243,14 @@ export const timeAgo = (timestamp: Date, timeOnly?: boolean): string => {
 
 export async function fetcher<JSON = any>(
   input: RequestInfo,
-  init?: RequestInit,
+  init?: RequestInit
 ): Promise<JSON> {
   const res = await fetch(input, init);
 
   if (!res.ok) {
     // Check content type before parsing JSON
     const contentType = res.headers.get("content-type");
-    if (contentType && contentType.includes("application/json")) {
+    if (contentType?.includes("application/json")) {
       try {
         const text = await res.text();
         const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -265,7 +264,7 @@ export async function fetcher<JSON = any>(
             throw error;
           }
         }
-      } catch (parseError) {
+      } catch (_parseError) {
         // JSON parse failed - throw generic error
       }
     }
@@ -294,7 +293,7 @@ export async function fetcher<JSON = any>(
     }
   } catch (parseError) {
     throw new Error(
-      `Failed to parse JSON: ${parseError instanceof Error ? parseError.message : String(parseError)}`,
+      `Failed to parse JSON: ${parseError instanceof Error ? parseError.message : String(parseError)}`
     );
   }
 }
@@ -314,9 +313,7 @@ export function nFormatter(num: number, digits?: number) {
   var item = lookup
     .slice()
     .reverse()
-    .find(function (item) {
-      return num >= item.value;
-    });
+    .find((item) => num >= item.value);
   return item
     ? (num / item.value).toFixed(digits || 1).replace(rx, "$1") + item.symbol
     : "0";
@@ -345,13 +342,13 @@ export const getBlurDataURL = async (url: string | null) => {
 
   try {
     const response = await fetch(
-      `https://wsrv.nl/?url=${fullUrl}&w=50&h=50&blur=5`,
+      `https://wsrv.nl/?url=${fullUrl}&w=50&h=50&blur=5`
     );
     const buffer = await response.arrayBuffer();
     const base64 = Buffer.from(buffer).toString("base64");
 
     return `data:image/png;base64,${base64}`;
-  } catch (error) {
+  } catch (_error) {
     return "data:image/webp;base64,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   }
 };

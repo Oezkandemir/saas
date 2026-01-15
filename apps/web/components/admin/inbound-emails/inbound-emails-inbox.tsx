@@ -1,25 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import {
-  getInboundEmails,
-  markEmailAsRead,
-  type InboundEmail,
-} from "@/actions/inbound-email-actions";
-import {
-  Mail,
-  Loader2,
-  RefreshCw,
   ChevronLeft,
   ChevronRight,
+  Loader2,
+  Mail,
+  RefreshCw,
   Star,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { InboundEmailDetail } from "./inbound-email-detail";
-import { InboundEmailReplyForm } from "./inbound-email-reply-form";
-
+import {
+  getInboundEmails,
+  type InboundEmail,
+  markEmailAsRead,
+} from "@/actions/inbound-email-actions";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -29,6 +26,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { InboundEmailDetail } from "./inbound-email-detail";
+import { InboundEmailReplyForm } from "./inbound-email-reply-form";
 
 type FilterType = "all" | "unread" | "read";
 
@@ -44,54 +43,6 @@ export function InboundEmailsInbox() {
   const [showDetail, setShowDetail] = useState(false); // For mobile toggle
   const [selectedEmails, setSelectedEmails] = useState<Set<string>>(new Set());
   const limit = 50;
-
-  useEffect(() => {
-    loadEmails();
-  }, [filter, page]);
-
-  // Auto-sync emails from Resend on initial load (only once)
-  // This ensures all emails sent to us are visible
-  useEffect(() => {
-    let isMounted = true;
-    
-    const autoSync = async () => {
-      try {
-        const { syncAllResendInboundEmails } = await import("@/actions/sync-all-resend-inbound-emails");
-        const result = await syncAllResendInboundEmails();
-        if (isMounted && result.success) {
-          if (result.synced > 0) {
-            toast.success(`${result.synced} neue Email${result.synced !== 1 ? "s" : ""} synchronisiert`, {
-              duration: 3000,
-            });
-          }
-          // Always reload emails after sync to show latest data
-          await loadEmails();
-        }
-      } catch (error) {
-        // Silently fail - don't show error to user on auto-sync
-        // The server-side sync will handle errors
-        console.error("Auto-sync failed:", error);
-      }
-    };
-
-    // Only sync once on mount
-    autoSync();
-    
-    return () => {
-      isMounted = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array = only run once on mount
-
-  // Load selected email when selection changes
-  useEffect(() => {
-    if (selectedEmailId && emails.length > 0) {
-      const email = emails.find((e) => e.id === selectedEmailId);
-      if (email && !email.is_read) {
-        markEmailAsRead(email.id);
-      }
-    }
-  }, [selectedEmailId, emails]);
 
   const loadEmails = async () => {
     setIsLoading(true);
@@ -109,13 +60,66 @@ export function InboundEmailsInbox() {
       } else {
         toast.error(result.error || "Emails konnten nicht geladen werden");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Fehler beim Laden der Emails");
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
   };
+
+  useEffect(() => {
+    loadEmails();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-sync emails from Resend on initial load (only once)
+  // This ensures all emails sent to us are visible
+  useEffect(() => {
+    let isMounted = true;
+
+    const autoSync = async () => {
+      try {
+        const { syncAllResendInboundEmails } = await import(
+          "@/actions/sync-all-resend-inbound-emails"
+        );
+        const result = await syncAllResendInboundEmails();
+        if (isMounted && result.success) {
+          if (result.synced > 0) {
+            toast.success(
+              `${result.synced} neue Email${result.synced !== 1 ? "s" : ""} synchronisiert`,
+              {
+                duration: 3000,
+              }
+            );
+          }
+          // Always reload emails after sync to show latest data
+          await loadEmails();
+        }
+      } catch (error) {
+        // Silently fail - don't show error to user on auto-sync
+        // The server-side sync will handle errors
+        console.error("Auto-sync failed:", error);
+      }
+    };
+
+    // Only sync once on mount
+    autoSync();
+
+    return () => {
+      isMounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array = only run once on mount
+
+  // Load selected email when selection changes
+  useEffect(() => {
+    if (selectedEmailId && emails.length > 0) {
+      const email = emails.find((e) => e.id === selectedEmailId);
+      if (email && !email.is_read) {
+        markEmailAsRead(email.id);
+      }
+    }
+  }, [selectedEmailId, emails]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -128,32 +132,36 @@ export function InboundEmailsInbox() {
   return (
     <div className="flex flex-col h-full border rounded-lg overflow-hidden bg-background">
       {/* Email List - Always shown when no detail selected */}
-      <div className={`w-full border-r flex flex-col bg-background flex-shrink-0 ${showDetail ? 'hidden' : 'flex'}`}>
+      <div
+        className={`w-full border-r flex flex-col bg-background shrink-0 ${showDetail ? "hidden" : "flex"}`}
+      >
         {/* Header - Gmail Style */}
         <div className="px-4 py-2 border-b bg-background flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Checkbox
-              checked={selectedEmails.size === emails.length && emails.length > 0}
+              checked={
+                selectedEmails.size === emails.length && emails.length > 0
+              }
               onCheckedChange={(checked) => {
                 if (checked) {
-                  setSelectedEmails(new Set(emails.map(e => e.id)));
+                  setSelectedEmails(new Set(emails.map((e) => e.id)));
                 } else {
                   setSelectedEmails(new Set());
                 }
               }}
-              className="h-4 w-4"
+              className="size-4"
             />
             <Button
               variant="ghost"
               size="sm"
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="h-8 w-8 p-0"
+              className="size-8 p-0"
             >
               {isRefreshing ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="size-4 animate-spin" />
               ) : (
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className="size-4" />
               )}
             </Button>
             <Select
@@ -182,25 +190,26 @@ export function InboundEmailsInbox() {
           {totalPages > 1 && (
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <span>
-                {((page - 1) * limit) + 1}-{Math.min(page * limit, total)} von {total}
+                {(page - 1) * limit + 1}-{Math.min(page * limit, total)} von{" "}
+                {total}
               </span>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="h-6 w-6 p-0"
+                className="size-6 p-0"
               >
-                <ChevronLeft className="h-3 w-3" />
+                <ChevronLeft className="size-3" />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="h-6 w-6 p-0"
+                className="size-6 p-0"
               >
-                <ChevronRight className="h-3 w-3" />
+                <ChevronRight className="size-3" />
               </Button>
             </div>
           )}
@@ -210,11 +219,11 @@ export function InboundEmailsInbox() {
         <div className="flex-1 overflow-y-auto">
           {isLoading && emails.length === 0 ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              <Loader2 className="size-6 animate-spin text-muted-foreground" />
             </div>
           ) : emails.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center px-4">
-              <Mail className="h-12 w-12 text-muted-foreground mb-4" />
+              <Mail className="size-12 text-muted-foreground mb-4" />
               <p className="text-sm font-medium">Keine Emails gefunden</p>
               <p className="text-xs text-muted-foreground mt-1">
                 {filter === "all"
@@ -228,13 +237,17 @@ export function InboundEmailsInbox() {
                 const isSelected = selectedEmailId === email.id;
                 const isChecked = selectedEmails.has(email.id);
                 const isUnread = !email.is_read;
-                
+
                 return (
                   <div
                     key={email.id}
                     onClick={(e) => {
                       // Don't open if clicking checkbox or star
-                      if ((e.target as HTMLElement).closest('button, [role="checkbox"]')) {
+                      if (
+                        (e.target as HTMLElement).closest(
+                          'button, [role="checkbox"]'
+                        )
+                      ) {
                         return;
                       }
                       setSelectedEmailId(email.id);
@@ -242,7 +255,7 @@ export function InboundEmailsInbox() {
                       setShowDetail(true);
                     }}
                     className={`
-                      flex items-center gap-2 px-2 py-2 cursor-pointer hover:bg-muted/30 transition-colors
+                      flex items-center gap-2 p-2 cursor-pointer hover:bg-muted/30 transition-colors
                       ${isSelected ? "bg-muted/50" : ""}
                     `}
                   >
@@ -260,7 +273,7 @@ export function InboundEmailsInbox() {
                           return next;
                         });
                       }}
-                      className="flex-shrink-0"
+                      className="shrink-0"
                     >
                       <Checkbox
                         checked={isChecked}
@@ -275,7 +288,7 @@ export function InboundEmailsInbox() {
                             return next;
                           });
                         }}
-                        className="h-4 w-4"
+                        className="size-4"
                       />
                     </div>
 
@@ -285,9 +298,9 @@ export function InboundEmailsInbox() {
                         e.stopPropagation();
                         // TODO: Implement star functionality
                       }}
-                      className="flex-shrink-0"
+                      className="shrink-0"
                     >
-                      <Star className="h-4 w-4 text-muted-foreground hover:text-yellow-500 transition-colors" />
+                      <Star className="size-4 text-muted-foreground hover:text-yellow-500 transition-colors" />
                     </div>
 
                     {/* Email Content - Gmail Style Layout */}
@@ -295,7 +308,7 @@ export function InboundEmailsInbox() {
                       {/* Sender Name - Fixed Width */}
                       <span
                         className={`
-                          text-sm truncate flex-shrink-0 w-[140px] xl:w-[180px] 2xl:w-[200px]
+                          text-sm truncate shrink-0 w-[140px] xl:w-[180px] 2xl:w-[200px]
                           ${isUnread ? "font-semibold text-foreground" : "font-normal text-muted-foreground"}
                         `}
                       >
@@ -306,7 +319,7 @@ export function InboundEmailsInbox() {
                       <div className="flex-1 min-w-0 flex items-center gap-2 overflow-hidden">
                         <span
                           className={`
-                            text-sm truncate flex-shrink-0
+                            text-sm truncate shrink-0
                             ${isUnread ? "font-semibold text-foreground" : "font-normal text-muted-foreground"}
                           `}
                         >
@@ -323,11 +336,13 @@ export function InboundEmailsInbox() {
                       {/* Timestamp - Fixed Width Right Aligned */}
                       <span
                         className={`
-                          text-xs flex-shrink-0 text-right w-[60px] xl:w-[80px]
+                          text-xs shrink-0 text-right w-[60px] xl:w-[80px]
                           ${isUnread ? "font-semibold text-foreground" : "font-normal text-muted-foreground"}
                         `}
                       >
-                        {format(new Date(email.received_at), "HH:mm", { locale: de })}
+                        {format(new Date(email.received_at), "HH:mm", {
+                          locale: de,
+                        })}
                       </span>
                     </div>
                   </div>
@@ -336,11 +351,12 @@ export function InboundEmailsInbox() {
             </div>
           )}
         </div>
-
       </div>
 
       {/* Email Detail - Full Screen */}
-      <div className={`flex-1 flex flex-col overflow-hidden min-w-0 ${!showDetail ? 'hidden' : 'flex'}`}>
+      <div
+        className={`flex-1 flex flex-col overflow-hidden min-w-0 ${!showDetail ? "hidden" : "flex"}`}
+      >
         {selectedEmail ? (
           <>
             {/* Back Button - Always visible */}
@@ -354,12 +370,12 @@ export function InboundEmailsInbox() {
                   setShowReplyForm(false);
                 }}
               >
-                <ChevronLeft className="h-4 w-4 mr-2" />
+                <ChevronLeft className="size-4 mr-2" />
                 Zurück zur Liste
               </Button>
             </div>
             <div className="flex-1 overflow-hidden">
-              <InboundEmailDetail 
+              <InboundEmailDetail
                 emailId={selectedEmail.id}
                 onMarkAsRead={loadEmails}
               />
@@ -381,7 +397,7 @@ export function InboundEmailsInbox() {
         ) : (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <Mail className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <Mail className="size-16 text-muted-foreground mx-auto mb-4" />
               <p className="text-lg font-medium text-muted-foreground">
                 Wählen Sie eine Email aus
               </p>

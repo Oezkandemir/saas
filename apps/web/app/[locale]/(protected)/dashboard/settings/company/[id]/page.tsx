@@ -1,6 +1,3 @@
-import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
-import { getCompanyProfile } from "@/actions/company-profiles-actions";
 import {
   Building2,
   Calendar,
@@ -20,11 +17,14 @@ import {
   User,
   UserPlus,
 } from "lucide-react";
-
-import { getCurrentUser } from "@/lib/session";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
+import { getCompanyProfile } from "@/actions/company-profiles-actions";
+import { CompanyProfileTeamManagement } from "@/components/company-settings/company-profile-team-management";
+import { CopyButton } from "@/components/company-settings/copy-button";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -32,9 +32,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CompanyProfileTeamManagement } from "@/components/company-settings/company-profile-team-management";
-import { CopyButton } from "@/components/company-settings/copy-button";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Separator } from "@/components/ui/separator";
+import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -54,8 +53,8 @@ export default async function ViewCompanyProfilePage({
     if (!value) return null;
     return (
       <div className="group flex items-start gap-3 py-2.5 px-3 rounded-lg hover:bg-muted/50 transition-colors">
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary flex-shrink-0">
-          <Icon className="h-4 w-4" />
+        <div className="flex size-8 items-center justify-center rounded-md bg-primary/10 text-primary shrink-0">
+          <Icon className="size-4" />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-xs font-medium text-muted-foreground mb-1">
@@ -70,7 +69,7 @@ export default async function ViewCompanyProfilePage({
                 className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1.5 group/link"
               >
                 {value}
-                <ExternalLink className="h-3 w-3 opacity-0 group-hover/link:opacity-100 transition-opacity" />
+                <ExternalLink className="size-3 opacity-0 group-hover/link:opacity-100 transition-opacity" />
               </a>
             ) : (
               <p className="text-sm font-medium break-words">{value}</p>
@@ -96,14 +95,14 @@ export default async function ViewCompanyProfilePage({
     <UnifiedPageLayout
       title={profile.profile_name}
       description={profile.company_name}
-      icon={<Building2 className="h-4 w-4 text-primary" />}
+      icon={<Building2 className="size-4 text-primary" />}
       showBackButton
       backHref="/dashboard/settings/company"
       actions={
         profile.is_owner !== false ? (
           <Link href={`/dashboard/settings/company/${profile.id}/edit`}>
             <Button size="sm" className="gap-2">
-              <Edit className="h-4 w-4" />
+              <Edit className="size-4" />
               Bearbeiten
             </Button>
           </Link>
@@ -116,8 +115,8 @@ export default async function ViewCompanyProfilePage({
         <CardContent className="p-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-start gap-4 flex-1 min-w-0">
-              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 border-2 border-primary/20 flex-shrink-0">
-                <Building2 className="h-8 w-8 text-primary" />
+              <div className="flex size-16 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 border-2 border-primary/20 shrink-0">
+                <Building2 className="size-8 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
                 <h1 className="text-2xl font-bold mb-1">
@@ -129,13 +128,13 @@ export default async function ViewCompanyProfilePage({
                 <div className="flex flex-wrap items-center gap-2">
                   {profile.is_default && profile.is_owner !== false && (
                     <Badge className="bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/30">
-                      <CheckCircle2 className="h-3 w-3 mr-1" />
+                      <CheckCircle2 className="size-3 mr-1" />
                       Standard-Profil
                     </Badge>
                   )}
                   {profile.is_owner === false && (
                     <Badge className="bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30">
-                      <UserPlus className="h-3 w-3 mr-1" />
+                      <UserPlus className="size-3 mr-1" />
                       Eingeladen
                     </Badge>
                   )}
@@ -170,8 +169,8 @@ export default async function ViewCompanyProfilePage({
         <Card className="shadow-sm">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                <Building2 className="h-5 w-5" />
+              <div className="flex size-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                <Building2 className="size-5" />
               </div>
               Basisinformationen
             </CardTitle>
@@ -231,8 +230,8 @@ export default async function ViewCompanyProfilePage({
         <Card className="shadow-sm">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-500/10 text-green-600 dark:text-green-400">
-                <Mail className="h-5 w-5" />
+              <div className="flex size-9 items-center justify-center rounded-lg bg-green-500/10 text-green-600 dark:text-green-400">
+                <Mail className="size-5" />
               </div>
               Kontaktinformationen
             </CardTitle>
@@ -309,8 +308,8 @@ export default async function ViewCompanyProfilePage({
         <Card className="shadow-sm">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400">
-                <Scale className="h-5 w-5" />
+              <div className="flex size-9 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                <Scale className="size-5" />
               </div>
               Rechtliche Informationen
             </CardTitle>
@@ -338,7 +337,7 @@ export default async function ViewCompanyProfilePage({
               !profile.company_tax_id &&
               !profile.company_registration_number && (
                 <div className="py-8 text-center">
-                  <Scale className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+                  <Scale className="size-12 mx-auto text-muted-foreground/30 mb-3" />
                   <p className="text-sm text-muted-foreground">
                     Keine rechtlichen Informationen hinterlegt
                   </p>
@@ -351,8 +350,8 @@ export default async function ViewCompanyProfilePage({
         <Card className="shadow-sm">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400">
-                <Landmark className="h-5 w-5" />
+              <div className="flex size-9 items-center justify-center rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400">
+                <Landmark className="size-5" />
               </div>
               Bankverbindung
             </CardTitle>
@@ -375,7 +374,7 @@ export default async function ViewCompanyProfilePage({
             <InfoRow icon={FileText} label="BIC" value={profile.bic} copyable />
             {!profile.bank_name && !profile.iban && !profile.bic && (
               <div className="py-8 text-center">
-                <Landmark className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+                <Landmark className="size-12 mx-auto text-muted-foreground/30 mb-3" />
                 <p className="text-sm text-muted-foreground">
                   Keine Bankdaten hinterlegt
                 </p>
@@ -388,8 +387,8 @@ export default async function ViewCompanyProfilePage({
         <Card className="shadow-sm lg:col-span-2">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
-                <FileText className="h-5 w-5" />
+              <div className="flex size-9 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                <FileText className="size-5" />
               </div>
               Dokument-Standards
             </CardTitle>
@@ -402,8 +401,8 @@ export default async function ViewCompanyProfilePage({
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {profile.default_tax_rate !== null && (
                 <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50 border">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
-                    <Percent className="h-5 w-5" />
+                  <div className="flex size-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                    <Percent className="size-5" />
                   </div>
                   <div>
                     <p className="text-xs font-medium text-muted-foreground mb-0.5">
@@ -417,8 +416,8 @@ export default async function ViewCompanyProfilePage({
               )}
               {profile.default_payment_days !== null && (
                 <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50 border">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
-                    <Calendar className="h-5 w-5" />
+                  <div className="flex size-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                    <Calendar className="size-5" />
                   </div>
                   <div>
                     <p className="text-xs font-medium text-muted-foreground mb-0.5">
@@ -432,8 +431,8 @@ export default async function ViewCompanyProfilePage({
               )}
               {profile.payment_on_receipt !== null && (
                 <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50 border">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
-                    <CreditCard className="h-5 w-5" />
+                  <div className="flex size-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                    <CreditCard className="size-5" />
                   </div>
                   <div>
                     <p className="text-xs font-medium text-muted-foreground mb-0.5">
@@ -451,7 +450,7 @@ export default async function ViewCompanyProfilePage({
                 profile.default_payment_days === null &&
                 profile.payment_on_receipt === null && (
                   <div className="col-span-full py-8 text-center">
-                    <FileText className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+                    <FileText className="size-12 mx-auto text-muted-foreground/30 mb-3" />
                     <p className="text-sm text-muted-foreground">
                       Keine Dokument-Standards konfiguriert
                     </p>

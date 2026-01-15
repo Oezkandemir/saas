@@ -15,11 +15,7 @@ type BlogPostData = {
   blurDataURL: string;
 };
 
-export function BlogPosts({
-  posts,
-}: {
-  posts: BlogPostData[];
-}) {
+export function BlogPosts({ posts }: { posts: BlogPostData[] }) {
   if (posts.length === 0) {
     return (
       <main className="space-y-8">

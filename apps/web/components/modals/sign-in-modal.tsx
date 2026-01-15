@@ -1,19 +1,18 @@
 "use client";
 
 import {
-  Dispatch,
-  SetStateAction,
+  type Dispatch,
+  type SetStateAction,
   useCallback,
   useMemo,
   useState,
 } from "react";
-
-import { siteConfig } from "@/config/site";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { DialogDescription } from "@/components/ui/dialog";
-import { Modal } from "@/components/ui/modal";
 import { UserAuthForm } from "@/components/forms/user-auth-form";
 import { Icons } from "@/components/shared/icons";
+import { DialogDescription } from "@/components/ui/dialog";
+import { Modal } from "@/components/ui/modal";
+import { siteConfig } from "@/config/site";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 function SignInModal({
   showSignInModal,
@@ -34,7 +33,7 @@ function SignInModal({
       title="Sign In"
       fullscreenOnMobile={true}
     >
-      <div className="w-full h-full flex flex-col">
+      <div className="size-full flex flex-col">
         <div className="flex flex-col items-center justify-center space-y-3 border-b bg-background px-4 py-6 pt-8 text-center md:px-16 md:pt-8 relative">
           {isMobile && (
             <button
@@ -72,13 +71,13 @@ export function useSignInModal() {
         setShowSignInModal={setShowSignInModal}
       />
     );
-  }, [showSignInModal, setShowSignInModal]);
+  }, [showSignInModal]);
 
   return useMemo(
     () => ({
       setShowSignInModal,
       SignInModal: SignInModalCallback,
     }),
-    [setShowSignInModal, SignInModalCallback],
+    [SignInModalCallback]
   );
 }

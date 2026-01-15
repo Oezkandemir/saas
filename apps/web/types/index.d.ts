@@ -1,5 +1,3 @@
-import type { Icon } from "lucide-react";
-
 import { UserRole } from "@/components/forms/user-role-form";
 import { Icons } from "@/components/shared/icons";
 

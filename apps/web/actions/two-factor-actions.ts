@@ -1,6 +1,6 @@
 "use server";
 
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { revalidatePath } from "next/cache";
 
 import { logger } from "@/lib/logger";
@@ -16,7 +16,7 @@ function base32Encode(buffer: Buffer): string {
   let output = "";
 
   for (let i = 0; i < buffer.length; i++) {
-    value = (value << 8) | buffer[i];
+    value = (value << 8) | buffer[i]!;
     bits += 8;
 
     while (bits >= 5) {
@@ -42,7 +42,7 @@ function base32Encode(buffer: Buffer): string {
 function verifyTOTP(
   token: string,
   secret: string,
-  window: number = 1,
+  window: number = 1
 ): boolean {
   try {
     // Decode base32 secret
@@ -80,12 +80,12 @@ function generateTOTP(secret: Buffer, timeStep: number): string {
   const hash = hmac.digest();
 
   // Dynamic truncation
-  const offset = hash[hash.length - 1] & 0xf;
+  const offset = hash[hash.length - 1]! & 0xf;
   const code =
-    ((hash[offset] & 0x7f) << 24) |
-    ((hash[offset + 1] & 0xff) << 16) |
-    ((hash[offset + 2] & 0xff) << 8) |
-    (hash[offset + 3] & 0xff);
+    ((hash[offset]! & 0x7f) << 24) |
+    ((hash[offset + 1]! & 0xff) << 16) |
+    ((hash[offset + 2]! & 0xff) << 8) |
+    (hash[offset + 3]! & 0xff);
 
   // Get 6 digits
   const otp = (code % 1000000).toString().padStart(6, "0");
@@ -97,15 +97,15 @@ function generateTOTP(secret: Buffer, timeStep: number): string {
  */
 function base32Decode(base32: string): Buffer {
   const base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-  base32 = base32.toUpperCase().replace(/=+$/, "");
+  const normalizedBase32 = base32.toUpperCase().replace(/=+$/, "");
 
   let bits = 0;
   let value = 0;
   let index = 0;
   const output: number[] = [];
 
-  for (let i = 0; i < base32.length; i++) {
-    value = (value << 5) | base32Chars.indexOf(base32[i]);
+  for (let i = 0; i < normalizedBase32.length; i++) {
+    value = (value << 5) | base32Chars.indexOf(normalizedBase32[i]!);
     bits += 5;
 
     if (bits >= 8) {
@@ -156,7 +156,7 @@ export async function generateTwoFactorSecret(): Promise<
 
     // Generate backup codes (10 codes, 8 characters each)
     const backupCodes = Array.from({ length: 10 }, () =>
-      crypto.randomBytes(4).toString("hex").toUpperCase(),
+      crypto.randomBytes(4).toString("hex").toUpperCase()
     );
 
     // Store secret and backup codes temporarily (not enabled yet)
@@ -171,7 +171,7 @@ export async function generateTwoFactorSecret(): Promise<
         },
         {
           onConflict: "user_id",
-        },
+        }
       );
 
     if (upsertError) {
@@ -205,7 +205,7 @@ export async function generateTwoFactorSecret(): Promise<
  * @returns Success status
  */
 export async function verifyAndEnableTwoFactor(
-  code: string,
+  code: string
 ): Promise<{ success: boolean; message: string }> {
   try {
     const supabase = await createClient();
@@ -276,7 +276,7 @@ export async function verifyAndEnableTwoFactor(
  * @returns Success status
  */
 export async function disableTwoFactor(
-  password: string,
+  password: string
 ): Promise<{ success: boolean; message: string }> {
   try {
     const supabase = await createClient();
@@ -433,7 +433,7 @@ export async function regenerateBackupCodes(): Promise<
 
     // Generate new backup codes
     const backupCodes = Array.from({ length: 10 }, () =>
-      crypto.randomBytes(4).toString("hex").toUpperCase(),
+      crypto.randomBytes(4).toString("hex").toUpperCase()
     );
 
     const { error } = await supabase
@@ -472,7 +472,7 @@ export async function regenerateBackupCodes(): Promise<
  * @returns 2FA status and user ID if found
  */
 export async function checkTwoFactorEnabledByEmail(
-  email: string,
+  email: string
 ): Promise<
   | { success: true; enabled: boolean; userId: string | null }
   | { success: false; message: string }
@@ -552,7 +552,7 @@ export async function checkTwoFactorEnabledByEmail(
  */
 export async function verifyTwoFactorCodeForSignIn(
   userId: string,
-  code: string,
+  code: string
 ): Promise<{ success: boolean; message: string }> {
   try {
     // Use admin client to access 2FA data
@@ -580,7 +580,7 @@ export async function verifyTwoFactorCodeForSignIn(
     if (isBackupCode) {
       // Remove used backup code
       const updatedBackupCodes = backupCodes.filter(
-        (c: string) => c !== code.toUpperCase(),
+        (c: string) => c !== code.toUpperCase()
       );
       const { error: updateError } = await supabaseAdmin
         .from("two_factor_auth")

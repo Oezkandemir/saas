@@ -20,7 +20,8 @@ module.exports = {
           allowedPaths: {
             type: "array",
             items: { type: "string" },
-            description: "File paths where hardcoded values are allowed (e.g., mocks, config)",
+            description:
+              "File paths where hardcoded values are allowed (e.g., mocks, config)",
           },
         },
         additionalProperties: false,

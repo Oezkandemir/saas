@@ -1,7 +1,3 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { getCustomer } from "@/actions/customers-actions";
-import { getDocuments, type Document } from "@/actions/documents-actions";
 import {
   ArrowRight,
   Building2,
@@ -13,9 +9,17 @@ import {
   Plus,
   User,
 } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
+import { getCustomer } from "@/actions/customers-actions";
+import { type Document, getDocuments } from "@/actions/documents-actions";
+import { DeleteCustomerButton } from "@/components/customers/delete-customer-button";
+import { EditCustomerDrawer } from "@/components/customers/edit-customer-drawer";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { StatusBadge } from "@/components/shared/status-badge";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -24,12 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { DeleteCustomerButton } from "@/components/customers/delete-customer-button";
-import { EditCustomerDrawer } from "@/components/customers/edit-customer-drawer";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { StatusBadge } from "@/components/shared/status-badge";
+import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -52,14 +51,14 @@ export default async function CustomerDetailPage({
 
   // Get documents for this customer
   const customerDocuments: Document[] = await getDocuments(undefined, id).catch(
-    () => [],
+    () => []
   );
 
   return (
     <UnifiedPageLayout
       title={customer.name}
       description={customer.company || t("description")}
-      icon={<User className="h-4 w-4 text-primary" />}
+      icon={<User className="size-4 text-primary" />}
       showBackButton
       backHref="/dashboard/customers"
       actions={
@@ -68,7 +67,7 @@ export default async function CustomerDetailPage({
             customer={customer}
             trigger={
               <Button variant="outline" className="gap-2">
-                <Edit className="h-4 w-4" />
+                <Edit className="size-4" />
                 {t("edit")}
               </Button>
             }
@@ -91,7 +90,7 @@ export default async function CustomerDetailPage({
               href={`mailto:${customer.email}`}
               className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
             >
-              <Mail className="h-3.5 w-3.5" />
+              <Mail className="size-3.5" />
               <span className="break-all">{customer.email}</span>
             </a>
           )}
@@ -100,19 +99,19 @@ export default async function CustomerDetailPage({
               href={`tel:${customer.phone}`}
               className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
             >
-              <Phone className="h-3.5 w-3.5" />
+              <Phone className="size-3.5" />
               <span>{customer.phone}</span>
             </a>
           )}
           {customer.company && (
             <div className="flex items-center gap-1.5 text-muted-foreground">
-              <Building2 className="h-3.5 w-3.5" />
+              <Building2 className="size-3.5" />
               <span>{customer.company}</span>
             </div>
           )}
           {(customer.address_line1 || customer.city) && (
             <div className="flex items-center gap-1.5 text-muted-foreground">
-              <MapPin className="h-3.5 w-3.5" />
+              <MapPin className="size-3.5" />
               <span>
                 {[customer.address_line1, customer.postal_code, customer.city]
                   .filter(Boolean)
@@ -139,7 +138,7 @@ export default async function CustomerDetailPage({
                   size="sm"
                   className="gap-1.5 h-8 text-xs"
                 >
-                  <Plus className="h-3.5 w-3.5" />
+                  <Plus className="size-3.5" />
                   {tDocuments("newQuote")}
                 </Button>
               </Link>
@@ -147,7 +146,7 @@ export default async function CustomerDetailPage({
                 href={`/dashboard/documents/new?type=invoice&customer_id=${customer.id}`}
               >
                 <Button size="sm" className="gap-1.5 h-8 text-xs">
-                  <Plus className="h-3.5 w-3.5" />
+                  <Plus className="size-3.5" />
                   {tDocuments("newInvoice")}
                 </Button>
               </Link>
@@ -219,7 +218,7 @@ export default async function CustomerDetailPage({
                           className="h-7 text-xs"
                         >
                           {tTable("open")}
-                          <ArrowRight className="ml-1 h-3 w-3" />
+                          <ArrowRight className="ml-1 size-3" />
                         </Button>
                       </Link>
                     </TableCell>
@@ -231,7 +230,7 @@ export default async function CustomerDetailPage({
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <FileText className="h-8 w-8 text-muted-foreground mb-3 opacity-50" />
+          <FileText className="size-8 text-muted-foreground mb-3 opacity-50" />
           <h3 className="text-sm font-semibold mb-1">
             {tDocuments("empty.title")}
           </h3>
@@ -244,7 +243,7 @@ export default async function CustomerDetailPage({
                 size="sm"
                 className="gap-1.5 h-8 text-xs"
               >
-                <Plus className="h-3.5 w-3.5" />
+                <Plus className="size-3.5" />
                 {tDocuments("newQuote")}
               </Button>
             </Link>
@@ -252,7 +251,7 @@ export default async function CustomerDetailPage({
               href={`/dashboard/documents/new?type=invoice&customer_id=${customer.id}`}
             >
               <Button size="sm" className="gap-1.5 h-8 text-xs">
-                <Plus className="h-3.5 w-3.5" />
+                <Plus className="size-3.5" />
                 {tDocuments("newInvoice")}
               </Button>
             </Link>

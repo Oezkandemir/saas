@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { routing } from "@/i18n/routing";
 
 export async function GET(_request: NextRequest) {
@@ -34,7 +34,7 @@ ${entries
     <lastmod>${entry.lastModified}</lastmod>
     <changefreq>${entry.changeFrequency}</changefreq>
     <priority>${entry.priority}</priority>
-  </url>`,
+  </url>`
   )
   .join("\n")}
 </urlset>`;

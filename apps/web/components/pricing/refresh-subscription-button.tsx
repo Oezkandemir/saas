@@ -1,14 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { refreshSubscription } from "@/actions/refresh-subscription";
+import { useState } from "react";
 import { toast } from "sonner";
-
-import { logger } from "@/lib/logger";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Button } from "@/components/ui/button";
+import { refreshSubscription } from "@/actions/refresh-subscription";
 import { Icons } from "@/components/shared/icons";
+import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { logger } from "@/lib/logger";
 
 export function RefreshSubscriptionButton() {
   const [isLoading, setIsLoading] = useState(false);

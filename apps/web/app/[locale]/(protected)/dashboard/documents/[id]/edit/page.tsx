@@ -1,10 +1,9 @@
+import { FileText } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 import { getDocument } from "@/actions/documents-actions";
-import { FileText } from "lucide-react";
-
-import { getCurrentUser } from "@/lib/session";
 import { DocumentForm } from "@/components/documents/document-form";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +26,7 @@ export default async function EditDocumentPage({
     <UnifiedPageLayout
       title={`${document.type === "quote" ? "Angebot" : "Rechnung"} bearbeiten`}
       description={`Bearbeiten Sie ${document.document_number}`}
-      icon={<FileText className="h-4 w-4 text-primary" />}
+      icon={<FileText className="size-4 text-primary" />}
       showBackButton
       backHref={`/dashboard/documents/${document.id}`}
     >

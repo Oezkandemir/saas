@@ -17,7 +17,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       compact = false,
       ...props
     },
-    ref,
+    ref
   ) => (
     <div
       ref={ref}
@@ -25,11 +25,11 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         "overflow-hidden rounded-lg border border-border bg-card text-card-foreground",
         "shadow-sm",
         interactive && "cursor-pointer",
-        className,
+        className
       )}
       {...props}
     />
-  ),
+  )
 );
 Card.displayName = "Card";
 
@@ -53,7 +53,7 @@ const CardTitle = React.forwardRef<
     ref={ref}
     className={cn(
       "text-base font-semibold leading-tight tracking-tight",
-      className,
+      className
     )}
     {...props}
   />

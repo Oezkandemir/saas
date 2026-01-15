@@ -1,16 +1,9 @@
-import { notFound, redirect } from "next/navigation";
 import { formatDistance } from "date-fns";
 import { Calendar, Mail, Shield, User } from "lucide-react";
+import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
-import { createClient } from "@/lib/supabase/server";
-import { constructMetadata } from "@/lib/utils";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
   CardContent,
@@ -18,7 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
+import { getCurrentUser } from "@/lib/session";
+import { createClient } from "@/lib/supabase/server";
+import { constructMetadata } from "@/lib/utils";
 
 interface UserProfilePageProps {
   params: Promise<{

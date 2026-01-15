@@ -1,11 +1,10 @@
-import { redirect } from "next/navigation";
-import { getRoles } from "@/actions/role-actions";
 import { UserCog } from "lucide-react";
+import { redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
+import { getRoles } from "@/actions/role-actions";
 import { RoleList } from "@/components/admin/roles/role-list";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { getCurrentUser } from "@/lib/session";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -47,7 +46,7 @@ export default async function AdminRolesPage(props: Props) {
     <UnifiedPageLayout
       title={t("title")}
       description={t("description")}
-      icon={<UserCog className="h-4 w-4 text-primary" />}
+      icon={<UserCog className="size-4 text-primary" />}
     >
       <RoleList
         initialRoles={result.success ? result.data || [] : []}

@@ -1,19 +1,14 @@
 import { TrendingUp } from "lucide-react";
-
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AnalyticsLoading() {
   return (
     <UnifiedPageLayout
       title="Analytics Dashboard"
       description="Track key metrics and app performance"
-      icon={<TrendingUp className="h-4 w-4 text-primary" />}
+      icon={<TrendingUp className="size-4 text-primary" />}
       contentClassName="space-y-4"
     >
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

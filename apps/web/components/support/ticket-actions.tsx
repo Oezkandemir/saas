@@ -1,13 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import {
-  deleteTicket,
-  Ticket,
-  updateTicketStatus,
-} from "@/actions/support-ticket-actions";
 import {
   AlertCircle,
   CheckCircle2,
@@ -17,10 +9,15 @@ import {
   Trash2,
   XCircle,
 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-
-import { logger } from "@/lib/logger";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import {
+  deleteTicket,
+  type Ticket,
+  updateTicketStatus,
+} from "@/actions/support-ticket-actions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,8 +29,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
 
 interface TicketActionsProps {
   ticket: Ticket;
@@ -58,7 +57,7 @@ export function TicketActions({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleStatusChange = async (
-    status: "open" | "in_progress" | "resolved" | "closed",
+    status: "open" | "in_progress" | "resolved" | "closed"
   ) => {
     try {
       setLoading(true);
@@ -128,7 +127,7 @@ export function TicketActions({
           }}
           className={cn(
             "flex h-8 items-center rounded-md text-gray-600 transition-all duration-200 hover:bg-muted hover:text-gray-800",
-            isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
+            isExpanded ? "w-auto px-2" : "w-8 justify-center p-0"
           )}
         >
           <ExternalLink className="size-4" />
@@ -158,7 +157,7 @@ export function TicketActions({
             className={cn(
               "flex h-8 items-center rounded-md text-yellow-600 transition-all duration-200 hover:bg-muted hover:text-yellow-700",
               isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
-              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
             )}
           >
             <PlayCircle className="size-4" />
@@ -189,7 +188,7 @@ export function TicketActions({
             className={cn(
               "flex h-8 items-center rounded-md text-green-600 transition-all duration-200 hover:bg-muted hover:text-green-700",
               isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
-              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
             )}
           >
             <CheckCircle2 className="size-4" />
@@ -220,7 +219,7 @@ export function TicketActions({
             className={cn(
               "flex h-8 items-center rounded-md text-red-600 transition-all duration-200 hover:bg-muted hover:text-red-700",
               isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
-              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
             )}
           >
             <XCircle className="size-4" />
@@ -251,7 +250,7 @@ export function TicketActions({
               className={cn(
                 "flex h-8 items-center rounded-md text-red-600 transition-all duration-200 hover:bg-muted hover:text-red-700",
                 isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
-                "cursor-pointer",
+                "cursor-pointer"
               )}
             >
               <Trash2 className="size-4" />

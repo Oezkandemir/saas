@@ -1,13 +1,13 @@
 "use server";
 
-import { env } from "@/env.mjs";
+import { revalidatePath } from "next/cache";
 import { siteConfig } from "@/config/site";
+import { env } from "@/env.mjs";
+import { supabaseAdmin } from "@/lib/db";
 import { resend } from "@/lib/email";
 import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
-import { supabaseAdmin } from "@/lib/db";
 import { getInboundEmailById } from "./inbound-email-actions";
-import { revalidatePath } from "next/cache";
 
 export interface ReplyToInboundEmailInput {
   inboundEmailId: string;
@@ -20,7 +20,7 @@ export interface ReplyToInboundEmailInput {
  * Reply to an inbound email with proper thread referencing
  */
 export async function replyToInboundEmail(
-  input: ReplyToInboundEmailInput,
+  input: ReplyToInboundEmailInput
 ): Promise<{
   success: boolean;
   message: string;
@@ -77,7 +77,9 @@ export async function replyToInboundEmail(
           </div>`
         : "";
 
-    const htmlContent = input.htmlBody || `
+    const htmlContent =
+      input.htmlBody ||
+      `
       <!DOCTYPE html>
       <html>
         <head>
@@ -104,13 +106,13 @@ export async function replyToInboundEmail(
 
     // Prepare email headers for thread referencing
     const headers: Record<string, string> = {
-      "X-Entity-Ref-ID": new Date().getTime().toString(),
+      "X-Entity-Ref-ID": Date.now().toString(),
     };
 
     // Add thread headers if message_id exists
     if (originalEmail.message_id) {
       headers["In-Reply-To"] = originalEmail.message_id;
-      headers["References"] = originalEmail.message_id;
+      headers.References = originalEmail.message_id;
     }
 
     // Determine recipient email
@@ -120,7 +122,7 @@ export async function replyToInboundEmail(
         : originalEmail.from_email;
 
     logger.info(
-      `Sending reply to ${originalEmail.from_email} (actual recipient: ${recipientEmail})`,
+      `Sending reply to ${originalEmail.from_email} (actual recipient: ${recipientEmail})`
     );
 
     // Validate and extract email from EMAIL_FROM
@@ -129,9 +131,9 @@ export async function replyToInboundEmail(
     if (fromEmail && typeof fromEmail === "string" && fromEmail.includes("@")) {
       // Extract email from format like "Name <email@example.com>" or just "email@example.com"
       const emailMatch = fromEmail.match(
-        /<?([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,})>?/,
+        /<?([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,})>?/
       );
-      if (emailMatch && emailMatch[1]) {
+      if (emailMatch?.[1]) {
         validFromEmail = emailMatch[1];
       } else if (fromEmail.includes("@") && !fromEmail.includes("<")) {
         validFromEmail = fromEmail.trim();
@@ -139,10 +141,11 @@ export async function replyToInboundEmail(
     }
 
     // Sanitize name for email (remove any invalid characters)
-    const sanitizedName = (user.name || siteConfig.name || "Cenety")
-      .replace(/[<>"']/g, "") // Remove <, >, ", '
-      .replace(/\s+/g, " ") // Normalize whitespace
-      .trim() || "Cenety"; // Fallback if empty
+    const sanitizedName =
+      (user.name || siteConfig.name || "Cenety")
+        .replace(/[<>"']/g, "") // Remove <, >, ", '
+        .replace(/\s+/g, " ") // Normalize whitespace
+        .trim() || "Cenety"; // Fallback if empty
 
     // Send reply email via Resend
     const { data, error } = await resend.emails.send({
@@ -163,7 +166,7 @@ export async function replyToInboundEmail(
     }
 
     logger.info(
-      `Reply email sent successfully to ${originalEmail.from_email}, messageId: ${data?.id}`,
+      `Reply email sent successfully to ${originalEmail.from_email}, messageId: ${data?.id}`
     );
 
     // Save reply to database
@@ -184,7 +187,9 @@ export async function replyToInboundEmail(
         logger.error("Failed to save reply to database", replyError);
         // Don't fail the whole operation if saving reply fails
       } else {
-        logger.info(`Reply saved to database for email ${input.inboundEmailId}`);
+        logger.info(
+          `Reply saved to database for email ${input.inboundEmailId}`
+        );
       }
     } catch (saveError) {
       logger.error("Error saving reply to database", saveError);

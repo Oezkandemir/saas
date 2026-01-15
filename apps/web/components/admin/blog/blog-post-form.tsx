@@ -1,35 +1,27 @@
 "use client";
 
-import * as React from "react";
+import { RiInformationFill } from "@remixicon/react";
+import { Trash2, Upload, X } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import * as React from "react";
+import { toast } from "sonner";
 import {
-  createBlogPost,
-  updateBlogPost,
-  deleteBlogPost,
-  uploadBlogImage,
   type BlogPost,
   type BlogPostInput,
+  createBlogPost,
+  deleteBlogPost,
+  updateBlogPost,
+  uploadBlogImage,
 } from "@/actions/blog-actions";
-import { BLOG_CATEGORIES, BLOG_AUTHORS } from "@/config/blog";
-import { RiInformationFill } from "@remixicon/react";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
-import Image from "next/image";
-import { Trash2, Upload, X } from "lucide-react";
-
 import { ButtonRoot } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { HintIcon, HintRoot } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  LabelAsterisk,
-  Label,
-  LabelSub,
-} from "@/components/ui/label";
-import {
-  TextareaCharCounter,
-  Textarea,
-} from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Label, LabelAsterisk, LabelSub } from "@/components/ui/label";
+import { Textarea, TextareaCharCounter } from "@/components/ui/textarea";
+import { BLOG_AUTHORS, BLOG_CATEGORIES } from "@/config/blog";
 
 const Button = {
   Root: ButtonRoot,
@@ -61,7 +53,7 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isUploadingImage, setIsUploadingImage] = React.useState(false);
   const [imagePreview, setImagePreview] = React.useState<string | null>(
-    post?.image || null,
+    post?.image || null
   );
 
   const [formData, setFormData] = React.useState<BlogPostInput>({
@@ -117,7 +109,7 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
       } else {
         toast.error(result.error || "Failed to upload image");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to upload image");
     } finally {
       setIsUploadingImage(false);
@@ -244,9 +236,7 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
             type="text"
             placeholder="blog-post-slug"
             value={formData.slug}
-            onChange={(e) =>
-              setFormData({ ...formData, slug: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
             required
           />
           <Hint.Root>
@@ -259,11 +249,15 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
         {/* Description */}
         <div className="flex flex-col gap-1">
           <LabelNS.Root htmlFor="description">
-            {t("description") || "Description"} <LabelNS.Sub>(Optional)</LabelNS.Sub>
+            {t("description") || "Description"}{" "}
+            <LabelNS.Sub>(Optional)</LabelNS.Sub>
           </LabelNS.Root>
           <TextareaNS.Root
             id="description"
-            placeholder={t("descriptionPlaceholder") || "Brief description of the blog post"}
+            placeholder={
+              t("descriptionPlaceholder") ||
+              "Brief description of the blog post"
+            }
             value={formData.description || ""}
             onChange={(e) =>
               setFormData({ ...formData, description: e.target.value })
@@ -290,7 +284,7 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
                   <img
                     src={imagePreview}
                     alt="Preview"
-                    className="w-full h-full object-cover"
+                    className="size-full object-cover"
                     onError={(e) => {
                       console.error("Image load error:", imagePreview);
                       const target = e.target as HTMLImageElement;
@@ -318,12 +312,12 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
                 }}
                 className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 z-10"
               >
-                <X className="h-4 w-4" />
+                <X className="size-4" />
               </button>
             </div>
           ) : (
             <div className="border-2 border-dashed rounded-lg p-8 text-center">
-              <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+              <Upload className="size-8 mx-auto text-muted-foreground mb-2" />
               <label
                 htmlFor="image-upload"
                 className="cursor-pointer text-sm text-muted-foreground hover:text-foreground"
@@ -426,7 +420,10 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
           </LabelNS.Root>
           <TextareaNS.Root
             id="content"
-            placeholder={t("contentPlaceholder") || "Write your blog post content here. You can use HTML or Markdown."}
+            placeholder={
+              t("contentPlaceholder") ||
+              "Write your blog post content here. You can use HTML or Markdown."
+            }
             value={formData.content}
             onChange={(e) =>
               setFormData({ ...formData, content: e.target.value })
@@ -452,7 +449,7 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
               disabled={isLoading}
               className="text-destructive hover:text-destructive"
             >
-              <Trash2 className="h-4 w-4 mr-2" />
+              <Trash2 className="size-4 mr-2" />
               {t("delete") || "Delete"}
             </Button.Root>
           )}
@@ -492,4 +489,3 @@ export function BlogPostForm({ post }: BlogPostFormProps) {
     </div>
   );
 }
-

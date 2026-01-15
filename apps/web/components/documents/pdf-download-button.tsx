@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { Download, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
-
-import { logger } from "@/lib/logger";
 import { Button } from "@/components/ui/button";
+import { logger } from "@/lib/logger";
 
 interface PDFDownloadButtonProps {
   documentId: string;
@@ -30,7 +29,7 @@ export function PDFDownloadButton({
       // Always generate a fresh PDF to ensure it's valid
       // Fetch PDF from API which will generate it if needed
       const response = await fetch(
-        `/api/documents/${documentId}/pdf?force=true`,
+        `/api/documents/${documentId}/pdf?force=true`
       );
 
       if (!response.ok) {
@@ -38,7 +37,7 @@ export function PDFDownloadButton({
           .json()
           .catch(() => ({ error: "Unknown error" }));
         throw new Error(
-          errorData.message || errorData.error || "Failed to generate PDF",
+          errorData.message || errorData.error || "Failed to generate PDF"
         );
       }
 
@@ -97,12 +96,12 @@ export function PDFDownloadButton({
     >
       {loading ? (
         <>
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          <Loader2 className="size-3.5 animate-spin" />
           <span className="hidden sm:inline">{t("generating")}</span>
         </>
       ) : (
         <>
-          <Download className="h-3.5 w-3.5" />
+          <Download className="size-3.5" />
           <span className="hidden sm:inline">{t("button")}</span>
         </>
       )}

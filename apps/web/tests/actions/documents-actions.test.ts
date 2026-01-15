@@ -1,11 +1,11 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createDocument,
+  type DocumentInput,
   deleteDocument,
   getDocument,
   getDocuments,
-  type DocumentInput,
 } from "@/actions/documents-actions";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServer } from "@/lib/supabase-server";
@@ -131,7 +131,7 @@ describe("Documents Actions", () => {
 
       expect(mockSupabase.eq).toHaveBeenCalledWith(
         "customer_id",
-        "customer-123",
+        "customer-123"
       );
     });
   });
@@ -215,7 +215,7 @@ describe("Documents Actions", () => {
       vi.mocked(getSupabaseServer).mockResolvedValue(mockSupabase as any);
 
       await expect(createDocument("invoice", documentInput)).rejects.toThrow(
-        "Unauthorized",
+        "Unauthorized"
       );
     });
 
@@ -266,6 +266,3 @@ describe("Documents Actions", () => {
     });
   });
 });
-
-
-

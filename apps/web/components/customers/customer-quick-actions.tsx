@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { Customer } from "@/actions/customers-actions";
 import { Check, Copy, FileText, Mail, Phone } from "lucide-react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
+import type { Customer } from "@/actions/customers-actions";
 
 import { Button } from "@/components/ui/button";
 
@@ -44,7 +44,7 @@ export function CustomerQuickActions({ customer }: CustomerQuickActionsProps) {
             customer={customer}
             trigger={
               <Button variant="default" size="sm" className="gap-2">
-                <Mail className="h-4 w-4" />
+                <Mail className="size-4" />
                 {t("sendEmail")}
               </Button>
             }
@@ -57,12 +57,12 @@ export function CustomerQuickActions({ customer }: CustomerQuickActionsProps) {
           >
             {copied ? (
               <>
-                <Check className="h-4 w-4" />
+                <Check className="size-4" />
                 {t("copied")}
               </>
             ) : (
               <>
-                <Copy className="h-4 w-4" />
+                <Copy className="size-4" />
                 {t("copyEmail")}
               </>
             )}
@@ -77,7 +77,7 @@ export function CustomerQuickActions({ customer }: CustomerQuickActionsProps) {
           onClick={handleCall}
           className="gap-2"
         >
-          <Phone className="h-4 w-4" />
+          <Phone className="size-4" />
           {t("call")}
         </Button>
       )}
@@ -86,7 +86,7 @@ export function CustomerQuickActions({ customer }: CustomerQuickActionsProps) {
         href={`/dashboard/documents/new?type=quote&customer_id=${customer.id}`}
       >
         <Button variant="outline" size="sm" className="gap-2">
-          <FileText className="h-4 w-4" />
+          <FileText className="size-4" />
           {t("newQuote")}
         </Button>
       </Link>
@@ -95,7 +95,7 @@ export function CustomerQuickActions({ customer }: CustomerQuickActionsProps) {
         href={`/dashboard/documents/new?type=invoice&customer_id=${customer.id}`}
       >
         <Button variant="outline" size="sm" className="gap-2">
-          <FileText className="h-4 w-4" />
+          <FileText className="size-4" />
           {t("newInvoice")}
         </Button>
       </Link>

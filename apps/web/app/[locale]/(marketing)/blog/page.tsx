@@ -1,8 +1,7 @@
-import { getPublishedBlogPosts } from "@/actions/blog-actions";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { constructMetadata, getBlurDataURL } from "@/lib/utils";
+import { getPublishedBlogPosts } from "@/actions/blog-actions";
 import { BlogPosts } from "@/components/content/blog-posts";
+import { constructMetadata, getBlurDataURL } from "@/lib/utils";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -34,7 +33,7 @@ export default async function BlogPage() {
       slug: `/blog/${post.slug}`,
       slugAsParams: post.slug,
       blurDataURL: await getBlurDataURL(post.image),
-    })),
+    }))
   );
 
   return <BlogPosts posts={posts} />;

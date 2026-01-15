@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 import { logger } from "./logger";
 import { checkRateLimit } from "./rate-limit";
@@ -21,7 +21,7 @@ export interface APIMiddlewareOptions {
  */
 export async function applyAPIMiddleware(
   request: NextRequest,
-  options: APIMiddlewareOptions = {},
+  options: APIMiddlewareOptions = {}
 ): Promise<
   | { valid: true; user?: Awaited<ReturnType<typeof getCurrentUser>> }
   | { valid: false; response: NextResponse }
@@ -37,7 +37,7 @@ export async function applyAPIMiddleware(
     const rateLimit = await checkRateLimit(
       options.rateLimit.endpoint,
       identifier,
-      identifierType,
+      identifierType
     );
 
     if (!rateLimit.allowed) {
@@ -54,17 +54,17 @@ export async function applyAPIMiddleware(
           {
             error: "Rate limit exceeded",
             retryAfter: Math.ceil(
-              (rateLimit.resetAt.getTime() - Date.now()) / 1000,
+              (rateLimit.resetAt.getTime() - Date.now()) / 1000
             ),
           },
           {
             status: 429,
             headers: {
               "Retry-After": Math.ceil(
-                (rateLimit.resetAt.getTime() - Date.now()) / 1000,
+                (rateLimit.resetAt.getTime() - Date.now()) / 1000
               ).toString(),
             },
-          },
+          }
         ),
       };
     }
@@ -99,7 +99,7 @@ export async function applyAPIMiddleware(
         valid: false,
         response: NextResponse.json(
           { error: "Forbidden: Admin access required" },
-          { status: 403 },
+          { status: 403 }
         ),
       };
     }

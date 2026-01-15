@@ -1,7 +1,5 @@
-import { Metadata } from "next";
 import { Check } from "lucide-react";
-
-import { constructMetadata } from "@/lib/utils";
+import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { constructMetadata } from "@/lib/utils";
 
 export const metadata: Metadata = constructMetadata({
   title: "Enterprise Solutions",

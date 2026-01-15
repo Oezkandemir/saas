@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Building2, CheckCircle2, Shield } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
-  CompanyProfileWithMembership,
+  type CompanyProfileWithMembership,
   getCompanyProfiles,
 } from "@/actions/company-profiles-actions";
-import { Building2, CheckCircle2, Shield } from "lucide-react";
-
-import { logger } from "@/lib/logger";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -16,8 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { logger } from "@/lib/logger";
 
 interface CompanyProfileSelectorProps {
   value?: string;
@@ -62,7 +61,7 @@ export function CompanyProfileSelector({
 
     loadProfiles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
+  }, [value, onProfileSelect, onValueChange]);
 
   const handleValueChange = (profileId: string) => {
     if (onValueChange) onValueChange(profileId);
@@ -77,7 +76,7 @@ export function CompanyProfileSelector({
   if (isLoading) {
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Building2 className="h-4 w-4 animate-pulse" />
+        <Building2 className="size-4 animate-pulse" />
         Lade Profile...
       </div>
     );
@@ -87,7 +86,7 @@ export function CompanyProfileSelector({
     return (
       <div className="rounded-lg border border-dashed p-4">
         <div className="flex flex-col items-center gap-3 text-center">
-          <Building2 className="h-8 w-8 text-muted-foreground" />
+          <Building2 className="size-8 text-muted-foreground" />
           <div className="space-y-1">
             <p className="text-sm font-medium">Kein Firmenprofil vorhanden</p>
             <p className="text-sm text-muted-foreground">
@@ -113,15 +112,15 @@ export function CompanyProfileSelector({
         {profiles.map((profile) => (
           <SelectItem key={profile.id} value={profile.id}>
             <div className="flex items-center gap-2 w-full">
-              <Building2 className="h-4 w-4 flex-shrink-0" />
+              <Building2 className="size-4 shrink-0" />
               <span className="flex-1 truncate">{profile.profile_name}</span>
-              <div className="flex items-center gap-1.5 flex-shrink-0">
+              <div className="flex items-center gap-1.5 shrink-0">
                 {profile.is_default && (
                   <Badge
                     variant="outline"
                     className="text-xs bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800"
                   >
-                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    <CheckCircle2 className="size-3 mr-1" />
                     Standard
                   </Badge>
                 )}
@@ -130,7 +129,7 @@ export function CompanyProfileSelector({
                     variant="outline"
                     className="text-xs bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary border-primary/30 dark:border-primary/40"
                   >
-                    <Shield className="h-3 w-3 mr-1" />
+                    <Shield className="size-3 mr-1" />
                     Verwaltet
                   </Badge>
                 )}

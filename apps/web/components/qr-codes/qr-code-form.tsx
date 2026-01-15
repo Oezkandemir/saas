@@ -1,19 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  createQRCode,
-  QRCode,
-  QRCodeInput,
-  updateQRCode,
-} from "@/actions/qr-codes-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-
+import {
+  createQRCode,
+  type QRCode,
+  type QRCodeInput,
+  updateQRCode,
+} from "@/actions/qr-codes-actions";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -23,6 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
@@ -34,13 +36,6 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 
 const qrCodeSchema = z.object({
   name: z.string().min(1, "Name ist erforderlich"),
@@ -83,7 +78,7 @@ export function QRCodeForm({ qrCode }: QRCodeFormProps) {
       router.refresh();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Fehler beim Speichern",
+        error instanceof Error ? error.message : "Fehler beim Speichern"
       );
     } finally {
       setIsLoading(false);
@@ -298,7 +293,7 @@ export function QRCodeForm({ qrCode }: QRCodeFormProps) {
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4" />
+                      <CheckCircle2 className="size-4" />
                       Speichern
                     </span>
                   )}

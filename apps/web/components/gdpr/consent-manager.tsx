@@ -1,19 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  getConsentHistory,
-  getUserConsents,
-  updateConsent,
-  type ConsentRecord,
-  type ConsentType,
-} from "@/actions/consent-actions";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { CheckCircle2, History, Loader2, Shield, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-
-import { logger } from "@/lib/logger";
+import { useEffect, useState } from "react";
+import {
+  type ConsentRecord,
+  type ConsentType,
+  getConsentHistory,
+  getUserConsents,
+  updateConsent,
+} from "@/actions/consent-actions";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -24,14 +30,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { logger } from "@/lib/logger";
 
 export function ConsentManager() {
   const t = useTranslations("GDPR");
@@ -66,10 +65,6 @@ export function ConsentManager() {
   const [consentHistory, setConsentHistory] = useState<ConsentRecord[]>([]);
   const [showHistory, setShowHistory] = useState(false);
 
-  useEffect(() => {
-    loadConsents();
-  }, []);
-
   const loadConsents = async () => {
     setIsLoading(true);
     try {
@@ -84,9 +79,13 @@ export function ConsentManager() {
     }
   };
 
+  useEffect(() => {
+    loadConsents();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleToggleConsent = async (
     consentType: ConsentType,
-    granted: boolean,
+    granted: boolean
   ) => {
     setUpdating(consentType);
     try {
@@ -110,7 +109,7 @@ export function ConsentManager() {
           description: result.message,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: t("consent.error"),
@@ -218,7 +217,7 @@ export function ConsentManager() {
                   </div>
                 </div>
               );
-            },
+            }
           )}
         </CardContent>
       </Card>

@@ -1,6 +1,3 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { getCompanyProfileDetails } from "@/actions/admin-company-profiles-actions";
 import {
   ArrowLeft,
   Building2,
@@ -9,10 +6,20 @@ import {
   Mail,
   Users,
 } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getLocale, setRequestLocale } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
-import { constructMetadata } from "@/lib/utils";
+import { getCompanyProfileDetails } from "@/actions/admin-company-profiles-actions";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -21,16 +28,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { getCurrentUser } from "@/lib/session";
+import { constructMetadata } from "@/lib/utils";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -71,7 +70,7 @@ export default async function CompanyProfileDetailsPage(props: Props) {
       <UnifiedPageLayout
         title="Firmenprofil"
         description="Firmenprofil Details"
-        icon={<Building2 className="h-4 w-4 text-primary" />}
+        icon={<Building2 className="size-4 text-primary" />}
       >
         <Card>
           <CardContent className="pt-8 text-center">
@@ -107,12 +106,12 @@ export default async function CompanyProfileDetailsPage(props: Props) {
     <UnifiedPageLayout
       title={companyProfile.company_name}
       description="Firmenprofil Details"
-      icon={<Building2 className="h-4 w-4 text-primary" />}
+      icon={<Building2 className="size-4 text-primary" />}
       contentClassName="space-y-6"
     >
       <Link href={`/${locale}/admin/companies`}>
         <Button variant="ghost" size="sm" className="mb-4">
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft className="mr-2 size-4" />
           Zurück zur Übersicht
         </Button>
       </Link>
@@ -281,7 +280,7 @@ export default async function CompanyProfileDetailsPage(props: Props) {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <Users className="size-4 text-muted-foreground" />
                 <div className="text-sm text-muted-foreground">Kunden</div>
               </div>
               <div className="text-2xl font-semibold">
@@ -290,7 +289,7 @@ export default async function CompanyProfileDetailsPage(props: Props) {
             </div>
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <FileText className="h-4 w-4 text-muted-foreground" />
+                <FileText className="size-4 text-muted-foreground" />
                 <div className="text-sm text-muted-foreground">Rechnungen</div>
               </div>
               <div className="text-2xl font-semibold">
@@ -310,7 +309,7 @@ export default async function CompanyProfileDetailsPage(props: Props) {
             </div>
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <FileText className="h-4 w-4 text-muted-foreground" />
+                <FileText className="size-4 text-muted-foreground" />
                 <div className="text-sm text-muted-foreground">Angebote</div>
               </div>
               <div className="text-2xl font-semibold">
@@ -323,7 +322,7 @@ export default async function CompanyProfileDetailsPage(props: Props) {
             </div>
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <DollarSign className="size-4 text-muted-foreground" />
                 <div className="text-sm text-muted-foreground">Umsatz</div>
               </div>
               <div className="text-2xl font-semibold">
@@ -369,7 +368,7 @@ export default async function CompanyProfileDetailsPage(props: Props) {
                       <div className="flex flex-col gap-0.5">
                         {customer.email && (
                           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                            <Mail className="h-3 w-3" />
+                            <Mail className="size-3" />
                             <span className="truncate max-w-[200px]">
                               {customer.email}
                             </span>
@@ -385,7 +384,7 @@ export default async function CompanyProfileDetailsPage(props: Props) {
                     <TableCell className="text-sm text-muted-foreground">
                       {customer.company ? (
                         <div className="flex items-center gap-1.5">
-                          <Building2 className="h-3 w-3" />
+                          <Building2 className="size-3" />
                           <span>{customer.company}</span>
                         </div>
                       ) : (

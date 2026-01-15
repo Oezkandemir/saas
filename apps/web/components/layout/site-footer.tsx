@@ -1,10 +1,10 @@
-import * as React from "react";
-import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import type * as React from "react";
+import { ModeToggle } from "@/components/layout/mode-toggle";
 
 import { footerLinks, siteConfig } from "@/config/site";
+import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import { ModeToggle } from "@/components/layout/mode-toggle";
 
 import { NewsletterForm } from "../forms/newsletter-form";
 import { Icons } from "../shared/icons";
@@ -25,12 +25,12 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
               {section.items?.map((link) => {
                 const isDocsSection = section.title === "Docs";
                 const linkKey = link.title.toLowerCase().replace(/\s+/g, "_");
-                
+
                 if (isDocsSection) {
                   // Disable documentation links (not clickable)
                   return (
                     <li key={link.title}>
-                      <span 
+                      <span
                         className="text-sm text-muted-foreground/50 cursor-not-allowed pointer-events-none select-none"
                         aria-disabled="true"
                       >
@@ -39,7 +39,7 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
                     </li>
                   );
                 }
-                
+
                 return (
                   <li key={link.title}>
                     <Link

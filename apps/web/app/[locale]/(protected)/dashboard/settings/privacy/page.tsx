@@ -1,14 +1,13 @@
-import { redirect } from "next/navigation";
 import { Shield } from "lucide-react";
+import { redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
-import { constructMetadata } from "@/lib/utils";
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { ConsentManager } from "@/components/gdpr/consent-manager";
 import { CookieSettingsButton } from "@/components/gdpr/cookie-settings-button";
 import { DataExport } from "@/components/gdpr/data-export";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { getCurrentUser } from "@/lib/session";
+import { constructMetadata } from "@/lib/utils";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -36,7 +35,7 @@ export default async function PrivacySettingsPage() {
     <UnifiedPageLayout
       title={t("settingsTitle")}
       description={t("settingsDescription")}
-      icon={<Shield className="w-4 h-4 text-primary" />}
+      icon={<Shield className="size-4 text-primary" />}
       contentClassName="space-y-6 pb-10"
     >
       {/* Cookie Settings Section */}

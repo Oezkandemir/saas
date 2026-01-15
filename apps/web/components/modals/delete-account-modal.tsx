@@ -1,18 +1,17 @@
+import { useTranslations } from "next-intl";
 import {
-  Dispatch,
-  SetStateAction,
+  type Dispatch,
+  type SetStateAction,
   useCallback,
   useMemo,
   useState,
 } from "react";
-import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-
-import { Modal } from "@/components/ui/modal";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { useSupabase } from "@/components/supabase-provider";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Modal } from "@/components/ui/modal";
 
 function DeleteAccountModal({
   showDeleteAccountModal,
@@ -39,7 +38,7 @@ function DeleteAccountModal({
           setTimeout(() => {
             supabase.auth.signOut();
             resolve(null);
-          }, 500),
+          }, 500)
         );
       } else {
         setDeleting(false);
@@ -121,13 +120,13 @@ export function useDeleteAccountModal() {
         setShowDeleteAccountModal={setShowDeleteAccountModal}
       />
     );
-  }, [showDeleteAccountModal, setShowDeleteAccountModal]);
+  }, [showDeleteAccountModal]);
 
   return useMemo(
     () => ({
       setShowDeleteAccountModal,
       DeleteAccountModal: DeleteAccountModalCallback,
     }),
-    [setShowDeleteAccountModal, DeleteAccountModalCallback],
+    [DeleteAccountModalCallback]
   );
 }

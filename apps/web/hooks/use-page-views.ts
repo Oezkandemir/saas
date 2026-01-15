@@ -41,7 +41,7 @@ export function usePageViews({ slug, trackView = true }: UsePageViewsProps) {
     {
       revalidateOnFocus: false,
       dedupingInterval: 60000, // 1 minute
-    },
+    }
   );
 
   // Track the page view once when the component mounts

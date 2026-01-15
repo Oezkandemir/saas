@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { getUserTickets } from "@/actions/support-ticket-actions";
 import {
   ArrowRight,
   HelpCircle,
@@ -8,15 +6,16 @@ import {
   Phone,
   Plus,
 } from "lucide-react";
+import Link from "next/link";
 import { getLocale, setRequestLocale } from "next-intl/server";
-
-import { siteConfig } from "@/config/site";
-import { constructMetadata } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+import { getUserTickets } from "@/actions/support-ticket-actions";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { UserTicketAccordion } from "@/components/support/user-ticket-accordion";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { siteConfig } from "@/config/site";
+import { constructMetadata } from "@/lib/utils";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -40,7 +39,7 @@ export default async function SupportPage() {
   // Calculate ticket stats
   const openTickets = tickets.filter((t) => t.status === "open").length;
   const inProgressTickets = tickets.filter(
-    (t) => t.status === "in_progress",
+    (t) => t.status === "in_progress"
   ).length;
 
   // Contextual description with ticket counts
@@ -53,11 +52,11 @@ export default async function SupportPage() {
     <UnifiedPageLayout
       title="Support Center"
       description={description}
-      icon={<HelpCircle className="h-4 w-4 text-primary" />}
+      icon={<HelpCircle className="size-4 text-primary" />}
       actions={
         <Link href="/dashboard/support/new">
           <Button size="sm" className="gap-1.5 text-xs sm:text-sm h-8 sm:h-9">
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="size-3.5" />
             <span className="hidden sm:inline">New Ticket</span>
             <span className="sm:hidden">New</span>
           </Button>

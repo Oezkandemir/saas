@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-import { adminSidebarLinks } from "@/config/admin";
-import { sidebarLinks } from "@/config/dashboard";
-import { emailSidebarLinks } from "@/config/emails";
 import { SearchCommand } from "@/components/dashboard/search-command";
 import { TwoFactorSecurityBanner } from "@/components/security/two-factor-security-banner";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { adminSidebarLinks } from "@/config/admin";
+import { sidebarLinks } from "@/config/dashboard";
+import { emailSidebarLinks } from "@/config/emails";
 
 import {
   DashboardSidebar,
@@ -34,9 +33,11 @@ export function SidebarLinksProvider({
   // Matches: /admin, /admin/, /en/admin, /de/admin, /en/admin/users, etc.
   const isAdminRoute =
     pathname?.includes("/admin") || pathname?.match(/\/[a-z]{2}\/admin/);
-  
+
   // Check if we're on the emails page - use email-specific sidebar
-  const isEmailsPage = pathname?.includes("/admin/emails") && !pathname?.includes("/admin/emails/inbound/");
+  const isEmailsPage =
+    pathname?.includes("/admin/emails") &&
+    !pathname?.includes("/admin/emails/inbound/");
 
   // Use email sidebar links if on emails page, admin sidebar links if on admin route and user is admin, otherwise use dashboard links
   let baseLinks = sidebarLinks;
@@ -78,7 +79,10 @@ export function SidebarLinksProvider({
         <header className="sticky top-0 z-50 flex h-14 shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:h-[60px]">
           <div className="flex w-full items-center gap-x-3 px-4 xl:px-8">
             {/* Mobile Sidebar Trigger - visible on all screens below lg (as overlay) */}
-            <MobileSheetSidebar links={filteredLinks} showBackButton={isEmailsPage} />
+            <MobileSheetSidebar
+              links={filteredLinks}
+              showBackButton={isEmailsPage}
+            />
             <Link href="/" className="flex items-center space-x-1.5">
               <Icons.logo />
               <span className="font-urban text-xl font-bold">{siteName}</span>

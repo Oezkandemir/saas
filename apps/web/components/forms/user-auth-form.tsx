@@ -1,13 +1,17 @@
 "use client";
 
-import * as React from "react";
-import { checkTwoFactorEnabledByEmail } from "@/actions/two-factor-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useLocale } from "next-intl";
+import * as React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { useLocale } from "next-intl";
-
+import { checkTwoFactorEnabledByEmail } from "@/actions/two-factor-actions";
+import { useSupabase } from "@/components/supabase-provider";
+import { buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { siteConfig } from "@/config/site";
 import {
   sendSignupConfirmationEmail,
@@ -15,11 +19,6 @@ import {
 } from "@/lib/email-client";
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useSupabase } from "@/components/supabase-provider";
 
 import { TwoFactorLoginForm } from "./two-factor-login-form";
 
@@ -56,7 +55,7 @@ export function UserAuthForm({
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [showTwoFactor, setShowTwoFactor] = React.useState<boolean>(false);
   const [twoFactorUserId, setTwoFactorUserId] = React.useState<string | null>(
-    null,
+    null
   );
   const [userEmail, setUserEmail] = React.useState<string>("");
   const [storedPassword, setStoredPassword] = React.useState<string>(""); // Temporarily store password for 2FA flow
@@ -77,7 +76,7 @@ export function UserAuthForm({
         (error) => {
           // Silently fail - session tracking shouldn't block login
           logger.error("Failed to track login session:", error);
-        },
+        }
       );
     }
 
@@ -122,7 +121,8 @@ export function UserAuthForm({
             const checkData = await checkResponse.json();
             if (checkData.exists) {
               toast.error("Benutzer existiert bereits", {
-                description: "Ein Benutzer mit dieser E-Mail-Adresse existiert bereits. Bitte melde dich an oder verwende eine andere E-Mail-Adresse.",
+                description:
+                  "Ein Benutzer mit dieser E-Mail-Adresse existiert bereits. Bitte melde dich an oder verwende eine andere E-Mail-Adresse.",
               });
               setIsLoading(false);
               return;
@@ -157,7 +157,8 @@ export function UserAuthForm({
             signUpResult.error.message.includes("User already registered")
           ) {
             toast.error("Benutzer existiert bereits", {
-              description: "Ein Benutzer mit dieser E-Mail-Adresse existiert bereits. Bitte melde dich an.",
+              description:
+                "Ein Benutzer mit dieser E-Mail-Adresse existiert bereits. Bitte melde dich an.",
             });
             setIsLoading(false);
             return;
@@ -178,13 +179,20 @@ export function UserAuthForm({
           try {
             const url = new URL(baseUrl);
             // If hostname is localhost or 127.0.0.1, force http:// protocol
-            if ((url.hostname === "localhost" || url.hostname === "127.0.0.1") && url.protocol === "https:") {
+            if (
+              (url.hostname === "localhost" || url.hostname === "127.0.0.1") &&
+              url.protocol === "https:"
+            ) {
               url.protocol = "http:";
               baseUrl = url.toString().replace(/\/$/, ""); // Remove trailing slash if present
             }
-          } catch (e) {
+          } catch (_e) {
             // If URL parsing fails, fall back to string replacement
-            if ((baseUrl.includes("localhost") || baseUrl.includes("127.0.0.1")) && baseUrl.startsWith("https://")) {
+            if (
+              (baseUrl.includes("localhost") ||
+                baseUrl.includes("127.0.0.1")) &&
+              baseUrl.startsWith("https://")
+            ) {
               baseUrl = baseUrl.replace(/^https:\/\//, "http://");
             }
           }
@@ -199,7 +207,10 @@ export function UserAuthForm({
             });
             logger.info("Confirmation email sent successfully");
           } catch (confirmationError) {
-            logger.error("Failed to send confirmation email:", confirmationError);
+            logger.error(
+              "Failed to send confirmation email:",
+              confirmationError
+            );
             // Continue even if confirmation email fails
           }
 
@@ -298,7 +309,7 @@ export function UserAuthForm({
       <div
         className={cn(
           "grid gap-6 w-full flex-1 justify-center items-center",
-          className,
+          className
         )}
         {...props}
       >
@@ -324,7 +335,7 @@ export function UserAuthForm({
                   "@/lib/session-tracking"
                 );
                 await updateLoginHistoryWith2FA(
-                  signInResult.data.session.access_token,
+                  signInResult.data.session.access_token
                 );
               } catch (error) {
                 // Silently fail - logging shouldn't block login

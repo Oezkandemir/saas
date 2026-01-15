@@ -1,15 +1,14 @@
+import { Plus, QrCode } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getCustomers, type Customer } from "@/actions/customers-actions";
-import { getQRCodes, type QRCode } from "@/actions/qr-codes-actions";
-import { Plus, QrCode } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
-import { Button } from "@/components/ui/button";
+import { type Customer, getCustomers } from "@/actions/customers-actions";
+import { getQRCodes, type QRCode } from "@/actions/qr-codes-actions";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { QRCodesTable } from "@/components/qr-codes/qr-codes-table";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
+import { Button } from "@/components/ui/button";
+import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -36,11 +35,11 @@ export default async function QRCodesPage() {
     <UnifiedPageLayout
       title={t("title")}
       description={description}
-      icon={<QrCode className="h-4 w-4 text-primary" />}
+      icon={<QrCode className="size-4 text-primary" />}
       actions={
         <Link href="/dashboard/qr-codes/new">
           <Button className="gap-1.5 text-xs sm:text-sm h-8 sm:h-9">
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="size-3.5" />
             <span className="hidden sm:inline">{t("newQRCode")}</span>
             <span className="sm:hidden">{t("new")}</span>
           </Button>
@@ -61,7 +60,7 @@ export default async function QRCodesPage() {
             </EmptyPlaceholder.Description>
             <Link href="/dashboard/qr-codes/new" className="mt-6">
               <Button size="sm" className="gap-2">
-                <Plus className="h-4 w-4" />
+                <Plus className="size-4" />
                 {t("empty.create")}
               </Button>
             </Link>

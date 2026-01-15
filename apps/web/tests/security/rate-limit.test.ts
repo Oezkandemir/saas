@@ -54,7 +54,7 @@ describe("Rate Limiting", () => {
                       block_duration_seconds: 300,
                       enabled: true,
                     },
-                  }),
+                  })
                 ),
               })),
             })),
@@ -111,7 +111,7 @@ describe("Rate Limiting", () => {
               },
             ],
             error: null,
-          }),
+          })
         ),
       } as any);
 
@@ -147,7 +147,7 @@ describe("Rate Limiting", () => {
               },
             ],
             error: null,
-          }),
+          })
         ),
       } as any);
 
@@ -181,7 +181,7 @@ describe("Rate Limiting", () => {
               },
             ],
             error: null,
-          }),
+          })
         ),
       } as any);
 
@@ -208,7 +208,7 @@ describe("Rate Limiting", () => {
           Promise.resolve({
             data: null,
             error: { message: "Database error" },
-          }),
+          })
         ),
       } as any);
 

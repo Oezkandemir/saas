@@ -1,10 +1,5 @@
 "use client";
 
-import { useEffect, useTransition } from "react";
-import {
-  updateUserPreferences,
-  type ExtendedPreferences,
-} from "@/actions/preferences-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Bell,
@@ -19,10 +14,22 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
+import { useEffect, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-
+import {
+  type ExtendedPreferences,
+  updateUserPreferences,
+} from "@/actions/preferences-actions";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -33,14 +40,6 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 const preferencesSchema = z.object({
   theme_preference: z.enum(["system", "light", "dark"]),
@@ -295,7 +294,7 @@ export function PreferencesPanel({
       | "subscription"
       | "invoice"
       | "payment",
-    value: boolean,
+    value: boolean
   ) => {
     const current = watchedPreferences.notification_preferences_granular;
     setValue(
@@ -307,7 +306,7 @@ export function PreferencesPanel({
           [type]: value,
         },
       },
-      { shouldDirty: true },
+      { shouldDirty: true }
     );
   };
 

@@ -1,21 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Document, DocumentType } from "@/actions/documents-actions";
-import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
-
-import { Button } from "@/components/ui/button";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { useEffect, useMemo, useState } from "react";
+import type { Document, DocumentType } from "@/actions/documents-actions";
 import { DocumentsTable } from "@/components/documents/documents-table";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface DocumentsTabsProps {
   allDocuments: Document[];
@@ -32,7 +26,7 @@ export function DocumentsTabs({
   const searchParams = useSearchParams();
   const typeParam = searchParams.get("type");
   const [activeTab, setActiveTab] = useState<DocumentType | "all">(
-    typeParam === "quote" || typeParam === "invoice" ? typeParam : "all",
+    typeParam === "quote" || typeParam === "invoice" ? typeParam : "all"
   );
 
   // Update active tab when URL changes (e.g., browser back/forward or initial load)
@@ -96,13 +90,13 @@ export function DocumentsTabs({
               <div className="flex gap-2 mt-4">
                 <Link href="/dashboard/documents/new?type=quote">
                   <Button variant="outline" size="sm">
-                    <Plus className="mr-2 h-4 w-4" />
+                    <Plus className="mr-2 size-4" />
                     {t("empty.createQuote")}
                   </Button>
                 </Link>
                 <Link href="/dashboard/documents/new?type=invoice">
                   <Button size="sm">
-                    <Plus className="mr-2 h-4 w-4" />
+                    <Plus className="mr-2 size-4" />
                     {t("empty.createInvoice")}
                   </Button>
                 </Link>

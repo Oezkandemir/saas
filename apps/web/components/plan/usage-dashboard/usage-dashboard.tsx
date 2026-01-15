@@ -1,9 +1,6 @@
 "use client";
 
 import { CheckCircle, Infinity as InfinityIcon, XCircle } from "lucide-react";
-
-import type { PlanFeaturesInfo } from "@/lib/plan-features";
-import { Progress } from "@/components/ui/progress";
 import {
   Card,
   CardContent,
@@ -11,6 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import type { PlanFeaturesInfo } from "@/lib/plan-features";
 
 interface UsageDashboardProps {
   planFeatures: PlanFeaturesInfo;
@@ -19,10 +18,10 @@ interface UsageDashboardProps {
 export function UsageDashboard({ planFeatures }: UsageDashboardProps) {
   const getUsagePercentage = (
     current: number,
-    max: string | number,
+    max: string | number
   ): number => {
     if (max === "unlimited" || max === Infinity) return 0;
-    const maxNum = typeof max === "string" ? parseInt(max) : max;
+    const maxNum = typeof max === "string" ? parseInt(max, 10) : max;
     if (maxNum === 0) return 0;
     return Math.min((current / maxNum) * 100, 100);
   };
@@ -60,7 +59,7 @@ export function UsageDashboard({ planFeatures }: UsageDashboardProps) {
                       <Progress
                         value={getUsagePercentage(
                           feature.limit.current,
-                          feature.limit.max,
+                          feature.limit.max
                         )}
                         className="h-2"
                       />
@@ -73,22 +72,17 @@ export function UsageDashboard({ planFeatures }: UsageDashboardProps) {
                       <InfinityIcon className="size-3 text-muted-foreground" />
                       <span className="text-muted-foreground">Unlimited</span>
                     </>
+                  ) : feature.limit.current < feature.limit.max ? (
+                    <>
+                      <CheckCircle className="size-3 text-green-500" />
+                      <span className="text-muted-foreground">
+                        {feature.limit.max - feature.limit.current} remaining
+                      </span>
+                    </>
                   ) : (
                     <>
-                      {feature.limit.current < feature.limit.max ? (
-                        <>
-                          <CheckCircle className="size-3 text-green-500" />
-                          <span className="text-muted-foreground">
-                            {feature.limit.max - feature.limit.current}{" "}
-                            remaining
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <XCircle className="size-3 text-red-500" />
-                          <span className="text-red-500">Limit reached</span>
-                        </>
-                      )}
+                      <XCircle className="size-3 text-red-500" />
+                      <span className="text-red-500">Limit reached</span>
                     </>
                   )}
                 </div>

@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
 
 import {
-  errorResponse,
   ErrorType,
+  errorResponse,
   handleAPIError,
   successResponse,
 } from "@/lib/error-handler";
@@ -86,7 +86,7 @@ describe("Error Handler", () => {
           defaultMessage: "Default error",
           logError: false,
           includeDetails: true,
-        },
+        }
       );
 
       expect(result.status).toBe(500);
@@ -117,7 +117,7 @@ describe("Error Handler", () => {
       const result = errorResponse(
         ErrorType.AUTHENTICATION_ERROR,
         "Not authenticated",
-        401,
+        401
       );
       expect(result.status).toBe(401);
       const json = JSON.parse(result.body as string);
@@ -133,7 +133,7 @@ describe("Error Handler", () => {
         ErrorType.VALIDATION_ERROR,
         "Validation failed",
         400,
-        { field: "email" },
+        { field: "email" }
       );
       const json = JSON.parse(result.body as string);
       expect(json.details).toBeDefined();
@@ -149,7 +149,7 @@ describe("Error Handler", () => {
         ErrorType.VALIDATION_ERROR,
         "Validation failed",
         400,
-        { field: "email" },
+        { field: "email" }
       );
       const json = JSON.parse(result.body as string);
       expect(json.details).toBeUndefined();

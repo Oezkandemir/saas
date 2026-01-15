@@ -1,10 +1,10 @@
 "use client";
 
+import { CheckCircle2, ChevronDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { updateTicketStatus } from "@/actions/support-ticket-actions";
-import { CheckCircle2, ChevronDown, Loader2 } from "lucide-react";
-
-import { logger } from "@/lib/logger";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { logger } from "@/lib/logger";
 
 interface TicketStatusUpdaterProps {
   ticketId: string;

@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 
 import { logger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/server";
@@ -32,7 +32,7 @@ const RETRY_DELAYS = [1000, 5000, 15000]; // 1s, 5s, 15s
  */
 export function calculateWebhookSignature(
   payload: string,
-  secret: string,
+  secret: string
 ): string {
   return crypto.createHmac("sha256", secret).update(payload).digest("hex");
 }
@@ -43,7 +43,7 @@ export function calculateWebhookSignature(
 async function deliverWebhook(
   url: string,
   payload: WebhookPayload,
-  secret: string,
+  secret: string
 ): Promise<{ status: number; body: string; error?: string }> {
   try {
     const payloadString = JSON.stringify(payload);
@@ -87,7 +87,7 @@ async function recordDelivery(
   responseStatus: number | null,
   responseBody: string | null,
   errorMessage: string | null,
-  retryCount: number,
+  retryCount: number
 ): Promise<void> {
   try {
     const supabase = await createClient();
@@ -111,7 +111,7 @@ async function recordDelivery(
  */
 export async function triggerWebhooks(
   event: WebhookEvent,
-  data: Record<string, unknown>,
+  data: Record<string, unknown>
 ): Promise<void> {
   try {
     const supabase = await createClient();
@@ -151,7 +151,7 @@ export async function triggerWebhooks(
           const result = await deliverWebhook(
             webhook.url,
             payload,
-            webhook.secret,
+            webhook.secret
           );
 
           const isSuccess = result.status >= 200 && result.status < 300;
@@ -163,7 +163,7 @@ export async function triggerWebhooks(
             result.status,
             result.body,
             result.error || null,
-            retryCount,
+            retryCount
           );
 
           if (isSuccess) {
@@ -176,7 +176,7 @@ export async function triggerWebhooks(
               await new Promise((resolve) => setTimeout(resolve, delay));
             } else {
               logger.warn(
-                `Webhook delivery failed after ${MAX_RETRIES} retries: ${webhook.name}`,
+                `Webhook delivery failed after ${MAX_RETRIES} retries: ${webhook.name}`
               );
             }
           }
@@ -198,14 +198,11 @@ export async function triggerWebhooks(
 export function verifyWebhookSignature(
   payload: string,
   signature: string,
-  secret: string,
+  secret: string
 ): boolean {
   const expectedSignature = calculateWebhookSignature(payload, secret);
   return crypto.timingSafeEqual(
     Buffer.from(signature),
-    Buffer.from(expectedSignature),
+    Buffer.from(expectedSignature)
   );
 }
-
-
-

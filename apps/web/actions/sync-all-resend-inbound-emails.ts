@@ -42,13 +42,16 @@ export async function syncAllResendInboundEmails(): Promise<{
 
     // Fetch all inbound emails from Resend API
     // Resend API supports pagination with limit parameter (max 100 per request)
-    const response = await fetch("https://api.resend.com/emails/receiving?limit=100", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      "https://api.resend.com/emails/receiving?limit=100",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${env.RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -90,7 +93,7 @@ export async function syncAllResendInboundEmails(): Promise<{
       .select("email_id");
 
     const existingEmailIds = new Set(
-      existingEmails?.map((e) => e.email_id) || [],
+      existingEmails?.map((e) => e.email_id) || []
     );
 
     let synced = 0;
@@ -135,7 +138,10 @@ export async function syncAllResendInboundEmails(): Promise<{
             : [];
 
         if (toArray.length === 0) {
-          logger.warn("No recipients found in email data", { emailId, emailData });
+          logger.warn("No recipients found in email data", {
+            emailId,
+            emailData,
+          });
           errors++;
           continue;
         }
@@ -149,8 +155,16 @@ export async function syncAllResendInboundEmails(): Promise<{
             from_email: fromEmail,
             from_name: fromName,
             to: toArray,
-            cc: Array.isArray(emailData.cc) ? emailData.cc : emailData.cc ? [emailData.cc] : [],
-            bcc: Array.isArray(emailData.bcc) ? emailData.bcc : emailData.bcc ? [emailData.bcc] : [],
+            cc: Array.isArray(emailData.cc)
+              ? emailData.cc
+              : emailData.cc
+                ? [emailData.cc]
+                : [],
+            bcc: Array.isArray(emailData.bcc)
+              ? emailData.bcc
+              : emailData.bcc
+                ? [emailData.bcc]
+                : [],
             subject: emailData.subject || null,
             text_content: emailData.text || null,
             html_content: emailData.html || null,
@@ -176,7 +190,10 @@ export async function syncAllResendInboundEmails(): Promise<{
         }
 
         // Handle attachments if present
-        if (Array.isArray(emailData.attachments) && emailData.attachments.length > 0) {
+        if (
+          Array.isArray(emailData.attachments) &&
+          emailData.attachments.length > 0
+        ) {
           const attachments = emailData.attachments.map((attachment: any) => ({
             inbound_email_id: insertedEmail.id,
             attachment_id: attachment.id || attachment.filename,
@@ -212,7 +229,9 @@ export async function syncAllResendInboundEmails(): Promise<{
       }
     }
 
-    logger.info(`Sync completed: ${synced} synced, ${skipped} skipped, ${errors} errors`);
+    logger.info(
+      `Sync completed: ${synced} synced, ${skipped} skipped, ${errors} errors`
+    );
 
     return {
       success: true,

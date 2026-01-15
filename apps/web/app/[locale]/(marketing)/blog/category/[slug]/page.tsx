@@ -1,11 +1,10 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getPublishedBlogPosts } from "@/actions/blog-actions";
 import { getTranslations } from "next-intl/server";
-
+import { getPublishedBlogPosts } from "@/actions/blog-actions";
+import { BlogCard } from "@/components/content/blog-card";
 import { BLOG_CATEGORIES } from "@/config/blog";
 import { constructMetadata, getBlurDataURL } from "@/lib/utils";
-import { BlogCard } from "@/components/content/blog-card";
 
 interface CategoryPageProps {
   params: Promise<{
@@ -26,7 +25,7 @@ export async function generateMetadata({
   const t = await getTranslations("Blog");
   const resolvedParams = await params;
   const category = BLOG_CATEGORIES.find(
-    (category) => category.slug === resolvedParams.slug,
+    (category) => category.slug === resolvedParams.slug
   );
   if (!category) {
     return;
@@ -43,7 +42,7 @@ export async function generateMetadata({
 export default async function BlogCategory({ params }: CategoryPageProps) {
   const resolvedParams = await params;
   const category = BLOG_CATEGORIES.find(
-    (ctg) => ctg.slug === resolvedParams.slug,
+    (ctg) => ctg.slug === resolvedParams.slug
   );
 
   if (!category) {
@@ -68,13 +67,17 @@ export default async function BlogCategory({ params }: CategoryPageProps) {
         slug: `/blog/${post.slug}`,
         slugAsParams: post.slug,
         blurDataURL: await getBlurDataURL(post.image),
-      })),
+      }))
   );
 
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {articles.map((article, idx) => (
-        <BlogCard key={article._id || article.id} data={article} priority={idx <= 2} />
+        <BlogCard
+          key={article._id || article.id}
+          data={article}
+          priority={idx <= 2}
+        />
       ))}
     </div>
   );

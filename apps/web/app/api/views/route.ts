@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 import { applyAPIMiddleware } from "@/lib/api-middleware";
 import { logger } from "@/lib/logger";
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     logger.error("Error incrementing page view:", error);
     return NextResponse.json(
       { error: "Failed to increment page view" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
     logger.error("Error fetching page views:", error);
     return NextResponse.json(
       { error: "Failed to fetch page views" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

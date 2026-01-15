@@ -1,8 +1,8 @@
 "use client";
 
-import { CompanyProfileInput } from "@/actions/company-profiles-actions";
 import { Calendar, CreditCard, Percent, Tag } from "lucide-react";
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
+import type { CompanyProfileInput } from "@/actions/company-profiles-actions";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -29,7 +29,7 @@ export function CompanyProfileSettingsStep({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 pb-2">
-        <Tag className="h-5 w-5 text-muted-foreground" />
+        <Tag className="size-5 text-muted-foreground" />
         <h3 className="text-lg font-semibold">Profil-Einstellungen</h3>
       </div>
       <FormField
@@ -38,7 +38,7 @@ export function CompanyProfileSettingsStep({
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <Tag className="h-4 w-4 text-primary" />
+              <Tag className="size-4 text-primary" />
               Profilname *
             </FormLabel>
             <FormControl>
@@ -123,7 +123,7 @@ export function CompanyDocumentDefaultsStep({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 pb-2">
-        <Percent className="h-5 w-5 text-muted-foreground" />
+        <Percent className="size-5 text-muted-foreground" />
         <h3 className="text-lg font-semibold">Dokument-Standards</h3>
       </div>
       <p className="text-sm text-muted-foreground mb-4">
@@ -137,7 +137,7 @@ export function CompanyDocumentDefaultsStep({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-2">
-                <Percent className="h-4 w-4 text-primary" />
+                <Percent className="size-4 text-primary" />
                 Standard-Mehrwertsteuer (%)
               </FormLabel>
               <FormControl>
@@ -151,7 +151,7 @@ export function CompanyDocumentDefaultsStep({
                   value={field.value ?? ""}
                   onChange={(e) =>
                     field.onChange(
-                      e.target.value ? parseFloat(e.target.value) : undefined,
+                      e.target.value ? parseFloat(e.target.value) : undefined
                     )
                   }
                 />
@@ -169,7 +169,7 @@ export function CompanyDocumentDefaultsStep({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-primary" />
+                <Calendar className="size-4 text-primary" />
                 Standard-Zahlungsfrist (Tage)
               </FormLabel>
               <FormControl>
@@ -181,7 +181,7 @@ export function CompanyDocumentDefaultsStep({
                   value={field.value ?? ""}
                   onChange={(e) =>
                     field.onChange(
-                      e.target.value ? parseInt(e.target.value) : undefined,
+                      e.target.value ? parseInt(e.target.value, 10) : undefined
                     )
                   }
                 />
@@ -207,7 +207,7 @@ export function CompanyDocumentDefaultsStep({
             </FormControl>
             <div className="space-y-1 leading-none">
               <FormLabel className="flex items-center gap-2">
-                <CreditCard className="h-4 w-4 text-primary" />
+                <CreditCard className="size-4 text-primary" />
                 Zahlung bei Erhalt der Rechnung
               </FormLabel>
               <FormDescription>

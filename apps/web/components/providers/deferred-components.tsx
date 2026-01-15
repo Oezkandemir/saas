@@ -9,7 +9,7 @@ const Toaster = dynamic(
     import("@/components/ui/sonner").then((mod) => ({ default: mod.Toaster })),
   {
     ssr: false,
-  },
+  }
 );
 
 const TailwindIndicator = dynamic(
@@ -19,7 +19,7 @@ const TailwindIndicator = dynamic(
     })),
   {
     ssr: false,
-  },
+  }
 );
 
 const PerformanceTracker = dynamic(
@@ -29,7 +29,7 @@ const PerformanceTracker = dynamic(
     })),
   {
     ssr: false,
-  },
+  }
 );
 
 const AutoRefreshSubscription = dynamic(
@@ -39,7 +39,7 @@ const AutoRefreshSubscription = dynamic(
     })),
   {
     ssr: false,
-  },
+  }
 );
 
 /**
@@ -61,6 +61,3 @@ export function DeferredComponents() {
     </>
   );
 }
-
-
-

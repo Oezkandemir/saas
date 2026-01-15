@@ -40,13 +40,13 @@ export async function toggleUserBanStatus(userId: string, status: string) {
     // Call the appropriate RPC function
     const { error } = await supabaseAdmin.rpc(
       status === "banned" ? "unban_user" : "ban_user",
-      { user_id: validatedUserId },
+      { user_id: validatedUserId }
     );
 
     if (error) {
       logger.error(
         `Error ${status === "banned" ? "unbanning" : "banning"} user:`,
-        error,
+        error
       );
       return {
         success: false,
@@ -91,9 +91,8 @@ export async function deleteUser(userId: string) {
     const { userId: validatedUserId } = deleteUserSchema.parse({ userId });
 
     // Delete from auth.users first (this will cascade to public.users if foreign key is set up)
-    const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(
-      validatedUserId,
-    );
+    const { error: authError } =
+      await supabaseAdmin.auth.admin.deleteUser(validatedUserId);
 
     if (authError) {
       logger.warn("Error deleting auth user (may not exist):", authError);
@@ -151,12 +150,14 @@ export async function deleteUsersBatch(userIds: string[]) {
         const { userId: validatedUserId } = deleteUserSchema.parse({ userId });
 
         // Delete from auth.users first
-        const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(
-          validatedUserId,
-        );
+        const { error: authError } =
+          await supabaseAdmin.auth.admin.deleteUser(validatedUserId);
 
         if (authError) {
-          logger.warn(`Error deleting auth user ${validatedUserId}:`, authError);
+          logger.warn(
+            `Error deleting auth user ${validatedUserId}:`,
+            authError
+          );
           errors.push({ userId: validatedUserId, error: authError.message });
         } else {
           results.push({ userId: validatedUserId, success: true });
@@ -170,11 +171,17 @@ export async function deleteUsersBatch(userIds: string[]) {
 
         if (error && error.code !== "PGRST116") {
           // PGRST116 = no rows returned (user already deleted)
-          logger.warn(`Error deleting user ${validatedUserId} from public.users:`, error);
+          logger.warn(
+            `Error deleting user ${validatedUserId} from public.users:`,
+            error
+          );
         }
       } catch (error) {
         logger.error(`Error processing user ${userId}:`, error);
-        errors.push({ userId, error: error instanceof Error ? error.message : "Unknown error" });
+        errors.push({
+          userId,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
       }
     }
 
@@ -202,7 +209,7 @@ export async function deleteUsersBatch(userIds: string[]) {
  */
 export async function toggleUserAdminStatus(
   userId: string,
-  currentRole: string,
+  currentRole: string
 ) {
   try {
     // Check if current user is admin
@@ -297,7 +304,7 @@ export async function getAllUsers() {
     const { data: users, error } = await supabaseAdmin
       .from("users")
       .select(
-        'id, email, name, role, status, avatar_url, polar_subscription_id, created_at, updated_at, "emailVerified"',
+        'id, email, name, role, status, avatar_url, polar_subscription_id, created_at, updated_at, "emailVerified"'
       )
       .order("created_at", { ascending: false });
 
@@ -320,7 +327,7 @@ export async function getAllUsers() {
 
     if (authError) {
       logger.warn(
-        `Error fetching auth users (last_sign_in_at may be missing): ${authError instanceof Error ? authError.message : String(authError)}`,
+        `Error fetching auth users (last_sign_in_at may be missing): ${authError instanceof Error ? authError.message : String(authError)}`
       );
     }
 
@@ -331,7 +338,7 @@ export async function getAllUsers() {
         {
           last_sign_in_at: authUser.last_sign_in_at,
         },
-      ]) || []) as Array<[string, { last_sign_in_at: string | null }]>,
+      ]) || []) as Array<[string, { last_sign_in_at: string | null }]>
     );
 
     // Merge public.users data with auth.users data

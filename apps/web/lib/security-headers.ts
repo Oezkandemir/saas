@@ -1,5 +1,4 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import type { NextRequest, NextResponse } from "next/server";
 
 /**
  * Security headers configuration
@@ -43,7 +42,7 @@ const defaultCSP = [
 export function applySecurityHeaders(
   response: NextResponse,
   request: NextRequest,
-  customConfig?: SecurityHeadersConfig,
+  customConfig?: SecurityHeadersConfig
 ): NextResponse {
   const config: SecurityHeadersConfig = {
     contentSecurityPolicy: defaultCSP,
@@ -63,7 +62,7 @@ export function applySecurityHeaders(
   if (config.contentSecurityPolicy) {
     response.headers.set(
       "Content-Security-Policy",
-      config.contentSecurityPolicy,
+      config.contentSecurityPolicy
     );
   }
 
@@ -71,7 +70,7 @@ export function applySecurityHeaders(
   if (config.strictTransportSecurity) {
     response.headers.set(
       "Strict-Transport-Security",
-      config.strictTransportSecurity,
+      config.strictTransportSecurity
     );
   }
 

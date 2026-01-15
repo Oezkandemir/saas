@@ -1,9 +1,9 @@
 "use client";
 
-import * as React from "react";
+import { ChevronRight, Home } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight, Home } from "lucide-react";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -90,7 +90,7 @@ export function Breadcrumbs({
       className={cn(
         "flex items-center space-x-1 text-sm text-muted-foreground py-2",
         sticky && isScrolled && "shadow-sm backdrop-blur-sm bg-background/95",
-        className,
+        className
       )}
     >
       <ol className="flex items-center space-x-1">
@@ -114,7 +114,7 @@ export function Breadcrumbs({
                 <span
                   className={cn(
                     "flex items-center gap-1",
-                    isLast && "text-foreground font-medium",
+                    isLast && "text-foreground font-medium"
                   )}
                   aria-current={isLast ? "page" : undefined}
                 >

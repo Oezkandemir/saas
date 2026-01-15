@@ -1,10 +1,17 @@
-import { redirect } from "next/navigation";
-import { getAnalyticsData } from "@/actions/analytics-actions";
 import { formatDistanceToNow } from "date-fns";
 import { TrendingUp } from "lucide-react";
-
-import { getCurrentUser } from "@/lib/session";
-import { constructMetadata } from "@/lib/utils";
+import { redirect } from "next/navigation";
+import { getAnalyticsData } from "@/actions/analytics-actions";
+import { RealtimeAnalytics } from "@/components/analytics/realtime-analytics";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -14,16 +21,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { RealtimeAnalytics } from "@/components/analytics/realtime-analytics";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { getCurrentUser } from "@/lib/session";
+import { constructMetadata } from "@/lib/utils";
 
 export const metadata = constructMetadata({
   title: "Analytics – Cenety",
@@ -62,7 +61,7 @@ export default async function AnalyticsPage() {
       <UnifiedPageLayout
         title="Analytics Dashboard"
         description="Track key metrics and app performance"
-        icon={<TrendingUp className="h-4 w-4 text-primary" />}
+        icon={<TrendingUp className="size-4 text-primary" />}
       >
         <Card>
           <CardContent className="pt-8 text-center">
@@ -85,14 +84,14 @@ export default async function AnalyticsPage() {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
   const activeUsers30d = data.recentLogins.filter(
-    (login) => new Date(login.timestamp) >= thirtyDaysAgo,
+    (login) => new Date(login.timestamp) >= thirtyDaysAgo
   ).length;
 
   return (
     <UnifiedPageLayout
       title="Analytics Dashboard"
       description="Track key metrics and app performance"
-      icon={<TrendingUp className="h-4 w-4 text-primary" />}
+      icon={<TrendingUp className="size-4 text-primary" />}
       contentClassName="space-y-6"
     >
       {/* Primary Metric */}
@@ -171,7 +170,7 @@ export default async function AnalyticsPage() {
                         {sub.polar_current_period_end
                           ? formatDistanceToNow(
                               new Date(sub.polar_current_period_end),
-                              { addSuffix: true },
+                              { addSuffix: true }
                             )
                           : "N/A"}
                       </TableCell>
@@ -225,7 +224,7 @@ export default async function AnalyticsPage() {
                             </TableCell>
                             <TableCell>{interaction.count}</TableCell>
                           </TableRow>
-                        ),
+                        )
                       )}
                     </TableBody>
                   </Table>
@@ -255,12 +254,12 @@ export default async function AnalyticsPage() {
                         <TableRow key={index}>
                           <TableCell className="font-mono text-xs">
                             {flow.from_page.length > 30
-                              ? flow.from_page.substring(0, 30) + "..."
+                              ? `${flow.from_page.substring(0, 30)}...`
                               : flow.from_page}
                           </TableCell>
                           <TableCell className="font-mono text-xs">
                             {flow.to_page.length > 30
-                              ? flow.to_page.substring(0, 30) + "..."
+                              ? `${flow.to_page.substring(0, 30)}...`
                               : flow.to_page}
                           </TableCell>
                           <TableCell>{flow.transition_count}</TableCell>
@@ -311,7 +310,7 @@ export default async function AnalyticsPage() {
                         .slice(0, 20)
                         .map((page: any, index: number) => {
                           const pagePath = String(
-                            page.page_path || page.slug || "",
+                            page.page_path || page.slug || ""
                           ).trim();
                           const avgDuration = page.avg_duration
                             ? `${Math.round(Number(page.avg_duration))}s`
@@ -329,7 +328,7 @@ export default async function AnalyticsPage() {
                               </TableCell>
                               <TableCell className="text-right">
                                 {Number(
-                                  page.unique_visitors || page.view_count || 0,
+                                  page.unique_visitors || page.view_count || 0
                                 ).toLocaleString()}
                               </TableCell>
                               <TableCell className="text-right text-muted-foreground">
@@ -369,7 +368,7 @@ export default async function AnalyticsPage() {
                         .reduce(
                           (sum: number, page: any) =>
                             sum + (page.view_count || 0),
-                          0,
+                          0
                         )
                         .toLocaleString()}
                     </div>
@@ -400,7 +399,7 @@ export default async function AnalyticsPage() {
                         .reduce(
                           (sum: number, page: any) =>
                             sum + (page.unique_visitors || 0),
-                          0,
+                          0
                         )
                         .toLocaleString()}
                     </div>
@@ -448,7 +447,7 @@ export default async function AnalyticsPage() {
                             <TableCell>{device.device_type}</TableCell>
                             <TableCell>{device.count}</TableCell>
                           </TableRow>
-                        ),
+                        )
                       )}
                     </TableBody>
                   </Table>
@@ -478,7 +477,7 @@ export default async function AnalyticsPage() {
                             <TableCell>{browser.browser}</TableCell>
                             <TableCell>{browser.count}</TableCell>
                           </TableRow>
-                        ),
+                        )
                       )}
                     </TableBody>
                   </Table>

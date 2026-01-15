@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import { useEffect, useState } from "react";
 
 import { env } from "@/env.mjs";
 import { usePageViews } from "@/hooks/use-page-views";
@@ -7,7 +7,7 @@ import { usePageViews } from "@/hooks/use-page-views";
 // Initialize the Supabase client with public/anon key (safe for browser)
 const supabaseClient = createClient(
   env.NEXT_PUBLIC_SUPABASE_URL,
-  env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
 interface UseRealtimePageViewsProps {
@@ -68,7 +68,7 @@ export function useRealtimePageViews({
           if (payload.new && typeof payload.new.view_count === "number") {
             setViews(payload.new.view_count);
           }
-        },
+        }
       )
       .subscribe();
 

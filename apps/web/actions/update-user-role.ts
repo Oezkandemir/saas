@@ -1,13 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-
+import type { UserRole } from "@/components/forms/user-role-form";
 import { supabaseAdmin } from "@/lib/db-admin";
 import { logger } from "@/lib/logger";
 import { getCurrentUser, getSession } from "@/lib/session";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { userRoleSchema } from "@/lib/validations/user";
-import { UserRole } from "@/components/forms/user-role-form";
 
 export type FormData = {
   role: UserRole;
@@ -22,7 +21,7 @@ export async function updateUserRole(userId: string, data: FormData) {
     // Users cannot change their own role, even to downgrade themselves
     if (!currentUser || currentUser.role !== "ADMIN") {
       logger.warn(
-        `Unauthorized role change attempt by user ${session?.user?.id}`,
+        `Unauthorized role change attempt by user ${session?.user?.id}`
       );
       throw new Error("Unauthorized: Admin access required to change roles");
     }

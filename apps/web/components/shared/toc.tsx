@@ -1,10 +1,9 @@
 "use client";
 
 import * as React from "react";
-
-import { TableOfContents } from "@/lib/toc";
-import { cn } from "@/lib/utils";
 import { useMounted } from "@/hooks/use-mounted";
+import type { TableOfContents } from "@/lib/toc";
+import { cn } from "@/lib/utils";
 
 interface TocProps {
   toc: TableOfContents;
@@ -56,7 +55,7 @@ function useActiveItem(itemIds: (string | undefined)[]) {
           }
         });
       },
-      { rootMargin: `0% 0% -80% 0%` },
+      { rootMargin: `0% 0% -80% 0%` }
     );
 
     itemIds?.forEach((id) => {
@@ -112,7 +111,7 @@ function Tree({ tree, level = 1, activeItem }: TreeProps) {
         });
       }
     },
-    [],
+    []
   );
 
   return tree?.items?.length && level < 3 ? (
@@ -127,7 +126,7 @@ function Tree({ tree, level = 1, activeItem }: TreeProps) {
                 "inline-block text-sm no-underline cursor-pointer",
                 item.url === `#${activeItem}`
                   ? "font-medium text-primary"
-                  : "text-muted-foreground",
+                  : "text-muted-foreground"
               )}
             >
               {item.title}

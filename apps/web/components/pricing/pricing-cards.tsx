@@ -1,8 +1,5 @@
 "use client";
 
-import { useContext, useState } from "react";
-import Link from "next/link";
-import { UserSubscriptionPlan } from "@/types";
 import {
   ArrowRight,
   BarChart3,
@@ -22,17 +19,19 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
-
-import { SubscriptionPlan } from "@/types/index";
-import { pricingData } from "@/config/subscriptions";
-import { cn } from "@/lib/utils";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { useContext, useState } from "react";
 import { BillingFormButton } from "@/components/forms/billing-form-button";
 import { ModalContext } from "@/components/modals/providers";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { pricingData } from "@/config/subscriptions";
+import { cn } from "@/lib/utils";
+import type { UserSubscriptionPlan } from "@/types";
+import type { SubscriptionPlan } from "@/types/index";
 
 interface PricingCardsProps {
   userId?: string;
@@ -40,16 +39,15 @@ interface PricingCardsProps {
 }
 
 export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
-  const isYearlyDefault =
+  const isYearlyDefault = !!(
     !subscriptionPlan?.polarCustomerId || subscriptionPlan.interval === "year"
-      ? true
-      : false;
+  );
   const [isYearly, setIsYearly] = useState<boolean>(!!isYearlyDefault);
   const { setShowSignInModal } = useContext(ModalContext);
   const t = useTranslations("Pricing");
   const tBenefits = useTranslations("Pricing.benefits");
   const tPlanDesc = useTranslations("Pricing.benefits.planDescription");
-  
+
   // Translate benefit/limitation text
   const translateText = (text: string): string => {
     // Map common benefit texts to translation keys
@@ -75,41 +73,40 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
       "Kein Custom QR Alias": tBenefits("noCustomQrAlias"),
       "Kein eigenes Logo/Footer": tBenefits("noCustomLogoFooter"),
     };
-    
+
     return benefitMap[text] || text;
   };
 
   // Icon mapping for features
   const getFeatureIcon = (feature: string) => {
     const lowerFeature = feature.toLowerCase();
-    if (lowerFeature.includes("kunden")) return <Users className="h-4 w-4" />;
-    if (lowerFeature.includes("qr")) return <QrCode className="h-4 w-4" />;
+    if (lowerFeature.includes("kunden")) return <Users className="size-4" />;
+    if (lowerFeature.includes("qr")) return <QrCode className="size-4" />;
     if (lowerFeature.includes("dokument"))
-      return <FileText className="h-4 w-4" />;
+      return <FileText className="size-4" />;
     if (lowerFeature.includes("pdf") || lowerFeature.includes("export"))
-      return <Download className="h-4 w-4" />;
+      return <Download className="size-4" />;
     if (lowerFeature.includes("tracking") || lowerFeature.includes("scan"))
-      return <BarChart3 className="h-4 w-4" />;
+      return <BarChart3 className="size-4" />;
     if (lowerFeature.includes("alias") || lowerFeature.includes("link"))
-      return <Link2 className="h-4 w-4" />;
+      return <Link2 className="size-4" />;
     if (lowerFeature.includes("logo") || lowerFeature.includes("footer"))
-      return <ImageIcon className="h-4 w-4" />;
-    if (lowerFeature.includes("branding"))
-      return <Shield className="h-4 w-4" />;
+      return <ImageIcon className="size-4" />;
+    if (lowerFeature.includes("branding")) return <Shield className="size-4" />;
     if (lowerFeature.includes("status"))
-      return <RefreshCw className="h-4 w-4" />;
+      return <RefreshCw className="size-4" />;
     if (lowerFeature.includes("support"))
-      return <Headphones className="h-4 w-4" />;
-    if (lowerFeature.includes("api")) return <Code className="h-4 w-4" />;
-    return <Check className="h-4 w-4" />;
+      return <Headphones className="size-4" />;
+    if (lowerFeature.includes("api")) return <Code className="size-4" />;
+    return <Check className="size-4" />;
   };
 
   const getPlanIcon = (title: string) => {
     const lowerTitle = title.toLowerCase();
-    if (lowerTitle === "free") return <Sparkles className="h-5 w-5" />;
-    if (lowerTitle === "pro") return <Zap className="h-5 w-5" />;
-    if (lowerTitle === "enterprise") return <Crown className="h-5 w-5" />;
-    return <Sparkles className="h-5 w-5" />;
+    if (lowerTitle === "free") return <Sparkles className="size-5" />;
+    if (lowerTitle === "pro") return <Zap className="size-5" />;
+    if (lowerTitle === "enterprise") return <Crown className="size-5" />;
+    return <Sparkles className="size-5" />;
   };
 
   const PricingCard = ({ offer }: { offer: SubscriptionPlan }) => {
@@ -130,7 +127,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
             : isEnterprise
               ? "border-primary/60 bg-gradient-to-br from-primary/10 via-background to-primary/10 shadow-lg shadow-primary/10"
               : "border-border bg-card hover:border-primary/20",
-          isCurrentPlan && "ring-2 ring-primary ring-offset-2",
+          isCurrentPlan && "ring-2 ring-primary ring-offset-2"
         )}
         key={offer.title}
       >
@@ -156,12 +153,12 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
             <div className="flex items-center gap-3">
               <div
                 className={cn(
-                  "flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 shrink-0",
+                  "flex items-center justify-center size-12 rounded-xl transition-all duration-300 shrink-0",
                   isPro
                     ? "bg-primary/10 text-primary"
                     : isEnterprise
                       ? "bg-primary/20 text-primary"
-                      : "bg-muted text-muted-foreground",
+                      : "bg-muted text-muted-foreground"
                 )}
               >
                 {getPlanIcon(offer.title)}
@@ -173,9 +170,14 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                 {offer.description && (
                   <p className="text-xs text-muted-foreground/80 mt-0.5">
                     {(() => {
-                      const planKey = offer.title.toLowerCase() as "free" | "pro" | "enterprise";
+                      const planKey = offer.title.toLowerCase() as
+                        | "free"
+                        | "pro"
+                        | "enterprise";
                       try {
-                        return tPlanDesc(planKey, { defaultValue: offer.description });
+                        return tPlanDesc(planKey, {
+                          defaultValue: offer.description,
+                        });
                       } catch {
                         return offer.description;
                       }
@@ -227,7 +229,8 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                 <Badge variant="secondary" className="text-xs px-2 py-0.5">
                   {t("savePercent", {
                     percent: Math.round(
-                      (1 - offer.prices.yearly / (offer.prices.monthly * 12)) * 100,
+                      (1 - offer.prices.yearly / (offer.prices.monthly * 12)) *
+                        100
                     ),
                   })}
                 </Badge>
@@ -245,10 +248,12 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                 style={{ animationDelay: `${index * 50}ms` }}
                 key={feature}
               >
-                <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                   {getFeatureIcon(feature)}
                 </div>
-                <p className="text-sm font-medium leading-relaxed">{translateText(feature)}</p>
+                <p className="text-sm font-medium leading-relaxed">
+                  {translateText(feature)}
+                </p>
               </li>
             ))}
 
@@ -258,10 +263,12 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                   className="flex items-start gap-3 text-muted-foreground"
                   key={feature}
                 >
-                  <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted">
-                    <X className="h-3 w-3" />
+                  <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-muted">
+                    <X className="size-3" />
                   </div>
-                  <p className="text-sm leading-relaxed">{translateText(feature)}</p>
+                  <p className="text-sm leading-relaxed">
+                    {translateText(feature)}
+                  </p>
                 </li>
               ))}
           </ul>
@@ -278,11 +285,11 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                       variant: "outline",
                       size: "lg",
                     }),
-                    "w-full group/btn",
+                    "w-full group/btn"
                   )}
                 >
                   {t("goToDashboard")}
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+                  <ArrowRight className="ml-2 size-4 transition-transform group-hover/btn:translate-x-1" />
                 </Link>
               ) : (
                 <BillingFormButton
@@ -298,10 +305,8 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                 className="w-full group/btn"
                 onClick={() => setShowSignInModal(true)}
               >
-                {offer.prices.monthly === 0
-                  ? t("startFree")
-                  : t("upgradeNow")}
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+                {offer.prices.monthly === 0 ? t("startFree") : t("upgradeNow")}
+                <ArrowRight className="ml-2 size-4 transition-transform group-hover/btn:translate-x-1" />
               </Button>
             )}
           </div>
@@ -332,7 +337,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
             className={cn(
               "text-sm font-medium transition-colors",
               !isYearly && "text-foreground",
-              isYearly && "text-muted-foreground",
+              isYearly && "text-muted-foreground"
             )}
           >
             {t("monthly")}
@@ -370,7 +375,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
             className={cn(
               "text-sm font-medium transition-colors",
               isYearly && "text-foreground",
-              !isYearly && "text-muted-foreground",
+              !isYearly && "text-muted-foreground"
             )}
           >
             {t("yearly")}

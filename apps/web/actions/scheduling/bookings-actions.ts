@@ -1,6 +1,6 @@
 "use server";
 
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -83,7 +83,7 @@ export type AvailableSlot = {
  * Used to disable dates in the booking calendar
  */
 export async function getPublicOverrides(
-  eventSlug: string,
+  eventSlug: string
 ): Promise<ActionResult<Array<{ date: string; is_unavailable: boolean }>>> {
   try {
     const supabase = await createClient();
@@ -140,7 +140,7 @@ export async function getPublicOverrides(
       ([date, is_unavailable]) => ({
         date,
         is_unavailable,
-      }),
+      })
     );
 
     return {
@@ -166,7 +166,7 @@ export async function getPublicOverrides(
 export async function getPublicSlots(
   eventSlug: string,
   date: string, // YYYY-MM-DD format
-  timezone: string = "Europe/Berlin",
+  timezone: string = "Europe/Berlin"
 ): Promise<ActionResult<AvailableSlot[]>> {
   try {
     const supabase = await createClient();
@@ -244,10 +244,10 @@ export async function getPublicSlots(
 
     // Convert to UTC for database query
     const dateStartUTC = new Date(
-      dateStart.toLocaleString("en-US", { timeZone: "UTC" }),
+      dateStart.toLocaleString("en-US", { timeZone: "UTC" })
     );
     const dateEndUTC = new Date(
-      dateEnd.toLocaleString("en-US", { timeZone: "UTC" }),
+      dateEnd.toLocaleString("en-US", { timeZone: "UTC" })
     );
 
     const { data: existingBookings } = await supabase
@@ -351,7 +351,7 @@ function calculateSlotsFromTimeSlots(params: {
   today.setHours(0, 0, 0, 0); // Reset to start of day for comparison
   const selectedDate = new Date(`${date}T00:00:00`);
   const daysDiff = Math.ceil(
-    (selectedDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+    (selectedDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
   );
 
   if (daysDiff < 0) {
@@ -363,7 +363,7 @@ function calculateSlotsFromTimeSlots(params: {
 
   // Check for full-day unavailability override
   const fullDayUnavailable = overrides.some(
-    (o) => o.is_unavailable && !o.start_time && !o.end_time,
+    (o) => o.is_unavailable && !o.start_time && !o.end_time
   );
   if (fullDayUnavailable) {
     return [];
@@ -395,10 +395,10 @@ function calculateSlotsFromTimeSlots(params: {
 
     // Convert rule times to Date objects
     const ruleStartDate = new Date(
-      `${date}T${String(ruleStartHour).padStart(2, "0")}:${String(ruleStartMinute).padStart(2, "0")}:00`,
+      `${date}T${String(ruleStartHour).padStart(2, "0")}:${String(ruleStartMinute).padStart(2, "0")}:00`
     );
     const ruleEndDate = new Date(
-      `${date}T${String(ruleEndHour).padStart(2, "0")}:${String(ruleEndMinute).padStart(2, "0")}:00`,
+      `${date}T${String(ruleEndHour).padStart(2, "0")}:${String(ruleEndMinute).padStart(2, "0")}:00`
     );
     ruleStartUTC = new Date(ruleStartDate.getTime() - tzOffset);
     ruleEndUTC = new Date(ruleEndDate.getTime() - tzOffset);
@@ -427,10 +427,10 @@ function calculateSlotsFromTimeSlots(params: {
     // The time slot times are already in the local timezone, so we create them directly
     // When creating dates without timezone, JavaScript interprets them as local time
     const slotStartDate = new Date(
-      `${date}T${String(slotStartHour).padStart(2, "0")}:${String(slotStartMinute).padStart(2, "0")}:00`,
+      `${date}T${String(slotStartHour).padStart(2, "0")}:${String(slotStartMinute).padStart(2, "0")}:00`
     );
     const slotEndDate = new Date(
-      `${date}T${String(slotEndHour).padStart(2, "0")}:${String(slotEndMinute).padStart(2, "0")}:00`,
+      `${date}T${String(slotEndHour).padStart(2, "0")}:${String(slotEndMinute).padStart(2, "0")}:00`
     );
 
     // For comparison with UTC dates (bookings, overrides), convert to UTC
@@ -470,10 +470,10 @@ function calculateSlotsFromTimeSlots(params: {
       const overrideStartParts = override.start_time.split(":").map(Number);
       const overrideEndParts = override.end_time.split(":").map(Number);
       const overrideStart = new Date(
-        `${date}T${String(overrideStartParts[0]).padStart(2, "0")}:${String(overrideStartParts[1] || 0).padStart(2, "0")}:00`,
+        `${date}T${String(overrideStartParts[0]).padStart(2, "0")}:${String(overrideStartParts[1] || 0).padStart(2, "0")}:00`
       );
       const overrideEnd = new Date(
-        `${date}T${String(overrideEndParts[0]).padStart(2, "0")}:${String(overrideEndParts[1] || 0).padStart(2, "0")}:00`,
+        `${date}T${String(overrideEndParts[0]).padStart(2, "0")}:${String(overrideEndParts[1] || 0).padStart(2, "0")}:00`
       );
       const overrideStartUTC = new Date(overrideStart.getTime() - tzOffset);
       const overrideEndUTC = new Date(overrideEnd.getTime() - tzOffset);
@@ -504,7 +504,7 @@ function calculateSlotsFromTimeSlots(params: {
     // Sum the number of participants from all overlapping bookings
     const bookedParticipants = slotBookings.reduce(
       (sum, booking) => sum + (booking.number_of_participants || 1),
-      0,
+      0
     );
     const maxParticipants = timeSlot.max_participants || 999; // Default to high number if not set
     const availablePlaces = Math.max(0, maxParticipants - bookedParticipants);
@@ -575,7 +575,7 @@ function calculateAvailableSlots(params: {
   today.setHours(0, 0, 0, 0); // Reset to start of day for comparison
   const selectedDate = new Date(`${date}T00:00:00`);
   const daysDiff = Math.ceil(
-    (selectedDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+    (selectedDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
   );
 
   if (daysDiff < 0) {
@@ -587,7 +587,7 @@ function calculateAvailableSlots(params: {
 
   // Check for full-day unavailability override
   const fullDayUnavailable = overrides.some(
-    (o) => o.is_unavailable && !o.start_time && !o.end_time,
+    (o) => o.is_unavailable && !o.start_time && !o.end_time
   );
   if (fullDayUnavailable) {
     return [];
@@ -613,7 +613,7 @@ function calculateAvailableSlots(params: {
 
   // Check for full-day availability override (is_unavailable = false means available)
   const fullDayAvailableOverride = overrides.some(
-    (o) => !o.is_unavailable && !o.start_time && !o.end_time,
+    (o) => !o.is_unavailable && !o.start_time && !o.end_time
   );
 
   if (fullDayAvailableOverride) {
@@ -627,9 +627,9 @@ function calculateAvailableSlots(params: {
     // Parse start and end times from rule (format: HH:MM:SS or HH:MM)
     const startTimeParts = dayRule.start_time.split(":").map(Number);
     const endTimeParts = dayRule.end_time.split(":").map(Number);
-    startHour = startTimeParts[0];
+    startHour = startTimeParts[0] ?? 0;
     startMinute = startTimeParts[1] || 0;
-    endHour = endTimeParts[0];
+    endHour = endTimeParts[0] ?? 23;
     endMinute = endTimeParts[1] || 0;
   } else {
     // If no rule exists and no override, the day is NOT available
@@ -638,10 +638,10 @@ function calculateAvailableSlots(params: {
 
   // Create date objects in the specified timezone
   const startDateTime = new Date(
-    `${date}T${String(startHour).padStart(2, "0")}:${String(startMinute).padStart(2, "0")}:00`,
+    `${date}T${String(startHour).padStart(2, "0")}:${String(startMinute).padStart(2, "0")}:00`
   );
   const endDateTime = new Date(
-    `${date}T${String(endHour).padStart(2, "0")}:${String(endMinute).padStart(2, "0")}:00`,
+    `${date}T${String(endHour).padStart(2, "0")}:${String(endMinute).padStart(2, "0")}:00`
   );
 
   // Apply timezone offset (tzOffset already defined above)
@@ -687,10 +687,10 @@ function calculateAvailableSlots(params: {
         .map(Number);
 
       const overrideStart = new Date(
-        `${date}T${String(overrideStartHour).padStart(2, "0")}:${String(overrideStartMinute).padStart(2, "0")}:00`,
+        `${date}T${String(overrideStartHour).padStart(2, "0")}:${String(overrideStartMinute).padStart(2, "0")}:00`
       );
       const overrideEnd = new Date(
-        `${date}T${String(overrideEndHour).padStart(2, "0")}:${String(overrideEndMinute).padStart(2, "0")}:00`,
+        `${date}T${String(overrideEndHour).padStart(2, "0")}:${String(overrideEndMinute).padStart(2, "0")}:00`
       );
 
       const overrideStartUTC = new Date(overrideStart.getTime() - tzOffset);
@@ -738,7 +738,7 @@ function getTimezoneOffset(timezone: string): number {
  * Create a new booking
  */
 export async function createBooking(
-  input: z.infer<typeof createBookingSchema>,
+  input: z.infer<typeof createBookingSchema>
 ): Promise<
   ActionResult<Booking & { emailSent?: boolean; emailError?: string }>
 > {
@@ -764,7 +764,7 @@ export async function createBooking(
     // Verify slot is available
     const startAt = new Date(validatedData.start_at);
     const endAt = new Date(
-      startAt.getTime() + eventType.duration_minutes * 60 * 1000,
+      startAt.getTime() + eventType.duration_minutes * 60 * 1000
     );
 
     // Calculate duration in hours (rounded to nearest half hour)
@@ -781,7 +781,7 @@ export async function createBooking(
       const numberOfParticipants = validatedData.number_of_participants || 1;
       // Price is always per person (not per hour)
       priceAmount = parseFloat(
-        (eventType.price_amount * numberOfParticipants).toFixed(2),
+        (eventType.price_amount * numberOfParticipants).toFixed(2)
       );
       priceCurrency = eventType.price_currency || "EUR";
     }
@@ -813,7 +813,7 @@ export async function createBooking(
       // For specific time slots, only check bookings with the same time_slot_id
       bookingsQuery = bookingsQuery.eq(
         "time_slot_id",
-        validatedData.time_slot_id,
+        validatedData.time_slot_id
       );
     } else {
       // For general availability, check overlapping time ranges
@@ -828,7 +828,7 @@ export async function createBooking(
     if (maxParticipants !== null && overlappingBookings) {
       const totalBookedParticipants = overlappingBookings.reduce(
         (sum, booking) => sum + (booking.number_of_participants || 1),
-        0,
+        0
       );
       const requestedParticipants = validatedData.number_of_participants || 1;
 
@@ -903,7 +903,7 @@ export async function createBooking(
 
     // Send booking confirmation email to customer
     let emailSent = false;
-    let emailError: string | undefined = undefined;
+    let emailError: string | undefined;
 
     try {
       logger.info("Attempting to send booking confirmation email", {
@@ -1004,7 +1004,7 @@ export async function createBooking(
  */
 export async function cancelBookingByToken(
   token: string,
-  reason?: string,
+  reason?: string
 ): Promise<ActionResult<Booking>> {
   try {
     const supabase = await createClient();
@@ -1047,7 +1047,7 @@ export async function cancelBookingByToken(
  */
 export async function cancelBookingAsHost(
   bookingId: string,
-  reason?: string,
+  reason?: string
 ): Promise<ActionResult<Booking>> {
   const user = await getCurrentUser();
 
@@ -1124,7 +1124,7 @@ export async function listBookings(filters?: {
         `
         *,
         event_type:event_types(id, title, slug, duration_minutes, price_amount, price_currency)
-      `,
+      `
       )
       .order("start_at", { ascending: true });
 
@@ -1186,7 +1186,7 @@ export async function getBooking(id: string): Promise<ActionResult<Booking>> {
         `
         *,
         event_type:event_types(id, title, slug, duration_minutes)
-      `,
+      `
       )
       .eq("id", id)
       .eq("host_user_id", user.id)
@@ -1226,7 +1226,7 @@ export async function getBooking(id: string): Promise<ActionResult<Booking>> {
  * Get a booking by cancel token (public access)
  */
 export async function getBookingByToken(
-  token: string,
+  token: string
 ): Promise<ActionResult<Booking>> {
   try {
     const supabase = await createClient();
@@ -1237,7 +1237,7 @@ export async function getBookingByToken(
         `
         *,
         event_type:event_types(id, title, slug, duration_minutes)
-      `,
+      `
       )
       .eq("cancel_token", token)
       .single();
@@ -1321,7 +1321,7 @@ export async function getBookingStatistics(): Promise<
     const yesterdayYear = yesterdayDate.getFullYear();
     const yesterdayMonth = String(yesterdayDate.getMonth() + 1).padStart(
       2,
-      "0",
+      "0"
     );
     const yesterdayDay = String(yesterdayDate.getDate()).padStart(2, "0");
     const yesterdayDateStr = `${yesterdayYear}-${yesterdayMonth}-${yesterdayDay}`;
@@ -1395,14 +1395,14 @@ export async function getBookingStatistics(): Promise<
       (sum: number, booking: any) => {
         return sum + (booking.price_amount || 0);
       },
-      0,
+      0
     );
 
     const yesterdayRevenue = yesterdayBookingsFiltered.reduce(
       (sum: number, booking: any) => {
         return sum + (booking.price_amount || 0);
       },
-      0,
+      0
     );
 
     // Get most common currency (default to EUR)
@@ -1415,7 +1415,7 @@ export async function getBookingStatistics(): Promise<
             arr.filter((v) => v === a).length >=
             arr.filter((v) => v === b).length
               ? a
-              : b,
+              : b
           )
         : "EUR";
 
@@ -1444,7 +1444,7 @@ export async function getBookingStatistics(): Promise<
  * Delete a booking permanently (authenticated host only)
  */
 export async function deleteBooking(
-  bookingId: string,
+  bookingId: string
 ): Promise<ActionResult<void>> {
   const user = await getCurrentUser();
 
@@ -1514,7 +1514,7 @@ const rescheduleBookingSchema = z.object({
  * This will free up the old slot and assign the new slot
  */
 export async function rescheduleBooking(
-  input: z.infer<typeof rescheduleBookingSchema>,
+  input: z.infer<typeof rescheduleBookingSchema>
 ): Promise<ActionResult<Booking>> {
   const user = await getCurrentUser();
 
@@ -1536,7 +1536,7 @@ export async function rescheduleBooking(
         `
         *,
         event_type:event_types(*)
-      `,
+      `
       )
       .eq("id", validatedData.booking_id)
       .eq("host_user_id", user.id)
@@ -1561,7 +1561,7 @@ export async function rescheduleBooking(
     // Calculate new end time
     const newStartAt = new Date(validatedData.new_start_at);
     const newEndAt = new Date(
-      newStartAt.getTime() + eventType.duration_minutes * 60 * 1000,
+      newStartAt.getTime() + eventType.duration_minutes * 60 * 1000
     );
 
     // Verify new slot is available
@@ -1598,7 +1598,7 @@ export async function rescheduleBooking(
     if (validatedData.new_time_slot_id) {
       bookingsQuery = bookingsQuery.eq(
         "time_slot_id",
-        validatedData.new_time_slot_id,
+        validatedData.new_time_slot_id
       );
     } else {
       bookingsQuery = bookingsQuery
@@ -1612,7 +1612,7 @@ export async function rescheduleBooking(
     if (maxParticipants !== null && overlappingBookings) {
       const totalBookedParticipants = overlappingBookings.reduce(
         (sum, booking) => sum + (booking.number_of_participants || 1),
-        0,
+        0
       );
       const requestedParticipants = existingBooking.number_of_participants || 1;
 
@@ -1642,7 +1642,7 @@ export async function rescheduleBooking(
       const numberOfParticipants = existingBooking.number_of_participants || 1;
       // Price is always per person (not per hour)
       priceAmount = parseFloat(
-        (eventType.price_amount * numberOfParticipants).toFixed(2),
+        (eventType.price_amount * numberOfParticipants).toFixed(2)
       );
       priceCurrency = eventType.price_currency || "EUR";
     } else {
@@ -1669,7 +1669,7 @@ export async function rescheduleBooking(
         `
         *,
         event_type:event_types(id, title, slug, duration_minutes)
-      `,
+      `
       )
       .single();
 
@@ -1713,7 +1713,7 @@ export async function rescheduleBooking(
  * This will change the status back to "scheduled" and check slot availability
  */
 export async function reactivateBooking(
-  bookingId: string,
+  bookingId: string
 ): Promise<ActionResult<Booking>> {
   const user = await getCurrentUser();
 
@@ -1734,7 +1734,7 @@ export async function reactivateBooking(
         `
         *,
         event_type:event_types(*)
-      `,
+      `
       )
       .eq("id", bookingId)
       .eq("host_user_id", user.id)
@@ -1795,7 +1795,7 @@ export async function reactivateBooking(
     if (existingBooking.time_slot_id) {
       bookingsQuery = bookingsQuery.eq(
         "time_slot_id",
-        existingBooking.time_slot_id,
+        existingBooking.time_slot_id
       );
     } else {
       bookingsQuery = bookingsQuery
@@ -1809,7 +1809,7 @@ export async function reactivateBooking(
     if (maxParticipants !== null && overlappingBookings) {
       const totalBookedParticipants = overlappingBookings.reduce(
         (sum, booking) => sum + (booking.number_of_participants || 1),
-        0,
+        0
       );
       const requestedParticipants = existingBooking.number_of_participants || 1;
 
@@ -1839,7 +1839,7 @@ export async function reactivateBooking(
         `
         *,
         event_type:event_types(id, title, slug, duration_minutes)
-      `,
+      `
       )
       .single();
 

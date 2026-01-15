@@ -1,19 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { ChevronDown, Cookie, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
-
-import { logger } from "@/lib/logger";
-import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
 
 const COOKIE_CONSENT_KEY = "cenety-cookie-consent";
 const COOKIE_CONSENT_VERSION = "1.0";
@@ -151,18 +150,18 @@ export function CookieConsent({
   return (
     <div
       className={cn(
-        "fixed right-0 bottom-0 left-0 z-50 w-full border-t backdrop-blur bg-background/95 supports-[backdrop-filter]:bg-background/80",
+        "fixed inset-x-0 bottom-0 z-50 w-full border-t backdrop-blur bg-background/95 supports-[backdrop-filter]:bg-background/80",
         "shadow-lg animate-fade-up",
-        open ? "block" : "hidden",
+        open ? "block" : "hidden"
       )}
     >
-      <div className="container px-4 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div className="container p-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <Collapsible open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
           {/* Banner Header - Always Visible */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex gap-3 items-start sm:items-center">
-              <div className="flex justify-center items-center w-10 h-10 rounded-lg shrink-0 bg-primary/10">
-                <Cookie className="w-5 h-5 text-primary" />
+              <div className="flex justify-center items-center size-10 rounded-lg shrink-0 bg-primary/10">
+                <Cookie className="size-5 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-base font-semibold text-foreground sm:text-lg">
@@ -182,12 +181,12 @@ export function CookieConsent({
                   size="sm"
                   className="w-full transition-all duration-200 sm:w-auto hover:bg-accent"
                 >
-                  <Settings className="mr-2 w-4 h-4" />
+                  <Settings className="mr-2 size-4" />
                   {t("customize")}
                   <ChevronDown
                     className={cn(
-                      "ml-2 h-4 w-4 transition-transform duration-200",
-                      isSettingsOpen && "rotate-180",
+                      "ml-2 size-4 transition-transform duration-200",
+                      isSettingsOpen && "rotate-180"
                     )}
                   />
                 </Button>
@@ -217,7 +216,7 @@ export function CookieConsent({
             className={cn(
               "overflow-hidden transition-all duration-300 ease-in-out",
               "data-[state=open]:animate-accordion-down",
-              "data-[state=closed]:animate-accordion-up",
+              "data-[state=closed]:animate-accordion-up"
             )}
           >
             <div className="pt-6 mt-6 space-y-6 border-t animate-fade-in">
@@ -225,7 +224,7 @@ export function CookieConsent({
               <div className="space-y-4">
                 {/* Necessary Cookies */}
                 <div className="flex items-center gap-3.5 rounded-lg p-3 transition-colors hover:bg-muted/50">
-                  <Avatar className="h-10 w-10">
+                  <Avatar className="size-10">
                     <AvatarImage src="/favicon.ico" alt="Necessary" />
                   </Avatar>
                   <div className="flex-1 space-y-1">
@@ -241,7 +240,7 @@ export function CookieConsent({
 
                 {/* Analytics Cookies */}
                 <div className="flex items-center gap-3.5 rounded-lg p-3 transition-colors hover:bg-muted/50">
-                  <Avatar className="h-10 w-10">
+                  <Avatar className="size-10">
                     <AvatarImage src="/favicon.ico" alt="Analytics" />
                   </Avatar>
                   <div className="flex-1 space-y-1">
@@ -262,7 +261,7 @@ export function CookieConsent({
 
                 {/* Marketing Cookies */}
                 <div className="flex items-center gap-3.5 rounded-lg p-3 transition-colors hover:bg-muted/50">
-                  <Avatar className="h-10 w-10">
+                  <Avatar className="size-10">
                     <AvatarImage src="/favicon.ico" alt="Marketing" />
                   </Avatar>
                   <div className="flex-1 space-y-1">

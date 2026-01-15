@@ -1,28 +1,22 @@
+import { Edit, FileText } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import {
   getCompanyProfile,
   getDefaultCompanyProfile,
 } from "@/actions/company-profiles-actions";
-import { getDocument, type Document } from "@/actions/documents-actions";
-import { Edit, FileText } from "lucide-react";
-import { getTranslations } from "next-intl/server";
-
-import { logger } from "@/lib/logger";
-import { getCurrentUser } from "@/lib/session";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { type Document, getDocument } from "@/actions/documents-actions";
 import { DocumentDeleteButton } from "@/components/documents/document-delete-button";
 import { PDFActionButtons } from "@/components/documents/document-pdf-components";
 import { DocumentStatusTimeline } from "@/components/documents/document-status-timeline";
 import { InvoiceFullPreview } from "@/components/documents/invoice-full-preview";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -53,7 +47,7 @@ export default async function DocumentDetailPage({
     };
     if (documentWithProfileId.company_profile_id) {
       companyProfile = await getCompanyProfile(
-        documentWithProfileId.company_profile_id,
+        documentWithProfileId.company_profile_id
       );
     }
     if (!companyProfile) {
@@ -72,7 +66,7 @@ export default async function DocumentDetailPage({
           ? t("description.quote")
           : t("description.invoice")
       }
-      icon={<FileText className="h-4 w-4 text-primary" />}
+      icon={<FileText className="size-4 text-primary" />}
       showBackButton
       backHref="/dashboard/documents"
       actions={
@@ -83,7 +77,7 @@ export default async function DocumentDetailPage({
           />
           <Link href={`/dashboard/documents/${document.id}/edit`}>
             <Button variant="outline" size="sm" className="gap-1.5 h-8">
-              <Edit className="h-3.5 w-3.5" />
+              <Edit className="size-3.5" />
               <span className="hidden sm:inline">{t("edit")}</span>
             </Button>
           </Link>
@@ -193,7 +187,7 @@ export default async function DocumentDetailPage({
                             {
                               style: "currency",
                               currency: "EUR",
-                            },
+                            }
                           )}
                         </p>
                       </div>

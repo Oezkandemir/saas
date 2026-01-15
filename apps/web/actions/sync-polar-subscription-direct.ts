@@ -10,22 +10,29 @@ import { logger } from "@/lib/logger";
 /**
  * Helper function to get plan name from product ID
  */
-function getPlanNameFromProductId(productId: string | null | undefined): string {
+function getPlanNameFromProductId(
+  productId: string | null | undefined
+): string {
   if (!productId) return "Free";
-  
+
   for (const plan of pricingData) {
-    if (plan.polarIds?.monthly === productId || plan.polarIds?.yearly === productId) {
+    if (
+      plan.polarIds?.monthly === productId ||
+      plan.polarIds?.yearly === productId
+    ) {
       return plan.title;
     }
   }
-  
+
   return `Unknown Plan (${productId})`;
 }
 
 /**
  * Helper function to get user display info for logging
  */
-async function getUserDisplayInfo(userId: string): Promise<{ name: string; email: string } | null> {
+async function getUserDisplayInfo(
+  userId: string
+): Promise<{ name: string; email: string } | null> {
   try {
     // Get user data from users table (has email and name)
     const { data: userData } = await supabaseAdmin
@@ -33,24 +40,25 @@ async function getUserDisplayInfo(userId: string): Promise<{ name: string; email
       .select("email, name")
       .eq("id", userId)
       .single();
-    
+
     if (!userData) {
       return null;
     }
-    
+
     // Try to get display_name from user_profiles for better name
     const { data: profileData } = await supabaseAdmin
       .from("user_profiles")
       .select("display_name")
       .eq("user_id", userId)
       .single();
-    
+
     // Prioritize display_name from profile, then name from users, then email prefix
-    const displayName = profileData?.display_name || 
-                       userData.name || 
-                       userData.email?.split("@")[0] || 
-                       "Unknown";
-    
+    const displayName =
+      profileData?.display_name ||
+      userData.name ||
+      userData.email?.split("@")[0] ||
+      "Unknown";
+
     return {
       name: displayName,
       email: userData.email || "Unknown",
@@ -108,31 +116,28 @@ export async function syncPolarSubscriptionDirect(): Promise<{
     // If no customer ID, try to find customer by email
     if (!customerId && userEmail) {
       logger.info(
-        `No customer ID found, searching for customer by email: ${userEmail}`,
+        `No customer ID found, searching for customer by email: ${userEmail}`
       );
-      
+
       try {
         // List customers and search for matching email
-        const customersResponse = await fetch(
-          `${apiUrl}/customers?limit=100`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-            cache: "no-store",
+        const customersResponse = await fetch(`${apiUrl}/customers?limit=100`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
           },
-        );
+          cache: "no-store",
+        });
 
         if (customersResponse.ok) {
           const customersData = await customersResponse.json();
           const customers = customersData.items || customersData || [];
-          
+
           // Search for customer with matching email
           const foundCustomer = customers.find(
-            (customer: any) => customer.email === userEmail,
+            (customer: any) => customer.email === userEmail
           );
-          
+
           if (foundCustomer) {
             customerId = foundCustomer.id;
             logger.info(`Found customer by email: ${customerId}`);
@@ -148,9 +153,9 @@ export async function syncPolarSubscriptionDirect(): Promise<{
     // If still no customer ID, try to find subscription directly by email
     if (!customerId && userEmail) {
       logger.info(
-        `No customer ID found, trying to find subscription directly by email: ${userEmail}`,
+        `No customer ID found, trying to find subscription directly by email: ${userEmail}`
       );
-      
+
       try {
         // List all subscriptions and search for matching email
         const subscriptionsResponse = await fetch(
@@ -161,21 +166,22 @@ export async function syncPolarSubscriptionDirect(): Promise<{
               "Content-Type": "application/json",
             },
             cache: "no-store",
-          },
+          }
         );
 
         if (subscriptionsResponse.ok) {
           const subscriptionsData = await subscriptionsResponse.json();
-          const allSubscriptions = subscriptionsData.items || subscriptionsData || [];
-          
+          const allSubscriptions =
+            subscriptionsData.items || subscriptionsData || [];
+
           // Search for subscription with matching customer email
           const matchingSubscription = allSubscriptions.find(
             (sub: any) =>
               (sub.customer?.email === userEmail ||
                 sub.customer_email === userEmail) &&
-              sub.status === "active",
+              sub.status === "active"
           );
-          
+
           if (matchingSubscription) {
             customerId = matchingSubscription.customer_id;
             subscriptionId = matchingSubscription.id;
@@ -184,7 +190,9 @@ export async function syncPolarSubscriptionDirect(): Promise<{
               productId: matchingSubscription.product_id,
             });
           } else {
-            logger.warn(`No active subscription found with email: ${userEmail}`);
+            logger.warn(
+              `No active subscription found with email: ${userEmail}`
+            );
           }
         }
       } catch (error) {
@@ -203,9 +211,9 @@ export async function syncPolarSubscriptionDirect(): Promise<{
     // If no subscription ID, try to find active subscription by customer ID
     if (!subscriptionId) {
       logger.info(
-        `No subscription ID found, searching for active subscription for customer ${customerId}`,
+        `No subscription ID found, searching for active subscription for customer ${customerId}`
       );
-      
+
       try {
         // Try multiple endpoints to find subscriptions
         // Method 1: Use subscriptions endpoint with customer_id filter
@@ -217,7 +225,7 @@ export async function syncPolarSubscriptionDirect(): Promise<{
               "Content-Type": "application/json",
             },
             cache: "no-store",
-          },
+          }
         );
 
         let subscriptions: any[] = [];
@@ -225,10 +233,14 @@ export async function syncPolarSubscriptionDirect(): Promise<{
         if (subscriptionsResponse.ok) {
           const subscriptionsData = await subscriptionsResponse.json();
           subscriptions = subscriptionsData.items || subscriptionsData || [];
-          logger.info(`Found ${subscriptions.length} subscriptions via /subscriptions endpoint`);
+          logger.info(
+            `Found ${subscriptions.length} subscriptions via /subscriptions endpoint`
+          );
         } else {
           // Method 2: Fallback to customer subscriptions endpoint
-          logger.info("Trying alternative endpoint: /customers/{id}/subscriptions");
+          logger.info(
+            "Trying alternative endpoint: /customers/{id}/subscriptions"
+          );
           const customerResponse = await fetch(
             `${apiUrl}/customers/${customerId}/subscriptions`,
             {
@@ -237,13 +249,15 @@ export async function syncPolarSubscriptionDirect(): Promise<{
                 "Content-Type": "application/json",
               },
               cache: "no-store",
-            },
+            }
           );
 
           if (customerResponse.ok) {
             const customerSubsData = await customerResponse.json();
             subscriptions = customerSubsData.items || customerSubsData || [];
-            logger.info(`Found ${subscriptions.length} subscriptions via /customers/{id}/subscriptions endpoint`);
+            logger.info(
+              `Found ${subscriptions.length} subscriptions via /customers/{id}/subscriptions endpoint`
+            );
           } else {
             logger.warn("Both subscription endpoints failed", {
               subscriptionsStatus: subscriptionsResponse.status,
@@ -253,10 +267,10 @@ export async function syncPolarSubscriptionDirect(): Promise<{
         }
 
         // Find active subscription (prioritize active, then any subscription)
-        const activeSubscription = subscriptions.find(
-          (sub: any) => sub.status === "active",
-        ) || subscriptions[0]; // Fallback to first subscription if no active found
-        
+        const activeSubscription =
+          subscriptions.find((sub: any) => sub.status === "active") ||
+          subscriptions[0]; // Fallback to first subscription if no active found
+
         if (activeSubscription) {
           subscriptionId = activeSubscription.id;
           logger.info(`Found subscription: ${subscriptionId}`, {
@@ -291,20 +305,17 @@ export async function syncPolarSubscriptionDirect(): Promise<{
     }
 
     logger.info(
-      `Syncing subscription ${subscriptionId} directly from Polar API`,
+      `Syncing subscription ${subscriptionId} directly from Polar API`
     );
 
-    const response = await fetch(
-      `${apiUrl}/subscriptions/${subscriptionId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        // Don't cache this request
-        cache: "no-store",
+    const response = await fetch(`${apiUrl}/subscriptions/${subscriptionId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
       },
-    );
+      // Don't cache this request
+      cache: "no-store",
+    });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -324,14 +335,14 @@ export async function syncPolarSubscriptionDirect(): Promise<{
     const productId = subscription.product_id;
     const subscriptionCustomerId = subscription.customer_id;
     const status = subscription.status; // active, canceled, etc.
-    
+
     // Convert timestamps to ISO strings, handling null/undefined/invalid values safely
     let currentPeriodEnd: string | null = null;
     if (subscription.current_period_end) {
       try {
         const timestamp = subscription.current_period_end * 1000;
         const date = new Date(timestamp);
-        if (!isNaN(date.getTime())) {
+        if (!Number.isNaN(date.getTime())) {
           currentPeriodEnd = date.toISOString();
         } else {
           logger.warn("Invalid current_period_end timestamp", {
@@ -342,13 +353,13 @@ export async function syncPolarSubscriptionDirect(): Promise<{
         logger.error("Error converting current_period_end", error);
       }
     }
-    
+
     let currentPeriodStart: string | null = null;
     if (subscription.current_period_start) {
       try {
         const timestamp = subscription.current_period_start * 1000;
         const date = new Date(timestamp);
-        if (!isNaN(date.getTime())) {
+        if (!Number.isNaN(date.getTime())) {
           currentPeriodStart = date.toISOString();
         } else {
           logger.warn("Invalid current_period_start timestamp", {
@@ -366,11 +377,11 @@ export async function syncPolarSubscriptionDirect(): Promise<{
     const planName = getPlanNameFromProductId(productId);
     const userInfo = await getUserDisplayInfo(user.id);
     logger.info(
-      `Updating user "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"}) with latest Polar subscription data: Plan: ${planName}, Status: ${status}`,
+      `Updating user "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"}) with latest Polar subscription data: Plan: ${planName}, Status: ${status}`
     );
 
     // Update user table with latest data
-    
+
     const { error: userUpdateError } = await supabaseAdmin
       .from("users")
       .update({
@@ -428,7 +439,7 @@ export async function syncPolarSubscriptionDirect(): Promise<{
 
     // Reuse planName and userInfo from above (already declared at line 362-363)
     logger.info(
-      `Successfully synced subscription from Polar API: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"}) → Plan: ${planName}, Status: ${status}`,
+      `Successfully synced subscription from Polar API: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"}) → Plan: ${planName}, Status: ${status}`
     );
 
     return {
@@ -443,4 +454,3 @@ export async function syncPolarSubscriptionDirect(): Promise<{
     };
   }
 }
-

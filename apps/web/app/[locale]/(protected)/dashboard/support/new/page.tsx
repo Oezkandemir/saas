@@ -1,12 +1,11 @@
-import { redirect } from "next/navigation";
 import { MessageSquarePlus } from "lucide-react";
+import { redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
-import { constructMetadata } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { CreateTicketForm } from "@/components/support/create-ticket-form";
+import { Card, CardContent } from "@/components/ui/card";
+import { getCurrentUser } from "@/lib/session";
+import { constructMetadata } from "@/lib/utils";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -36,7 +35,7 @@ export default async function NewTicketPage() {
     <UnifiedPageLayout
       title="Create Support Ticket"
       description="Our support team typically responds within 2-4 hours. For urgent issues, please mark your ticket as high priority."
-      icon={<MessageSquarePlus className="h-4 w-4 text-primary" />}
+      icon={<MessageSquarePlus className="size-4 text-primary" />}
       showBackButton
       backHref="/dashboard/support"
       contentClassName="space-y-6"

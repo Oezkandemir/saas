@@ -1,13 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 
 import { cn } from "@/lib/utils";
 import {
-  validatePassword,
   type PasswordPolicy,
+  validatePassword,
 } from "@/lib/validations/password-policy";
 
 interface PasswordPolicyIndicatorProps {
@@ -53,7 +53,7 @@ export function PasswordPolicyIndicator({
                 "font-medium",
                 validation.strength === "weak" && "text-red-500",
                 validation.strength === "medium" && "text-yellow-500",
-                validation.strength === "strong" && "text-green-500",
+                validation.strength === "strong" && "text-green-500"
               )}
             >
               {strengthLabels[validation.strength]}
@@ -66,7 +66,7 @@ export function PasswordPolicyIndicator({
                 strengthColors[validation.strength],
                 validation.strength === "weak" && "w-1/3",
                 validation.strength === "medium" && "w-2/3",
-                validation.strength === "strong" && "w-full",
+                validation.strength === "strong" && "w-full"
               )}
             />
           </div>

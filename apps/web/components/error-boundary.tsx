@@ -1,9 +1,7 @@
 "use client";
 
-import React from "react";
 import { AlertCircle, Home, RefreshCw } from "lucide-react";
-
-import { logger } from "@/lib/logger";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { logger } from "@/lib/logger";
 
 interface ErrorBoundaryState {
   hasError: boolean;

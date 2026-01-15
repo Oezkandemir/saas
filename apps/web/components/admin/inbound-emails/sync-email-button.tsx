@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { syncResendInboundEmail } from "@/actions/sync-resend-inbound-email";
 import { Loader2, RefreshCw } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
+import { syncResendInboundEmail } from "@/actions/sync-resend-inbound-email";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -14,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export function SyncEmailButton() {
@@ -37,7 +37,7 @@ export function SyncEmailButton() {
       } else {
         toast.error(result.message);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Fehler beim Synchronisieren der Email");
     } finally {
       setIsSyncing(false);
@@ -48,7 +48,7 @@ export function SyncEmailButton() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <RefreshCw className="h-4 w-4" />
+          <RefreshCw className="size-4" />
           Email manuell synchronisieren
         </CardTitle>
         <CardDescription>
@@ -78,12 +78,12 @@ export function SyncEmailButton() {
         >
           {isSyncing ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 size-4 animate-spin" />
               Synchronisiere...
             </>
           ) : (
             <>
-              <RefreshCw className="mr-2 h-4 w-4" />
+              <RefreshCw className="mr-2 size-4" />
               Email synchronisieren
             </>
           )}

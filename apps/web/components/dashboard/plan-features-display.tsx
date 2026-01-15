@@ -1,9 +1,6 @@
 "use client";
 
 import { Check, X } from "lucide-react";
-
-import type { PlanFeaturesInfo } from "@/lib/plan-features";
-import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -12,6 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import type { PlanFeaturesInfo } from "@/lib/plan-features";
+import { cn } from "@/lib/utils";
 
 interface PlanFeaturesDisplayProps {
   planInfo: PlanFeaturesInfo;
@@ -48,7 +47,7 @@ export function PlanFeaturesDisplay({ planInfo }: PlanFeaturesDisplayProps) {
                 "h-full transition-all",
                 isAtLimit && "bg-destructive",
                 isNearLimit && !isAtLimit && "bg-yellow-500",
-                !isAtLimit && !isNearLimit && "bg-primary",
+                !isAtLimit && !isNearLimit && "bg-primary"
               )}
               style={{ width: `${percentage}%` }}
             />
@@ -98,7 +97,7 @@ export function PlanFeaturesDisplay({ planInfo }: PlanFeaturesDisplayProps) {
                 "p-4 rounded-lg border transition-colors",
                 feature.enabled
                   ? "bg-background border-border"
-                  : "bg-muted/50 border-border/50 opacity-60",
+                  : "bg-muted/50 border-border/50 opacity-60"
               )}
             >
               <div className="flex items-start gap-3">
@@ -113,9 +112,9 @@ export function PlanFeaturesDisplay({ planInfo }: PlanFeaturesDisplayProps) {
                     </div>
                     <div className="shrink-0">
                       {feature.enabled ? (
-                        <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                        <Check className="size-4 text-green-600 dark:text-green-400" />
                       ) : (
-                        <X className="h-4 w-4 text-muted-foreground" />
+                        <X className="size-4 text-muted-foreground" />
                       )}
                     </div>
                   </div>

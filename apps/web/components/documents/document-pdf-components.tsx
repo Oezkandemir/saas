@@ -11,7 +11,7 @@ const PDFDownloadButton = dynamic(
     })),
   {
     ssr: false,
-  },
+  }
 );
 
 const PDFPreviewButton = dynamic(
@@ -21,7 +21,7 @@ const PDFPreviewButton = dynamic(
     })),
   {
     ssr: false,
-  },
+  }
 );
 
 const DocumentEmailButton = dynamic(
@@ -31,7 +31,7 @@ const DocumentEmailButton = dynamic(
     })),
   {
     ssr: false,
-  },
+  }
 );
 
 const InvoiceCompactPreview = dynamic(
@@ -46,7 +46,7 @@ const InvoiceCompactPreview = dynamic(
       </div>
     ),
     ssr: false,
-  },
+  }
 );
 
 const InvoiceFullscreenButton = dynamic(
@@ -56,7 +56,7 @@ const InvoiceFullscreenButton = dynamic(
     })),
   {
     ssr: false,
-  },
+  }
 );
 
 interface PDFActionButtonsProps {

@@ -1,6 +1,6 @@
+import { type CookieOptions, createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 import { createLoginSession } from "@/lib/session-tracking";
 
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
             cookieStore.delete({ name, ...options });
           },
         },
-      },
+      }
     );
 
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);

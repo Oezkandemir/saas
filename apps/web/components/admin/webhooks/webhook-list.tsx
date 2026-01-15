@@ -1,17 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Webhook } from "@/actions/webhook-actions";
 import { Plus, Webhook as WebhookIcon } from "lucide-react";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { useState } from "react";
+import type { Webhook } from "@/actions/webhook-actions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,6 +11,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 import { WebhookForm } from "./webhook-form";
 
@@ -52,7 +51,7 @@ export function WebhookList({ initialWebhooks }: WebhookListProps) {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button>
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 size-4" />
               Create Webhook
             </Button>
           </DialogTrigger>
@@ -74,13 +73,13 @@ export function WebhookList({ initialWebhooks }: WebhookListProps) {
       {webhooks.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <WebhookIcon className="mb-4 h-12 w-12 text-muted-foreground" />
+            <WebhookIcon className="mb-4 size-12 text-muted-foreground" />
             <CardTitle className="mb-2">No webhooks configured</CardTitle>
             <CardDescription className="mb-4 text-center">
               Create your first webhook to start receiving event notifications
             </CardDescription>
             <Button onClick={() => setIsDialogOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 size-4" />
               Create Webhook
             </Button>
           </CardContent>
@@ -93,7 +92,7 @@ export function WebhookList({ initialWebhooks }: WebhookListProps) {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">{webhook.name}</CardTitle>
                   <div
-                    className={`h-2 w-2 rounded-full ${
+                    className={`size-2 rounded-full ${
                       webhook.is_active ? "bg-green-500" : "bg-gray-400"
                     }`}
                   />
@@ -114,9 +113,7 @@ export function WebhookList({ initialWebhooks }: WebhookListProps) {
                     webhook={webhook}
                     onSuccess={(updated) => {
                       setWebhooks(
-                        webhooks.map((w) =>
-                          w.id === updated.id ? updated : w,
-                        ),
+                        webhooks.map((w) => (w.id === updated.id ? updated : w))
                       );
                     }}
                     onDelete={() => handleWebhookDeleted(webhook.id)}

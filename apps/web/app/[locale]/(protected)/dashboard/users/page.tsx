@@ -1,9 +1,8 @@
-import { Suspense } from "react";
-import { Metadata } from "next";
 import { Users } from "lucide-react";
-
-import { Skeleton } from "@/components/ui/skeleton";
+import type { Metadata } from "next";
+import { Suspense } from "react";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { UserSearch } from "./user-search";
 
@@ -61,7 +60,7 @@ export default function UsersPage() {
     <UnifiedPageLayout
       title="Users"
       description="Search and discover users in the community"
-      icon={<Users className="h-4 w-4 text-primary" />}
+      icon={<Users className="size-4 text-primary" />}
     >
       <Suspense fallback={<UserSearchSkeleton />}>
         <UserSearch />

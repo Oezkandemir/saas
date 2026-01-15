@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -11,9 +11,7 @@ interface CopyBookingButtonProps {
   bookingUrl: string;
 }
 
-export function CopyBookingButton({
-  bookingUrl,
-}: CopyBookingButtonProps) {
+export function CopyBookingButton({ bookingUrl }: CopyBookingButtonProps) {
   const t = useTranslations("Scheduling.eventTypes.detail.share");
   const [copied, setCopied] = useState(false);
 
@@ -23,7 +21,7 @@ export function CopyBookingButton({
       setCopied(true);
       toast.success(t("copied") || "Booking link copied to clipboard");
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("copyError") || "Failed to copy link");
     }
   };
@@ -37,12 +35,12 @@ export function CopyBookingButton({
     >
       {copied ? (
         <>
-          <Check className="h-3.5 w-3.5" />
+          <Check className="size-3.5" />
           <span className="text-xs">{t("copied") || "Kopiert"}</span>
         </>
       ) : (
         <>
-          <Copy className="h-3.5 w-3.5" />
+          <Copy className="size-3.5" />
           <span className="text-xs">{t("copy") || "Link kopieren"}</span>
         </>
       )}

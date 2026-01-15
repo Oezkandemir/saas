@@ -1,8 +1,3 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { getDefaultCompanyProfile } from "@/actions/company-profiles-actions";
-import { getUserPreferences } from "@/actions/preferences-actions";
-import { getUserTickets } from "@/actions/support-ticket-actions";
 import { formatDistance } from "date-fns";
 import {
   ArrowRight,
@@ -14,30 +9,13 @@ import {
   Shield,
   User,
 } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { UserSubscriptionPlan } from "types";
-import { pricingData } from "@/config/subscriptions";
-import { logger } from "@/lib/logger";
-import { getCurrentUser } from "@/lib/session";
-import { getUserSubscriptionPlan } from "@/lib/subscription";
-import { createClient } from "@/lib/supabase/server";
-import { constructMetadata } from "@/lib/utils";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import type { UserSubscriptionPlan } from "types";
+import { getDefaultCompanyProfile } from "@/actions/company-profiles-actions";
+import { getUserPreferences } from "@/actions/preferences-actions";
+import { getUserTickets } from "@/actions/support-ticket-actions";
 import { UserAvatarForm } from "@/components/forms/user-avatar-form";
 import { UserNameForm } from "@/components/forms/user-name-form";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
@@ -46,6 +24,23 @@ import { PolarPortalButton } from "@/components/pricing/polar-portal-button";
 import { PolarPortalButtonFallback } from "@/components/pricing/polar-portal-button-fallback";
 import { PolarPortalButtonWithSubscription } from "@/components/pricing/polar-portal-button-subscription";
 import { UserTicketAccordion } from "@/components/support/user-ticket-accordion";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { pricingData } from "@/config/subscriptions";
+import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
+import { getUserSubscriptionPlan } from "@/lib/subscription";
+import { createClient } from "@/lib/supabase/server";
+import { constructMetadata } from "@/lib/utils";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -89,7 +84,7 @@ export default async function ProfilePage() {
 
   // Get user subscription plan
   const defaultFreePlan: UserSubscriptionPlan = {
-    ...pricingData[0],
+    ...pricingData[0]!,
     stripeCustomerId: null,
     stripeSubscriptionId: null,
     stripePriceId: null,
@@ -129,7 +124,7 @@ export default async function ProfilePage() {
     <UnifiedPageLayout
       title={t("heading")}
       description={t("updateProfile")}
-      icon={<User className="w-4 h-4 text-primary" />}
+      icon={<User className="size-4 text-primary" />}
       contentClassName="space-y-6"
     >
       {/* Hero Profile Section - Modern Big Tech Style */}
@@ -141,7 +136,7 @@ export default async function ProfilePage() {
           <CardContent className="relative p-6 sm:p-8">
             <div className="flex flex-col gap-6 items-start sm:flex-row sm:items-end">
               {/* Avatar - Perfect Circle, Not Stretched */}
-              <div className="relative flex-shrink-0">
+              <div className="relative shrink-0">
                 <Avatar className="border-4 ring-2 shadow-lg size-24 sm:size-32 border-background ring-primary/20">
                   <AvatarImage
                     src={user.avatar_url || ""}
@@ -191,7 +186,7 @@ export default async function ProfilePage() {
                               new Date(),
                               {
                                 addSuffix: true,
-                              },
+                              }
                             )
                           : "N/A"}
                       </p>
@@ -372,7 +367,7 @@ export default async function ProfilePage() {
                             {formatDistance(
                               new Date(user.last_sign_in_at),
                               new Date(),
-                              { addSuffix: true },
+                              { addSuffix: true }
                             )}
                           </span>
                         </div>

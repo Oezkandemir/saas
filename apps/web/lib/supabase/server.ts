@@ -1,9 +1,9 @@
-import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 import { logger } from "@/lib/logger";
 
-import { Database } from "../supabase";
+import type { Database } from "../supabase";
 
 export const createClient = async () => {
   try {
@@ -24,7 +24,7 @@ export const createClient = async () => {
             cookieStore.set({ name, value: "", ...options });
           },
         },
-      },
+      }
     );
   } catch (error) {
     logger.error("Error creating Supabase server client:", error);

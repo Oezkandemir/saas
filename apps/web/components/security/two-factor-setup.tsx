@@ -1,14 +1,11 @@
 "use client";
 
+import { Check, Copy, Loader2, Shield } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   generateTwoFactorSecret,
   verifyAndEnableTwoFactor,
 } from "@/actions/two-factor-actions";
-import { Check, Copy, Loader2, Shield } from "lucide-react";
-
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,6 +15,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
 
 interface TwoFactorSetupProps {
   onComplete: () => void;
@@ -32,12 +31,6 @@ export function TwoFactorSetup({ onComplete }: TwoFactorSetupProps) {
   const [verificationCode, setVerificationCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
-
-  useEffect(() => {
-    if (step === "generate") {
-      handleGenerateSecret();
-    }
-  }, [step]);
 
   const handleGenerateSecret = async () => {
     setIsLoading(true);
@@ -66,7 +59,7 @@ export function TwoFactorSetup({ onComplete }: TwoFactorSetupProps) {
       // Generate QR code URL (we'll use an external service or component)
       // For now, store the otpauth URL and let the user scan it manually or use a QR service
       setQrCodeUrl(result.data.qrCodeUrl);
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: "Fehler",
@@ -76,6 +69,12 @@ export function TwoFactorSetup({ onComplete }: TwoFactorSetupProps) {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (step === "generate") {
+      handleGenerateSecret();
+    }
+  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleVerify = async () => {
     if (verificationCode.length !== 6) {
@@ -109,7 +108,7 @@ export function TwoFactorSetup({ onComplete }: TwoFactorSetupProps) {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       onComplete();
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: "Fehler",

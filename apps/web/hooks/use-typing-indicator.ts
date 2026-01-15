@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-
-import { logger } from "@/lib/logger";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSupabase } from "@/components/supabase-provider";
+import { logger } from "@/lib/logger";
 
 export interface TypingUser {
   userId: string;
@@ -26,7 +25,7 @@ export interface UseTypingIndicatorResult {
 export function useTypingIndicator(
   ticketId: string,
   currentUserId: string,
-  currentUserName: string,
+  currentUserName: string
 ): UseTypingIndicatorResult {
   const supabaseContext = useSupabase();
   const channelRef = useRef<RealtimeChannel | null>(null);
@@ -68,7 +67,7 @@ export function useTypingIndicator(
       }
       try {
         supabase.removeChannel(channelRef.current);
-      } catch (err) {
+      } catch (_err) {
         // Ignore cleanup errors
       }
       channelRef.current = null;
@@ -87,7 +86,7 @@ export function useTypingIndicator(
         }
         try {
           await supabase.removeChannel(channelRef.current);
-        } catch (err) {
+        } catch (_err) {
           // Ignore cleanup errors
         }
         channelRef.current = null;
@@ -110,43 +109,37 @@ export function useTypingIndicator(
         channelRef.current = channel;
 
         // Listen for typing events from other users
-        channel = channel.on(
-          "broadcast",
-          { event: "typing" },
-          (payload) => {
-            const { userId, userName, timestamp } = payload.payload as {
-              userId: string;
-              userName: string;
-              timestamp: number;
-            };
+        channel = channel.on("broadcast", { event: "typing" }, (payload) => {
+          const { userId, userName, timestamp } = payload.payload as {
+            userId: string;
+            userName: string;
+            timestamp: number;
+          };
 
-            // Ignore our own typing events
-            if (userId === currentUserId) {
-              return;
-            }
+          // Ignore our own typing events
+          if (userId === currentUserId) {
+            return;
+          }
 
-            // Add or update typing user
-            setTypingUsers((prev) => {
-              const existing = prev.find((u) => u.userId === userId);
-              if (existing) {
-                // Update timestamp
-                return prev.map((u) =>
-                  u.userId === userId ? { ...u, timestamp } : u,
-                );
-              } else {
-                // Add new typing user
-                return [...prev, { userId, userName, timestamp }];
-              }
-            });
-
-            // Remove typing user after timeout
-            setTimeout(() => {
-              setTypingUsers((prev) =>
-                prev.filter((u) => u.userId !== userId),
+          // Add or update typing user
+          setTypingUsers((prev) => {
+            const existing = prev.find((u) => u.userId === userId);
+            if (existing) {
+              // Update timestamp
+              return prev.map((u) =>
+                u.userId === userId ? { ...u, timestamp } : u
               );
-            }, TYPING_TIMEOUT);
-          },
-        );
+            } else {
+              // Add new typing user
+              return [...prev, { userId, userName, timestamp }];
+            }
+          });
+
+          // Remove typing user after timeout
+          setTimeout(() => {
+            setTypingUsers((prev) => prev.filter((u) => u.userId !== userId));
+          }, TYPING_TIMEOUT);
+        });
 
         // Check before subscribing
         if (channelRef.current !== channel) {
@@ -189,7 +182,7 @@ export function useTypingIndicator(
           if (channelState === "joined" || channelState === "joining") {
             supabase.removeChannel(channelRef.current);
           }
-        } catch (err) {
+        } catch (_err) {
           // Ignore cleanup errors
         }
         channelRef.current = null;
@@ -206,7 +199,7 @@ export function useTypingIndicator(
     const interval = setInterval(() => {
       const now = Date.now();
       setTypingUsers((prev) =>
-        prev.filter((user) => now - user.timestamp < TYPING_TIMEOUT),
+        prev.filter((user) => now - user.timestamp < TYPING_TIMEOUT)
       );
     }, 1000);
 
@@ -264,7 +257,7 @@ export function useTypingIndicator(
         }
       }
     },
-    [sendTypingEvent],
+    [sendTypingEvent]
   );
 
   return {
@@ -274,4 +267,3 @@ export function useTypingIndicator(
     sendTypingEvent,
   };
 }
-

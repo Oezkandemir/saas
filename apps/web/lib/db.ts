@@ -3,7 +3,7 @@ import "server-only";
 import { createClient } from "@supabase/supabase-js";
 
 import { logger } from "./logger";
-import { Database } from "./supabase";
+import type { Database } from "./supabase";
 
 // Check if environment variables are set
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -25,7 +25,7 @@ export const supabaseAdmin = createClient<Database>(
     auth: {
       persistSession: false,
     },
-  },
+  }
 );
 
 // Connection test removed to reduce log spam

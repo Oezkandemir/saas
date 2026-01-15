@@ -1,11 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-
+import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServer, getSupabaseStatic } from "@/lib/supabase-server";
-import { supabaseAdmin } from "@/lib/db";
 
 export type BlogPost = {
   id: string;
@@ -69,7 +68,7 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
  * @param useStaticClient - Use static client for generateStaticParams (no cookies)
  */
 export async function getPublishedBlogPosts(
-  useStaticClient = false,
+  useStaticClient = false
 ): Promise<BlogPost[]> {
   try {
     let supabase;
@@ -78,7 +77,7 @@ export async function getPublishedBlogPosts(
     } else {
       try {
         supabase = await getSupabaseServer();
-      } catch (error) {
+      } catch (_error) {
         // Fall back to static client if server client fails
         supabase = getSupabaseStatic();
       }
@@ -113,7 +112,9 @@ export async function getPublishedBlogPosts(
 /**
  * Get blog post by slug
  */
-export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+export async function getBlogPostBySlug(
+  slug: string
+): Promise<BlogPost | null> {
   try {
     const supabase = await getSupabaseServer();
     const { data, error } = await supabase
@@ -168,9 +169,7 @@ export async function getBlogPostById(id: string): Promise<BlogPost | null> {
 /**
  * Create a new blog post
  */
-export async function createBlogPost(
-  input: BlogPostInput,
-): Promise<BlogPost> {
+export async function createBlogPost(input: BlogPostInput): Promise<BlogPost> {
   try {
     const user = await getCurrentUser();
     if (!user || user.role !== "ADMIN") {
@@ -216,7 +215,7 @@ export async function createBlogPost(
  */
 export async function updateBlogPost(
   id: string,
-  input: Partial<BlogPostInput>,
+  input: Partial<BlogPostInput>
 ): Promise<BlogPost> {
   try {
     const user = await getCurrentUser();
@@ -371,9 +370,7 @@ export async function uploadBlogImage(formData: FormData): Promise<{
     logger.error("Error in uploadBlogImage", error);
     return {
       success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to upload image",
+      error: error instanceof Error ? error.message : "Failed to upload image",
     };
   }
 }
-

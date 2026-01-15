@@ -1,7 +1,7 @@
 "use client";
 
 import { Briefcase, Globe, Mail, Phone, Smartphone, User } from "lucide-react";
-import { Control } from "react-hook-form";
+import type { Control } from "react-hook-form";
 
 import {
   FormControl,
@@ -27,7 +27,7 @@ export function CompanyContactFields({ control }: CompanyContactFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-primary" />
+              <Mail className="size-4 text-primary" />
               E-Mail *
             </FormLabel>
             <FormControl>
@@ -53,7 +53,7 @@ export function CompanyContactFields({ control }: CompanyContactFieldsProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-primary" />
+                <Phone className="size-4 text-primary" />
                 Telefon
               </FormLabel>
               <FormControl>
@@ -75,7 +75,7 @@ export function CompanyContactFields({ control }: CompanyContactFieldsProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-2">
-                <Smartphone className="h-4 w-4 text-primary" />
+                <Smartphone className="size-4 text-primary" />
                 Mobil
               </FormLabel>
               <FormControl>
@@ -99,7 +99,7 @@ export function CompanyContactFields({ control }: CompanyContactFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <Globe className="h-4 w-4 text-primary" />
+              <Globe className="size-4 text-primary" />
               Website
             </FormLabel>
             <FormControl>
@@ -137,7 +137,7 @@ export function CompanyContactFields({ control }: CompanyContactFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <User className="h-4 w-4 text-primary" />
+              <User className="size-4 text-primary" />
               Name des Ansprechpartners
             </FormLabel>
             <FormControl>
@@ -162,7 +162,7 @@ export function CompanyContactFields({ control }: CompanyContactFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-primary" />
+              <Briefcase className="size-4 text-primary" />
               Position
             </FormLabel>
             <FormControl>

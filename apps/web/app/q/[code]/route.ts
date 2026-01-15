@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { trackQRCodeScan } from "@/actions/qr-codes-actions";
 
 import { logger } from "@/lib/logger";
@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ code: string }> },
+  { params }: { params: Promise<{ code: string }> }
 ) {
   try {
     const { code: codeParam } = await params;
@@ -93,7 +93,7 @@ export async function GET(
           headers: {
             "Content-Type": "text/html; charset=utf-8",
           },
-        },
+        }
       );
     }
 
@@ -221,7 +221,7 @@ export async function GET(
             headers: {
               "Content-Type": "text/html; charset=utf-8",
             },
-          },
+          }
         );
       }
 
@@ -300,7 +300,7 @@ export async function GET(
         headers: {
           "Content-Type": "text/html; charset=utf-8",
         },
-      },
+      }
     );
   }
 }
@@ -313,5 +313,5 @@ function escapeHtml(text: string): string {
     '"': "&quot;",
     "'": "&#039;",
   };
-  return text.replace(/[&<>"']/g, (m) => map[m]);
+  return text.replace(/[&<>"']/g, (m) => map[m]!);
 }

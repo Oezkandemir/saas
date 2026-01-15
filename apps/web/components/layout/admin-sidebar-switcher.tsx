@@ -1,10 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { SidebarNavItem } from "@/types";
-
 import { adminSidebarLinks } from "@/config/admin";
 import { sidebarLinks } from "@/config/dashboard";
+import type { SidebarNavItem } from "@/types";
 
 interface UseSidebarLinksProps {
   userRole?: string | null;

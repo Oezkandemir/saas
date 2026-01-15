@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { format } from "date-fns";
+import { de, enUS } from "date-fns/locale";
+import { Calendar, CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useLocale } from "next-intl";
+import { useEffect, useState } from "react";
 import {
   cancelBookingByToken,
   getBookingByToken,
 } from "@/actions/scheduling/bookings-actions";
-import { format } from "date-fns";
-import { de, enUS } from "date-fns/locale";
-import { Calendar, CheckCircle2, Loader2, XCircle } from "lucide-react";
-import { useLocale } from "next-intl";
-
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,10 +19,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Alert,
-  AlertDescription,
-} from "@/components/ui/alert";
 
 export default function CancelBookingPage() {
   const searchParams = useSearchParams();
@@ -51,7 +47,7 @@ export default function CancelBookingPage() {
         } else {
           setError("Buchung nicht gefunden oder bereits storniert");
         }
-      } catch (err) {
+      } catch (_err) {
         setError("Fehler beim Laden der Buchung");
       } finally {
         setLoading(false);
@@ -77,7 +73,7 @@ export default function CancelBookingPage() {
       } else {
         setError(result.error || "Fehler beim Stornieren der Buchung");
       }
-    } catch (err) {
+    } catch (_err) {
       setError("Fehler beim Stornieren der Buchung");
     } finally {
       setCanceling(false);
@@ -89,7 +85,7 @@ export default function CancelBookingPage() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="size-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -100,7 +96,7 @@ export default function CancelBookingPage() {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <XCircle className="h-5 w-5 text-red-500" />
+              <XCircle className="size-5 text-red-500" />
               Fehler
             </CardTitle>
           </CardHeader>
@@ -120,7 +116,7 @@ export default function CancelBookingPage() {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-green-500" />
+              <CheckCircle2 className="size-5 text-green-500" />
               Buchung storniert
             </CardTitle>
           </CardHeader>
@@ -157,7 +153,7 @@ export default function CancelBookingPage() {
           {booking.event_type && (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <Calendar className="size-4 text-muted-foreground" />
                 <span className="font-semibold">
                   {booking.event_type.title}
                 </span>
@@ -195,7 +191,7 @@ export default function CancelBookingPage() {
             >
               {canceling ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 size-4 animate-spin" />
                   Storniere...
                 </>
               ) : (

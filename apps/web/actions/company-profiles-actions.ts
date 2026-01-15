@@ -141,7 +141,7 @@ export async function getCompanyProfiles(): Promise<
  * Get a single company profile by ID (owned or member)
  */
 export async function getCompanyProfile(
-  id: string,
+  id: string
 ): Promise<CompanyProfileWithMembership | null> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -197,7 +197,7 @@ export async function getDefaultCompanyProfile(): Promise<CompanyProfile | null>
  * Create a new company profile
  */
 export async function createCompanyProfile(
-  input: CompanyProfileInput,
+  input: CompanyProfileInput
 ): Promise<CompanyProfile> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -266,7 +266,7 @@ export async function createCompanyProfile(
     logger.error("Error creating company profile:", error);
     throw new Error(
       error.message ||
-        `Fehler beim Erstellen des Firmenprofils: ${error.code || "Unbekannter Fehler"}`,
+        `Fehler beim Erstellen des Firmenprofils: ${error.code || "Unbekannter Fehler"}`
     );
   }
 
@@ -283,7 +283,7 @@ export async function createCompanyProfile(
  */
 export async function updateCompanyProfile(
   id: string,
-  input: Partial<CompanyProfileInput>,
+  input: Partial<CompanyProfileInput>
 ): Promise<CompanyProfile> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
@@ -404,7 +404,7 @@ export async function updateCompanyProfile(
     logger.error("Error updating company profile:", error);
     throw new Error(
       error.message ||
-        `Fehler beim Aktualisieren des Firmenprofils: ${error.code || "Unbekannter Fehler"}`,
+        `Fehler beim Aktualisieren des Firmenprofils: ${error.code || "Unbekannter Fehler"}`
     );
   }
 
@@ -470,7 +470,7 @@ export async function setDefaultProfile(id: string): Promise<CompanyProfile> {
  * Helper to get company profile data for use in other features
  */
 export async function getCompanyProfileData(
-  profileId?: string,
+  profileId?: string
 ): Promise<CompanyProfile | null> {
   const user = await getCurrentUser();
   if (!user) return null;

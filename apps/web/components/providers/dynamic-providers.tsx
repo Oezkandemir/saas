@@ -12,7 +12,7 @@ const Analytics = dynamic(
   {
     ssr: false,
     loading: () => null, // Don't show loading state for analytics
-  },
+  }
 );
 
 const ModalProvider = dynamic(() => import("@/components/modals/providers"), {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SidebarNavItem } from "@/types";
+import type { SidebarNavItem } from "@/types";
 
 import {
   DashboardSidebar as DashboardSidebarComponent,
@@ -13,7 +13,10 @@ interface DashboardSidebarWrapperProps {
   showBackButton?: boolean;
 }
 
-export function DashboardSidebar({ links, showBackButton }: DashboardSidebarWrapperProps) {
+export function DashboardSidebar({
+  links,
+  showBackButton,
+}: DashboardSidebarWrapperProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -31,10 +34,15 @@ export function DashboardSidebar({ links, showBackButton }: DashboardSidebarWrap
     );
   }
 
-  return <DashboardSidebarComponent links={links} showBackButton={showBackButton} />;
+  return (
+    <DashboardSidebarComponent links={links} showBackButton={showBackButton} />
+  );
 }
 
-export function MobileSheetSidebar({ links, showBackButton = false }: DashboardSidebarWrapperProps) {
+export function MobileSheetSidebar({
+  links,
+  showBackButton = false,
+}: DashboardSidebarWrapperProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -45,5 +53,10 @@ export function MobileSheetSidebar({ links, showBackButton = false }: DashboardS
     return null;
   }
 
-  return <MobileSheetSidebarComponent links={links} showBackButton={showBackButton} />;
+  return (
+    <MobileSheetSidebarComponent
+      links={links}
+      showBackButton={showBackButton}
+    />
+  );
 }

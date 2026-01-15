@@ -1,4 +1,8 @@
-import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
+import {
+  type FieldPath,
+  type FieldValues,
+  useFormContext,
+} from "react-hook-form";
 
 /**
  * Hook to get field status for visual feedback

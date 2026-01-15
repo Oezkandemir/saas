@@ -1,11 +1,10 @@
 "use client";
 
+import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { getUserPreferences } from "@/actions/preferences-actions";
-import { useTheme } from "next-themes";
-
-import { logger } from "@/lib/logger";
 import { useSupabase } from "@/components/supabase-provider";
+import { logger } from "@/lib/logger";
 
 /**
  * ThemeSyncProvider synchronizes the theme preference from the database

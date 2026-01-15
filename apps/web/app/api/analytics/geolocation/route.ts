@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 import { applyAPIMiddleware } from "@/lib/api-middleware";
 import { logger } from "@/lib/logger";
@@ -47,13 +47,13 @@ export async function GET(request: NextRequest) {
     // Create abort controller for better timeout handling
     const controller = new AbortController();
     let timeoutId: NodeJS.Timeout | null = null;
-    
+
     try {
       // Set timeout to abort request after 3 seconds
       timeoutId = setTimeout(() => {
         try {
           controller.abort();
-        } catch (err) {
+        } catch (_err) {
           // Ignore abort errors
         }
       }, 3000);
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json(defaultResponse);
           }
         }
-      } catch (parseError) {
+      } catch (_parseError) {
         // JSON parse failed - return defaults silently
         return NextResponse.json(defaultResponse);
       }
@@ -121,7 +121,11 @@ export async function GET(request: NextRequest) {
       }
 
       // Don't log timeout errors - they're expected and handled gracefully
-      if (fetchError?.name === "AbortError" || fetchError?.code === 23 || fetchError?.message?.includes("aborted")) {
+      if (
+        fetchError?.name === "AbortError" ||
+        fetchError?.code === 23 ||
+        fetchError?.message?.includes("aborted")
+      ) {
         // Timeout - return defaults silently
         return NextResponse.json(defaultResponse);
       }

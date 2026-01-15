@@ -1,5 +1,7 @@
 "use client";
 
+import { formatDistanceToNow } from "date-fns";
+import { Activity, Globe, MapPin, Monitor, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   getDeviceStatistics,
@@ -7,18 +9,7 @@ import {
   getRealtimeActiveUsers,
   getRealtimePageViews,
 } from "@/actions/analytics-actions";
-import { formatDistanceToNow } from "date-fns";
-import { Activity, Globe, MapPin, Monitor, Users } from "lucide-react";
-
-import { logger } from "@/lib/logger";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { useSupabase } from "@/components/supabase-provider";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -27,7 +18,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useSupabase } from "@/components/supabase-provider";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { logger } from "@/lib/logger";
 
 interface ActiveUser {
   user_id: string | null;
@@ -76,7 +75,7 @@ export function RealtimeAnalytics() {
   const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([]);
   const [pageViews, setPageViews] = useState<PageView[]>([]);
   const [geolocationStats, setGeolocationStats] = useState<GeolocationStat[]>(
-    [],
+    []
   );
   const [deviceStats, setDeviceStats] = useState<DeviceStat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -163,7 +162,7 @@ export function RealtimeAnalytics() {
               } catch (error) {
                 logger.error("Error refreshing realtime data:", error);
               }
-            },
+            }
           )
           .subscribe((status) => {
             if (status === "SUBSCRIBED") {
@@ -210,7 +209,7 @@ export function RealtimeAnalytics() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Aktive User</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{activeUsers.length}</div>
@@ -221,7 +220,7 @@ export function RealtimeAnalytics() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Page Views</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+            <Activity className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -234,7 +233,7 @@ export function RealtimeAnalytics() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Länder</CardTitle>
-            <Globe className="h-4 w-4 text-muted-foreground" />
+            <Globe className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{geolocationStats.length}</div>
@@ -245,7 +244,7 @@ export function RealtimeAnalytics() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Geräte-Typen</CardTitle>
-            <Monitor className="h-4 w-4 text-muted-foreground" />
+            <Monitor className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -288,7 +287,7 @@ export function RealtimeAnalytics() {
                     <TableCell>
                       {user.city && user.country ? (
                         <div className="flex items-center gap-1">
-                          <MapPin className="h-3 w-3" />
+                          <MapPin className="size-3" />
                           <span className="text-xs">
                             {user.city}, {user.country}
                           </span>

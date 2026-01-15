@@ -1,26 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  createCustomer,
-  Customer,
-  CustomerInput,
-  updateCustomer,
-} from "@/actions/customers-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileText, MapPin, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-
-import { useAutoSave } from "@/lib/hooks/use-auto-save";
-import { logger } from "@/lib/logger";
-import { LoadingOverlay } from "@/components/ui/loading-overlay";
-import { MultiStepForm, Step } from "@/components/ui/multi-step-form";
+import {
+  type Customer,
+  type CustomerInput,
+  createCustomer,
+  updateCustomer,
+} from "@/actions/customers-actions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { MultiStepForm, type Step } from "@/components/ui/multi-step-form";
+import { useAutoSave } from "@/lib/hooks/use-auto-save";
+import { logger } from "@/lib/logger";
 
 import {
   CustomerAdditionalInfoStep,

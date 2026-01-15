@@ -1,14 +1,13 @@
 import { Users } from "lucide-react";
-
-import { Skeleton } from "@/components/ui/skeleton";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function UsersLoading() {
   return (
     <UnifiedPageLayout
       title="Users Management"
       description="View and manage all users in your application."
-      icon={<Users className="h-4 w-4 text-primary" />}
+      icon={<Users className="size-4 text-primary" />}
       contentClassName="space-y-4"
     >
       {/* User Stats Section */}

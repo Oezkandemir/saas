@@ -1,11 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  updateEventType,
-  type EventType,
-} from "@/actions/scheduling/event-types-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Calendar,
@@ -16,20 +10,16 @@ import {
   MapPin,
   Settings,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-
-import { getURL } from "@/lib/utils";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+  type EventType,
+  updateEventType,
+} from "@/actions/scheduling/event-types-actions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -48,7 +38,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { getURL } from "@/lib/utils";
 
 const eventTypeSchema = z.object({
   slug: z
@@ -57,7 +56,7 @@ const eventTypeSchema = z.object({
     .max(100)
     .regex(
       /^[a-z0-9-]+$/,
-      "Slug must contain only lowercase letters, numbers, and hyphens",
+      "Slug must contain only lowercase letters, numbers, and hyphens"
     ),
   title: z.string().min(1).max(200),
   description: z.string().max(1000).optional(),
@@ -89,7 +88,7 @@ export function EditEventTypeForm({
   const t = useTranslations("Scheduling.eventTypes.form");
   const [isLoading, setIsLoading] = useState(false);
   const [embedType, setEmbedType] = useState<"button" | "script" | "link">(
-    "button",
+    "button"
   );
   const [copiedEmbed, setCopiedEmbed] = useState(false);
 
@@ -101,20 +100,21 @@ export function EditEventTypeForm({
     userId: string,
     slug: string,
     locale: string,
-    type: "button" | "script" | "link",
+    type: "button" | "script" | "link"
   ): string => {
     const baseUrl = getURL();
     const bookingUrl = `${baseUrl}/${locale}/book/${userId}/${slug}`;
 
     switch (type) {
-      case "button":
+      case "button": {
         // Simple HTML button with link
         const buttonText = t("bookButton") || "Termin buchen";
         return `<a href="${bookingUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 24px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 6px; font-weight: 500; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; transition: background-color 0.2s;">
   ${buttonText}
 </a>`;
+      }
 
-      case "script":
+      case "script": {
         // JavaScript widget that opens a modal/popup
         const widgetButtonText = t("bookButton") || "Termin buchen";
         return `<script>
@@ -130,11 +130,13 @@ export function EditEventTypeForm({
   })();
 </script>
 <div id="booking-widget-${slug}"></div>`;
+      }
 
-      case "link":
+      case "link": {
         // Simple direct link
         const linkText = t("bookLink") || "Termin buchen";
         return `<a href="${bookingUrl}" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
+      }
 
       default:
         return "";
@@ -201,7 +203,7 @@ export function EditEventTypeForm({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
+              <Calendar className="size-4" />
               {t("basicInfo") || "Basic Information"}
             </CardTitle>
             <CardDescription>
@@ -282,7 +284,7 @@ export function EditEventTypeForm({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
+              <Clock className="size-4" />
               {t("duration") || "Duration"}
             </CardTitle>
             <CardDescription>
@@ -306,7 +308,7 @@ export function EditEventTypeForm({
                       max={480}
                       {...field}
                       onChange={(e) =>
-                        field.onChange(parseInt(e.target.value) || 30)
+                        field.onChange(parseInt(e.target.value, 10) || 30)
                       }
                     />
                   </FormControl>
@@ -325,7 +327,7 @@ export function EditEventTypeForm({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
+              <MapPin className="size-4" />
               {t("location") || "Location"}
             </CardTitle>
             <CardDescription>
@@ -397,7 +399,7 @@ export function EditEventTypeForm({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               {t("status") || "Status"}
             </CardTitle>
           </CardHeader>
@@ -432,7 +434,7 @@ export function EditEventTypeForm({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
+              <Settings className="size-4" />
               {t("pricing") || "Pricing"}
             </CardTitle>
             <CardDescription>
@@ -461,7 +463,7 @@ export function EditEventTypeForm({
                           field.onChange(
                             e.target.value
                               ? parseFloat(e.target.value)
-                              : undefined,
+                              : undefined
                           )
                         }
                         value={field.value || ""}
@@ -514,7 +516,7 @@ export function EditEventTypeForm({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Code className="h-4 w-4" />
+              <Code className="size-4" />
               {t("embed") || "Einbettungscode"}
             </CardTitle>
             <CardDescription>
@@ -579,7 +581,7 @@ export function EditEventTypeForm({
                     ownerUserId,
                     eventType.slug,
                     locale,
-                    embedType,
+                    embedType
                   )}
                   className="w-full min-h-[120px] p-3 pr-10 font-mono text-sm bg-muted rounded-md border resize-none"
                   onClick={(e) => (e.target as HTMLTextAreaElement).select()}
@@ -594,30 +596,30 @@ export function EditEventTypeForm({
                       ownerUserId,
                       eventType.slug,
                       locale,
-                      embedType,
+                      embedType
                     );
                     try {
                       await navigator.clipboard.writeText(embedCode);
                       setCopiedEmbed(true);
                       toast.success(
-                        t("embedCopied") || "Einbettungscode kopiert",
+                        t("embedCopied") || "Einbettungscode kopiert"
                       );
                       setTimeout(() => setCopiedEmbed(false), 2000);
-                    } catch (error) {
+                    } catch (_error) {
                       toast.error(
-                        t("embedCopyError") || "Fehler beim Kopieren",
+                        t("embedCopyError") || "Fehler beim Kopieren"
                       );
                     }
                   }}
                 >
                   {copiedEmbed ? (
                     <>
-                      <Check className="h-4 w-4 mr-2" />
+                      <Check className="size-4 mr-2" />
                       {t("copied") || "Kopiert"}
                     </>
                   ) : (
                     <>
-                      <Copy className="h-4 w-4 mr-2" />
+                      <Copy className="size-4 mr-2" />
                       {t("copy") || "Kopieren"}
                     </>
                   )}
@@ -692,9 +694,7 @@ export function EditEventTypeForm({
           </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading ? (
-              <>
-                <span className="mr-2">{t("updating") || "Updating..."}</span>
-              </>
+              <span className="mr-2">{t("updating") || "Updating..."}</span>
             ) : (
               t("update") || "Update Event Type"
             )}

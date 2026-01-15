@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-
-import { logger } from "@/lib/logger";
 import { supabaseAdmin } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 // Validation schema for email check
 const emailCheckSchema = z.object({
@@ -27,7 +26,7 @@ export async function POST(req: Request) {
     }
 
     const existingUser = existingUsers?.users.find(
-      (u) => u.email?.toLowerCase() === normalizedEmail,
+      (u) => u.email?.toLowerCase() === normalizedEmail
     );
 
     if (existingUser) {
@@ -73,4 +72,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ exists: false });
   }
 }
-

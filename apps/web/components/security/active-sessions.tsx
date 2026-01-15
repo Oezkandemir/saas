@@ -1,14 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  clearAllSessions,
-  getActiveSessions,
-  revokeAllOtherSessions,
-  revokeSession,
-  type ActiveSession,
-} from "@/actions/security-actions";
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
 import {
@@ -19,7 +10,16 @@ import {
   Monitor,
   Trash2,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import {
+  type ActiveSession,
+  clearAllSessions,
+  getActiveSessions,
+  revokeAllOtherSessions,
+  revokeSession,
+} from "@/actions/security-actions";
 
 import {
   AlertDialog,
@@ -32,9 +32,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -42,6 +41,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 
 export function ActiveSessions() {
   const t = useTranslations("Security.activeSessions");
@@ -49,10 +49,6 @@ export function ActiveSessions() {
   const router = useRouter();
   const [sessions, setSessions] = useState<ActiveSession[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    loadSessions();
-  }, []);
 
   const loadSessions = async () => {
     setIsLoading(true);
@@ -67,7 +63,7 @@ export function ActiveSessions() {
           description: result.message,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: t("error"),
@@ -77,6 +73,10 @@ export function ActiveSessions() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadSessions();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRevokeSession = async (sessionId: string) => {
     try {
@@ -94,7 +94,7 @@ export function ActiveSessions() {
           description: result.message,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: t("error"),
@@ -119,7 +119,7 @@ export function ActiveSessions() {
           description: result.message,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: t("error"),
@@ -148,7 +148,7 @@ export function ActiveSessions() {
           description: result.message,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: t("error"),
@@ -213,7 +213,9 @@ export function ActiveSessions() {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>{t("revokeAllConfirmTitle")}</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      {t("revokeAllConfirmTitle")}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
                       {t("revokeAllConfirmDescription")}
                     </AlertDialogDescription>
@@ -314,7 +316,9 @@ export function ActiveSessions() {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>{t("revokeConfirmTitle")}</AlertDialogTitle>
+                        <AlertDialogTitle>
+                          {t("revokeConfirmTitle")}
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
                           {t("revokeConfirmDescription")}
                         </AlertDialogDescription>

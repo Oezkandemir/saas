@@ -24,7 +24,7 @@ export default async function ManageSubscriptionPage() {
       await openPolarPortal(userSubscriptionPlan.polarCustomerId);
       // openPolarPortal will redirect, so this won't execute
       return null;
-    } catch (error) {
+    } catch (_error) {
       // If portal generation fails, redirect to billing page
       redirect("/dashboard/billing");
     }

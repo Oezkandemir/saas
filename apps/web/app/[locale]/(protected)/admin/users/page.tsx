@@ -1,13 +1,12 @@
-import { redirect } from "next/navigation";
-import { getAllUsers } from "@/actions/admin-user-actions";
 import { formatDistance } from "date-fns";
 import { Users } from "lucide-react";
+import { redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
+import { getAllUsers } from "@/actions/admin-user-actions";
 import { columns } from "@/components/admin/users/columns";
 import { DataTableWrapper } from "@/components/admin/users/data-table-wrapper";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { getCurrentUser } from "@/lib/session";
 
 export async function generateMetadata() {
   // CRITICAL FIX: Get locale and set it before translations
@@ -56,7 +55,7 @@ export default async function AdminUsersPage(props: Props) {
       <UnifiedPageLayout
         title={tUsers("title")}
         description={tUsers("loadingError")}
-        icon={<Users className="h-4 w-4 text-primary" />}
+        icon={<Users className="size-4 text-primary" />}
       >
         <div />
       </UnifiedPageLayout>
@@ -97,7 +96,7 @@ export default async function AdminUsersPage(props: Props) {
     <UnifiedPageLayout
       title={tUsers("pageTitle")}
       description={tUsers("pageDescription")}
-      icon={<Users className="h-4 w-4 text-primary" />}
+      icon={<Users className="size-4 text-primary" />}
       contentClassName="space-y-6"
     >
       {/* Primary Metric + Secondary KPIs */}

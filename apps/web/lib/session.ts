@@ -1,5 +1,5 @@
+import type { Session } from "@supabase/supabase-js";
 import { cache } from "react";
-import { type Session } from "@supabase/supabase-js";
 
 import { logger } from "@/lib/logger";
 import { getSupabaseServer } from "@/lib/supabase-server";

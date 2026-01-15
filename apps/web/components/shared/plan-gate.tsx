@@ -1,17 +1,16 @@
 "use client";
 
-import { ReactNode } from "react";
-import Link from "next/link";
 import { Lock } from "lucide-react";
-
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface PlanGateProps {
   children: ReactNode;
@@ -44,7 +43,7 @@ export function PlanGate({
           >
             {children}
             <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-              <Lock className="h-6 w-6 text-muted-foreground" />
+              <Lock className="size-6 text-muted-foreground" />
             </div>
           </div>
         </TooltipTrigger>
@@ -62,6 +61,3 @@ export function PlanGate({
     </TooltipProvider>
   );
 }
-
-
-

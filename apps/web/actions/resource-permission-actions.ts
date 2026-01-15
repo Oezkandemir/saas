@@ -35,7 +35,7 @@ export type ResourcePermission = {
  * Grant permission to a user for a resource
  */
 export async function grantPermission(
-  input: z.infer<typeof permissionSchema>,
+  input: z.infer<typeof permissionSchema>
 ): Promise<ActionResult<ResourcePermission>> {
   try {
     const user = await getCurrentUser();
@@ -54,7 +54,7 @@ export async function grantPermission(
       supabase,
       validated.resource_type,
       validated.resource_id,
-      user.id,
+      user.id
     );
 
     if (!isOwner && user.role !== "ADMIN") {
@@ -111,7 +111,7 @@ export async function grantPermission(
 export async function revokePermission(
   resourceType: "document" | "qr_code" | "customer",
   resourceId: string,
-  userId: string,
+  userId: string
 ): Promise<ActionResult<void>> {
   try {
     const user = await getCurrentUser();
@@ -129,7 +129,7 @@ export async function revokePermission(
       supabase,
       resourceType,
       resourceId,
-      user.id,
+      user.id
     );
 
     if (!isOwner && user.role !== "ADMIN") {
@@ -173,7 +173,7 @@ export async function revokePermission(
  */
 export async function getResourcePermissions(
   resourceType: "document" | "qr_code" | "customer",
-  resourceId: string,
+  resourceId: string
 ): Promise<ActionResult<ResourcePermission[]>> {
   try {
     const user = await getCurrentUser();
@@ -191,7 +191,7 @@ export async function getResourcePermissions(
       supabase,
       resourceType,
       resourceId,
-      user.id,
+      user.id
     );
 
     if (!isOwner && user.role !== "ADMIN") {
@@ -237,7 +237,7 @@ export async function checkResourceAccess(
   resourceType: "document" | "qr_code" | "customer",
   resourceId: string,
   userId: string,
-  requiredLevel: "read" | "write" | "delete" = "read",
+  requiredLevel: "read" | "write" | "delete" = "read"
 ): Promise<ActionResult<boolean>> {
   try {
     const user = await getCurrentUser();
@@ -263,7 +263,7 @@ export async function checkResourceAccess(
       supabase,
       resourceType,
       resourceId,
-      userId,
+      userId
     );
 
     if (isOwner) {
@@ -322,7 +322,7 @@ export async function shareResource(
   resourceType: "document" | "qr_code" | "customer",
   resourceId: string,
   userId: string,
-  permissionLevel: "read" | "write" | "delete" = "read",
+  permissionLevel: "read" | "write" | "delete" = "read"
 ): Promise<ActionResult<ResourcePermission>> {
   return grantPermission({
     resource_type: resourceType,
@@ -339,7 +339,7 @@ async function checkResourceOwnership(
   supabase: Awaited<ReturnType<typeof createClient>>,
   resourceType: "document" | "qr_code" | "customer",
   resourceId: string,
-  userId: string,
+  userId: string
 ): Promise<boolean> {
   try {
     switch (resourceType) {

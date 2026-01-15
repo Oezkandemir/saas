@@ -1,6 +1,6 @@
 "use server";
 
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -53,7 +53,7 @@ export type WebhookDelivery = {
  * Create a new webhook
  */
 export async function createWebhook(
-  input: z.infer<typeof webhookSchema>,
+  input: z.infer<typeof webhookSchema>
 ): Promise<ActionResult<Webhook>> {
   try {
     const user = await getCurrentUser();
@@ -114,7 +114,7 @@ export async function createWebhook(
  * Update an existing webhook
  */
 export async function updateWebhook(
-  input: z.infer<typeof webhookUpdateSchema>,
+  input: z.infer<typeof webhookUpdateSchema>
 ): Promise<ActionResult<Webhook>> {
   try {
     const user = await getCurrentUser();
@@ -257,7 +257,7 @@ export async function getWebhooks(): Promise<ActionResult<Webhook[]>> {
  */
 export async function getWebhookDeliveries(
   webhookId?: string,
-  limit = 50,
+  limit = 50
 ): Promise<ActionResult<WebhookDelivery[]>> {
   try {
     const user = await getCurrentUser();
@@ -315,7 +315,7 @@ export async function getWebhookDeliveries(
 export async function triggerWebhook(
   webhookId: string,
   eventType: string,
-  payload: Record<string, unknown>,
+  payload: Record<string, unknown>
 ): Promise<ActionResult<WebhookDelivery>> {
   try {
     const user = await getCurrentUser();

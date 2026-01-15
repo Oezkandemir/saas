@@ -29,7 +29,7 @@ declare module "phoenix" {
       channel: Channel,
       event: string,
       payload?: any,
-      timeout?: number,
+      timeout?: number
     );
     send(): void;
     receive(status: string, callback: (response?: any) => void): Push;
@@ -40,13 +40,13 @@ declare module "phoenix" {
       currentState: any,
       newState: any,
       onJoin?: Function,
-      onLeave?: Function,
+      onLeave?: Function
     ): any;
     static syncDiff(
       currentState: any,
       diff: any,
       onJoin?: Function,
-      onLeave?: Function,
+      onLeave?: Function
     ): any;
     static list(presences: any, chooser?: Function): any[];
     static map(presences: any, chooser?: Function): any;

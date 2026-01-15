@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   Building2,
   CreditCard,
@@ -13,6 +11,8 @@ import {
   Settings,
   Users,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -41,7 +41,7 @@ export function CommandPalette() {
       id: "dashboard",
       title: "Dashboard",
       description: "Zurück zur Übersicht",
-      icon: <Home className="h-4 w-4" />,
+      icon: <Home className="size-4" />,
       href: "/dashboard",
       category: "Navigation",
     },
@@ -49,7 +49,7 @@ export function CommandPalette() {
       id: "customers",
       title: "Kunden",
       description: "Kundenverwaltung öffnen",
-      icon: <Users className="h-4 w-4" />,
+      icon: <Users className="size-4" />,
       href: "/dashboard/customers",
       category: "Navigation",
     },
@@ -57,7 +57,7 @@ export function CommandPalette() {
       id: "documents",
       title: "Dokumente",
       description: "Angebote und Rechnungen",
-      icon: <FileText className="h-4 w-4" />,
+      icon: <FileText className="size-4" />,
       href: "/dashboard/documents",
       category: "Navigation",
     },
@@ -65,7 +65,7 @@ export function CommandPalette() {
       id: "qr-codes",
       title: "QR-Codes",
       description: "QR-Code Verwaltung",
-      icon: <QrCode className="h-4 w-4" />,
+      icon: <QrCode className="size-4" />,
       href: "/dashboard/qr-codes",
       category: "Navigation",
     },
@@ -73,7 +73,7 @@ export function CommandPalette() {
       id: "settings",
       title: "Einstellungen",
       description: "Account-Einstellungen",
-      icon: <Settings className="h-4 w-4" />,
+      icon: <Settings className="size-4" />,
       href: "/dashboard/settings",
       category: "Navigation",
     },
@@ -81,7 +81,7 @@ export function CommandPalette() {
       id: "billing",
       title: "Abrechnung",
       description: "Abonnement verwalten",
-      icon: <CreditCard className="h-4 w-4" />,
+      icon: <CreditCard className="size-4" />,
       href: "/dashboard/billing",
       category: "Navigation",
     },
@@ -89,7 +89,7 @@ export function CommandPalette() {
       id: "company",
       title: "Unternehmensprofile",
       description: "Firmendaten verwalten",
-      icon: <Building2 className="h-4 w-4" />,
+      icon: <Building2 className="size-4" />,
       href: "/dashboard/settings/company",
       category: "Navigation",
     },
@@ -98,7 +98,7 @@ export function CommandPalette() {
       id: "new-customer",
       title: "Neuer Kunde",
       description: "Kunden erstellen",
-      icon: <Users className="h-4 w-4" />,
+      icon: <Users className="size-4" />,
       href: "/dashboard/customers/new",
       category: "Aktionen",
     },
@@ -106,7 +106,7 @@ export function CommandPalette() {
       id: "new-document",
       title: "Neues Dokument",
       description: "Angebot oder Rechnung erstellen",
-      icon: <FileText className="h-4 w-4" />,
+      icon: <FileText className="size-4" />,
       href: "/dashboard/documents/new",
       category: "Aktionen",
     },
@@ -114,11 +114,17 @@ export function CommandPalette() {
       id: "new-qr",
       title: "Neuer QR-Code",
       description: "QR-Code generieren",
-      icon: <QrCode className="h-4 w-4" />,
+      icon: <QrCode className="size-4" />,
       href: "/dashboard/qr-codes/new",
       category: "Aktionen",
     },
   ];
+
+  const handleSelect = (item: SearchResult) => {
+    setOpen(false);
+    setSearch("");
+    router.push(item.href);
+  };
 
   // Keyboard shortcut handler
   useEffect(() => {
@@ -154,7 +160,7 @@ export function CommandPalette() {
 
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, [open, results, selectedIndex]);
+  }, [open, results, selectedIndex, handleSelect]);
 
   // Search logic
   useEffect(() => {
@@ -189,22 +195,16 @@ export function CommandPalette() {
     setIsSearching(false);
   }, [search]);
 
-  const handleSelect = (item: SearchResult) => {
-    setOpen(false);
-    setSearch("");
-    router.push(item.href);
-  };
-
   // Group results by category
   const groupedResults = results.reduce(
     (acc, item) => {
       if (!acc[item.category]) {
         acc[item.category] = [];
       }
-      acc[item.category].push(item);
+      acc[item.category]?.push(item);
       return acc;
     },
-    {} as Record<string, SearchResult[]>,
+    {} as Record<string, SearchResult[]>
   );
 
   return (
@@ -214,7 +214,7 @@ export function CommandPalette() {
         onClick={() => setOpen(true)}
         className="flex w-full items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground sm:w-64"
       >
-        <Search className="h-4 w-4" />
+        <Search className="size-4" />
         <span>Suche...</span>
         <kbd className="ml-auto hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-xs font-medium text-muted-foreground">
           <span className="text-xs">⌘</span>K
@@ -224,7 +224,7 @@ export function CommandPalette() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl p-0">
           <div className="flex items-center border-b px-4 py-3">
-            <Search className="mr-2 h-5 w-5 text-muted-foreground" />
+            <Search className="mr-2 size-5 text-muted-foreground" />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -232,7 +232,7 @@ export function CommandPalette() {
               className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
               autoFocus
             />
-            {isSearching && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isSearching && <Loader2 className="size-4 animate-spin" />}
           </div>
 
           <div className="max-h-[400px] overflow-y-auto p-2">
@@ -259,7 +259,7 @@ export function CommandPalette() {
                             : "hover:bg-accent/50"
                         }`}
                       >
-                        <div className="flex h-8 w-8 items-center justify-center rounded-md border bg-background">
+                        <div className="flex size-8 items-center justify-center rounded-md border bg-background">
                           {item.icon}
                         </div>
                         <div className="flex-1">

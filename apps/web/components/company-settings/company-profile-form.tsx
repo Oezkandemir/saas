@@ -1,24 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  CompanyProfile,
-  CompanyProfileInput,
-  createCompanyProfile,
-  updateCompanyProfile,
-} from "@/actions/company-profiles-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Building2, FileText, Landmark, Mail, Scale, Tag } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-
+import {
+  type CompanyProfile,
+  type CompanyProfileInput,
+  createCompanyProfile,
+  updateCompanyProfile,
+} from "@/actions/company-profiles-actions";
+import { Card, CardContent } from "@/components/ui/card";
+import { Form } from "@/components/ui/form";
+import { MultiStepForm, type Step } from "@/components/ui/multi-step-form";
 import { useAutoSave } from "@/lib/hooks/use-auto-save";
 import { logger } from "@/lib/logger";
-import { Form } from "@/components/ui/form";
-import { MultiStepForm, Step } from "@/components/ui/multi-step-form";
-import { Card, CardContent } from "@/components/ui/card";
 
 import {
   CompanyBankInfoStep,

@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -32,7 +32,7 @@ function Skeleton({
         "bg-muted",
         variantClasses[variant],
         animationClasses[animation],
-        className,
+        className
       )}
       {...props}
     />

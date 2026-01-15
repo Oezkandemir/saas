@@ -1,5 +1,5 @@
-import type { Document as DocumentType } from "@/actions/documents-actions";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import type { Document as DocumentType } from "@/actions/documents-actions";
 
 import type { CompanyInfo } from "./templates";
 
@@ -10,14 +10,14 @@ import type { CompanyInfo } from "./templates";
  */
 export async function generatePDFFromDocument(
   document: DocumentType,
-  companyInfo: CompanyInfo,
+  companyInfo: CompanyInfo
 ): Promise<Buffer> {
   // Helper functions
   const formatCurrency = (
     amount: number | null | undefined,
-    currency: string = "EUR",
+    currency: string = "EUR"
   ): string => {
-    if (amount == null || isNaN(amount)) {
+    if (amount == null || Number.isNaN(amount)) {
       return new Intl.NumberFormat("de-DE", {
         style: "currency",
         currency,
@@ -35,7 +35,7 @@ export async function generatePDFFromDocument(
     }
     try {
       const dateObj = typeof date === "string" ? new Date(date) : date;
-      if (isNaN(dateObj.getTime())) {
+      if (Number.isNaN(dateObj.getTime())) {
         return new Date().toLocaleDateString("de-DE");
       }
       return new Intl.DateTimeFormat("de-DE", {
@@ -43,7 +43,7 @@ export async function generatePDFFromDocument(
         month: "long",
         day: "numeric",
       }).format(dateObj);
-    } catch (error) {
+    } catch (_error) {
       return new Date().toLocaleDateString("de-DE");
     }
   };
@@ -91,7 +91,7 @@ export async function generatePDFFromDocument(
       color?: any;
       maxWidth?: number;
       align?: "left" | "center" | "right";
-    } = {},
+    } = {}
   ) => {
     // Handle null/undefined text
     const safeText = text || "";
@@ -177,7 +177,7 @@ export async function generatePDFFromDocument(
     {
       size: 10,
       color: rgb(0.42, 0.45, 0.51),
-    },
+    }
   );
   y -= 12;
   addTextToPage(companyInfo.country || "", MARGIN_LEFT, y, {
@@ -275,7 +275,7 @@ export async function generatePDFFromDocument(
     {
       size: 10,
       align: "right",
-    },
+    }
   );
 
   if (document.due_date && isInvoice) {
@@ -295,7 +295,7 @@ export async function generatePDFFromDocument(
         size: 10,
         font: helveticaBoldFont,
         align: "right",
-      },
+      }
     );
   }
 
@@ -321,7 +321,7 @@ export async function generatePDFFromDocument(
     {
       size: 10,
       color: rgb(0.22, 0.25, 0.31),
-    },
+    }
   );
   y -= 20;
 
@@ -470,7 +470,7 @@ export async function generatePDFFromDocument(
         {
           size: 11,
           align: "right",
-        },
+        }
       );
       addTextToPage(
         formatCurrency(item.quantity * item.unit_price),
@@ -480,7 +480,7 @@ export async function generatePDFFromDocument(
           size: 11,
           font: helveticaBoldFont,
           align: "right",
-        },
+        }
       );
 
       tableY -= itemHeight;
@@ -617,7 +617,7 @@ export async function generatePDFFromDocument(
       {
         size: 9,
         font: helveticaBoldFont,
-      },
+      }
     );
     addTextToPage("Zahlungsweise:", 300, y - 28, {
       size: 9,
@@ -636,7 +636,7 @@ export async function generatePDFFromDocument(
         size: 8,
         color: rgb(0.42, 0.45, 0.51),
         maxWidth: MARGIN_RIGHT - MARGIN_LEFT - 40,
-      },
+      }
     );
 
     y = paymentBoxY - 20;
@@ -658,7 +658,7 @@ export async function generatePDFFromDocument(
     {
       size: 10,
       color: rgb(0.22, 0.25, 0.31),
-    },
+    }
   );
   y -= 15;
   addTextToPage("Mit freundlichen Grüßen", MARGIN_LEFT, y, {
@@ -730,7 +730,7 @@ export async function generatePDFFromDocument(
           size: 8,
           color: rgb(0.42, 0.45, 0.51),
           align: "center",
-        },
+        }
       );
       footerYPos -= 10;
     }
@@ -745,7 +745,7 @@ export async function generatePDFFromDocument(
           size: 8,
           color: rgb(0.42, 0.45, 0.51),
           align: "center",
-        },
+        }
       );
       footerYPos -= 12;
     }
@@ -760,7 +760,7 @@ export async function generatePDFFromDocument(
         color: rgb(0.61, 0.64, 0.69), // #9ca3af
         maxWidth: MARGIN_RIGHT - MARGIN_LEFT,
         align: "center",
-      },
+      }
     );
   } else {
     // Footer fits on current page - always position at bottom (footerY is already calculated)
@@ -807,7 +807,7 @@ export async function generatePDFFromDocument(
           size: 8,
           color: rgb(0.42, 0.45, 0.51),
           align: "center",
-        },
+        }
       );
       footerYPos -= 10;
     }
@@ -822,7 +822,7 @@ export async function generatePDFFromDocument(
           size: 8,
           color: rgb(0.42, 0.45, 0.51),
           align: "center",
-        },
+        }
       );
       footerYPos -= 12;
     }
@@ -837,7 +837,7 @@ export async function generatePDFFromDocument(
         color: rgb(0.61, 0.64, 0.69), // #9ca3af
         maxWidth: MARGIN_RIGHT - MARGIN_LEFT,
         align: "center",
-      },
+      }
     );
   }
 

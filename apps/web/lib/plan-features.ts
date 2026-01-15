@@ -1,4 +1,4 @@
-import { checkPlanLimit, LimitType } from "@/lib/plan-limits";
+import { checkPlanLimit, type LimitType } from "@/lib/plan-limits";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 
 export interface PlanFeature {
@@ -23,7 +23,7 @@ export interface PlanFeaturesInfo {
  * Get all features and limits for the current user's plan
  */
 export async function getAllPlanFeatures(
-  userId: string,
+  userId: string
 ): Promise<PlanFeaturesInfo> {
   const subscriptionPlan = await getUserSubscriptionPlan(userId);
   const isPaid = subscriptionPlan.isPaid;
@@ -127,6 +127,3 @@ export async function getAllPlanFeatures(
     features,
   };
 }
-
-
-

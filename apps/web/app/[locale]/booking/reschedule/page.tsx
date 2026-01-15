@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { getBookingByToken } from "@/actions/scheduling/bookings-actions";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
 import { Calendar, Info, Loader2, XCircle } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale } from "next-intl";
-
+import { useEffect, useState } from "react";
+import { getBookingByToken } from "@/actions/scheduling/bookings-actions";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -15,10 +15,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Alert,
-  AlertDescription,
-} from "@/components/ui/alert";
 
 export default function RescheduleBookingPage() {
   const searchParams = useSearchParams();
@@ -45,13 +41,13 @@ export default function RescheduleBookingPage() {
           // Redirect to booking page to reschedule
           if (result.data.event_type) {
             router.push(
-              `/book/${result.data.host_user_id}/${result.data.event_type.slug}`,
+              `/book/${result.data.host_user_id}/${result.data.event_type.slug}`
             );
           }
         } else {
           setError("Buchung nicht gefunden");
         }
-      } catch (err) {
+      } catch (_err) {
         setError("Fehler beim Laden der Buchung");
       } finally {
         setLoading(false);
@@ -66,7 +62,7 @@ export default function RescheduleBookingPage() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="size-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -77,7 +73,7 @@ export default function RescheduleBookingPage() {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <XCircle className="h-5 w-5 text-red-500" />
+              <XCircle className="size-5 text-red-500" />
               Fehler
             </CardTitle>
           </CardHeader>
@@ -111,7 +107,7 @@ export default function RescheduleBookingPage() {
           {booking.event_type && (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <Calendar className="size-4 text-muted-foreground" />
                 <span className="font-semibold">
                   {booking.event_type.title}
                 </span>
@@ -128,7 +124,7 @@ export default function RescheduleBookingPage() {
           )}
 
           <Alert>
-            <Info className="h-4 w-4" />
+            <Info className="size-4" />
             <AlertDescription>
               Bitte stornieren Sie zuerst die aktuelle Buchung, bevor Sie einen
               neuen Termin buchen.

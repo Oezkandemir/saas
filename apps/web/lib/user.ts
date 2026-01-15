@@ -16,7 +16,7 @@ export const getUserById = getServerUserById;
 export const signUpWithEmailConfirmation = async (
   email: string,
   password: string,
-  name?: string,
+  name?: string
 ) => {
   try {
     const supabase = getSupabaseClient();

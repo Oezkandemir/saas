@@ -71,7 +71,7 @@ const getToc = () => (node, file) => {
 export type TableOfContents = Items;
 
 export async function getTableOfContents(
-  content: string,
+  content: string
 ): Promise<TableOfContents> {
   const result = await remark().use(getToc).process(content);
 
@@ -88,15 +88,15 @@ export function getTableOfContentsFromHTML(htmlContent: string): {
   // Create a temporary DOM parser (works in Node.js with jsdom-like environment)
   // For server-side rendering, we'll use a regex-based approach
   const headings: Array<{ level: number; title: string; id: string }> = [];
-  
+
   // Function to generate slug from text
   function slugify(text: string): string {
     return text
       .toLowerCase()
       .trim()
-      .replace(/[^\w\s-]/g, '') // Remove special characters
-      .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
-      .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+      .replace(/[^\w\s-]/g, "") // Remove special characters
+      .replace(/[\s_-]+/g, "-") // Replace spaces and underscores with hyphens
+      .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
   }
 
   // Extract headings and add IDs
@@ -108,38 +108,41 @@ export function getTableOfContentsFromHTML(htmlContent: string): {
 
   while ((match = headingRegex.exec(htmlContent)) !== null) {
     const level = parseInt(match[1], 10);
-    const attributes = match[2] || '';
+    const attributes = match[2] || "";
     const innerContent = match[3];
-    
+
     // Check if heading already has an ID
     const existingIdMatch = attributes.match(/id=["']([^"']+)["']/);
     let finalId: string;
-    
+
     if (existingIdMatch) {
       finalId = existingIdMatch[1];
     } else {
       // Generate new ID
-      const titleTextClean = innerContent.replace(/<[^>]*>/g, '').trim();
+      const titleTextClean = innerContent.replace(/<[^>]*>/g, "").trim();
       const id = slugify(titleTextClean) || `heading-${headingCounter++}`;
-      
+
       // Check if ID already exists, append number if needed
       let counter = 1;
       finalId = id;
-      while (headings.some(h => h.id === finalId) || processedHeadings.includes(finalId)) {
+      while (
+        headings.some((h) => h.id === finalId) ||
+        processedHeadings.includes(finalId)
+      ) {
         finalId = `${id}-${counter++}`;
       }
-      
+
       // Replace the heading with one that has an ID
       const headingTag = match[0];
       const newHeading = `<h${level}${attributes} id="${finalId}">${innerContent}</h${level}>`;
       contentWithIds = contentWithIds.replace(headingTag, newHeading);
     }
-    
+
     processedHeadings.push(finalId);
-    
+
     headings.push({
       level,
-      title: innerContent.replace(/<[^>]*>/g, '').trim(),
+      title: innerContent.replace(/<[^>]*>/g, "").trim(),
       id: finalId,
     });
   }

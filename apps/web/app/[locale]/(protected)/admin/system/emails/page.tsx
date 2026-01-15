@@ -1,15 +1,14 @@
+import { FileText } from "lucide-react";
 import { redirect } from "next/navigation";
+import { getLocale, setRequestLocale } from "next-intl/server";
 import {
   getEmailTemplates,
   getResendConfigStatus,
 } from "@/actions/admin-email-actions";
-import { FileText } from "lucide-react";
-import { getLocale, setRequestLocale } from "next-intl/server";
-
+import { EmailTemplates } from "@/components/admin/email-templates";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { EmailTemplates } from "@/components/admin/email-templates";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -40,7 +39,7 @@ export default async function SystemEmailsPage() {
     <UnifiedPageLayout
       title="E-Mail-Templates"
       description="Verwalten Sie E-Mail-Templates und Konfiguration"
-      icon={<FileText className="h-4 w-4 text-primary" />}
+      icon={<FileText className="size-4 text-primary" />}
       contentClassName="space-y-6 pb-10"
     >
       <EmailTemplates templates={templates} configStatus={configStatus} />
