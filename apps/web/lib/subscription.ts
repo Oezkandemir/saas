@@ -147,32 +147,55 @@ async function _getUserSubscriptionPlanInternal(
     for (const plan of pricingData) {
       if (plan.polarIds?.monthly === user.polarProductId) {
         userPlan = plan;
-        // Plan matched silently
+        logger.info(
+          `Plan matched: ${plan.title} (monthly) for product ID: ${user.polarProductId}`
+        );
         break;
       }
       if (plan.polarIds?.yearly === user.polarProductId) {
         userPlan = plan;
-        // Plan matched silently
+        logger.info(
+          `Plan matched: ${plan.title} (yearly) for product ID: ${user.polarProductId}`
+        );
         break;
       }
     }
 
     if (!userPlan && isPaid && user.polarProductId) {
+      // Log detailed error with all available information
+      const availableProductIds = pricingData.map((plan) => ({
+        planTitle: plan.title,
+        monthlyId: plan.polarIds?.monthly,
+        yearlyId: plan.polarIds?.yearly,
+      }));
+
       logger.error(
         "CRITICAL: No exact Polar product ID match found! This indicates a configuration mismatch.",
         {
+          userId,
+          userEmail,
           userProductId: user.polarProductId,
-          availableProductIds: pricingData.map((plan) => ({
-            planTitle: plan.title,
-            monthlyId: plan.polarIds?.monthly,
-            yearlyId: plan.polarIds?.yearly,
-          })),
+          userSubscriptionId: user.polarSubscriptionId,
+          userCustomerId: user.polarCustomerId,
+          availableProductIds,
+          // Check if product ID exists but doesn't match (case sensitivity, whitespace, etc.)
+          productIdComparison: {
+            userProductIdLength: user.polarProductId?.length,
+            userProductIdTrimmed: user.polarProductId?.trim(),
+            matchesFound: availableProductIds.filter(
+              (p) =>
+                p.monthlyId === user.polarProductId ||
+                p.yearlyId === user.polarProductId ||
+                p.monthlyId?.trim() === user.polarProductId?.trim() ||
+                p.yearlyId?.trim() === user.polarProductId?.trim()
+            ),
+          },
         }
       );
       // Don't assign a fallback plan - this is a configuration error
       // Return free plan instead to prevent showing wrong plan
       logger.warn(
-        "Returning free plan due to product ID mismatch. Please check configuration."
+        `Returning free plan due to product ID mismatch for user ${userId}. User has product ID "${user.polarProductId}" but it doesn't match any configured plan IDs. Please check environment variables NEXT_PUBLIC_POLAR_ENTERPRISE_MONTHLY_PLAN_ID and NEXT_PUBLIC_POLAR_ENTERPRISE_YEARLY_PLAN_ID.`
       );
     }
 

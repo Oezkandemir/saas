@@ -91,12 +91,44 @@ export async function syncPolarSubscriptionFromCheckout(
         const subscription = await subscriptionResponse.json();
 
         // Update user with Polar subscription data
-        const currentPeriodEnd = subscription.current_period_end
-          ? new Date(subscription.current_period_end * 1000).toISOString()
-          : null;
-        const currentPeriodStart = subscription.current_period_start
-          ? new Date(subscription.current_period_start * 1000).toISOString()
-          : null;
+        // Handle both Unix timestamp (number) and ISO string formats
+        let currentPeriodEnd: string | null = null;
+        if (subscription.current_period_end) {
+          try {
+            let date: Date;
+            if (typeof subscription.current_period_end === "string") {
+              date = new Date(subscription.current_period_end);
+            } else if (typeof subscription.current_period_end === "number") {
+              date = new Date(subscription.current_period_end * 1000);
+            } else {
+              date = new Date(subscription.current_period_end);
+            }
+            if (!Number.isNaN(date.getTime())) {
+              currentPeriodEnd = date.toISOString();
+            }
+          } catch (error) {
+            logger.error("Error converting current_period_end", error);
+          }
+        }
+
+        let currentPeriodStart: string | null = null;
+        if (subscription.current_period_start) {
+          try {
+            let date: Date;
+            if (typeof subscription.current_period_start === "string") {
+              date = new Date(subscription.current_period_start);
+            } else if (typeof subscription.current_period_start === "number") {
+              date = new Date(subscription.current_period_start * 1000);
+            } else {
+              date = new Date(subscription.current_period_start);
+            }
+            if (!Number.isNaN(date.getTime())) {
+              currentPeriodStart = date.toISOString();
+            }
+          } catch (error) {
+            logger.error("Error converting current_period_start", error);
+          }
+        }
 
         const { error: userUpdateError } = await supabaseAdmin
           .from("users")

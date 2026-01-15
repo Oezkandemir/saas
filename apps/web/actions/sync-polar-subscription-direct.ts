@@ -336,17 +336,29 @@ export async function syncPolarSubscriptionDirect(): Promise<{
     const subscriptionCustomerId = subscription.customer_id;
     const status = subscription.status; // active, canceled, etc.
 
-    // Convert timestamps to ISO strings, handling null/undefined/invalid values safely
+    // Convert timestamps to ISO strings, handling both Unix timestamps and ISO strings
     let currentPeriodEnd: string | null = null;
     if (subscription.current_period_end) {
       try {
-        const timestamp = subscription.current_period_end * 1000;
-        const date = new Date(timestamp);
+        let date: Date;
+        
+        // Handle both Unix timestamp (number) and ISO string formats
+        if (typeof subscription.current_period_end === "string") {
+          // Already an ISO string, parse it directly
+          date = new Date(subscription.current_period_end);
+        } else if (typeof subscription.current_period_end === "number") {
+          // Unix timestamp in seconds, convert to milliseconds
+          date = new Date(subscription.current_period_end * 1000);
+        } else {
+          throw new Error("Invalid timestamp format");
+        }
+
         if (!Number.isNaN(date.getTime())) {
           currentPeriodEnd = date.toISOString();
         } else {
           logger.warn("Invalid current_period_end timestamp", {
             value: subscription.current_period_end,
+            type: typeof subscription.current_period_end,
           });
         }
       } catch (error) {
@@ -357,13 +369,25 @@ export async function syncPolarSubscriptionDirect(): Promise<{
     let currentPeriodStart: string | null = null;
     if (subscription.current_period_start) {
       try {
-        const timestamp = subscription.current_period_start * 1000;
-        const date = new Date(timestamp);
+        let date: Date;
+        
+        // Handle both Unix timestamp (number) and ISO string formats
+        if (typeof subscription.current_period_start === "string") {
+          // Already an ISO string, parse it directly
+          date = new Date(subscription.current_period_start);
+        } else if (typeof subscription.current_period_start === "number") {
+          // Unix timestamp in seconds, convert to milliseconds
+          date = new Date(subscription.current_period_start * 1000);
+        } else {
+          throw new Error("Invalid timestamp format");
+        }
+
         if (!Number.isNaN(date.getTime())) {
           currentPeriodStart = date.toISOString();
         } else {
           logger.warn("Invalid current_period_start timestamp", {
             value: subscription.current_period_start,
+            type: typeof subscription.current_period_start,
           });
         }
       } catch (error) {
