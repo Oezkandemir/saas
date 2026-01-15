@@ -3,14 +3,21 @@
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import {
+  Archive,
   ChevronLeft,
   ChevronRight,
   Loader2,
   Mail,
+  MailOpen,
   RefreshCw,
+  RotateCcw,
+  Search,
   Star,
+  Trash2,
+  X,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   getInboundEmails,
@@ -18,10 +25,20 @@ import {
   markEmailAsRead,
   markEmailAsUnread,
   deleteInboundEmail,
+  toggleEmailStar,
+  bulkDelete,
+  bulkMarkAsRead,
+  bulkMarkAsUnread,
+  bulkArchive,
+  bulkToggleStar,
+  bulkRestore,
+  searchInboundEmails,
+  restoreDeletedEmail,
 } from "@/actions/inbound-email-actions";
 import { getSupabaseClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -29,22 +46,45 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { InboundEmailDetail } from "./inbound-email-detail";
 import { InboundEmailReplyForm } from "./inbound-email-reply-form";
 
-type FilterType = "all" | "unread" | "read";
+type FilterType = "all" | "unread" | "read" | "starred" | "archived" | "deleted";
 
 export function InboundEmailsInbox() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  // Helper function to get filter from URL query parameter
+  const getFilterFromUrl = (): FilterType => {
+    const filterParam = searchParams.get("filter");
+    // Map URL filter values to component filter values
+    if (filterParam === "trash") return "deleted";
+    if (filterParam === "unread" || filterParam === "read" || filterParam === "starred" || filterParam === "archived" || filterParam === "deleted") {
+      return filterParam as FilterType;
+    }
+    return "all";
+  };
+  
   const [emails, setEmails] = useState<InboundEmail[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [filter, setFilter] = useState<FilterType>("all");
+  const [filter, setFilter] = useState<FilterType>(getFilterFromUrl());
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [selectedEmailId, setSelectedEmailId] = useState<string | null>(null);
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [showDetail, setShowDetail] = useState(false); // For mobile toggle
   const [selectedEmails, setSelectedEmails] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+  const [focusedEmailIndex, setFocusedEmailIndex] = useState<number | null>(null);
   const limit = 50;
   const loadEmailsRef = useRef<((silent?: boolean) => Promise<void>) | null>(null);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -56,11 +96,19 @@ export function InboundEmailsInbox() {
       setIsLoading(true);
     }
     try {
-      const result = await getInboundEmails({
-        page,
-        limit,
-        filter,
-      });
+      // Use search if query is provided, otherwise use regular getInboundEmails
+      const result = searchQuery.trim()
+        ? await searchInboundEmails({
+            query: searchQuery,
+            page,
+            limit,
+            filter,
+          })
+        : await getInboundEmails({
+            page,
+            limit,
+            filter,
+          });
 
       if (result.success && result.data) {
         const newCount = result.data.total;
@@ -96,12 +144,38 @@ export function InboundEmailsInbox() {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [page, limit, filter]);
+  }, [page, limit, filter, searchQuery]);
 
   // Keep ref updated
   useEffect(() => {
     loadEmailsRef.current = loadEmails;
   }, [loadEmails]);
+
+  // Sync filter with URL query parameter when URL changes (e.g., from sidebar navigation)
+  useEffect(() => {
+    const urlFilter = getFilterFromUrl();
+    if (urlFilter !== filter) {
+      setFilter(urlFilter);
+      setPage(1); // Reset to first page when filter changes
+    }
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Update URL when filter changes (e.g., from dropdown)
+  useEffect(() => {
+    const urlFilter = getFilterFromUrl();
+    if (filter !== urlFilter) {
+      const params = new URLSearchParams(searchParams.toString());
+      if (filter === "all") {
+        params.delete("filter");
+      } else if (filter === "deleted") {
+        params.set("filter", "trash"); // Use "trash" in URL for compatibility with sidebar links
+      } else {
+        params.set("filter", filter);
+      }
+      const newUrl = params.toString() ? `/admin/emails?${params.toString()}` : "/admin/emails";
+      router.replace(newUrl, { scroll: false });
+    }
+  }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     loadEmails();
@@ -238,6 +312,149 @@ export function InboundEmailsInbox() {
   // Rely on Supabase Realtime for new emails instead
   // Users can manually sync using the SyncAllEmailsButton if needed
 
+  // Keyboard Shortcuts (Gmail-style)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't handle shortcuts when typing in input/textarea
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      // j/k - Navigate up/down through emails
+      if (e.key === "j" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        if (emails.length > 0 && !showDetail) {
+          const currentIndex = focusedEmailIndex !== null ? focusedEmailIndex : -1;
+          const nextIndex = currentIndex < emails.length - 1 ? currentIndex + 1 : 0;
+          const nextEmail = emails[nextIndex];
+          if (nextEmail) {
+            setFocusedEmailIndex(nextIndex);
+            setSelectedEmailId(nextEmail.id);
+          }
+        }
+      } else if (e.key === "k" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        if (emails.length > 0 && !showDetail) {
+          const currentIndex = focusedEmailIndex !== null ? focusedEmailIndex : emails.length;
+          const prevIndex = currentIndex > 0 ? currentIndex - 1 : emails.length - 1;
+          const prevEmail = emails[prevIndex];
+          if (prevEmail) {
+            setFocusedEmailIndex(prevIndex);
+            setSelectedEmailId(prevEmail.id);
+          }
+        }
+      }
+
+      // Enter - Open selected email
+      if (e.key === "Enter" && !e.ctrlKey && !e.metaKey && !showDetail) {
+        e.preventDefault();
+        if (selectedEmailId) {
+          setShowDetail(true);
+          setShowReplyForm(false);
+        }
+      }
+
+      // x - Toggle selection of current email
+      if (e.key === "x" && !e.ctrlKey && !e.metaKey && !showDetail) {
+        e.preventDefault();
+        if (selectedEmailId) {
+          setSelectedEmails((prev) => {
+            const next = new Set(prev);
+            if (next.has(selectedEmailId)) {
+              next.delete(selectedEmailId);
+            } else {
+              next.add(selectedEmailId);
+            }
+            return next;
+          });
+        }
+      }
+
+      // u - Return to list from detail view
+      if (e.key === "u" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        if (showDetail) {
+          setShowDetail(false);
+          setSelectedEmailId(null);
+          setShowReplyForm(false);
+        }
+      }
+
+      // # - Delete selected email(s)
+      if (e.key === "#" && !e.ctrlKey && !e.metaKey && !showDetail) {
+        e.preventDefault();
+        if (selectedEmails.size > 0) {
+          const ids = Array.from(selectedEmails);
+          if (confirm(`Möchten Sie ${ids.length} Email${ids.length !== 1 ? "s" : ""} wirklich löschen?`)) {
+            handleBulkDelete();
+          }
+        } else if (selectedEmailId) {
+          if (confirm("Möchten Sie diese Email wirklich löschen?")) {
+            handleDelete(selectedEmailId);
+          }
+        }
+      }
+
+      // s - Toggle star
+      if (e.key === "s" && !e.ctrlKey && !e.metaKey && !showDetail) {
+        e.preventDefault();
+        if (selectedEmailId) {
+          const email = emails.find((e) => e.id === selectedEmailId);
+          if (email) {
+            handleToggleStar(email.id, email.is_starred || false);
+          }
+        }
+      }
+
+      // / - Focus search
+      if (e.key === "/" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setShowSearch(true);
+      }
+
+      // Escape - Close search or detail view
+      if (e.key === "Escape") {
+        if (showSearch) {
+          setShowSearch(false);
+          setSearchQuery("");
+        } else if (showDetail) {
+          setShowDetail(false);
+          setSelectedEmailId(null);
+          setShowReplyForm(false);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [
+    emails,
+    focusedEmailIndex,
+    selectedEmailId,
+    selectedEmails,
+    showDetail,
+    showSearch,
+    showReplyForm,
+  ]);
+
+  // Debounce search query
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      loadEmails(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Load selected email when selection changes
   useEffect(() => {
     if (selectedEmailId && emails.length > 0) {
@@ -309,6 +526,84 @@ export function InboundEmailsInbox() {
     }
   };
 
+  const handleToggleStar = async (id: string, currentStarStatus: boolean) => {
+    // Optimistic update
+    setEmails((prev) =>
+      prev.map((email) =>
+        email.id === id
+          ? { ...email, is_starred: !currentStarStatus }
+          : email
+      )
+    );
+
+    try {
+      const result = await toggleEmailStar(id);
+      if (!result.success) {
+        // Revert on error
+        setEmails((prev) =>
+          prev.map((email) =>
+            email.id === id ? { ...email, is_starred: currentStarStatus } : email
+          )
+        );
+        toast.error(result.error || "Fehler beim Markieren");
+      }
+    } catch (error) {
+      // Revert on error
+      setEmails((prev) =>
+        prev.map((email) =>
+          email.id === id ? { ...email, is_starred: currentStarStatus } : email
+        )
+      );
+      toast.error("Fehler beim Markieren der Email");
+    }
+  };
+
+  const handleRestore = async (id: string) => {
+    // Store email for potential revert
+    const emailToRestore = emails.find((e) => e.id === id);
+    
+    // Optimistic update - mark as not deleted
+    setEmails((prev) =>
+      prev.map((email) =>
+        email.id === id ? { ...email, is_deleted: false, deleted_at: null } : email
+      )
+    );
+
+    try {
+      const result = await restoreDeletedEmail(id);
+      if (!result.success) {
+        // Revert on error
+        if (emailToRestore) {
+          setEmails((prev) =>
+            prev.map((email) =>
+              email.id === id
+                ? { ...email, is_deleted: true, deleted_at: emailToRestore.deleted_at }
+                : email
+            )
+          );
+        }
+        toast.error(result.error || "Fehler beim Wiederherstellen");
+      } else {
+        toast.success("Email wiederhergestellt");
+        // Remove from deleted list
+        setEmails((prev) => prev.filter((email) => email.id !== id));
+        setTotal((prev) => Math.max(0, prev - 1));
+      }
+    } catch (error) {
+      // Revert on error
+      if (emailToRestore) {
+        setEmails((prev) =>
+          prev.map((email) =>
+            email.id === id
+              ? { ...email, is_deleted: true, deleted_at: emailToRestore.deleted_at }
+              : email
+          )
+        );
+      }
+      toast.error("Fehler beim Wiederherstellen der Email");
+    }
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm("Möchten Sie diese Email wirklich löschen?")) {
       return;
@@ -363,6 +658,226 @@ export function InboundEmailsInbox() {
     await loadEmails(false); // Not silent - show loading state
   };
 
+  const handleBulkMarkAsRead = async () => {
+    const ids = Array.from(selectedEmails);
+    if (ids.length === 0) return;
+
+    // Optimistic update
+    setEmails((prev) =>
+      prev.map((email) =>
+        selectedEmails.has(email.id) ? { ...email, is_read: true } : email
+      )
+    );
+
+    try {
+      const result = await bulkMarkAsRead(ids);
+      if (result.success) {
+        toast.success(`${ids.length} Email${ids.length !== 1 ? "s" : ""} als gelesen markiert`);
+        setSelectedEmails(new Set());
+      } else {
+        // Revert on error
+        loadEmails();
+        toast.error(result.error || "Fehler beim Markieren");
+      }
+    } catch (error) {
+      loadEmails();
+      toast.error("Fehler beim Markieren der Emails");
+    }
+  };
+
+  const handleBulkMarkAsUnread = async () => {
+    const ids = Array.from(selectedEmails);
+    if (ids.length === 0) return;
+
+    // Optimistic update
+    setEmails((prev) =>
+      prev.map((email) =>
+        selectedEmails.has(email.id) ? { ...email, is_read: false } : email
+      )
+    );
+
+    try {
+      const result = await bulkMarkAsUnread(ids);
+      if (result.success) {
+        toast.success(`${ids.length} Email${ids.length !== 1 ? "s" : ""} als ungelesen markiert`);
+        setSelectedEmails(new Set());
+      } else {
+        // Revert on error
+        loadEmails();
+        toast.error(result.error || "Fehler beim Markieren");
+      }
+    } catch (error) {
+      loadEmails();
+      toast.error("Fehler beim Markieren der Emails");
+    }
+  };
+
+  const handleBulkToggleStar = async () => {
+    const ids = Array.from(selectedEmails);
+    if (ids.length === 0) return;
+
+    // Determine if we should star or unstar (check first selected email)
+    const firstEmail = emails.find((e) => e.id === ids[0]);
+    const shouldStar = !firstEmail?.is_starred;
+
+    // Optimistic update
+    setEmails((prev) =>
+      prev.map((email) =>
+        selectedEmails.has(email.id)
+          ? { ...email, is_starred: shouldStar }
+          : email
+      )
+    );
+
+    try {
+      const result = await bulkToggleStar(ids, shouldStar);
+      if (result.success) {
+        toast.success(
+          `${ids.length} Email${ids.length !== 1 ? "s" : ""} ${shouldStar ? "markiert" : "Markierung entfernt"}`
+        );
+        setSelectedEmails(new Set());
+      } else {
+        // Revert on error
+        loadEmails();
+        toast.error(result.error || "Fehler beim Markieren");
+      }
+    } catch (error) {
+      loadEmails();
+      toast.error("Fehler beim Markieren der Emails");
+    }
+  };
+
+  const handleBulkArchive = async () => {
+    const ids = Array.from(selectedEmails);
+    if (ids.length === 0) return;
+
+    // Optimistic update
+    setEmails((prev) =>
+      prev.map((email) =>
+        selectedEmails.has(email.id)
+          ? { ...email, is_archived: true }
+          : email
+      )
+    );
+
+    try {
+      const result = await bulkArchive(ids);
+      if (result.success) {
+        toast.success(`${ids.length} Email${ids.length !== 1 ? "s" : ""} archiviert`);
+        const archivedIds = new Set(ids);
+        setSelectedEmails(new Set());
+        // Remove archived emails from list if not viewing archived filter
+        if (filter !== "archived") {
+          setEmails((prev) => prev.filter((email) => !archivedIds.has(email.id)));
+          setTotal((prev) => Math.max(0, prev - ids.length));
+        }
+      } else {
+        // Revert on error
+        loadEmails();
+        toast.error(result.error || "Fehler beim Archivieren");
+      }
+    } catch (error) {
+      loadEmails();
+      toast.error("Fehler beim Archivieren der Emails");
+    }
+  };
+
+  const handleBulkRestore = async () => {
+    const ids = Array.from(selectedEmails);
+    if (ids.length === 0) return;
+
+    // Store emails for potential revert
+    const emailsToRestore = emails.filter((e) => selectedEmails.has(e.id));
+
+    // Optimistic update - mark as not deleted
+    setEmails((prev) =>
+      prev.map((email) =>
+        selectedEmails.has(email.id)
+          ? { ...email, is_deleted: false, deleted_at: null }
+          : email
+      )
+    );
+
+    const restoredIds = new Set(ids);
+    setSelectedEmails(new Set());
+
+    try {
+      const result = await bulkRestore(ids);
+      if (!result.success) {
+        // Revert on error
+        setEmails((prev) =>
+          prev.map((email) => {
+            const original = emailsToRestore.find((e) => e.id === email.id);
+            return original ? original : email;
+          })
+        );
+        toast.error(result.error || "Fehler beim Wiederherstellen");
+      } else {
+        toast.success(`${ids.length} Email${ids.length !== 1 ? "s" : ""} wiederhergestellt`);
+        // Remove restored emails from deleted list
+        setEmails((prev) => prev.filter((email) => !restoredIds.has(email.id)));
+        setTotal((prev) => Math.max(0, prev - ids.length));
+      }
+    } catch (error) {
+      // Revert on error
+      setEmails((prev) =>
+        prev.map((email) => {
+          const original = emailsToRestore.find((e) => e.id === email.id);
+          return original ? original : email;
+        })
+      );
+      toast.error("Fehler beim Wiederherstellen der Emails");
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    const ids = Array.from(selectedEmails);
+    if (ids.length === 0) return;
+
+    if (!confirm(`Möchten Sie ${ids.length} Email${ids.length !== 1 ? "s" : ""} wirklich löschen?`)) {
+      return;
+    }
+
+    // Store emails for potential revert
+    const emailsToDelete = emails.filter((e) => selectedEmails.has(e.id));
+
+    // Optimistic update - remove from list
+    setEmails((prev) => prev.filter((email) => !selectedEmails.has(email.id)));
+    setTotal((prev) => Math.max(0, prev - ids.length));
+    setSelectedEmails(new Set());
+
+    try {
+      const result = await bulkDelete(ids);
+      if (!result.success) {
+        // Revert on error
+        setEmails((prev) => {
+          const newEmails = [...prev, ...emailsToDelete];
+          return newEmails.sort(
+            (a, b) =>
+              new Date(b.received_at).getTime() -
+              new Date(a.received_at).getTime()
+          );
+        });
+        setTotal((prev) => prev + ids.length);
+        toast.error(result.error || "Fehler beim Löschen");
+      } else {
+        toast.success(`${ids.length} Email${ids.length !== 1 ? "s" : ""} gelöscht`);
+      }
+    } catch (error) {
+      // Revert on error
+      setEmails((prev) => {
+        const newEmails = [...prev, ...emailsToDelete];
+        return newEmails.sort(
+          (a, b) =>
+            new Date(b.received_at).getTime() -
+            new Date(a.received_at).getTime()
+        );
+      });
+      setTotal((prev) => prev + ids.length);
+      toast.error("Fehler beim Löschen der Emails");
+    }
+  };
+
   const selectedEmail = emails.find((e) => e.id === selectedEmailId);
   const totalPages = Math.ceil(total / limit);
 
@@ -408,21 +923,138 @@ export function InboundEmailsInbox() {
                 setPage(1);
               }}
             >
-              <SelectTrigger className="h-8 w-[120px] text-xs">
+              <SelectTrigger className="h-8 w-[140px] text-xs">
                 <SelectValue>
                   {filter === "all"
                     ? "Alle"
                     : filter === "unread"
                       ? "Ungelesen"
-                      : "Gelesen"}
+                      : filter === "read"
+                        ? "Gelesen"
+                        : filter === "starred"
+                          ? "Markiert"
+                          : filter === "archived"
+                            ? "Archiviert"
+                            : filter === "deleted"
+                              ? "Gelöscht"
+                              : "Alle"}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Alle</SelectItem>
                 <SelectItem value="unread">Ungelesen</SelectItem>
                 <SelectItem value="read">Gelesen</SelectItem>
+                <SelectItem value="starred">Markiert</SelectItem>
+                <SelectItem value="archived">Archiviert</SelectItem>
+                <SelectItem value="deleted">Gelöscht</SelectItem>
               </SelectContent>
             </Select>
+
+            {/* Search Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowSearch(!showSearch)}
+              className="size-8 p-0"
+            >
+              {showSearch ? (
+                <X className="size-4" />
+              ) : (
+                <Search className="size-4" />
+              )}
+            </Button>
+
+            {/* Bulk Actions Toolbar - Show when emails are selected */}
+            {selectedEmails.size > 0 && (
+              <div className="flex items-center gap-1 ml-4 pl-4 border-l">
+                <span className="text-xs text-muted-foreground mr-2">
+                  {selectedEmails.size} ausgewählt
+                </span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="size-7 p-0"
+                        onClick={() => handleBulkMarkAsRead()}
+                      >
+                        <MailOpen className="size-3.5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Als gelesen markieren</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="size-7 p-0"
+                        onClick={() => handleBulkMarkAsUnread()}
+                      >
+                        <Mail className="size-3.5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Als ungelesen markieren</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="size-7 p-0"
+                        onClick={() => handleBulkToggleStar()}
+                      >
+                        <Star className="size-3.5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Markieren</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="size-7 p-0"
+                        onClick={() => handleBulkArchive()}
+                      >
+                        <Archive className="size-3.5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Archivieren</TooltipContent>
+                  </Tooltip>
+                  {filter === "deleted" ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="size-7 p-0"
+                          onClick={() => handleBulkRestore()}
+                        >
+                          <RotateCcw className="size-3.5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Wiederherstellen</TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="size-7 p-0 text-destructive hover:text-destructive"
+                          onClick={() => handleBulkDelete()}
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Löschen</TooltipContent>
+                    </Tooltip>
+                  )}
+                </TooltipProvider>
+              </div>
+            )}
           </div>
           {totalPages > 1 && (
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -452,6 +1084,39 @@ export function InboundEmailsInbox() {
           )}
         </div>
 
+        {/* Search Bar - Show when search is active */}
+        {showSearch && (
+          <div className="px-4 py-2 border-b bg-background">
+            <div className="flex items-center gap-2">
+              <Search className="size-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Emails durchsuchen..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setPage(1);
+                }}
+                className="h-8 text-sm"
+                autoFocus
+              />
+              {searchQuery && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setShowSearch(false);
+                  }}
+                  className="size-8 p-0"
+                >
+                  <X className="size-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Email List */}
         <div className="flex-1 overflow-y-auto">
           {isLoading && emails.length === 0 ? (
@@ -479,7 +1144,7 @@ export function InboundEmailsInbox() {
                   <div
                     key={email.id}
                     onClick={(e) => {
-                      // Don't open if clicking checkbox or star
+                      // Don't open if clicking checkbox, star, or action buttons
                       if (
                         (e.target as HTMLElement).closest(
                           'button, [role="checkbox"]'
@@ -487,13 +1152,16 @@ export function InboundEmailsInbox() {
                       ) {
                         return;
                       }
+                      const index = emails.findIndex((e) => e.id === email.id);
                       setSelectedEmailId(email.id);
                       setShowReplyForm(false);
                       setShowDetail(true);
+                      setFocusedEmailIndex(index);
                     }}
                     className={`
-                      flex items-center gap-2 p-2 cursor-pointer hover:bg-muted/30 transition-colors
+                      group flex items-center gap-2 p-2 cursor-pointer hover:bg-muted/30 transition-colors
                       ${isSelected ? "bg-muted/50" : ""}
+                      ${focusedEmailIndex === emails.findIndex((e) => e.id === email.id) ? "ring-2 ring-primary/20" : ""}
                     `}
                   >
                     {/* Checkbox */}
@@ -533,11 +1201,17 @@ export function InboundEmailsInbox() {
                     <div
                       onClick={(e) => {
                         e.stopPropagation();
-                        // TODO: Implement star functionality
+                        handleToggleStar(email.id, email.is_starred || false);
                       }}
-                      className="shrink-0"
+                      className="shrink-0 cursor-pointer"
                     >
-                      <Star className="size-4 text-muted-foreground hover:text-yellow-500 transition-colors" />
+                      <Star
+                        className={`size-4 transition-colors ${
+                          email.is_starred
+                            ? "fill-yellow-500 text-yellow-500"
+                            : "text-muted-foreground hover:text-yellow-500"
+                        }`}
+                      />
                     </div>
 
                     {/* Email Content - Gmail Style Layout */}
@@ -582,6 +1256,80 @@ export function InboundEmailsInbox() {
                         })}
                       </span>
                     </div>
+
+                    {/* Action Icons - Show on Hover */}
+                    <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <TooltipProvider>
+                        {/* Mark as Read/Unread */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="size-7 p-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (isUnread) {
+                                  handleMarkAsRead(email.id);
+                                } else {
+                                  handleMarkAsUnread(email.id);
+                                }
+                              }}
+                            >
+                              {isUnread ? (
+                                <MailOpen className="size-3.5" />
+                              ) : (
+                                <Mail className="size-3.5" />
+                              )}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {isUnread ? "Als gelesen markieren" : "Als ungelesen markieren"}
+                          </TooltipContent>
+                        </Tooltip>
+
+                        {/* Delete or Restore - depending on filter */}
+                        {filter === "deleted" ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="size-7 p-0"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleRestore(email.id);
+                                }}
+                              >
+                                <RotateCcw className="size-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Wiederherstellen
+                            </TooltipContent>
+                          </Tooltip>
+                        ) : (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="size-7 p-0 text-destructive hover:text-destructive"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(email.id);
+                                }}
+                              >
+                                <Trash2 className="size-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Löschen
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                      </TooltipProvider>
+                    </div>
                   </div>
                 );
               })}
@@ -616,6 +1364,14 @@ export function InboundEmailsInbox() {
                 emailId={selectedEmail.id}
                 initialEmail={selectedEmail}
                 onMarkAsRead={loadEmails}
+                onDelete={() => {
+                  // Navigate back to list when email is deleted
+                  setShowDetail(false);
+                  setSelectedEmailId(null);
+                  setShowReplyForm(false);
+                  // Reload emails to reflect deletion
+                  loadEmails();
+                }}
               />
             </div>
             {showReplyForm && selectedEmail && (
@@ -623,6 +1379,8 @@ export function InboundEmailsInbox() {
                 <InboundEmailReplyForm
                   inboundEmailId={selectedEmail.id}
                   originalSubject={selectedEmail.subject || "(Kein Betreff)"}
+                  originalFromEmail={selectedEmail.from_email}
+                  originalFromName={selectedEmail.from_name}
                   onSuccess={() => {
                     setShowReplyForm(false);
                     loadEmails();

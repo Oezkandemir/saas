@@ -10,7 +10,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Fragment, useEffect, useState } from "react";
 import { getUserPlan } from "@/actions/get-user-plan";
@@ -48,7 +48,52 @@ function DashboardSidebarContent({
   showBackButton = false,
 }: DashboardSidebarProps) {
   const path = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
+  
+  // Helper function to check if a link is active (including query params)
+  const isLinkActive = (href: string): boolean => {
+    if (!href) return false;
+    
+    // Parse href to get path and query params
+    const [hrefPath, hrefQuery] = href.split("?");
+    const currentPath = path || "";
+    const currentParams = searchParams;
+    
+    // Ensure hrefPath exists before processing
+    if (!hrefPath) return false;
+    
+    // Check if paths match (handle locale prefixes like /de/, /en/)
+    const normalizedHrefPath = hrefPath.replace(/^\/[a-z]{2}/, "");
+    const normalizedCurrentPath = currentPath.replace(/^\/[a-z]{2}/, "");
+    
+    if (normalizedHrefPath !== normalizedCurrentPath) return false;
+    
+    // If href has query params, check if they match
+    if (hrefQuery) {
+      const hrefParams = new URLSearchParams(hrefQuery);
+      
+      // Check if all href params match current params
+      let allMatch = true;
+      Array.from(hrefParams.keys()).forEach((key) => {
+        const value = hrefParams.get(key);
+        if (value && currentParams.get(key) !== value) {
+          allMatch = false;
+        }
+      });
+      return allMatch;
+    }
+    
+    // If href has no query params, check if current URL also has no relevant query params
+    // For email links, we want to match even if there are other query params
+    if (normalizedHrefPath === "/admin/emails" && !hrefQuery) {
+      // Base emails page is active if no filter is set or filter is "all"
+      const filter = currentParams.get("filter");
+      return !filter || filter === "all";
+    }
+    
+    return true;
+  };
   // Desktop sidebar is always expanded by default (only shown on lg+ screens, 1024px+)
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [userPlan, setUserPlan] = useState<{
@@ -267,8 +312,8 @@ function DashboardSidebarContent({
                               className={cn(
                                 // Base Styles - Kompakte Spacing, klare Active States
                                 "flex items-center gap-3 rounded-md p-2 text-sm font-medium transition-colors",
-                                // Active State - Klar sichtbar
-                                path === item.href
+                                // Active State - Klar sichtbar (check with query params)
+                                isLinkActive(item.href)
                                   ? "bg-primary/10 text-primary font-semibold border border-primary/20"
                                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                                 // Disabled State
@@ -302,8 +347,8 @@ function DashboardSidebarContent({
                                   className={cn(
                                     // Base Styles für Collapsed Sidebar
                                     "flex items-center gap-3 rounded-md py-2 text-sm font-medium transition-colors relative",
-                                    // Active State - Klar sichtbar
-                                    path === item.href
+                                    // Active State - Klar sichtbar (check with query params)
+                                    isLinkActive(item.href)
                                       ? "bg-primary/10 text-primary"
                                       : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                                     // Disabled State
@@ -450,7 +495,52 @@ function MobileSheetSidebarContent({
   showBackButton = false,
 }: DashboardSidebarProps) {
   const path = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
+  
+  // Helper function to check if a link is active (including query params)
+  const isLinkActive = (href: string): boolean => {
+    if (!href) return false;
+    
+    // Parse href to get path and query params
+    const [hrefPath, hrefQuery] = href.split("?");
+    const currentPath = path || "";
+    const currentParams = searchParams;
+    
+    // Ensure hrefPath exists before processing
+    if (!hrefPath) return false;
+    
+    // Check if paths match (handle locale prefixes like /de/, /en/)
+    const normalizedHrefPath = hrefPath.replace(/^\/[a-z]{2}/, "");
+    const normalizedCurrentPath = currentPath.replace(/^\/[a-z]{2}/, "");
+    
+    if (normalizedHrefPath !== normalizedCurrentPath) return false;
+    
+    // If href has query params, check if they match
+    if (hrefQuery) {
+      const hrefParams = new URLSearchParams(hrefQuery);
+      
+      // Check if all href params match current params
+      let allMatch = true;
+      Array.from(hrefParams.keys()).forEach((key) => {
+        const value = hrefParams.get(key);
+        if (value && currentParams.get(key) !== value) {
+          allMatch = false;
+        }
+      });
+      return allMatch;
+    }
+    
+    // If href has no query params, check if current URL also has no relevant query params
+    // For email links, we want to match even if there are other query params
+    if (normalizedHrefPath === "/admin/emails" && !hrefQuery) {
+      // Base emails page is active if no filter is set or filter is "all"
+      const filter = currentParams.get("filter");
+      return !filter || filter === "all";
+    }
+    
+    return true;
+  };
   const [open, setOpen] = useState(false);
   const [userPlan, setUserPlan] = useState<{
     title: string;
@@ -638,7 +728,7 @@ function MobileSheetSidebarContent({
                             prefetch={!item.disabled}
                             className={cn(
                               "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted",
-                              path === item.href
+                              isLinkActive(item.href)
                                 ? "bg-muted"
                                 : "text-muted-foreground hover:text-accent-foreground",
                               item.disabled &&

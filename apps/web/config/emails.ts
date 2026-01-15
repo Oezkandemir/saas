@@ -10,24 +10,19 @@ export const emailSidebarLinks: SidebarNavItem[] = [
         title: "Posteingang",
       },
       {
+        href: "/admin/emails?filter=unread",
+        icon: "mail",
+        title: "Ungelesen",
+      },
+      {
         href: "/admin/emails?filter=starred",
         icon: "star",
         title: "Markiert",
       },
       {
-        href: "/admin/emails?filter=snoozed",
-        icon: "clock",
-        title: "Zurückgestellt",
-      },
-      {
         href: "/admin/emails?filter=sent",
         icon: "send",
         title: "Gesendet",
-      },
-      {
-        href: "/admin/emails?filter=purchases",
-        icon: "shoppingBag",
-        title: "Käufe",
       },
     ],
   },

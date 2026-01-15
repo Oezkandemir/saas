@@ -3,25 +3,33 @@
 import { format, formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
 import {
+  Archive,
   ChevronDown,
   Download,
   Forward,
   Loader2,
   Lock,
   Mail,
+  MailOpen,
   Paperclip,
   Reply,
-  X,
+  Star,
+  Trash2,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 // Email Detail Component - Gmail Style Design
 import {
+  archiveEmail,
+  deleteInboundEmail,
   getInboundEmailById,
   getInboundEmailReplies,
   type InboundEmail,
   type InboundEmailReply,
   markEmailAsRead,
+  markEmailAsUnread,
+  toggleEmailStar,
+  unarchiveEmail,
 } from "@/actions/inbound-email-actions";
 import {
   Accordion,
@@ -31,6 +39,16 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Popover,
   PopoverContent,
@@ -43,24 +61,31 @@ type InboundEmailDetailProps = {
   emailId: string;
   initialEmail?: InboundEmail; // Optional: pre-loaded email data for instant display
   onMarkAsRead?: () => void;
+  onDelete?: () => void; // Callback when email is deleted
 };
 
 export function InboundEmailDetail({
   emailId,
   initialEmail,
   onMarkAsRead,
+  onDelete,
 }: InboundEmailDetailProps) {
   const [email, setEmail] = useState<InboundEmail | null>(initialEmail || null);
   const [replies, setReplies] = useState<InboundEmailReply[]>([]);
   const [isLoading, setIsLoading] = useState(!initialEmail); // If we have initial data, don't show loading
   const [showReplyForm, setShowReplyForm] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isMarkingRead, setIsMarkingRead] = useState(false);
   const replyFormRef = useRef<HTMLDivElement>(null);
   const onMarkAsReadRef = useRef(onMarkAsRead);
+  const onDeleteRef = useRef(onDelete);
 
-  // Keep ref updated without causing re-renders
+  // Keep refs updated without causing re-renders
   useEffect(() => {
     onMarkAsReadRef.current = onMarkAsRead;
-  }, [onMarkAsRead]);
+    onDeleteRef.current = onDelete;
+  }, [onMarkAsRead, onDelete]);
 
   const loadEmail = useCallback(async () => {
     if (!emailId) return;
@@ -137,6 +162,173 @@ export function InboundEmailDetail({
       }, 100);
     }
   }, [showReplyForm]);
+
+  // Handle mark as read/unread
+  const handleMarkAsReadUnread = async () => {
+    if (!email) return;
+
+    setIsMarkingRead(true);
+    const wasRead = email.is_read;
+
+    // Optimistic update
+    setEmail((prev) => (prev ? { ...prev, is_read: !wasRead } : null));
+
+    try {
+      const result = wasRead
+        ? await markEmailAsUnread(email.id)
+        : await markEmailAsRead(email.id);
+
+      if (!result.success) {
+        // Revert on error
+        setEmail((prev) => (prev ? { ...prev, is_read: wasRead } : null));
+        toast.error(result.error || "Fehler beim Markieren");
+      } else {
+        toast.success(
+          wasRead
+            ? "Email als ungelesen markiert"
+            : "Email als gelesen markiert"
+        );
+        // Call parent callback if provided
+        if (onMarkAsReadRef.current) {
+          onMarkAsReadRef.current();
+        }
+      }
+    } catch (error) {
+      // Revert on error
+      setEmail((prev) => (prev ? { ...prev, is_read: wasRead } : null));
+      toast.error("Fehler beim Markieren der Email");
+    } finally {
+      setIsMarkingRead(false);
+    }
+  };
+
+  // Handle toggle star
+  const handleToggleStar = async () => {
+    if (!email) return;
+
+    const wasStarred = email.is_starred || false;
+
+    // Optimistic update
+    setEmail((prev) => (prev ? { ...prev, is_starred: !wasStarred } : null));
+
+    try {
+      const result = await toggleEmailStar(email.id);
+      if (!result.success) {
+        // Revert on error
+        setEmail((prev) => (prev ? { ...prev, is_starred: wasStarred } : null));
+        toast.error(result.error || "Fehler beim Markieren");
+      } else {
+        toast.success(wasStarred ? "Markierung entfernt" : "Email markiert");
+      }
+    } catch (error) {
+      // Revert on error
+      setEmail((prev) => (prev ? { ...prev, is_starred: wasStarred } : null));
+      toast.error("Fehler beim Markieren der Email");
+    }
+  };
+
+  // Handle archive/unarchive
+  const handleArchive = async () => {
+    if (!email) return;
+
+    const wasArchived = email.is_archived || false;
+
+    // Optimistic update
+    setEmail((prev) => (prev ? { ...prev, is_archived: !wasArchived } : null));
+
+    try {
+      const result = wasArchived
+        ? await unarchiveEmail(email.id)
+        : await archiveEmail(email.id);
+
+      if (!result.success) {
+        // Revert on error
+        setEmail((prev) => (prev ? { ...prev, is_archived: wasArchived } : null));
+        toast.error(result.error || "Fehler beim Archivieren");
+      } else {
+        toast.success(wasArchived ? "Email aus Archiv entfernt" : "Email archiviert");
+        // Call parent callback if provided
+        if (onMarkAsReadRef.current) {
+          onMarkAsReadRef.current();
+        }
+      }
+    } catch (error) {
+      // Revert on error
+      setEmail((prev) => (prev ? { ...prev, is_archived: wasArchived } : null));
+      toast.error("Fehler beim Archivieren der Email");
+    }
+  };
+
+  // Handle delete
+  const handleDelete = async () => {
+    if (!email) return;
+
+    setIsDeleting(true);
+    try {
+      const result = await deleteInboundEmail(email.id);
+      if (!result.success) {
+        toast.error(result.error || "Fehler beim Löschen");
+      } else {
+        toast.success("Email gelöscht");
+        // Call parent callback if provided (for navigation)
+        if (onDeleteRef.current) {
+          onDeleteRef.current();
+        }
+      }
+    } catch (error) {
+      toast.error("Fehler beim Löschen der Email");
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteDialog(false);
+    }
+  };
+
+  // Keyboard shortcuts for detail view
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      // r - Reply
+      if (e.key === "r" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setShowReplyForm(!showReplyForm);
+      }
+
+      // u - Back to list
+      if (e.key === "u" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        // This will be handled by parent component
+      }
+
+      // # - Delete
+      if (e.key === "#" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setShowDeleteDialog(true);
+      }
+
+      // s - Toggle star
+      if (e.key === "s" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        handleToggleStar();
+      }
+
+      // e - Archive
+      if (e.key === "e" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        handleArchive();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showReplyForm, email, handleToggleStar, handleArchive]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (isLoading) {
     return (
@@ -352,33 +544,17 @@ export function InboundEmailDetail({
             )}
           </div>
 
-          {/* Reply Form - Directly after email content for maximum visibility */}
+          {/* Reply Form - Gmail-like floating composition window */}
           {showReplyForm && email && (
             <div
               ref={replyFormRef}
-              className="mt-8 pt-8 border-t border-border bg-primary/5 rounded-lg p-6 animate-in slide-in-from-bottom-4 duration-300"
+              className="mt-8 pt-8 border-t border-border"
             >
-              <div className="mb-4 flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold mb-1">
-                    Antwort verfassen
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Antwort an: {email.from_name || email.from_email}
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowReplyForm(false)}
-                  className="size-8 p-0"
-                >
-                  <X className="size-4" />
-                </Button>
-              </div>
               <InboundEmailReplyForm
                 inboundEmailId={email.id}
                 originalSubject={email.subject || "(Kein Betreff)"}
+                originalFromEmail={email.from_email}
+                originalFromName={email.from_name}
                 onSuccess={() => {
                   setShowReplyForm(false);
                   loadEmail();
@@ -496,7 +672,7 @@ export function InboundEmailDetail({
       </div>
 
       {/* Bottom Toolbar - Gmail Style (Grey Background) */}
-      <div className="px-4 py-2 border-t bg-muted/50 flex items-center gap-2">
+      <div className="px-4 py-2 border-t bg-muted/50 flex items-center gap-2 flex-wrap">
         <Button
           variant="outline"
           size="sm"
@@ -512,7 +688,91 @@ export function InboundEmailDetail({
           <Forward className="size-4 mr-2" />
           Weiterleiten
         </Button>
+        
+        {/* Star */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleToggleStar}
+          disabled={!email}
+          className={`h-9 ${email?.is_starred ? "bg-yellow-50 text-yellow-600 border-yellow-300" : ""}`}
+        >
+          <Star className={`size-4 mr-2 ${email?.is_starred ? "fill-yellow-500" : ""}`} />
+          {email?.is_starred ? "Markierung entfernen" : "Markieren"}
+        </Button>
+
+        {/* Archive/Unarchive */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleArchive}
+          disabled={!email}
+          className="h-9"
+        >
+          <Archive className="size-4 mr-2" />
+          {email?.is_archived ? "Aus Archiv entfernen" : "Archivieren"}
+        </Button>
+
+        {/* Mark as Read/Unread */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleMarkAsReadUnread}
+          disabled={isMarkingRead || !email}
+          className="h-9"
+        >
+          {isMarkingRead ? (
+            <Loader2 className="size-4 mr-2 animate-spin" />
+          ) : email?.is_read ? (
+            <Mail className="size-4 mr-2" />
+          ) : (
+            <MailOpen className="size-4 mr-2" />
+          )}
+          {email?.is_read ? "Als ungelesen markieren" : "Als gelesen markieren"}
+        </Button>
+
+        {/* Delete */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowDeleteDialog(true)}
+          disabled={isDeleting || !email}
+          className="h-9 text-destructive hover:text-destructive hover:bg-destructive/10"
+        >
+          <Trash2 className="size-4 mr-2" />
+          Löschen
+        </Button>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Email löschen?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Möchten Sie diese Email wirklich löschen? Diese Aktion kann nicht
+              rückgängig gemacht werden.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Abbrechen</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Wird gelöscht...
+                </>
+              ) : (
+                "Löschen"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

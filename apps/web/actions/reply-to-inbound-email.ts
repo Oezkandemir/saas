@@ -77,9 +77,38 @@ export async function replyToInboundEmail(
           </div>`
         : "";
 
-    const htmlContent =
-      input.htmlBody ||
-      `
+    // If htmlBody is provided, use it and append the quoted original
+    // Otherwise, create a simple HTML email
+    let htmlContent: string;
+    if (input.htmlBody) {
+      // Wrap the provided HTML body in a proper email structure and add quoted original
+      htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${replySubject}</title>
+        </head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">${siteConfig.name}</h1>
+          </div>
+          <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
+            ${input.htmlBody}
+            ${quotedOriginal}
+            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+            <p style="color: #6b7280; font-size: 14px; margin: 0;">
+              Mit freundlichen Grüßen,<br>
+              ${user.name || siteConfig.name}
+            </p>
+          </div>
+        </body>
+      </html>
+      `;
+    } else {
+      // Fallback to simple HTML if no htmlBody provided
+      htmlContent = `
       <!DOCTYPE html>
       <html>
         <head>
@@ -102,7 +131,8 @@ export async function replyToInboundEmail(
           </div>
         </body>
       </html>
-    `;
+      `;
+    }
 
     // Prepare email headers for thread referencing
     const headers: Record<string, string> = {

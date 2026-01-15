@@ -66,11 +66,21 @@ export async function syncResendInboundEmail(emailId: string): Promise<{
     });
 
     // Check if email already exists
+    // IMPORTANT: Skip emails that have been deleted (is_deleted = true)
     const { data: existingEmail } = await supabaseAdmin
       .from("inbound_emails")
-      .select("id, text_content, html_content")
+      .select("id, text_content, html_content, is_deleted")
       .eq("email_id", emailId)
       .single();
+
+    // If email was deleted, do not re-sync it
+    if (existingEmail?.is_deleted) {
+      logger.info(`Skipping deleted email: ${emailId}`);
+      return {
+        success: false,
+        message: "Email was deleted and will not be re-synced",
+      };
+    }
 
     // If email exists but has no content, update it
     if (existingEmail) {

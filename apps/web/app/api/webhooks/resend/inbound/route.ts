@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-import { env } from "@/env.mjs";
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
 
@@ -162,13 +161,30 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if email already exists (idempotency)
+    // IMPORTANT: Skip emails that have been deleted (is_deleted = true)
     const { data: existingEmail } = await supabaseAdmin
       .from("inbound_emails")
-      .select("id")
+      .select("id, is_deleted")
       .eq("email_id", emailData.email_id)
       .single();
 
     if (existingEmail) {
+      // If email was deleted, do not re-sync it
+      if (existingEmail.is_deleted) {
+        logger.info(`Email ${emailData.email_id} was deleted, skipping re-sync`);
+        return new NextResponse(
+          JSON.stringify({
+            received: true,
+            message: "Email was deleted and will not be re-synced",
+            email_id: emailData.email_id,
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
+
       logger.info(`Email ${emailData.email_id} already exists, skipping`);
       return new NextResponse(
         JSON.stringify({
