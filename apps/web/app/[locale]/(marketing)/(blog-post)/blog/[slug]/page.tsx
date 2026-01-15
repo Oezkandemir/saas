@@ -76,7 +76,11 @@ export default async function PostPage({ params }: PostPageProps) {
 
   const category = BLOG_CATEGORIES.find(
     (category) => category.slug === post.categories[0]
-  )!;
+  );
+
+  if (!category) {
+    notFound();
+  }
 
   // Get related articles
   const allPosts = await getPublishedBlogPosts();

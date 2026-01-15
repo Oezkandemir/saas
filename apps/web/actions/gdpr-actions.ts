@@ -22,12 +22,20 @@ export async function exportUserData() {
       return { success: false, message: "User not authenticated" };
     }
 
-    // Fetch all user-related data
+    // OPTIMIZATION: Fetch QR codes first to get IDs, then fetch events in parallel with other data
+    // This avoids duplicate QR codes queries
+    const qrCodesResult = await supabase
+      .from("qr_codes")
+      .select("*")
+      .eq("user_id", user.id);
+
+    const qrCodeIds = qrCodesResult.data?.map((qr) => qr.id) || [];
+
+    // Fetch all user-related data in parallel (now that we have QR code IDs)
     const [
       profile,
       customers,
       documents,
-      qrCodes,
       qrEvents,
       cookieConsents,
       notifications,
@@ -51,30 +59,10 @@ export async function exportUserData() {
         .select("*, document_items(*)")
         .eq("user_id", user.id),
 
-      // QR Codes
-      supabase
-        .from("qr_codes")
-        .select("*")
-        .eq("user_id", user.id),
-
-      // QR Events (if Pro user) - Fixed: First get QR code IDs, then query events
-      (async () => {
-        const { data: qrCodesData } = await supabase
-          .from("qr_codes")
-          .select("id")
-          .eq("user_id", user.id);
-
-        const qrCodeIds = qrCodesData?.map((qr) => qr.id) || [];
-
-        if (qrCodeIds.length === 0) {
-          return { data: [], error: null };
-        }
-
-        return await supabase
-          .from("qr_events")
-          .select("*")
-          .in("qr_code_id", qrCodeIds);
-      })(),
+      // QR Events - use IDs from already fetched QR codes
+      qrCodeIds.length > 0
+        ? supabase.from("qr_events").select("*").in("qr_code_id", qrCodeIds)
+        : Promise.resolve({ data: [], error: null }),
 
       // Cookie consents
       supabase
@@ -88,6 +76,8 @@ export async function exportUserData() {
         .select("*")
         .eq("user_id", user.id),
     ]);
+
+    const qrCodes = qrCodesResult;
 
     // Compile all data
     const userData = {

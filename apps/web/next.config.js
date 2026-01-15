@@ -318,7 +318,8 @@ const nextConfig = {
   },
 
   // ⚡ COMPRESSION & OPTIMIZATIONS
-  compress: true,
+  compress: true, // Gzip compression enabled by default in Next.js
+  // Brotli compression is handled by Vercel/CDN automatically
 
   // Disable source maps in production for faster builds
   productionBrowserSourceMaps: false,
@@ -343,4 +344,14 @@ const nextConfig = {
   }),
 };
 
-module.exports = withNextIntl(nextConfig);
+// Apply bundle analyzer wrapper conditionally
+let config = withNextIntl(nextConfig);
+
+if (process.env.ANALYZE === "true") {
+  const withBundleAnalyzer = require("@next/bundle-analyzer")({
+    enabled: true,
+  });
+  config = withBundleAnalyzer(config);
+}
+
+module.exports = config;

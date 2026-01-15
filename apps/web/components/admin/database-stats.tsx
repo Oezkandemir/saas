@@ -73,7 +73,7 @@ export function DatabaseStats() {
 
   useEffect(() => {
     loadStats();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadStats]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRefresh = async () => {
     setIsRefreshing(true);

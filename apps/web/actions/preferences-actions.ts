@@ -305,7 +305,8 @@ export async function updateUserPreferences(
       throw new Error(fetchError.message);
     }
 
-    let result;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let result: any;
 
     if (!currentPreferences) {
       // Create new preferences if they don't exist

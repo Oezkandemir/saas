@@ -19,7 +19,12 @@ describe("Documents Actions", () => {
     id: "user-123",
     email: "test@example.com",
     role: "USER" as const,
-  };
+    name: "Test User",
+    avatar_url: null,
+    status: "active",
+    app_metadata: {},
+    user_metadata: {},
+  } as Awaited<ReturnType<typeof getCurrentUser>>;
 
   const mockDocument = {
     id: "doc-123",
@@ -91,10 +96,10 @@ describe("Documents Actions", () => {
       const result = await getDocuments();
 
       expect(result).toHaveLength(1);
-      expect(result[0].items).toBeDefined();
-      expect(result[0].items).toHaveLength(1);
+      expect(result[0]?.items).toBeDefined();
+      expect(result[0]?.items).toHaveLength(1);
       // Verify items are sorted by position
-      expect(result[0].items[0].position).toBe(0);
+      expect(result[0]?.items?.[0]?.position).toBe(0);
     });
 
     it("should filter by type when provided", async () => {

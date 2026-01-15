@@ -1,12 +1,13 @@
 "use client";
 
-import { Calendar, Loader2, Mail, MailOpen, TrendingUp } from "lucide-react";
+import { Calendar, Mail, MailOpen, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   getInboundEmailStats,
   type InboundEmailStats,
 } from "@/actions/inbound-email-actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { InlineLoadingState } from "@/components/ui/loading-state";
 
 export function InboundEmailsStats() {
   const [stats, setStats] = useState<InboundEmailStats | null>(null);
@@ -42,23 +43,16 @@ export function InboundEmailsStats() {
 
   useEffect(() => {
     loadStats();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadStats]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Laden...</CardTitle>
-              <Loader2 className="size-4 animate-spin text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">-</div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <InlineLoadingState
+        isLoading={true}
+        text="Lade Email-Statistiken..."
+        size="md"
+        className="min-h-[200px]"
+      />
     );
   }
 

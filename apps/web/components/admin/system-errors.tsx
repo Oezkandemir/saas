@@ -71,7 +71,7 @@ export function SystemErrors() {
 
   useEffect(() => {
     loadErrors();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadErrors]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleResolve = async (errorId: string) => {
     setResolvingId(errorId);

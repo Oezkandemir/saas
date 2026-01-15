@@ -71,7 +71,7 @@ export async function getPublishedBlogPosts(
   useStaticClient = false
 ): Promise<BlogPost[]> {
   try {
-    let supabase;
+    let supabase: Awaited<ReturnType<typeof getSupabaseServer>>;
     if (useStaticClient) {
       supabase = getSupabaseStatic();
     } else {

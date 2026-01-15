@@ -87,7 +87,7 @@ export function TwoFactorAuth() {
 
   useEffect(() => {
     loadStatus();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDisable = async () => {
     if (!password) {

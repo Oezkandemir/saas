@@ -117,7 +117,7 @@ export function PDFPreviewButton({
     if (open && !directPdfUrl && !currentPdfUrl) {
       fetchPDFUrl();
     }
-  }, [open, directPdfUrl, currentPdfUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [open, directPdfUrl, currentPdfUrl, fetchPDFUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>

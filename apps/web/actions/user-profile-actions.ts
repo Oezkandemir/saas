@@ -198,7 +198,8 @@ export async function updateUserProfile(
       throw new Error(fetchError.message);
     }
 
-    let result;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let result: any;
 
     if (!currentProfile) {
       // Create new profile if it doesn't exist

@@ -78,10 +78,8 @@ export default async function BillingPage({
   if (syncSuccess) {
     const { unstable_noStore } = await import("next/cache");
 
-    // Small delay to ensure database write is committed
-    await new Promise((resolve) => setTimeout(resolve, 200));
-
     // Force no cache for this request to get fresh data
+    // No delay needed - cache invalidation and unstable_noStore ensure fresh data
     unstable_noStore();
 
     logger.info("Sync successful, forcing fresh data load");

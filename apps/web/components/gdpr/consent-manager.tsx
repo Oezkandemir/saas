@@ -81,7 +81,7 @@ export function ConsentManager() {
 
   useEffect(() => {
     loadConsents();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadConsents]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleToggleConsent = async (
     consentType: ConsentType,

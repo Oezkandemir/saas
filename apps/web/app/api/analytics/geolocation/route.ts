@@ -1,5 +1,7 @@
+import { unstable_cache } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
-
+import { CACHE_CONFIG } from "@/config/constants";
+import { addCacheHeaders, checkETag, generateETag } from "@/lib/api-cache";
 import { applyAPIMiddleware } from "@/lib/api-middleware";
 import { logger } from "@/lib/logger";
 
@@ -30,19 +32,9 @@ export async function GET(request: NextRequest) {
     longitude: null,
   };
 
-  try {
-    // Get client IP from headers
-    const forwarded = request.headers.get("x-forwarded-for");
-    const realIp = request.headers.get("x-real-ip");
-    const ip = forwarded?.split(",")[0]?.trim() || realIp?.trim() || "";
-
-    // If no IP found, use empty string to get current request IP
-    const ipToUse = ip || "";
-
-    // Use free IP geolocation service with shorter timeout
-    const url = ipToUse
-      ? `https://ipapi.co/${ipToUse}/json/`
-      : "https://ipapi.co/json/";
+  // Internal function to fetch geolocation
+  async function _fetchGeolocation(ip: string) {
+    const url = ip ? `https://ipapi.co/${ip}/json/` : "https://ipapi.co/json/";
 
     // Create abort controller for better timeout handling
     const controller = new AbortController();
@@ -71,68 +63,98 @@ export async function GET(request: NextRequest) {
       }
 
       if (!response.ok) {
-        // Return default values if API fails
-        return NextResponse.json(defaultResponse);
+        return defaultResponse;
       }
 
       // Check content type before parsing JSON
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
-        // Not JSON response - return defaults
-        return NextResponse.json(defaultResponse);
+        return defaultResponse;
       }
 
       // Try to parse JSON with error handling
       let data;
       try {
         const text = await response.text();
-        // Trim whitespace and try to parse JSON
         const trimmedText = text.trim();
-        // Try direct parse first
         try {
           data = JSON.parse(trimmedText);
         } catch {
-          // If direct parse fails, try to extract JSON object
           const jsonMatch = trimmedText.match(/\{[\s\S]*\}/);
           if (jsonMatch) {
             data = JSON.parse(jsonMatch[0]);
           } else {
-            // No valid JSON found - return defaults
-            return NextResponse.json(defaultResponse);
+            return defaultResponse;
           }
         }
       } catch (_parseError) {
-        // JSON parse failed - return defaults silently
-        return NextResponse.json(defaultResponse);
+        return defaultResponse;
       }
 
-      return NextResponse.json({
+      return {
         country: data.country_name || null,
         city: data.city || null,
         region: data.region || null,
         timezone: data.timezone || null,
         latitude: data.latitude || null,
         longitude: data.longitude || null,
-      });
+      };
     } catch (fetchError: any) {
       if (timeoutId) {
         clearTimeout(timeoutId);
         timeoutId = null;
       }
 
-      // Don't log timeout errors - they're expected and handled gracefully
       if (
         fetchError?.name === "AbortError" ||
         fetchError?.code === 23 ||
         fetchError?.message?.includes("aborted")
       ) {
-        // Timeout - return defaults silently
-        return NextResponse.json(defaultResponse);
+        return defaultResponse;
       }
 
-      // Re-throw other errors to be caught by outer catch
       throw fetchError;
     }
+  }
+
+  // Cached version of geolocation fetch
+  const getCachedGeolocation = unstable_cache(
+    async (ip: string) => {
+      return _fetchGeolocation(ip);
+    },
+    ["analytics-geolocation"],
+    {
+      revalidate: CACHE_CONFIG.api.geolocation.revalidate,
+      tags: ["analytics-geolocation"],
+    }
+  );
+
+  try {
+    // Get client IP from headers
+    const forwarded = request.headers.get("x-forwarded-for");
+    const realIp = request.headers.get("x-real-ip");
+    const ip = forwarded?.split(",")[0]?.trim() || realIp?.trim() || "";
+
+    // If no IP found, use empty string to get current request IP
+    const ipToUse = ip || "";
+
+    // Fetch cached geolocation data
+    const data = await getCachedGeolocation(ipToUse);
+    const etag = generateETag(data);
+
+    // Check ETag for 304 Not Modified
+    const etagCheck = checkETag(request, etag);
+    if (etagCheck) {
+      return etagCheck;
+    }
+
+    // Return response with cache headers
+    const response = NextResponse.json(data);
+    return addCacheHeaders(response, {
+      maxAge: CACHE_CONFIG.api.geolocation.revalidate,
+      staleWhileRevalidate: 600, // 10 minutes stale-while-revalidate
+      etag,
+    });
   } catch (error: any) {
     // Only log critical errors, not timeouts or expected failures
     if (
@@ -144,7 +166,9 @@ export async function GET(request: NextRequest) {
       logger.error("Geolocation API error:", error?.message || error);
     }
 
-    // Return default values on any error
-    return NextResponse.json(defaultResponse);
+    // Return default values on any error with no-cache header
+    const response = NextResponse.json(defaultResponse);
+    response.headers.set("Cache-Control", "no-store");
+    return response;
   }
 }

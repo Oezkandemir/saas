@@ -3,10 +3,17 @@ import type { Config } from "tailwindcss";
 const config = {
   darkMode: ["class"],
   content: [
-    "./app/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./ui/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx,js,jsx}",
+    "./components/**/*.{ts,tsx,js,jsx}",
+    "./ui/**/*.{ts,tsx,js,jsx}",
     "./content/**/*.{md,mdx}",
+    "./actions/**/*.{ts,tsx}",
+    "./lib/**/*.{ts,tsx}",
+    "./hooks/**/*.{ts,tsx}",
+    // Exclude node_modules and build directories
+    "!./node_modules/**/*",
+    "!./.next/**/*",
+    "!./dist/**/*",
   ],
   safelist: [
     {

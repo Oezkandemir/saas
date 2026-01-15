@@ -8,6 +8,7 @@ import { createElement, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { getUserNotifications } from "@/actions/user-profile-actions";
 import { useSupabase } from "@/components/supabase-provider";
+import { CACHE_CONFIG, RETRY_CONFIG } from "@/config/constants";
 import { usePathname } from "@/i18n/routing";
 import { logger } from "@/lib/logger";
 
@@ -114,9 +115,9 @@ export function useNotifications(): UseNotificationsResult {
         return 0;
       }
     },
-    staleTime: 30 * 1000, // Consider stale after 30 seconds
-    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
-    retry: 1,
+    staleTime: CACHE_CONFIG.notifications.staleTime,
+    gcTime: CACHE_CONFIG.notifications.gcTime,
+    retry: RETRY_CONFIG.notifications.retry,
     refetchOnWindowFocus: false, // Realtime handles updates, no need to refetch on focus
     refetchInterval: false, // Disable automatic polling - rely on realtime instead
     enabled: !!userId && !!supabase, // Only run if we have a user session and supabase client

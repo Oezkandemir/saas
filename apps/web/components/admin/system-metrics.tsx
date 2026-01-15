@@ -50,7 +50,7 @@ export function SystemMetricsComponent() {
 
   useEffect(() => {
     loadMetrics();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadMetrics]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRefresh = async () => {
     setIsRefreshing(true);

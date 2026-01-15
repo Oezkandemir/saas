@@ -24,7 +24,9 @@
     "check:ci": "biome check --diagnostic-level=error .",
     "type-check": "tsc --noEmit",
     "type-check:strict": "tsc --noEmit --strict",
-    "validate": "pnpm check && pnpm type-check:strict",
+    "validate": "pnpm check:fix && pnpm type-check",
+    "validate:strict": "pnpm check:errors && pnpm type-check:strict",
+    "validate:ci": "pnpm check:ci && pnpm type-check",
     "lint:eslint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "lint:eslint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
     "format:prettier": "prettier --write .",
@@ -41,6 +43,11 @@
     "analyze": "ANALYZE=true next build",
     "analyze:server": "BUNDLE_ANALYZE=server next build",
     "analyze:browser": "BUNDLE_ANALYZE=browser next build",
+    "analyze:bundle": "node scripts/analyze-bundle.js",
+    "analyze:css": "node scripts/analyze-css.js",
+    "lighthouse": "lhci autorun",
+    "lighthouse:ci": "lhci autorun --config=../../.lighthouserc.js",
+    "check:deps": "depcheck --ignores='@types/*,eslint-*,@biomejs/*,@commitlint/*,prettier,husky,autoprefixer,postcss,tailwindcss'",
     "clean": "rm -rf .next .turbo node_modules/.cache",
     "clean:all": "rm -rf .next .turbo node_modules"
   },
@@ -131,6 +138,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@lhci/cli": "^0.12.0",
     "@babel/core": "^7.27.7",
     "@babel/preset-env": "^7.27.2",
     "@babel/preset-react": "^7.27.1",

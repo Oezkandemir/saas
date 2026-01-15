@@ -402,16 +402,20 @@ export async function getAnalyticsData() {
               unique_visitors: new Set(),
             });
           } else {
-            const page = pageMap.get(path)!;
-            page.view_count += 1;
+            const page = pageMap.get(path);
+            if (page) {
+              page.view_count += 1;
+            }
           }
 
-          const pageData = pageMap.get(path)!;
-          if (view.session_id) {
-            pageData.unique_visitors.add(`session_${view.session_id}`);
-          }
-          if (view.user_id) {
-            pageData.unique_visitors.add(`user_${view.user_id}`);
+          const pageData = pageMap.get(path);
+          if (pageData) {
+            if (view.session_id) {
+              pageData.unique_visitors.add(`session_${view.session_id}`);
+            }
+            if (view.user_id) {
+              pageData.unique_visitors.add(`user_${view.user_id}`);
+            }
           }
         });
 

@@ -146,7 +146,8 @@ export async function upsertWeeklyAvailability(
       .eq("event_type_id", validatedData.event_type_id || null)
       .single();
 
-    let result;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let result: any;
     if (existing) {
       // Update existing rule
       result = await supabase

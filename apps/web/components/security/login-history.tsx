@@ -42,7 +42,7 @@ export function LoginHistory() {
 
   useEffect(() => {
     loadHistory();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadHistory]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getLocationInfo = (entry: LoginHistoryEntry) => {
     if (entry.locationInfo && typeof entry.locationInfo === "object") {

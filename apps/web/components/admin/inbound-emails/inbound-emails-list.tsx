@@ -87,7 +87,7 @@ export function InboundEmailsList() {
 
   useEffect(() => {
     loadEmails();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadEmails]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRefresh = async () => {
     setIsRefreshing(true);

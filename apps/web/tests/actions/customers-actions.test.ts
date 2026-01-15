@@ -22,7 +22,12 @@ describe("Customers Actions", () => {
     id: "user-123",
     email: "test@example.com",
     role: "USER" as const,
-  };
+    name: "Test User",
+    avatar_url: null,
+    status: "active",
+    app_metadata: {},
+    user_metadata: {},
+  } as Awaited<ReturnType<typeof getCurrentUser>>;
 
   const mockCustomer = {
     id: "customer-123",
@@ -46,7 +51,7 @@ describe("Customers Actions", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(getCurrentUser).mockResolvedValue(mockUser);
+      vi.mocked(getCurrentUser).mockResolvedValue(mockUser!);
     vi.mocked(enforcePlanLimit).mockResolvedValue(undefined);
   });
 

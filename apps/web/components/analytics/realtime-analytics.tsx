@@ -2,7 +2,7 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { Activity, Globe, MapPin, Monitor, Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   getDeviceStatistics,
   getGeolocationStats,
@@ -18,6 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { SectionLoadingState } from "@/components/ui/loading-state";
 import {
   Table,
   TableBody,
@@ -26,6 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { TIMING_CONFIG } from "@/config/constants";
 import { logger } from "@/lib/logger";
 
 interface ActiveUser {
@@ -80,43 +82,47 @@ export function RealtimeAnalytics() {
   const [deviceStats, setDeviceStats] = useState<DeviceStat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // OPTIMIZATION: Memoize fetchData to prevent recreation on every render
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const [usersResult, viewsResult, geoResult, deviceResult] =
+        await Promise.allSettled([
+          getRealtimeActiveUsers(),
+          getRealtimePageViews(),
+          getGeolocationStats(7),
+          getDeviceStatistics(7),
+        ]);
+
+      if (usersResult.status === "fulfilled" && usersResult.value.success) {
+        setActiveUsers(usersResult.value.data || []);
+      }
+      if (viewsResult.status === "fulfilled" && viewsResult.value.success) {
+        setPageViews(viewsResult.value.data || []);
+      }
+      if (geoResult.status === "fulfilled" && geoResult.value.success) {
+        setGeolocationStats(geoResult.value.data || []);
+      }
+      if (deviceResult.status === "fulfilled" && deviceResult.value.success) {
+        setDeviceStats(deviceResult.value.data || []);
+      }
+    } catch (error) {
+      logger.error("Error fetching realtime analytics:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   // Fetch initial data
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const [usersResult, viewsResult, geoResult, deviceResult] =
-          await Promise.allSettled([
-            getRealtimeActiveUsers(),
-            getRealtimePageViews(),
-            getGeolocationStats(7),
-            getDeviceStatistics(7),
-          ]);
-
-        if (usersResult.status === "fulfilled" && usersResult.value.success) {
-          setActiveUsers(usersResult.value.data || []);
-        }
-        if (viewsResult.status === "fulfilled" && viewsResult.value.success) {
-          setPageViews(viewsResult.value.data || []);
-        }
-        if (geoResult.status === "fulfilled" && geoResult.value.success) {
-          setGeolocationStats(geoResult.value.data || []);
-        }
-        if (deviceResult.status === "fulfilled" && deviceResult.value.success) {
-          setDeviceStats(deviceResult.value.data || []);
-        }
-      } catch (error) {
-        logger.error("Error fetching realtime analytics:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchData();
-    const interval = setInterval(fetchData, 30000); // Refresh every 30 seconds
+    const interval = setInterval(
+      fetchData,
+      TIMING_CONFIG.realtimeAnalyticsRefreshInterval
+    );
 
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchData]);
 
   // Subscribe to realtime updates
   useEffect(() => {
@@ -187,18 +193,11 @@ export function RealtimeAnalytics() {
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {[1, 2, 3, 4].map((i) => (
-          <Card key={i} className="animate-pulse">
-            <CardHeader>
-              <div className="h-4 w-24 bg-muted rounded" />
-            </CardHeader>
-            <CardContent>
-              <div className="h-8 w-16 bg-muted rounded" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <SectionLoadingState
+        isLoading={true}
+        text="Lade Analytics-Daten..."
+        minHeight={300}
+      />
     );
   }
 

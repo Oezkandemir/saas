@@ -9,6 +9,7 @@ import {
 } from "@/actions/company-profiles-actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
   Select,
   SelectContent,
@@ -76,8 +77,8 @@ export function CompanyProfileSelector({
   if (isLoading) {
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Building2 className="size-4 animate-pulse" />
-        Lade Profile...
+        <LoadingSpinner size="sm" variant="muted" />
+        <span>Lade Profile...</span>
       </div>
     );
   }

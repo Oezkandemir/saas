@@ -10,10 +10,12 @@ export const siteConfig: SiteConfig = {
   url: site_url,
   ogImage: `${site_url}/og.jpg`,
   links: {
-    twitter: "https://twitter.com/miickasmt",
-    github: "https://github.com/mickasmt/next-saas-stripe-starter",
+    twitter: env.NEXT_PUBLIC_TWITTER_URL || "https://twitter.com/miickasmt",
+    github:
+      env.NEXT_PUBLIC_GITHUB_URL ||
+      "https://github.com/mickasmt/next-saas-stripe-starter",
   },
-  mailSupport: "support@cenety.com",
+  mailSupport: env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@cenety.com",
 };
 
 export const footerLinks: SidebarNavItem[] = [

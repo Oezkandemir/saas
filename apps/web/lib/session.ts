@@ -25,25 +25,24 @@ async function _getCurrentUserInternal() {
     // Ensure the user exists in the database table
     await syncUserWithDatabase(user);
 
+    // OPTIMIZATION: Fetch users and user_profiles in parallel to reduce query time
     // IMPORTANT: Get role from database, not metadata
     // This ensures admin checks use the database role, not metadata
-    const { data: dbUserRole, error: roleError } = await supabase
-      .from("users")
-      .select("role")
-      .eq("id", user.id)
-      .single();
+    const [usersResult, profilesResult] = await Promise.all([
+      supabase.from("users").select("role").eq("id", user.id).single(),
+      supabase.from("user_profiles").select("*").eq("id", user.id).single(),
+    ]);
 
     // If database query fails, log error but don't fail the whole request
-    if (roleError) {
-      logger.error("Error fetching user role from database:", roleError);
+    if (usersResult.error) {
+      logger.error(
+        "Error fetching user role from database:",
+        usersResult.error
+      );
     }
 
-    // Auch Benutzerdaten aus der Datenbank abrufen für zusätzliche Felder wie avatar_url
-    const { data: dbUser } = await supabase
-      .from("user_profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single();
+    const dbUserRole = usersResult.data;
+    const dbUser = profilesResult.data;
 
     return {
       ...user,

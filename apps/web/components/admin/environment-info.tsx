@@ -65,7 +65,7 @@ export function EnvironmentInfo() {
 
   useEffect(() => {
     loadInfo();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadInfo]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRefresh = async () => {
     setIsRefreshing(true);

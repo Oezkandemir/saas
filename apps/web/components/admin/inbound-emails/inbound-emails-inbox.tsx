@@ -70,7 +70,7 @@ export function InboundEmailsInbox() {
 
   useEffect(() => {
     loadEmails();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadEmails]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-sync emails from Resend on initial load (only once)
   // This ensures all emails sent to us are visible
@@ -109,7 +109,7 @@ export function InboundEmailsInbox() {
       isMounted = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array = only run once on mount
+  }, [loadEmails]); // Empty dependency array = only run once on mount
 
   // Load selected email when selection changes
   useEffect(() => {

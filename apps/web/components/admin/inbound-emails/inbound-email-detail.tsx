@@ -85,7 +85,7 @@ export function InboundEmailDetail({
 
   useEffect(() => {
     loadEmail();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadEmail]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Scroll to reply form when it opens
   useEffect(() => {

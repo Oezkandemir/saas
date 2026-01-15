@@ -252,7 +252,7 @@ export async function autoCreateRemindersForOverdue() {
           documentId: doc.id,
           reminderType,
           reminderLevel,
-          scheduledDate: new Date().toISOString().split("T")[0]!,
+          scheduledDate: new Date().toISOString().split("T")[0] || "",
           feeAmount: reminderLevel > 1 ? 5.0 : 0,
         });
 

@@ -74,7 +74,7 @@ export function TwoFactorSetup({ onComplete }: TwoFactorSetupProps) {
     if (step === "generate") {
       handleGenerateSecret();
     }
-  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [step, handleGenerateSecret]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleVerify = async () => {
     if (verificationCode.length !== 6) {

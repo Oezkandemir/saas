@@ -93,7 +93,7 @@ export function CustomerSelector({
 
   useEffect(() => {
     loadCustomers();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadCustomers]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const form = useForm<CustomerInput>({
     resolver: zodResolver(quickCustomerSchema),

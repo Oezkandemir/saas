@@ -27,6 +27,11 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_APP_URL: z.string().min(1),
 
+    // Site Configuration
+    NEXT_PUBLIC_SUPPORT_EMAIL: z.string().email().optional(),
+    NEXT_PUBLIC_TWITTER_URL: z.string().url().optional(),
+    NEXT_PUBLIC_GITHUB_URL: z.string().url().optional(),
+
     // Polar.sh
     POLAR_SUCCESS_URL: z.string().url().optional(),
     // Payment provider selection: "polar" (Stripe removed)
@@ -51,6 +56,11 @@ export const env = createEnv({
     EMAIL_FROM: process.env.EMAIL_FROM,
     RESEND_WEBHOOK_SECRET: process.env.RESEND_WEBHOOK_SECRET,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+
+    // Site Configuration
+    NEXT_PUBLIC_SUPPORT_EMAIL: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
+    NEXT_PUBLIC_TWITTER_URL: process.env.NEXT_PUBLIC_TWITTER_URL,
+    NEXT_PUBLIC_GITHUB_URL: process.env.NEXT_PUBLIC_GITHUB_URL,
 
     // PDF Service
     PDF_SERVICE_URL: process.env.PDF_SERVICE_URL,

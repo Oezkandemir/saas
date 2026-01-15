@@ -151,7 +151,7 @@ export function PDFPreview({
     if (!currentPdfUrl && documentId && showPdfPreview) {
       handleFetchPDF();
     }
-  }, [documentId, currentPdfUrl, showPdfPreview]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [documentId, currentPdfUrl, showPdfPreview, handleFetchPDF]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDownload = async () => {
     if (currentPdfUrl) {

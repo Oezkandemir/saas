@@ -128,7 +128,7 @@ export function CompanyProfileTeamManagement({
 
   useEffect(() => {
     loadMembers();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadMembers]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAddMember = async () => {
     if (!newMemberEmail.trim()) {

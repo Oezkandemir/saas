@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   type Control,
   type FieldArrayPath,
@@ -136,11 +136,15 @@ export function BookingFormDrawer({
   }, [numberOfParticipants, replace, form]);
 
   // Calculate price display - always per person, regardless of duration
-  const calculatePrice = (participants: number) => {
-    if (!eventType.price_amount) return null;
-    // Price is always per person (not per hour)
-    return eventType.price_amount * participants;
-  };
+  // OPTIMIZATION: Memoize to prevent recreation on every render
+  const calculatePrice = useCallback(
+    (participants: number) => {
+      if (!eventType.price_amount) return null;
+      // Price is always per person (not per hour)
+      return eventType.price_amount * participants;
+    },
+    [eventType.price_amount]
+  );
 
   const onSubmit = async (data: BookingFormValues) => {
     if (!selectedSlot) {

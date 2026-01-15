@@ -5,6 +5,7 @@ import { unstable_cache, unstable_noStore } from "next/cache";
 import { cache } from "react";
 
 import type { UserSubscriptionPlan } from "types";
+import { CACHE_CONFIG } from "@/config/constants";
 import { pricingData } from "@/config/subscriptions";
 import { supabaseAdmin } from "@/lib/db";
 import { logger } from "@/lib/logger";
@@ -190,11 +191,14 @@ async function _getUserSubscriptionPlanInternal(
             : null
         : null;
 
-    // Check if subscription is set to cancel at period end (Polar only)
+    // OPTIMIZATION: Check subscription status in parallel with user data if possible
+    // For Polar, check subscription status from database
     let isCanceled = false;
+    let _subscriptionData = null;
+
     if (isPaid && user.polarSubscriptionId) {
-      // For Polar, check subscription status from database
       try {
+        // Fetch subscription data - can be optimized further by combining with user query
         const { data: subData } = await supabaseAdmin
           .from("subscriptions")
           .select(
@@ -202,6 +206,8 @@ async function _getUserSubscriptionPlanInternal(
           )
           .eq("polar_subscription_id", user.polarSubscriptionId)
           .single();
+
+        _subscriptionData = subData;
 
         if (subData) {
           isCanceled =
@@ -267,7 +273,7 @@ export const getUserSubscriptionPlan = cache(
     },
     ["user-subscription-plan"],
     {
-      revalidate: 10, // Cache for 10 seconds (reduced for better real-time updates)
+      revalidate: CACHE_CONFIG.subscriptionPlanRevalidate,
       tags: ["subscription-plan"],
     }
   )

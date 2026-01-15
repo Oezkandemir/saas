@@ -15,7 +15,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@tanstack/react-query", () => ({
-  useQuery: ({ queryKey, enabled }) => {
+  useQuery: ({ queryKey, enabled }: { queryKey: unknown[]; enabled?: boolean }) => {
     if (
       queryKey[0] === "notifications" &&
       queryKey[1] === "popover" &&

@@ -76,7 +76,7 @@ export function ActiveSessions() {
 
   useEffect(() => {
     loadSessions();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadSessions]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRevokeSession = async (sessionId: string) => {
     try {

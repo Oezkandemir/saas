@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
+import { CACHE_CONFIG, TIMING_CONFIG } from "@/config/constants";
 import { logger } from "@/lib/logger";
 
 // Fetcher function for SWR
@@ -40,7 +41,7 @@ export function usePageViews({ slug, trackView = true }: UsePageViewsProps) {
     fetcher,
     {
       revalidateOnFocus: false,
-      dedupingInterval: 60000, // 1 minute
+      dedupingInterval: CACHE_CONFIG.pageViews.dedupingInterval,
     }
   );
 
@@ -73,7 +74,7 @@ export function usePageViews({ slug, trackView = true }: UsePageViewsProps) {
       window.requestIdleCallback(() => trackPageView());
     } else {
       // Fallback for browsers that don't support requestIdleCallback
-      setTimeout(trackPageView, 1000);
+      setTimeout(trackPageView, TIMING_CONFIG.pageViewTrackingFallbackDelay);
     }
   }, [normalizedSlug, trackView, hasTracked, mutate]);
 

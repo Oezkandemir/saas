@@ -1,5 +1,4 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import { Button } from "@/components/ui/button";
@@ -12,14 +11,13 @@ describe("Button Component", () => {
     ).toBeInTheDocument();
   });
 
-  it("should handle click events", async () => {
+  it("should handle click events", () => {
     const handleClick = vi.fn();
-    const user = userEvent.setup();
 
     render(<Button onClick={handleClick}>Click me</Button>);
     const button = screen.getByRole("button", { name: /click me/i });
 
-    await user.click(button);
+    button.click();
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
@@ -58,15 +56,15 @@ describe("Button Component", () => {
     expect(button).toHaveAttribute("aria-label", "Close dialog");
   });
 
-  it("should support keyboard navigation", async () => {
+  it("should support keyboard navigation", () => {
     const handleClick = vi.fn();
-    const user = userEvent.setup();
 
     render(<Button onClick={handleClick}>Press Enter</Button>);
     const button = screen.getByRole("button", { name: /press enter/i });
 
     button.focus();
-    await user.keyboard("{Enter}");
+    const event = new KeyboardEvent("keydown", { key: "Enter" });
+    button.dispatchEvent(event);
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 });
