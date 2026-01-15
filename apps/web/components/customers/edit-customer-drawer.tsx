@@ -156,12 +156,12 @@ export function EditCustomerDrawer({
 
       <DrawerNS.Content
         side="right"
-        className="mr-2 shadow-custom-md w-[min(600px,calc(100%-16px))]"
+        className="w-auto min-w-[280px] max-w-[600px] h-full border-l border-r-0 border-y-0 rounded-none border-border/50 shadow-lg"
       >
-        <div className="flex flex-col h-full bg-bg-white-0">
-          <DrawerNS.Header className="bg-bg-white-0 border-b border-stroke-soft-200">
+        <div className="w-full flex flex-col h-full">
+          <DrawerNS.Header className="border-b px-6 py-4">
             <div className="flex items-center justify-between">
-              <DrawerNS.Title className="text-label-lg text-text-strong-950">
+              <DrawerNS.Title className="text-lg font-semibold">
                 Kunde bearbeiten
               </DrawerNS.Title>
               <DrawerNS.Close asChild>
@@ -172,36 +172,36 @@ export function EditCustomerDrawer({
             </div>
           </DrawerNS.Header>
 
-          <DrawerNS.Body className="overflow-y-auto flex-1 bg-bg-white-0">
+          <div className="flex-1 overflow-y-auto">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(handleSubmit)}
                 className="h-full"
               >
-                <div className="p-5">
+                <div className="px-4 py-2">
                   <TabsNS.Root
                     value={activeTab}
                     onValueChange={setActiveTab}
                     className="w-full"
                   >
-                    <TabsNS.List className="mb-6 w-full justify-start border-b border-stroke-soft-200">
+                    <TabsNS.List className="mb-6 w-full justify-start border-b border-border">
                       <TabsNS.Trigger
                         value="personal"
-                        className="data-[state=active]:border-b-2 data-[state=active]:border-text-strong-950 rounded-none"
+                        className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
                       >
                         <User className="size-4 mr-2" />
                         {tFields("personalInfo")}
                       </TabsNS.Trigger>
                       <TabsNS.Trigger
                         value="address"
-                        className="data-[state=active]:border-b-2 data-[state=active]:border-text-strong-950 rounded-none"
+                        className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
                       >
                         <MapPin className="size-4 mr-2" />
                         {tFields("address")}
                       </TabsNS.Trigger>
                       <TabsNS.Trigger
                         value="additional"
-                        className="data-[state=active]:border-b-2 data-[state=active]:border-text-strong-950 rounded-none"
+                        className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
                       >
                         <FileText className="size-4 mr-2" />
                         {tFields("additionalInfo")}
@@ -231,30 +231,30 @@ export function EditCustomerDrawer({
                 </div>
               </form>
             </Form>
-          </DrawerNS.Body>
+          </div>
 
-          <DrawerNS.Footer className="flex gap-3 justify-between p-5 border-t border-stroke-soft-200 bg-bg-white-0">
-            <Button.Root
-              variant="outline"
-              size="default"
-              className="flex-1 px-6 h-12 text-base font-medium border-2 border-stroke-soft-200 bg-bg-white-0 text-text-strong-950 hover:bg-bg-white-50 hover:border-stroke-soft-300"
-              onClick={handleDiscard}
-              disabled={isLoading}
-              type="button"
-            >
-              Abbrechen
-            </Button.Root>
-            <Button.Root
-              variant="default"
-              size="default"
-              className="flex-1 px-6 h-12 text-base font-semibold shadow-sm bg-text-strong-950 text-bg-white-0 hover:bg-text-strong-900 hover:shadow-md"
-              onClick={form.handleSubmit(handleSubmit)}
-              disabled={isLoading}
-              type="submit"
-            >
-              {isLoading ? "Wird gespeichert..." : "Änderungen speichern"}
-            </Button.Root>
-          </DrawerNS.Footer>
+          <div className="border-t px-6 py-4">
+            <div className="flex gap-3">
+              <Button.Root
+                variant="outline"
+                className="flex-1"
+                onClick={handleDiscard}
+                disabled={isLoading}
+                type="button"
+              >
+                Abbrechen
+              </Button.Root>
+              <Button.Root
+                variant="default"
+                className="flex-1"
+                onClick={form.handleSubmit(handleSubmit)}
+                disabled={isLoading}
+                type="submit"
+              >
+                {isLoading ? "Wird gespeichert..." : "Änderungen speichern"}
+              </Button.Root>
+            </div>
+          </div>
         </div>
       </DrawerNS.Content>
     </DrawerNS.Root>

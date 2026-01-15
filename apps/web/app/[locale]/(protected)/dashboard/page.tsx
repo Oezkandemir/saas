@@ -16,6 +16,11 @@ import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  Card,
+  CardContent,
+  CardHeader,
+} from "@/components/ui/card";
+import {
   Table,
   TableBody,
   TableCell,
@@ -61,7 +66,6 @@ export default async function DashboardPage() {
     0
   );
 
-  // Maximal 3 KPIs: Customers, Open Quotes, Unpaid Invoices
   const kpis = [
     {
       title: t("stats.customers"),
@@ -87,212 +91,203 @@ export default async function DashboardPage() {
       icon={<LayoutDashboard className="size-4 text-primary" />}
       contentClassName=""
     >
-      {/* 1. Primary Metric - Single Focus */}
-      <div className="mb-8">
-        <p className="text-xs text-muted-foreground mb-2">
-          {t("revenue.totalRevenue")}
-        </p>
-        <p className="text-4xl font-semibold tracking-tight">
-          {new Intl.NumberFormat(undefined, {
-            style: "currency",
-            currency: "EUR",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-          }).format(totalRevenue)}
-        </p>
-      </div>
-
-      {/* 2. Maximum 3 KPIs - Minimal, Grouped */}
-      <div className="flex gap-8 mb-10 pb-8 border-b border-border">
-        {kpis.map((kpi) => (
-          <Link key={kpi.title} href={kpi.href} className="group">
-            <p className="text-xs text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
-              {kpi.title}
-            </p>
-            <p className="text-lg font-semibold">{kpi.value}</p>
-          </Link>
-        ))}
-      </div>
-
-      {/* Quick Actions / Feature Cards */}
-      <div className="mb-10 pb-8 border-b border-border">
-        <h2 className="text-sm font-semibold mb-4">
-          {t("quickActions.title")}
-        </h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Link
-            href="/dashboard/customers/new"
-            className="group border rounded-lg p-4 hover:bg-muted/50 transition-colors"
-          >
-            <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-green-500/10 group-hover:bg-green-500/20 transition-colors">
-                <Users className="size-4 text-green-500" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold mb-1 group-hover:text-primary transition-colors">
-                  {t("quickActions.newCustomer")}
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  {t("quickActions.newCustomerDescription")}
-                </p>
-              </div>
-              <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
-            </div>
-          </Link>
-
-          <Link
-            href="/dashboard/documents/new"
-            className="group border rounded-lg p-4 hover:bg-muted/50 transition-colors"
-          >
-            <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-purple-500/10 group-hover:bg-purple-500/20 transition-colors">
-                <FileText className="size-4 text-purple-500" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold mb-1 group-hover:text-primary transition-colors">
-                  {t("quickActions.newDocument")}
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  {t("quickActions.newDocumentDescription")}
-                </p>
-              </div>
-              <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
-            </div>
-          </Link>
-
-          <Link
-            href="/dashboard/qr-codes/new"
-            className="group border rounded-lg p-4 hover:bg-muted/50 transition-colors"
-          >
-            <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-orange-500/10 group-hover:bg-orange-500/20 transition-colors">
-                <QrCode className="size-4 text-orange-500" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold mb-1 group-hover:text-primary transition-colors">
-                  {t("quickActions.newQrCode")}
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  {t("quickActions.newQrCodeDescription")}
-                </p>
-              </div>
-              <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
-            </div>
-          </Link>
-
-          <Link
-            href="/dashboard/scheduling"
-            className="group border rounded-lg p-4 hover:bg-muted/50 transition-colors"
-          >
-            <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors">
-                <Calendar className="size-4 text-blue-500" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold mb-1 group-hover:text-primary transition-colors">
-                  {t("quickActions.scheduling")}
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  {t("quickActions.schedulingDescription")}
-                </p>
-              </div>
-              <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
-            </div>
-          </Link>
+      <div className="space-y-6">
+        {/* Revenue */}
+        <div className="border-b pb-4">
+          <p className="text-sm text-muted-foreground mb-1">
+            {t("revenue.totalRevenue")}
+          </p>
+          <p className="text-3xl sm:text-4xl font-semibold">
+            {new Intl.NumberFormat(undefined, {
+              style: "currency",
+              currency: "EUR",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(totalRevenue)}
+          </p>
         </div>
-      </div>
 
-      {/* 3. Data Table - Visual Focus */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold">{t("recent.documents")}</h2>
-          <div className="flex items-center gap-2">
-            <Link href="/dashboard/documents/new">
-              <Button size="sm" className="h-7 text-xs">
-                <Plus className="size-3 mr-1" />
-                {t("recent.create")}
+        {/* KPIs */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {kpis.map((kpi) => (
+            <Link key={kpi.title} href={kpi.href}>
+              <Card className="hover:bg-muted/50 transition-colors">
+                <CardHeader className="pb-3">
+                  <p className="text-sm text-muted-foreground">{kpi.title}</p>
+                  <p className="text-2xl font-semibold">{kpi.value}</p>
+                </CardHeader>
+              </Card>
+            </Link>
+          ))}
+        </div>
+
+        {/* Quick Actions */}
+        <div>
+          <h2 className="text-sm font-semibold mb-3">{t("quickActions.title")}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <Link href="/dashboard/customers/new">
+              <Button variant="outline" className="w-full justify-start h-auto py-3">
+                <Users className="size-4 mr-2" />
+                <span className="text-sm">{t("quickActions.newCustomer")}</span>
               </Button>
             </Link>
-            <Link href="/dashboard/documents">
-              <Button variant="ghost" size="sm" className="h-7 text-xs -mr-2">
-                {t("recent.all")}
-                <ArrowRight className="ml-1 size-3" />
+            <Link href="/dashboard/documents/new">
+              <Button variant="outline" className="w-full justify-start h-auto py-3">
+                <FileText className="size-4 mr-2" />
+                <span className="text-sm">{t("quickActions.newDocument")}</span>
+              </Button>
+            </Link>
+            <Link href="/dashboard/qr-codes/new">
+              <Button variant="outline" className="w-full justify-start h-auto py-3">
+                <QrCode className="size-4 mr-2" />
+                <span className="text-sm">{t("quickActions.newQrCode")}</span>
+              </Button>
+            </Link>
+            <Link href="/dashboard/scheduling">
+              <Button variant="outline" className="w-full justify-start h-auto py-3">
+                <Calendar className="size-4 mr-2" />
+                <span className="text-sm">{t("quickActions.scheduling")}</span>
               </Button>
             </Link>
           </div>
         </div>
 
-        {recentDocuments.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <FileText className="size-6 text-muted-foreground mb-3" />
-            <p className="text-sm text-muted-foreground mb-4">
-              {t("recent.noDocuments")}
-            </p>
-            <Link href="/dashboard/documents/new">
-              <Button size="sm" variant="outline" className="h-8 text-xs">
-                {t("recent.create")}
-              </Button>
-            </Link>
+        {/* Recent Documents */}
+        <div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <h2 className="text-sm font-semibold">{t("recent.documents")}</h2>
+            <div className="flex items-center gap-2">
+              <Link href="/dashboard/documents/new">
+                <Button size="sm" variant="default">
+                  <Plus className="size-3 mr-1" />
+                  {t("recent.create")}
+                </Button>
+              </Link>
+              <Link href="/dashboard/documents">
+                <Button size="sm" variant="ghost">
+                  {t("recent.all")}
+                  <ArrowRight className="ml-1 size-3" />
+                </Button>
+              </Link>
+            </div>
           </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow className="border-b border-border">
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground">
-                  {tTable("number")}
-                </TableHead>
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground">
-                  {tTable("type")}
-                </TableHead>
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground">
-                  {tTable("date")}
-                </TableHead>
-                <TableHead className="h-9 text-xs font-medium text-muted-foreground text-right">
-                  {tTable("amount")}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentDocuments.map((doc) => (
-                <TableRow
-                  key={doc.id}
-                  className="border-b border-border hover:bg-muted/50 transition-colors"
-                >
-                  <TableCell className="py-3">
-                    <Link
-                      href={`/dashboard/documents/${doc.id}`}
-                      className="text-sm font-medium hover:text-primary transition-colors"
-                    >
-                      {doc.document_number}
-                    </Link>
-                  </TableCell>
-                  <TableCell className="py-3">
-                    <Badge variant="outline" className="text-xs font-normal">
-                      {doc.type === "quote" ? tDocs("quote") : tDocs("invoice")}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="py-3 text-xs text-muted-foreground">
-                    {new Date(doc.document_date).toLocaleDateString(undefined, {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </TableCell>
-                  <TableCell className="py-3 text-right text-sm font-medium">
-                    {doc.total
-                      ? new Intl.NumberFormat(undefined, {
-                          style: "currency",
-                          currency: "EUR",
-                          minimumFractionDigits: 0,
-                          maximumFractionDigits: 0,
-                        }).format(doc.total)
-                      : "-"}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
+
+          {recentDocuments.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                <FileText className="size-6 text-muted-foreground mb-3" />
+                <p className="text-sm text-muted-foreground mb-4">
+                  {t("recent.noDocuments")}
+                </p>
+                <Link href="/dashboard/documents/new">
+                  <Button size="sm" variant="outline">
+                    {t("recent.create")}
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              {/* Desktop Table */}
+              <div className="hidden sm:block">
+                <Card>
+                  <CardContent className="p-0">
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="text-xs">{tTable("number")}</TableHead>
+                            <TableHead className="text-xs">{tTable("type")}</TableHead>
+                            <TableHead className="text-xs">{tTable("date")}</TableHead>
+                            <TableHead className="text-xs text-right">{tTable("amount")}</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {recentDocuments.map((doc) => (
+                            <TableRow key={doc.id} className="hover:bg-muted/50">
+                              <TableCell>
+                                <Link
+                                  href={`/dashboard/documents/${doc.id}`}
+                                  className="text-sm font-medium hover:text-primary"
+                                >
+                                  {doc.document_number}
+                                </Link>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className="text-xs">
+                                  {doc.type === "quote" ? tDocs("quote") : tDocs("invoice")}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-xs text-muted-foreground">
+                                {new Date(doc.document_date).toLocaleDateString(undefined, {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                })}
+                              </TableCell>
+                              <TableCell className="text-right text-sm font-medium">
+                                {doc.total
+                                  ? new Intl.NumberFormat(undefined, {
+                                      style: "currency",
+                                      currency: "EUR",
+                                      minimumFractionDigits: 0,
+                                      maximumFractionDigits: 0,
+                                    }).format(doc.total)
+                                  : "-"}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="sm:hidden space-y-3">
+                {recentDocuments.map((doc) => (
+                  <Card key={doc.id}>
+                    <CardHeader>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <Link
+                            href={`/dashboard/documents/${doc.id}`}
+                            className="text-sm font-medium hover:text-primary block truncate"
+                          >
+                            {doc.document_number}
+                          </Link>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {new Date(doc.document_date).toLocaleDateString(undefined, {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </p>
+                        </div>
+                        <div className="flex flex-col items-end gap-1">
+                          <Badge variant="outline" className="text-xs">
+                            {doc.type === "quote" ? tDocs("quote") : tDocs("invoice")}
+                          </Badge>
+                          {doc.total && (
+                            <p className="text-sm font-semibold">
+                              {new Intl.NumberFormat(undefined, {
+                                style: "currency",
+                                currency: "EUR",
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 0,
+                              }).format(doc.total)}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </UnifiedPageLayout>
   );

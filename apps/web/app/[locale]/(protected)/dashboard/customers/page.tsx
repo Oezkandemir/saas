@@ -3,11 +3,16 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { type Customer, getCustomers } from "@/actions/customers-actions";
 import { CustomersTableClient } from "@/components/customers/customers-table-client";
-import { NewCustomerDrawerEmptyState } from "@/components/customers/new-customer-drawer-empty-state";
+import { CustomersMobileList } from "@/components/customers/customers-mobile-list";
 import { NewCustomerDrawerWrapper } from "@/components/customers/new-customer-drawer-wrapper";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import { PlanLimitWarning } from "@/components/plan-limit-warning";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/session";
+import { NewCustomerDrawerEmptyState } from "@/components/customers/new-customer-drawer-empty-state";
+import { PlanLimitWarning } from "@/components/plan-limit-warning";
 
 // ISR: Revalidate every 60 seconds for fresh customer data
 export const revalidate = 60;
@@ -27,19 +32,31 @@ export default async function CustomersPage() {
       actions={<NewCustomerDrawerWrapper />}
       contentClassName=""
     >
-      {/* Plan Limit Warning */}
-      <PlanLimitWarning limitType="customers" />
+      <div className="space-y-4">
+        {/* Plan Limit Warning */}
+        <PlanLimitWarning limitType="customers" />
 
-      {/* Data Table - Visual Focus, genau wie Dashboard */}
-      <div>
+        {/* Customers List */}
         {customers.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center border border-border rounded-lg">
-            <Users className="size-8 text-muted-foreground mb-2" />
-            <p className="text-sm font-medium mb-1">{t("empty.title")}</p>
-            <NewCustomerDrawerEmptyState />
-          </div>
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+              <Users className="size-8 text-muted-foreground mb-3" />
+              <p className="text-sm font-medium mb-1">{t("empty.title")}</p>
+              <NewCustomerDrawerEmptyState />
+            </CardContent>
+          </Card>
         ) : (
-          <CustomersTableClient customers={customers} />
+          <>
+            {/* Desktop Table */}
+            <div className="hidden sm:block overflow-x-auto">
+              <CustomersTableClient customers={customers} />
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="sm:hidden">
+              <CustomersMobileList customers={customers} />
+            </div>
+          </>
         )}
       </div>
     </UnifiedPageLayout>

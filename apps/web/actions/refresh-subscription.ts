@@ -4,7 +4,6 @@ import { revalidateTag } from "next/cache";
 import { auth } from "@/auth";
 
 import { logger } from "@/lib/logger";
-import { getUserSubscriptionPlan } from "@/lib/subscription";
 
 export type RefreshResult = {
   success: boolean;
@@ -38,7 +37,17 @@ export async function refreshSubscription(): Promise<RefreshResult> {
     revalidateTag("subscription-plan", "max");
 
     // Get current subscription plan (will use fresh data after sync)
-    const updatedPlan = await getUserSubscriptionPlan(user.id);
+    // Skip cache to ensure we get the latest data after sync
+    const { getUserSubscriptionPlan } = await import("@/lib/subscription");
+    const updatedPlan = await getUserSubscriptionPlan(user.id, user.email);
+
+    // Log the plan details for debugging
+    logger.info("Subscription refreshed:", {
+      plan: updatedPlan.title,
+      isPaid: updatedPlan.isPaid,
+      productId: updatedPlan.polarProductId,
+      interval: updatedPlan.interval,
+    });
 
     return {
       success: true,

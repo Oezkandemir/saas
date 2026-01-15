@@ -25,6 +25,14 @@ const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue
 );
 
+type FormItemContextValue = {
+  id: string;
+};
+
+const FormItemContext = React.createContext<FormItemContextValue>(
+  {} as FormItemContextValue
+);
+
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -41,41 +49,57 @@ const FormField = <
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext);
   const itemContext = React.useContext(FormItemContext);
-  const { getFieldState, formState, watch } = useFormContext();
-
-  const fieldState = getFieldState(fieldContext.name, formState);
-  const fieldValue = watch(fieldContext.name);
-  const isDirty = formState.dirtyFields[fieldContext.name];
-  const isValid =
-    !fieldState.error &&
-    isDirty &&
-    fieldValue !== undefined &&
-    fieldValue !== "";
-
+  
   if (!fieldContext) {
     throw new Error("useFormField should be used within <FormField>");
   }
 
-  const { id } = itemContext;
+  // Safely get form context - may be null if used outside FormProvider
+  let formContext: ReturnType<typeof useFormContext> | null = null;
+  try {
+    formContext = useFormContext();
+  } catch {
+    // FormProvider not available - this is okay for some components
+  }
 
+  const { id } = itemContext || { id: React.useId() };
+
+  // If form context is available, use it for field state
+  if (formContext) {
+    const { getFieldState, formState, watch } = formContext;
+    const fieldState = getFieldState(fieldContext.name, formState);
+    const fieldValue = watch(fieldContext.name);
+    const isDirty = formState.dirtyFields[fieldContext.name];
+    const isValid =
+      !fieldState.error &&
+      isDirty &&
+      fieldValue !== undefined &&
+      fieldValue !== "";
+
+    return {
+      id,
+      name: fieldContext.name,
+      formItemId: `${id}-form-item`,
+      formDescriptionId: `${id}-form-item-description`,
+      formMessageId: `${id}-form-item-message`,
+      isValid,
+      ...fieldState,
+    };
+  }
+
+  // Fallback when FormProvider is not available
   return {
     id,
     name: fieldContext.name,
     formItemId: `${id}-form-item`,
     formDescriptionId: `${id}-form-item-description`,
     formMessageId: `${id}-form-item-message`,
-    isValid,
-    ...fieldState,
+    isValid: false,
+    error: undefined,
+    isDirty: false,
+    isTouched: false,
   };
 };
-
-type FormItemContextValue = {
-  id: string;
-};
-
-const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue
-);
 
 const FormItem = React.forwardRef<
   HTMLDivElement,
@@ -139,7 +163,12 @@ const FormDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => {
-  const { formDescriptionId } = useFormField();
+  // NOTE: This component does NOT use useFormField() to avoid requiring FormProvider
+  // It only uses FormItemContext which is always available when used within FormItem
+  const itemContext = React.useContext(FormItemContext);
+  const formDescriptionId = itemContext?.id
+    ? `${itemContext.id}-form-item-description`
+    : undefined;
 
   return (
     <p

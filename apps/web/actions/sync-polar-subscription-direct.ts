@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidateTag } from "next/cache";
 import { auth } from "@/auth";
 
 import { pricingData } from "@/config/subscriptions";
@@ -458,13 +459,33 @@ export async function syncPolarSubscriptionDirect(): Promise<{
       await supabaseAdmin.from("subscriptions").insert(subscriptionData);
     }
 
-    // Note: Cache invalidation is handled by unstable_noStore() in the page component
-    // We don't call revalidateTag here to avoid calling it during render
+    // Invalidate cache to ensure fresh data on next request
+    revalidateTag("subscription-plan", "max");
 
     // Reuse planName and userInfo from above (already declared at line 362-363)
     logger.info(
-      `Successfully synced subscription from Polar API: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"}) → Plan: ${planName}, Status: ${status}`
+      `Successfully synced subscription from Polar API: User "${userInfo?.name || "Unknown"}" (${userInfo?.email || "Unknown"}) → Plan: ${planName}, Status: ${status}, Product ID: ${productId}`
     );
+
+    // Log available plan IDs for debugging
+    const availablePlanIds = pricingData.map((plan) => ({
+      title: plan.title,
+      monthly: plan.polarIds?.monthly,
+      yearly: plan.polarIds?.yearly,
+    }));
+    
+    logger.info("Available plan IDs for matching:", availablePlanIds);
+    
+    // Check if product ID matches any configured plan
+    const matchesPlan = availablePlanIds.some(
+      (p) => p.monthly === productId || p.yearly === productId
+    );
+    
+    if (!matchesPlan && productId) {
+      logger.warn(
+        `Product ID ${productId} does not match any configured plan IDs. This may cause the plan to show as Free.`
+      );
+    }
 
     return {
       success: true,
