@@ -37,7 +37,9 @@
         "POLAR_ACCESS_TOKEN",
         "POLAR_SUCCESS_URL",
         "POLAR_USE_SANDBOX",
-        "USE_REAL_EMAIL"
+        "USE_REAL_EMAIL",
+        "TURBO_TEAM",
+        "TURBO_REMOTE_ONLY"
       ],
       "cache": true,
       "persistent": false

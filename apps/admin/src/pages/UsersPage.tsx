@@ -82,7 +82,8 @@ export default function UsersPage() {
   const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set());
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_editingUser, setEditingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [newRole, setNewRole] = useState<string>("");
 
@@ -221,7 +222,6 @@ export default function UsersPage() {
   };
 
   const allSelected = users.length > 0 && selectedUserIds.size === users.length;
-  const someSelected = selectedUserIds.size > 0 && selectedUserIds.size < users.length;
 
   if (isLoading) {
     return (
@@ -561,8 +561,6 @@ export default function UsersPage() {
               currentPage={page}
               totalPages={paginatedData.totalPages}
               onPageChange={setPage}
-              totalItems={paginatedData.total}
-              pageSize={pageSize}
             />
           </div>
         )}
