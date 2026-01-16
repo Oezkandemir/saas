@@ -339,9 +339,6 @@ const nextConfig = {
   // Disable source maps in production for faster builds
   productionBrowserSourceMaps: false,
 
-  // ⚡ SWC MINIFICATION (faster than Terser)
-  swcMinify: true,
-
   // ⚡ TYPESCRIPT OPTIMIZATIONS
   typescript: {
     // Skip type checking during build for faster builds (use CI for that)
