@@ -12,6 +12,7 @@ import {
   LogOut,
   Moon,
   Settings,
+  Shield,
   Sun,
   User as UserIcon,
   X,
@@ -152,6 +153,18 @@ export function UserAccountNav() {
       label: tNav("dashboard"),
       onClick: () => setDrawerOpen(false),
     },
+    // Admin Dashboard Link (only for ADMIN users)
+    ...(userRole === "ADMIN"
+      ? [
+          {
+            href: "https://admin.cenety.com",
+            icon: Shield,
+            label: t("adminDashboard") || "Admin Dashboard",
+            onClick: () => setDrawerOpen(false),
+            external: true,
+          },
+        ]
+      : []),
     {
       href: "/profile",
       icon: UserIcon,
@@ -291,25 +304,33 @@ export function UserAccountNav() {
 
             {/* Navigation Links */}
             <div className="px-4 py-2">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  prefetch={true}
-                  onClick={item.onClick}
-                  className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground"
-                >
-                  <div className="flex items-center gap-3">
-                    <item.icon className="size-4 shrink-0" />
-                    <span>{item.label}</span>
-                  </div>
-                  {item.badge && (
-                    <span className="flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-semibold">
-                      {item.badge > 99 ? "99+" : item.badge}
-                    </span>
-                  )}
-                </Link>
-              ))}
+              {menuItems.map((item) => {
+                const linkProps = {
+                  href: item.href,
+                  prefetch: !(item as { external?: boolean }).external,
+                  onClick: item.onClick,
+                  className:
+                    "flex items-center justify-between gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground",
+                  ...((item as { external?: boolean }).external && {
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                  }),
+                };
+
+                return (
+                  <Link key={item.href} {...linkProps}>
+                    <div className="flex items-center gap-3">
+                      <item.icon className="size-4 shrink-0" />
+                      <span>{item.label}</span>
+                    </div>
+                    {item.badge && (
+                      <span className="flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-semibold">
+                        {item.badge > 99 ? "99+" : item.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
 
               <Separator className="my-2" />
 

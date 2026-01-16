@@ -57,6 +57,7 @@
   "UserNav": {
     "admin": "Admin",
     "adminPanel": "Admin Panel",
+    "adminDashboard": "Admin Dashboard",
     "account": "Account",
     "profile": "Profile",
     "company": "Company",
