@@ -119,12 +119,20 @@ export default function CompaniesPage() {
 
   const handleSave = async () => {
     if (editingCompany) {
-      await updateProfile.mutateAsync({
-        id: editingCompany.id,
-        updates: editForm,
-      });
-      setIsEditing(false);
-      setSelectedCompany(null);
+      try {
+        await updateProfile.mutateAsync({
+          id: editingCompany.id,
+          updates: editForm,
+        });
+        // Close dialog on success (error handling is done in mutation)
+        setIsEditing(false);
+        setSelectedCompany(null);
+        setEditingCompany(null);
+        setEditForm({});
+      } catch (error) {
+        // Error is already handled by the mutation's onError callback
+        // Don't close dialog on error so user can retry
+      }
     }
   };
 

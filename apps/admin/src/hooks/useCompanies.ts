@@ -68,9 +68,14 @@ export function useUpdateCompanyProfile() {
       id: string;
       updates: Partial<CompanyProfile>;
     }) => updateCompanyProfile(id, updates),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["company-profiles"] });
-      toast.success("Company profile updated successfully");
+    onSuccess: (response) => {
+      if (response.success) {
+        queryClient.invalidateQueries({ queryKey: ["company-profiles"] });
+        toast.success("Company profile updated successfully");
+      } else {
+        toast.error(response.error || "Failed to update company profile");
+        throw new Error(response.error || "Failed to update company profile");
+      }
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to update company profile");

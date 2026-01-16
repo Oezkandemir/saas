@@ -1,4 +1,4 @@
-import { supabase } from "../lib/supabase";
+import { supabase, createAdminClient } from "../lib/supabase";
 import { ApiClient, ApiResponse } from "./client";
 
 export type ProfileType = "personal" | "team";
@@ -235,8 +235,11 @@ export async function updateCompanyProfile(
 ): Promise<ApiResponse<CompanyProfile>> {
   await ApiClient.ensureAdmin();
 
+  // Use admin client with service role key to bypass RLS
+  const adminClient = createAdminClient();
+
   return ApiClient.fetch(async () => {
-    const { data, error } = await supabase
+    const { data, error } = await adminClient
       .from("company_profiles")
       .update({
         ...updates,
@@ -263,15 +266,18 @@ export async function setDefaultCompanyProfile(
 ): Promise<ApiResponse<void>> {
   await ApiClient.ensureAdmin();
 
+  // Use admin client with service role key to bypass RLS
+  const adminClient = createAdminClient();
+
   return ApiClient.fetch(async () => {
     // First, unset all defaults for this user
-    await supabase
+    await adminClient
       .from("company_profiles")
       .update({ is_default: false })
       .eq("user_id", userId);
 
     // Then set the new default
-    const { error } = await supabase
+    const { error } = await adminClient
       .from("company_profiles")
       .update({ is_default: true })
       .eq("id", profileId)
