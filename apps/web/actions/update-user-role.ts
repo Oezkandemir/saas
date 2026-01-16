@@ -1,7 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import type { UserRole } from "@/components/forms/user-role-form";
+// UserRole type - admin functionality moved to separate admin dashboard
+export enum UserRole {
+  USER = "USER",
+  ADMIN = "ADMIN",
+}
 import { supabaseAdmin } from "@/lib/db-admin";
 import { logger } from "@/lib/logger";
 import { getCurrentUser, getSession } from "@/lib/session";
@@ -63,7 +67,6 @@ export async function updateUserRole(userId: string, data: FormData) {
     // Force revalidation of all relevant paths
     revalidatePath("/dashboard/settings");
     revalidatePath("/dashboard");
-    revalidatePath("/admin");
 
     return { status: "success" };
   } catch (error) {

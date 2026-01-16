@@ -9,7 +9,6 @@ import {
   Globe,
   Home,
   LayoutDashboard,
-  Lock,
   LogOut,
   Moon,
   Settings,
@@ -186,15 +185,7 @@ export function UserAccountNav() {
     },
   ];
 
-  // Admin-only menu items
-  const adminItems = [
-    {
-      href: "/admin",
-      icon: Lock,
-      label: t("adminPanel"),
-      onClick: () => setDrawerOpen(false),
-    },
-  ];
+  // Admin panel moved to separate admin dashboard (apps/admin)
 
   // Public navigation items
   const publicItems = [
@@ -319,21 +310,6 @@ export function UserAccountNav() {
                   )}
                 </Link>
               ))}
-
-              {/* Admin Panel */}
-              {userRole === "ADMIN" &&
-                adminItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    prefetch={true}
-                    onClick={item.onClick}
-                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground"
-                  >
-                    <item.icon className="size-4 shrink-0" />
-                    <span>{item.label}</span>
-                  </Link>
-                ))}
 
               <Separator className="my-2" />
 

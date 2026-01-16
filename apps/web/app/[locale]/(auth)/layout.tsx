@@ -16,11 +16,7 @@ export default async function AuthLayout({ children }: AuthLayoutProps) {
   // OPTIMIZATION: Only redirect if user is authenticated
   // Don't redirect if already on target page to prevent loops
   if (user) {
-    if (user.role === "ADMIN") {
-      redirect(`/${locale}/admin`);
-    } else {
-      redirect(`/${locale}/dashboard`);
-    }
+    redirect(`/${locale}/dashboard`);
   }
 
   return (

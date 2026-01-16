@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 interface PlanGateProps {
   children: ReactNode;
-  requiredPlan: "starter" | "pro";
+  requiredPlan: "pro" | "enterprise";
   currentPlan?: string;
   className?: string;
 }
@@ -25,7 +25,7 @@ export function PlanGate({
   currentPlan = "free",
   className,
 }: PlanGateProps) {
-  const planHierarchy = { free: 0, starter: 1, pro: 2 };
+  const planHierarchy = { free: 0, pro: 1, enterprise: 2 };
   const hasAccess =
     planHierarchy[currentPlan.toLowerCase() as keyof typeof planHierarchy] >=
     planHierarchy[requiredPlan];
@@ -50,7 +50,7 @@ export function PlanGate({
         <TooltipContent side="top" className="max-w-xs">
           <div className="flex flex-col gap-2">
             <p className="font-medium">
-              Verfügbar in {requiredPlan === "pro" ? "Pro" : "Starter"}
+              Verfügbar in {requiredPlan === "pro" ? "Pro" : "Enterprise"}
             </p>
             <Button asChild size="sm" className="w-full">
               <Link href="/dashboard/billing">Upgrade</Link>

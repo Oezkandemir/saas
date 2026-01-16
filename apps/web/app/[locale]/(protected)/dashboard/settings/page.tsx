@@ -1,45 +1,24 @@
 import {
   ArrowRight,
-  Bell,
-  Building2,
   CheckCircle2,
   CreditCard,
-  FileText,
-  Globe,
-  Key,
-  Lock,
-  Palette,
   Settings,
-  Shield,
-  Trash2,
   User,
-  UserCircle,
-  Webhook,
   XCircle,
   Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-import { UserAvatarForm } from "@/components/forms/user-avatar-form";
-import { UserNameForm } from "@/components/forms/user-name-form";
-import { AccountDeletion } from "@/components/gdpr/account-deletion";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { SettingsPageDrawer } from "@/components/settings/settings-page-drawer";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { logger } from "@/lib/logger";
 import { getAllPlanFeatures, type PlanFeaturesInfo } from "@/lib/plan-features";
 import { getCurrentUser } from "@/lib/session";
@@ -87,58 +66,6 @@ export default async function SettingsPage() {
     .eq("user_id", user.id)
     .single();
   const twoFactorEnabled = twoFactorData?.enabled || false;
-
-  const settingsSections = [
-    {
-      title: t("companySettings.title"),
-      description: t("companySettings.description"),
-      icon: Building2,
-      href: "/dashboard/settings/company",
-      color: "text-blue-500",
-      bgColor: "bg-blue-500/10",
-    },
-    {
-      title: t("preferences.title"),
-      description: t("preferences.description"),
-      icon: Palette,
-      href: "/dashboard/settings/preferences",
-      color: "text-purple-500",
-      bgColor: "bg-purple-500/10",
-    },
-    {
-      title: t("security.title"),
-      description: t("security.description"),
-      icon: Shield,
-      href: "/dashboard/settings/security",
-      color: "text-green-500",
-      bgColor: "bg-green-500/10",
-      badge: twoFactorEnabled ? (
-        <Badge
-          variant="default"
-          className="text-xs text-green-600 bg-green-500/10 border-green-500/20"
-        >
-          <CheckCircle2 className="mr-1 size-3" />
-          {t("security.twoFactorActive")}
-        </Badge>
-      ) : null,
-    },
-    {
-      title: t("notifications.title"),
-      description: t("notifications.description"),
-      icon: Bell,
-      href: "/dashboard/settings/preferences#notifications",
-      color: "text-orange-500",
-      bgColor: "bg-orange-500/10",
-    },
-    {
-      title: t("privacy.title"),
-      description: t("privacy.gdprDescription"),
-      icon: Lock,
-      href: "/dashboard/settings/privacy",
-      color: "text-red-500",
-      bgColor: "bg-red-500/10",
-    },
-  ];
 
   return (
     <UnifiedPageLayout
@@ -283,200 +210,14 @@ export default async function SettingsPage() {
         )}
       </div>
 
-      {/* Profile Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex gap-2 items-center">
-            <User className="size-5 text-primary" />
-            <CardTitle>{t("profile.title")}</CardTitle>
-          </div>
-          <CardDescription>{t("profile.description")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Accordion
-            type="single"
-            defaultValue="profile"
-            collapsible
-            className="w-full"
-          >
-            <AccordionItem value="profile">
-              <AccordionTrigger className="flex items-center gap-2">
-                <UserCircle className="size-4 text-muted-foreground" />
-                <span>{t("profile.editProfile")}</span>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-6 pt-4">
-                  {/* Avatar Section */}
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium text-foreground">
-                      {t("profilePicture.label")}
-                    </Label>
-                    <UserAvatarForm
-                      user={{
-                        id: user.id,
-                        avatar_url: user.user_metadata?.avatar_url,
-                      }}
-                    />
-                  </div>
-
-                  <div className="border-t" />
-
-                  {/* Name Section */}
-                  <div className="space-y-3">
-                    <Label
-                      className="text-sm font-medium text-foreground"
-                      htmlFor="name"
-                    >
-                      {t("userName.label")}
-                    </Label>
-                    <UserNameForm
-                      user={{ id: user.id, name: user.name || "" }}
-                    />
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </CardContent>
-      </Card>
-
-      {/* Settings Grid */}
-      <div className="grid gap-4 md:grid-cols-2">
-        {settingsSections.map((section) => {
-          const Icon = section.icon;
-          return (
-            <Link key={section.href} href={section.href}>
-              <Card className="h-full transition-all cursor-pointer hover:border-primary/50 group">
-                <CardContent className="p-4">
-                  <div className="flex gap-3 items-start">
-                    <div
-                      className={`flex items-center justify-center size-10 rounded-lg ${section.bgColor} shrink-0`}
-                    >
-                      <Icon className={`size-5 ${section.color}`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex gap-2 justify-between items-start">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="mb-1 text-sm font-semibold break-words">
-                            {section.title}
-                          </h3>
-                          <p className="text-xs break-words text-muted-foreground">
-                            {section.description}
-                          </p>
-                        </div>
-                        {section.badge}
-                      </div>
-                      <div className="flex items-center mt-3 text-xs text-primary group-hover:underline">
-                        {t("manage")}
-                        <ArrowRight className="ml-1 transition-transform size-3 group-hover:translate-x-1" />
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* Additional Features */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <div className="flex gap-2 items-center">
-              <Key className="size-5 text-primary" />
-              <CardTitle>{t("apiIntegrations.title")}</CardTitle>
-            </div>
-            <CardDescription>
-              {t("apiIntegrations.description")}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
-                <div className="flex gap-2 items-center">
-                  <Key className="size-4 text-muted-foreground" />
-                  <span className="text-sm">
-                    {t("apiIntegrations.apiKeys")}
-                  </span>
-                </div>
-                <Badge variant="outline" className="text-xs">
-                  {t("comingSoon")}
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
-                <div className="flex gap-2 items-center">
-                  <Webhook className="size-4 text-muted-foreground" />
-                  <span className="text-sm">
-                    {t("apiIntegrations.webhooks")}
-                  </span>
-                </div>
-                <Badge variant="outline" className="text-xs">
-                  {t("comingSoon")}
-                </Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <div className="flex gap-2 items-center">
-              <FileText className="size-5 text-primary" />
-              <CardTitle>{t("documentsExport.title")}</CardTitle>
-            </div>
-            <CardDescription>
-              {t("documentsExport.description")}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
-                <div className="flex gap-2 items-center">
-                  <FileText className="size-4 text-muted-foreground" />
-                  <span className="text-sm">
-                    {t("documentsExport.exportFormats")}
-                  </span>
-                </div>
-                <Badge variant="outline" className="text-xs">
-                  {t("comingSoon")}
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center p-3 rounded-lg border bg-muted/30">
-                <div className="flex gap-2 items-center">
-                  <Globe className="size-4 text-muted-foreground" />
-                  <span className="text-sm">
-                    {t("documentsExport.languageRegion")}
-                  </span>
-                </div>
-                <Link
-                  href="/dashboard/settings/preferences"
-                  className="flex gap-1 items-center text-xs text-primary hover:underline"
-                >
-                  {t("manage")}
-                  <ArrowRight className="size-3" />
-                </Link>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Danger Zone */}
-      <Card className="border-destructive/50">
-        <CardHeader>
-          <div className="flex gap-2 items-center">
-            <Trash2 className="size-5 text-destructive" />
-            <CardTitle className="text-destructive">
-              {t("dangerZone.title")}
-            </CardTitle>
-          </div>
-          <CardDescription>{t("dangerZone.description")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <AccountDeletion />
-        </CardContent>
-      </Card>
+      {/* Settings Grid with Drawers */}
+      <SettingsPageDrawer
+        user={user}
+        emailVerified={emailVerified}
+        twoFactorEnabled={twoFactorEnabled}
+        subscriptionPlan={subscriptionPlan}
+        planFeatures={planFeatures}
+      />
     </UnifiedPageLayout>
   );
 }

@@ -124,7 +124,7 @@ export default async function proxy(request: NextRequest) {
   } = await supabase.auth.getSession();
 
   // Define route checks
-  const protectedRoutes = ["/dashboard", "/settings", "/account", "/admin"];
+  const protectedRoutes = ["/dashboard", "/settings", "/account"];
   const authRoutes = ["/login", "/register", "/auth"];
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathnameWithoutLocale.startsWith(route)
@@ -194,7 +194,7 @@ export default async function proxy(request: NextRequest) {
       // Use cached role
     } else {
       // Only query database if cache miss (async, don't block)
-      // For redirect, use default USER and let AuthLayout handle admin redirect
+      // For redirect, use default USER
       // This prevents blocking the redirect with a DB query
 
       // Update cache asynchronously (don't await)
@@ -214,7 +214,7 @@ export default async function proxy(request: NextRequest) {
 
     // Check for redirectTo param first, then use default
     const redirectTo =
-      request.nextUrl.searchParams.get("redirectTo") || "/dashboard"; // Always redirect to dashboard, let AuthLayout handle admin redirect
+      request.nextUrl.searchParams.get("redirectTo") || "/dashboard";
 
     return NextResponse.redirect(
       new URL(`/${locale}${redirectTo}`, request.url)

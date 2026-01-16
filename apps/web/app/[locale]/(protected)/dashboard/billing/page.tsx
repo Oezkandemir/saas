@@ -6,10 +6,10 @@ import { Suspense } from "react";
 import type { UserSubscriptionPlan } from "types";
 import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
 import { AutoSyncSubscription } from "@/components/pricing/auto-sync-subscription";
+import { AutoSyncSubscriptionDirect } from "@/components/pricing/auto-sync-subscription-direct";
 import { BillingInfo } from "@/components/pricing/billing-info";
 import { RefreshSubscriptionButton } from "@/components/pricing/refresh-subscription-button";
 import { pricingData } from "@/config/subscriptions";
-import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { constructMetadata } from "@/lib/utils";
@@ -42,48 +42,10 @@ export default async function BillingPage({
   // Resolve searchParams (Next.js 15 requires awaiting)
   const resolvedSearchParams = await searchParams;
 
-  // Always sync subscription directly from Polar API to ensure latest data
-  // This is critical for showing the correct plan after plan changes
-  let syncSuccess = false;
-  try {
-    const { syncPolarSubscriptionDirect } = await import(
-      "@/actions/sync-polar-subscription-direct"
-    );
-    const syncResult = await syncPolarSubscriptionDirect();
-    syncSuccess = syncResult.success;
-    // Only log errors, not successful syncs
-  } catch (error) {
-    logger.error("Error syncing subscription from Polar API:", error);
-    // Continue loading page even if sync fails - will show cached data
-  }
-
-  // If checkout_id is present, also sync from checkout
-  if (resolvedSearchParams?.checkout_id) {
-    try {
-      const { syncPolarSubscriptionFromCheckout } = await import(
-        "@/actions/sync-polar-subscription"
-      );
-      const checkoutSyncResult = await syncPolarSubscriptionFromCheckout(
-        resolvedSearchParams.checkout_id
-      );
-      syncSuccess = checkoutSyncResult.success || syncSuccess;
-      // Only log errors, not successful syncs
-    } catch (error) {
-      logger.error("Error syncing subscription from checkout:", error);
-      // Continue loading page even if sync fails
-    }
-  }
-
-  // After sync, ensure we get fresh data (cache invalidation happens in server action)
-  if (syncSuccess) {
-    const { unstable_noStore } = await import("next/cache");
-
-    // Force no cache for this request to get fresh data
-    // No delay needed - cache invalidation and unstable_noStore ensure fresh data
-    unstable_noStore();
-
-    logger.info("Sync successful, forcing fresh data load");
-  }
+  // Note: Subscription syncing is now handled by client components after render:
+  // - AutoSyncSubscriptionDirect: Syncs directly from Polar API after page load
+  // - AutoSyncSubscription: Syncs from checkout_id when returning from checkout
+  // This avoids calling revalidateTag during render, which Next.js doesn't allow
 
   // Default free plan for admins or when subscription fetch fails
   const defaultFreePlan: UserSubscriptionPlan = {
@@ -105,10 +67,8 @@ export default async function BillingPage({
 
   // Try to get subscription plan for both USER and ADMIN roles
   // Admins might not have a subscription, but should still be able to view the page
-  // Skip cache if we just synced to ensure we get fresh data
   try {
     if (user.role === "USER") {
-      // After sync, bypass cache to get fresh data
       const plan = await getUserSubscriptionPlan(user.id, user.email);
       userSubscriptionPlan = plan || defaultFreePlan;
     } else if (user.role === "ADMIN") {
@@ -128,7 +88,6 @@ export default async function BillingPage({
   } catch (error) {
     // If there's an error fetching subscription, use default plan
     // This allows admins to view the page even without a subscription
-    logger.error("Error fetching subscription plan:", error);
     userSubscriptionPlan = defaultFreePlan;
   }
 
@@ -151,6 +110,7 @@ export default async function BillingPage({
     >
       <Suspense fallback={null}>
         <AutoSyncSubscription />
+        <AutoSyncSubscriptionDirect />
       </Suspense>
 
       {/* Subscription Details - Visual Center */}

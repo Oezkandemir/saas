@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 
 import { NewsletterForm } from "../forms/newsletter-form";
 import { Icons } from "../shared/icons";
-import { SystemStatusLink } from "./system-status-link";
 
 export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
   const t = useTranslations("Footer");
@@ -61,9 +60,6 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
 
       <div className="border-t py-4">
         <div className="container grid max-w-6xl grid-cols-3 items-center">
-          <div className="hidden sm:block">
-            <SystemStatusLink />
-          </div>
           <p className="col-span-3 text-center text-sm text-muted-foreground sm:col-span-1">
             Powered by Cenety &copy; 2025.
           </p>
@@ -79,10 +75,6 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
             </Link>
             <ModeToggle />
           </div>
-        </div>
-        {/* Mobile: Show system status below */}
-        <div className="container max-w-6xl sm:hidden mt-4 flex justify-center">
-          <SystemStatusLink />
         </div>
       </div>
     </footer>

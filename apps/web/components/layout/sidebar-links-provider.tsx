@@ -6,7 +6,6 @@ import { SearchCommand } from "@/components/dashboard/search-command";
 import { TwoFactorSecurityBanner } from "@/components/security/two-factor-security-banner";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
-import { adminSidebarLinks } from "@/config/admin";
 import { sidebarLinks } from "@/config/dashboard";
 import { emailSidebarLinks } from "@/config/emails";
 
@@ -29,23 +28,9 @@ export function SidebarLinksProvider({
   children,
 }: SidebarLinksProviderProps) {
   const pathname = usePathname();
-  // Check if we're on an admin route (handles both /admin and /locale/admin)
-  // Matches: /admin, /admin/, /en/admin, /de/admin, /en/admin/users, etc.
-  const isAdminRoute =
-    pathname?.includes("/admin") || pathname?.match(/\/[a-z]{2}\/admin/);
 
-  // Check if we're on the emails page - use email-specific sidebar
-  const isEmailsPage =
-    pathname?.includes("/admin/emails") &&
-    !pathname?.includes("/admin/emails/inbound/");
-
-  // Use email sidebar links if on emails page, admin sidebar links if on admin route and user is admin, otherwise use dashboard links
-  let baseLinks = sidebarLinks;
-  if (isEmailsPage && userRole === "ADMIN") {
-    baseLinks = emailSidebarLinks;
-  } else if (isAdminRoute && userRole === "ADMIN") {
-    baseLinks = adminSidebarLinks;
-  }
+  // Use dashboard links (admin email management moved to separate admin dashboard)
+  const baseLinks = sidebarLinks;
 
   // Filter sidebar links based on user role
   const filteredLinks = baseLinks.map((section) => ({
@@ -72,8 +57,7 @@ export function SidebarLinksProvider({
     <div className="flex min-h-screen w-full">
       <ScrollToTop />
       {/* Desktop Sidebar - sticky, only visible on lg screens and above (1024px+) */}
-      {/* Show email-specific sidebar on emails page, otherwise normal sidebar */}
-      <DashboardSidebar links={filteredLinks} showBackButton={isEmailsPage} />
+      <DashboardSidebar links={filteredLinks} showBackButton={false} />
       {/* Main Content Area - full width on mobile/tablet, adjusted on desktop */}
       <div className="flex flex-1 flex-col min-w-0">
         <header className="sticky top-0 z-50 flex h-14 shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:h-[60px]">
@@ -81,7 +65,7 @@ export function SidebarLinksProvider({
             {/* Mobile Sidebar Trigger - visible on all screens below lg (as overlay) */}
             <MobileSheetSidebar
               links={filteredLinks}
-              showBackButton={isEmailsPage}
+              showBackButton={false}
             />
             <Link href="/" className="flex items-center space-x-1.5">
               <Icons.logo />

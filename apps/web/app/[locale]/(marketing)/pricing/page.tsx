@@ -27,33 +27,7 @@ export default async function PricingPage() {
   const locale = await getLocale();
   setRequestLocale(locale);
   const t = await getTranslations("Pricing.page");
-  const tNav = await getTranslations("Navigation");
   const user = await getCurrentUser();
-
-  if (user?.role === "ADMIN") {
-    return (
-      <div className="flex flex-col justify-center items-center min-h-screen">
-        <h1 className="text-5xl font-bold">{t("adminSeriously")}</h1>
-        <Image
-          src={resolveStaticPath("illustrations/call-waiting.svg")}
-          alt="403"
-          width={560}
-          height={560}
-          className="-my-20 pointer-events-none dark:invert"
-        />
-        <p className="px-4 text-2xl font-medium text-center text-balance">
-          {t("adminMessage", { role: user.role })}{" "}
-          <Link
-            href="/admin"
-            className="underline text-muted-foreground underline-offset-4 hover:text-purple-500"
-          >
-            {tNav("dashboard")}
-          </Link>
-          .
-        </p>
-      </div>
-    );
-  }
 
   let subscriptionPlan: UserSubscriptionPlan | undefined;
 

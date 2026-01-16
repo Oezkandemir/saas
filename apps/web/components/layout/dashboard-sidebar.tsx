@@ -14,7 +14,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Fragment, useEffect, useState } from "react";
 import { getUserPlan } from "@/actions/get-user-plan";
-import { UserRole } from "@/components/forms/user-role-form";
 import { Icons } from "@/components/shared/icons";
 import { useSupabase } from "@/components/supabase-provider";
 import { Badge } from "@/components/ui/badge";
@@ -82,14 +81,6 @@ function DashboardSidebarContent({
         }
       });
       return allMatch;
-    }
-    
-    // If href has no query params, check if current URL also has no relevant query params
-    // For email links, we want to match even if there are other query params
-    if (normalizedHrefPath === "/admin/emails" && !hrefQuery) {
-      // Base emails page is active if no filter is set or filter is "all"
-      const filter = currentParams.get("filter");
-      return !filter || filter === "all";
     }
     
     return true;
@@ -529,14 +520,6 @@ function MobileSheetSidebarContent({
         }
       });
       return allMatch;
-    }
-    
-    // If href has no query params, check if current URL also has no relevant query params
-    // For email links, we want to match even if there are other query params
-    if (normalizedHrefPath === "/admin/emails" && !hrefQuery) {
-      // Base emails page is active if no filter is set or filter is "all"
-      const filter = currentParams.get("filter");
-      return !filter || filter === "all";
     }
     
     return true;

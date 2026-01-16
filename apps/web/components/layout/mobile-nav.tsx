@@ -93,20 +93,6 @@ export function NavMobile() {
 
           {session ? (
             <>
-              {/* CRITICAL: Check role from database, not from user_metadata */}
-              {/* user_metadata can be outdated or manipulated, database is source of truth */}
-              {userRole === "ADMIN" ? (
-                <li className="py-3">
-                  <Link
-                    href="/admin"
-                    onClick={() => setOpen(false)}
-                    className="flex w-full font-medium capitalize"
-                  >
-                    Admin
-                  </Link>
-                </li>
-              ) : null}
-
               <li className="py-3">
                 <Link
                   href="/dashboard"
