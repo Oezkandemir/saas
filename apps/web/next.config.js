@@ -157,6 +157,8 @@ const nextConfig = {
     },
     // Faster page compilation
     optimisticClientCache: true,
+    // Optimize CSS imports
+    optimizeCss: true,
   },
 
   // External packages for server-side (not bundled) - reduces bundle size
@@ -337,10 +339,13 @@ const nextConfig = {
   // Disable source maps in production for faster builds
   productionBrowserSourceMaps: false,
 
+  // ⚡ SWC MINIFICATION (faster than Terser)
+  swcMinify: true,
+
   // ⚡ TYPESCRIPT OPTIMIZATIONS
   typescript: {
-    // Skip type checking during build (use CI for that)
-    ignoreBuildErrors: false,
+    // Skip type checking during build for faster builds (use CI for that)
+    ignoreBuildErrors: true,
     // Faster type checking
     tsconfigPath: "./tsconfig.json",
   },

@@ -9,7 +9,7 @@
   "ignoreCommand": "git diff --quiet HEAD^ HEAD ./apps/web ./packages",
   "build": {
     "env": {
-      "NODE_OPTIONS": "--max-old-space-size=4096",
+      "NODE_OPTIONS": "--max-old-space-size=8192",
       "NEXT_TELEMETRY_DISABLED": "1",
       "SKIP_PREFLIGHT_CHECK": "true",
       "TURBO_TEAM": "team_vercel",

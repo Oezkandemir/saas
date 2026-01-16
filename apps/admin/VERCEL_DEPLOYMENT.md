@@ -22,7 +22,9 @@ Stelle sicher, dass folgende Environment Variables gesetzt sind:
 
 - `VITE_SUPABASE_URL` - Supabase Project URL
 - `VITE_SUPABASE_ANON_KEY` - Supabase Anon Key
-- `VITE_APP_URL` - URL der Admin-App (z.B. `https://admin.yourdomain.com`)
+- `VITE_APP_URL` - URL der **Web-App** (Next.js App, z.B. `https://yourdomain.com` oder `https://app.yourdomain.com`)
+  - **Wichtig**: Dies ist NICHT die Admin-App URL, sondern die URL der Hauptanwendung!
+  - Wird verwendet, um Nicht-Admin-Benutzer zur Web-App umzuleiten
 
 ### 3. Vercel Configuration
 

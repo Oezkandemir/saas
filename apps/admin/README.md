@@ -132,7 +132,7 @@ pnpm install
 ```env
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-VITE_APP_URL=http://localhost:3000
+VITE_APP_URL=http://localhost:3000  # URL der Web-App (Next.js), nicht der Admin-App!
 ```
 
 3. Start the development server:
