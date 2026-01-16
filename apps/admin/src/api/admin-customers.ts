@@ -116,6 +116,7 @@ export async function getAllCustomers(options?: {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
     let { data, error, count } = await query.range(from, to);
+    let typedData: Customer[] | null = data as Customer[] | null;
 
     // If foreign key join fails, try without join and load profiles separately
     if (error && error.message?.includes("does not exist")) {
@@ -159,26 +160,30 @@ export async function getAllCustomers(options?: {
         return { data: null, error: fallbackResult.error };
       }
 
-      data = fallbackResult.data;
+      const fallbackData = fallbackResult.data as any[];
       count = fallbackResult.count;
       error = null;
 
       // Load user info separately from users table (user_profiles doesn't have email/name)
-      if (data && data.length > 0) {
-        const userIds = [...new Set(data.map((c: any) => c.user_id).filter(Boolean))];
+      if (fallbackData && fallbackData.length > 0) {
+        const userIds = [...new Set(fallbackData.map((c: any) => c.user_id).filter(Boolean))];
         if (userIds.length > 0) {
           const { data: users } = await supabase
             .from("users")
             .select("id, email, name")
             .in("id", userIds);
 
-          // Map users to customers (format as user_profiles for compatibility)
+          // Map users to customers
           const userMap = new Map((users || []).map((u: any) => [u.id, u]));
-          data = data.map((c: any) => ({
+          typedData = fallbackData.map((c: any) => ({
             ...c,
-            user_profiles: userMap.get(c.user_id) || null,
-          }));
+            user: userMap.get(c.user_id) || undefined,
+          })) as Customer[];
+        } else {
+          typedData = fallbackData as Customer[];
         }
+      } else {
+        typedData = fallbackData as Customer[];
       }
     }
 
@@ -188,12 +193,12 @@ export async function getAllCustomers(options?: {
     }
 
     // Debug: Check if count doesn't match data length
-    if (count && count > 0 && (!data || data.length === 0)) {
+    if (count && count > 0 && (!typedData || typedData.length === 0)) {
       console.warn("Warning: Count is", count, "but no data returned. Page:", page, "PageSize:", pageSize);
     }
 
     console.log("Fetched customers:", { 
-      dataLength: data?.length || 0, 
+      dataLength: typedData?.length || 0, 
       count, 
       page, 
       pageSize,
@@ -202,7 +207,7 @@ export async function getAllCustomers(options?: {
     });
 
     // Map customers with user info
-    const customers: Customer[] = (data || []).map((c: any) => {
+    const customers: Customer[] = (typedData || []).map((c: any) => {
       // Handle user_profiles - could be array, object, or null
       let profile = null;
       if (c.user_profiles) {

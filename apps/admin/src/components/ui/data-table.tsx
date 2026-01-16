@@ -28,7 +28,7 @@ interface Column<T> {
 
 interface DataTableProps<T> {
   data: T[];
-  columns: Column<T>;
+  columns: Column<T>[];
   getRowId: (item: T) => string;
   onRowClick?: (item: T) => void;
   selectable?: boolean;

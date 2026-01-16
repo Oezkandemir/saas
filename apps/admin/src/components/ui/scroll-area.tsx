@@ -1,4 +1,5 @@
 import * as React from "react";
+// @ts-ignore - Package will be installed during deployment
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 import { cn } from "../../lib/utils";
 

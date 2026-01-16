@@ -30,7 +30,7 @@ export function QuickStatsWidget({ stats }: QuickStatsWidgetProps) {
           value={stat.value}
           icon={stat.icon}
           trend={stat.trend}
-          onClick={stat.href ? () => navigate(stat.href) : undefined}
+          onClick={stat.href ? () => navigate(stat.href!) : undefined}
           className={stat.href ? "cursor-pointer hover:shadow-md transition-shadow" : ""}
         />
       ))}

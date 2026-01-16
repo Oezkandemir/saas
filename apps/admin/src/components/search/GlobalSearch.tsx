@@ -263,9 +263,9 @@ export function GlobalSearch() {
       }
     });
 
-    // Search companies (simple array: data)
-    const companies = companiesData?.data || [];
-    companies.forEach((company) => {
+    // Search companies (handle PaginatedResponse)
+    const companies = companiesData?.data?.data || [];
+    companies.forEach((company: any) => {
       if (
         company.company_name?.toLowerCase().includes(searchTerm) ||
         company.company_email?.toLowerCase().includes(searchTerm) ||

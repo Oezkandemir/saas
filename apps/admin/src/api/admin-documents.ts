@@ -137,6 +137,7 @@ export async function getAllDocuments(options?: {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
     let { data, error, count } = await query.range(from, to);
+    let typedData: Document[] | null = data as Document[] | null;
 
     // If error, try without joins
     if (error && error.message?.includes("does not exist")) {
@@ -181,14 +182,14 @@ export async function getAllDocuments(options?: {
       }
 
       const fallbackResult = await fallbackQuery.range(from, to);
-      data = fallbackResult.data;
+      const fallbackData = fallbackResult.data as any[] | null;
       error = fallbackResult.error;
       count = fallbackResult.count;
 
       // Fetch customers and users separately if needed
-      if (data && !error) {
-        const customerIds = [...new Set(data.map((d: any) => d.customer_id).filter(Boolean))];
-        const userIds = [...new Set(data.map((d: any) => d.user_id).filter(Boolean))];
+      if (fallbackData && !error) {
+        const customerIds = [...new Set(fallbackData.map((d: any) => d.customer_id).filter(Boolean))];
+        const userIds = [...new Set(fallbackData.map((d: any) => d.user_id).filter(Boolean))];
 
         // Fetch customers
         if (customerIds.length > 0) {
@@ -201,14 +202,16 @@ export async function getAllDocuments(options?: {
             (customersData || []).map((c: any) => [c.id, c])
           );
 
-          data = data.map((doc: any) => ({
+          typedData = fallbackData.map((doc: any) => ({
             ...doc,
-            customer: customersMap.get(doc.customer_id) || null,
-          }));
+            customer: customersMap.get(doc.customer_id) || undefined,
+          })) as Document[];
+        } else {
+          typedData = fallbackData as Document[];
         }
 
         // Fetch users for email/name
-        if (userIds.length > 0) {
+        if (userIds.length > 0 && typedData) {
           const { data: usersData } = await supabase
             .from("users")
             .select("id, email, name")
@@ -218,7 +221,7 @@ export async function getAllDocuments(options?: {
             (usersData || []).map((u: any) => [u.id, u])
           );
 
-          data = data.map((doc: any) => ({
+          typedData = typedData.map((doc: any) => ({
             ...doc,
             user: usersMap.get(doc.user_id)
               ? {
@@ -233,8 +236,10 @@ export async function getAllDocuments(options?: {
                   name: null,
                 }
               : undefined,
-          }));
+          })) as Document[];
         }
+      } else {
+        typedData = fallbackData as Document[];
       }
     }
 
@@ -243,7 +248,7 @@ export async function getAllDocuments(options?: {
     }
 
     // Map documents with user info (items loaded separately when needed)
-    const documents: Document[] = (data || []).map((doc: any) => {
+    const documents: Document[] = (typedData || []).map((doc: any) => {
       return {
         ...doc,
         customer: doc.customer || null,

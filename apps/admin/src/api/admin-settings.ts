@@ -317,7 +317,16 @@ export async function importSettings(
       }));
 
       const result = await updateSystemSettings(updates);
-      return result;
+      if (result.error || !result.data) {
+        return {
+          data: null,
+          error: result.error || { message: "Failed to import settings" } as any,
+        };
+      }
+      return {
+        data: result.data,
+        error: null,
+      };
     } catch (error: any) {
       return {
         data: null,
