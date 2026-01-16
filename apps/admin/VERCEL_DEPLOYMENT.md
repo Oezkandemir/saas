@@ -10,11 +10,13 @@ Die Admin-App ist jetzt als separate Anwendung im Monorepo konfiguriert und kann
 2. Klicke auf "Add New Project"
 3. Wähle das GitHub Repository aus
 4. **Wichtig**: Konfiguriere das Projekt für die Admin-App:
-   - **Root Directory**: `apps/admin`
+   - **Root Directory**: `apps/admin` ⭐ **WICHTIG!**
    - **Framework Preset**: Other (oder Vite)
    - **Build Command**: `pnpm turbo run build --filter=@cenety/admin`
-   - **Output Directory**: `dist`
+   - **Output Directory**: `dist` (relativ zum Root Directory)
    - **Install Command**: `pnpm install`
+   
+   **Hinweis**: Wenn das Root Directory auf `apps/admin` gesetzt ist, ist das Output Directory relativ dazu, also nur `dist`, nicht `apps/admin/dist`.
 
 ### 2. Environment Variables
 
@@ -30,7 +32,7 @@ Stelle sicher, dass folgende Environment Variables gesetzt sind:
 
 Die `vercel.json` Datei ist bereits konfiguriert mit:
 - Build Command für Turbo
-- Output Directory (`apps/admin/dist`)
+- Output Directory (`dist` - relativ zum Root Directory)
 - SPA Rewrites (alle Routes → `/index.html`)
 - Security Headers
 

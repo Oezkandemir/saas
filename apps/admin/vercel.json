@@ -4,7 +4,7 @@
   "buildCommand": "pnpm turbo run build --filter=@cenety/admin",
   "devCommand": "pnpm turbo run dev --filter=@cenety/admin",
   "installCommand": "pnpm install",
-  "outputDirectory": "apps/admin/dist",
+  "outputDirectory": "dist",
   "framework": null,
   "build": {
     "env": {
