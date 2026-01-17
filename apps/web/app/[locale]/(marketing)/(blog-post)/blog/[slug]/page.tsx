@@ -33,10 +33,17 @@ interface PostPageProps {
 }
 
 export async function generateStaticParams() {
-  const posts = await getPublishedBlogPosts(true); // Use static client for build time
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+  try {
+    const posts = await getPublishedBlogPosts(true); // Use static client for build time
+    return posts.map((post) => ({
+      slug: post.slug,
+    }));
+  } catch (error) {
+    // If blog posts can't be fetched during build (e.g., no database connection),
+    // return empty array to allow build to continue
+    console.warn("Failed to fetch blog posts for generateStaticParams:", error);
+    return [];
+  }
 }
 
 // Helper function to get post by slug - now correctly handling async params
