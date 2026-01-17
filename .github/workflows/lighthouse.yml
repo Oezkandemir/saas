@@ -37,6 +37,12 @@ jobs:
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
           SKIP_ENV_VALIDATION: 'true'
+          # Required environment variables for build validation (dummy values for CI)
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'dummy-service-role-key-for-ci-build' }}
+          SUPABASE_JWT_SECRET: ${{ secrets.SUPABASE_JWT_SECRET || 'dummy-jwt-secret-for-ci-build' }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || 'https://example.com' }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'dummy-anon-key-for-ci-build' }}
         run: pnpm build
 
       - name: Run Lighthouse CI
