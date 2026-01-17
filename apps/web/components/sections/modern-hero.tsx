@@ -10,11 +10,11 @@ export default async function ModernHero() {
 
   return (
     <section className="relative overflow-hidden border-b bg-gradient-to-br from-background via-background to-muted/30">
-      {/* Animated background decoration */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-0 size-[600px] -translate-x-1/2 animate-pulse rounded-full bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-pink-500/30 blur-3xl" />
-        <div className="absolute right-0 top-1/2 size-[500px] -translate-y-1/2 animate-pulse rounded-full bg-gradient-to-r from-indigo-500/30 to-purple-500/30 blur-3xl delay-1000" />
-        <div className="absolute bottom-0 left-0 size-[400px] animate-pulse rounded-full bg-gradient-to-r from-pink-500/20 to-blue-500/20 blur-3xl delay-500" />
+      {/* Animated background decoration - optimized with will-change and contain for better LCP */}
+      <div className="absolute inset-0 -z-10" style={{ willChange: 'opacity', contain: 'layout style paint' }}>
+        <div className="absolute left-1/2 top-0 size-[600px] -translate-x-1/2 animate-pulse rounded-full bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-pink-500/30 blur-3xl" style={{ animationDelay: '0s', animationDuration: '3s' }} />
+        <div className="absolute right-0 top-1/2 size-[500px] -translate-y-1/2 animate-pulse rounded-full bg-gradient-to-r from-indigo-500/30 to-purple-500/30 blur-3xl" style={{ animationDelay: '1s', animationDuration: '3s' }} />
+        <div className="absolute bottom-0 left-0 size-[400px] animate-pulse rounded-full bg-gradient-to-r from-pink-500/20 to-blue-500/20 blur-3xl" style={{ animationDelay: '0.5s', animationDuration: '3s' }} />
       </div>
 
       {/* Grid pattern overlay */}
@@ -22,32 +22,32 @@ export default async function ModernHero() {
 
       <MaxWidthWrapper className="relative flex min-h-screen items-center justify-center py-12 sm:py-16 lg:py-20">
         <div className="mx-auto max-w-5xl text-center">
-          {/* Badge with glassmorphism */}
+          {/* Badge with glassmorphism - removed animation delay for faster LCP */}
           <div className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-primary/20 bg-background/60 px-4 py-2 text-xs font-medium backdrop-blur-xl shadow-lg transition-all hover:border-primary/40 hover:bg-background/80 sm:mb-8 sm:px-5 sm:py-2.5 sm:text-sm">
             <span className="relative flex size-2">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" style={{ animationDuration: '2s' }} />
               <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
             </span>
             <span>{t("badge")}</span>
           </div>
 
-          {/* Main heading - smaller and responsive */}
+          {/* Main heading - optimized: removed animation delays, faster duration for LCP */}
           <h1 className="mb-4 text-3xl font-extrabold tracking-tight sm:mb-6 sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
-            <span className="block animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <span className="block">
               {t("title")}
             </span>
-            <span className="block animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               {t("titleHighlight")}
             </span>
           </h1>
 
-          {/* Description - responsive */}
-          <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-muted-foreground sm:mb-10 sm:text-lg md:text-xl lg:mb-12 lg:text-xl animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+          {/* Description - removed animation delay for faster LCP */}
+          <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-muted-foreground sm:mb-10 sm:text-lg md:text-xl lg:mb-12 lg:text-xl">
             {t("description")}
           </p>
 
-          {/* CTA Buttons with modern styling - responsive */}
-          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500">
+          {/* CTA Buttons - removed animation delay for faster LCP */}
+          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
             <Link
               href="/pricing"
               prefetch={true}
@@ -83,8 +83,8 @@ export default async function ModernHero() {
             </Link>
           </div>
 
-          {/* Trust indicators with modern design - responsive */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-xs sm:mt-12 sm:gap-4 sm:text-sm animate-in fade-in slide-in-from-bottom-4 duration-700 delay-700">
+          {/* Trust indicators - removed animation delay for faster LCP */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-xs sm:mt-12 sm:gap-4 sm:text-sm">
             {[
               { icon: Icons.check, text: t("trust1") },
               { icon: Icons.check, text: t("trust2") },

@@ -43,13 +43,13 @@ export default async function PricingPage() {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Hero Section */}
+      {/* Hero Section - optimized: removed animation delay for faster LCP */}
       <div className="overflow-hidden relative py-16 bg-gradient-to-b border-b from-background via-background to-muted/20 md:py-24">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
-        <div className="container flex relative z-10 flex-col gap-6 items-center text-center duration-700 animate-in fade-in slide-in-from-top-4">
+        <div className="container flex relative z-10 flex-col gap-6 items-center text-center">
           <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-2">
             <span className="flex relative size-2">
-              <span className="inline-flex absolute size-full rounded-full opacity-75 animate-ping bg-primary"></span>
+              <span className="inline-flex absolute size-full rounded-full opacity-75 animate-ping bg-primary" style={{ animationDuration: '2s' }}></span>
               <span className="inline-flex relative size-2 rounded-full bg-primary"></span>
             </span>
             {t("heroBadge")}
