@@ -191,7 +191,11 @@ async function notifyAdminsOfCriticalError(
       return;
     }
 
-    // Use Resend directly for system error emails
+    // Use Resend directly for system error emails (only if API key is available)
+    if (!env.RESEND_API_KEY) {
+      logger.warn("RESEND_API_KEY not configured, skipping error notification email");
+      return;
+    }
     const resend = new Resend(env.RESEND_API_KEY);
     const errorTime = new Date().toLocaleString("de-DE", {
       dateStyle: "full",

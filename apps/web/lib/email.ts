@@ -10,7 +10,22 @@ import { logger } from "@/lib/logger";
 import { getServerUserByEmail, getServerUserById } from "./db-admin";
 import { getSupabaseClient } from "./supabase";
 
-export const resend = new Resend(env.RESEND_API_KEY);
+// Helper function to get Resend instance (lazy initialization for build-time safety)
+function getResend(): Resend | null {
+  try {
+    if (!env.RESEND_API_KEY || env.RESEND_API_KEY.trim() === "") {
+      return null;
+    }
+    return new Resend(env.RESEND_API_KEY);
+  } catch (error) {
+    // If Resend initialization fails (e.g., invalid API key format), return null
+    logger.warn("Failed to initialize Resend:", error);
+    return null;
+  }
+}
+
+// Export resend instance (will be null if API key is not set, but won't crash on import)
+export const resend = getResend();
 
 // Define our own email request interface for Supabase
 interface VerificationRequestParams {
@@ -58,7 +73,7 @@ export const sendEmailWithEdgeFunction = async ({
   } catch (error) {
     logger.error(`Failed to send ${type} email`, error);
     // Try to use direct Resend API as a fallback for some email types
-    if (type === "welcome") {
+    if (type === "welcome" && resend) {
       try {
         logger.info("Attempting to send welcome email directly via Resend API");
         const { data, error } = await resend.emails.send({
@@ -119,7 +134,10 @@ export const sendVerificationRequest = async ({
       // Continue with direct Resend API fallback
     }
 
-    // Fallback to direct Resend API
+    // Fallback to direct Resend API (only if resend is available)
+    if (!resend) {
+      throw new Error("Resend API key not configured");
+    }
     const { data, error } = await resend.emails.send({
       from: provider.from,
       to:
@@ -331,7 +349,11 @@ export const sendBookingConfirmationEmail = async ({
       `Sending booking confirmation email to ${inviteeEmail} (actual recipient: ${recipientEmail}), fromEmail: ${validFromEmail}, fromField: ${finalFromField}, sanitizedName: ${sanitizedName}, hasResendKey: ${!!env.RESEND_API_KEY}, hostUserId: ${hostUserId}, eventTitle: ${eventTitle}, eventSlug: ${eventSlug}`
     );
 
-    // Send email via Resend - use validated from field
+    // Send email via Resend - use validated from field (check resend is available)
+    if (!resend) {
+      logger.error("Resend instance not available, cannot send booking confirmation email");
+      return { success: false, error: "Email service not configured" };
+    }
     const { data, error } = await resend.emails.send({
       from: finalFromField,
       to: recipientEmail,
