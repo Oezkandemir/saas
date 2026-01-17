@@ -22,6 +22,7 @@ import {
   LogOut,
   Shield,
   Mail,
+  Home,
 } from "lucide-react";
 import { AdminNotificationsPopover } from "./AdminNotificationsPopover";
 
@@ -84,6 +85,15 @@ export function Header({ onMenuClick }: HeaderProps) {
               <DropdownMenuSeparator />
               
               {/* Quick Navigation */}
+              <DropdownMenuItem 
+                onClick={() => {
+                  const homepageUrl = import.meta.env.VITE_APP_URL || "https://cenety.com";
+                  window.open(homepageUrl, "_blank");
+                }}
+              >
+                <Home className="mr-2 h-4 w-4" />
+                Homepage
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate("/")}>
                 <LayoutDashboard className="mr-2 h-4 w-4" />
                 Dashboard
