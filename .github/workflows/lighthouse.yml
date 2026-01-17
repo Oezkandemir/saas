@@ -46,11 +46,10 @@ jobs:
         run: pnpm build
 
       - name: Run Lighthouse CI
+        working-directory: apps/web
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-        run: |
-          cd apps/web
-          pnpm lighthouse:ci
+        run: pnpm lighthouse:ci
 
       - name: Upload Lighthouse results
         uses: actions/upload-artifact@v4
