@@ -1,12 +1,18 @@
 # Dependencies
-node_modules
+node_modules/
+**/node_modules/
 .pnp
 .pnp.js
+.pnpm-store/
+.pnpm-debug.log*
 
 # Build outputs
 .next/
+**/.next/
 .turbo/
+**/.turbo/
 dist/
+**/dist/
 build/
 out/
 
@@ -87,7 +93,7 @@ dist
 
 # Gatsby files
 .cache/
-public
+# Note: public/ should be tracked in Next.js projects (removed from ignore)
 
 # Storybook build outputs
 .out
@@ -96,6 +102,7 @@ public
 # Temporary folders
 tmp/
 temp/
+temp-mobile/
 
 # Editor directories and files
 .vscode/*

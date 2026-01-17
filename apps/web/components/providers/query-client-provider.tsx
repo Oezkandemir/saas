@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
 import {
   QueryClient,
   QueryClientProvider as ReactQueryClientProvider,
 } from "@tanstack/react-query";
+import { type ReactNode, useState } from "react";
 
 interface QueryClientProviderProps {
   children: ReactNode;
@@ -16,12 +16,20 @@ export function QueryClientProvider({ children }: QueryClientProviderProps) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60 * 1000, // 1 minute
-            refetchOnWindowFocus: true,
-            retry: 1,
+            staleTime: 10 * 60 * 1000, // 10 minutes - data considered fresh (increased from 5)
+            gcTime: 30 * 60 * 1000, // 30 minutes - cache retention (increased from 10)
+            refetchOnWindowFocus: false, // Only refetch when needed
+            refetchOnReconnect: true, // Refetch when connection restored
+            refetchOnMount: false, // Don't refetch if data is fresh
+            retry: 1, // Retry failed requests once
+            // Use stale-while-revalidate strategy for better UX
+            refetchInterval: false, // Disable automatic refetching by default
+          },
+          mutations: {
+            retry: 1, // Retry failed mutations once
           },
         },
-      }),
+      })
   );
 
   return (

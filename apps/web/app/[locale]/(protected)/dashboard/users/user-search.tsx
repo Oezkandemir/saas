@@ -1,44 +1,54 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Users, Crown, Search } from 'lucide-react';
-import { FollowButton } from '@/components/follow-button';
-import { searchUsers, getUserStats, type UserSearchResult } from '@/actions/user-search-actions';
-import { useRouter } from 'next/navigation';
+import { Crown, Search, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import {
+  getUserStats,
+  searchUsers,
+  type UserSearchResult,
+} from "@/actions/user-search-actions";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { InlineLoadingState } from "@/components/ui/loading-state";
+import { logger } from "@/lib/logger";
 
 export function UserSearch() {
   const router = useRouter();
-  
+
   // State
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [users, setUsers] = useState<UserSearchResult[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserSearchResult[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ totalUsers: 0, totalAdmins: 0, recentJoins: 0 });
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalAdmins: 0,
+    recentJoins: 0,
+  });
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load all users and stats on mount
   useEffect(() => {
     const loadUsers = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch all users and stats
         const [usersResult, statsData] = await Promise.all([
           searchUsers({}, 1, 100), // Get first 100 users
           getUserStats(),
         ]);
-        
+
         setUsers(usersResult.users);
         setFilteredUsers(usersResult.users);
         setStats(statsData);
       } catch (error) {
-        console.error('Failed to load users:', error);
+        logger.error("Failed to load users:", error);
       } finally {
         setLoading(false);
       }
@@ -47,33 +57,41 @@ export function UserSearch() {
     loadUsers();
   }, []);
 
-  // Filter users based on search query
+  // Debounce search query (300ms delay)
   useEffect(() => {
-    if (searchQuery.trim() === '') {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [searchQuery]);
+
+  // Filter users based on debounced search query
+  useEffect(() => {
+    if (debouncedSearchQuery.trim() === "") {
       setFilteredUsers(users);
     } else {
-      const query = searchQuery.toLowerCase();
-      const filtered = users.filter(user => 
-        user.name?.toLowerCase().includes(query) ||
-        user.email?.toLowerCase().includes(query)
+      const query = debouncedSearchQuery.toLowerCase();
+      const filtered = users.filter(
+        (user) =>
+          user.name?.toLowerCase().includes(query) ||
+          user.email?.toLowerCase().includes(query)
       );
       setFilteredUsers(filtered);
     }
-  }, [searchQuery, users]);
+  }, [debouncedSearchQuery, users]);
 
   // Navigate to user profile
   const navigateToProfile = (userId: string) => {
     router.push(`/profile/${userId}`);
-  };
-
-  // Handle follow state change
-  const handleFollowChange = (userId: string, isFollowing: boolean) => {
-    setUsers(prev => prev.map(user => 
-      user.id === userId ? { ...user, isFollowing } : user
-    ));
-    setFilteredUsers(prev => prev.map(user => 
-      user.id === userId ? { ...user, isFollowing } : user
-    ));
   };
 
   return (
@@ -91,7 +109,7 @@ export function UserSearch() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
@@ -103,7 +121,7 @@ export function UserSearch() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
@@ -130,17 +148,17 @@ export function UserSearch() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="flex-1"
             />
-            <Button 
-              type="button" 
+            <Button
+              type="button"
               variant="outline"
-              onClick={() => setSearchQuery('')}
+              onClick={() => setSearchQuery("")}
             >
               Clear
             </Button>
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Users List */}
       <Card>
         <CardHeader>
@@ -150,19 +168,18 @@ export function UserSearch() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <UserCardSkeleton key={i} />
-              ))}
-            </div>
+            <InlineLoadingState
+              isLoading={true}
+              text="Lade Benutzer..."
+              size="md"
+            />
           ) : filteredUsers.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredUsers.map((user) => (
-                <UserCard 
-                  key={user.id} 
-                  user={user} 
+                <UserCard
+                  key={user.id}
+                  user={user}
                   onProfileClick={navigateToProfile}
-                  onFollowChange={handleFollowChange}
                 />
               ))}
             </div>
@@ -170,7 +187,9 @@ export function UserSearch() {
             <div className="text-center py-8">
               <Users className="size-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">
-                {searchQuery ? `No users found for "${searchQuery}"` : 'No users found.'}
+                {searchQuery
+                  ? `No users found for "${searchQuery}"`
+                  : "No users found."}
               </p>
             </div>
           )}
@@ -180,38 +199,36 @@ export function UserSearch() {
   );
 }
 
-function UserCard({ 
+function UserCard({
   user,
   onProfileClick,
-  onFollowChange
-}: { 
+}: {
   user: UserSearchResult;
   onProfileClick: (userId: string) => void;
-  onFollowChange: (userId: string, isFollowing: boolean) => void;
 }) {
   // Helper function to get role badge variant and color
   const getRoleBadge = (role: string) => {
     switch (role?.toUpperCase()) {
-      case 'ADMIN':
+      case "ADMIN":
         return {
-          variant: 'destructive' as const,
+          variant: "destructive" as const,
           icon: Crown,
-          label: 'Admin',
-          className: 'text-xs'
+          label: "Admin",
+          className: "text-xs",
         };
-      case 'USER':
+      case "USER":
         return {
-          variant: 'secondary' as const,
+          variant: "secondary" as const,
           icon: null,
-          label: 'User',
-          className: 'text-xs'
+          label: "User",
+          className: "text-xs",
         };
       default:
         return {
-          variant: 'outline' as const,
+          variant: "outline" as const,
           icon: null,
-          label: role || 'Unknown',
-          className: 'text-xs'
+          label: role || "Unknown",
+          className: "text-xs",
         };
     }
   };
@@ -222,70 +239,45 @@ function UserCard({
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-4">
         <div className="flex items-start space-x-3">
-          <Avatar 
-            className="cursor-pointer" 
+          <Avatar
+            className="cursor-pointer"
             onClick={() => onProfileClick(user.id)}
           >
-            <AvatarImage src={user.avatar_url || ''} alt={user.name || ''} />
+            <AvatarImage src={user.avatar_url || ""} alt={user.name || ""} />
             <AvatarFallback>
-              {user.name?.slice(0, 2)?.toUpperCase() || user.email?.slice(0, 2)?.toUpperCase() || 'U'}
+              {user.name?.slice(0, 2)?.toUpperCase() ||
+                user.email?.slice(0, 2)?.toUpperCase() ||
+                "U"}
             </AvatarFallback>
           </Avatar>
-          
+
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2">
-              <h3 
+              <h3
                 className="font-medium text-sm truncate cursor-pointer hover:underline"
                 onClick={() => onProfileClick(user.id)}
               >
-                {user.name || 'Anonymous'}
+                {user.name || "Anonymous"}
               </h3>
-              <Badge variant={roleBadge.variant} className={roleBadge.className}>
+              <Badge
+                variant={roleBadge.variant}
+                className={roleBadge.className}
+              >
                 {roleBadge.icon && <roleBadge.icon className="size-3 mr-1" />}
                 {roleBadge.label}
               </Badge>
             </div>
-            
+
             <p className="text-xs text-muted-foreground truncate">
               {user.email}
             </p>
-            
+
             <p className="text-xs text-muted-foreground mt-1">
               Joined {new Date(user.created_at).toLocaleDateString()}
             </p>
           </div>
         </div>
-        
-        <div className="mt-3">
-          <FollowButton 
-            userId={user.id} 
-            isFollowing={user.isFollowing || false}
-            size="sm"
-            variant="outline"
-            onFollowChange={(isFollowing) => onFollowChange(user.id, isFollowing)}
-          />
-        </div>
       </CardContent>
     </Card>
   );
 }
-
-function UserCardSkeleton() {
-  return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-start space-x-3">
-          <Skeleton className="size-10 rounded-full" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-3 w-32" />
-            <Skeleton className="h-3 w-20" />
-          </div>
-        </div>
-        <div className="mt-3">
-          <Skeleton className="h-8 w-full" />
-        </div>
-      </CardContent>
-    </Card>
-  );
-} 

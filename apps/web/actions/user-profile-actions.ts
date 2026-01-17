@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 
@@ -143,7 +144,7 @@ export async function getUserProfile(): Promise<ActionResult<UserProfile>> {
       data: profile as UserProfile,
     };
   } catch (error) {
-    console.error("Error fetching user profile:", error);
+    logger.error("Error fetching user profile", error);
     return {
       success: false,
       error: "Failed to fetch user profile",
@@ -153,7 +154,7 @@ export async function getUserProfile(): Promise<ActionResult<UserProfile>> {
 
 // Update user profile
 export async function updateUserProfile(
-  formData: FormData,
+  formData: FormData
 ): Promise<ActionResult<UserProfile>> {
   const user = await getCurrentUser();
 
@@ -197,7 +198,8 @@ export async function updateUserProfile(
       throw new Error(fetchError.message);
     }
 
-    let result;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let result: any;
 
     if (!currentProfile) {
       // Create new profile if it doesn't exist
@@ -250,7 +252,7 @@ export async function updateUserProfile(
       };
     }
 
-    console.error("Error updating user profile:", error);
+    logger.error("Error updating user profile", error);
     return {
       success: false,
       error: "Failed to update profile",
@@ -261,6 +263,7 @@ export async function updateUserProfile(
 // Get user notifications
 export async function getUserNotifications(
   onlyUnread: boolean = false,
+  limit?: number
 ): Promise<ActionResult<UserNotification[]>> {
   const user = await getCurrentUser();
 
@@ -284,6 +287,11 @@ export async function getUserNotifications(
       query = query.eq("read", false);
     }
 
+    // Add limit if specified (default: 100 for better performance)
+    const queryLimit = limit !== undefined ? limit : 100;
+    query = query.limit(queryLimit);
+
+    // Execute query directly without timeout (let database handle it)
     const { data, error } = await query;
 
     if (error) {
@@ -292,13 +300,16 @@ export async function getUserNotifications(
 
     return {
       success: true,
-      data: data as UserNotification[],
+      data: (data || []) as UserNotification[],
     };
   } catch (error) {
-    console.error("Error fetching user notifications:", error);
+    logger.error("Error fetching user notifications", error);
     return {
       success: false,
-      error: "Failed to fetch notifications",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch notifications",
     };
   }
 }
@@ -336,7 +347,7 @@ export async function trackUserLogin(): Promise<ActionResult<null>> {
       data: null,
     };
   } catch (error) {
-    console.error("Error tracking user login:", error);
+    logger.error("Error tracking user login", error);
     return {
       success: false,
       error: "Failed to track login",
@@ -375,7 +386,7 @@ export async function markAllNotificationsAsRead(): Promise<
       data: null,
     };
   } catch (error) {
-    console.error("Error marking all notifications as read:", error);
+    logger.error("Error marking all notifications as read", error);
     return {
       success: false,
       error: "Failed to update notifications",
@@ -385,7 +396,7 @@ export async function markAllNotificationsAsRead(): Promise<
 
 // Mark notification as read
 export async function markNotificationAsRead(
-  notificationId: string,
+  notificationId: string
 ): Promise<ActionResult<null>> {
   const user = await getCurrentUser();
 
@@ -417,7 +428,7 @@ export async function markNotificationAsRead(
       data: null,
     };
   } catch (error) {
-    console.error("Error marking notification as read:", error);
+    logger.error("Error marking notification as read", error);
     return {
       success: false,
       error: "Failed to update notification",
@@ -427,7 +438,7 @@ export async function markNotificationAsRead(
 
 // Delete a single notification
 export async function deleteNotification(
-  notificationId: string,
+  notificationId: string
 ): Promise<ActionResult<null>> {
   const user = await getCurrentUser();
 
@@ -461,7 +472,7 @@ export async function deleteNotification(
       data: null,
     };
   } catch (error) {
-    console.error("Error deleting notification:", error);
+    logger.error("Error deleting notification", error);
     return {
       success: false,
       error: "Failed to delete notification",
@@ -483,7 +494,7 @@ export async function deleteAllNotifications(): Promise<ActionResult<null>> {
   const supabase = await createClient();
 
   try {
-    const { data, error } = await supabase.rpc("api_delete_all_notifications");
+    const { error } = await supabase.rpc("api_delete_all_notifications");
 
     if (error) {
       throw new Error(error.message);
@@ -497,7 +508,7 @@ export async function deleteAllNotifications(): Promise<ActionResult<null>> {
       data: null,
     };
   } catch (error) {
-    console.error("Error deleting all notifications:", error);
+    logger.error("Error deleting all notifications", error);
     return {
       success: false,
       error: "Failed to delete all notifications",
@@ -507,7 +518,7 @@ export async function deleteAllNotifications(): Promise<ActionResult<null>> {
 
 // Get user activity logs
 export async function getUserActivityLogs(
-  limit: number = 10,
+  limit: number = 10
 ): Promise<ActionResult<ActivityLog[]>> {
   const user = await getCurrentUser();
 
@@ -537,7 +548,7 @@ export async function getUserActivityLogs(
       data: data as ActivityLog[],
     };
   } catch (error) {
-    console.error("Error fetching user activity logs:", error);
+    logger.error("Error fetching user activity logs", error);
     return {
       success: false,
       error: "Failed to fetch activity logs",

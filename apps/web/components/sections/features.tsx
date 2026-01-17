@@ -1,17 +1,12 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-
-import { features } from "@/config/landing";
-import { Button } from "@/components/ui/button";
 import { HeaderSection } from "@/components/shared/header-section";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { Button } from "@/components/ui/button";
+import { features } from "@/config/landing";
 
-interface FeaturesProps {
-  locale?: string;
-}
-
-export default async function Features({ locale = "en" }: FeaturesProps) {
+export default async function Features() {
   // Get translations
   const t = await getTranslations("Features");
 
@@ -23,8 +18,6 @@ export default async function Features({ locale = "en" }: FeaturesProps) {
             label={t("label")}
             title={t("title")}
             subtitle={t("subtitle")}
-            locale={locale}
-            sectionKey="features"
           />
 
           <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -54,8 +47,7 @@ export default async function Features({ locale = "en" }: FeaturesProps) {
                       <Button
                         variant="secondary"
                         size="sm"
-                        rounded="xl"
-                        className="px-4"
+                        className="px-4 rounded-xl"
                       >
                         <Link href="/" className="flex items-center gap-2">
                           <span>{t("visitSite")}</span>

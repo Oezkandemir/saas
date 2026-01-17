@@ -31,7 +31,7 @@ export function Callout({
             type === "info",
         },
         className,
-        twClass,
+        twClass
       )}
       {...props}
     >

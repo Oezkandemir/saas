@@ -1,22 +1,38 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Ticket, updateTicketStatus } from "@/actions/support-ticket-actions";
 import {
   AlertCircle,
   CheckCircle2,
   Clock,
   ExternalLink,
   PlayCircle,
+  Trash2,
   XCircle,
 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import {
+  deleteTicket,
+  type Ticket,
+  updateTicketStatus,
+} from "@/actions/support-ticket-actions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
 
 interface TicketActionsProps {
   ticket: Ticket;
@@ -37,9 +53,11 @@ export function TicketActions({
   const router = useRouter();
   const t = useTranslations("Admin.support");
   const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleStatusChange = async (
-    status: "open" | "in_progress" | "resolved" | "closed",
+    status: "open" | "in_progress" | "resolved" | "closed"
   ) => {
     try {
       setLoading(true);
@@ -57,7 +75,7 @@ export function TicketActions({
 
       router.refresh();
     } catch (error) {
-      console.error("Error updating ticket status:", error);
+      logger.error("Error updating ticket status:", error);
       toast({
         title: "Error",
         description: "Failed to update ticket status. Please try again.",
@@ -65,6 +83,35 @@ export function TicketActions({
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      setDeleteLoading(true);
+
+      const result = await deleteTicket(ticket.id);
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      toast({
+        title: t("ticketDeleted") || "Ticket deleted",
+        description: "The ticket has been permanently deleted.",
+      });
+
+      setShowDeleteDialog(false);
+      router.refresh();
+    } catch (error) {
+      logger.error("Error deleting ticket:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete ticket. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -80,7 +127,7 @@ export function TicketActions({
           }}
           className={cn(
             "flex h-8 items-center rounded-md text-gray-600 transition-all duration-200 hover:bg-muted hover:text-gray-800",
-            isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
+            isExpanded ? "w-auto px-2" : "w-8 justify-center p-0"
           )}
         >
           <ExternalLink className="size-4" />
@@ -110,7 +157,7 @@ export function TicketActions({
             className={cn(
               "flex h-8 items-center rounded-md text-yellow-600 transition-all duration-200 hover:bg-muted hover:text-yellow-700",
               isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
-              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
             )}
           >
             <PlayCircle className="size-4" />
@@ -141,7 +188,7 @@ export function TicketActions({
             className={cn(
               "flex h-8 items-center rounded-md text-green-600 transition-all duration-200 hover:bg-muted hover:text-green-700",
               isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
-              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
             )}
           >
             <CheckCircle2 className="size-4" />
@@ -172,7 +219,7 @@ export function TicketActions({
             className={cn(
               "flex h-8 items-center rounded-md text-red-600 transition-all duration-200 hover:bg-muted hover:text-red-700",
               isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
-              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+              loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
             )}
           >
             <XCircle className="size-4" />
@@ -183,6 +230,63 @@ export function TicketActions({
             )}
           </div>
         )}
+
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogTrigger asChild>
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowDeleteDialog(true);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowDeleteDialog(true);
+                }
+              }}
+              className={cn(
+                "flex h-8 items-center rounded-md text-red-600 transition-all duration-200 hover:bg-muted hover:text-red-700",
+                isExpanded ? "w-auto px-2" : "w-8 justify-center p-0",
+                "cursor-pointer"
+              )}
+            >
+              <Trash2 className="size-4" />
+              {isExpanded && (
+                <span className="ml-1 overflow-hidden whitespace-nowrap text-xs">
+                  {t("actions.delete") || "Delete"}
+                </span>
+              )}
+            </div>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {t("actions.deleteConfirmTitle") || "Delete Ticket"}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {t("actions.deleteConfirmDescription") ||
+                  "Are you sure you want to delete this ticket? This action cannot be undone."}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={deleteLoading}>
+                {t("actions.cancel") || "Cancel"}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
+                disabled={deleteLoading}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {deleteLoading
+                  ? t("actions.deleting") || "Deleting..."
+                  : t("actions.delete") || "Delete"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     );
   }
@@ -247,6 +351,45 @@ export function TicketActions({
           {t("actions.view")}
         </Button>
       )}
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={deleteLoading}
+            className="border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700"
+          >
+            <Trash2 className="mr-1 size-4" />
+            {t("actions.delete") || "Delete"}
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t("actions.deleteConfirmTitle") || "Delete Ticket"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("actions.deleteConfirmDescription") ||
+                "Are you sure you want to delete this ticket? This action cannot be undone."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteLoading}>
+              {t("actions.cancel") || "Cancel"}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleteLoading}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteLoading
+                ? t("actions.deleting") || "Deleting..."
+                : t("actions.delete") || "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

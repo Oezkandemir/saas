@@ -1,23 +1,9 @@
 import { notFound } from "next/navigation";
-import { routing } from "@/i18n/routing";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
+import { routing } from "@/i18n/routing";
 
-import "@/styles/globals.css";
-
-import { fontGeist, fontHeading, fontSans, fontUrban } from "@/assets/fonts";
-import { ThemeProvider } from "next-themes";
-
-import { cn, constructMetadata } from "@/lib/utils";
-import { Toaster } from "@/components/ui/sonner";
-import { Analytics } from "@/components/analytics";
-import { AvatarProvider } from "@/components/context/avatar-context";
-import { NotificationsProvider } from "@/components/context/notifications-context";
-import { ErrorBoundary } from "@/components/error-boundary";
-import ModalProvider from "@/components/modals/providers";
-import { QueryClientProvider } from "@/components/providers/query-client-provider";
-import { SupabaseProvider } from "@/components/supabase-provider";
-import { TailwindIndicator } from "@/components/tailwind-indicator";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -25,66 +11,52 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export const metadata = constructMetadata();
+// Pre-load messages synchronously to avoid flash during client-side navigation
+async function loadMessages(locale: string) {
+  // Use direct import for fastest loading - this ensures messages are available immediately
+  try {
+    const messages = await import(`../../messages/${locale}.json`);
+    return messages.default;
+  } catch (error) {
+    // Fallback to default locale if locale file doesn't exist
+    logger.error(`Failed to load messages for locale ${locale}:`, error);
+    const fallbackMessages = await import(
+      `../../messages/${routing.defaultLocale}.json`
+    );
+    return fallbackMessages.default;
+  }
+}
 
 export default async function LocaleLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: "en" | "de" }>;
+  params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
 
-  // Ensure the locale is valid
-  if (!routing.locales.includes(locale)) {
+  // Ensure the locale is valid - type guard to narrow to "de" | "en"
+  if (!routing.locales.includes(locale as "de" | "en")) {
     notFound();
   }
 
+  // Type assertion after validation
+  const validLocale = locale as "de" | "en";
+
   // Enable static rendering
-  setRequestLocale(locale);
+  setRequestLocale(validLocale);
 
-  // Get messages for the current locale
-  const messages = await getMessages();
+  // Load messages directly for immediate availability
+  // This prevents any flash of incorrect language during client-side navigation
+  const messages = await loadMessages(validLocale);
 
+  // Locale layout no longer needs html/body tags as they're in root layout
+  // But we need to provide locale-specific messages, so we wrap with NextIntlClientProvider
+  // This will override the default locale messages from root layout immediately
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <head>
-        <link rel="manifest" href="/site.webmanifest" />
-      </head>
-      <body
-        className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable,
-          fontUrban.variable,
-          fontHeading.variable,
-          fontGeist.variable,
-        )}
-      >
-        <ErrorBoundary>
-          <SupabaseProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <NextIntlClientProvider messages={messages} locale={locale}>
-                <AvatarProvider>
-                  <QueryClientProvider>
-                    <NotificationsProvider>
-                      <ModalProvider>{children}</ModalProvider>
-                      <Analytics />
-                      <Toaster richColors closeButton />
-                      <TailwindIndicator />
-                    </NotificationsProvider>
-                  </QueryClientProvider>
-                </AvatarProvider>
-              </NextIntlClientProvider>
-            </ThemeProvider>
-          </SupabaseProvider>
-        </ErrorBoundary>
-      </body>
-    </html>
+    <NextIntlClientProvider messages={messages} locale={validLocale}>
+      {children}
+    </NextIntlClientProvider>
   );
 }

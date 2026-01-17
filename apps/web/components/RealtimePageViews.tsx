@@ -1,8 +1,6 @@
-import React from "react";
 import { Eye } from "lucide-react";
-
-import { cn } from "@/lib/utils";
 import { useRealtimePageViews } from "@/hooks/use-realtime-page-views";
+import { cn } from "@/lib/utils";
 
 interface RealtimePageViewsProps {
   slug: string;
@@ -61,7 +59,7 @@ export function RealtimePageViews({
       <div
         className={cn(
           "inline-flex items-center rounded-md bg-muted p-2",
-          className,
+          className
         )}
       >
         {showIcon && <Eye className="mr-2 size-4" />}
@@ -80,7 +78,7 @@ export function RealtimePageViews({
       <span
         className={cn(
           "flex items-center text-sm text-muted-foreground",
-          className,
+          className
         )}
       >
         {formattedViews} views {realtimeIndicator}
@@ -93,7 +91,7 @@ export function RealtimePageViews({
     <span
       className={cn(
         "flex items-center text-sm text-muted-foreground",
-        className,
+        className
       )}
     >
       {showIcon && <Eye className="mr-1 size-4" />}

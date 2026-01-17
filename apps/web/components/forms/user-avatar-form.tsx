@@ -1,20 +1,19 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { updateUserAvatar } from "@/actions/update-user-avatar";
-import { User } from "@/types";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
-import { userAvatarSchema } from "@/lib/validations/user";
-import { Button } from "@/components/ui/button";
+import { updateUserAvatar } from "@/actions/update-user-avatar";
 import { useAvatar } from "@/components/context/avatar-context";
-import { SectionColumns } from "@/components/dashboard/section-columns";
 import { Icons } from "@/components/shared/icons";
+import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { userAvatarSchema } from "@/lib/validations/user";
+import type { User } from "@/types";
 
 interface UserAvatarFormProps {
   user: Pick<User, "id"> & {
@@ -28,7 +27,7 @@ export function UserAvatarForm({ user }: UserAvatarFormProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isPending, startTransition] = useTransition();
   const [previewUrl, setPreviewUrl] = useState<string | null>(
-    user.avatar_url || null,
+    user.avatar_url || null
   );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showSaveButton, setShowSaveButton] = useState(false);
@@ -103,77 +102,79 @@ export function UserAvatarForm({ user }: UserAvatarFormProps) {
 
   return (
     <form>
-      <SectionColumns title={t("title")} description={t("description")}>
-        <div className="flex flex-col items-center gap-4 sm:flex-row">
-          <div className="relative size-24 overflow-hidden rounded-full border border-border">
-            {previewUrl ? (
-              <Image
-                src={previewUrl}
-                alt={t("label")}
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <div className="flex size-full items-center justify-center bg-muted">
-                <Icons.user className="size-12 text-muted-foreground" />
-              </div>
-            )}
-            {isPending && (
-              <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-                <Icons.spinner className="size-8 animate-spin text-primary" />
-              </div>
-            )}
-          </div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div className="relative size-24 overflow-hidden rounded-full border-2 border-border shrink-0 ring-2 ring-background">
+          {previewUrl ? (
+            <Image
+              src={previewUrl}
+              alt={t("label")}
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <div className="flex size-full items-center justify-center bg-muted/50">
+              <Icons.user className="size-12 text-muted-foreground" />
+            </div>
+          )}
+          {isPending && (
+            <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-full">
+              <LoadingSpinner size="sm" variant="primary" />
+            </div>
+          )}
+        </div>
 
-          <div className="flex flex-col gap-2">
-            <div className="flex gap-2">
+        <div className="flex flex-col gap-3 flex-1 min-w-0 w-full sm:w-auto">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-9"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {t("title")}
+            </Button>
+
+            {showSaveButton && (
               <Button
                 type="button"
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
+                size="sm"
+                className="h-9"
+                onClick={handleAvatarUpload}
+                disabled={isPending}
               >
-                Select Image
+                {isPending ? (
+                  <>
+                    <LoadingSpinner size="sm" variant="primary" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  "Save"
+                )}
               </Button>
-
-              {showSaveButton && (
-                <Button
-                  type="button"
-                  onClick={handleAvatarUpload}
-                  disabled={isPending}
-                >
-                  {isPending ? (
-                    <>
-                      <Icons.spinner className="mr-2 size-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    "Save Avatar"
-                  )}
-                </Button>
-              )}
-            </div>
-
-            <input
-              type="file"
-              id="avatar"
-              accept="image/jpeg, image/png, image/gif, image/webp"
-              className="hidden"
-              onChange={handleFileChange}
-              ref={setRefs}
-              {...rest}
-            />
-
-            {errors?.avatar && (
-              <p className="text-sm text-red-600">
-                {String(errors.avatar.message || "Invalid file")}
-              </p>
             )}
-            <p className="text-xs text-muted-foreground">
-              {t("recommendation")}
-            </p>
           </div>
+
+          <input
+            type="file"
+            id="avatar"
+            accept="image/jpeg, image/png, image/gif, image/webp"
+            className="hidden"
+            onChange={handleFileChange}
+            ref={setRefs}
+            {...rest}
+          />
+
+          {errors?.avatar && (
+            <p className="text-xs text-destructive font-medium">
+              {String(errors.avatar.message || "Invalid file")}
+            </p>
+          )}
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {t("recommendation")}
+          </p>
         </div>
-      </SectionColumns>
+      </div>
     </form>
   );
 }

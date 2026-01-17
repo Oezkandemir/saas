@@ -18,7 +18,7 @@ type NewsletterUnsubscribeEmailProps = {
 };
 
 export default function NewsletterUnsubscribeEmail({
-  email = "user@example.com",
+  email: _email = "user@example.com",
   siteName = "Next.js SaaS Starter",
   siteUrl = "https://example.com",
 }: NewsletterUnsubscribeEmailProps) {

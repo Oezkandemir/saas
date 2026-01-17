@@ -1,7 +1,9 @@
-import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
-import { type Database } from "./supabase";
+import { logger } from "@/lib/logger";
+
+import type { Database } from "./supabase";
 
 // For use in route handlers (e.g. app/api/*)
 export async function getSupabaseRouteHandlerClient() {
@@ -15,7 +17,7 @@ export async function getSupabaseRouteHandlerClient() {
             const cookieStore = await cookies();
             return cookieStore.get(name)?.value;
           } catch (error) {
-            console.error("Error reading cookie:", error);
+            logger.error("Error reading cookie:", error);
             return undefined;
           }
         },
@@ -24,7 +26,7 @@ export async function getSupabaseRouteHandlerClient() {
             const cookieStore = await cookies();
             cookieStore.set({ name, value, ...options });
           } catch (error) {
-            console.error("Error setting cookie:", error);
+            logger.error("Error setting cookie:", error);
           }
         },
         async remove(name: string, options: any) {
@@ -32,10 +34,10 @@ export async function getSupabaseRouteHandlerClient() {
             const cookieStore = await cookies();
             cookieStore.set({ name, value: "", ...options });
           } catch (error) {
-            console.error("Error removing cookie:", error);
+            logger.error("Error removing cookie:", error);
           }
         },
       },
-    },
+    }
   );
 }

@@ -71,7 +71,7 @@ export function Callout({
       className={cn(
         "mt-6 flex items-start space-x-3 rounded-lg border px-4 py-3 text-[15.6px] dark:border-none",
         classes,
-        twClass,
+        twClass
       )}
       {...props}
     >

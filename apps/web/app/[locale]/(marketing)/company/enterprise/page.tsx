@@ -1,8 +1,5 @@
-import { Metadata } from "next";
 import { Check } from "lucide-react";
-import { getTranslations } from "next-intl/server";
-
-import { constructMetadata } from "@/lib/utils";
+import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { constructMetadata } from "@/lib/utils";
 
 export const metadata: Metadata = constructMetadata({
   title: "Enterprise Solutions",
@@ -18,8 +16,6 @@ export const metadata: Metadata = constructMetadata({
 });
 
 export default async function EnterprisePage() {
-  const t = await getTranslations("Footer");
-
   return (
     <div className="space-y-8">
       <div className="space-y-4">

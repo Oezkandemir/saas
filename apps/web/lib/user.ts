@@ -2,6 +2,7 @@ import {
   getUserByEmail as getServerUserByEmail,
   getUserById as getServerUserById,
 } from "@/lib/db-client";
+import { logger } from "@/lib/logger";
 
 import { syncUserWithDatabase } from "./auth-sync";
 import { sendSignupConfirmationEmail } from "./email-client";
@@ -15,7 +16,7 @@ export const getUserById = getServerUserById;
 export const signUpWithEmailConfirmation = async (
   email: string,
   password: string,
-  name?: string,
+  name?: string
 ) => {
   try {
     const supabase = getSupabaseClient();
@@ -48,7 +49,7 @@ export const signUpWithEmailConfirmation = async (
       });
 
       if (otpError) {
-        console.error("Error requesting email confirmation:", otpError);
+        logger.error("Error requesting email confirmation:", otpError);
         return { success: false, error: otpError.message };
       }
 
@@ -68,10 +69,13 @@ export const signUpWithEmailConfirmation = async (
 
     return { success: false, error: "No user returned from sign up" };
   } catch (error) {
-    console.error("Error signing up user:", error);
+    logger.error("Error signing up user:", error);
     return {
       success: false,
-      error: error.message || "An error occurred during sign up",
+      error:
+        error instanceof Error
+          ? error.message
+          : "An error occurred during sign up",
     };
   }
 };

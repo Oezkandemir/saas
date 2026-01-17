@@ -1,11 +1,11 @@
-import { Link } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
-
-import { env } from "@/env.mjs";
-import { siteConfig } from "@/config/site";
-import { cn, nFormatter } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
 import { Icons } from "@/components/shared/icons";
+import { buttonVariants } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
+import { env } from "@/env.mjs";
+import { Link } from "@/i18n/routing";
+import { logger } from "@/lib/logger";
+import { cn, nFormatter } from "@/lib/utils";
 
 export default async function HeroLanding() {
   let stars = 0;
@@ -22,7 +22,7 @@ export default async function HeroLanding() {
         }),
         // data will revalidate every hour
         next: { revalidate: 3600 },
-      },
+      }
     );
 
     if (response.ok) {
@@ -30,7 +30,7 @@ export default async function HeroLanding() {
       stars = data.stargazers_count || 0;
     }
   } catch (e) {
-    console.log("Error fetching GitHub stars:", e);
+    logger.debug("Error fetching GitHub stars:", e);
   }
 
   // Get translations
@@ -42,8 +42,8 @@ export default async function HeroLanding() {
         <Link
           href="https://twitter.com/miickasmt/status/1810465801649938857"
           className={cn(
-            buttonVariants({ variant: "outline", size: "sm", rounded: "full" }),
-            "px-4",
+            buttonVariants({ variant: "outline", size: "sm" }),
+            "px-4 rounded-full"
           )}
           target="_blank"
         >
@@ -74,10 +74,7 @@ export default async function HeroLanding() {
           <Link
             href="/pricing"
             prefetch={true}
-            className={cn(
-              buttonVariants({ size: "lg", rounded: "full" }),
-              "gap-2",
-            )}
+            className={cn(buttonVariants({ size: "lg" }), "gap-2 rounded-full")}
           >
             <span>{t("goPricing")}</span>
             <Icons.arrowRight className="size-4" />
@@ -90,9 +87,8 @@ export default async function HeroLanding() {
               buttonVariants({
                 variant: "outline",
                 size: "lg",
-                rounded: "full",
               }),
-              "px-5",
+              "px-5 rounded-full"
             )}
           >
             <Icons.gitHub className="mr-2 size-4" />

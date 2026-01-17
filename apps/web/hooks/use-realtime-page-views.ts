@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import { useEffect, useState } from "react";
 
 import { env } from "@/env.mjs";
 import { usePageViews } from "@/hooks/use-page-views";
@@ -7,7 +7,7 @@ import { usePageViews } from "@/hooks/use-page-views";
 // Initialize the Supabase client with public/anon key (safe for browser)
 const supabaseClient = createClient(
   env.NEXT_PUBLIC_SUPABASE_URL,
-  env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
 interface UseRealtimePageViewsProps {
@@ -49,9 +49,12 @@ export function useRealtimePageViews({
   useEffect(() => {
     if (!normalizedSlug) return;
 
+    // Create unique channel name per slug to avoid conflicts
+    const channelName = `page_views_changes:${normalizedSlug}`;
+
     // Subscribe to changes on the page_views table
-    const subscription = supabaseClient
-      .channel("page_views_changes")
+    const channel = supabaseClient
+      .channel(channelName)
       .on(
         "postgres_changes",
         {
@@ -65,13 +68,17 @@ export function useRealtimePageViews({
           if (payload.new && typeof payload.new.view_count === "number") {
             setViews(payload.new.view_count);
           }
-        },
+        }
       )
       .subscribe();
 
-    // Clean up subscription on unmount
+    // Clean up subscription on unmount or when slug changes
     return () => {
-      subscription.unsubscribe();
+      if (channel) {
+        supabaseClient.removeChannel(channel).catch(() => {
+          // Ignore cleanup errors
+        });
+      }
     };
   }, [normalizedSlug]);
 

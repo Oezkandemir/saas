@@ -1,52 +1,50 @@
-import { FeatureLdg, InfoLdg, TestimonialType } from "types";
+import type { FeatureLdg, InfoLdg, TestimonialType } from "types";
 
 export const infos: InfoLdg[] = [
   {
-    title: "Empower your projects",
+    title: "Alles in einem Werkzeug",
     description:
-      "Unlock the full potential of your projects with our open-source SaaS platform. Collaborate seamlessly, innovate effortlessly, and scale limitlessly.",
+      "Cenety ist Ihr komplettes Business-Toolkit für Freelancer und lokale Unternehmen. Verwalten Sie Kunden, erstellen Sie Angebote und Rechnungen, und nutzen Sie dynamische QR-Codes – alles an einem Ort.",
     image: "/illustrations/work-from-home.jpg",
     list: [
       {
-        title: "Collaborative",
-        description: "Work together with your team members in real-time.",
-        icon: "laptop",
+        title: "CRM Light",
+        description: "Verwalten Sie Ihre Kunden einfach und effizient.",
+        icon: "users",
       },
       {
-        title: "Innovative",
-        description: "Stay ahead of the curve with access constant updates.",
-        icon: "settings",
+        title: "Angebote & Rechnungen",
+        description: "Erstellen Sie professionelle Dokumente mit PDF-Export.",
+        icon: "fileText",
       },
       {
-        title: "Scalable",
-        description:
-          "Our platform offers the scalability needed to adapt to your needs.",
-        icon: "search",
+        title: "Dynamische QR-Codes",
+        description: "QR-Codes mit stabilem Link, aber editierbarem Ziel.",
+        icon: "qrCode",
       },
     ],
   },
   {
-    title: "Seamless Integration",
+    title: "Professionell & Einfach",
     description:
-      "Integrate our open-source SaaS seamlessly into your existing workflows. Effortlessly connect with your favorite tools and services for a streamlined experience.",
+      "Cenety kombiniert professionelle Funktionen mit einer intuitiven Benutzeroberfläche. Perfekt für Freelancer und kleine Unternehmen, die ihre Geschäftsprozesse optimieren möchten.",
     image: "/illustrations/work-from-home.jpg",
     list: [
       {
-        title: "Flexible",
+        title: "Schnell",
         description:
-          "Customize your integrations to fit your unique requirements.",
-        icon: "laptop",
+          "Erstellen Sie Angebote und Rechnungen in Minuten, nicht Stunden.",
+        icon: "check",
       },
       {
-        title: "Efficient",
-        description: "Streamline your processes and reducing manual effort.",
-        icon: "search",
+        title: "Professionell",
+        description: "PDF-Generierung und professionelle Dokumente.",
+        icon: "fileText",
       },
       {
-        title: "Reliable",
-        description:
-          "Rely on our robust infrastructure and comprehensive documentation.",
-        icon: "settings",
+        title: "Flexibel",
+        description: "Dynamische QR-Codes, die Sie jederzeit anpassen können.",
+        icon: "qrCode",
       },
     ],
   },
@@ -54,46 +52,46 @@ export const infos: InfoLdg[] = [
 
 export const features: FeatureLdg[] = [
   {
-    title: "Feature 1",
+    title: "Kundenverwaltung",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
-    icon: "nextjs",
+      "Verwalten Sie Ihre Kunden zentral. Speichern Sie Kontaktdaten, Adressen und Notizen an einem Ort.",
+    link: "/dashboard/customers",
+    icon: "users",
   },
   {
-    title: "Feature 2",
+    title: "Angebote erstellen",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
-    icon: "google",
+      "Erstellen Sie professionelle Angebote mit automatischer Nummerierung und PDF-Export.",
+    link: "/dashboard/documents",
+    icon: "fileText",
   },
   {
-    title: "Feature 3",
+    title: "Rechnungen",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
-    icon: "gitHub",
+      "Wandeln Sie Angebote mit einem Klick in Rechnungen um. Automatische Berechnung von Steuern und Gesamtbeträgen.",
+    link: "/dashboard/documents",
+    icon: "fileText",
   },
   {
-    title: "Feature 4",
+    title: "Dynamische QR-Codes",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
-    icon: "laptop",
+      "Erstellen Sie QR-Codes mit stabilem Link. Ändern Sie das Ziel jederzeit, ohne den QR-Code neu zu drucken.",
+    link: "/dashboard/qr-codes",
+    icon: "qrCode",
   },
   {
-    title: "Feature 5",
+    title: "PDF-Export",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
-    icon: "user",
+      "Generieren Sie professionelle PDFs für alle Ihre Dokumente. Perfekt zum Versenden per E-Mail.",
+    link: "/dashboard/documents",
+    icon: "page",
   },
   {
-    title: "Feature 6",
+    title: "Scan-Tracking",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
-    icon: "copy",
+      "Verfolgen Sie QR-Code-Scans mit detaillierten Analytics (Pro-Feature).",
+    link: "/dashboard/qr-codes",
+    icon: "lineChart",
   },
 ];
 

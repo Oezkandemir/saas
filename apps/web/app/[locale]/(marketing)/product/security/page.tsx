@@ -1,133 +1,198 @@
-import { Metadata } from "next";
 import { AlertCircle, CheckCircle, Lock, Shield } from "lucide-react";
-import { getTranslations } from "next-intl/server";
-
+import type { Metadata } from "next";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
+import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { constructMetadata } from "@/lib/utils";
 
-export const metadata: Metadata = constructMetadata({
-  title: "Security",
-  description: "How we keep your data secure at Cenety",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  setRequestLocale(locale);
+  const t = await getTranslations("Product.Security");
+
+  return constructMetadata({
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  });
+}
 
 export default async function SecurityPage() {
-  const t = await getTranslations("Footer");
+  const locale = await getLocale();
+  setRequestLocale(locale);
+  const t = await getTranslations("Product.Security");
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-4">
-        <h1 className="text-3xl font-bold">Security at Cenety</h1>
-        <p className="text-xl text-muted-foreground">
-          Your security and privacy are our top priorities
-        </p>
-      </div>
-
-      <div className="space-y-4">
-        <p>
-          At Cenety, we understand that the security of your data is critical.
-          We&apos;ve built our platform with security in mind at every step,
-          implementing industry best practices and continuously monitoring for
-          threats.
-        </p>
-      </div>
-
-      <div className="grid gap-8 md:grid-cols-2">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <Shield className="size-8 text-primary" />
-            <h2 className="text-2xl font-semibold">Infrastructure Security</h2>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <div className="overflow-hidden relative py-16 bg-gradient-to-b border-b from-background via-background to-muted/20 md:py-24">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        <div className="container flex relative z-10 flex-col gap-6 items-center text-center duration-700 animate-in fade-in slide-in-from-top-4">
+          <div className="mb-4 flex justify-center">
+            <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+              <Shield className="size-6 text-primary" />
+            </div>
           </div>
-          <ul className="space-y-3">
-            <li className="flex items-start gap-2">
-              <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
-              <span>
-                All data is encrypted at rest and in transit using
-                industry-standard encryption
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
-              <span>
-                Hosted on secure cloud infrastructure with multiple redundancy
-                layers
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
-              <span>
-                Regular security audits and penetration testing by third-party
-                specialists
-              </span>
-            </li>
-          </ul>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <Lock className="size-8 text-primary" />
-            <h2 className="text-2xl font-semibold">Account Security</h2>
+          <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-2">
+            <span className="flex relative size-2">
+              <span className="inline-flex absolute size-full rounded-full opacity-75 animate-ping bg-primary"></span>
+              <span className="inline-flex relative size-2 rounded-full bg-primary"></span>
+            </span>
+            {t("hero.badge")}
           </div>
-          <ul className="space-y-3">
-            <li className="flex items-start gap-2">
-              <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
-              <span>
-                Multi-factor authentication (MFA) to protect your account
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
-              <span>Role-based access controls for team management</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
-              <span>
-                Session management with automatic timeouts for inactive sessions
-              </span>
-            </li>
-          </ul>
+          <h1 className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b sm:text-5xl md:text-6xl lg:text-7xl from-foreground to-foreground/70">
+            {t("hero.title")}
+          </h1>
+          <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+            {t("hero.description")}
+          </p>
         </div>
       </div>
 
-      <div className="rounded-lg border bg-muted/50 p-6">
-        <div className="flex items-start gap-3">
-          <AlertCircle className="mt-1 size-6 text-primary" />
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold">Reporting Security Issues</h3>
-            <p>
-              We take security issues seriously. If you discover a potential
-              security vulnerability, please report it responsibly by emailing
-              our security team at security@cenety.com.
-            </p>
-            <p>
-              Our security team will acknowledge your report within 24 hours and
-              work with you to understand and address the issue quickly.
-            </p>
-          </div>
-        </div>
-      </div>
+      <MaxWidthWrapper className="py-16 md:py-24">
+        <div className="mx-auto max-w-4xl space-y-8">
+          {/* Intro */}
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-muted-foreground leading-relaxed">
+                {t("intro")}
+              </p>
+            </CardContent>
+          </Card>
 
-      <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">
-          Compliance and Certifications
-        </h2>
-        <p>
-          Cenety is committed to meeting industry standards and regulatory
-          requirements to ensure your data is protected:
-        </p>
-        <ul className="space-y-3">
-          <li className="flex items-start gap-2">
-            <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
-            <span>GDPR compliant</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
-            <span>SOC 2 Type II certified</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
-            <span>ISO 27001 certified</span>
-          </li>
-        </ul>
-      </div>
+          {/* Infrastructure Security */}
+          <Card>
+            <CardHeader>
+              <div className="mb-4 flex items-center gap-3">
+                <Shield className="size-8 text-primary" />
+                <CardTitle className="text-2xl">
+                  {t("infrastructure.title")}
+                </CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
+                  <span className="text-muted-foreground">
+                    {t("infrastructure.item1")}
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
+                  <span className="text-muted-foreground">
+                    {t("infrastructure.item2")}
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
+                  <span className="text-muted-foreground">
+                    {t("infrastructure.item3")}
+                  </span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Account Security */}
+          <Card>
+            <CardHeader>
+              <div className="mb-4 flex items-center gap-3">
+                <Lock className="size-8 text-primary" />
+                <CardTitle className="text-2xl">{t("account.title")}</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
+                  <span className="text-muted-foreground">
+                    {t("account.item1")}
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
+                  <span className="text-muted-foreground">
+                    {t("account.item2")}
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
+                  <span className="text-muted-foreground">
+                    {t("account.item3")}
+                  </span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Reporting */}
+          <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
+            <CardHeader>
+              <div className="flex items-start gap-3">
+                <AlertCircle className="mt-1 size-6 shrink-0 text-primary" />
+                <div>
+                  <CardTitle>{t("reporting.title")}</CardTitle>
+                  <CardDescription>
+                    {t("reporting.description")}
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                {t("reporting.text")}
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {t("reporting.text2")}
+              </p>
+              <a
+                href="mailto:security@cenety.com"
+                className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
+              >
+                security@cenety.com
+              </a>
+            </CardContent>
+          </Card>
+
+          {/* Compliance */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {t("compliance.title")}
+              </CardTitle>
+              <CardDescription>{t("compliance.description")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
+                  <span className="text-muted-foreground">
+                    {t("compliance.item1")}
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
+                  <span className="text-muted-foreground">
+                    {t("compliance.item2")}
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="mt-1 size-5 shrink-0 text-primary" />
+                  <span className="text-muted-foreground">
+                    {t("compliance.item3")}
+                  </span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+      </MaxWidthWrapper>
     </div>
   );
 }

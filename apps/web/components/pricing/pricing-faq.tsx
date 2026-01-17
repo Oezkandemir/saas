@@ -1,3 +1,8 @@
+"use client";
+
+import { HelpCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
+import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import {
   Accordion,
   AccordionContent,
@@ -5,62 +10,73 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-import { HeaderSection } from "../shared/header-section";
-
-const pricingFaqData = [
-  {
-    id: "item-1",
-    question: "What is the cost of the free plan?",
-    answer:
-      "Our free plan is completely free, with no monthly or annual charges. It's a great way to get started and explore our basic features.",
-  },
-  {
-    id: "item-2",
-    question: "How much does the Basic Monthly plan cost?",
-    answer:
-      "The Basic Monthly plan is priced at $15 per month. It provides access to our core features and is billed on a monthly basis.",
-  },
-  {
-    id: "item-3",
-    question: "What is the price of the Pro Monthly plan?",
-    answer:
-      "The Pro Monthly plan is available for $25 per month. It offers advanced features and is billed on a monthly basis for added flexibility.",
-  },
-  {
-    id: "item-4",
-    question: "Do you offer any annual subscription plans?",
-    answer:
-      "Yes, we offer annual subscription plans for even more savings. The Basic Annual plan is $144 per year, and the Pro Annual plan is $300 per year.",
-  },
-  {
-    id: "item-5",
-    question: "Is there a trial period for the paid plans?",
-    answer:
-      "We offer a 14-day free trial for both the Pro Monthly and Pro Annual plans. It's a great way to experience all the features before committing to a paid subscription.",
-  },
-];
-
 export function PricingFaq() {
-  return (
-    <section className="container max-w-4xl py-2">
-      <HeaderSection
-        label="FAQ"
-        title="Frequently Asked Questions"
-        subtitle="Explore our comprehensive FAQ to find quick answers to common
-          inquiries. If you need further assistance, don't hesitate to
-          contact us for personalized help."
-      />
+  const t = useTranslations("Pricing.faq");
 
-      <Accordion type="single" collapsible className="my-12 w-full">
-        {pricingFaqData.map((faqItem) => (
-          <AccordionItem key={faqItem.id} value={faqItem.id}>
-            <AccordionTrigger>{faqItem.question}</AccordionTrigger>
-            <AccordionContent className="text-sm text-muted-foreground sm:text-[15px]">
-              {faqItem.answer}
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
-    </section>
+  const pricingFaqData = [
+    {
+      id: "item-1",
+      question: t("questions.q1.question"),
+      answer: t("questions.q1.answer"),
+    },
+    {
+      id: "item-2",
+      question: t("questions.q2.question"),
+      answer: t("questions.q2.answer"),
+    },
+    {
+      id: "item-3",
+      question: t("questions.q3.question"),
+      answer: t("questions.q3.answer"),
+    },
+    {
+      id: "item-4",
+      question: t("questions.q4.question"),
+      answer: t("questions.q4.answer"),
+    },
+    {
+      id: "item-5",
+      question: t("questions.q5.question"),
+      answer: t("questions.q5.answer"),
+    },
+  ];
+  return (
+    <MaxWidthWrapper>
+      <section className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-12 text-center animate-in fade-in slide-in-from-top-4 duration-700">
+          <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-4">
+            <HelpCircle className="size-4" />
+            {t("badge")}
+          </div>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
+            {t("title")}
+          </h2>
+          <p className="max-w-2xl mx-auto text-lg text-muted-foreground">
+            {t("description")}
+          </p>
+        </div>
+
+        {/* Accordion */}
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+          <Accordion type="single" collapsible className="w-full space-y-2">
+            {pricingFaqData.map((faqItem) => (
+              <AccordionItem
+                key={faqItem.id}
+                value={faqItem.id}
+                className="rounded-lg border bg-card px-4 transition-all hover:bg-muted/50"
+              >
+                <AccordionTrigger className="text-left font-semibold hover:no-underline py-4">
+                  {faqItem.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground pb-4 leading-relaxed sm:text-base">
+                  {faqItem.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </section>
+    </MaxWidthWrapper>
   );
 }

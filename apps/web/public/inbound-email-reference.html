@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cenety.com Inbound Email - Quick Reference Card</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        h2 {
+            color: #667eea;
+            font-size: 20px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #764ba2;
+            font-size: 16px;
+            margin-bottom: 10px;
+            margin-top: 16px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .status-check {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f7f7f7;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .status-check input[type="checkbox"] {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 8px 8px 8px 0;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: #764ba2;
+        }
+        .btn-secondary:hover {
+            background: #653d8c;
+        }
+        .btn-success {
+            background: #10b981;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        .alert-warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            color: #92400e;
+        }
+        .alert-success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            color: #065f46;
+        }
+        .alert-danger {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            color: #991b1b;
+        }
+        .step-number {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 32px;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        ul li {
+            padding: 8px 0;
+            padding-left: 28px;
+            position: relative;
+        }
+        ul li:before {
+            content: "→";
+            position: absolute;
+            left: 8px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        .print-only {
+            display: none;
+        }
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .card {
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+            .print-only {
+                display: block;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🔧 Cenety.com Inbound Email Fix</h1>
+            <p style="text-align: center; color: #666; margin-top: 10px;">
+                Quick Reference Card - Keep this open while troubleshooting
+            </p>
+        </div>
+
+        <div class="grid">
+            <!-- Column 1: Testing URLs -->
+            <div class="card">
+                <h2>🔗 Testing URLs</h2>
+                
+                <h3>Health Check</h3>
+                <a href="https://cenety.com/api/webhooks/resend/health" target="_blank" class="btn btn-success">
+                    Check Health
+                </a>
+                <p style="font-size: 12px; color: #666; margin-top: 8px;">
+                    Shows all configuration status
+                </p>
+
+                <h3>Debug Dashboard</h3>
+                <a href="https://cenety.com/de/admin/emails/debug" target="_blank" class="btn btn-primary">
+                    Open Debug Page
+                </a>
+                <p style="font-size: 12px; color: #666; margin-top: 8px;">
+                    Visual dashboard with tests
+                </p>
+
+                <h3>Webhook Endpoint</h3>
+                <a href="https://cenety.com/api/webhooks/resend/inbound" target="_blank" class="btn">
+                    Test Webhook
+                </a>
+                <p style="font-size: 12px; color: #666; margin-top: 8px;">
+                    Should return: {"status":"active"}
+                </p>
+
+                <h3>External Tools</h3>
+                <a href="https://resend.com/logs" target="_blank" class="btn btn-secondary">
+                    Resend Logs
+                </a>
+                <a href="https://resend.com/domains" target="_blank" class="btn btn-secondary">
+                    Resend Domains
+                </a>
+            </div>
+
+            <!-- Column 2: Quick Checks -->
+            <div class="card">
+                <h2>✅ Quick Checks</h2>
+                
+                <div class="status-check">
+                    <input type="checkbox" id="check1">
+                    <label for="check1">Code deployed to production</label>
+                </div>
+                
+                <div class="status-check">
+                    <input type="checkbox" id="check2">
+                    <label for="check2">Resend route exists & enabled</label>
+                </div>
+                
+                <div class="status-check">
+                    <input type="checkbox" id="check3">
+                    <label for="check3">Webhook URL is correct</label>
+                </div>
+                
+                <div class="status-check">
+                    <input type="checkbox" id="check4">
+                    <label for="check4">MX records configured in DNS</label>
+                </div>
+                
+                <div class="status-check">
+                    <input type="checkbox" id="check5">
+                    <label for="check5">Vercel env vars set for Production</label>
+                </div>
+                
+                <div class="status-check">
+                    <input type="checkbox" id="check6">
+                    <label for="check6">Health check returns "healthy"</label>
+                </div>
+                
+                <div class="status-check">
+                    <input type="checkbox" id="check7">
+                    <label for="check7">Test email sent</label>
+                </div>
+                
+                <div class="status-check">
+                    <input type="checkbox" id="check8">
+                    <label for="check8">Email appears in admin panel</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resend Configuration -->
+        <div class="card">
+            <h2><span class="step-number">1</span>Resend Dashboard Configuration</h2>
+            
+            <div class="alert alert-warning">
+                <strong>⚠️ MOST COMMON ISSUE!</strong> Webhook URL pointing to wrong domain
+            </div>
+
+            <h3>Required Settings:</h3>
+            <ul>
+                <li><strong>Go to:</strong> https://resend.com/domains → cenety.com → Inbound tab</li>
+                <li><strong>Match Pattern:</strong> support@cenety.com (or *@cenety.com)</li>
+                <li><strong>Destination:</strong> https://cenety.com/api/webhooks/resend/inbound</li>
+                <li><strong>Status:</strong> ✓ Enabled (toggle must be ON)</li>
+            </ul>
+        </div>
+
+        <!-- DNS Configuration -->
+        <div class="card">
+            <h2><span class="step-number">2</span>DNS (MX Records)</h2>
+            
+            <h3>Test MX Records:</h3>
+            <div class="code-block">nslookup -type=MX cenety.com</div>
+            
+            <h3>Expected Output:</h3>
+            <div class="code-block">cenety.com mail exchanger = 10 feedback-smtp.resend.com</div>
+            
+            <div class="alert alert-danger" style="margin-top: 16px;">
+                <strong>If not showing:</strong>
+                <ol style="margin-top: 8px; padding-left: 20px;">
+                    <li>Go to your DNS provider (Cloudflare, Namecheap, etc.)</li>
+                    <li>Add MX record: Type=MX, Name=@, Value=feedback-smtp.resend.com, Priority=10</li>
+                    <li>Wait 15-30 minutes for DNS propagation</li>
+                    <li>Test again</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Vercel Environment Variables -->
+        <div class="card">
+            <h2><span class="step-number">3</span>Vercel Environment Variables</h2>
+            
+            <h3>Required for PRODUCTION:</h3>
+            <ul>
+                <li><strong>RESEND_API_KEY</strong> = re_xxxxxxxxxxxxx</li>
+                <li><strong>NEXT_PUBLIC_APP_URL</strong> = https://cenety.com</li>
+                <li><strong>SUPABASE_SERVICE_ROLE_KEY</strong> = xxxxx...</li>
+                <li><strong>NEXT_PUBLIC_SUPABASE_URL</strong> = https://xxx.supabase.co</li>
+                <li><strong>NEXT_PUBLIC_SUPABASE_ANON_KEY</strong> = xxxxx...</li>
+            </ul>
+            
+            <div class="alert alert-warning" style="margin-top: 16px;">
+                <strong>After adding/changing variables:</strong>
+                <ol style="margin-top: 8px; padding-left: 20px;">
+                    <li>Go to Deployments tab</li>
+                    <li>Click latest deployment → "..." → Redeploy</li>
+                    <li>Uncheck "Use existing build cache"</li>
+                    <li>Wait 2-3 minutes</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Testing Workflow -->
+        <div class="card">
+            <h2><span class="step-number">4</span>Testing Workflow</h2>
+            
+            <div class="grid">
+                <div>
+                    <h3>1. Health Check</h3>
+                    <ul>
+                        <li>Open health check URL</li>
+                        <li>Verify "status": "healthy"</li>
+                        <li>Check all ✅ indicators</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>2. Webhook Test</h3>
+                    <ul>
+                        <li>Open webhook endpoint</li>
+                        <li>Should return 200</li>
+                        <li>Message: "active"</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>3. Send Test Email</h3>
+                    <ul>
+                        <li>From Gmail/Outlook</li>
+                        <li>To: support@cenety.com</li>
+                        <li>Wait 30 seconds</li>
+                        <li>Check admin panel</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>4. Check Logs</h3>
+                    <ul>
+                        <li>Resend logs (webhook status)</li>
+                        <li>Vercel logs (function execution)</li>
+                        <li>Look for errors</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Common Fixes -->
+        <div class="card">
+            <h2>🔥 Common Fixes</h2>
+            
+            <div class="grid">
+                <div>
+                    <h3>Fix #1: Wrong Webhook URL</h3>
+                    <div class="alert alert-danger">
+                        <strong>Problem:</strong> URL points to localhost or staging<br>
+                        <strong>Fix:</strong> Resend → Edit route → Change to production URL
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>Fix #2: Missing Env Vars</h3>
+                    <div class="alert alert-danger">
+                        <strong>Problem:</strong> Variables not set in Production<br>
+                        <strong>Fix:</strong> Vercel Settings → Add vars → Redeploy
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>Fix #3: No MX Records</h3>
+                    <div class="alert alert-danger">
+                        <strong>Problem:</strong> DNS not configured<br>
+                        <strong>Fix:</strong> Add MX record → Wait 15 mins → Test
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>Fix #4: Route Disabled</h3>
+                    <div class="alert alert-danger">
+                        <strong>Problem:</strong> Resend route toggle is OFF<br>
+                        <strong>Fix:</strong> Resend Dashboard → Enable the route
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Indicators -->
+        <div class="card">
+            <h2>🎉 Success Indicators</h2>
+            
+            <div class="alert alert-success">
+                <strong>You'll know it's working when:</strong>
+                <ul style="margin-top: 12px;">
+                    <li>✅ Health check shows "healthy"</li>
+                    <li>✅ Webhook endpoint returns 200</li>
+                    <li>✅ Debug page shows all checks passed</li>
+                    <li>✅ MX records verified in DNS</li>
+                    <li>✅ Test email appears in admin panel</li>
+                    <li>✅ Resend logs show webhook delivered (200)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="card no-print">
+            <h2>📚 Documentation</h2>
+            <ul>
+                <li><strong>Quick Fix Guide:</strong> /docs/INBOUND_EMAIL_QUICK_FIX.md</li>
+                <li><strong>Full Troubleshooting:</strong> /docs/INBOUND_EMAIL_TROUBLESHOOTING.md</li>
+                <li><strong>Summary:</strong> /INBOUND_EMAIL_FIX_SUMMARY.md</li>
+                <li><strong>Checklist:</strong> /INBOUND_EMAIL_CHECKLIST.txt</li>
+            </ul>
+            
+            <div style="margin-top: 20px; text-align: center;">
+                <button onclick="window.print()" class="btn">
+                    🖨️ Print This Page
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Save checkbox state
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            const id = checkbox.id;
+            const saved = localStorage.getItem(id);
+            if (saved === 'true') {
+                checkbox.checked = true;
+            }
+            
+            checkbox.addEventListener('change', function() {
+                localStorage.setItem(id, this.checked);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -33,7 +33,7 @@ declare module "parse5" {
   export function parse(html: string, options?: ParserOptions): Document;
   export function parseFragment(
     html: string,
-    options?: ParserOptions,
+    options?: ParserOptions
   ): DocumentFragment;
   export function serialize(node: Node): string;
 }

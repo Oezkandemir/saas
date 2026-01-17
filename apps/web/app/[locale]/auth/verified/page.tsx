@@ -1,33 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-
-import { siteConfig } from "@/config/site";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import { Icons } from "@/components/shared/icons";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
 
 export default function VerifiedPage() {
   const router = useRouter();
   const params = useParams();
   const locale = params.locale as string;
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(3);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          router.push(`/${locale}/login`);
-          return 0;
-        }
-        return prev - 1;
-      });
+    if (countdown <= 0) {
+      router.push(`/${locale}/login`);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setCountdown((prev) => prev - 1);
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [router, locale]);
+    return () => clearTimeout(timer);
+  }, [router, locale, countdown]);
 
   return (
     <div className="container flex h-screen w-screen flex-col items-center justify-center">
@@ -49,7 +46,7 @@ export default function VerifiedPage() {
 
         <div className="grid gap-2">
           <Button
-            className={buttonVariants({ variant: "default" })}
+            variant="default"
             onClick={() => router.push(`/${locale}/login`)}
           >
             Jetzt anmelden

@@ -1,10 +1,10 @@
-import * as React from "react";
-import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import type * as React from "react";
+import { ModeToggle } from "@/components/layout/mode-toggle";
 
 import { footerLinks, siteConfig } from "@/config/site";
+import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import { ModeToggle } from "@/components/layout/mode-toggle";
 
 import { NewsletterForm } from "../forms/newsletter-form";
 import { Icons } from "../shared/icons";
@@ -21,29 +21,45 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
               {t(`sections.${section.title.toLowerCase()}`)}
             </span>
             <ul className="mt-4 list-inside space-y-3">
-              {section.items?.map((link) => (
-                <li key={link.title}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground hover:text-primary"
-                  >
-                    {t(
-                      `links.${link.title.toLowerCase().replace(/\s+/g, "_")}`,
-                    )}
-                  </Link>
-                </li>
-              ))}
+              {section.items?.map((link) => {
+                const isDocsSection = section.title === "Docs";
+                const linkKey = link.title.toLowerCase().replace(/\s+/g, "_");
+
+                if (isDocsSection) {
+                  // Disable documentation links (not clickable)
+                  return (
+                    <li key={link.title}>
+                      <span
+                        className="text-sm text-muted-foreground/50 cursor-not-allowed pointer-events-none select-none"
+                        aria-disabled="true"
+                      >
+                        {t(`links.${linkKey}`)}
+                      </span>
+                    </li>
+                  );
+                }
+
+                return (
+                  <li key={link.title}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-muted-foreground hover:text-primary"
+                    >
+                      {t(`links.${linkKey}`)}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         ))}
-        <div className="col-span-full flex flex-col items-end sm:col-span-1 md:col-span-2">
+        <div className="col-span-full sm:col-span-1 md:col-span-2">
           <NewsletterForm />
         </div>
       </div>
 
       <div className="border-t py-4">
         <div className="container grid max-w-6xl grid-cols-3 items-center">
-          <div className="hidden sm:block"></div>
           <p className="col-span-3 text-center text-sm text-muted-foreground sm:col-span-1">
             Powered by Cenety &copy; 2025.
           </p>

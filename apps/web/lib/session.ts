@@ -1,12 +1,15 @@
-import { type Session } from "@supabase/supabase-js";
+import type { Session } from "@supabase/supabase-js";
+import { cache } from "react";
 
+import { logger } from "@/lib/logger";
 import { getSupabaseServer } from "@/lib/supabase-server";
 
 import "server-only";
 
 import { syncUserWithDatabase } from "./auth-sync";
 
-export async function getCurrentUser() {
+// Internal function that performs the actual user fetch
+async function _getCurrentUserInternal() {
   try {
     const supabase = await getSupabaseServer();
 
@@ -22,12 +25,24 @@ export async function getCurrentUser() {
     // Ensure the user exists in the database table
     await syncUserWithDatabase(user);
 
-    // Auch Benutzerdaten aus der Datenbank abrufen für zusätzliche Felder wie avatar_url
-    const { data: dbUser } = await supabase
-      .from("user_profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single();
+    // OPTIMIZATION: Fetch users and user_profiles in parallel to reduce query time
+    // IMPORTANT: Get role from database, not metadata
+    // This ensures admin checks use the database role, not metadata
+    const [usersResult, profilesResult] = await Promise.all([
+      supabase.from("users").select("role").eq("id", user.id).single(),
+      supabase.from("user_profiles").select("*").eq("id", user.id).single(),
+    ]);
+
+    // If database query fails, log error but don't fail the whole request
+    if (usersResult.error) {
+      logger.error(
+        "Error fetching user role from database:",
+        usersResult.error
+      );
+    }
+
+    const dbUserRole = usersResult.data;
+    const dbUser = profilesResult.data;
 
     return {
       ...user,
@@ -38,17 +53,25 @@ export async function getCurrentUser() {
         user.user_metadata?.name ||
         user.email?.split("@")[0] ||
         null,
-      role: user.user_metadata?.role || "USER", // Default to USER role if not set
+      // IMPORTANT: Use role from database, not metadata
+      // This prevents showing admin features to non-admin users
+      // If database query failed or role is null, default to USER for security
+      role: (dbUserRole?.role as string) || "USER",
       email: user.email,
       // Zusätzliche Informationen aus der Datenbank
       avatar_url: dbUser?.avatar_url || user.user_metadata?.avatar_url || null,
       status: dbUser?.status || "active",
     };
   } catch (error) {
-    console.error("Error getting current user:", error);
+    logger.error("Error getting current user:", error);
     return null;
   }
 }
+
+// Cached version using React cache() for request-level deduplication
+// This ensures that multiple calls to getCurrentUser within the same request
+// will only execute the database query once
+export const getCurrentUser = cache(_getCurrentUserInternal);
 
 export async function getSession(): Promise<Session | null> {
   try {
@@ -64,7 +87,7 @@ export async function getSession(): Promise<Session | null> {
 
     return session;
   } catch (error) {
-    console.error("Error getting session:", error);
+    logger.error("Error getting session:", error);
     return null;
   }
 }

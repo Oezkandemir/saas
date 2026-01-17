@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ locale: string }> },
+  _request: NextRequest,
+  { params }: { params: Promise<{ locale: string }> }
 ) {
   const resolvedParams = await params;
   const { locale } = resolvedParams;

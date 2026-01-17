@@ -1,35 +1,49 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
-import Link from "next/link";
-import { useSelectedLayoutSegment } from "next/navigation";
 import { Menu, X } from "lucide-react";
-
-import { docsConfig } from "@/config/docs";
-import { marketingConfig } from "@/config/marketing";
-import { siteConfig } from "@/config/site";
-import { cn } from "@/lib/utils";
-import { DocsSidebarNav } from "@/components/docs/sidebar-nav";
-import { ModalContext } from "@/components/modals/providers";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Icons } from "@/components/shared/icons";
 import { useSupabase } from "@/components/supabase-provider";
-
-import { ModeToggle } from "./mode-toggle";
+import { marketingConfig } from "@/config/marketing";
+import { siteConfig } from "@/config/site";
+import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
 
 export function NavMobile() {
-  const { session } = useSupabase();
+  const { session, supabase } = useSupabase();
   const [open, setOpen] = useState(false);
-  const selectedLayout = useSelectedLayoutSegment();
-  const documentation = selectedLayout === "docs";
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const links = marketingConfig.mainNav;
 
-  const configMap = {
-    docs: docsConfig.mainNav,
-  };
+  // Fetch user role from database (not from metadata for security)
+  useEffect(() => {
+    async function fetchUserRole() {
+      try {
+        if (session?.user?.id) {
+          const { data, error } = await supabase
+            .from("users")
+            .select("role")
+            .eq("id", session.user.id)
+            .single();
 
-  const links =
-    (selectedLayout && configMap[selectedLayout]) || marketingConfig.mainNav;
+          if (!error && data) {
+            // Use database role, not metadata
+            const role = String(data.role || "USER").trim();
+            setUserRole(role);
+          } else {
+            // If database query fails, don't trust metadata - set to USER
+            setUserRole("USER");
+          }
+        }
+      } catch (err) {
+        logger.error("Error fetching user role:", err);
+        setUserRole("USER");
+      }
+    }
 
-  const { setShowSignInModal, setShowSignUpModal } = useContext(ModalContext);
+    fetchUserRole();
+  }, [session, supabase]);
 
   // prevent body scroll when modal is open
   useEffect(() => {
@@ -46,7 +60,7 @@ export function NavMobile() {
         onClick={() => setOpen(!open)}
         className={cn(
           "fixed right-16 top-2.5 z-50 rounded-full p-2 transition-colors duration-200 hover:bg-muted focus:outline-none active:bg-muted md:hidden",
-          open && "hover:bg-muted active:bg-muted",
+          open && "hover:bg-muted active:bg-muted"
         )}
       >
         {open ? (
@@ -59,7 +73,7 @@ export function NavMobile() {
       <nav
         className={cn(
           "fixed inset-0 z-20 hidden w-full overflow-auto bg-background px-5 py-16 lg:hidden",
-          open && "block",
+          open && "block"
         )}
       >
         <ul className="grid divide-y divide-muted">
@@ -79,18 +93,6 @@ export function NavMobile() {
 
           {session ? (
             <>
-              {session.user.user_metadata?.role === "ADMIN" ? (
-                <li className="py-3">
-                  <Link
-                    href="/admin"
-                    onClick={() => setOpen(false)}
-                    className="flex w-full font-medium capitalize"
-                  >
-                    Admin
-                  </Link>
-                </li>
-              ) : null}
-
               <li className="py-3">
                 <Link
                   href="/dashboard"
@@ -104,44 +106,33 @@ export function NavMobile() {
           ) : (
             <>
               <li className="py-3">
-                <button
-                  onClick={() => {
-                    setOpen(false);
-                    setShowSignInModal(true);
-                  }}
+                <Link
+                  href="/login"
+                  onClick={() => setOpen(false)}
                   className="flex w-full font-medium capitalize"
                 >
                   Login
-                </button>
+                </Link>
               </li>
 
               <li className="py-3">
-                <button
-                  onClick={() => {
-                    setOpen(false);
-                    setShowSignUpModal(true);
-                  }}
+                <Link
+                  href="/register"
+                  onClick={() => setOpen(false)}
                   className="flex w-full font-medium capitalize"
                 >
                   Sign up
-                </button>
+                </Link>
               </li>
             </>
           )}
         </ul>
-
-        {documentation ? (
-          <div className="mt-8 block md:hidden">
-            <DocsSidebarNav setOpen={setOpen} />
-          </div>
-        ) : null}
 
         <div className="mt-5 flex items-center justify-end space-x-4">
           <Link href={siteConfig.links.github} target="_blank" rel="noreferrer">
             <Icons.gitHub className="size-6" />
             <span className="sr-only">GitHub</span>
           </Link>
-          <ModeToggle />
         </div>
       </nav>
     </>

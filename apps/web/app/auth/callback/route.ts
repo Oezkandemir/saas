@@ -1,6 +1,8 @@
+import { type CookieOptions, createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+
+import { createLoginSession } from "@/lib/session-tracking";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -25,10 +27,16 @@ export async function GET(request: Request) {
             cookieStore.delete({ name, ...options });
           },
         },
-      },
+      }
     );
 
-    await supabase.auth.exchangeCodeForSession(code);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (!error && data.session && data.user) {
+      // Create login session and log to history
+      const expiresAt = new Date(data.session.expires_at! * 1000);
+      await createLoginSession(data.user.id, expiresAt);
+    }
   }
 
   // URL to redirect to after sign in process completes

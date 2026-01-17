@@ -1,99 +1,61 @@
 import Image from "next/image";
-import { InfoLdg } from "@/types";
-
-import { cn } from "@/lib/utils";
+import { getTranslations } from "next-intl/server";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { cn } from "@/lib/utils";
+import type { InfoLdg } from "@/types";
 
 interface InfoLandingProps {
   data: InfoLdg;
   reverse?: boolean;
   infoKey: "empower" | "integration";
-  locale?: string;
 }
 
-// German translations for InfoLanding
-const deTranslations = {
-  empower: {
-    title: "Stärken Sie Ihre Projekte",
-    description:
-      "Entfalten Sie das volle Potenzial Ihrer Projekte mit unserer Open-Source-SaaS-Plattform. Arbeiten Sie nahtlos zusammen, innovieren Sie mühelos und skalieren Sie grenzenlos.",
-    collaborative: {
-      title: "Kollaborativ",
-      description:
-        "Arbeiten Sie in Echtzeit mit Ihren Teammitgliedern zusammen.",
-    },
-    innovative: {
-      title: "Innovativ",
-      description:
-        "Bleiben Sie mit ständigen Updates der Konkurrenz einen Schritt voraus.",
-    },
-    scalable: {
-      title: "Skalierbar",
-      description:
-        "Unsere Plattform bietet die Skalierbarkeit, die Sie benötigen, um sich an Ihre Anforderungen anzupassen.",
-    },
-  },
-  integration: {
-    title: "Nahtlose Integration",
-    description:
-      "Integrieren Sie unsere Open-Source-SaaS nahtlos in Ihre bestehenden Arbeitsabläufe. Verbinden Sie mühelos Ihre Lieblingstools und -dienste für eine optimierte Erfahrung.",
-    flexible: {
-      title: "Flexibel",
-      description:
-        "Passen Sie Ihre Integrationen an Ihre individuellen Anforderungen an.",
-    },
-    efficient: {
-      title: "Effizient",
-      description:
-        "Optimieren Sie Ihre Prozesse und reduzieren Sie den manuellen Aufwand.",
-    },
-    reliable: {
-      title: "Zuverlässig",
-      description:
-        "Verlassen Sie sich auf unsere robuste Infrastruktur und umfassende Dokumentation.",
-    },
-  },
-};
-
-export default function InfoLanding({
+export default async function InfoLanding({
   data,
   reverse = false,
   infoKey,
-  locale = "en",
 }: InfoLandingProps) {
-  // Get translations based on locale and info key
-  const getLocalizedContent = () => {
-    // Use German translations if locale is 'de'
-    if (locale === "de" && deTranslations[infoKey]) {
-      return deTranslations[infoKey];
-    }
-
-    // Default to English/original content from the data object
-    return {
-      title: data.title,
-      description: data.description,
-    };
-  };
+  // Get translations using next-intl
+  const t = await getTranslations(`Info.${infoKey}`);
 
   // Get localized content for the main section
-  const localizedContent = getLocalizedContent();
+  const localizedContent = {
+    title: t("title"),
+    description: t("description"),
+  };
+
+  // Map items by index to translation keys
+  // empower: collaborative, innovative, scalable
+  // integration: flexible, efficient, reliable
+  const itemKeyMap: Record<"empower" | "integration", string[]> = {
+    empower: ["collaborative", "innovative", "scalable"],
+    integration: ["flexible", "efficient", "reliable"],
+  };
 
   // Function to get localized list item content
-  const getLocalizedListItem = (item) => {
-    const itemKey = item.title.toLowerCase();
+  const getLocalizedListItem = (
+    item: { title: string; description: string; icon?: string },
+    index: number
+  ) => {
+    const itemKey = itemKeyMap[infoKey]?.[index];
 
-    if (
-      locale === "de" &&
-      deTranslations[infoKey] &&
-      deTranslations[infoKey][itemKey]
-    ) {
-      return {
-        title: deTranslations[infoKey][itemKey].title,
-        description: deTranslations[infoKey][itemKey].description,
-      };
+    if (itemKey) {
+      try {
+        return {
+          title: t(`${itemKey}.title`),
+          description: t(`${itemKey}.description`),
+        };
+      } catch {
+        // Fallback to original if translation not found
+        return {
+          title: item.title,
+          description: item.description,
+        };
+      }
     }
 
+    // Fallback to original if no mapping found
     return {
       title: item.title,
       description: item.description,
@@ -113,7 +75,7 @@ export default function InfoLanding({
           <dl className="mt-6 space-y-4 leading-7">
             {data.list.map((item, index) => {
               const Icon = Icons[item.icon || "arrowRight"];
-              const localizedItem = getLocalizedListItem(item);
+              const localizedItem = getLocalizedListItem(item, index);
 
               return (
                 <div className="relative pl-8" key={index}>
@@ -132,7 +94,7 @@ export default function InfoLanding({
         <div
           className={cn(
             "overflow-hidden rounded-xl border lg:-m-4",
-            reverse ? "order-1" : "order-2",
+            reverse ? "order-1" : "order-2"
           )}
         >
           <div className="aspect-video">

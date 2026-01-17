@@ -1,0 +1,20 @@
+# Development files
+*.log
+.env*.local
+.turbo
+node_modules/.cache
+
+# Testing
+coverage
+*.test.ts
+*.test.tsx
+tests/
+
+# Documentation
+*.md
+!README.md
+
+# Editor
+.vscode
+.idea
+

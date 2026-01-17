@@ -1,0 +1,30 @@
+# Mobile app
+apps/mobile
+
+# Landing page (separate deployment)
+apps/landing
+
+# Packages (will be installed via pnpm)
+packages/templates
+
+# Development files
+*.log
+.env*.local
+.turbo
+.contentlayer
+
+# Testing
+coverage
+*.test.ts
+*.test.tsx
+tests/
+
+# Documentation
+*.md
+!README.md
+
+# Editor
+.vscode
+.idea
+*.swp
+*.swo

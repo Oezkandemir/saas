@@ -1,20 +1,19 @@
 "use client";
 
-import { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { Suspense } from "react";
 import { UserAuthForm } from "@/components/forms/user-auth-form";
 import { Icons } from "@/components/shared/icons";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
 // Component to get search params with Suspense
 function LoginForm() {
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/dashboard";
+  const redirectTo = searchParams.get("redirectTo") || "/";
 
   return (
     <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
@@ -45,13 +44,11 @@ export default function LoginPage() {
         href="/"
         className={cn(
           buttonVariants({ variant: "outline", size: "sm" }),
-          "absolute left-4 top-4 md:left-8 md:top-8",
+          "absolute left-4 top-4 md:left-8 md:top-8"
         )}
       >
-        <>
-          <Icons.chevronLeft className="mr-2 size-4" />
-          Back
-        </>
+        <Icons.chevronLeft className="mr-2 size-4" />
+        Back
       </Link>
       <Suspense fallback={<div>Loading...</div>}>
         <LoginForm />

@@ -4,10 +4,8 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { siteConfig } from "@/config/site";
-import {
-  sendNewsletterConfirmationEmail,
-  sendUnsubscribeConfirmationEmail,
-} from "@/lib/email-client";
+import { sendNewsletterConfirmationEmail } from "@/lib/email-client";
+import { logger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/server";
 
 // Schema for newsletter subscription
@@ -34,7 +32,7 @@ export async function subscribeToNewsletter(data: NewsletterFormData) {
       .eq("email", validatedData.email)
       .single();
 
-    let isNewSubscriber = !existingSubscriber;
+    const isNewSubscriber = !existingSubscriber;
 
     // Only insert if not already subscribed
     if (isNewSubscriber) {
@@ -43,7 +41,7 @@ export async function subscribeToNewsletter(data: NewsletterFormData) {
         .insert([{ email: validatedData.email }]);
 
       if (error) {
-        console.error("Error adding newsletter subscriber:", error);
+        logger.error("Error adding newsletter subscriber", error);
         return {
           success: false,
           message: "Failed to subscribe. Please try again later.",
@@ -56,16 +54,15 @@ export async function subscribeToNewsletter(data: NewsletterFormData) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    console.log("Current user:", user?.id || "Not authenticated");
+    logger.debug("Current user", { userId: user?.id || "Not authenticated" });
 
     let userId = user?.id;
 
     // If no authenticated user, try to find a user with the provided email
     if (!userId) {
-      console.log(
-        "No authenticated user, searching for user with email:",
-        validatedData.email,
-      );
+      logger.debug("No authenticated user, searching for user with email", {
+        email: validatedData.email,
+      });
 
       // Search for a user with the provided email in the public.users table
       const { data: userData, error: userError } = await supabase
@@ -75,21 +72,21 @@ export async function subscribeToNewsletter(data: NewsletterFormData) {
         .single();
 
       if (userError) {
-        console.log("No user found with email:", validatedData.email);
+        logger.debug("No user found with email", {
+          email: validatedData.email,
+        });
       } else if (userData) {
-        console.log(
-          "Found user with email:",
-          validatedData.email,
-          "User ID:",
-          userData.id,
-        );
+        logger.info("Found user with email", {
+          email: validatedData.email,
+          userId: userData.id,
+        });
         userId = userData.id;
       }
     }
 
     // If we have a user ID (either from authenticated user or found by email), create a notification
     if (userId) {
-      console.log("Creating notification for user:", userId);
+      logger.info("Creating notification for user", { userId });
 
       // Create notification for the user
       const notificationContent = isNewSubscriber
@@ -109,9 +106,9 @@ export async function subscribeToNewsletter(data: NewsletterFormData) {
           .select();
 
       if (notificationError) {
-        console.error("Error creating notification:", notificationError);
+        logger.error("Error creating notification", notificationError);
       } else {
-        console.log("Notification created successfully:", notificationData);
+        logger.info("Notification created successfully", { notificationData });
       }
 
       // Note: We can't directly call the NotificationsContext's refetchAll method here
@@ -140,11 +137,11 @@ export async function subscribeToNewsletter(data: NewsletterFormData) {
       message: "Thank you for subscribing to our newsletter!",
     };
   } catch (error) {
-    console.error("Newsletter subscription error:", error);
+    logger.error("Newsletter subscription error", error);
     if (error instanceof z.ZodError) {
       return {
         success: false,
-        message: error.errors[0].message || "Invalid email address",
+        message: error.errors[0]?.message || "Invalid email address",
       };
     }
 
@@ -156,13 +153,12 @@ export async function subscribeToNewsletter(data: NewsletterFormData) {
 }
 
 // Function to unsubscribe from newsletter
-export async function unsubscribeFromNewsletter(email: string, token: string) {
+export async function unsubscribeFromNewsletter(email: string, _token: string) {
   try {
     // Get Supabase client
     const supabase = await createClient();
 
-    console.log("===== UNSUBSCRIBE DEBUG =====");
-    console.log("Unsubscribe request for email:", email);
+    logger.debug("Unsubscribe request for email", { email });
 
     // SUPER SIMPLE APPROACH: Just delete directly by email
     // No token verification, no checks, just delete
@@ -172,19 +168,18 @@ export async function unsubscribeFromNewsletter(email: string, token: string) {
       email_to_delete: email,
     });
 
-    console.log("Delete result:", { data, error });
+    logger.debug("Delete result", { data, error });
 
     // Return success regardless of whether we found the email or not
     // This way, users always see a success message
-    console.log("Unsubscribe process completed");
-    console.log("===== END UNSUBSCRIBE DEBUG =====");
+    logger.info("Unsubscribe process completed");
 
     return {
       success: true,
       message: "You have successfully unsubscribed from our newsletter.",
     };
   } catch (error) {
-    console.error("Newsletter unsubscription error:", error);
+    logger.error("Newsletter unsubscription error", error);
 
     // Even if there's an error, tell the user it worked
     return {

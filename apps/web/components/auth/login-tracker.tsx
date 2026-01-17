@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { trackUserLogin } from "@/actions/user-profile-actions";
 
+import { logger } from "@/lib/logger";
+
 export function LoginTracker() {
   useEffect(() => {
     // Track user login when the component mounts
@@ -10,7 +12,7 @@ export function LoginTracker() {
       try {
         await trackUserLogin();
       } catch (error) {
-        console.error("Failed to track login:", error);
+        logger.error("Failed to track login:", error);
       }
     };
 

@@ -54,12 +54,12 @@ const testEmails = async () => {
     if (confirmationResult.error) {
       console.error(
         "Error sending confirmation email:",
-        confirmationResult.error,
+        confirmationResult.error
       );
     } else {
       console.log(
         "Confirmation email sent successfully:",
-        confirmationResult.data,
+        confirmationResult.data
       );
     }
   } catch (error) {

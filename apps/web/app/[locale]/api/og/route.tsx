@@ -4,18 +4,31 @@ import { ogImageSchema } from "@/lib/validations/og";
 
 export const runtime = "edge";
 
-const interRegular = fetch(
-  new URL("../../../../assets/fonts/Inter-Regular.ttf", import.meta.url),
-).then((res) => res.arrayBuffer());
-
-const interBold = fetch(
-  new URL("../../../../assets/fonts/CalSans-SemiBold.ttf", import.meta.url),
-).then((res) => res.arrayBuffer());
+// Load fonts from external URLs to reduce bundle size
+// This prevents bundling large font files in the Edge Function
+async function loadFont(url: string): Promise<ArrayBuffer> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to load font from ${url}`);
+  }
+  return response.arrayBuffer();
+}
 
 export async function GET(req: Request) {
   try {
-    const fontRegular = await interRegular;
-    const fontBold = await interBold;
+    // Load fonts from external URLs instead of bundling them
+    // This significantly reduces the Edge Function bundle size (under 1MB limit)
+    const [fontRegular, fontBold] = await Promise.all([
+      // Inter Regular from Google Fonts API (WOFF2 format, smaller size)
+      loadFont(
+        "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2"
+      ),
+      // For Cal Sans, using Poppins as a visual substitute (similar geometric sans-serif)
+      // To use Cal Sans instead, host it on a CDN (Vercel Blob/Cloudflare R2) and replace this URL
+      loadFont(
+        "https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLCz7Z1xlFd2JQEk.woff2"
+      ),
+    ]);
 
     const url = new URL(req.url);
     const values = ogImageSchema.parse(Object.fromEntries(url.searchParams));
@@ -32,103 +45,101 @@ export async function GET(req: Request) {
     const githubName = "mickasmt";
 
     return new ImageResponse(
-      (
+      <div
+        tw="flex relative flex-col p-12 w-full h-full items-start"
+        style={{
+          color: paint,
+          background:
+            mode === "dark"
+              ? "linear-gradient(90deg, #000 0%, #111 100%)"
+              : "white",
+        }}
+      >
         <div
-          tw="flex relative flex-col p-12 w-full h-full items-start"
+          tw="text-5xl"
           style={{
-            color: paint,
-            background:
-              mode === "dark"
-                ? "linear-gradient(90deg, #000 0%, #111 100%)"
-                : "white",
+            fontFamily: "Poppins",
+            fontWeight: "normal",
+            position: "relative",
+            background: "linear-gradient(90deg, #6366f1, #a855f7 80%)",
+            backgroundClip: "text",
+            color: "transparent",
           }}
         >
+          Cenety
+        </div>
+
+        <div tw="flex flex-col flex-1 py-16">
+          {/* Type : Blog or Doc */}
           <div
-            tw="text-5xl"
+            tw="flex text-xl uppercase font-bold tracking-tight"
+            style={{ fontFamily: "Inter", fontWeight: "normal" }}
+          >
+            {values.type}
+          </div>
+          {/* Title */}
+          <div
+            tw="flex leading-[1.15] text-[80px] font-bold"
             style={{
-              fontFamily: "Cal Sans",
-              fontWeight: "normal",
-              position: "relative",
-              background: "linear-gradient(90deg, #6366f1, #a855f7 80%)",
-              backgroundClip: "text",
-              color: "transparent",
+              fontFamily: "Poppins",
+              fontWeight: "bold",
+              marginLeft: "-3px",
+              fontSize,
             }}
           >
-            Cenety
+            {heading}
           </div>
+        </div>
 
-          <div tw="flex flex-col flex-1 py-16">
-            {/* Type : Blog or Doc */}
-            <div
-              tw="flex text-xl uppercase font-bold tracking-tight"
-              style={{ fontFamily: "Inter", fontWeight: "normal" }}
-            >
-              {values.type}
-            </div>
-            {/* Title */}
-            <div
-              tw="flex leading-[1.15] text-[80px] font-bold"
+        <div tw="flex items-center w-full justify-between">
+          <div
+            tw="flex items-center text-xl"
+            style={{ fontFamily: "Inter", fontWeight: "normal" }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              alt="avatar"
+              width="65"
+              src={`https://github.com/${githubName}.png`}
               style={{
-                fontFamily: "Cal Sans",
-                fontWeight: "bold",
-                marginLeft: "-3px",
-                fontSize,
+                borderRadius: 128,
               }}
-            >
-              {heading}
+            />
+
+            <div tw="flex flex-col" style={{ marginLeft: "15px" }}>
+              <div tw="text-[22px]" style={{ fontFamily: "Poppins" }}>
+                {githubName}
+              </div>
+              <div>Open Source Designer</div>
             </div>
           </div>
 
-          <div tw="flex items-center w-full justify-between">
-            <div
-              tw="flex items-center text-xl"
-              style={{ fontFamily: "Inter", fontWeight: "normal" }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                alt="avatar"
-                width="65"
-                src={`https://github.com/${githubName}.png`}
-                style={{
-                  borderRadius: 128,
-                }}
+          <div
+            tw="flex items-center text-xl"
+            style={{ fontFamily: "Inter", fontWeight: "normal" }}
+          >
+            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+              <path
+                d="M30 44v-8a9.6 9.6 0 0 0-2-7c6 0 12-4 12-11 .16-2.5-.54-4.96-2-7 .56-2.3.56-4.7 0-7 0 0-2 0-6 3-5.28-1-10.72-1-16 0-4-3-6-3-6-3-.6 2.3-.6 4.7 0 7a10.806 10.806 0 0 0-2 7c0 7 6 11 12 11a9.43 9.43 0 0 0-1.7 3.3c-.34 1.2-.44 2.46-.3 3.7v8"
+                stroke={paint}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
-
-              <div tw="flex flex-col" style={{ marginLeft: "15px" }}>
-                <div tw="text-[22px]" style={{ fontFamily: "Cal Sans" }}>
-                  {githubName}
-                </div>
-                <div>Open Source Designer</div>
-              </div>
-            </div>
-
-            <div
-              tw="flex items-center text-xl"
-              style={{ fontFamily: "Inter", fontWeight: "normal" }}
-            >
-              <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
-                <path
-                  d="M30 44v-8a9.6 9.6 0 0 0-2-7c6 0 12-4 12-11 .16-2.5-.54-4.96-2-7 .56-2.3.56-4.7 0-7 0 0-2 0-6 3-5.28-1-10.72-1-16 0-4-3-6-3-6-3-.6 2.3-.6 4.7 0 7a10.806 10.806 0 0 0-2 7c0 7 6 11 12 11a9.43 9.43 0 0 0-1.7 3.3c-.34 1.2-.44 2.46-.3 3.7v8"
-                  stroke={paint}
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M18 36c-9.02 4-10-4-14-4"
-                  stroke={paint}
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <div tw="flex ml-2">
-                github.com/mickasmt/next-saas-stripe-starter
-              </div>
+              <path
+                d="M18 36c-9.02 4-10-4-14-4"
+                stroke={paint}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <div tw="flex ml-2">
+              github.com/mickasmt/next-saas-stripe-starter
             </div>
           </div>
         </div>
-      ),
+      </div>,
       {
         width: 1200,
         height: 630,
@@ -140,15 +151,15 @@ export async function GET(req: Request) {
             style: "normal",
           },
           {
-            name: "Cal Sans",
+            name: "Poppins",
             data: fontBold,
-            weight: 700,
+            weight: 400,
             style: "normal",
           },
         ],
-      },
+      }
     );
-  } catch (error) {
+  } catch (_error) {
     return new Response(`Failed to generate image`, {
       status: 500,
     });

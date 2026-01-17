@@ -1,15 +1,31 @@
 import "server-only";
 
-import { MagicLinkEmail } from "@/emails/magic-link-email";
 import { Resend } from "resend";
-
-import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
+import { BookingConfirmationEmail } from "@/emails/booking-confirmation-email";
+import { MagicLinkEmail } from "@/emails/magic-link-email";
+import { env } from "@/env.mjs";
+import { logger } from "@/lib/logger";
 
-import { getServerUserByEmail } from "./db-admin";
+import { getServerUserByEmail, getServerUserById } from "./db-admin";
 import { getSupabaseClient } from "./supabase";
 
-export const resend = new Resend(env.RESEND_API_KEY);
+// Helper function to get Resend instance (lazy initialization for build-time safety)
+function getResend(): Resend | null {
+  try {
+    if (!env.RESEND_API_KEY || env.RESEND_API_KEY.trim() === "") {
+      return null;
+    }
+    return new Resend(env.RESEND_API_KEY);
+  } catch (error) {
+    // If Resend initialization fails (e.g., invalid API key format), return null
+    logger.warn("Failed to initialize Resend:", error);
+    return null;
+  }
+}
+
+// Export resend instance (will be null if API key is not set, but won't crash on import)
+export const resend = getResend();
 
 // Define our own email request interface for Supabase
 interface VerificationRequestParams {
@@ -35,7 +51,7 @@ export const sendEmailWithEdgeFunction = async ({
   emailType?: "login" | "register";
 }) => {
   try {
-    console.log(`Sending ${type} email to ${email} via edge function`);
+    logger.info(`Sending ${type} email to ${email} via edge function`);
     const supabase = getSupabaseClient();
     const { data, error } = await supabase.functions.invoke("send-email", {
       body: {
@@ -48,18 +64,18 @@ export const sendEmailWithEdgeFunction = async ({
     });
 
     if (error) {
-      console.error("Edge function error:", error);
+      logger.error("Edge function error", error);
       throw new Error(`Failed to send ${type} email: ${error.message}`);
     }
 
-    console.log(`Successfully sent ${type} email to ${email}`);
+    logger.info(`Successfully sent ${type} email to ${email}`);
     return data;
   } catch (error) {
-    console.error(`Failed to send ${type} email:`, error);
+    logger.error(`Failed to send ${type} email`, error);
     // Try to use direct Resend API as a fallback for some email types
-    if (type === "welcome") {
+    if (type === "welcome" && resend) {
       try {
-        console.log("Attempting to send welcome email directly via Resend API");
+        logger.info("Attempting to send welcome email directly via Resend API");
         const { data, error } = await resend.emails.send({
           from: `${siteConfig.name} <hello@cenety.com>`,
           to:
@@ -71,15 +87,15 @@ export const sendEmailWithEdgeFunction = async ({
         });
 
         if (error) {
-          console.error("Resend API fallback error:", error);
+          logger.error("Resend API fallback error", error);
         } else {
-          console.log(
-            "Successfully sent welcome email via Resend API fallback",
+          logger.info(
+            "Successfully sent welcome email via Resend API fallback"
           );
           return data;
         }
       } catch (fallbackError) {
-        console.error("Fallback email sending failed:", fallbackError);
+        logger.error("Fallback email sending failed", fallbackError);
       }
     }
 
@@ -95,7 +111,7 @@ export const sendVerificationRequest = async ({
   const user = await getServerUserByEmail(identifier);
   if (!user || !user.name) return;
 
-  const userVerified = user?.emailVerified ? true : false;
+  const userVerified = !!user?.emailVerified;
   const authSubject = userVerified
     ? `Sign-in link for ${siteConfig.name}`
     : "Activate your account";
@@ -112,14 +128,16 @@ export const sendVerificationRequest = async ({
       });
       return;
     } catch (edgeFunctionError) {
-      console.warn(
-        "Edge function failed, falling back to Resend direct:",
-        edgeFunctionError,
+      logger.warn(
+        `Edge function failed, falling back to Resend direct. Error: ${edgeFunctionError instanceof Error ? edgeFunctionError.message : String(edgeFunctionError)}`
       );
       // Continue with direct Resend API fallback
     }
 
-    // Fallback to direct Resend API
+    // Fallback to direct Resend API (only if resend is available)
+    if (!resend) {
+      throw new Error("Resend API key not configured");
+    }
     const { data, error } = await resend.emails.send({
       from: provider.from,
       to:
@@ -136,7 +154,7 @@ export const sendVerificationRequest = async ({
       // Set this to prevent Gmail from threading emails.
       // More info: https://resend.com/changelog/custom-email-headers
       headers: {
-        "X-Entity-Ref-ID": new Date().getTime() + "",
+        "X-Entity-Ref-ID": `${Date.now()}`,
       },
     });
 
@@ -144,8 +162,8 @@ export const sendVerificationRequest = async ({
       throw new Error(error?.message);
     }
 
-    // console.log(data)
-  } catch (error) {
+    // logger.debug(data)
+  } catch (_error) {
     throw new Error("Failed to send verification email.");
   }
 };
@@ -168,7 +186,7 @@ export const sendSignupConfirmationEmail = async ({
       actionUrl,
     });
   } catch (error) {
-    console.error("Failed to send signup confirmation email:", error);
+    logger.error("Failed to send signup confirmation email", error);
     throw new Error("Failed to send signup confirmation email.");
   }
 };
@@ -188,7 +206,223 @@ export const sendWelcomeEmail = async ({
       name,
     });
   } catch (error) {
-    console.error("Failed to send welcome email:", error);
+    logger.error("Failed to send welcome email", error);
     throw new Error("Failed to send welcome email.");
+  }
+};
+
+/**
+ * Send booking confirmation email to customer
+ */
+export const sendBookingConfirmationEmail = async ({
+  inviteeEmail,
+  inviteeName,
+  eventTitle,
+  eventDescription,
+  startAt,
+  endAt,
+  durationMinutes,
+  locationType,
+  locationValue,
+  hostUserId,
+  priceAmount,
+  priceCurrency,
+  numberOfParticipants,
+  participantNames,
+  inviteeNotes,
+  cancelToken,
+  rescheduleToken,
+  eventSlug,
+}: {
+  inviteeEmail: string;
+  inviteeName: string;
+  eventTitle: string;
+  eventDescription?: string | null;
+  startAt: string;
+  endAt: string;
+  durationMinutes: number;
+  locationType?:
+    | "google_meet"
+    | "zoom"
+    | "custom_link"
+    | "phone"
+    | "in_person"
+    | null;
+  locationValue?: string | null;
+  hostUserId: string;
+  priceAmount?: number | null;
+  priceCurrency?: string | null;
+  numberOfParticipants: number;
+  participantNames?: string[] | null;
+  inviteeNotes?: string | null;
+  cancelToken: string;
+  rescheduleToken?: string | null;
+  eventSlug: string;
+}) => {
+  try {
+    logger.info(
+      `sendBookingConfirmationEmail called - inviteeEmail: ${inviteeEmail}, eventTitle: ${eventTitle}`
+    );
+
+    // Check if Resend is configured
+    if (!env.RESEND_API_KEY) {
+      logger.error(
+        "RESEND_API_KEY is not configured, cannot send booking confirmation email"
+      );
+      return { success: false, error: "Email service not configured" };
+    }
+
+    // Get host user information
+    const hostUser = await getServerUserById(hostUserId);
+    const hostName = hostUser?.name || null;
+    const hostEmail = hostUser?.email || null;
+
+    // Build booking URL
+    const bookingUrl = `${env.NEXT_PUBLIC_APP_URL}/book/${hostUserId}/${eventSlug}`;
+
+    // Determine recipient email
+    // In development, we can optionally send to delivered@resend.dev for testing
+    // But for booking confirmations, we should send to the actual recipient
+    // Set FORCE_DEV_EMAIL=true in .env if you want to use delivered@resend.dev in development
+    const recipientEmail =
+      process.env.NODE_ENV === "development" &&
+      process.env.FORCE_DEV_EMAIL === "true"
+        ? "delivered@resend.dev"
+        : inviteeEmail;
+
+    const fromEmail = env.EMAIL_FROM || "hello@cenety.com";
+
+    // Ensure fromEmail is valid - must be a valid email format
+    let validFromEmail = "hello@cenety.com";
+    if (fromEmail && typeof fromEmail === "string" && fromEmail.includes("@")) {
+      // Extract email from format like "Name <email@example.com>" or just "email@example.com"
+      const emailMatch = fromEmail.match(
+        /<?([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,})>?/
+      );
+      if (emailMatch?.[1]) {
+        validFromEmail = emailMatch[1];
+      } else if (fromEmail.includes("@") && !fromEmail.includes("<")) {
+        validFromEmail = fromEmail.trim();
+      }
+    }
+
+    // Sanitize site name for email (remove any invalid characters, ensure it's not empty)
+    let sanitizedName = (siteConfig.name || "Cenety")
+      .replace(/[<>"']/g, "") // Remove <, >, ", '
+      .replace(/\s+/g, " ") // Normalize whitespace
+      .trim();
+
+    // If name is empty after sanitization, use default
+    if (!sanitizedName || sanitizedName.length === 0) {
+      sanitizedName = "Cenety";
+    }
+
+    // Build from field - use format: "Name <email@example.com>"
+    const fromField = `${sanitizedName} <${validFromEmail}>`;
+
+    // Validate from field format before sending
+    // Resend accepts: "email@example.com" or "Name <email@example.com>"
+    const fromFieldRegex =
+      /^[^<>"]+ <[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,}>$/;
+    const emailOnlyRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,}$/;
+
+    // Determine which format to use
+    let finalFromField: string;
+    if (fromFieldRegex.test(fromField)) {
+      finalFromField = fromField;
+    } else if (emailOnlyRegex.test(validFromEmail)) {
+      // Fallback to email only if name format is invalid
+      logger.warn(
+        `Invalid from field format, using email only - fromField: ${fromField}, sanitizedName: ${sanitizedName}, validFromEmail: ${validFromEmail}`
+      );
+      finalFromField = validFromEmail;
+    } else {
+      // Last resort fallback
+      logger.error("Invalid email format, using default", {
+        fromField,
+        validFromEmail,
+      });
+      finalFromField = "hello@cenety.com";
+    }
+
+    logger.info(
+      `Sending booking confirmation email to ${inviteeEmail} (actual recipient: ${recipientEmail}), fromEmail: ${validFromEmail}, fromField: ${finalFromField}, sanitizedName: ${sanitizedName}, hasResendKey: ${!!env.RESEND_API_KEY}, hostUserId: ${hostUserId}, eventTitle: ${eventTitle}, eventSlug: ${eventSlug}`
+    );
+
+    // Send email via Resend - use validated from field (check resend is available)
+    if (!resend) {
+      logger.error("Resend instance not available, cannot send booking confirmation email");
+      return { success: false, error: "Email service not configured" };
+    }
+    const { data, error } = await resend.emails.send({
+      from: finalFromField,
+      to: recipientEmail,
+      reply_to: hostEmail || validFromEmail,
+      subject: `Buchungsbestätigung: ${eventTitle}`,
+      react: BookingConfirmationEmail({
+        inviteeName,
+        eventTitle,
+        eventDescription,
+        startAt,
+        endAt,
+        durationMinutes,
+        locationType,
+        locationValue,
+        hostName,
+        hostEmail,
+        priceAmount,
+        priceCurrency,
+        numberOfParticipants,
+        participantNames,
+        inviteeNotes,
+        cancelToken,
+        bookingUrl,
+        rescheduleToken,
+      }),
+      headers: {
+        "X-Entity-Ref-ID": Date.now().toString(),
+      },
+    });
+
+    if (error) {
+      logger.error("Failed to send booking confirmation email via Resend", {
+        error: error.message,
+        errorDetails: JSON.stringify(error),
+        inviteeEmail,
+        recipientEmail,
+        fromEmail: validFromEmail,
+        fromField: finalFromField,
+        hasResendKey: !!env.RESEND_API_KEY,
+      });
+      return { success: false, error: error.message || "Unknown error" };
+    }
+
+    if (!data || !data.id) {
+      logger.error("Resend returned no data or message ID", {
+        inviteeEmail,
+        recipientEmail,
+        response: data,
+      });
+      return { success: false, error: "No message ID returned from Resend" };
+    }
+
+    logger.info(
+      `Booking confirmation email sent successfully - inviteeEmail: ${inviteeEmail}, recipientEmail: ${recipientEmail}, messageId: ${data.id}, fromEmail: ${validFromEmail}, fromField: ${finalFromField}`
+    );
+
+    return { success: true, messageId: data.id };
+  } catch (error) {
+    logger.error("Exception in sendBookingConfirmationEmail", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      inviteeEmail,
+    });
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to send booking confirmation email",
+    };
   }
 };

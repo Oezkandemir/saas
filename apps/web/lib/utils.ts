@@ -1,14 +1,25 @@
-import { Metadata } from "next";
-import { clsx, type ClassValue } from "clsx";
+import { type ClassValue, clsx } from "clsx";
 import ms from "ms";
+import type { Metadata } from "next";
 import { twMerge } from "tailwind-merge";
-
-import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
+import { env } from "@/env.mjs";
 
+/**
+ * cn Utility
+ * Merges Tailwind classes with proper conflict resolution
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export {
+  createPolymorphicComponent,
+  type PolymorphicComponent,
+} from "./polymorphic";
+export { recursiveCloneChildren } from "./recursive-clone-children";
+// Re-export utility functions for convenience
+export { tv } from "./tv";
 
 export function constructMetadata({
   title = siteConfig.name,
@@ -16,27 +27,31 @@ export function constructMetadata({
   image = siteConfig.ogImage,
   icons = "/favicon.ico",
   noIndex = false,
+  keywords,
 }: {
   title?: string;
   description?: string;
   image?: string;
   icons?: string;
   noIndex?: boolean;
+  keywords?: string[];
 } = {}): Metadata {
+  const defaultKeywords = [
+    "Next.js",
+    "React",
+    "Prisma",
+    "Neon",
+    "Auth.js",
+    "shadcn ui",
+    "Resend",
+    "React Email",
+    "Stripe",
+  ];
+  const finalKeywords = keywords || defaultKeywords;
+
   return {
     title,
     description,
-    keywords: [
-      "Next.js",
-      "React",
-      "Prisma",
-      "Neon",
-      "Auth.js",
-      "shadcn ui",
-      "Resend",
-      "React Email",
-      "Stripe",
-    ],
     authors: [
       {
         name: "mickasmt",
@@ -50,6 +65,14 @@ export function constructMetadata({
       title,
       description,
       siteName: title,
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
@@ -61,11 +84,24 @@ export function constructMetadata({
     icons,
     metadataBase: new URL(siteConfig.url),
     manifest: `${siteConfig.url}/site.webmanifest`,
-    ...(noIndex && {
-      robots: {
-        index: false,
-        follow: false,
-      },
+    robots: noIndex
+      ? {
+          index: false,
+          follow: false,
+        }
+      : {
+          index: true,
+          follow: true,
+          googleBot: {
+            index: true,
+            follow: true,
+            "max-video-preview": -1,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+          },
+        },
+    ...(finalKeywords.length > 0 && {
+      keywords: finalKeywords.join(", "),
     }),
   };
 }
@@ -81,8 +117,12 @@ export function getURL() {
     process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
     "http://localhost:3000";
 
-  // Make sure to include `https://` when not localhost.
-  url = url.startsWith("http") ? url : `https://${url}`;
+  // Make sure to include protocol when not present, but preserve http for localhost
+  if (!url.startsWith("http")) {
+    // Only use https if it's not localhost
+    const isLocalhost = url.includes("localhost") || url.includes("127.0.0.1");
+    url = isLocalhost ? `http://${url}` : `https://${url}`;
+  }
 
   // Make sure to include a trailing `/`.
   url = url.endsWith("/") ? url : `${url}/`;
@@ -93,6 +133,93 @@ export function getURL() {
 /**
  * Format a date to a readable string
  */
+/**
+ * Format duration in minutes to a human-readable string
+ * Rounds to nearest half hour (0, 0.5, 1, 1.5, 2, etc.)
+ * Examples: 180 min -> "3 Stunden", 90 min -> "1.5 Stunden", 30 min -> "0.5 Stunden"
+ */
+export function formatDuration(minutes: number, locale: string = "de"): string {
+  const hours = minutes / 60;
+  // Round to nearest half hour
+  const roundedHours = Math.round(hours * 2) / 2;
+
+  if (roundedHours === 0) {
+    return locale === "de" ? "0 Stunden" : "0 hours";
+  }
+
+  // Check if it's a whole number or half hour
+  if (roundedHours % 1 === 0) {
+    // Whole hours
+    const hoursText =
+      locale === "de"
+        ? roundedHours === 1
+          ? "Stunde"
+          : "Stunden"
+        : roundedHours === 1
+          ? "hour"
+          : "hours";
+    return `${roundedHours} ${hoursText}`;
+  } else {
+    // Half hours - format as "X.5 Stunden" or "X Stunden 30 Minuten"
+    const wholeHours = Math.floor(roundedHours);
+    if (locale === "de") {
+      if (wholeHours === 0) {
+        return "30 Minuten";
+      }
+      return `${wholeHours}.5 Stunden`;
+    } else {
+      if (wholeHours === 0) {
+        return "30 minutes";
+      }
+      return `${wholeHours}.5 hours`;
+    }
+  }
+}
+
+/**
+ * Format duration hours (decimal) to a human-readable string
+ * Rounds to nearest half hour
+ */
+export function formatDurationHours(
+  hours: number,
+  locale: string = "de"
+): string {
+  // Round to nearest half hour
+  const roundedHours = Math.round(hours * 2) / 2;
+
+  if (roundedHours === 0) {
+    return locale === "de" ? "0 Stunden" : "0 hours";
+  }
+
+  // Check if it's a whole number or half hour
+  if (roundedHours % 1 === 0) {
+    // Whole hours
+    const hoursText =
+      locale === "de"
+        ? roundedHours === 1
+          ? "Stunde"
+          : "Stunden"
+        : roundedHours === 1
+          ? "hour"
+          : "hours";
+    return `${roundedHours} ${hoursText}`;
+  } else {
+    // Half hours
+    const wholeHours = Math.floor(roundedHours);
+    if (locale === "de") {
+      if (wholeHours === 0) {
+        return "30 Minuten";
+      }
+      return `${wholeHours}.5 Stunden`;
+    } else {
+      if (wholeHours === 0) {
+        return "30 minutes";
+      }
+      return `${wholeHours}.5 hours`;
+    }
+  }
+}
+
 export function formatDate(input: string | number | Date): string {
   const date = new Date(input);
   return date.toLocaleDateString("en-US", {
@@ -116,24 +243,59 @@ export const timeAgo = (timestamp: Date, timeOnly?: boolean): string => {
 
 export async function fetcher<JSON = any>(
   input: RequestInfo,
-  init?: RequestInit,
+  init?: RequestInit
 ): Promise<JSON> {
   const res = await fetch(input, init);
 
   if (!res.ok) {
-    const json = await res.json();
-    if (json.error) {
-      const error = new Error(json.error) as Error & {
-        status: number;
-      };
-      error.status = res.status;
-      throw error;
-    } else {
-      throw new Error("An unexpected error occurred");
+    // Check content type before parsing JSON
+    const contentType = res.headers.get("content-type");
+    if (contentType?.includes("application/json")) {
+      try {
+        const text = await res.text();
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const json = JSON.parse(jsonMatch[0]);
+          if (json.error) {
+            const error = new Error(json.error) as Error & {
+              status: number;
+            };
+            error.status = res.status;
+            throw error;
+          }
+        }
+      } catch (_parseError) {
+        // JSON parse failed - throw generic error
+      }
     }
+    throw new Error("An unexpected error occurred");
   }
 
-  return res.json();
+  // Check content type before parsing JSON
+  const contentType = res.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    throw new Error("Response is not JSON");
+  }
+
+  try {
+    const text = await res.text();
+    const trimmedText = text.trim();
+    // Try direct parse first
+    try {
+      return JSON.parse(trimmedText);
+    } catch {
+      // If direct parse fails, try to extract JSON object
+      const jsonMatch = trimmedText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+      }
+      throw new Error("No valid JSON found in response");
+    }
+  } catch (parseError) {
+    throw new Error(
+      `Failed to parse JSON: ${parseError instanceof Error ? parseError.message : String(parseError)}`
+    );
+  }
 }
 
 export function nFormatter(num: number, digits?: number) {
@@ -151,9 +313,7 @@ export function nFormatter(num: number, digits?: number) {
   var item = lookup
     .slice()
     .reverse()
-    .find(function (item) {
-      return num >= item.value;
-    });
+    .find((item) => num >= item.value);
   return item
     ? (num / item.value).toFixed(digits || 1).replace(rx, "$1") + item.symbol
     : "0";
@@ -182,13 +342,13 @@ export const getBlurDataURL = async (url: string | null) => {
 
   try {
     const response = await fetch(
-      `https://wsrv.nl/?url=${fullUrl}&w=50&h=50&blur=5`,
+      `https://wsrv.nl/?url=${fullUrl}&w=50&h=50&blur=5`
     );
     const buffer = await response.arrayBuffer();
     const base64 = Buffer.from(buffer).toString("base64");
 
     return `data:image/png;base64,${base64}`;
-  } catch (error) {
+  } catch (_error) {
     return "data:image/webp;base64,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   }
 };

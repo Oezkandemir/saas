@@ -2,4 +2,5 @@ packages:
   - apps/*
   - packages/**/*
   - "!apps/mobile-backup"
+  - "!apps/mobile"
   - "!temp-mobile"

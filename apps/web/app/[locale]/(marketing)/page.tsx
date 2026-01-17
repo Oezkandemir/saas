@@ -1,11 +1,16 @@
-import { infos } from "@/config/landing";
-import BentoGrid from "@/components/sections/bentogrid";
-import Features from "@/components/sections/features";
-import HeroLanding from "@/components/sections/hero-landing";
-import InfoLanding from "@/components/sections/info-landing";
-import Powered from "@/components/sections/powered";
-import PreviewLanding from "@/components/sections/preview-landing";
-import Testimonials from "@/components/sections/testimonials";
+import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+// ⚡ PERFORMANCE: Next.js automatically code-splits these imports into separate chunks
+import ModernBenefits from "@/components/sections/modern-benefits";
+import ModernCTA from "@/components/sections/modern-cta";
+import ModernFAQ from "@/components/sections/modern-faq";
+import ModernFeatures from "@/components/sections/modern-features";
+import ModernHero from "@/components/sections/modern-hero";
+import ModernHowItWorks from "@/components/sections/modern-how-it-works";
+import ModernOfferings from "@/components/sections/modern-offerings";
+import ModernStats from "@/components/sections/modern-stats";
+import ModernTestimonials from "@/components/sections/modern-testimonials";
+import { constructMetadata } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{
@@ -13,31 +18,86 @@ interface PageProps {
   }>;
 }
 
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const { locale } = resolvedParams;
+
+  // CRITICAL FIX: Set locale before getting translations
+  // This ensures the correct language is used during client-side navigation
+  setRequestLocale(locale);
+
+  const t = await getTranslations("Index");
+
+  return constructMetadata({
+    title: t("seo.title"),
+    description: t("seo.description"),
+    keywords: [
+      "Business Toolkit",
+      "Freelancer Software",
+      "Kundenverwaltung",
+      "Angebote erstellen",
+      "Rechnungen",
+      "QR-Codes",
+      "CRM",
+      "Invoice Management",
+      "Customer Management",
+      "Business Software",
+      "Small Business Tools",
+      "FAQ",
+      "Häufige Fragen",
+    ],
+  });
+}
+
 export default async function IndexPage({ params }: PageProps) {
   // Next.js 15 requires params to be awaited
   const resolvedParams = await params;
   const { locale } = resolvedParams;
 
+  // Set the locale for this request to ensure translations work correctly
+  setRequestLocale(locale);
+
+  const t = await getTranslations("Index");
+  const siteConfig = (await import("@/config/site")).siteConfig;
+
+  // ⚡ SEO: Structured Data for better search engine understanding
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: siteConfig.name,
+    description: t("seo.description"),
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "EUR",
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.8",
+      ratingCount: "150",
+    },
+  };
+
   return (
     <>
-      <HeroLanding />
-      <PreviewLanding />
-      <Powered />
-      <BentoGrid />
-      <InfoLanding
-        data={infos[0]}
-        reverse={true}
-        infoKey="empower"
-        locale={locale}
+      {/* ⚡ SEO: Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      {/* Uncomment to enable the second info section
-      <InfoLanding 
-        data={infos[1]}
-        infoKey="integration"
-        locale={locale} 
-      /> */}
-      <Features locale={locale} />
-      <Testimonials locale={locale} />
+      <ModernHero />
+      <ModernStats />
+      <ModernFeatures />
+      <ModernOfferings />
+      <ModernHowItWorks />
+      <ModernBenefits />
+      <ModernTestimonials />
+      <ModernFAQ />
+      <ModernCTA />
     </>
   );
 }

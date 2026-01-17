@@ -1,6 +1,6 @@
-import { Skeleton } from "@/components/ui/skeleton";
 import { HeaderSection } from "@/components/shared/header-section";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (

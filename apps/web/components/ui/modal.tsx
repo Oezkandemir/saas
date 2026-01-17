@@ -1,12 +1,11 @@
 "use client";
 
-import { Dispatch, SetStateAction } from "react";
+import type { Dispatch, SetStateAction } from "react";
 // import { useRouter } from "next/router";
 import { Drawer } from "vaul";
-
-import { cn } from "@/lib/utils";
-import { useMediaQuery } from "@/hooks/use-media-query";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { cn } from "@/lib/utils";
 
 interface ModalProps {
   children: React.ReactNode;
@@ -17,6 +16,7 @@ interface ModalProps {
   desktopOnly?: boolean;
   preventDefaultClose?: boolean;
   title?: string;
+  fullscreenOnMobile?: boolean;
 }
 
 export function Modal({
@@ -28,6 +28,7 @@ export function Modal({
   desktopOnly,
   preventDefaultClose,
   title = "Dialog",
+  fullscreenOnMobile = false,
 }: ModalProps) {
   // const router = useRouter();
 
@@ -36,7 +37,7 @@ export function Modal({
       return;
     }
     // fire onClose event if provided
-    onClose && onClose();
+    onClose?.();
 
     // if setShowModal is defined, use it to close modal
     if (setShowModal) {
@@ -63,13 +64,17 @@ export function Modal({
         <Drawer.Portal>
           <Drawer.Content
             className={cn(
-              "fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background",
-              className,
+              fullscreenOnMobile
+                ? "fixed inset-0 z-50 overflow-hidden border-0 bg-background"
+                : "fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background",
+              className
             )}
           >
-            <div className="sticky top-0 z-20 flex w-full items-center justify-center bg-inherit">
-              <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
-            </div>
+            {!fullscreenOnMobile && (
+              <div className="sticky top-0 z-20 flex w-full items-center justify-center bg-inherit">
+                <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
+              </div>
+            )}
             {/* The title is visually hidden but still present for accessibility */}
             <h2 className="sr-only">{title}</h2>
             {children}
@@ -93,7 +98,7 @@ export function Modal({
         onCloseAutoFocus={(e) => e.preventDefault()}
         className={cn(
           "overflow-hidden p-0 md:max-w-md md:rounded-2xl md:border",
-          className,
+          className
         )}
       >
         {/* The DialogTitle is now passed in the DialogContent to fix the accessibility issue */}

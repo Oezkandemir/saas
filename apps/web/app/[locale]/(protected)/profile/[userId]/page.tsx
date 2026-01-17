@@ -1,17 +1,8 @@
-import { redirect, notFound } from "next/navigation";
 import { formatDistance } from "date-fns";
-import {
-  BadgeCheck,
-  Calendar,
-  Mail,
-  Shield,
-  User,
-} from "lucide-react";
+import { Calendar, Mail, Shield, User } from "lucide-react";
+import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
-import { createClient } from "@/lib/supabase/server";
-import { constructMetadata } from "@/lib/utils";
+import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
@@ -20,10 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
-import { FollowButton } from "@/components/follow-button";
-import { FollowStats } from "@/components/follow-stats";
-import { getFollowStatus } from "@/actions/follow-actions";
+import { getCurrentUser } from "@/lib/session";
+import { createClient } from "@/lib/supabase/server";
+import { constructMetadata } from "@/lib/utils";
 
 interface UserProfilePageProps {
   params: Promise<{
@@ -34,11 +24,11 @@ interface UserProfilePageProps {
 
 async function getUserProfile(userId: string) {
   const supabase = await createClient();
-  
+
   const { data: user, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', userId)
+    .from("users")
+    .select("*")
+    .eq("id", userId)
     .single();
 
   if (error || !user) {
@@ -59,7 +49,9 @@ export async function generateMetadata({ params }: UserProfilePageProps) {
   });
 }
 
-export default async function UserProfilePage({ params }: UserProfilePageProps) {
+export default async function UserProfilePage({
+  params,
+}: UserProfilePageProps) {
   const { userId } = await params;
   const currentUser = await getCurrentUser();
   const t = await getTranslations("Profile");
@@ -74,13 +66,10 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
   }
 
   const user = await getUserProfile(userId);
-  
+
   if (!user) {
     notFound();
   }
-
-  // Get follow status and stats
-  const followStatus = await getFollowStatus(userId);
 
   return (
     <>
@@ -92,7 +81,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
       <div className="grid gap-6 md:grid-cols-3">
         {/* Left sidebar with user info */}
         <Card className="md:col-span-1">
-          <CardHeader className="flex flex-row items-center gap-4 pb-2">
+          <CardHeader className="flex flex-row gap-4 items-center pb-2">
             <Avatar className="size-16">
               <AvatarImage
                 src={user.avatar_url || ""}
@@ -106,37 +95,22 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
               <CardTitle>{user.name || "User"}</CardTitle>
               <CardDescription className="flex items-center">
                 {user.role === "ADMIN" && (
-                  <Shield className="mr-1 size-3 text-blue-500" />
+                  <Shield className="mr-1 text-blue-500 size-3" />
                 )}
                 {user.email}
               </CardDescription>
             </div>
           </CardHeader>
-          
+
           <CardContent className="space-y-4">
-            {/* Follow Button */}
-            <FollowButton
-              userId={userId}
-              isFollowing={followStatus.isFollowing}
-              className="w-full"
-            />
-
-            {/* Follow Stats */}
-            <FollowStats
-              userId={userId}
-              followerCount={followStatus.followerCount}
-              followingCount={followStatus.followingCount}
-              className="justify-center"
-            />
-
             {/* User Info */}
             <div className="space-y-1">
               <p className="text-sm font-medium text-muted-foreground">
                 {t("accountInfo")}
               </p>
-              
-              <div className="flex items-center justify-between">
-                <span className="text-sm flex items-center gap-1">
+
+              <div className="flex justify-between items-center">
+                <span className="flex gap-1 items-center text-sm">
                   <Calendar className="size-3" />
                   {t("memberSince")}
                 </span>
@@ -149,9 +123,9 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                 </span>
               </div>
 
-              {user.role === 'ADMIN' && (
-                <div className="flex items-center justify-between">
-                  <span className="text-sm flex items-center gap-1">
+              {user.role === "ADMIN" && (
+                <div className="flex justify-between items-center">
+                  <span className="flex gap-1 items-center text-sm">
                     <Shield className="size-3" />
                     Role
                   </span>
@@ -162,10 +136,10 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
               )}
 
               {/* User Status */}
-              <div className="flex items-center justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-sm">Status</span>
                 <span className="flex items-center text-sm font-medium text-green-500">
-                  <div className="mr-1 size-2 rounded-full bg-green-500" />
+                  <div className="mr-1 bg-green-500 rounded-full size-2" />
                   Active
                 </span>
               </div>
@@ -176,15 +150,13 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
         {/* Right content area */}
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex gap-2 items-center">
               <User className="size-5" />
               About {user.name || user.email}
             </CardTitle>
-            <CardDescription>
-              User information and activity
-            </CardDescription>
+            <CardDescription>User information and activity</CardDescription>
           </CardHeader>
-          
+
           <CardContent className="space-y-6">
             {/* Basic Info */}
             <div className="grid gap-4 md:grid-cols-2">
@@ -192,12 +164,12 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                 <h4 className="text-sm font-medium text-muted-foreground">
                   Contact Information
                 </h4>
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex gap-2 items-center text-sm">
                   <Mail className="size-4" />
                   {user.email}
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <h4 className="text-sm font-medium text-muted-foreground">
                   Account Details
@@ -206,7 +178,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                   <div className="flex justify-between">
                     <span>Account Type:</span>
                     <span className="font-medium">
-                      {user.role === 'ADMIN' ? 'Administrator' : 'User'}
+                      {user.role === "ADMIN" ? "Administrator" : "User"}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -226,7 +198,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
               <h4 className="text-sm font-medium text-muted-foreground">
                 Recent Activity
               </h4>
-              <div className="rounded-lg border p-4 text-center text-muted-foreground">
+              <div className="p-4 text-center rounded-lg border text-muted-foreground">
                 <p className="text-sm">No recent activity to display</p>
               </div>
             </div>
@@ -235,4 +207,4 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
       </div>
     </>
   );
-} 
+}

@@ -44,7 +44,7 @@ const TableFooter = React.forwardRef<
     ref={ref}
     className={cn(
       "border-t bg-muted/50 font-medium [&>tr]:last:border-b-0",
-      className,
+      className
     )}
     {...props}
   />
@@ -58,8 +58,8 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
-      className,
+      "border-b border-border transition-colors hover:bg-muted/30 data-[state=selected]:bg-muted",
+      className
     )}
     {...props}
   />
@@ -73,8 +73,8 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
-      className,
+      "h-12 px-4 text-left align-middle font-semibold text-sm text-muted-foreground [&:has([role=checkbox])]:pr-0",
+      className
     )}
     {...props}
   />
@@ -105,6 +105,20 @@ const TableCaption = React.forwardRef<
 ));
 TableCaption.displayName = "TableCaption";
 
+// Table row divider component
+const TableRowDivider = React.forwardRef<
+  HTMLTableRowElement,
+  React.HTMLAttributes<HTMLTableRowElement>
+>(({ className, ...props }, ref) => (
+  <tr ref={ref} className={cn("h-px bg-border", className)} {...props}>
+    <td colSpan={1000} className="h-px p-0" />
+  </tr>
+));
+TableRowDivider.displayName = "Table.RowDivider";
+
+// Alias for backward compatibility
+const TableRoot = Table;
+
 export {
   Table,
   TableHeader,
@@ -114,4 +128,6 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  TableRoot,
+  TableRowDivider,
 };

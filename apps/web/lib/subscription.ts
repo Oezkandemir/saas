@@ -1,9 +1,14 @@
 // @ts-nocheck
 // TODO: Fix this when we turn strict mode on.
-import { UserSubscriptionPlan } from "types";
+
+import { unstable_cache, unstable_noStore } from "next/cache";
+import { cache } from "react";
+
+import type { UserSubscriptionPlan } from "types";
+import { CACHE_CONFIG } from "@/config/constants";
 import { pricingData } from "@/config/subscriptions";
 import { supabaseAdmin } from "@/lib/db";
-import { stripe } from "@/lib/stripe";
+import { logger } from "@/lib/logger";
 
 // Default free subscription plan as a fallback
 const DEFAULT_FREE_PLAN: UserSubscriptionPlan = {
@@ -17,14 +22,21 @@ const DEFAULT_FREE_PLAN: UserSubscriptionPlan = {
   isCanceled: false,
 };
 
-export async function getUserSubscriptionPlan(
+// Internal function that performs the actual database query
+async function _getUserSubscriptionPlanInternal(
   userId: string,
   userEmail?: string,
+  skipCache?: boolean
 ): Promise<UserSubscriptionPlan> {
   // If no userId provided, return the default free plan
   if (!userId) {
-    console.warn("getUserSubscriptionPlan called without userId");
+    logger.warn("getUserSubscriptionPlan called without userId");
     return DEFAULT_FREE_PLAN;
+  }
+
+  // Skip cache if explicitly requested (e.g., after sync)
+  if (skipCache) {
+    unstable_noStore();
   }
 
   try {
@@ -36,7 +48,7 @@ export async function getUserSubscriptionPlan(
     const userResult = await supabaseAdmin
       .from("users")
       .select(
-        "id, email, stripe_customer_id, stripe_subscription_id, stripe_price_id, stripe_current_period_end",
+        "id, email, polar_customer_id, polar_subscription_id, polar_product_id, polar_current_period_end, payment_provider"
       )
       .eq("id", userId)
       .single();
@@ -44,25 +56,24 @@ export async function getUserSubscriptionPlan(
     userData = userResult.data;
     error = userResult.error;
 
-    console.log(`Fetching subscription data for user ${userId}`);
-    console.log(`Database record:`, userData);
+    // Fetching subscription data silently
 
     // If user not found by ID and we have an email, try to find by email
     if ((!userData || error) && userEmail) {
-      console.log(
-        `User not found by ID ${userId}, trying with email ${userEmail}`,
+      logger.info(
+        `User not found by ID ${userId}, trying with email ${userEmail}`
       );
       const emailResult = await supabaseAdmin
         .from("users")
         .select(
-          "id, email, stripe_customer_id, stripe_subscription_id, stripe_price_id, stripe_current_period_end",
+          "id, email, polar_customer_id, polar_subscription_id, polar_product_id, polar_current_period_end, payment_provider"
         )
         .eq("email", userEmail)
         .single();
 
       if (emailResult.data && !emailResult.error) {
-        console.log(
-          `Found user by email ${userEmail} with ID ${emailResult.data.id}`,
+        logger.info(
+          `Found user by email ${userEmail} with ID ${emailResult.data.id}`
         );
         userData = emailResult.data;
         error = null;
@@ -74,12 +85,12 @@ export async function getUserSubscriptionPlan(
           .eq("id", userData.id);
 
         if (updateResult.error) {
-          console.error(
-            `Failed to update user ID from ${userData.id} to ${userId}:`,
-            updateResult.error,
+          logger.error(
+            `Failed to update user ID from ${userData.id} to ${userId}`,
+            updateResult.error
           );
         } else {
-          console.log(`Updated user ID from ${userData.id} to ${userId}`);
+          logger.info(`Updated user ID from ${userData.id} to ${userId}`);
           userData.id = userId;
         }
       }
@@ -87,94 +98,212 @@ export async function getUserSubscriptionPlan(
 
     // If user not found, return the default free plan instead of throwing an error
     if (error || !userData) {
-      console.warn(
-        `User with id ${userId} not found in Supabase database:`,
-        error?.message || "No data returned",
+      logger.warn(
+        `User with id ${userId} not found in Supabase database: ${error?.message || "No data returned"}`
       );
       return DEFAULT_FREE_PLAN;
     }
 
+    // Use Polar only (Stripe is deprecated)
+    const paymentProvider = userData.payment_provider || "polar";
+    const _isPolar = true; // Always use Polar now
+
     // Map Supabase column names to our expected format
-    const user = {
-      stripeCustomerId: userData.stripe_customer_id,
-      stripeSubscriptionId: userData.stripe_subscription_id,
-      stripePriceId: userData.stripe_price_id,
-      stripeCurrentPeriodEnd: userData.stripe_current_period_end
-        ? new Date(userData.stripe_current_period_end)
+    const user: any = {
+      // Stripe fields deprecated - kept for backward compatibility but always null
+      stripeCustomerId: null,
+      stripeSubscriptionId: null,
+      stripePriceId: null,
+      stripeCurrentPeriodEnd: null,
+      // Polar fields
+      polarCustomerId: userData.polar_customer_id,
+      polarSubscriptionId: userData.polar_subscription_id,
+      polarProductId: userData.polar_product_id,
+      polarCurrentPeriodEnd: userData.polar_current_period_end
+        ? new Date(userData.polar_current_period_end)
         : null,
+      polarCurrentPeriodStart: null,
+      polarSubscriptionStart: null,
+      paymentProvider,
     };
 
-    console.log("User stripe data:", {
-      customerId: user.stripeCustomerId,
-      subscriptionId: user.stripeSubscriptionId,
-      priceId: user.stripePriceId,
-      periodEnd: user.stripeCurrentPeriodEnd,
-    });
+    // User subscription data loaded
 
-    // Check if user is on a paid plan.
-    const isPaid =
-      user.stripePriceId &&
-      user.stripeCurrentPeriodEnd?.getTime() + 86_400_000 > Date.now()
-        ? true
-        : false;
+    // Check if user is on a paid plan (Polar only)
+    const _currentPeriodEnd = user.polarCurrentPeriodEnd;
+    const productId = user.polarProductId;
 
-    // Find the pricing data corresponding to the user's plan
-    // First check monthly prices, then yearly prices
-    const userPlan =
-      pricingData.find(
-        (plan) => plan.stripeIds.monthly === user.stripePriceId,
-      ) ||
-      pricingData.find((plan) => plan.stripeIds.yearly === user.stripePriceId);
+    // For Polar: if product_id exists, consider it paid
+    const isPaid = !!productId;
 
-    console.log("Matched plan:", userPlan?.title || "No matching plan found");
+    // Find the pricing data corresponding to the user's plan (Polar only)
+    let userPlan = null;
+
+    // Log all available Polar product IDs for debugging
+    // Matching Polar product ID silently
+
+    // Check Polar product IDs - try monthly first, then yearly
+    // IMPORTANT: Check all plans to find exact match
+    for (const plan of pricingData) {
+      if (plan.polarIds?.monthly === user.polarProductId) {
+        userPlan = plan;
+        logger.info(
+          `Plan matched: ${plan.title} (monthly) for product ID: ${user.polarProductId}`
+        );
+        break;
+      }
+      if (plan.polarIds?.yearly === user.polarProductId) {
+        userPlan = plan;
+        logger.info(
+          `Plan matched: ${plan.title} (yearly) for product ID: ${user.polarProductId}`
+        );
+        break;
+      }
+    }
+
+    if (!userPlan && isPaid && user.polarProductId) {
+      // Log detailed error with all available information
+      const availableProductIds = pricingData.map((plan) => ({
+        planTitle: plan.title,
+        monthlyId: plan.polarIds?.monthly,
+        yearlyId: plan.polarIds?.yearly,
+      }));
+
+      // Check for potential matches (case-insensitive, trimmed)
+      const userProductIdTrimmed = user.polarProductId?.trim();
+      const potentialMatches = availableProductIds.filter(
+        (p) =>
+          p.monthlyId?.trim() === userProductIdTrimmed ||
+          p.yearlyId?.trim() === userProductIdTrimmed ||
+          p.monthlyId === user.polarProductId ||
+          p.yearlyId === user.polarProductId
+      );
+
+      logger.error(
+        "CRITICAL: No exact Polar product ID match found! This indicates a configuration mismatch.",
+        {
+          userId,
+          userEmail,
+          userProductId: user.polarProductId,
+          userProductIdTrimmed,
+          userSubscriptionId: user.polarSubscriptionId,
+          userCustomerId: user.polarCustomerId,
+          availableProductIds,
+          // Check if product ID exists but doesn't match (case sensitivity, whitespace, etc.)
+          productIdComparison: {
+            userProductIdLength: user.polarProductId?.length,
+            userProductIdTrimmed,
+            potentialMatches,
+            matchesFound: potentialMatches.length > 0,
+          },
+        }
+      );
+      // Don't assign a fallback plan - this is a configuration error
+      // Return free plan instead to prevent showing wrong plan
+      logger.warn(
+        `Returning free plan due to product ID mismatch for user ${userId}. User has product ID "${user.polarProductId}" but it doesn't match any configured plan IDs. Please check environment variables NEXT_PUBLIC_POLAR_PRO_MONTHLY_PLAN_ID, NEXT_PUBLIC_POLAR_PRO_YEARLY_PLAN_ID, NEXT_PUBLIC_POLAR_ENTERPRISE_MONTHLY_PLAN_ID and NEXT_PUBLIC_POLAR_ENTERPRISE_YEARLY_PLAN_ID.`
+      );
+    }
+
+    // Plan matching completed silently
 
     // Use the found plan or default to free
     const plan = isPaid && userPlan ? userPlan : pricingData[0];
 
-    // Determine the interval based on which price ID matched
-    const interval = isPaid
-      ? userPlan?.stripeIds.monthly === user.stripePriceId
-        ? "month"
-        : userPlan?.stripeIds.yearly === user.stripePriceId
-          ? "year"
-          : null
-      : null;
+    // Determine the interval based on which Polar product ID matched
+    const interval =
+      isPaid && userPlan
+        ? userPlan.polarIds?.monthly === user.polarProductId
+          ? "month"
+          : userPlan.polarIds?.yearly === user.polarProductId
+            ? "year"
+            : null
+        : null;
 
-    // Check if subscription is set to cancel at period end
+    // OPTIMIZATION: Check subscription status in parallel with user data if possible
+    // For Polar, check subscription status from database
     let isCanceled = false;
-    if (isPaid && user.stripeSubscriptionId) {
+    let _subscriptionData = null;
+
+    if (isPaid && user.polarSubscriptionId) {
       try {
-        const stripePlan = await stripe.subscriptions.retrieve(
-          user.stripeSubscriptionId,
-        );
-        isCanceled = stripePlan.cancel_at_period_end;
-      } catch (stripeError) {
-        console.error("Error retrieving Stripe subscription:", stripeError);
-        // Continue with default values if Stripe call fails
+        // Fetch subscription data - can be optimized further by combining with user query
+        const { data: subData } = await supabaseAdmin
+          .from("subscriptions")
+          .select(
+            "status, cancel_at_period_end, current_period_start, created_at"
+          )
+          .eq("polar_subscription_id", user.polarSubscriptionId)
+          .single();
+
+        _subscriptionData = subData;
+
+        if (subData) {
+          isCanceled =
+            subData.status === "canceled" ||
+            subData.cancel_at_period_end === true;
+          // Store period start if available
+          if (subData.current_period_start && !user.polarCurrentPeriodStart) {
+            user.polarCurrentPeriodStart = new Date(
+              subData.current_period_start
+            );
+          }
+          // Store created_at as subscription start date
+          if (subData.created_at && !user.polarSubscriptionStart) {
+            user.polarSubscriptionStart = new Date(subData.created_at);
+          }
+        }
+      } catch (error: any) {
+        logger.debug("Error checking Polar subscription status", error);
       }
     }
 
-    // Return the complete user subscription plan
+    // Return the complete user subscription plan (Polar only)
     const result = {
       ...plan,
-      ...user,
-      stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd?.getTime() || 0,
+      // Stripe fields deprecated - always null
+      stripeCustomerId: null,
+      stripeSubscriptionId: null,
+      stripePriceId: null,
+      stripeCurrentPeriodEnd: 0,
+      // Polar fields
+      polarCustomerId: user.polarCustomerId,
+      polarSubscriptionId: user.polarSubscriptionId,
+      polarProductId: user.polarProductId,
+      polarCurrentPeriodEnd: user.polarCurrentPeriodEnd?.getTime() || 0,
+      polarCurrentPeriodStart: user.polarCurrentPeriodStart?.getTime() || 0,
+      polarSubscriptionStart: user.polarSubscriptionStart?.getTime() || 0,
       isPaid,
       interval,
       isCanceled,
     };
 
-    console.log("Returning subscription plan:", {
-      title: result.title,
-      isPaid: result.isPaid,
-      priceId: result.stripePriceId,
-      interval: result.interval,
-    });
+    // Subscription plan returned silently
 
     return result;
   } catch (error) {
-    console.error("Unexpected error in getUserSubscriptionPlan:", error);
+    logger.error("Unexpected error in getUserSubscriptionPlan", error);
     // Return default plan in case of any error
     return DEFAULT_FREE_PLAN;
   }
 }
+
+// Cached version using React cache() for request-level deduplication
+// This ensures that multiple calls to getUserSubscriptionPlan within the same request
+// will only execute the database query once
+// Cache reduced to 10 seconds to ensure more up-to-date subscription data
+export const getUserSubscriptionPlan = cache(
+  unstable_cache(
+    async (
+      userId: string,
+      userEmail?: string
+    ): Promise<UserSubscriptionPlan> => {
+      return _getUserSubscriptionPlanInternal(userId, userEmail, false);
+    },
+    ["user-subscription-plan"],
+    {
+      revalidate: CACHE_CONFIG.subscriptionPlanRevalidate,
+      tags: ["subscription-plan"],
+    }
+  )
+);

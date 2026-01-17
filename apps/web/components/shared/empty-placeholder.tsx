@@ -1,7 +1,7 @@
-import * as React from "react";
-
-import { cn } from "@/lib/utils";
+import type * as React from "react";
 import { Icons } from "@/components/shared/icons";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface EmptyPlaceholderProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -13,8 +13,8 @@ export function EmptyPlaceholder({
   return (
     <div
       className={cn(
-        "flex flex-1 items-center justify-center rounded-lg border border-dashed p-8 text-center shadow-sm animate-in fade-in-50",
-        className,
+        "flex flex-1 items-center justify-center rounded-lg border border-dashed p-8 text-center shadow-sm",
+        className
       )}
       {...props}
     >
@@ -46,8 +46,11 @@ EmptyPlaceholder.Icon = function EmptyPlaceholderIcon({
   }
 
   return (
-    <div className="flex size-20 items-center justify-center rounded-full bg-muted">
-      <Icon className={cn("size-10", className)} {...props} />
+    <div className="flex size-20 items-center justify-center rounded-full bg-muted/50 border border-border mb-4">
+      <Icon
+        className={cn("size-10 text-muted-foreground", className)}
+        {...props}
+      />
     </div>
   );
 };
@@ -60,10 +63,7 @@ EmptyPlaceholder.Title = function EmptyPlaceholderTitle({
   ...props
 }: EmptyPlaceholderTitleProps) {
   return (
-    <h3
-      className={cn("mt-5 font-heading text-2xl font-bold", className)}
-      {...props}
-    />
+    <h3 className={cn("text-lg font-semibold mb-2", className)} {...props} />
   );
 };
 
@@ -77,10 +77,20 @@ EmptyPlaceholder.Description = function EmptyPlaceholderDescription({
   return (
     <p
       className={cn(
-        "mb-5 mt-1.5 text-center text-sm font-normal leading-6 text-muted-foreground",
-        className,
+        "text-sm text-muted-foreground mb-6 text-center max-w-md",
+        className
       )}
       {...props}
     />
   );
+};
+
+interface EmptyPlaceholderActionProps
+  extends React.ComponentProps<typeof Button> {}
+
+EmptyPlaceholder.Action = function EmptyPlaceholderAction({
+  className,
+  ...props
+}: EmptyPlaceholderActionProps) {
+  return <Button className={cn("gap-2", className)} {...props} />;
 };

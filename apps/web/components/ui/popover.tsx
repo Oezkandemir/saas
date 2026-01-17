@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -20,7 +20,7 @@ const PopoverContent = React.forwardRef<
       sideOffset={sideOffset}
       className={cn(
         "z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none animate-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        className,
+        className
       )}
       {...props}
     />
@@ -29,11 +29,12 @@ const PopoverContent = React.forwardRef<
 PopoverContent.displayName = PopoverPrimitive.Content.displayName;
 
 // Export a Modal version of Popover that enhances mouse interaction
-const PopoverModal = ({ modal = true, ...props }: React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Root> & {
+const PopoverModal = ({
+  modal = true,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Root> & {
   modal?: boolean;
-}) => (
-  <PopoverPrimitive.Root modal={modal} {...props} />
-);
+}) => <PopoverPrimitive.Root modal={modal} {...props} />;
 PopoverModal.displayName = "PopoverModal";
 
 export { Popover, PopoverTrigger, PopoverContent, PopoverModal };

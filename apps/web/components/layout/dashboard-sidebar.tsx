@@ -1,16 +1,21 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import {
+  ArrowLeft,
+  LayoutDashboard,
+  Mail,
+  Menu,
+  PanelLeftClose,
+  PanelRightClose,
+  Sparkles,
+} from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { NavItem, SidebarNavItem } from "@/types";
-import { Menu, PanelLeftClose, PanelRightClose } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-
-import { siteConfig } from "@/config/site";
-import { cn } from "@/lib/utils";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { useNotifications } from "@/hooks/use-notifications";
+import { Fragment, useEffect, useState } from "react";
+import { getUserPlan } from "@/actions/get-user-plan";
+import { Icons } from "@/components/shared/icons";
+import { useSupabase } from "@/components/supabase-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -26,18 +31,142 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import ProjectSwitcher from "@/components/dashboard/project-switcher";
-import { UpgradeCard } from "@/components/dashboard/upgrade-card";
-import { Icons } from "@/components/shared/icons";
+import { siteConfig } from "@/config/site";
+import { useNotifications } from "@/hooks/use-notifications";
+import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
+import type { SidebarNavItem } from "@/types";
 
 interface DashboardSidebarProps {
   links: SidebarNavItem[];
+  showBackButton?: boolean;
 }
 
-export function DashboardSidebar({ links }: DashboardSidebarProps) {
+function DashboardSidebarContent({
+  links,
+  showBackButton = false,
+}: DashboardSidebarProps) {
   const path = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  // Helper function to check if a link is active (including query params)
+  const isLinkActive = (href: string): boolean => {
+    if (!href) return false;
+    
+    // Parse href to get path and query params
+    const [hrefPath, hrefQuery] = href.split("?");
+    const currentPath = path || "";
+    const currentParams = searchParams;
+    
+    // Ensure hrefPath exists before processing
+    if (!hrefPath) return false;
+    
+    // Check if paths match (handle locale prefixes like /de/, /en/)
+    const normalizedHrefPath = hrefPath.replace(/^\/[a-z]{2}/, "");
+    const normalizedCurrentPath = currentPath.replace(/^\/[a-z]{2}/, "");
+    
+    if (normalizedHrefPath !== normalizedCurrentPath) return false;
+    
+    // If href has query params, check if they match
+    if (hrefQuery) {
+      const hrefParams = new URLSearchParams(hrefQuery);
+      
+      // Check if all href params match current params
+      let allMatch = true;
+      Array.from(hrefParams.keys()).forEach((key) => {
+        const value = hrefParams.get(key);
+        if (value && currentParams.get(key) !== value) {
+          allMatch = false;
+        }
+      });
+      return allMatch;
+    }
+    
+    return true;
+  };
+  // Desktop sidebar is always expanded by default (only shown on lg+ screens, 1024px+)
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const [userPlan, setUserPlan] = useState<{
+    title: string;
+    isPaid: boolean;
+  } | null>(null);
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const t = useTranslations("DashboardSidebar");
   const { unreadCount } = useNotifications();
+  const { session, supabase } = useSupabase();
+  const userEmail = session?.user?.email || "";
+
+  // Check if we're on dashboard page
+  const isDashboardPage =
+    path === "/dashboard" || path.startsWith("/dashboard/");
+
+  // Fetch user plan, role, and check if user is new
+  useEffect(() => {
+    async function fetchUserData() {
+      if (!session?.user?.id) {
+        return;
+      }
+
+      try {
+        // Fetch user role from database
+        const { data: userData, error: userError } = await supabase
+          .from("users")
+          .select("role, created_at")
+          .eq("id", session.user.id)
+          .single();
+
+        if (userError) {
+          // Log the error but don't throw - gracefully degrade
+          logger.warn("Error fetching user role from database:", {
+            error: userError,
+            userId: session.user.id,
+          });
+          setUserRole("USER");
+        } else if (userData) {
+          // Set role from database (prefer database role over metadata)
+          // For admin checks, we only trust the database role
+          // Normalize role to ensure it's a clean string for comparison
+          const role = String(userData.role || "USER").trim();
+          setUserRole(role);
+
+          // Check if user is new (created within last 30 days)
+          if (userData.created_at) {
+            const createdDate = new Date(userData.created_at);
+            const daysSinceCreation = Math.floor(
+              (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+            );
+            // Consider user "new" if created within last 30 days
+            setIsNewUser(daysSinceCreation <= 30);
+          }
+        } else {
+          // No user data found, set to USER
+          setUserRole("USER");
+        }
+      } catch (err) {
+        logger.error("Error fetching user role:", err);
+        // On error, set to USER (don't trust metadata for security)
+        setUserRole("USER");
+      }
+
+      // Fetch subscription plan separately - don't let errors here affect role setting
+      try {
+        const plan = await getUserPlan();
+        if (plan) {
+          setUserPlan({
+            title: plan.title,
+            isPaid: plan.isPaid,
+          });
+        }
+      } catch (err) {
+        // Log but don't throw - subscription plan is not critical for sidebar
+        logger.warn("Error fetching user plan:", err);
+      }
+    }
+
+    fetchUserData();
+  }, [session, supabase]);
 
   // NOTE: Use this if you want save in local storage -- Credits: Hosna Qasmei
   //
@@ -58,244 +187,129 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
   //   }
   // }, [isSidebarExpanded]);
 
-  const { isTablet } = useMediaQuery();
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(!isTablet);
-
   const toggleSidebar = () => {
     setIsSidebarExpanded(!isSidebarExpanded);
   };
 
-  useEffect(() => {
-    setIsSidebarExpanded(!isTablet);
-  }, [isTablet]);
+  // Sidebar expansion state is managed by user toggle on desktop
+  // No automatic collapsing based on screen size since sidebar is hidden on mobile/tablet
 
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="sticky top-0 h-full">
-        <ScrollArea className="h-full overflow-y-auto border-r">
-          <aside
-            className={cn(
-              isSidebarExpanded ? "w-[260px] xl:w-[300px]" : "w-[68px]",
-              "hidden h-screen md:block",
-            )}
-          >
-            <div className="flex h-full max-h-screen flex-1 flex-col gap-2">
-              <div className="flex h-14 items-center p-4 lg:h-[60px]">
-                {isSidebarExpanded ? <ProjectSwitcher /> : null}
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="ml-auto size-9 lg:size-8"
-                  onClick={toggleSidebar}
-                >
-                  {isSidebarExpanded ? (
-                    <PanelLeftClose
-                      size={18}
-                      className="stroke-muted-foreground"
-                    />
-                  ) : (
-                    <PanelRightClose
-                      size={18}
-                      className="stroke-muted-foreground"
-                    />
-                  )}
-                  <span className="sr-only">{t("toggleSidebar")}</span>
-                </Button>
-              </div>
-
-              <nav className="flex flex-1 flex-col gap-8 px-4 pt-4">
-                {links.map((section) => (
-                  <section
-                    key={section.title}
-                    className="flex flex-col gap-0.5"
-                  >
-                    {isSidebarExpanded ? (
-                      <p className="text-xs text-muted-foreground">
-                        {t(`sections.${section.title.toLowerCase()}`)}
-                      </p>
-                    ) : (
-                      <div className="h-4" />
-                    )}
-                    {section.items.map((item) => {
-                      const Icon = Icons[item.icon || "arrowRight"];
-                      const translatedTitle = t(
-                        `items.${item.title.toLowerCase().replace(/\s+/g, "_")}`,
-                        {
-                          defaultValue: item.title,
-                        },
-                      );
-
-                      // Add notification badge for notification items
-                      const showNotificationBadge =
-                        item.title.toLowerCase() === "notifications" &&
-                        unreadCount > 0;
-
-                      return (
-                        item.href && (
-                          <Fragment key={`link-fragment-${item.title}`}>
-                            {isSidebarExpanded ? (
-                              <Link
-                                key={`link-${item.title}`}
-                                href={item.disabled ? "#" : item.href}
-                                className={cn(
-                                  "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted",
-                                  path === item.href
-                                    ? "bg-muted"
-                                    : "text-muted-foreground hover:text-accent-foreground",
-                                  item.disabled &&
-                                    "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
-                                )}
-                              >
-                                <Icon className="size-5 min-w-5 shrink-0" />
-                                <span className="truncate">
-                                  {translatedTitle}
-                                </span>
-                                {item.badge && (
-                                  <Badge className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full">
-                                    {item.badge}
-                                  </Badge>
-                                )}
-                                {/* Add notification badge */}
-                                {showNotificationBadge && (
-                                  <Badge
-                                    className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full bg-red-500 text-white"
-                                    variant="outline"
-                                  >
-                                    {unreadCount > 99 ? "99+" : unreadCount}
-                                  </Badge>
-                                )}
-                              </Link>
-                            ) : (
-                              <Tooltip key={`tooltip-${item.title}`}>
-                                <TooltipTrigger asChild>
-                                  <Link
-                                    key={`link-tooltip-${item.title}`}
-                                    href={item.disabled ? "#" : item.href}
-                                    className={cn(
-                                      "flex items-center gap-3 rounded-md py-2 text-sm font-medium hover:bg-muted",
-                                      path === item.href
-                                        ? "bg-muted"
-                                        : "text-muted-foreground hover:text-accent-foreground",
-                                      item.disabled &&
-                                        "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
-                                      "relative", // Add relative positioning for badge
-                                    )}
-                                  >
-                                    <span className="flex size-full items-center justify-center">
-                                      <Icon className="size-5 min-w-5 shrink-0" />
-                                      {showNotificationBadge && (
-                                        <span className="absolute -right-2 -top-2 flex size-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
-                                          {unreadCount > 9 ? "9+" : unreadCount}
-                                        </span>
-                                      )}
-                                    </span>
-                                  </Link>
-                                </TooltipTrigger>
-                                <TooltipContent side="right">
-                                  {translatedTitle}
-                                  {showNotificationBadge && ` (${unreadCount})`}
-                                </TooltipContent>
-                              </Tooltip>
-                            )}
-                          </Fragment>
-                        )
-                      );
-                    })}
-                  </section>
-                ))}
-              </nav>
-
-              <div className="mt-auto xl:p-4">
-                {isSidebarExpanded ? <UpgradeCard /> : null}
-              </div>
-            </div>
-          </aside>
-        </ScrollArea>
-      </div>
-    </TooltipProvider>
-  );
-}
-
-export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
-  const path = usePathname();
-  const [open, setOpen] = useState(false);
-  const { isSm, isMobile } = useMediaQuery();
-  const t = useTranslations("DashboardSidebar");
-  const { unreadCount } = useNotifications();
-
-  if (isSm || isMobile) {
-    return (
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-9 shrink-0 md:hidden"
-          >
-            <Menu className="size-5" />
-            <span className="sr-only">{t("toggleNavigationMenu")}</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent
-          side="left"
-          className="flex max-w-[280px] flex-col p-0 sm:max-w-[320px]"
+      <div className="sticky top-0 h-screen border-r bg-background">
+        <aside
+          className={cn(
+            isSidebarExpanded ? "w-[260px] xl:w-[300px]" : "w-[68px]",
+            "hidden h-full lg:flex lg:flex-col"
+          )}
         >
-          <ScrollArea className="h-full overflow-y-auto">
-            <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-            <div className="flex h-screen flex-col">
-              <nav className="flex flex-1 flex-col gap-y-8 p-6 text-lg font-medium">
-                <Link
-                  href="#"
-                  className="flex items-center gap-2 text-lg font-semibold"
-                >
-                  <Icons.logo className="size-6" />
-                  <span className="font-urban text-xl font-bold">
-                    {siteConfig.name}
-                  </span>
-                </Link>
+          {/* Sidebar Header - merged with main header */}
+          <div className="flex h-14 shrink-0 items-center gap-2 border-b px-4 lg:h-[60px]">
+            {showBackButton && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-9 lg:size-8"
+                onClick={() => router.push("/admin")}
+                title="Zurück zu Admin"
+              >
+                <ArrowLeft size={18} className="stroke-muted-foreground" />
+                <span className="sr-only">Zurück zu Admin</span>
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-9 lg:size-8"
+              onClick={toggleSidebar}
+            >
+              {isSidebarExpanded ? (
+                <PanelLeftClose size={18} className="stroke-muted-foreground" />
+              ) : (
+                <PanelRightClose
+                  size={18}
+                  className="stroke-muted-foreground"
+                />
+              )}
+              <span className="sr-only">{t("toggleSidebar")}</span>
+            </Button>
+          </div>
 
-                <ProjectSwitcher large />
-
-                {links.map((section) => (
-                  <section
-                    key={section.title}
-                    className="flex flex-col gap-0.5"
-                  >
+          {/* Scrollable navigation area */}
+          <ScrollArea className="flex-1">
+            <nav className="flex flex-col gap-8 px-4 pt-4">
+              {links.map((section) => (
+                <section key={section.title} className="flex flex-col gap-0.5">
+                  {isSidebarExpanded ? (
                     <p className="text-xs text-muted-foreground">
                       {t(`sections.${section.title.toLowerCase()}`)}
                     </p>
+                  ) : (
+                    <div className="h-4" />
+                  )}
+                  {section.items.map((item) => {
+                    // Check authorization - don't show item if user doesn't have required role
+                    // Use the same simple logic as UserAccountNav menu: userRole === "ADMIN"
+                    if (item.authorizeOnly) {
+                      // For admin-only items, ONLY use database role (never metadata)
+                      // This prevents showing admin panel to non-admin users
+                      if (
+                        item.authorizeOnly === UserRole.ADMIN ||
+                        String(item.authorizeOnly) === "ADMIN"
+                      ) {
+                        // Only show if we have loaded the role from database AND it's exactly "ADMIN"
+                        // Use the same simple check as UserAccountNav: userRole === "ADMIN"
+                        // Also check if userRole is null or undefined (not loaded yet) - hide in that case
+                        if (!userRole || String(userRole).trim() !== "ADMIN") {
+                          return null; // Don't render admin items for non-admins or while loading
+                        }
+                      } else {
+                        // For other authorized items, ONLY use database role for security
+                        // Never trust metadata - if userRole is not loaded yet, default to USER
+                        const currentUserRole = (userRole || "USER")
+                          .toUpperCase()
+                          .trim();
+                        const requiredRole = String(item.authorizeOnly)
+                          .toUpperCase()
+                          .trim();
+                        if (currentUserRole !== requiredRole) {
+                          return null; // Don't render this item
+                        }
+                      }
+                    }
 
-                    {section.items.map((item) => {
-                      const Icon = Icons[item.icon || "arrowRight"];
-                      const translatedTitle = t(
-                        `items.${item.title.toLowerCase().replace(/\s+/g, "_")}`,
-                        {
-                          defaultValue: item.title,
-                        },
-                      );
+                    const Icon =
+                      Icons[item.icon || "arrowRight"] || Icons.arrowRight;
+                    const translatedTitle = t(
+                      `items.${item.title.toLowerCase().replace(/\s+/g, "_")}`,
+                      {
+                        defaultValue: item.title,
+                      }
+                    );
 
-                      // Add notification badge for notification items
-                      const showNotificationBadge =
-                        item.title.toLowerCase() === "notifications" &&
-                        unreadCount > 0;
+                    // Add notification badge for notification items
+                    const showNotificationBadge =
+                      item.title.toLowerCase() === "notifications" &&
+                      unreadCount > 0;
 
-                      return (
-                        item.href && (
-                          <Fragment key={`link-fragment-${item.title}`}>
+                    return (
+                      item.href && (
+                        <Fragment key={`link-fragment-${item.title}`}>
+                          {isSidebarExpanded ? (
                             <Link
                               key={`link-${item.title}`}
-                              onClick={() => {
-                                if (!item.disabled) setOpen(false);
-                              }}
                               href={item.disabled ? "#" : item.href}
+                              prefetch={!item.disabled}
                               className={cn(
-                                "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted",
-                                path === item.href
-                                  ? "bg-muted"
-                                  : "text-muted-foreground hover:text-accent-foreground",
+                                // Base Styles - Kompakte Spacing, klare Active States
+                                "flex items-center gap-3 rounded-md p-2 text-sm font-medium transition-colors",
+                                // Active State - Klar sichtbar (check with query params)
+                                isLinkActive(item.href)
+                                  ? "bg-primary/10 text-primary font-semibold border border-primary/20"
+                                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+                                // Disabled State
                                 item.disabled &&
-                                  "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
+                                  "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-muted-foreground"
                               )}
                             >
                               <Icon className="size-5 min-w-5 shrink-0" />
@@ -307,29 +321,463 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                                   {item.badge}
                                 </Badge>
                               )}
-                              {/* Add notification badge */}
+                              {/* Add notification badge with thin blue border */}
                               {showNotificationBadge && (
-                                <Badge
-                                  className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full bg-red-500 text-white"
-                                  variant="outline"
-                                >
+                                <span className="ml-auto flex size-6 shrink-0 items-center justify-center rounded-full ring-1 ring-black dark:ring-blue-500 bg-transparent text-xs font-bold text-black dark:text-blue-500">
                                   {unreadCount > 99 ? "99+" : unreadCount}
-                                </Badge>
+                                </span>
                               )}
                             </Link>
-                          </Fragment>
-                        )
-                      );
-                    })}
-                  </section>
-                ))}
-              </nav>
-            </div>
+                          ) : (
+                            <Tooltip key={`tooltip-${item.title}`}>
+                              <TooltipTrigger asChild>
+                                <Link
+                                  key={`link-tooltip-${item.title}`}
+                                  href={item.disabled ? "#" : item.href}
+                                  prefetch={!item.disabled}
+                                  className={cn(
+                                    // Base Styles für Collapsed Sidebar
+                                    "flex items-center gap-3 rounded-md py-2 text-sm font-medium transition-colors relative",
+                                    // Active State - Klar sichtbar (check with query params)
+                                    isLinkActive(item.href)
+                                      ? "bg-primary/10 text-primary"
+                                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+                                    // Disabled State
+                                    item.disabled &&
+                                      "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-muted-foreground"
+                                  )}
+                                >
+                                  <span className="flex size-full items-center justify-center relative">
+                                    {showNotificationBadge ? (
+                                      <span className="flex size-6 items-center justify-center rounded-full ring-1 ring-black dark:ring-blue-500 bg-transparent text-xs font-bold text-black dark:text-blue-500">
+                                        {unreadCount > 99 ? "99+" : unreadCount}
+                                      </span>
+                                    ) : (
+                                      <Icon className="size-5 min-w-5 shrink-0" />
+                                    )}
+                                  </span>
+                                </Link>
+                              </TooltipTrigger>
+                              <TooltipContent side="right">
+                                {translatedTitle}
+                                {showNotificationBadge && ` (${unreadCount})`}
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
+                        </Fragment>
+                      )
+                    );
+                  })}
+                </section>
+              ))}
+            </nav>
           </ScrollArea>
-        </SheetContent>
-      </Sheet>
-    );
-  }
 
-  return null;
+          {/* Sidebar Footer - Dashboard Info */}
+          {isDashboardPage && (
+            <div className="border-t bg-background/50 backdrop-blur-sm">
+              <div
+                className={cn(
+                  "flex flex-col gap-2 p-4",
+                  !isSidebarExpanded && "items-center"
+                )}
+              >
+                {/* Upgrade Banner - Only show for new users on free plan */}
+                {isNewUser &&
+                  userPlan &&
+                  !userPlan.isPaid &&
+                  userPlan.title === "Free" &&
+                  (isSidebarExpanded ? (
+                    <Link
+                      href="/pricing"
+                      prefetch={true}
+                      className="group relative overflow-hidden rounded-lg border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-3 transition-all hover:border-primary/40 hover:shadow-md"
+                    >
+                      <div className="flex items-start gap-2">
+                        <Sparkles className="mt-0.5 size-4 shrink-0 text-primary" />
+                        <div className="flex-1 space-y-1">
+                          <p className="text-xs font-semibold text-foreground">
+                            Upgrade empfohlen
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Für mehr Features upgraden
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  ) : (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link
+                          href="/pricing"
+                          prefetch={true}
+                          className="flex items-center justify-center rounded-lg border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-2 transition-all hover:border-primary/40 hover:shadow-md"
+                        >
+                          <Sparkles className="size-4 text-primary" />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <div className="flex flex-col gap-1">
+                          <span className="font-semibold">
+                            Upgrade empfohlen
+                          </span>
+                          <span className="text-xs">
+                            Für mehr Features upgraden
+                          </span>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  ))}
+
+                {isSidebarExpanded ? (
+                  <>
+                    <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                      <LayoutDashboard className="size-4 text-primary" />
+                      <span>Dashboard</span>
+                    </div>
+                    {userEmail && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Mail className="size-3" />
+                        <span className="truncate">{userEmail}</span>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex flex-col items-center gap-1">
+                        <LayoutDashboard className="size-4 text-primary" />
+                        {userEmail && (
+                          <Mail className="size-3 text-muted-foreground" />
+                        )}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <div className="flex flex-col gap-1">
+                        <span className="font-medium">Dashboard</span>
+                        {userEmail && (
+                          <span className="text-xs">{userEmail}</span>
+                        )}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </div>
+            </div>
+          )}
+        </aside>
+      </div>
+    </TooltipProvider>
+  );
+}
+
+// Internal component - use DashboardSidebarWrapper for SSR safety
+export function DashboardSidebar({
+  links,
+  showBackButton,
+}: DashboardSidebarProps) {
+  return (
+    <DashboardSidebarContent links={links} showBackButton={showBackButton} />
+  );
+}
+
+function MobileSheetSidebarContent({
+  links,
+  showBackButton = false,
+}: DashboardSidebarProps) {
+  const path = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  // Helper function to check if a link is active (including query params)
+  const isLinkActive = (href: string): boolean => {
+    if (!href) return false;
+    
+    // Parse href to get path and query params
+    const [hrefPath, hrefQuery] = href.split("?");
+    const currentPath = path || "";
+    const currentParams = searchParams;
+    
+    // Ensure hrefPath exists before processing
+    if (!hrefPath) return false;
+    
+    // Check if paths match (handle locale prefixes like /de/, /en/)
+    const normalizedHrefPath = hrefPath.replace(/^\/[a-z]{2}/, "");
+    const normalizedCurrentPath = currentPath.replace(/^\/[a-z]{2}/, "");
+    
+    if (normalizedHrefPath !== normalizedCurrentPath) return false;
+    
+    // If href has query params, check if they match
+    if (hrefQuery) {
+      const hrefParams = new URLSearchParams(hrefQuery);
+      
+      // Check if all href params match current params
+      let allMatch = true;
+      Array.from(hrefParams.keys()).forEach((key) => {
+        const value = hrefParams.get(key);
+        if (value && currentParams.get(key) !== value) {
+          allMatch = false;
+        }
+      });
+      return allMatch;
+    }
+    
+    return true;
+  };
+  const [open, setOpen] = useState(false);
+  const [userPlan, setUserPlan] = useState<{
+    title: string;
+    isPaid: boolean;
+  } | null>(null);
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const t = useTranslations("DashboardSidebar");
+  const { unreadCount } = useNotifications();
+  const { session, supabase } = useSupabase();
+
+  // Fetch user plan, role, and check if user is new
+  useEffect(() => {
+    async function fetchUserData() {
+      if (!session?.user?.id) {
+        return;
+      }
+
+      try {
+        // Fetch user role from database
+        const { data: userData, error: userError } = await supabase
+          .from("users")
+          .select("role, created_at")
+          .eq("id", session.user.id)
+          .single();
+
+        if (userError) {
+          // Log the error but don't throw - gracefully degrade
+          logger.warn("Error fetching user role from database:", {
+            error: userError,
+            userId: session.user.id,
+          });
+          setUserRole("USER");
+        } else if (userData) {
+          // Set role from database (prefer database role over metadata)
+          // For admin checks, we only trust the database role
+          // Normalize role to ensure it's a clean string for comparison
+          const role = String(userData.role || "USER").trim();
+          setUserRole(role);
+
+          // Check if user is new (created within last 30 days)
+          if (userData.created_at) {
+            const createdDate = new Date(userData.created_at);
+            const daysSinceCreation = Math.floor(
+              (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+            );
+            // Consider user "new" if created within last 30 days
+            setIsNewUser(daysSinceCreation <= 30);
+          }
+        } else {
+          // No user data found, set to USER
+          setUserRole("USER");
+        }
+      } catch (err) {
+        logger.error("Error fetching user role:", err);
+        // On error, set to USER (don't trust metadata for security)
+        setUserRole("USER");
+      }
+
+      // Fetch subscription plan separately - don't let errors here affect role setting
+      try {
+        const plan = await getUserPlan();
+        if (plan) {
+          setUserPlan({
+            title: plan.title,
+            isPaid: plan.isPaid,
+          });
+        }
+      } catch (err) {
+        // Log but don't throw - subscription plan is not critical for sidebar
+        logger.warn("Error fetching user plan:", err);
+      }
+    }
+
+    fetchUserData();
+  }, [session, supabase]);
+
+  // Mobile sidebar shown as overlay on all screens smaller than lg (1024px)
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-9 shrink-0 lg:hidden"
+        >
+          <Menu className="size-5" />
+          <span className="sr-only">{t("toggleNavigationMenu")}</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent
+        side="left"
+        className="flex w-[280px] flex-col p-0 sm:w-[320px] overflow-hidden"
+      >
+        <ScrollArea className="h-full overflow-y-auto">
+          <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+          <div className="flex h-screen flex-col">
+            {showBackButton && (
+              <div className="border-b p-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    router.push("/admin");
+                    setOpen(false);
+                  }}
+                  className="w-full justify-start"
+                >
+                  <ArrowLeft className="size-4 mr-2" />
+                  Zurück zu Admin
+                </Button>
+              </div>
+            )}
+            <nav className="flex flex-1 flex-col gap-y-8 p-6 text-lg font-medium">
+              <Link
+                href="#"
+                className="flex items-center gap-2 text-lg font-semibold"
+              >
+                <Icons.logo className="size-6" />
+                <span className="font-urban text-xl font-bold">
+                  {siteConfig.name}
+                </span>
+              </Link>
+
+              {links.map((section) => (
+                <section key={section.title} className="flex flex-col gap-0.5">
+                  <p className="text-xs text-muted-foreground">
+                    {t(`sections.${section.title.toLowerCase()}`)}
+                  </p>
+
+                  {section.items.map((item) => {
+                    // Check authorization - don't show item if user doesn't have required role
+                    // Use the same simple logic as UserAccountNav menu: userRole === "ADMIN"
+                    if (item.authorizeOnly) {
+                      // For admin-only items, ONLY use database role (never metadata)
+                      // This prevents showing admin panel to non-admin users
+                      if (
+                        item.authorizeOnly === UserRole.ADMIN ||
+                        String(item.authorizeOnly) === "ADMIN"
+                      ) {
+                        // Only show if we have loaded the role from database AND it's exactly "ADMIN"
+                        // Use the same simple check as UserAccountNav: userRole === "ADMIN"
+                        // Also check if userRole is null or undefined (not loaded yet) - hide in that case
+                        if (!userRole || String(userRole).trim() !== "ADMIN") {
+                          return null; // Don't render admin items for non-admins or while loading
+                        }
+                      } else {
+                        // For other authorized items, ONLY use database role for security
+                        // Never trust metadata - if userRole is not loaded yet, default to USER
+                        const currentUserRole = (userRole || "USER")
+                          .toUpperCase()
+                          .trim();
+                        const requiredRole = String(item.authorizeOnly)
+                          .toUpperCase()
+                          .trim();
+                        if (currentUserRole !== requiredRole) {
+                          return null; // Don't render this item
+                        }
+                      }
+                    }
+
+                    const Icon =
+                      Icons[item.icon || "arrowRight"] || Icons.arrowRight;
+                    const translatedTitle = t(
+                      `items.${item.title.toLowerCase().replace(/\s+/g, "_")}`,
+                      {
+                        defaultValue: item.title,
+                      }
+                    );
+
+                    // Add notification badge for notification items
+                    const showNotificationBadge =
+                      item.title.toLowerCase() === "notifications" &&
+                      unreadCount > 0;
+
+                    return (
+                      item.href && (
+                        <Fragment key={`link-fragment-${item.title}`}>
+                          <Link
+                            key={`link-${item.title}`}
+                            onClick={() => {
+                              if (!item.disabled) setOpen(false);
+                            }}
+                            href={item.disabled ? "#" : item.href}
+                            prefetch={!item.disabled}
+                            className={cn(
+                              "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted",
+                              isLinkActive(item.href)
+                                ? "bg-muted"
+                                : "text-muted-foreground hover:text-accent-foreground",
+                              item.disabled &&
+                                "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground"
+                            )}
+                          >
+                            <Icon className="size-5 min-w-5 shrink-0" />
+                            <span className="truncate">{translatedTitle}</span>
+                            {item.badge && (
+                              <Badge className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full">
+                                {item.badge}
+                              </Badge>
+                            )}
+                            {/* Add notification badge with thin blue border */}
+                            {showNotificationBadge && (
+                              <span className="ml-auto flex size-6 shrink-0 items-center justify-center rounded-full ring-1 ring-black dark:ring-blue-500 bg-transparent text-xs font-bold text-black dark:text-blue-500">
+                                {unreadCount > 99 ? "99+" : unreadCount}
+                              </span>
+                            )}
+                          </Link>
+                        </Fragment>
+                      )
+                    );
+                  })}
+                </section>
+              ))}
+
+              {/* Upgrade Banner - Only show for new users on free plan */}
+              {isNewUser &&
+                userPlan &&
+                !userPlan.isPaid &&
+                userPlan.title === "Free" && (
+                  <div className="mt-4 border-t pt-4">
+                    <Link
+                      href="/pricing"
+                      onClick={() => setOpen(false)}
+                      className="group relative overflow-hidden rounded-lg border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-3 transition-all hover:border-primary/40 hover:shadow-md"
+                    >
+                      <div className="flex items-start gap-2">
+                        <Sparkles className="mt-0.5 size-4 shrink-0 text-primary" />
+                        <div className="flex-1 space-y-1">
+                          <p className="text-xs font-semibold text-foreground">
+                            Upgrade empfohlen
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Für mehr Features upgraden
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                )}
+            </nav>
+          </div>
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+// Internal component - use MobileSheetSidebarWrapper for SSR safety
+export function MobileSheetSidebar({
+  links,
+  showBackButton,
+}: DashboardSidebarProps) {
+  return (
+    <MobileSheetSidebarContent links={links} showBackButton={showBackButton} />
+  );
 }

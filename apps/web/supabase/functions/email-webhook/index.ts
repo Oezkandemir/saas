@@ -1,10 +1,12 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+import { logger } from "@/lib/logger";
+
 import { corsHeaders } from "../_shared/cors.ts";
 
 // Load environment variables
-const SITE_URL = Deno.env.get("SITE_URL") || "http://localhost:3000";
-const SITE_NAME = Deno.env.get("SITE_NAME") || "Next.js SaaS Starter";
+const _SITE_URL = Deno.env.get("SITE_URL") || "http://localhost:3000";
+const _SITE_NAME = Deno.env.get("SITE_NAME") || "Next.js SaaS Starter";
 const WEBHOOK_SECRET = Deno.env.get("WEBHOOK_SECRET") || "";
 
 Deno.serve(async (req) => {
@@ -18,7 +20,7 @@ Deno.serve(async (req) => {
     const payload = await req.json();
 
     // Log the full payload for debugging
-    console.log("Webhook payload:", JSON.stringify(payload));
+    logger.debug("Webhook payload:", JSON.stringify(payload));
 
     // Verify the webhook is from Supabase Auth
     const signature = req.headers.get("x-webhook-signature") || "";
@@ -27,12 +29,12 @@ Deno.serve(async (req) => {
     // validation for now since it's internal to Supabase
 
     if (!signature && WEBHOOK_SECRET) {
-      console.warn("Missing webhook signature");
+      logger.warn("Missing webhook signature");
     }
 
     // Get event type from webhook
     const { type, record } = payload;
-    console.log("Webhook received:", type);
+    logger.debug("Webhook received:", type);
 
     // Create Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
@@ -45,11 +47,11 @@ Deno.serve(async (req) => {
     // Handle different webhook events
     if (type === "email.created" && record) {
       const { to, subject, content } = record;
-      console.log(`Processing email to ${to}, subject: ${subject}`);
+      logger.debug(`Processing email to ${to}, subject: ${subject}`);
 
       // Check if this is a confirmation email
-      if (subject && subject.includes("Confirm") && content) {
-        console.log("Found confirmation email, extracting link...");
+      if (subject?.includes("Confirm") && content) {
+        logger.debug("Found confirmation email, extracting link...");
 
         // Extract the confirmation link from the email content
         const confirmationLinkMatch = content.match(/href="([^"]+)"/);
@@ -58,19 +60,19 @@ Deno.serve(async (req) => {
           : null;
 
         if (confirmationLink) {
-          console.log("Extracted confirmation link:", confirmationLink);
+          logger.debug("Extracted confirmation link:", confirmationLink);
 
           // Get user details
           const { data: userData } =
             await supabase.auth.admin.getUserByEmail(to);
-          console.log("User data:", userData);
+          logger.debug("User data:", userData);
 
           const userName =
             userData?.user?.user_metadata?.name || to.split("@")[0];
 
           // Call the send-email function to send our custom email
           try {
-            console.log("Sending custom confirmation email to:", to);
+            logger.debug("Sending custom confirmation email to:", to);
             const { data, error } = await supabase.functions.invoke(
               "send-email",
               {
@@ -80,19 +82,19 @@ Deno.serve(async (req) => {
                   name: userName,
                   actionUrl: confirmationLink,
                 },
-              },
+              }
             );
 
             if (error) {
-              console.error("Error response from send-email function:", error);
+              logger.error("Error response from send-email function:", error);
               throw error;
             }
 
-            console.log("Custom confirmation email sent successfully");
+            logger.debug("Custom confirmation email sent successfully");
 
             // Also send welcome email
             try {
-              console.log("Sending welcome email to:", to);
+              logger.debug("Sending welcome email to:", to);
               const welcomeResult = await supabase.functions.invoke(
                 "send-email",
                 {
@@ -101,19 +103,19 @@ Deno.serve(async (req) => {
                     email: to,
                     name: userName,
                   },
-                },
+                }
               );
 
               if (welcomeResult.error) {
-                console.error(
+                logger.error(
                   "Error sending welcome email:",
-                  welcomeResult.error,
+                  welcomeResult.error
                 );
               } else {
-                console.log("Welcome email sent successfully");
+                logger.debug("Welcome email sent successfully");
               }
             } catch (welcomeError) {
-              console.error("Exception sending welcome email:", welcomeError);
+              logger.error("Exception sending welcome email:", welcomeError);
             }
 
             // If we successfully sent our custom email, return success and cancel original email
@@ -123,7 +125,7 @@ Deno.serve(async (req) => {
               originalEmail: false, // This tells Supabase not to send the original email
             };
           } catch (error) {
-            console.error("Error sending custom email:", error);
+            logger.error("Error sending custom email:", error);
             // Let the original email proceed
             response = {
               success: true,
@@ -133,8 +135,8 @@ Deno.serve(async (req) => {
             };
           }
         } else {
-          console.error(
-            "Could not extract confirmation link from email content",
+          logger.error(
+            "Could not extract confirmation link from email content"
           );
         }
       }
@@ -145,13 +147,13 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Webhook error:", error);
+    logger.error("Webhook error:", error);
     return new Response(
       JSON.stringify({ error: error.message || "Internal server error" }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
+      }
     );
   }
 });

@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createTicket } from "@/actions/support-ticket-actions";
 import { AlertCircle, Loader2 } from "lucide-react";
-
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { createTicket } from "@/actions/support-ticket-actions";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
+import { logger } from "@/lib/logger";
 
 export function CreateTicketForm() {
   const router = useRouter();
@@ -46,7 +46,7 @@ export function CreateTicketForm() {
         router.push("/dashboard/support");
       }
     } catch (err) {
-      console.error("Error creating ticket:", err);
+      logger.error("Error creating ticket:", err);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);

@@ -1,14 +1,18 @@
-import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
-import { getTicketWithMessages } from "@/actions/support-ticket-actions";
 import { formatDistance } from "date-fns";
-import { ChevronLeft } from "lucide-react";
+import {
+  CircleDot,
+  Clock,
+  FileText,
+  MessageCircle,
+  MessageSquareMore,
+  XCircle,
+} from "lucide-react";
+import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
-import { constructMetadata } from "@/lib/utils";
+import { getTicketWithMessages } from "@/actions/support-ticket-actions";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { TicketConversation } from "@/components/support/ticket-conversation";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -18,9 +22,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { DashboardHeader } from "@/components/dashboard/header";
-import { TicketMessageItem } from "@/components/support/ticket-message";
-import { TicketReplyForm } from "@/components/support/ticket-reply-form";
+import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
+import { constructMetadata } from "@/lib/utils";
 
 // Helper function to get status badge color
 const getStatusColor = (status: string) => {
@@ -64,8 +68,12 @@ export async function generateMetadata({
   const ticket = ticketResult.success ? ticketResult.data?.ticket : null;
 
   return constructMetadata({
-    title: ticket ? `Support Ticket: ${ticket.subject}` : "Support Ticket",
-    description: "View and respond to your support ticket",
+    title: ticket
+      ? `Support Ticket: ${ticket.subject} | Professional Support`
+      : "Support Ticket Details",
+    description: ticket
+      ? `Track and manage your support ticket. Status: ${ticket.status}. Get real-time updates and communicate directly with our support team.`
+      : "View and respond to your support ticket with real-time updates and expert assistance.",
   });
 }
 
@@ -85,7 +93,7 @@ export default async function TicketPage({
   const ticketResult = await getTicketWithMessages(resolvedParams.id);
 
   if (!ticketResult.success || !ticketResult.data) {
-    console.error("Error fetching ticket:", ticketResult.error);
+    logger.error("Error fetching ticket:", ticketResult.error);
     notFound();
   }
 
@@ -104,49 +112,59 @@ export default async function TicketPage({
   });
 
   return (
-    <>
-      <div className="mb-4 flex items-center">
-        <Link href="/dashboard/support">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1"
-          >
-            <ChevronLeft className="size-4" />
-            {t("backToSupport")}
-          </Button>
-        </Link>
-      </div>
-
-      <DashboardHeader heading={ticket.subject} text={t("viewAndRespond")} />
-
-      <Card className="mt-6">
+    <UnifiedPageLayout
+      title={ticket.subject}
+      description="Track your ticket status and communicate with our support team in real-time."
+      icon={<MessageSquareMore className="size-4 text-primary" />}
+      showBackButton
+      backHref="/dashboard/support"
+      contentClassName="space-y-6"
+    >
+      <Card hover>
         <CardHeader>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <CardTitle className="text-xl">{t("ticketDetails")}</CardTitle>
-              <CardDescription>
-                {t("created")} {createdAt}
+              <CardTitle className="flex gap-2 items-center text-xl">
+                <CircleDot className="size-4 text-primary" />
+                Ticket Details
+              </CardTitle>
+              <CardDescription className="flex items-center gap-1.5 mt-1.5">
+                <Clock className="size-3.5" />
+                Created {createdAt} • Last updated {updatedAt}
               </CardDescription>
             </div>
-            <div className="mt-2 flex items-center gap-2 md:mt-0">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">{t("status")}:</span>
+            <div className="flex flex-wrap gap-3 items-center">
+              <div className="flex gap-2 items-center">
+                <span className="text-sm font-medium">Status:</span>
                 <Badge className={getStatusColor(ticket.status)}>
                   {formatStatus(ticket.status, t)}
                 </Badge>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">{t("priority")}:</span>
-                <span className="capitalize">{t(ticket.priority)}</span>
+              <div className="flex gap-2 items-center">
+                <span className="text-sm font-medium">Priority:</span>
+                <Badge
+                  variant="outline"
+                  className={
+                    ticket.priority === "high"
+                      ? "border-red-500 text-red-600"
+                      : ticket.priority === "medium"
+                        ? "border-orange-500 text-orange-600"
+                        : "border-blue-500 text-blue-600"
+                  }
+                >
+                  {ticket.priority.toUpperCase()}
+                </Badge>
               </div>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <div className="mb-6">
-            <h3 className="mb-2 font-medium">{t("description")}</h3>
-            <div className="whitespace-pre-wrap rounded-lg bg-muted p-4 text-sm">
+            <h3 className="flex gap-2 items-center mb-3 font-semibold">
+              <FileText className="size-4 text-primary" />
+              Original Request
+            </h3>
+            <div className="p-4 text-sm leading-relaxed whitespace-pre-wrap rounded-lg border bg-muted/50 border-border">
               {ticket.description}
             </div>
           </div>
@@ -154,37 +172,33 @@ export default async function TicketPage({
           <Separator className="my-6" />
 
           <div>
-            <h3 className="mb-4 font-medium">{t("conversation")}</h3>
-            {messages.length === 0 ? (
-              <div className="py-6 text-center text-muted-foreground">
-                {t("noMessages")}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {messages.map((message) => (
-                  <TicketMessageItem
-                    key={message.id}
-                    message={message}
-                    isCurrentUser={message.user_id === user.id}
-                  />
-                ))}
-              </div>
-            )}
+            <h3 className="flex gap-2 items-center mb-4 font-semibold">
+              <MessageCircle className="size-4 text-primary" />
+              Conversation History
+            </h3>
+            <TicketConversation
+              ticketId={ticket.id}
+              initialMessages={messages}
+              currentUserId={user.id}
+              currentUserName={user.name || user.email || "User"}
+              ticketStatus={ticket.status}
+            />
           </div>
         </CardContent>
-        <CardFooter>
-          {ticket.status !== "closed" && (
-            <div className="w-full">
-              <TicketReplyForm ticketId={ticket.id} />
+        {ticket.status === "closed" && (
+          <CardFooter className="flex-col gap-4 bg-muted/30">
+            <div className="py-6 w-full text-center">
+              <div className="inline-flex justify-center items-center mb-3 rounded-lg border size-12 bg-muted/50 border-border">
+                <XCircle className="size-6 text-muted-foreground" />
+              </div>
+              <p className="mb-1 font-semibold">This ticket has been closed</p>
+              <p className="text-sm text-muted-foreground">
+                If you need further assistance, please create a new ticket
+              </p>
             </div>
-          )}
-          {ticket.status === "closed" && (
-            <div className="w-full py-4 text-center text-muted-foreground">
-              {t("ticketClosed")}
-            </div>
-          )}
-        </CardFooter>
+          </CardFooter>
+        )}
       </Card>
-    </>
+    </UnifiedPageLayout>
   );
 }

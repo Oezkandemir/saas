@@ -1,521 +1,464 @@
 "use client";
 
-import { useContext, useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { useRouter, useSelectedLayoutSegment } from "next/navigation";
-import { getUserNotifications } from "@/actions/user-profile-actions";
-import {
-  Link as I18nLink,
-} from "@/i18n/routing";
-import { useQuery } from "@tanstack/react-query";
-import { formatDistance } from "date-fns";
 import {
   Bell,
+  Building2,
+  CreditCard,
+  Crown,
+  FileText,
+  Globe,
+  Home,
   LayoutDashboard,
-  Lock,
   LogOut,
-  Menu,
+  Moon,
   Settings,
-  User,
+  Shield,
+  Sun,
+  User as UserIcon,
   X,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Drawer } from "vaul";
-
-import { docsConfig } from "@/config/docs";
-import { marketingConfig } from "@/config/marketing";
-import { siteConfig } from "@/config/site";
-import { cn } from "@/lib/utils";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { useNotifications } from "@/hooks/use-notifications";
-import { DocsSidebarNav } from "@/components/docs/sidebar-nav";
-import LanguageDrawer from "@/components/language-drawer";
-import { ModalContext } from "@/components/modals/providers";
-import { Icons } from "@/components/shared/icons";
-
-import { getNotificationIcon } from "@/components/shared/notifications-popover";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { useSupabase } from "@/components/supabase-provider";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { Separator } from "@/components/ui/separator";
+import { useNotifications } from "@/hooks/use-notifications";
+import { useRouter as useI18nRouter, usePathname } from "@/i18n/routing";
+import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
 
-import { ModeToggle } from "./mode-toggle";
-
-// Language Drawer Component
-// Notification Drawer Component
-function NotificationDrawer() {
-  const [open, setOpen] = useState(false);
-  const { unreadCount, isLoading } = useNotifications();
-  const t = useTranslations("Notifications");
-
-  // Fetch notifications when drawer is opened
-  const {
-    data: notifications = [],
-    isLoading: loadingNotifications,
-    refetch,
-  } = useQuery({
-    queryKey: ["notifications", "drawer"],
-    queryFn: async () => {
-      try {
-        const result = await getUserNotifications(false);
-        if (result.success && result.data) {
-          // Sort by created_at date (newest first) and limit to 5
-          return result.data
-            .sort(
-              (a, b) =>
-                new Date(b.created_at).getTime() -
-                new Date(a.created_at).getTime(),
-            )
-            .slice(0, 5);
-        }
-        return [];
-      } catch (err) {
-        console.error("Error fetching drawer notifications:", err);
-        return [];
-      }
-    },
-    enabled: open, // Only fetch when drawer is open
-    staleTime: 30 * 1000, // Consider data fresh for 30 seconds
-  });
-
-  return (
-    <Drawer.Root open={open} onClose={() => setOpen(false)}>
-      <Drawer.Trigger asChild>
-        <button
-          onClick={() => setOpen(true)}
-          className="relative p-2 transition-colors duration-200 rounded-full hover:bg-muted focus:outline-none active:bg-muted"
-        >
-          <Bell className="size-5 text-muted-foreground" />
-          {!isLoading && unreadCount > 0 && (
-            <span className="absolute flex items-center justify-center text-xs font-bold text-white bg-red-500 rounded-full -right-1 -top-1 size-4">
-              {unreadCount > 9 ? "9+" : unreadCount}
-            </span>
-          )}
-        </button>
-      </Drawer.Trigger>
-      <Drawer.Portal>
-        <Drawer.Overlay
-          className="fixed inset-0 z-40 h-full bg-background/80 backdrop-blur-sm"
-          onClick={() => setOpen(false)}
-        />
-        <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background px-3 text-sm">
-          <div className="sticky top-0 z-20 flex items-center justify-center w-full bg-inherit">
-            <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
-          </div>
-
-          <Drawer.Title className="sr-only">Notifications</Drawer.Title>
-
-          <div className="w-full mt-1 mb-14">
-            <div className="p-4 overflow-y-auto max-h-96">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">{t("notifications")}</h3>
-                {unreadCount > 0 && (
-                  <span className="px-2 py-1 text-xs text-white bg-red-500 rounded-full">
-                    {unreadCount}
-                  </span>
-                )}
-              </div>
-
-              {loadingNotifications ? (
-                <div className="py-8 text-center text-muted-foreground">
-                  <div className="mx-auto mb-4 border-2 rounded-full size-6 animate-spin border-muted-foreground border-t-transparent" />
-                  <p>{t("loading")}</p>
-                </div>
-              ) : notifications.length > 0 ? (
-                <div className="space-y-3">
-                  {notifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      className={cn(
-                        "rounded-lg border p-3 transition-colors",
-                        notification.read
-                          ? "border-muted bg-muted/50"
-                          : "border-border bg-background",
-                      )}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="mt-0.5 shrink-0">
-                          {getNotificationIcon(notification.type)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <p className="text-sm font-medium truncate">
-                              {notification.title}
-                            </p>
-                            {!notification.read && (
-                              <div className="ml-2 bg-blue-500 rounded-full shrink-0 size-2" />
-                            )}
-                          </div>
-                          <p className="mb-2 text-xs line-clamp-2 text-muted-foreground">
-                            {notification.content}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {formatDistance(
-                              new Date(notification.created_at),
-                              new Date(),
-                              {
-                                addSuffix: true,
-                              },
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  <div className="pt-4 border-t">
-                    <I18nLink
-                      href="/profile/notifications"
-                      onClick={() => setOpen(false)}
-                      className="block w-full px-4 py-2 text-center transition-colors rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
-                    >
-                      {t("viewAll")}
-                    </I18nLink>
-                  </div>
-                </div>
-              ) : (
-                <div className="py-8 text-center text-muted-foreground">
-                  <Bell className="mx-auto mb-4 opacity-50 size-12" />
-                  <p>{t("noNotifications")}</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </Drawer.Content>
-        <Drawer.Overlay />
-      </Drawer.Portal>
-    </Drawer.Root>
-  );
-}
+// Languages configuration
+const languages = [
+  {
+    value: "en",
+    flag: "🇺🇸",
+    label: "English",
+  },
+  {
+    value: "de",
+    flag: "🇩🇪",
+    label: "Deutsch",
+  },
+];
 
 export function UserAccountNav() {
   const { session, supabase } = useSupabase();
   const user = session?.user;
-  const router = useRouter();
   const t = useTranslations("UserNav");
+  const tNav = useTranslations("Navigation");
+  const tCommon = useTranslations("Common");
+  const locale = useLocale();
+  const router = useI18nRouter();
+  const pathname = usePathname();
+  const { theme, setTheme } = useTheme();
+  const { unreadCount } = useNotifications();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dbUserName, setDbUserName] = useState<string | null>(null);
+  const [dbUserRole, setDbUserRole] = useState<string | null>(null);
 
-  const closeDrawer = () => {
-    setDrawerOpen(false);
+  const switchLanguage = async (newLocale: string) => {
+    try {
+      await fetch("/api/locale", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ locale: newLocale }),
+      });
+    } catch (error) {
+      logger.error("Failed to save locale preference:", error);
+    }
+
+    router.replace(pathname, { locale: newLocale });
   };
 
-  const { isMobile } = useMediaQuery();
-
-  // Navigation configuration
-  const selectedLayout = useSelectedLayoutSegment();
-  const documentation = selectedLayout === "docs";
-
-  const configMap = {
-    docs: docsConfig.mainNav,
+  const setThemeMode = (mode: "light" | "dark" | "system") => {
+    setTheme(mode);
   };
-
-  const links =
-    (selectedLayout && configMap[selectedLayout]) || marketingConfig.mainNav;
-
-  const { setShowSignInModal, setShowSignUpModal } = useContext(ModalContext);
 
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
       toast.success(t("signOutSuccess"));
-      router.push("/");
-      router.refresh();
+      window.location.href = "/";
     } catch (error) {
-      console.error("Error signing out:", error);
+      logger.error("Error signing out:", error);
       toast.error(t("signOutError"));
+      window.location.href = "/";
     }
   };
 
-  // Fetch user name from database when component mounts
+  // Fetch user name and role from database
   useEffect(() => {
-    async function fetchUserName() {
+    async function fetchUserData() {
       try {
         if (user?.id) {
           const { data, error } = await supabase
             .from("users")
-            .select("name")
+            .select("name, role")
             .eq("id", user.id)
             .single();
 
           if (!error && data) {
             setDbUserName(data.name);
+            const role = String(data.role || "USER").trim();
+            setDbUserRole(role);
+          } else {
+            setDbUserRole("USER");
           }
         }
       } catch (err) {
-        console.error("Error fetching user name:", err);
+        logger.error("Error fetching user data:", err);
+        setDbUserRole("USER");
       }
     }
 
-    fetchUserName();
+    fetchUserData();
   }, [user, supabase]);
 
-  // Ensure we always have a display name, prioritizing the database value, then falling back to metadata and email
+  const userRole = dbUserRole || "USER";
+
+  // Ensure we always have a display name
   const displayName =
     dbUserName ||
     user?.user_metadata?.name ||
     user?.email?.split("@")[0] ||
     t("defaultUser");
-  const userRole = user?.user_metadata?.role || "USER";
 
-  if (!user)
+  if (!user) {
     return (
       <div className="border rounded-full size-8 animate-pulse bg-muted" />
     );
+  }
 
-  // Now using Bottom Sheet/Drawer for ALL screen sizes
+  // Navigation menu items
+  const menuItems = [
+    {
+      href: "/dashboard",
+      icon: LayoutDashboard,
+      label: tNav("dashboard"),
+      onClick: () => setDrawerOpen(false),
+    },
+    // Admin Dashboard Link (only for ADMIN users)
+    ...(userRole === "ADMIN"
+      ? [
+          {
+            href: "https://admin.cenety.com",
+            icon: Shield,
+            label: t("adminDashboard") || "Admin Dashboard",
+            onClick: () => setDrawerOpen(false),
+            external: true,
+          },
+        ]
+      : []),
+    {
+      href: "/profile",
+      icon: UserIcon,
+      label: t("profile"),
+      onClick: () => setDrawerOpen(false),
+    },
+    {
+      href: "/profile/notifications",
+      icon: Bell,
+      label: tNav("notifications"),
+      badge: unreadCount > 0 ? unreadCount : undefined,
+      onClick: () => setDrawerOpen(false),
+    },
+    {
+      href: "/dashboard/settings/company",
+      icon: Building2,
+      label: t("myCompany"),
+      onClick: () => setDrawerOpen(false),
+    },
+    {
+      href: "/dashboard/billing",
+      icon: CreditCard,
+      label: t("billing"),
+      onClick: () => setDrawerOpen(false),
+    },
+    {
+      href: "/dashboard/settings",
+      icon: Settings,
+      label: t("settings"),
+      onClick: () => setDrawerOpen(false),
+    },
+  ];
+
+  // Admin panel moved to separate admin dashboard (apps/admin)
+
+  // Public navigation items
+  const publicItems = [
+    {
+      href: "/",
+      icon: Home,
+      label: tNav("home"),
+      onClick: () => setDrawerOpen(false),
+    },
+    {
+      href: "/blog",
+      icon: FileText,
+      label: tNav("blog"),
+      onClick: () => setDrawerOpen(false),
+    },
+    {
+      href: "/pricing",
+      icon: Crown,
+      label: tNav("pricing"),
+      onClick: () => setDrawerOpen(false),
+    },
+  ];
+
   return (
-    <>
-      <div className="flex items-center gap-1">
-        {/* Notifications Drawer */}
-        <NotificationDrawer />
+    <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} direction="right">
+      <DrawerTrigger asChild>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setDrawerOpen(true);
+          }}
+          className={cn(
+            "relative cursor-pointer focus:outline-none rounded-full transition-opacity hover:opacity-90 active:opacity-80",
+            unreadCount > 0 && "ring-1 ring-blue-500 ring-offset-0 p-0.5"
+          )}
+          aria-label="Open user account menu"
+          aria-expanded={drawerOpen}
+        >
+          <UserAvatar
+            user={{
+              name: displayName,
+              image: user.user_metadata?.image || null,
+              avatar_url: user.user_metadata?.avatar_url || null,
+            }}
+            className="border border-stroke-soft-200 size-9"
+          />
+        </button>
+      </DrawerTrigger>
 
-        {/* User Account Drawer */}
-        <Drawer.Root open={drawerOpen} onClose={closeDrawer}>
-          <Drawer.Trigger asChild>
-            <div
-              onClick={() => setDrawerOpen(true)}
-              className="cursor-pointer"
-            >
-              <UserAvatar
-                user={{
-                  name: displayName,
-                  image: user.user_metadata?.image || null,
-                  avatar_url: user.user_metadata?.avatar_url || null,
-                }}
-                className="border size-9"
-              />
+      <DrawerContent
+        side="right"
+        className="w-auto min-w-[280px] max-w-[320px] h-full border-l border-r-0 border-y-0 rounded-none border-border/50 shadow-lg"
+      >
+        <div className="w-full">
+          {/* Header */}
+          <DrawerHeader className="border-b px-6 py-4">
+            <div className="flex items-center justify-between">
+              <DrawerTitle className="text-lg font-semibold">
+                {t("account")}
+              </DrawerTitle>
+              <DrawerClose asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8"
+                  aria-label="Close menu"
+                >
+                  <X className="size-4" />
+                </Button>
+              </DrawerClose>
             </div>
-          </Drawer.Trigger>
-          <Drawer.Portal>
-            <Drawer.Overlay
-              className="fixed inset-0 z-40 h-full bg-background/80 backdrop-blur-sm"
-              onClick={closeDrawer}
-            />
-            <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background px-3 text-sm">
-              <div className="sticky top-0 z-20 flex items-center justify-center w-full bg-inherit">
-                <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
-              </div>
+          </DrawerHeader>
 
-              <Drawer.Title className="sr-only">
-                User Account Menu
-              </Drawer.Title>
-
-              <div className="flex items-center justify-start gap-3 p-2">
+          {/* Content */}
+          <div className="flex flex-col">
+            {/* User Info Section */}
+            <div className="px-6 py-5 border-b">
+              <div className="flex items-center gap-4">
                 <UserAvatar
                   user={{
                     name: displayName,
                     image: user.user_metadata?.image || null,
                     avatar_url: user.user_metadata?.avatar_url || null,
                   }}
-                  className="border size-12"
+                  className="size-14 shrink-0 border-2"
                 />
-                <div className="flex flex-col">
-                  <p className="font-medium">{displayName}</p>
-                  {user.email && (
-                    <p className="w-[200px] truncate text-muted-foreground">
-                      {user?.email}
-                    </p>
-                  )}
-                  <p className="text-xs text-muted-foreground">
-                    {t("role")}: {t(userRole.toLowerCase())}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base font-semibold truncate text-foreground">
+                    {displayName}
+                  </h3>
+                  <p className="text-sm text-muted-foreground truncate mt-0.5">
+                    {user.email}
                   </p>
+                  {userRole === "ADMIN" && (
+                    <Badge variant="secondary" className="mt-2 text-xs">
+                      {t("admin")}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Navigation Links */}
+            <div className="px-4 py-2">
+              {menuItems.map((item) => {
+                const linkProps = {
+                  href: item.href,
+                  prefetch: !(item as { external?: boolean }).external,
+                  onClick: item.onClick,
+                  className:
+                    "flex items-center justify-between gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground",
+                  ...((item as { external?: boolean }).external && {
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                  }),
+                };
+
+                return (
+                  <Link key={item.href} {...linkProps}>
+                    <div className="flex items-center gap-3">
+                      <item.icon className="size-4 shrink-0" />
+                      <span>{item.label}</span>
+                    </div>
+                    {item.badge && (
+                      <span className="flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-semibold">
+                        {item.badge > 99 ? "99+" : item.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+
+              <Separator className="my-2" />
+
+              {/* Public Navigation */}
+              {publicItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  prefetch={true}
+                  onClick={item.onClick}
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground"
+                >
+                  <item.icon className="size-4 shrink-0" />
+                  <span>{item.label}</span>
+                </Link>
+              ))}
+
+              <Separator className="my-2" />
+
+              {/* Language Switcher */}
+              <div className="px-3 py-2.5">
+                <div className="flex items-center gap-3 mb-3">
+                  <Globe className="size-4 shrink-0 text-muted-foreground" />
+                  <span className="text-sm font-medium">
+                    {tNav("switchLanguage")}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {languages.map((lang) => (
+                    <button
+                      key={lang.value}
+                      onClick={() => switchLanguage(lang.value)}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
+                        locale === lang.value
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted hover:bg-muted/80 text-muted-foreground"
+                      )}
+                    >
+                      <span className="text-base leading-none">
+                        {lang.flag}
+                      </span>
+                      <span className="hidden sm:inline">
+                        {lang.value === "en"
+                          ? tCommon("languages.english")
+                          : tCommon("languages.german")}
+                      </span>
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              <ul
-                role="list"
-                className="w-full mt-1 mb-14 text-muted-foreground"
-              >
-                {userRole === "ADMIN" ? (
-                  <li className="rounded-lg text-foreground hover:bg-muted">
-                    <Link
-                      href="/admin"
-                      onClick={closeDrawer}
-                      className="flex w-full items-center gap-3 px-2.5 py-2"
-                    >
-                      <Lock className="size-4" />
-                      <p className="text-sm">{t("admin")}</p>
-                    </Link>
-                  </li>
-                ) : null}
-
-                <li className="rounded-lg text-foreground hover:bg-muted">
-                  <Link
-                    href="/profile"
-                    onClick={closeDrawer}
-                    className="flex w-full items-center gap-3 px-2.5 py-2"
-                  >
-                    <User className="size-4" />
-                    <p className="text-sm">Profile</p>
-                  </Link>
-                </li>
-
-                <li className="rounded-lg text-foreground hover:bg-muted">
-                  <Link
-                    href="/dashboard"
-                    onClick={closeDrawer}
-                    className="flex w-full items-center gap-3 px-2.5 py-2"
-                  >
-                    <LayoutDashboard className="size-4" />
-                    <p className="text-sm">{t("dashboard")}</p>
-                  </Link>
-                </li>
-
-                <li className="rounded-lg text-foreground hover:bg-muted">
-                  <Link
-                    href="/dashboard/settings"
-                    onClick={closeDrawer}
-                    className="flex w-full items-center gap-3 px-2.5 py-2"
-                  >
-                    <Settings className="size-4" />
-                    <p className="text-sm">{t("settings")}</p>
-                  </Link>
-                </li>
-
-                <li
-                  className="rounded-lg cursor-pointer text-foreground hover:bg-muted"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    handleSignOut();
-                    closeDrawer();
-                  }}
-                >
-                  <div className="flex w-full items-center gap-3 px-2.5 py-2">
-                    <LogOut className="size-4" />
-                    <p className="text-sm">{t("logout")}</p>
-                  </div>
-                </li>
-              </ul>
-            </Drawer.Content>
-            <Drawer.Overlay />
-          </Drawer.Portal>
-        </Drawer.Root>
-
-        {/* Mobile Navigation Menu as Drawer - Only shown on mobile */}
-        {isMobile && (
-          <Drawer.Root
-            open={mobileMenuOpen}
-            onClose={() => setMobileMenuOpen(false)}
-          >
-            <Drawer.Trigger asChild>
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 transition-colors duration-200 rounded-full hover:bg-muted focus:outline-none active:bg-muted"
-              >
-                {mobileMenuOpen ? (
-                  <X className="size-5 text-muted-foreground" />
-                ) : (
-                  <Menu className="size-5 text-muted-foreground" />
-                )}
-              </button>
-            </Drawer.Trigger>
-            <Drawer.Portal>
-              <Drawer.Overlay
-                className="fixed inset-0 z-40 h-full bg-background/80 backdrop-blur-sm"
-                onClick={() => setMobileMenuOpen(false)}
-              />
-              <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background px-3 text-sm">
-                <div className="sticky top-0 z-20 flex items-center justify-center w-full bg-inherit">
-                  <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
+              {/* Theme Switcher */}
+              <div className="px-3 py-2.5">
+                <div className="flex items-center gap-3 mb-3">
+                  {theme === "dark" ? (
+                    <Moon className="size-4 shrink-0 text-muted-foreground" />
+                  ) : theme === "light" ? (
+                    <Sun className="size-4 shrink-0 text-muted-foreground" />
+                  ) : (
+                    <Sun className="size-4 shrink-0 text-muted-foreground opacity-50" />
+                  )}
+                  <span className="text-sm font-medium">
+                    {tNav("theme", { defaultValue: "Theme" })}
+                  </span>
                 </div>
-
-                <Drawer.Title className="sr-only">Navigation Menu</Drawer.Title>
-
-                <div className="w-full mt-1 mb-14">
-                  <ul className="grid divide-y divide-muted">
-                    {links &&
-                      links.length > 0 &&
-                      links.map(({ title, href }) => (
-                        <li key={href} className="py-3">
-                          <I18nLink
-                            href={href}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="flex w-full font-medium capitalize text-foreground hover:text-foreground/80"
-                          >
-                            {title}
-                          </I18nLink>
-                        </li>
-                      ))}
-
-                    {session ? (
-                      <>
-                        {session.user.user_metadata?.role === "ADMIN" ? (
-                          <li className="py-3">
-                            <I18nLink
-                              href="/admin"
-                              onClick={() => setMobileMenuOpen(false)}
-                              className="flex w-full font-medium capitalize text-foreground hover:text-foreground/80"
-                            >
-                              Admin
-                            </I18nLink>
-                          </li>
-                        ) : null}
-
-                        <li className="py-3">
-                          <I18nLink
-                            href="/dashboard"
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="flex w-full font-medium capitalize text-foreground hover:text-foreground/80"
-                          >
-                            Dashboard
-                          </I18nLink>
-                        </li>
-                      </>
-                    ) : (
-                      <>
-                        <li className="py-3">
-                          <button
-                            onClick={() => {
-                              setMobileMenuOpen(false);
-                              setShowSignInModal(true);
-                            }}
-                            className="flex w-full font-medium capitalize text-foreground hover:text-foreground/80"
-                          >
-                            Login
-                          </button>
-                        </li>
-
-                        <li className="py-3">
-                          <button
-                            onClick={() => {
-                              setMobileMenuOpen(false);
-                              setShowSignUpModal(true);
-                            }}
-                            className="flex w-full font-medium capitalize text-foreground hover:text-foreground/80"
-                          >
-                            Sign up
-                          </button>
-                        </li>
-                      </>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setThemeMode("light")}
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
+                      theme === "light"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted hover:bg-muted/80 text-muted-foreground"
                     )}
-                  </ul>
-
-                  {documentation ? (
-                    <div className="block mt-8 md:hidden">
-                      <DocsSidebarNav setOpen={setMobileMenuOpen} />
-                    </div>
-                  ) : null}
-
-                  <div className="flex items-center justify-end mt-5 space-x-4">
-                    <I18nLink
-                      href={siteConfig.links.github}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <Icons.gitHub className="size-6" />
-                      <span className="sr-only">GitHub</span>
-                    </I18nLink>
-                    <ModeToggle />
-                  </div>
+                  >
+                    <Sun className="size-3.5" />
+                    <span className="hidden sm:inline">
+                      {tNav("lightMode")}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setThemeMode("dark")}
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
+                      theme === "dark"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted hover:bg-muted/80 text-muted-foreground"
+                    )}
+                  >
+                    <Moon className="size-3.5" />
+                    <span className="hidden sm:inline">{tNav("darkMode")}</span>
+                  </button>
+                  <button
+                    onClick={() => setThemeMode("system")}
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
+                      theme === "system" || !theme
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted hover:bg-muted/80 text-muted-foreground"
+                    )}
+                  >
+                    <Sun className="size-3.5 opacity-50" />
+                    <span className="hidden sm:inline">
+                      {tNav("systemMode", { defaultValue: "System" })}
+                    </span>
+                  </button>
                 </div>
-              </Drawer.Content>
-              <Drawer.Overlay />
-            </Drawer.Portal>
-          </Drawer.Root>
-        )}
-      </div>
-    </>
+              </div>
+
+              <Separator className="my-2" />
+
+              {/* Sign Out */}
+              <button
+                onClick={(event) => {
+                  event.preventDefault();
+                  setDrawerOpen(false);
+                  handleSignOut();
+                }}
+                className="flex w-full items-center gap-3 px-3 py-2.5 text-sm font-medium text-destructive rounded-lg transition-colors hover:bg-destructive/10 active:bg-destructive/20"
+              >
+                <LogOut className="size-4 shrink-0" />
+                <span>{t("logout")}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 }

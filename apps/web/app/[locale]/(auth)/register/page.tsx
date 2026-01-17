@@ -1,20 +1,19 @@
 "use client";
 
-import { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { Suspense } from "react";
 import { UserAuthForm } from "@/components/forms/user-auth-form";
 import { Icons } from "@/components/shared/icons";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
 // Component to get search params with Suspense
 function RegisterForm() {
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/dashboard";
+  const redirectTo = searchParams.get("redirectTo") || "/";
 
   return (
     <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
@@ -56,7 +55,7 @@ export default function RegisterPage() {
         href="/login"
         className={cn(
           buttonVariants({ variant: "ghost" }),
-          "absolute right-4 top-4 md:right-8 md:top-8",
+          "absolute right-4 top-4 md:right-8 md:top-8"
         )}
       >
         Login

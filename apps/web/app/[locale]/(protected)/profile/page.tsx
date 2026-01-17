@@ -1,23 +1,31 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { getUserTickets } from "@/actions/support-ticket-actions";
 import { formatDistance } from "date-fns";
 import {
+  ArrowRight,
   BadgeCheck,
-  Bell,
+  Building2,
   CreditCard,
   HelpCircle,
-  Mail,
   Settings,
   Shield,
   User,
 } from "lucide-react";
-import { getTranslations } from "next-intl/server";
-
-import { getCurrentUser } from "@/lib/session";
-import { createClient } from "@/lib/supabase/server";
-import { constructMetadata } from "@/lib/utils";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
+import type { UserSubscriptionPlan } from "types";
+import { getDefaultCompanyProfile } from "@/actions/company-profiles-actions";
+import { getUserPreferences } from "@/actions/preferences-actions";
+import { getUserTickets } from "@/actions/support-ticket-actions";
+import { UserAvatarForm } from "@/components/forms/user-avatar-form";
+import { UserNameForm } from "@/components/forms/user-name-form";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { BillingInfo } from "@/components/pricing/billing-info";
+import { PolarPortalButton } from "@/components/pricing/polar-portal-button";
+import { PolarPortalButtonFallback } from "@/components/pricing/polar-portal-button-fallback";
+import { PolarPortalButtonWithSubscription } from "@/components/pricing/polar-portal-button-subscription";
+import { UserTicketAccordion } from "@/components/support/user-ticket-accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,12 +35,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DashboardHeaderWithLanguageSwitcher } from "@/components/dashboard/header-with-language-switcher";
-import { UserTicketAccordion } from "@/components/support/user-ticket-accordion";
-import { FollowStats } from "@/components/follow-stats";
-import { getFollowStatus } from "@/actions/follow-actions";
+import { pricingData } from "@/config/subscriptions";
+import { logger } from "@/lib/logger";
+import { getCurrentUser } from "@/lib/session";
+import { getUserSubscriptionPlan } from "@/lib/subscription";
+import { createClient } from "@/lib/supabase/server";
+import { constructMetadata } from "@/lib/utils";
 
 export async function generateMetadata() {
+  // CRITICAL FIX: Get locale and set it before translations
+  // This ensures correct language during client-side navigation
+  const locale = await getLocale();
+  setRequestLocale(locale);
   const t = await getTranslations("Profile");
 
   return constructMetadata({
@@ -55,382 +69,535 @@ export default async function ProfilePage() {
 
   // Fetch user subscription and other details
   const supabase = await createClient();
-  const { data: userData, error } = await supabase
+  const { error } = await supabase
     .from("users")
     .select("*")
     .eq("id", user.id)
     .single();
 
   if (error) {
-    console.error("Error fetching user data:", error);
+    logger.error("Error fetching user data:", error);
   }
 
-  // Get follow status and stats for current user
-  const followStatus = await getFollowStatus(user.id);
+  // Get company profile - only default profile
+  const companyProfile = await getDefaultCompanyProfile().catch(() => null);
 
-  const hasSubscription = !!userData?.stripe_subscription_id;
-  const subscriptionStatus = hasSubscription ? "active" : null; // Simplified since we don't have the status field
-  const subscriptionEndsAt =
-    hasSubscription && userData?.stripe_current_period_end
-      ? new Date(userData.stripe_current_period_end)
-      : null;
+  // Get user subscription plan
+  const defaultFreePlan: UserSubscriptionPlan = {
+    ...pricingData[0]!,
+    stripeCustomerId: null,
+    stripeSubscriptionId: null,
+    stripePriceId: null,
+    stripeCurrentPeriodEnd: 0,
+    polarCustomerId: null,
+    polarSubscriptionId: null,
+    polarProductId: null,
+    polarCurrentPeriodEnd: 0,
+    polarCurrentPeriodStart: 0,
+    polarSubscriptionStart: 0,
+    isPaid: false,
+    interval: null,
+    isCanceled: false,
+  };
+
+  let userSubscriptionPlan: UserSubscriptionPlan;
+  try {
+    const plan = await getUserSubscriptionPlan(user.id, user.email);
+    userSubscriptionPlan = plan || defaultFreePlan;
+  } catch (error) {
+    logger.error("Error fetching subscription plan:", error);
+    userSubscriptionPlan = defaultFreePlan;
+  }
+
+  // Get user preferences
+  const preferencesResult = await getUserPreferences();
+  const preferences = preferencesResult.success ? preferencesResult.data : null;
+
+  // Check subscription status - Polar only (Stripe is deprecated)
+  const hasSubscription = userSubscriptionPlan?.isPaid || false;
+  const subscriptionStatus = hasSubscription ? "active" : null;
 
   // Get email verification status from Supabase user metadata
   const emailVerified = user.email_confirmed_at != null;
 
   return (
-    <>
-      <DashboardHeaderWithLanguageSwitcher
-        heading={t("heading")}
-        text={t("updateProfile")}
-      />
+    <UnifiedPageLayout
+      title={t("heading")}
+      description={t("updateProfile")}
+      icon={<User className="size-4 text-primary" />}
+      contentClassName="space-y-6"
+    >
+      {/* Hero Profile Section - Modern Big Tech Style */}
+      <Card className="overflow-hidden bg-gradient-to-br border-2 from-background via-background to-muted/20">
+        <div className="relative">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-gradient-to-br via-transparent from-primary/5 to-primary/5" />
 
-      <div className="grid gap-6 md:grid-cols-3">
-        {/* Left sidebar with user info */}
-        <Card className="md:col-span-1">
-          <CardHeader className="flex flex-row gap-4 items-center pb-2">
-            <Avatar className="size-16">
-              <AvatarImage
-                src={user.avatar_url || ""}
-                alt={user.name || "User"}
-              />
-              <AvatarFallback>
-                {user.name?.[0] || user.email?.[0] || "U"}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <CardTitle>{user.name || t("personalInfo.title")}</CardTitle>
-              <CardDescription className="flex items-center">
+          <CardContent className="relative p-6 sm:p-8">
+            <div className="flex flex-col gap-6 items-start sm:flex-row sm:items-end">
+              {/* Avatar - Perfect Circle, Not Stretched */}
+              <div className="relative shrink-0">
+                <Avatar className="border-4 ring-2 shadow-lg size-24 sm:size-32 border-background ring-primary/20">
+                  <AvatarImage
+                    src={user.avatar_url || ""}
+                    alt={user.name || "User"}
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="text-2xl font-semibold bg-gradient-to-br from-primary/20 to-primary/10 text-primary sm:text-3xl">
+                    {user.name?.[0]?.toUpperCase() ||
+                      user.email?.[0]?.toUpperCase() ||
+                      "U"}
+                  </AvatarFallback>
+                </Avatar>
                 {user.role === "ADMIN" && (
-                  <Shield className="mr-1 text-blue-500 size-3" />
+                  <div className="flex absolute -right-1 -bottom-1 justify-center items-center bg-blue-500 rounded-full border-4 shadow-lg size-8 sm:size-10 border-background">
+                    <Shield className="text-white size-4 sm:size-5" />
+                  </div>
                 )}
-                {user.email}
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">
-                {t("accountInfo")}
-              </p>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">{t("memberSince")}</span>
-                <span className="text-sm font-medium">
-                  {user.created_at
-                    ? formatDistance(new Date(user.created_at), new Date(), {
-                        addSuffix: true,
-                      })
-                    : "N/A"}
-                </span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">{t("lastLogin")}</span>
-                <span className="text-sm font-medium">
-                  {user.last_sign_in_at
-                    ? formatDistance(
-                        new Date(user.last_sign_in_at),
-                        new Date(),
-                        { addSuffix: true },
-                      )
-                    : "N/A"}
-                </span>
-              </div>
-              {subscriptionStatus && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">{t("subscription")}</span>
-                  <span
-                    className={`flex items-center text-sm font-medium ${subscriptionStatus === "active" ? "text-green-500" : "text-yellow-500"}`}
-                  >
-                    <BadgeCheck className="mr-1 size-3" />
-                    {subscriptionStatus === "active"
-                      ? t("active")
-                      : t("inactive")}
-                  </span>
-                </div>
-              )}
-              {subscriptionEndsAt && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">{t("renews")}</span>
-                  <span className="text-sm font-medium">
-                    {formatDistance(subscriptionEndsAt, new Date(), {
-                      addSuffix: true,
-                    })}
-                  </span>
-                </div>
-              )}
-            </div>
 
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">
-                {t("quickLinks")}
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                <Link href="/dashboard/billing">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="justify-start w-full"
-                  >
-                    <CreditCard className="mr-2 size-4" />
-                    {t("billing")}
-                  </Button>
-                </Link>
-                <Link href="/dashboard/settings">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="justify-start w-full"
-                  >
-                    <Settings className="mr-2 size-4" />
-                    {t("settings")}
-                  </Button>
-                </Link>
-                <Link href="/dashboard/support">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="justify-start w-full"
-                  >
-                    <HelpCircle className="mr-2 size-4" />
-                    {t("support")}
-                  </Button>
-                </Link>
-                <Link href="/dashboard/notifications">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="justify-start w-full"
-                  >
-                    <Bell className="mr-2 size-4" />
-                    {t("notifications.title")}
-                  </Button>
-                </Link>
-              </div>
-            </div>
+              {/* User Info */}
+              <div className="flex-1 pb-2 min-w-0">
+                <div className="flex flex-col gap-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0">
+                    <h1 className="mb-1 text-2xl font-bold truncate sm:text-3xl">
+                      {user.name || t("personalInfo.title")}
+                    </h1>
+                    <p className="text-sm break-all text-muted-foreground sm:text-base">
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
 
-            {/* Follow Stats */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">
-                Social
-              </p>
-              <FollowStats
-                userId={user.id}
-                followerCount={followStatus.followerCount}
-                followingCount={followStatus.followingCount}
-                className="justify-start"
-                size="sm"
-              />
+                {/* Stats Row */}
+                <div className="flex flex-wrap gap-4 items-center sm:gap-6">
+                  <div className="flex gap-2 items-center">
+                    <div className="flex justify-center items-center rounded-lg border size-8 bg-muted/50 border-border">
+                      <User className="size-4 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">
+                        {t("memberSince")}
+                      </p>
+                      <p className="text-sm font-medium">
+                        {user.created_at
+                          ? formatDistance(
+                              new Date(user.created_at),
+                              new Date(),
+                              {
+                                addSuffix: true,
+                              }
+                            )
+                          : "N/A"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {subscriptionStatus && userSubscriptionPlan && (
+                    <div className="flex gap-2 items-center">
+                      <div className="flex justify-center items-center rounded-lg border size-8 bg-green-500/10 border-green-500/20">
+                        <BadgeCheck className="text-green-600 size-4 dark:text-green-400" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">
+                          {t("subscription")}
+                        </p>
+                        <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                          {userSubscriptionPlan.title}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {companyProfile && (
+                    <Link
+                      href={`/dashboard/settings/company/${companyProfile.id}`}
+                      className="flex gap-2 items-center transition-opacity group hover:opacity-80"
+                    >
+                      <div className="flex justify-center items-center rounded-lg border size-8 bg-primary/10 border-primary/20">
+                        <Building2 className="size-4 text-primary" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-xs text-muted-foreground">Firma</p>
+                          {companyProfile.is_default && (
+                            <Badge
+                              variant="default"
+                              className="bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/30 text-[10px] px-1.5 py-0 h-4"
+                            >
+                              Standard
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm font-medium truncate max-w-[150px] group-hover:text-primary transition-colors">
+                          {companyProfile.company_name}
+                        </p>
+                      </div>
+                    </Link>
+                  )}
+                </div>
+              </div>
             </div>
           </CardContent>
-        </Card>
+        </div>
+      </Card>
 
-        {/* Main content with tabs */}
-        <div className="md:col-span-2">
-          <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid grid-cols-4 w-full">
-              <TabsTrigger value="overview">
-                <User className="mr-2 size-4 md:hidden" />
-                <span className="hidden md:inline">{t("overview")}</span>
-                <span className="md:hidden">{t("info")}</span>
-              </TabsTrigger>
-              <TabsTrigger value="support">
-                <HelpCircle className="mr-2 size-4 md:hidden" />
-                <span className="hidden md:inline">{t("support")}</span>
-                <span className="md:hidden">{t("help")}</span>
-              </TabsTrigger>
-              <TabsTrigger value="billing">
-                <CreditCard className="mr-2 size-4 md:hidden" />
-                <span className="hidden md:inline">{t("billing")}</span>
-                <span className="md:hidden">{t("pay")}</span>
-              </TabsTrigger>
-              <TabsTrigger value="settings">
-                <Settings className="mr-2 size-4 md:hidden" />
-                <span className="hidden md:inline">{t("settings")}</span>
-                <span className="md:hidden">{t("edit")}</span>
-              </TabsTrigger>
-            </TabsList>
+      {/* Main content with tabs */}
+      <div>
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid grid-cols-4 w-full">
+            <TabsTrigger value="overview">
+              <User className="mr-2 size-4 md:hidden" />
+              <span className="hidden md:inline">{t("overview")}</span>
+              <span className="md:hidden">{t("info")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="support">
+              <HelpCircle className="mr-2 size-4 md:hidden" />
+              <span className="hidden md:inline">{t("support")}</span>
+              <span className="md:hidden">{t("help")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="billing">
+              <CreditCard className="mr-2 size-4 md:hidden" />
+              <span className="hidden md:inline">{t("billing")}</span>
+              <span className="md:hidden">{t("pay")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="settings">
+              <Settings className="mr-2 size-4 md:hidden" />
+              <span className="hidden md:inline">{t("settings")}</span>
+              <span className="md:hidden">{t("edit")}</span>
+            </TabsTrigger>
+          </TabsList>
 
-            <TabsContent value="overview" className="mt-4 space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t("overview")}</CardTitle>
-                  <CardDescription>{t("updateProfile")}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">
-                      {t("personalInfo.title")}
-                    </h3>
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t("personalInfo.name")}
-                        </p>
-                        <p>{user.name || t("personalInfo.notProvided")}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t("personalInfo.email")}
-                        </p>
-                        <p>{user.email}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t("accountStatus")}
-                        </p>
-                        <p>{t("active")}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {t("emailVerified")}
-                        </p>
-                        <p>{emailVerified ? t("yes") : t("no")}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">
-                      {t("subscription")}
-                    </h3>
-                    {hasSubscription ? (
-                      <div className="p-4 rounded-lg border">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="font-medium">{t("currentPlan")}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {userData.stripe_price_id
-                                ? t("premiumPlan")
-                                : t("basicPlan")}
-                            </p>
-                          </div>
-                          <Link href="/dashboard/billing">
-                            <Button variant="outline" size="sm">
-                              {t("manage")}
-                            </Button>
-                          </Link>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="p-4 rounded-lg border">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="font-medium">{t("freePlan")}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {t("upgradeText")}
-                            </p>
-                          </div>
-                          <Link href="/dashboard/billing">
-                            <Button>{t("upgrade")}</Button>
-                          </Link>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">
-                      {t("activity.title")}
-                    </h3>
-                    <div className="p-4 rounded-lg border">
-                      <p className="mb-2 text-sm text-muted-foreground">
-                        {t("recentLogins")}
+          <TabsContent value="overview" className="mt-4 space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("overview")}</CardTitle>
+                <CardDescription>{t("updateProfile")}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold">
+                    {t("personalInfo.title")}
+                  </h3>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {t("personalInfo.name")}
                       </p>
-                      <div className="space-y-2">
-                        {user.last_sign_in_at && (
-                          <div className="flex justify-between items-center text-sm">
-                            <span>{t("lastLogin")}</span>
-                            <span>
-                              {formatDistance(
-                                new Date(user.last_sign_in_at),
-                                new Date(),
-                                { addSuffix: true },
-                              )}
-                            </span>
-                          </div>
-                        )}
-                      </div>
+                      <p>{user.name || t("personalInfo.notProvided")}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {t("personalInfo.email")}
+                      </p>
+                      <p>{user.email}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {t("accountStatus")}
+                      </p>
+                      <p>{t("active")}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {t("emailVerified")}
+                      </p>
+                      <p>{emailVerified ? t("yes") : t("no")}</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                </div>
 
-            <TabsContent value="support" className="mt-4 space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t("supportTickets")}</CardTitle>
-                  <CardDescription>{t("viewManage")}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-semibold">
-                      {t("yourTickets")}
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold">{t("subscription")}</h3>
+                  {hasSubscription && userSubscriptionPlan ? (
+                    <div className="p-4 rounded-lg border">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium">{t("currentPlan")}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {userSubscriptionPlan.title}
+                            {userSubscriptionPlan.interval && (
+                              <span className="ml-2 text-xs">
+                                (
+                                {userSubscriptionPlan.interval === "month"
+                                  ? t("monthly")
+                                  : t("yearly")}
+                                )
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                        <Link href="/dashboard/billing">
+                          <Button variant="outline" size="sm">
+                            {t("manage")}
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 rounded-lg border">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium">{t("freePlan")}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {t("upgradeText")}
+                          </p>
+                        </div>
+                        <Link href="/dashboard/billing">
+                          <Button>{t("upgrade")}</Button>
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold">
+                    {t("activity.title")}
+                  </h3>
+                  <div className="p-4 rounded-lg border">
+                    <p className="mb-2 text-sm text-muted-foreground">
+                      {t("recentLogins")}
+                    </p>
+                    <div className="space-y-2">
+                      {user.last_sign_in_at && (
+                        <div className="flex justify-between items-center text-sm">
+                          <span>{t("lastLogin")}</span>
+                          <span>
+                            {formatDistance(
+                              new Date(user.last_sign_in_at),
+                              new Date(),
+                              { addSuffix: true }
+                            )}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="support" className="mt-4 space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("supportTickets")}</CardTitle>
+                <CardDescription>{t("viewManage")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">{t("yourTickets")}</h3>
+                  <Link href="/dashboard/support/new">
+                    <Button>{t("createNewTicket")}</Button>
+                  </Link>
+                </div>
+                {tickets.length > 0 ? (
+                  <UserTicketAccordion data={tickets} />
+                ) : (
+                  <div className="p-6 text-center rounded-lg border">
+                    <HelpCircle className="mx-auto mb-4 size-12 text-muted-foreground" />
+                    <h3 className="mb-2 text-xl font-semibold">
+                      {t("noTickets")}
                     </h3>
+                    <p className="mb-4 text-muted-foreground">
+                      {t("needHelp")}
+                    </p>
                     <Link href="/dashboard/support/new">
                       <Button>{t("createNewTicket")}</Button>
                     </Link>
                   </div>
-                  {tickets.length > 0 ? (
-                    <UserTicketAccordion data={tickets} />
-                  ) : (
-                    <div className="p-6 text-center rounded-lg border">
-                      <HelpCircle className="mx-auto mb-4 size-12 text-muted-foreground" />
-                      <h3 className="mb-2 text-xl font-semibold">
-                        {t("noTickets")}
-                      </h3>
-                      <p className="mb-4 text-muted-foreground">
-                        {t("needHelp")}
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="billing" className="mt-4 space-y-4">
+            {/* Current Subscription */}
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("billingInfo")}</CardTitle>
+                <CardDescription>{t("manageSubscription")}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <BillingInfo userSubscriptionPlan={userSubscriptionPlan} />
+
+                {/* Micro Actions */}
+                <div className="pt-4 space-y-2 border-t">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">
+                      Abrechnung verwalten
+                    </span>
+                    {userSubscriptionPlan.polarCustomerId ? (
+                      <PolarPortalButton
+                        customerId={userSubscriptionPlan.polarCustomerId}
+                        variant="outline"
+                        className="h-8 text-xs"
+                      />
+                    ) : userSubscriptionPlan.polarSubscriptionId ? (
+                      <PolarPortalButtonWithSubscription
+                        subscriptionId={
+                          userSubscriptionPlan.polarSubscriptionId
+                        }
+                        variant="outline"
+                        className="h-8 text-xs"
+                      />
+                    ) : (
+                      <PolarPortalButtonFallback
+                        variant="outline"
+                        className="h-8 text-xs"
+                      />
+                    )}
+                  </div>
+                  <Link
+                    href="/dashboard/billing"
+                    className="flex justify-between items-center text-sm transition-colors group hover:text-primary"
+                  >
+                    <span className="text-muted-foreground">
+                      Vollständige Abrechnungsübersicht
+                    </span>
+                    <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="settings" className="mt-4 space-y-4">
+            {/* Profile Settings */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Profil</CardTitle>
+                <CardDescription>
+                  Verwalten Sie Ihre Profilinformationen
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">
+                      Profilbild
+                    </label>
+                    <UserAvatarForm
+                      user={{ id: user.id, avatar_url: user.avatar_url }}
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">
+                      Name
+                    </label>
+                    <UserNameForm
+                      user={{ id: user.id, name: user.name || "" }}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Preferences */}
+            {preferences && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Einstellungen</CardTitle>
+                  <CardDescription>
+                    Anpassen Sie Ihre Präferenzen
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Design
                       </p>
-                      <Link href="/dashboard/support/new">
-                        <Button>{t("createNewTicket")}</Button>
-                      </Link>
+                      <p className="text-sm capitalize">
+                        {preferences.theme_preference || "System"}
+                      </p>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="billing" className="mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t("billingInfo")}</CardTitle>
-                  <CardDescription>{t("manageSubscription")}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="p-6 text-center rounded-lg border">
-                    <p className="mb-4 text-muted-foreground">
-                      {t("viewManageSubscription")}
-                    </p>
-                    <Link href="/dashboard/billing">
-                      <Button>{t("goToBilling")}</Button>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Sprache
+                      </p>
+                      <p className="text-sm">
+                        {preferences.language_preference || "Deutsch"}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Währung
+                      </p>
+                      <p className="text-sm">{preferences.currency || "EUR"}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Datumsformat
+                      </p>
+                      <p className="text-sm">
+                        {preferences.date_format || "DD.MM.YYYY"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="pt-4 border-t">
+                    <Link
+                      href="/dashboard/settings/preferences"
+                      className="flex justify-between items-center text-sm transition-colors group hover:text-primary"
+                    >
+                      <span className="text-muted-foreground">
+                        Alle Einstellungen verwalten
+                      </span>
+                      <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
                     </Link>
                   </div>
                 </CardContent>
               </Card>
-            </TabsContent>
+            )}
 
-            <TabsContent value="settings" className="mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t("accountSettings")}</CardTitle>
-                  <CardDescription>{t("updateSettings")}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="p-6 text-center rounded-lg border">
-                    <p className="mb-4 text-muted-foreground">
-                      {t("manageAccountSettings")}
+            {/* Quick Links */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Weitere Einstellungen</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-0 divide-y divide-border">
+                <Link
+                  href="/dashboard/settings/company"
+                  className="flex justify-between items-center py-3 transition-colors group hover:text-primary"
+                >
+                  <div>
+                    <h3 className="text-sm font-medium">Firmenprofile</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Firmendaten verwalten
                     </p>
-                    <Link href="/dashboard/settings">
-                      <Button>{t("goToSettings")}</Button>
-                    </Link>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
+                  <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
+                </Link>
+                <Link
+                  href="/dashboard/settings/security"
+                  className="flex justify-between items-center py-3 transition-colors group hover:text-primary"
+                >
+                  <div>
+                    <h3 className="text-sm font-medium">Sicherheit</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Passwort und 2FA
+                    </p>
+                  </div>
+                  <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
+                </Link>
+                <Link
+                  href="/dashboard/settings/privacy"
+                  className="flex justify-between items-center py-3 transition-colors group hover:text-primary"
+                >
+                  <div>
+                    <h3 className="text-sm font-medium">Datenschutz</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      GDPR & Datenschutz
+                    </p>
+                  </div>
+                  <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" />
+                </Link>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
-    </>
+    </UnifiedPageLayout>
   );
 }

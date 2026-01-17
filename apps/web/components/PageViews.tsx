@@ -1,8 +1,6 @@
-import React from "react";
 import { Eye } from "lucide-react";
-
-import { cn } from "@/lib/utils";
 import { usePageViews } from "@/hooks/use-page-views";
+import { cn } from "@/lib/utils";
 
 interface PageViewsProps {
   slug: string;
@@ -49,7 +47,7 @@ export function PageViews({
       <div
         className={cn(
           "inline-flex items-center rounded-md bg-muted p-2",
-          className,
+          className
         )}
       >
         {showIcon && <Eye className="mr-2 size-4" />}
@@ -74,7 +72,7 @@ export function PageViews({
     <span
       className={cn(
         "flex items-center text-sm text-muted-foreground",
-        className,
+        className
       )}
     >
       {showIcon && <Eye className="mr-1 size-4" />}

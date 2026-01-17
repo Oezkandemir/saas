@@ -1,12 +1,10 @@
-import React from "react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getUserNotifications,
   markAllNotificationsAsRead,
 } from "@/actions/user-profile-actions";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { useNotifications } from "@/hooks/use-notifications";
 import { NotificationsPopover } from "@/components/shared/notifications-popover";
 
 // Mock the dependencies
@@ -17,7 +15,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@tanstack/react-query", () => ({
-  useQuery: ({ queryKey, queryFn, enabled }) => {
+  useQuery: ({ queryKey, enabled }: { queryKey: unknown[]; enabled?: boolean }) => {
     if (
       queryKey[0] === "notifications" &&
       queryKey[1] === "popover" &&
@@ -100,7 +98,7 @@ describe("NotificationsPopover", () => {
     render(
       <NotificationsPopover>
         <button>Test Trigger</button>
-      </NotificationsPopover>,
+      </NotificationsPopover>
     );
 
     expect(screen.getByText("Test Trigger")).toBeInTheDocument();
@@ -110,7 +108,7 @@ describe("NotificationsPopover", () => {
     render(
       <NotificationsPopover>
         <button>Test Trigger</button>
-      </NotificationsPopover>,
+      </NotificationsPopover>
     );
 
     // Initially the content should not be visible
@@ -129,7 +127,7 @@ describe("NotificationsPopover", () => {
     render(
       <NotificationsPopover>
         <button>Test Trigger</button>
-      </NotificationsPopover>,
+      </NotificationsPopover>
     );
 
     // Open the popover
@@ -146,7 +144,7 @@ describe("NotificationsPopover", () => {
     render(
       <NotificationsPopover>
         <button>Test Trigger</button>
-      </NotificationsPopover>,
+      </NotificationsPopover>
     );
 
     // Open the popover
@@ -162,7 +160,7 @@ describe("NotificationsPopover", () => {
     render(
       <NotificationsPopover>
         <button>Test Trigger</button>
-      </NotificationsPopover>,
+      </NotificationsPopover>
     );
 
     // Open the popover

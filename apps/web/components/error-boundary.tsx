@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
 import { AlertCircle, Home, RefreshCw } from "lucide-react";
-
+import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { logger } from "@/lib/logger";
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -121,7 +121,7 @@ export class ErrorBoundary extends React.Component<
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log the error to console in development
     if (process.env.NODE_ENV === "development") {
-      console.error("ErrorBoundary caught an error:", error, errorInfo);
+      logger.error("ErrorBoundary caught an error:", { error, errorInfo });
     }
 
     // Update state with error info

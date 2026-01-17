@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
+import { CACHE_CONFIG, TIMING_CONFIG } from "@/config/constants";
+import { logger } from "@/lib/logger";
+
 // Fetcher function for SWR
 const fetcher = async (url: string) => {
   const res = await fetch(url);
@@ -38,8 +41,8 @@ export function usePageViews({ slug, trackView = true }: UsePageViewsProps) {
     fetcher,
     {
       revalidateOnFocus: false,
-      dedupingInterval: 60000, // 1 minute
-    },
+      dedupingInterval: CACHE_CONFIG.pageViews.dedupingInterval,
+    }
   );
 
   // Track the page view once when the component mounts
@@ -62,7 +65,7 @@ export function usePageViews({ slug, trackView = true }: UsePageViewsProps) {
         mutate();
         setHasTracked(true);
       } catch (error) {
-        console.error("Error tracking page view:", error);
+        logger.error("Error tracking page view", error);
       }
     };
 
@@ -71,7 +74,7 @@ export function usePageViews({ slug, trackView = true }: UsePageViewsProps) {
       window.requestIdleCallback(() => trackPageView());
     } else {
       // Fallback for browsers that don't support requestIdleCallback
-      setTimeout(trackPageView, 1000);
+      setTimeout(trackPageView, TIMING_CONFIG.pageViewTrackingFallbackDelay);
     }
   }, [normalizedSlug, trackView, hasTracked, mutate]);
 

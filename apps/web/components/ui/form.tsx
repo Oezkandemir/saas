@@ -1,17 +1,16 @@
-import * as React from "react";
-import * as LabelPrimitive from "@radix-ui/react-label";
+import type * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
+import * as React from "react";
 import {
   Controller,
-  ControllerProps,
-  FieldPath,
-  FieldValues,
+  type ControllerProps,
+  type FieldPath,
+  type FieldValues,
   FormProvider,
   useFormContext,
 } from "react-hook-form";
-
-import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 const Form = FormProvider;
 
@@ -23,7 +22,15 @@ type FormFieldContextValue<
 };
 
 const FormFieldContext = React.createContext<FormFieldContextValue>(
-  {} as FormFieldContextValue,
+  {} as FormFieldContextValue
+);
+
+type FormItemContextValue = {
+  id: string;
+};
+
+const FormItemContext = React.createContext<FormItemContextValue>(
+  {} as FormItemContextValue
 );
 
 const FormField = <
@@ -42,43 +49,71 @@ const FormField = <
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext);
   const itemContext = React.useContext(FormItemContext);
-  const { getFieldState, formState } = useFormContext();
-
-  const fieldState = getFieldState(fieldContext.name, formState);
-
+  
   if (!fieldContext) {
     throw new Error("useFormField should be used within <FormField>");
   }
 
-  const { id } = itemContext;
+  // Safely get form context - may be null if used outside FormProvider
+  let formContext: ReturnType<typeof useFormContext> | null = null;
+  try {
+    formContext = useFormContext();
+  } catch {
+    // FormProvider not available - this is okay for some components
+  }
 
+  const { id } = itemContext || { id: React.useId() };
+
+  // If form context is available, use it for field state
+  if (formContext) {
+    const { getFieldState, formState, watch } = formContext;
+    const fieldState = getFieldState(fieldContext.name, formState);
+    const fieldValue = watch(fieldContext.name);
+    const isDirty = formState.dirtyFields[fieldContext.name];
+    const isValid =
+      !fieldState.error &&
+      isDirty &&
+      fieldValue !== undefined &&
+      fieldValue !== "";
+
+    return {
+      id,
+      name: fieldContext.name,
+      formItemId: `${id}-form-item`,
+      formDescriptionId: `${id}-form-item-description`,
+      formMessageId: `${id}-form-item-message`,
+      isValid,
+      ...fieldState,
+    };
+  }
+
+  // Fallback when FormProvider is not available
   return {
     id,
     name: fieldContext.name,
     formItemId: `${id}-form-item`,
     formDescriptionId: `${id}-form-item-description`,
     formMessageId: `${id}-form-item-message`,
-    ...fieldState,
+    isValid: false,
+    error: undefined,
+    isDirty: false,
+    isTouched: false,
   };
 };
 
-type FormItemContextValue = {
-  id: string;
-};
-
-const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue,
-);
-
 const FormItem = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement> & {
+    showSuccessIndicator?: boolean;
+  }
+>(({ className, showSuccessIndicator = true, children, ...props }, ref) => {
   const id = React.useId();
 
   return (
     <FormItemContext.Provider value={{ id }}>
-      <div ref={ref} className={cn("space-y-2", className)} {...props} />
+      <div ref={ref} className={cn("space-y-2 relative", className)} {...props}>
+        {children}
+      </div>
     </FormItemContext.Provider>
   );
 });
@@ -128,7 +163,12 @@ const FormDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => {
-  const { formDescriptionId } = useFormField();
+  // NOTE: This component does NOT use useFormField() to avoid requiring FormProvider
+  // It only uses FormItemContext which is always available when used within FormItem
+  const itemContext = React.useContext(FormItemContext);
+  const formDescriptionId = itemContext?.id
+    ? `${itemContext.id}-form-item-description`
+    : undefined;
 
   return (
     <p
@@ -165,6 +205,22 @@ const FormMessage = React.forwardRef<
 });
 FormMessage.displayName = "FormMessage";
 
+// Hint components for backward compatibility (alias to FormDescription)
+const HintRoot = FormDescription;
+const HintIcon = ({
+  className,
+  as: IconComponent,
+}: {
+  className?: string;
+  as?: React.ComponentType<{ className?: string }>;
+}) => {
+  if (IconComponent) {
+    return <IconComponent className={cn("size-4", className)} />;
+  }
+  return <div className={cn("size-4", className)} />;
+};
+HintIcon.displayName = "Hint.Icon";
+
 export {
   useFormField,
   Form,
@@ -174,4 +230,6 @@ export {
   FormDescription,
   FormMessage,
   FormField,
+  HintRoot,
+  HintIcon,
 };

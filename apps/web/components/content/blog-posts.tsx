@@ -1,23 +1,40 @@
 "use client";
 
-import { Post } from "@/.contentlayer/generated";
-
 import { BlogCard } from "./blog-card";
 
-export function BlogPosts({
-  posts,
-}: {
-  posts: (Post & {
-    blurDataURL: string;
-  })[];
-}) {
+type BlogPostData = {
+  _id?: string;
+  id?: string;
+  title: string;
+  description?: string | null;
+  image: string;
+  authors: string[];
+  date?: string;
+  created_at?: string;
+  slug: string;
+  blurDataURL: string;
+};
+
+export function BlogPosts({ posts }: { posts: BlogPostData[] }) {
+  if (posts.length === 0) {
+    return (
+      <main className="space-y-8">
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">No blog posts available.</p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="space-y-8">
-      <BlogCard data={posts[0]} horizontale priority />
-
-      <div className="grid gap-8 md:grid-cols-2 md:gap-x-6 md:gap-y-10 xl:grid-cols-3">
-        {posts.slice(1).map((post, idx) => (
-          <BlogCard data={post} key={post._id} priority={idx <= 2} />
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {posts.map((post, idx) => (
+          <BlogCard
+            data={post}
+            key={post._id || post.id || idx}
+            priority={idx <= 2}
+          />
         ))}
       </div>
     </main>

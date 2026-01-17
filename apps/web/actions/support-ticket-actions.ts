@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 
+import { logger } from "@/lib/logger";
 import { getCurrentUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 
@@ -84,7 +84,7 @@ export async function getAllTickets(): Promise<ActionResult<Ticket[]>> {
         `
         *,
         user:users(name, email, avatar_url)
-      `,
+      `
       )
       .order("updated_at", { ascending: false });
 
@@ -97,7 +97,7 @@ export async function getAllTickets(): Promise<ActionResult<Ticket[]>> {
       data: data as Ticket[],
     };
   } catch (error) {
-    console.error("Error fetching all tickets:", error);
+    logger.error("Error fetching all tickets:", error);
     return {
       success: false,
       error: "Failed to fetch tickets",
@@ -125,7 +125,7 @@ export async function getUserTickets(): Promise<ActionResult<Ticket[]>> {
         `
         *,
         user:users(name, email, avatar_url)
-      `,
+      `
       )
       .eq("user_id", user.id)
       .order("updated_at", { ascending: false });
@@ -139,7 +139,7 @@ export async function getUserTickets(): Promise<ActionResult<Ticket[]>> {
       data: data as Ticket[],
     };
   } catch (error) {
-    console.error("Error fetching user tickets:", error);
+    logger.error("Error fetching user tickets:", error);
     return {
       success: false,
       error: "Failed to fetch tickets",
@@ -149,7 +149,7 @@ export async function getUserTickets(): Promise<ActionResult<Ticket[]>> {
 
 // Get single ticket with messages
 export async function getTicketWithMessages(
-  ticketId: string,
+  ticketId: string
 ): Promise<ActionResult<{ ticket: Ticket; messages: TicketMessage[] }>> {
   const user = await getCurrentUser();
 
@@ -170,7 +170,7 @@ export async function getTicketWithMessages(
         `
         *,
         user:users(name, email, avatar_url)
-      `,
+      `
       )
       .eq("id", ticketId)
       .single();
@@ -194,7 +194,7 @@ export async function getTicketWithMessages(
         `
         *,
         user:users(name, email, avatar_url)
-      `,
+      `
       )
       .eq("ticket_id", ticketId)
       .order("created_at", { ascending: true });
@@ -211,7 +211,7 @@ export async function getTicketWithMessages(
       },
     };
   } catch (error) {
-    console.error("Error fetching ticket with messages:", error);
+    logger.error("Error fetching ticket with messages:", error);
     return {
       success: false,
       error: "Failed to fetch ticket details",
@@ -221,7 +221,7 @@ export async function getTicketWithMessages(
 
 // Create a new ticket
 export async function createTicket(
-  formData: FormData,
+  formData: FormData
 ): Promise<ActionResult<Ticket>> {
   const user = await getCurrentUser();
 
@@ -279,7 +279,7 @@ export async function createTicket(
       };
     }
 
-    console.error("Error creating ticket:", error);
+    logger.error("Error creating ticket:", error);
     return {
       success: false,
       error: "Failed to create ticket",
@@ -290,7 +290,7 @@ export async function createTicket(
 // Add a message to a ticket
 export async function addTicketMessage(
   ticketId: string,
-  formData: FormData,
+  formData: FormData
 ): Promise<ActionResult<TicketMessage>> {
   const user = await getCurrentUser();
 
@@ -328,7 +328,7 @@ export async function addTicketMessage(
       };
     }
 
-    // Add the message
+    // Add the message with user data included
     const { data, error } = await supabase
       .from("support_ticket_messages")
       .insert({
@@ -337,17 +337,21 @@ export async function addTicketMessage(
         message: validatedData.message,
         is_admin: user.role === "ADMIN",
       })
-      .select()
+      .select(
+        `
+        *,
+        user:users(name, email, avatar_url)
+      `
+      )
       .single();
 
     if (error) {
       throw new Error(error.message);
     }
 
-    revalidatePath(`/dashboard/support/${ticketId}`);
-    if (user.role === "ADMIN") {
-      revalidatePath("/admin/support");
-    }
+    // Don't use revalidatePath here - we're using Realtime for instant updates
+    // Revalidating causes page reloads which breaks the real-time experience
+    // The realtime subscription will handle updating the UI immediately
 
     return {
       success: true,
@@ -364,7 +368,7 @@ export async function addTicketMessage(
       };
     }
 
-    console.error("Error adding message:", error);
+    logger.error("Error adding message:", error);
     return {
       success: false,
       error: "Failed to add message",
@@ -375,7 +379,7 @@ export async function addTicketMessage(
 // Update ticket status (admin only)
 export async function updateTicketStatus(
   ticketId: string,
-  status: "open" | "in_progress" | "resolved" | "closed",
+  status: "open" | "in_progress" | "resolved" | "closed"
 ): Promise<ActionResult<Ticket>> {
   const user = await getCurrentUser();
 
@@ -415,10 +419,58 @@ export async function updateTicketStatus(
       data: data as Ticket,
     };
   } catch (error) {
-    console.error("Error updating ticket status:", error);
+    logger.error("Error updating ticket status:", error);
     return {
       success: false,
       error: "Failed to update ticket status",
+    };
+  }
+}
+
+// Delete ticket (admin only)
+export async function deleteTicket(
+  ticketId: string
+): Promise<ActionResult<void>> {
+  const user = await getCurrentUser();
+
+  if (!user?.email) {
+    return {
+      success: false,
+      error: "User not authenticated",
+    };
+  }
+
+  if (user.role !== "ADMIN") {
+    return {
+      success: false,
+      error: "Not authorized to delete tickets",
+    };
+  }
+
+  const supabase = await createClient();
+
+  try {
+    // Delete ticket (messages will be deleted automatically via CASCADE)
+    const { error } = await supabase
+      .from("support_tickets")
+      .delete()
+      .eq("id", ticketId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    revalidatePath("/admin/support");
+    revalidatePath("/dashboard/support");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    logger.error("Error deleting ticket:", error);
+    return {
+      success: false,
+      error: "Failed to delete ticket",
     };
   }
 }

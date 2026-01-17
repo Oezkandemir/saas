@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import Image, { ImageProps } from "next/image";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { cn, resolveStaticPath } from "@/lib/utils";
 
@@ -41,14 +41,15 @@ export function BlurImage({
   };
 
   // Resolve the image path to ensure it works with localized routes
-  const resolvedSrc = resolveStaticPath(src);
+  // Don't resolve if it's already a full URL (Supabase storage URLs)
+  const resolvedSrc = src.startsWith("http") ? src : resolveStaticPath(src);
 
   if (imgError) {
     return (
       <div
         className={cn(
           "flex items-center justify-center bg-muted/30",
-          className,
+          className
         )}
         style={{ width: `${width}px`, height: `${height}px` }}
       >
@@ -69,14 +70,18 @@ export function BlurImage({
         className={cn(
           "duration-700 ease-in-out",
           isLoading ? "scale-105 blur-sm" : "scale-100 blur-0",
-          className,
+          className
         )}
         placeholder={placeholder || (blurDataURL ? "blur" : "empty")}
         blurDataURL={blurDataURL}
-        onLoadingComplete={() => setLoading(false)}
+        onLoad={() => setLoading(false)}
         onError={handleError}
         priority={priority}
-        sizes={sizes}
+        loading={priority ? undefined : "lazy"}
+        sizes={
+          sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        }
+        unoptimized={resolvedSrc.startsWith("http")}
         {...props}
       />
     </div>

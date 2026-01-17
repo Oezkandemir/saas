@@ -1,0 +1,163 @@
+{
+  "budgets": [
+    {
+      "path": "/",
+      "timings": [
+        {
+          "metric": "interactive",
+          "budget": 3800
+        },
+        {
+          "metric": "first-meaningful-paint",
+          "budget": 2000
+        },
+        {
+          "metric": "largest-contentful-paint",
+          "budget": 2500
+        },
+        {
+          "metric": "total-blocking-time",
+          "budget": 200
+        },
+        {
+          "metric": "speed-index",
+          "budget": 3500
+        }
+      ],
+      "resourceSizes": [
+        {
+          "resourceType": "script",
+          "budget": 200
+        },
+        {
+          "resourceType": "stylesheet",
+          "budget": 50
+        },
+        {
+          "resourceType": "image",
+          "budget": 500
+        },
+        {
+          "resourceType": "font",
+          "budget": 100
+        },
+        {
+          "resourceType": "document",
+          "budget": 50
+        },
+        {
+          "resourceType": "total",
+          "budget": 500
+        }
+      ],
+      "resourceCounts": [
+        {
+          "resourceType": "script",
+          "budget": 15
+        },
+        {
+          "resourceType": "stylesheet",
+          "budget": 3
+        },
+        {
+          "resourceType": "image",
+          "budget": 10
+        },
+        {
+          "resourceType": "font",
+          "budget": 4
+        },
+        {
+          "resourceType": "third-party",
+          "budget": 5
+        }
+      ]
+    },
+    {
+      "path": "/pricing",
+      "timings": [
+        {
+          "metric": "interactive",
+          "budget": 4000
+        },
+        {
+          "metric": "first-meaningful-paint",
+          "budget": 2200
+        },
+        {
+          "metric": "largest-contentful-paint",
+          "budget": 2800
+        },
+        {
+          "metric": "total-blocking-time",
+          "budget": 250
+        },
+        {
+          "metric": "speed-index",
+          "budget": 4000
+        }
+      ],
+      "resourceSizes": [
+        {
+          "resourceType": "script",
+          "budget": 250
+        },
+        {
+          "resourceType": "stylesheet",
+          "budget": 60
+        },
+        {
+          "resourceType": "image",
+          "budget": 600
+        },
+        {
+          "resourceType": "total",
+          "budget": 600
+        }
+      ]
+    },
+    {
+      "path": "/features",
+      "timings": [
+        {
+          "metric": "interactive",
+          "budget": 4000
+        },
+        {
+          "metric": "first-meaningful-paint",
+          "budget": 2200
+        },
+        {
+          "metric": "largest-contentful-paint",
+          "budget": 2800
+        },
+        {
+          "metric": "total-blocking-time",
+          "budget": 250
+        },
+        {
+          "metric": "speed-index",
+          "budget": 4000
+        }
+      ],
+      "resourceSizes": [
+        {
+          "resourceType": "script",
+          "budget": 250
+        },
+        {
+          "resourceType": "stylesheet",
+          "budget": 60
+        },
+        {
+          "resourceType": "image",
+          "budget": 600
+        },
+        {
+          "resourceType": "total",
+          "budget": 600
+        }
+      ]
+    }
+  ]
+}

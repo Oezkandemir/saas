@@ -1,4 +1,4 @@
-import { SidebarNavItem, SiteConfig } from "types";
+import type { SidebarNavItem, SiteConfig } from "types";
 import { env } from "@/env.mjs";
 
 const site_url = env.NEXT_PUBLIC_APP_URL;
@@ -10,10 +10,12 @@ export const siteConfig: SiteConfig = {
   url: site_url,
   ogImage: `${site_url}/og.jpg`,
   links: {
-    twitter: "https://twitter.com/miickasmt",
-    github: "https://github.com/mickasmt/next-saas-stripe-starter",
+    twitter: env.NEXT_PUBLIC_TWITTER_URL || "https://twitter.com/miickasmt",
+    github:
+      env.NEXT_PUBLIC_GITHUB_URL ||
+      "https://github.com/mickasmt/next-saas-stripe-starter",
   },
-  mailSupport: "support@cenety.com",
+  mailSupport: env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@cenety.com",
 };
 
 export const footerLinks: SidebarNavItem[] = [
@@ -21,9 +23,9 @@ export const footerLinks: SidebarNavItem[] = [
     title: "Company",
     items: [
       { title: "About", href: "/company/about" },
-      { title: "Enterprise", href: "/company/enterprise" },
       { title: "Terms", href: "/terms" },
       { title: "Privacy", href: "/privacy" },
+      { title: "Imprint", href: "/imprint" },
     ],
   },
   {
@@ -31,7 +33,6 @@ export const footerLinks: SidebarNavItem[] = [
     items: [
       { title: "Security", href: "/product/security" },
       { title: "Customization", href: "/product/customization" },
-      { title: "Customers", href: "/product/customers" },
       { title: "Changelog", href: "/product/changelog" },
     ],
   },

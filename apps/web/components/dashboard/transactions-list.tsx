@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,8 +28,11 @@ export default function TransactionsList() {
             Recent transactions from your store.
           </CardDescription>
         </div>
-        <Button size="sm" className="ml-auto shrink-0 gap-1 px-4">
-          <Link href="#" className="flex items-center gap-2">
+        <Button size="sm" className="ml-auto shrink-0 gap-1 px-4" disabled>
+          <Link
+            href="/dashboard/documents"
+            className="flex items-center gap-2 pointer-events-none"
+          >
             <span>View All</span>
             <ArrowUpRight className="hidden size-4 sm:block" />
           </Link>

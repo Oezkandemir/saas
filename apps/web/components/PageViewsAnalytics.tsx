@@ -1,7 +1,6 @@
-import React from "react";
-import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight, BarChart3, ExternalLink, Eye } from "lucide-react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { InlineLoadingState } from "@/components/ui/loading-state";
 
 // Interface for API response
 interface PageViewsData {
@@ -59,17 +59,11 @@ export function PageViewsAnalytics({ limit = 5 }: PageViewsAnalyticsProps) {
           <CardDescription>Loading analytics data...</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            {Array.from({ length: limit }).map((_, i) => (
-              <div
-                key={i}
-                className="flex animate-pulse items-center justify-between py-2"
-              >
-                <div className="h-5 w-2/3 rounded bg-muted"></div>
-                <div className="h-5 w-16 rounded bg-muted"></div>
-              </div>
-            ))}
-          </div>
+          <InlineLoadingState
+            isLoading={true}
+            text="Lade Analytics-Daten..."
+            size="md"
+          />
         </CardContent>
       </Card>
     );

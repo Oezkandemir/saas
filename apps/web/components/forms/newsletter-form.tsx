@@ -1,26 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { subscribeToNewsletter } from "@/actions/newsletter";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-
+import { subscribeToNewsletter } from "@/actions/newsletter";
+import { useNotificationsContext } from "@/components/context/notifications-context";
+import { useSupabase } from "@/components/supabase-provider";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useNotificationsContext } from "@/components/context/notifications-context";
-import { Icons } from "@/components/shared/icons";
-import { useSupabase } from "@/components/supabase-provider";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export function NewsletterForm() {
   const t = useTranslations("Newsletter");
@@ -65,7 +64,7 @@ export function NewsletterForm() {
           description: result.message,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("errorTitle"), {
         description: t("errorDescription"),
       });
@@ -75,47 +74,57 @@ export function NewsletterForm() {
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full space-y-2 sm:max-w-sm"
-      >
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("subscribeLabel")}</FormLabel>
-              <FormControl>
-                <Input
-                  type="email"
-                  className="rounded-full px-4"
-                  placeholder={t("emailPlaceholder")}
-                  disabled={isLoading}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button
-          type="submit"
-          size="sm"
-          rounded="full"
-          className="px-4"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <>
-              <Icons.spinner className="mr-2 size-4 animate-spin" />
-              {t("subscribingButton")}
-            </>
-          ) : (
-            t("subscribeButton")
-          )}
-        </Button>
-      </form>
-    </Form>
+    <div className="w-full sm:max-w-sm">
+      <div className="mb-3">
+        <h3 className="text-sm font-semibold text-foreground">
+          {t("subscribeLabel")}
+        </h3>
+        <p className="mt-1 text-xs text-muted-foreground">{t("description")}</p>
+      </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-0">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="space-y-0">
+                <FormControl>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        type="email"
+                        className="h-9 pl-9 pr-3 text-sm"
+                        placeholder={t("emailPlaceholder")}
+                        disabled={isLoading}
+                        {...field}
+                      />
+                    </div>
+                    <Button
+                      type="submit"
+                      size="sm"
+                      className="h-9 px-4 shrink-0"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <>
+                          <LoadingSpinner size="sm" variant="primary" />
+                          <span className="sr-only">
+                            {t("subscribingButton")}
+                          </span>
+                        </>
+                      ) : (
+                        t("subscribeButton")
+                      )}
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormMessage className="mt-1.5 text-xs" />
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+    </div>
   );
 }

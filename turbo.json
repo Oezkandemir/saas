@@ -1,13 +1,27 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
+  "globalDependencies": [],
+  "globalEnv": [
+    "NODE_ENV",
+    "VERCEL",
+    "VERCEL_ENV",
+    "CI"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**", ".expo/**"],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**",
+        "build/**",
+        ".expo/**",
+        ".contentlayer/**"
+      ],
       "env": [
         "NODE_ENV", 
         "NEXT_PUBLIC_*",
+        "VITE_*",
         "SUPABASE_SERVICE_ROLE_KEY",
         "SUPABASE_JWT_SECRET",
         "RESEND_API_KEY",
@@ -16,8 +30,19 @@
         "STRIPE_WEBHOOK_SECRET",
         "NEXT_PUBLIC_SUPABASE_URL",
         "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
-      ]
+        "VITE_SUPABASE_URL",
+        "VITE_SUPABASE_ANON_KEY",
+        "VITE_APP_URL",
+        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+        "POLAR_ACCESS_TOKEN",
+        "POLAR_SUCCESS_URL",
+        "POLAR_USE_SANDBOX",
+        "USE_REAL_EMAIL",
+        "TURBO_TEAM",
+        "TURBO_REMOTE_ONLY"
+      ],
+      "cache": true,
+      "persistent": false
     },
     "dev": {
       "cache": false,
@@ -25,6 +50,7 @@
       "env": [
         "NODE_ENV", 
         "NEXT_PUBLIC_*",
+        "VITE_*",
         "SUPABASE_SERVICE_ROLE_KEY",
         "SUPABASE_JWT_SECRET",
         "RESEND_API_KEY",
@@ -33,30 +59,45 @@
         "STRIPE_WEBHOOK_SECRET",
         "NEXT_PUBLIC_SUPABASE_URL",
         "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
+        "VITE_SUPABASE_URL",
+        "VITE_SUPABASE_ANON_KEY",
+        "VITE_APP_URL",
+        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+        "POLAR_ACCESS_TOKEN",
+        "POLAR_SUCCESS_URL",
+        "POLAR_USE_SANDBOX",
+        "USE_REAL_EMAIL"
       ]
     },
     "lint": {
-      "dependsOn": ["^lint"],
-      "outputs": ["eslint-report.json"]
+      "dependsOn": ["^build"],
+      "outputs": ["eslint-report.json"],
+      "cache": true
     },
     "type-check": {
-      "dependsOn": ["^type-check"],
-      "outputs": ["tsconfig.tsbuildinfo"]
+      "dependsOn": ["^build"],
+      "outputs": ["tsconfig.tsbuildinfo"],
+      "cache": true
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
+      "outputs": ["coverage/**"],
+      "cache": true
     },
     "clean": {
       "cache": false
     },
     "format": {
-      "outputs": []
+      "outputs": [],
+      "cache": false
     },
     "analyze": {
       "dependsOn": ["^build"],
-      "outputs": [".next/analyze/**"]
+      "outputs": [".next/analyze/**"],
+      "cache": true
     }
+  },
+  "remoteCache": {
+    "enabled": true
   }
 }

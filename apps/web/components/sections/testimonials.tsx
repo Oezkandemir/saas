@@ -1,16 +1,9 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
-
-import { testimonials } from "@/config/landing";
 import { HeaderSection } from "@/components/shared/header-section";
+import { testimonials } from "@/config/landing";
 
-interface TestimonialsProps {
-  locale?: string;
-}
-
-export default async function Testimonials({
-  locale = "en",
-}: TestimonialsProps) {
+export default async function Testimonials() {
   // Get translations
   const t = await getTranslations("Testimonials");
 
@@ -21,8 +14,6 @@ export default async function Testimonials({
           label={t("label")}
           title={t("title")}
           subtitle={t("subtitle")}
-          locale={locale}
-          sectionKey="testimonials"
         />
 
         <div className="column-1 gap-5 space-y-5 md:columns-2 lg:columns-3">

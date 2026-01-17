@@ -1,5 +1,3 @@
-import type { Icon } from "lucide-react";
-
 import { UserRole } from "@/components/forms/user-role-form";
 import { Icons } from "@/components/shared/icons";
 
@@ -72,6 +70,10 @@ export type SubscriptionPlan = {
     monthly: string | null;
     yearly: string | null;
   };
+  polarIds?: {
+    monthly: string | null;
+    yearly: string | null;
+  };
   productId?: string;
 };
 
@@ -86,6 +88,12 @@ export type UserSubscriptionPlan = SubscriptionPlan & {
   stripeSubscriptionId: string | null;
   stripePriceId: string | null;
   stripeCurrentPeriodEnd: number;
+  polarCustomerId?: string | null;
+  polarSubscriptionId?: string | null;
+  polarProductId?: string | null;
+  polarCurrentPeriodEnd?: number;
+  polarCurrentPeriodStart?: number;
+  polarSubscriptionStart?: number;
   isPaid: boolean;
   interval: "month" | "year" | null;
   isCanceled?: boolean;

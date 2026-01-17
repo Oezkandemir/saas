@@ -1,7 +1,6 @@
 import Image from "next/image";
-
-import { resolveStaticPath } from "@/lib/utils";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { resolveStaticPath } from "@/lib/utils";
 
 export default function PreviewLanding() {
   return (

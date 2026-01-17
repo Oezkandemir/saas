@@ -1,14 +1,88 @@
 # Cenety Monorepo
 
 <div align="center">
-  <p>A complete SaaS ecosystem with Next.js Web App, Marketing Landing Page, and React Native Mobile App.</p>
+  <h3>A complete SaaS ecosystem with Next.js Web App, Marketing Landing Page, and React Native Mobile App</h3>
+  
   <p>
     <a href="#getting-started">Get Started</a> ·
     <a href="#apps">Apps</a> ·
     <a href="#packages">Packages</a> ·
-    <a href="#development">Development</a>
+    <a href="#development">Development</a> ·
+    <a href="#contributing">Contributing</a>
+  </p>
+
+  <p>
+    <a href="https://github.com/Oezkandemir/saas/stargazers">
+      <img src="https://img.shields.io/github/stars/Oezkandemir/saas?style=social" alt="GitHub stars">
+    </a>
+    <a href="https://github.com/Oezkandemir/saas/forks">
+      <img src="https://img.shields.io/github/forks/Oezkandemir/saas?style=social" alt="GitHub forks">
+    </a>
+    <a href="https://github.com/Oezkandemir/saas/issues">
+      <img src="https://img.shields.io/github/issues/Oezkandemir/saas" alt="GitHub issues">
+    </a>
+    <a href="https://github.com/Oezkandemir/saas/blob/main/LICENSE.md">
+      <img src="https://img.shields.io/github/license/Oezkandemir/saas" alt="License">
+    </a>
+  </p>
+
+  <p>
+    <a href="https://github.com/sponsors/Oezkandemir">
+      <img src="https://img.shields.io/badge/Sponsor-❤️-red?logo=github&style=for-the-badge" alt="Sponsor on GitHub">
+    </a>
   </p>
 </div>
+
+## 🚀 Tech Stack
+
+<div align="center">
+  <img src="https://img.shields.io/badge/Next.js-15-black?logo=next.js&logoColor=white" alt="Next.js">
+  <img src="https://img.shields.io/badge/React-19-blue?logo=react&logoColor=white" alt="React">
+  <img src="https://img.shields.io/badge/TypeScript-5.7-blue?logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/TailwindCSS-3.4-38bdf8?logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
+  <img src="https://img.shields.io/badge/Supabase-Database-3ecf8e?logo=supabase&logoColor=white" alt="Supabase">
+  <img src="https://img.shields.io/badge/Stripe-Payments-635bff?logo=stripe&logoColor=white" alt="Stripe">
+  <img src="https://img.shields.io/badge/Expo-React%20Native-000020?logo=expo&logoColor=white" alt="Expo">
+  <img src="https://img.shields.io/badge/Turborepo-Monorepo-ef4444?logo=turborepo&logoColor=white" alt="Turborepo">
+</div>
+
+## ✨ Features
+
+### 🌐 Web Application
+- ✅ **Complete Authentication System** - Email/password, OAuth, magic links
+- ✅ **User Dashboard** - Modern, responsive dashboard with analytics
+- ✅ **Payment Integration** - Stripe integration for subscriptions and one-time payments
+- ✅ **Multi-language Support** - i18n with English and German
+- ✅ **Dark Mode** - Full dark/light theme support
+- ✅ **Admin Panel** - Comprehensive admin dashboard
+- ✅ **Customer Management** - Full CRUD with QR code generation
+- ✅ **Document Management** - Create, edit, and manage documents
+- ✅ **Invoice System** - Generate and manage invoices
+- ✅ **Team Collaboration** - Team management and collaboration features
+- ✅ **Notifications** - Real-time notification system
+- ✅ **User Profiles** - Complete user profile management with follow system
+
+### 📱 Mobile Application
+- ✅ **Cross-platform** - iOS and Android support via Expo
+- ✅ **Native Experience** - React Native with native performance
+- ✅ **Push Notifications** - Expo push notification support
+- ✅ **Offline Support** - AsyncStorage for offline functionality
+- ✅ **Biometric Auth** - Secure authentication options
+- ✅ **Responsive Design** - Optimized for all screen sizes
+
+### 🎨 Landing Page
+- ✅ **Modern Design** - Beautiful, conversion-optimized landing page
+- ✅ **SEO Optimized** - Built for search engine visibility
+- ✅ **Newsletter Integration** - Lead capture and email marketing
+- ✅ **Performance** - Lightning-fast page loads
+
+### 🏗️ Infrastructure
+- ✅ **Monorepo** - Turborepo for efficient code sharing
+- ✅ **Type Safety** - Full TypeScript coverage
+- ✅ **Code Quality** - ESLint, Biome, Prettier configured
+- ✅ **Testing** - Vitest for unit and integration tests
+- ✅ **CI/CD** - GitHub Actions workflows
+- ✅ **Performance** - Optimized builds and caching
 
 ## 🏗️ Monorepo Structure
 
@@ -39,8 +113,8 @@ cenety-monorepo/
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
-   cd cenety-monorepo
+   git clone https://github.com/Oezkandemir/saas.git
+   cd next-saas-stripe-starter-main
    ```
 
 2. **Install dependencies**
@@ -166,13 +240,62 @@ Each app has its own environment configuration:
 - [Supabase Setup](./apps/web/README-SETUP-SUPABASE.md)
 - [Stripe Setup](./apps/web/STRIPE-SETUP-GUIDE.md)
 
+## 💝 Sponsoring
+
+If you find this project helpful, please consider sponsoring the maintainer. Your support helps keep this project active and maintained.
+
+<div align="center">
+  <a href="https://github.com/sponsors/Oezkandemir">
+    <img src="https://img.shields.io/badge/Sponsor-❤️-red?logo=github&style=for-the-badge" alt="Sponsor on GitHub">
+  </a>
+  <p>
+    <a href="https://github.com/sponsors/Oezkandemir">GitHub Sponsors</a> ·
+    <a href="https://github.com/Oezkandemir/saas">Star this repo</a>
+  </p>
+</div>
+
 ## 🤝 Contributing
 
-1. Create a feature branch
-2. Make your changes
-3. Run tests and linting: `pnpm test && pnpm lint`
-4. Submit a pull request
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Development Guidelines
+
+- Follow the existing code style
+- Add tests for new features
+- Update documentation as needed
+- Run `pnpm test && pnpm lint` before submitting
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details. 
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Database powered by [Supabase](https://supabase.com/)
+- Payments handled by [Stripe](https://stripe.com/)
+- Mobile app built with [Expo](https://expo.dev/)
+
+## 📞 Support
+
+- 📧 **Email**: [Open an issue](https://github.com/Oezkandemir/saas/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/Oezkandemir/saas/discussions)
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/Oezkandemir/saas/issues)
+
+---
+
+<div align="center">
+  Made with ❤️ by <a href="https://github.com/Oezkandemir">Oezkandemir</a>
+  <br />
+  <a href="https://github.com/Oezkandemir/saas">⭐ Star this repo</a> ·
+  <a href="https://github.com/sponsors/Oezkandemir">💝 Sponsor</a> ·
+  <a href="https://github.com/Oezkandemir/saas/issues">🐛 Report Bug</a> ·
+  <a href="https://github.com/Oezkandemir/saas/discussions">💬 Request Feature</a>
+</div> 

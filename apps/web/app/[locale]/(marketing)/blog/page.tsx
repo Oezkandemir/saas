@@ -1,10 +1,13 @@
-import { allPosts } from "contentlayer/generated";
-import { getTranslations } from "next-intl/server";
-
-import { constructMetadata, getBlurDataURL } from "@/lib/utils";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
+import { getPublishedBlogPosts } from "@/actions/blog-actions";
 import { BlogPosts } from "@/components/content/blog-posts";
+import { constructMetadata, getBlurDataURL } from "@/lib/utils";
 
 export async function generateMetadata() {
+  // CRITICAL FIX: Get locale and set it before translations
+  // This ensures correct language during client-side navigation
+  const locale = await getLocale();
+  setRequestLocale(locale);
   const t = await getTranslations("Blog");
 
   return constructMetadata({
@@ -14,14 +17,23 @@ export async function generateMetadata() {
 }
 
 export default async function BlogPage() {
+  const supabasePosts = await getPublishedBlogPosts();
+
+  // Transform Supabase posts to match the expected format
   const posts = await Promise.all(
-    allPosts
-      .filter((post) => post.published)
-      .sort((a, b) => b.date.localeCompare(a.date))
-      .map(async (post) => ({
-        ...post,
-        blurDataURL: await getBlurDataURL(post.image),
-      })),
+    supabasePosts.map(async (post) => ({
+      _id: post.id,
+      title: post.title,
+      description: post.description || "",
+      date: post.created_at,
+      image: post.image,
+      authors: post.authors,
+      categories: post.categories,
+      related: post.related || [],
+      slug: `/blog/${post.slug}`,
+      slugAsParams: post.slug,
+      blurDataURL: await getBlurDataURL(post.image),
+    }))
   );
 
   return <BlogPosts posts={posts} />;

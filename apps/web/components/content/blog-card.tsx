@@ -1,36 +1,52 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
-import { Link } from "@/i18n/routing";
-import { Post } from "contentlayer/generated";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { BlurImage } from "@/components/shared/blur-image";
 
 import { BLOG_AUTHORS } from "@/config/blog";
+import { Link } from "@/i18n/routing";
 import {
   cn,
   formatDate,
   placeholderBlurhash,
   resolveStaticPath,
 } from "@/lib/utils";
-import { BlurImage } from "@/components/shared/blur-image";
+
+type BlogPostData = {
+  _id?: string;
+  id?: string;
+  title: string;
+  description?: string | null;
+  image: string;
+  authors: string[];
+  date?: string;
+  created_at?: string;
+  slug: string;
+  blurDataURL: string;
+};
 
 export function BlogCard({
   data,
   priority,
   horizontale = false,
 }: {
-  data: Post & {
-    blurDataURL: string;
-  };
+  data: BlogPostData;
   priority?: boolean;
   horizontale?: boolean;
 }) {
   const t = useTranslations("Blog");
   const [imageError, setImageError] = useState(false);
 
-  // Ensure the image path is properly resolved
-  const imageSrc = data.image ? resolveStaticPath(data.image) : "";
+  // Check if image is a full URL (Supabase) or a relative path (legacy)
+  const imageSrc = data.image
+    ? data.image.startsWith("http")
+      ? data.image
+      : resolveStaticPath(data.image)
+    : "";
+
+  const postDate = data.date || data.created_at || "";
 
   return (
     <article
@@ -38,20 +54,17 @@ export function BlogCard({
         "group relative",
         horizontale
           ? "grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-6"
-          : "flex flex-col space-y-2",
+          : "flex flex-col space-y-2"
       )}
     >
       {imageSrc && !imageError && (
-        <div className="w-full overflow-hidden rounded-xl border">
+        <div className="w-full overflow-hidden rounded-xl border aspect-video bg-muted/30 flex items-center justify-center">
           <BlurImage
             alt={data.title}
             blurDataURL={data.blurDataURL ?? placeholderBlurhash}
-            className={cn(
-              "size-full object-cover object-center",
-              horizontale ? "lg:h-72" : null,
-            )}
+            className="size-full object-contain object-center"
             width={800}
-            height={400}
+            height={450}
             priority={priority}
             placeholder="blur"
             src={imageSrc}
@@ -63,7 +76,7 @@ export function BlogCard({
       <div
         className={cn(
           "flex flex-1 flex-col",
-          horizontale ? "justify-center" : "justify-between",
+          horizontale ? "justify-center" : "justify-between"
         )}
       >
         <div className="w-full">
@@ -78,28 +91,32 @@ export function BlogCard({
         </div>
         <div className="mt-4 flex items-center space-x-3">
           <div className="flex items-center -space-x-2">
-            {data.authors.map((author) => (
-              <div key={author} className="relative">
-                {BLOG_AUTHORS[author] && (
-                  <Image
-                    src={
-                      BLOG_AUTHORS[author].image
-                        ? resolveStaticPath(BLOG_AUTHORS[author].image)
-                        : ""
-                    }
-                    alt={BLOG_AUTHORS[author].name}
-                    width={32}
-                    height={32}
-                    className="size-8 rounded-full border-2 border-background transition-all group-hover:brightness-90"
-                  />
-                )}
-              </div>
-            ))}
+            {data.authors.map((author) => {
+              const authorData =
+                BLOG_AUTHORS[author as keyof typeof BLOG_AUTHORS];
+              return (
+                <div key={author} className="relative">
+                  {authorData && (
+                    <Image
+                      src={
+                        authorData.image
+                          ? resolveStaticPath(authorData.image)
+                          : ""
+                      }
+                      alt={authorData.name}
+                      width={32}
+                      height={32}
+                      className="size-8 rounded-full border-2 border-background transition-all group-hover:brightness-90"
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
 
-          {data.date && (
+          {postDate && (
             <p className="text-sm text-muted-foreground">
-              {formatDate(data.date)}
+              {formatDate(postDate)}
             </p>
           )}
         </div>

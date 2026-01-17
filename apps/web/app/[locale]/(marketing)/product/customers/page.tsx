@@ -1,7 +1,4 @@
-import { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
-
-import { constructMetadata } from "@/lib/utils";
+import type { Metadata } from "next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { constructMetadata } from "@/lib/utils";
 
 export const metadata: Metadata = constructMetadata({
   title: "Customers",
@@ -19,8 +17,6 @@ export const metadata: Metadata = constructMetadata({
 });
 
 export default async function CustomersPage() {
-  const t = await getTranslations("Footer");
-
   const testimonials = [
     {
       name: "John Doe",
@@ -165,7 +161,7 @@ export default async function CustomersPage() {
               </CardContent>
               <CardFooter>
                 <a
-                  href="#"
+                  href="/pricing"
                   className="text-sm text-primary underline-offset-4 hover:underline"
                 >
                   Read full case study →
@@ -185,7 +181,7 @@ export default async function CustomersPage() {
           difference.
         </p>
         <a
-          href="#"
+          href="/pricing"
           className="inline-flex items-center justify-center rounded-md bg-primary px-8 py-3 text-sm font-medium text-primary-foreground"
         >
           Get Started

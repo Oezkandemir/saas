@@ -1,21 +1,18 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { updateUserName, type FormData } from "@/actions/update-user-name";
-import { User } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
-import { userNameSchema } from "@/lib/validations/user";
+import { type FormData, updateUserName } from "@/actions/update-user-name";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SectionColumns } from "@/components/dashboard/section-columns";
-import { Icons } from "@/components/shared/icons";
-import { useSupabase } from "@/components/supabase-provider";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { userNameSchema } from "@/lib/validations/user";
+import type { User } from "@/types";
 
 interface UserNameFormProps {
   user: Pick<User, "id" | "name">;
@@ -23,13 +20,12 @@ interface UserNameFormProps {
 
 export function UserNameForm({ user }: UserNameFormProps) {
   const router = useRouter();
-  const { supabase } = useSupabase();
   const [updated, setUpdated] = useState(false);
   const [isPending, startTransition] = useTransition();
   const updateUserNameWithId = updateUserName.bind(null, user.id);
   const t = useTranslations("Settings.userName");
 
-  const checkUpdate = (value) => {
+  const checkUpdate = (value: string) => {
     setUpdated(user.name !== value);
   };
 
@@ -63,45 +59,44 @@ export function UserNameForm({ user }: UserNameFormProps) {
   });
 
   return (
-    <form onSubmit={onSubmit}>
-      <SectionColumns title={t("title")} description={t("description")}>
-        <div className="flex w-full items-center gap-2">
-          <Label className="sr-only" htmlFor="name">
-            {t("label")}
-          </Label>
-          <Input
-            id="name"
-            className="flex-1"
-            size={32}
-            {...register("name")}
-            onChange={(e) => checkUpdate(e.target.value)}
-            placeholder={t("label")}
-          />
-          <Button
-            type="submit"
-            variant={updated ? "default" : "disable"}
-            disabled={isPending || !updated}
-            className="w-[67px] shrink-0 px-0 sm:w-[130px]"
-          >
-            {isPending ? (
-              <Icons.spinner className="size-4 animate-spin" />
-            ) : (
-              <p>
-                Save
-                <span className="hidden sm:inline-flex">&nbsp;Changes</span>
-              </p>
-            )}
-          </Button>
-        </div>
-        <div className="flex flex-col justify-between p-1">
-          {errors?.name && (
-            <p className="pb-0.5 text-[13px] text-red-600">
-              {errors.name.message}
-            </p>
+    <form onSubmit={onSubmit} className="space-y-3">
+      <div className="flex items-center gap-2">
+        <Label className="sr-only" htmlFor="name">
+          {t("label")}
+        </Label>
+        <Input
+          id="name"
+          className="flex-1 h-9"
+          size={32}
+          {...register("name")}
+          onChange={(e) => checkUpdate(e.target.value)}
+          placeholder={t("label")}
+        />
+        <Button
+          type="submit"
+          variant={updated ? "default" : "outline"}
+          size="sm"
+          className="h-9 shrink-0 min-w-[80px]"
+          disabled={isPending || !updated}
+        >
+          {isPending ? (
+            <>
+              <LoadingSpinner size="sm" variant="primary" />
+              <span className="ml-2">Saving...</span>
+            </>
+          ) : (
+            "Save"
           )}
-          <p className="text-[13px] text-muted-foreground">{t("maxChars")}</p>
-        </div>
-      </SectionColumns>
+        </Button>
+      </div>
+      <div className="flex flex-col gap-1">
+        {errors?.name && (
+          <p className="text-xs text-destructive font-medium">
+            {errors.name.message}
+          </p>
+        )}
+        <p className="text-xs text-muted-foreground">{t("maxChars")}</p>
+      </div>
     </form>
   );
 }

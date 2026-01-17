@@ -1,9 +1,8 @@
 "use client";
 
+import { CheckCircle2, ChevronDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { updateTicketStatus } from "@/actions/support-ticket-actions";
-import { CheckCircle2, ChevronDown, Loader2 } from "lucide-react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
+import { logger } from "@/lib/logger";
 
 interface TicketStatusUpdaterProps {
   ticketId: string;
@@ -91,7 +91,7 @@ export function TicketStatusUpdater({
         onStatusChange();
       }
     } catch (error) {
-      console.error("Error updating ticket status:", error);
+      logger.error("Error updating ticket status:", error);
       toast({
         variant: "destructive",
         title: "Error",

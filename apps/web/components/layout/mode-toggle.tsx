@@ -1,10 +1,8 @@
 "use client";
 
-import * as React from "react";
 import { useTheme } from "next-themes";
-
-import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/shared/icons";
+import { Button } from "@/components/ui/button";
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
@@ -19,10 +17,10 @@ export function ModeToggle() {
   };
 
   return (
-    <Button 
-      variant="ghost" 
-      size="sm" 
-      className="size-8 px-0" 
+    <Button
+      variant="ghost"
+      size="sm"
+      className="size-8 px-0"
       onClick={toggleTheme}
       aria-label="Toggle theme"
     >

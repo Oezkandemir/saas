@@ -2,9 +2,7 @@
 
 import { Bell } from "lucide-react";
 import { useTranslations } from "next-intl";
-
-import { cn } from "@/lib/utils";
-import { useNotifications } from "@/hooks/use-notifications";
+import { NotificationsPopover } from "@/components/shared/notifications-popover";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -13,10 +11,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { NotificationsPopover } from "@/components/shared/notifications-popover";
+import { useNotifications } from "@/hooks/use-notifications";
+import { cn } from "@/lib/utils";
 
 interface NotificationBellProps {
-  variant?: "default" | "ghost" | "outline";
+  variant?: "default" | "secondary" | "ghost" | "destructive" | "outline";
   size?: "default" | "sm" | "lg" | "icon";
   showTooltip?: boolean;
   className?: string;
@@ -35,7 +34,7 @@ export function NotificationBell({
     <Button variant={variant} size={size} className="relative" type="button">
       <Bell className="size-5" />
       {!isLoading && unreadCount > 0 && (
-        <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+        <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
           {unreadCount > 99 ? "99+" : unreadCount}
         </span>
       )}
@@ -69,7 +68,7 @@ export function NotificationBell({
       <span
         className={cn(
           "relative inline-flex items-center justify-center",
-          className,
+          className
         )}
       >
         {bellWithTooltip}

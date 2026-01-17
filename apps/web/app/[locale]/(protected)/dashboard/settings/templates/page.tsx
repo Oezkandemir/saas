@@ -1,0 +1,92 @@
+import { FileText, Plus } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getDocumentTemplates } from "@/actions/document-templates-actions";
+import { DocumentTemplatesList } from "@/components/documents/document-templates-list";
+import { UnifiedPageLayout } from "@/components/layout/unified-page-layout";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { getCurrentUser } from "@/lib/session";
+
+export const dynamic = "force-dynamic";
+
+export default async function TemplatesPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  const [invoiceTemplates, quoteTemplates] = await Promise.all([
+    getDocumentTemplates("invoice").catch(() => []),
+    getDocumentTemplates("quote").catch(() => []),
+  ]);
+
+  return (
+    <UnifiedPageLayout
+      title="Rechnungs-Templates"
+      description="Verwalten Sie Ihre Rechnungs- und Angebots-Templates mit individuellem Branding"
+      icon={<FileText className="size-4 text-primary" />}
+      actions={
+        <Link href="/dashboard/settings/templates/new">
+          <Button className="gap-2">
+            <Plus className="size-4" />
+            Neues Template
+          </Button>
+        </Link>
+      }
+      contentClassName="space-y-6"
+    >
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Rechnungs-Templates</CardTitle>
+            <CardDescription>
+              Templates für Rechnungen ({invoiceTemplates.length})
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {invoiceTemplates.length > 0 ? (
+              <DocumentTemplatesList templates={invoiceTemplates} />
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <p className="mb-4">Noch keine Templates vorhanden</p>
+                <Link href="/dashboard/settings/templates/new?type=invoice">
+                  <Button variant="outline" size="sm">
+                    Erstes Template erstellen
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Angebots-Templates</CardTitle>
+            <CardDescription>
+              Templates für Angebote ({quoteTemplates.length})
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {quoteTemplates.length > 0 ? (
+              <DocumentTemplatesList templates={quoteTemplates} />
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <p className="mb-4">Noch keine Templates vorhanden</p>
+                <Link href="/dashboard/settings/templates/new?type=quote">
+                  <Button variant="outline" size="sm">
+                    Erstes Template erstellen
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </UnifiedPageLayout>
+  );
+}

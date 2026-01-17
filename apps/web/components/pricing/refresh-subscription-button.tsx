@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { refreshSubscription } from "@/actions/refresh-subscription";
+import { useState } from "react";
 import { toast } from "sonner";
-
-import { Button } from "@/components/ui/button";
+import { refreshSubscription } from "@/actions/refresh-subscription";
 import { Icons } from "@/components/shared/icons";
+import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { logger } from "@/lib/logger";
 
 export function RefreshSubscriptionButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,14 +19,26 @@ export function RefreshSubscriptionButton() {
       const result = await refreshSubscription();
 
       if (result.success) {
-        toast.success("Subscription data refreshed successfully");
-        router.refresh(); // Refresh the page to show updated subscription details
+        const planInfo = result.subscription
+          ? `Plan: ${result.subscription.plan}${result.subscription.productId ? ` (ID: ${result.subscription.productId})` : ""}`
+          : "";
+        toast.success("Abonnement erfolgreich aktualisiert", {
+          description: planInfo || result.message,
+        });
+        // Small delay to ensure cache is cleared before refresh
+        setTimeout(() => {
+          router.refresh(); // Refresh the page to show updated subscription details
+        }, 500);
       } else {
-        toast.error(result.message || "Failed to refresh subscription data");
+        toast.error("Fehler beim Aktualisieren", {
+          description: result.message || "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        });
       }
     } catch (error) {
-      console.error("Error refreshing subscription:", error);
-      toast.error("An error occurred while refreshing subscription data");
+      logger.error("Error refreshing subscription:", error);
+      toast.error("Fehler beim Aktualisieren", {
+        description: "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -40,7 +53,8 @@ export function RefreshSubscriptionButton() {
     >
       {isLoading ? (
         <>
-          <Icons.spinner className="mr-2 size-4 animate-spin" /> Refreshing...
+          <LoadingSpinner size="sm" variant="primary" />
+          <span>Refreshing...</span>
         </>
       ) : (
         <>

@@ -1,11 +1,9 @@
-import React from "react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   deleteAllNotifications,
   deleteNotification,
-  getUserNotifications,
 } from "@/actions/user-profile-actions";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ClearAllNotificationsButton } from "@/components/profile/clear-all-notifications-button";
 import { DeleteNotificationButton } from "@/components/profile/delete-notification-button";
@@ -20,7 +18,6 @@ vi.mock("next/navigation", () => ({
 vi.mock("@/actions/user-profile-actions", () => ({
   deleteNotification: vi.fn(),
   deleteAllNotifications: vi.fn(),
-  getUserNotifications: vi.fn(),
 }));
 
 vi.mock("@/components/ui/use-toast", () => ({
@@ -67,7 +64,7 @@ describe("Notification Delete Functionality", () => {
     it("shows error state when the API call fails", async () => {
       // Mock the API to fail
       (deleteNotification as any).mockRejectedValueOnce(
-        new Error("Test error"),
+        new Error("Test error")
       );
 
       render(<DeleteNotificationButton notificationId="test-id" />);
@@ -103,7 +100,7 @@ describe("Notification Delete Functionality", () => {
     it("shows error state when the API call fails", async () => {
       // Mock the API to fail
       (deleteAllNotifications as any).mockRejectedValueOnce(
-        new Error("Test error"),
+        new Error("Test error")
       );
 
       render(<ClearAllNotificationsButton />);

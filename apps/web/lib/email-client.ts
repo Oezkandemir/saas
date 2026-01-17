@@ -1,5 +1,4 @@
-import { siteConfig } from "@/config/site";
-
+import { logger } from "./logger";
 import { getSupabaseClient } from "./supabase";
 
 // Function to call our Supabase Edge Function for sending emails (client-safe)
@@ -23,7 +22,7 @@ export const sendEmailWithEdgeFunction = async ({
   emailType?: "login" | "register";
 }) => {
   try {
-    console.log(`Sending ${type} email to ${email} via edge function`);
+    logger.info(`Sending ${type} email to ${email} via edge function`);
     const supabase = getSupabaseClient();
     const { data, error } = await supabase.functions.invoke("send-email", {
       body: {
@@ -36,14 +35,14 @@ export const sendEmailWithEdgeFunction = async ({
     });
 
     if (error) {
-      console.error("Edge function error:", error);
+      logger.error("Edge function error", error);
       throw new Error(`Failed to send ${type} email: ${error.message}`);
     }
 
-    console.log(`Successfully sent ${type} email to ${email}`);
+    logger.info(`Successfully sent ${type} email to ${email}`);
     return data;
   } catch (error) {
-    console.error(`Failed to send ${type} email:`, error);
+    logger.error(`Failed to send ${type} email`, error);
     throw new Error(`Failed to send ${type} email.`);
   }
 };
@@ -66,7 +65,7 @@ export const sendSignupConfirmationEmail = async ({
       actionUrl,
     });
   } catch (error) {
-    console.error("Failed to send signup confirmation email:", error);
+    logger.error("Failed to send signup confirmation email", error);
     throw new Error("Failed to send signup confirmation email.");
   }
 };
@@ -86,7 +85,7 @@ export const sendWelcomeEmail = async ({
       name,
     });
   } catch (error) {
-    console.error("Failed to send welcome email:", error);
+    logger.error("Failed to send welcome email", error);
     throw new Error("Failed to send welcome email.");
   }
 };
@@ -103,7 +102,7 @@ export const sendNewsletterConfirmationEmail = async ({
       email,
     });
   } catch (error) {
-    console.error("Failed to send newsletter confirmation email:", error);
+    logger.error("Failed to send newsletter confirmation email", error);
     throw new Error("Failed to send newsletter confirmation email.");
   }
 };
@@ -127,7 +126,7 @@ export const sendTeamInvitationEmail = async ({
   actionUrl?: string;
 }) => {
   try {
-    console.log(`Sending team invitation email to ${email} via edge function`);
+    logger.info(`Sending team invitation email to ${email} via edge function`);
     const supabase = getSupabaseClient();
     const { data, error } = await supabase.functions.invoke("send-email", {
       body: {
@@ -143,14 +142,14 @@ export const sendTeamInvitationEmail = async ({
     });
 
     if (error) {
-      console.error("Edge function error:", error);
+      logger.error("Edge function error", error);
       throw new Error(`Failed to send team invitation email: ${error.message}`);
     }
 
-    console.log(`Successfully sent team invitation email to ${email}`);
+    logger.info(`Successfully sent team invitation email to ${email}`);
     return data;
   } catch (error) {
-    console.error("Failed to send team invitation email:", error);
+    logger.error("Failed to send team invitation email", error);
     throw new Error("Failed to send team invitation email.");
   }
 };
@@ -167,7 +166,7 @@ export const sendUnsubscribeConfirmationEmail = async ({
       email,
     });
   } catch (error) {
-    console.error("Failed to send unsubscribe confirmation email:", error);
+    logger.error("Failed to send unsubscribe confirmation email", error);
     throw new Error("Failed to send unsubscribe confirmation email.");
   }
 };

@@ -1,34 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import {
-  deleteAllNotifications,
-  deleteNotification,
-  getUserNotifications,
-  markAllNotificationsAsRead,
-  markNotificationAsRead,
-  UserNotification,
-} from "@/actions/user-profile-actions";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
 import {
   Bell,
   Check,
   CheckCircle2,
-  Clock,
   ExternalLink,
   Loader2,
   Trash2,
-  X,
-  Users,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
-
-import { getCurrentUser } from "@/lib/session";
-import { cn } from "@/lib/utils";
-import { useNotifications } from "@/hooks/use-notifications";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import {
+  deleteAllNotifications,
+  deleteNotification,
+  getUserNotifications,
+  markAllNotificationsAsRead,
+  markNotificationAsRead,
+  type UserNotification,
+} from "@/actions/user-profile-actions";
+import { useNotificationsContext } from "@/components/context/notifications-context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,8 +32,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
-import { useNotificationsContext } from "@/components/context/notifications-context";
-import { useSupabase } from "@/components/supabase-provider";
+import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
 
 interface NotificationsPopoverProps {
   children: React.ReactNode;
@@ -64,8 +57,6 @@ export function getNotificationIcon(type: string) {
       return <Bell className="size-4 text-pink-500" />;
     case "TEAM":
       return <Bell className="size-4 text-indigo-500" />;
-    case "FOLLOW":
-      return <Users className="size-4 text-blue-600" />;
     default:
       return <Bell className="size-4 text-gray-500" />;
   }
@@ -81,10 +72,7 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
   >(null);
   const router = useRouter();
   const { toast } = useToast();
-  const { refetch: refetchUnreadCount } = useNotifications();
   const { refetchAll } = useNotificationsContext();
-  const t = useTranslations("Notifications");
-  const { supabase, session } = useSupabase();
 
   // Fetch notifications when popover is opened
   const {
@@ -102,18 +90,20 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
             .sort(
               (a, b) =>
                 new Date(b.created_at).getTime() -
-                new Date(a.created_at).getTime(),
+                new Date(a.created_at).getTime()
             )
             .slice(0, 5);
         }
         return [];
       } catch (err) {
-        console.error("Error fetching popover notifications:", err);
+        logger.error("Error fetching popover notifications", err);
         return [];
       }
     },
     enabled: open, // Only fetch when popover is open
-    staleTime: 30 * 1000, // Consider data fresh for 30 seconds
+    staleTime: 30 * 1000, // Consider data fresh for 30 seconds (notifications change frequently)
+    gcTime: 2 * 60 * 1000, // Keep in cache for 2 minutes
+    refetchOnWindowFocus: false, // Don't refetch on window focus
   });
 
   // Listen for notification changes from other components
@@ -126,12 +116,12 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
 
     window.addEventListener(
       "notifications-changed",
-      handleNotificationsChanged,
+      handleNotificationsChanged
     );
     return () => {
       window.removeEventListener(
         "notifications-changed",
-        handleNotificationsChanged,
+        handleNotificationsChanged
       );
     };
   }, [open, refetch]);
@@ -155,7 +145,7 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
       await refetch();
       router.refresh();
     } catch (error) {
-      console.error("Error marking all as read:", error);
+      logger.error("Error marking all as read", error);
       toast({
         title: "Error",
         description:
@@ -189,7 +179,7 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
       await refetch();
       router.refresh();
     } catch (error) {
-      console.error("Error clearing notifications:", error);
+      logger.error("Error clearing notifications", error);
       toast({
         title: "Error",
         description:
@@ -221,7 +211,7 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
       // Trigger notification updates
       await refetchAll();
     } catch (error) {
-      console.error("Error marking notification as read:", error);
+      logger.error("Error marking notification as read", error);
       toast({
         title: "Error",
         description:
@@ -254,7 +244,7 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
       // Manually trigger updates
       await refetchAll();
     } catch (error) {
-      console.error("Error deleting notification:", error);
+      logger.error("Error deleting notification", error);
       toast({
         title: "Error",
         description:
@@ -269,7 +259,7 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
   };
 
   const hasUnreadNotifications = notifications.some(
-    (notification) => !notification.read,
+    (notification) => !notification.read
   );
 
   return (
@@ -280,7 +270,7 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
         align="end"
         side="bottom"
         sideOffset={8}
-        onInteractOutside={(e) => {
+        onInteractOutside={() => {
           // Only close when clicking outside the popover
           setOpen(false);
         }}
@@ -341,7 +331,7 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
                     key={notification.id}
                     className={cn(
                       "flex flex-col gap-1.5 border-b border-border p-4 text-sm last:border-0",
-                      !notification.read && "bg-muted/50",
+                      !notification.read && "bg-muted/50"
                     )}
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -366,7 +356,7 @@ export function NotificationsPopover({ children }: NotificationsPopoverProps) {
                       {formatDistance(
                         new Date(notification.created_at),
                         new Date(),
-                        { addSuffix: true },
+                        { addSuffix: true }
                       )}
                     </p>
                     <p className="mt-1 line-clamp-2 text-xs">

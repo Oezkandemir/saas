@@ -1,12 +1,12 @@
+import { describe, expect, test, vi } from "vitest";
 import {
   getAnalyticsData,
   getDetailedAnalytics,
+  type PageViewData,
   recordPageView,
   trackUserInteraction,
-  type PageViewData,
   type UserInteractionData,
 } from "@/actions/analytics-actions";
-import { describe, expect, test, vi } from "vitest";
 
 // Mock the supabaseAdmin and currentUser
 vi.mock("@/lib/db", () => ({

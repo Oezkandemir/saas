@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { supabaseAdmin } from "@/lib/db";
+import { logger } from "@/lib/logger";
 import { getSession } from "@/lib/session";
 import { getSupabaseServer } from "@/lib/supabase-server";
 
@@ -29,7 +30,7 @@ export async function updateUserAvatar(userId: string, formData: FormData) {
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
     if (!allowedTypes.includes(avatarFile.type)) {
       throw new Error(
-        "File type not supported. Please upload a JPEG, PNG, GIF, or WEBP image.",
+        "File type not supported. Please upload a JPEG, PNG, GIF, or WEBP image."
       );
     }
 
@@ -42,7 +43,7 @@ export async function updateUserAvatar(userId: string, formData: FormData) {
     const buffer = new Uint8Array(arrayBuffer);
 
     // Upload to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+    const { error: uploadError } = await supabaseAdmin.storage
       .from("avatars")
       .upload(fileName, buffer, {
         contentType: avatarFile.type,
@@ -50,7 +51,7 @@ export async function updateUserAvatar(userId: string, formData: FormData) {
       });
 
     if (uploadError) {
-      console.error("Error uploading avatar:", uploadError);
+      logger.error("Error uploading avatar", uploadError);
       throw new Error("Failed to upload avatar");
     }
 
@@ -83,10 +84,11 @@ export async function updateUserAvatar(userId: string, formData: FormData) {
 
     return { status: "success", avatarUrl };
   } catch (error) {
-    console.error("Error updating user avatar:", error);
+    logger.error("Error updating user avatar", error);
     return {
       status: "error",
-      message: error.message || "Failed to update avatar",
+      message:
+        error instanceof Error ? error.message : "Failed to update avatar",
     };
   }
 }

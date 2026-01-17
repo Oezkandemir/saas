@@ -1,7 +1,5 @@
 import * as z from "zod";
 
-import { UserRole } from "@/components/forms/user-role-form";
-
 export const userNameSchema = z.object({
   name: z.string().min(3).max(32),
 });
@@ -23,11 +21,11 @@ export const userAvatarSchema = z.object({
       (file) =>
         file instanceof File &&
         ["image/jpeg", "image/png", "image/gif", "image/webp"].includes(
-          file.type,
+          file.type
         ),
       {
         message:
           "Unsupported file type. Please upload a JPEG, PNG, GIF, or WEBP image",
-      },
+      }
     ),
 });

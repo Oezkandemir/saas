@@ -1,11 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { Ticket } from "@/actions/support-ticket-actions";
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
 import { ArrowUpDown, ExternalLink } from "lucide-react";
-
+import Link from "next/link";
+import type { Ticket } from "@/actions/support-ticket-actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 

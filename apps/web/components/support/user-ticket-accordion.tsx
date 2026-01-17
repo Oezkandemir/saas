@@ -1,10 +1,10 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
-import { Ticket } from "@/actions/support-ticket-actions";
 import { formatDistance } from "date-fns";
 import { ChevronRight, ExternalLink, Search } from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
+import type { Ticket } from "@/actions/support-ticket-actions";
 
 import {
   Accordion,
@@ -72,7 +72,7 @@ export function UserTicketAccordion({ data }: UserTicketAccordionProps) {
     return data.filter(
       (ticket) =>
         ticket.subject.toLowerCase().includes(query) ||
-        ticket.description.toLowerCase().includes(query),
+        ticket.description.toLowerCase().includes(query)
     );
   }, [data, searchQuery]);
 

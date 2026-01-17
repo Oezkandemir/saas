@@ -1,12 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
-
-import { getSession } from "@/lib/session";
+// UserRole type - admin functionality moved to separate admin dashboard
+export enum UserRole {
+  USER = "USER",
+  ADMIN = "ADMIN",
+}
+import { supabaseAdmin } from "@/lib/db-admin";
+import { logger } from "@/lib/logger";
+import { getCurrentUser, getSession } from "@/lib/session";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { userRoleSchema } from "@/lib/validations/user";
-import { UserRole } from "@/components/forms/user-role-form";
 
 export type FormData = {
   role: UserRole;
@@ -15,9 +19,20 @@ export type FormData = {
 export async function updateUserRole(userId: string, data: FormData) {
   try {
     const session = await getSession();
+    const currentUser = await getCurrentUser();
 
-    if (!session?.user || session?.user.id !== userId) {
-      throw new Error("Unauthorized");
+    // SECURITY: Only admins can change roles
+    // Users cannot change their own role, even to downgrade themselves
+    if (!currentUser || currentUser.role !== "ADMIN") {
+      logger.warn(
+        `Unauthorized role change attempt by user ${session?.user?.id}`
+      );
+      throw new Error("Unauthorized: Admin access required to change roles");
+    }
+
+    // Additional check: Ensure the session user is an admin
+    if (!session?.user) {
+      throw new Error("Unauthorized: No session");
     }
 
     const { role } = userRoleSchema.parse(data);
@@ -37,14 +52,25 @@ export async function updateUserRole(userId: string, data: FormData) {
       },
     });
 
+    // IMPORTANT: Also update the users table to keep it in sync
+    // This prevents the role from being reset when syncUserWithDatabase runs
+    const { error: dbError } = await supabaseAdmin
+      .from("users")
+      .update({ role: role as any })
+      .eq("id", userId);
+
+    if (dbError) {
+      logger.error("Error updating role in users table:", dbError);
+      // Don't fail the whole operation, but log the error
+    }
+
     // Force revalidation of all relevant paths
     revalidatePath("/dashboard/settings");
     revalidatePath("/dashboard");
-    revalidatePath("/admin");
 
     return { status: "success" };
   } catch (error) {
-    console.error("Error updating user role:", error);
+    logger.error("Error updating user role", error);
     return { status: "error" };
   }
 }

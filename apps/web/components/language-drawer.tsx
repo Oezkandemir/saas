@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { Globe } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { Drawer } from "vaul";
-
 import { useRouter as useI18nRouter, usePathname } from "@/i18n/routing";
+
+import { logger } from "@/lib/logger";
 
 export default function LanguageDrawer() {
   const [open, setOpen] = useState(false);
@@ -13,7 +14,21 @@ export default function LanguageDrawer() {
   const pathname = usePathname();
   const t = useTranslations("Navigation");
 
-  const switchLanguage = (locale: string) => {
+  const switchLanguage = async (locale: string) => {
+    // Save locale preference to cookie
+    try {
+      await fetch("/api/locale", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ locale }),
+      });
+    } catch (error) {
+      logger.error("Failed to save locale preference:", error);
+    }
+
+    // Navigate to new locale
     router.replace(pathname, { locale });
     setOpen(false);
   };
@@ -69,4 +84,4 @@ export default function LanguageDrawer() {
       </Drawer.Portal>
     </Drawer.Root>
   );
-} 
+}

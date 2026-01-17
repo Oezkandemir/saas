@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
 import { supabaseAdmin } from "@/lib/db";
+import { logger } from "@/lib/logger";
 import { getSession } from "@/lib/session";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { userNameSchema } from "@/lib/validations/user";
@@ -28,7 +28,7 @@ export async function updateUserName(userId: string, data: FormData) {
     const { data: userData, error: userError } = await supabase.auth.getUser();
 
     if (userError) {
-      console.error("Error fetching user data:", userError);
+      logger.error("Error fetching user data", userError);
       throw new Error("Failed to fetch user data");
     }
 
@@ -43,7 +43,7 @@ export async function updateUserName(userId: string, data: FormData) {
     });
 
     if (updateAuthError) {
-      console.error("Error updating auth user:", updateAuthError);
+      logger.error("Error updating auth user", updateAuthError);
       throw new Error("Failed to update user auth data");
     }
 
@@ -54,7 +54,7 @@ export async function updateUserName(userId: string, data: FormData) {
       .eq("id", userId);
 
     if (updateDbError) {
-      console.error("Error updating users table:", updateDbError);
+      logger.error("Error updating users table", updateDbError);
       throw new Error("Failed to update user in database");
     }
 
@@ -65,7 +65,7 @@ export async function updateUserName(userId: string, data: FormData) {
 
     return { status: "success" };
   } catch (error) {
-    console.error("Error updating user name:", error);
+    logger.error("Error updating user name", error);
     return { status: "error" };
   }
 }
