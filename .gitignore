@@ -102,6 +102,7 @@ dist
 # Temporary folders
 tmp/
 temp/
+temp-mobile/
 
 # Editor directories and files
 .vscode/*
