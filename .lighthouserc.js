@@ -7,8 +7,8 @@ module.exports = {
         'http://localhost:3000/features',
       ],
       startServerCommand: 'pnpm start',
-      startServerReadyPattern: 'Ready on',
-      startServerReadyTimeout: 30000,
+      startServerReadyPattern: /Ready/i,
+      startServerReadyTimeout: 60000,
       numberOfRuns: 3,
       settings: {
         preset: 'desktop',
