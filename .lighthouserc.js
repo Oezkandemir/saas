@@ -6,7 +6,7 @@ module.exports = {
         'http://localhost:3000/pricing',
         'http://localhost:3000/features',
       ],
-      startServerCommand: 'cd apps/web && pnpm start',
+      startServerCommand: 'pnpm start',
       startServerReadyPattern: 'Ready on',
       startServerReadyTimeout: 30000,
       numberOfRuns: 3,

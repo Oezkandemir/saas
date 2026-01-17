@@ -90,7 +90,13 @@ export async function getPublishedBlogPosts(
       .order("created_at", { ascending: false });
 
     if (error) {
-      logger.error("Error fetching published blog posts", error);
+      // In CI/build environments, don't log errors aggressively
+      const isCI = process.env.CI === "true" || process.env.SKIP_ENV_VALIDATION === "true";
+      if (isCI) {
+        logger.warn("Error fetching published blog posts (CI environment, continuing with empty list)", error);
+      } else {
+        logger.error("Error fetching published blog posts", error);
+      }
       return [];
     }
 
@@ -98,12 +104,19 @@ export async function getPublishedBlogPosts(
   } catch (error) {
     // Only log if it's not a cookies/request scope error (those are handled by getSupabaseServer)
     const errorMessage = error instanceof Error ? error.message : String(error);
+    const isCI = process.env.CI === "true" || process.env.SKIP_ENV_VALIDATION === "true";
+    
     if (
       !errorMessage.includes("request scope") &&
       !errorMessage.includes("cookies") &&
-      !errorMessage.includes("AsyncLocalStorage")
+      !errorMessage.includes("AsyncLocalStorage") &&
+      !errorMessage.includes("fetch failed")
     ) {
-      logger.error("Error in getPublishedBlogPosts", error);
+      if (isCI) {
+        logger.warn("Error in getPublishedBlogPosts (CI environment, continuing with empty list)", error);
+      } else {
+        logger.error("Error in getPublishedBlogPosts", error);
+      }
     }
     return [];
   }
