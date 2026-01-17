@@ -244,8 +244,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
           <ul className="space-y-3 text-left">
             {offer.benefits.map((feature, index) => (
               <li
-                className="flex items-start gap-3 animate-in fade-in slide-in-from-left-4"
-                style={{ animationDelay: `${index * 50}ms` }}
+                className="flex items-start gap-3"
                 key={feature}
               >
                 <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -318,8 +317,8 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
   return (
     <MaxWidthWrapper>
       <section className="flex flex-col items-center">
-        {/* Header */}
-        <div className="mb-12 text-center animate-in fade-in slide-in-from-top-4 duration-700">
+        {/* Header - optimized: removed animation delay for faster LCP */}
+        <div className="mb-12 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground mb-4">
             {t("pricing")}
           </div>
@@ -331,8 +330,8 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
           </p>
         </div>
 
-        {/* Billing Toggle */}
-        <div className="mb-8 flex items-center justify-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+        {/* Billing Toggle - optimized: removed animation delay for faster LCP */}
+        <div className="mb-8 flex items-center justify-center gap-3">
           <span
             className={cn(
               "text-sm font-medium transition-colors",
@@ -382,24 +381,17 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
           </span>
         </div>
 
-        {/* Pricing Cards Grid */}
+        {/* Pricing Cards Grid - optimized: removed animation delays for faster LCP */}
         <div className="grid gap-6 w-full sm:grid-cols-2 lg:grid-cols-3 mb-12">
-          {pricingData.map((offer, index) => (
-            <div
-              key={offer.title}
-              className="animate-in fade-in slide-in-from-bottom-4"
-              style={{
-                animationDelay: `${index * 100}ms`,
-                animationDuration: "700ms",
-              }}
-            >
+          {pricingData.map((offer) => (
+            <div key={offer.title}>
               <PricingCard offer={offer} />
             </div>
           ))}
         </div>
 
-        {/* Footer Note */}
-        <div className="max-w-2xl mx-auto text-center space-y-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+        {/* Footer Note - optimized: removed animation delay for faster LCP */}
+        <div className="max-w-2xl mx-auto text-center space-y-2">
           <p className="text-sm text-muted-foreground">
             {t("questions")}{" "}
             <a
